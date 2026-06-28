@@ -1,0 +1,314 @@
+import express from "express";
+import { XMLParser } from "fast-xml-parser";
+import * as store from "./store.mjs";
+import * as runtime from "./runtime.mjs";
+import { buildUploadRequest } from "./jsonToXml.mjs";
+import { getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
+
+const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
+const HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
+let JAVA_URL = process.env.TAWALA_JAVA_URL || "";
+const DEV_USERS = { dev: "dev", designer: "designer" };
+
+async function resolveJavaBackend() {
+  if (process.env.TAWALA_DEV_ONLY === "1") {
+    JAVA_URL = "";
+    return;
+  }
+  if (!JAVA_URL) JAVA_URL = "http://localhost:8080";
+  try {
+    const res = await fetch(`${JAVA_URL.replace(/\/$/, "")}/login`, {
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    console.log(`  Java backend OK at ${JAVA_URL} — deploy will use Tomcat`);
+  } catch (e) {
+    if (process.env.TAWALA_JAVA_URL) {
+      console.error(`  ERROR: TAWALA_JAVA_URL=${JAVA_URL} not reachable (${e.message})`);
+    } else {
+      console.log(`  Java not reachable at ${JAVA_URL} (${e.message}) — deploy uses dev runtime :5173`);
+      JAVA_URL = "";
+    }
+  }
+}
+
+const app = express();
+app.use(express.text({ type: ["text/xml", "application/xml", "text/plain"], limit: "50mb" }));
+app.use(express.json({ limit: "50mb" }));
+
+const xmlParser = new XMLParser({
+  ignoreAttributes: false,
+  attributeNamePrefix: "@_",
+});
+
+function checkAuth(user, password) {
+  if (process.env.TAWALA_DEV_AUTH === "any") return true;
+  return DEV_USERS[user] === password;
+}
+
+function deploymentXml(userId, projects, baseUrl) {
+  const deployments = projects
+    .map((entry) => {
+      const data = store.getProjectByUniqueId(entry.uniqueId);
+      if (!data) return "";
+      const formLines = (data.project.forms ?? [])
+        .map((form) => {
+          const url = `${baseUrl}/p/${entry.uniqueId}/${encodeURIComponent(form.name)}`;
+          return `      <startpoint form="${form.name}" url="${url}"/>`;
+        })
+        .join("\n");
+      return `    <deployment project="${entry.name}">\n${formLines}\n    </deployment>`;
+    })
+    .join("\n");
+  return `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="success">\n  <deployments user="${userId}">\n${deployments}\n  </deployments>\n</response>\n`;
+}
+
+function authFailedXml() {
+  return `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="failure">\n  <error id="auth.failed" message="unknown userid or password"/>\n</response>\n`;
+}
+
+async function forwardToJava(xmlBody) {
+  const res = await fetch(`${JAVA_URL.replace(/\/$/, "")}/client`, {
+    method: "POST",
+    headers: { "Content-Type": "text/xml; charset=utf-8" },
+    body: xmlBody,
+  });
+  return res.text();
+}
+
+/** Legacy Designer XML API — same contract as ClientApiController */
+app.post("/client", async (req, res) => {
+  try {
+    const parsed = xmlParser.parse(req.body);
+    const request = parsed.request ?? parsed;
+    const type = request["@_type"];
+    const credNode = request.credentials ?? {};
+    const user = credNode["@_user"] ?? credNode.user;
+    const password = credNode["@_password"] ?? credNode.password;
+
+    if (!checkAuth(user, password)) {
+      res.type("text/xml").send(authFailedXml());
+      return;
+    }
+
+    if (type === "queryDeployments") {
+      const projects = store.listProjects(user);
+      res.type("text/xml").send(deploymentXml(user, projects, HOST));
+      return;
+    }
+
+    if (type === "uploadProject") {
+      let project;
+      if (request.project) {
+        project = jsonFromLegacyXmlProject(request.project);
+      }
+      if (!project) {
+        res.type("text/xml").send(failureXml("project.invalid", "Could not parse project"));
+        return;
+      }
+
+      if (JAVA_URL) {
+        const xml = typeof req.body === "string" ? req.body : buildUploadRequest({ user, password }, project);
+        const javaResponse = await forwardToJava(xml);
+        res.type("text/xml").send(javaResponse);
+        return;
+      }
+
+      const entry = store.saveProject(user, project);
+      const projects = store.listProjects(user);
+      res.type("text/xml").send(deploymentXml(user, projects, HOST));
+      return;
+    }
+
+    if (type === "previewForm") {
+      const formName = request["@_form"];
+      const project = request.project ? jsonFromLegacyXmlProject(request.project) : null;
+      if (!project) {
+        res.type("text/xml").send(failureXml("project.invalid", "Could not parse project for preview"));
+        return;
+      }
+      store.putPreview(user, project);
+      const url = `${HOST}/preview/${encodeURIComponent(user)}/${encodeURIComponent(project.name)}/${encodeURIComponent(formName)}`;
+      res.type("text/xml").send(
+        `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="success">\n  <formPreview url="${url}"/>\n</response>\n`,
+      );
+      return;
+    }
+
+    res.type("text/xml").send(failureXml("command.unknown", `Unknown command '${type}'.`));
+  } catch (e) {
+    console.error(e);
+    res.type("text/xml").send(failureXml("server.error", String(e.message ?? e)));
+  }
+});
+
+function failureXml(id, message) {
+  return `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="failure">\n  <error id="${id}" message="${message}"/>\n</response>\n`;
+}
+
+function parseStartpointsFromXml(xmlText) {
+  const points = [];
+  const re = /<startpoint form="([^"]+)" url="([^"]+)"/g;
+  let m;
+  while ((m = re.exec(xmlText))) {
+    points.push({ form: m[1], url: m[2] });
+  }
+  return points;
+}
+
+function parseDeployFailure(xmlText) {
+  const m = xmlText.match(/<error id="([^"]+)" message="([^"]*)"/);
+  return m ? `${m[1]}: ${m[2]}` : null;
+}
+
+/** JSON deploy from web Designer */
+app.post("/api/deploy", async (req, res) => {
+  const { credentials, project } = req.body ?? {};
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed" });
+    return;
+  }
+  if (!project?.name) {
+    res.status(400).json({ status: "failure", error: "project required" });
+    return;
+  }
+
+  try {
+      if (JAVA_URL) {
+        const xml = buildUploadRequest(credentials, project);
+        const javaResponse = await forwardToJava(xml);
+        const startpoints = parseStartpointsFromXml(javaResponse);
+        const failure = parseDeployFailure(javaResponse);
+        if (failure || (!javaResponse.includes('status="success"') && startpoints.length === 0)) {
+          const snippet = javaResponse.replace(/\s+/g, " ").slice(0, 200);
+          res.status(502).json({
+            status: "failure",
+            mode: "java",
+            error: failure ?? `Java backend did not return deployment URLs (${snippet})`,
+            raw: javaResponse.slice(0, 2000),
+          });
+          return;
+        }
+        res.json({
+          status: "success",
+          mode: "java",
+          project: project.name,
+          startpoints,
+          raw: javaResponse,
+        });
+        return;
+      }
+
+    const entry = store.saveProject(credentials.user, project);
+    const startpoints = (project.forms ?? []).map((form) => ({
+      form: form.name,
+      url: `${HOST}/p/${entry.uniqueId}/${encodeURIComponent(form.name)}`,
+    }));
+    res.json({
+      status: "success",
+      mode: "dev",
+      project: project.name,
+      uniqueId: entry.uniqueId,
+      startpoints,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ status: "failure", error: String(e.message ?? e) });
+  }
+});
+
+app.get("/p/:uniqueId/:formName", (req, res) => {
+  const data = store.getProjectByUniqueId(req.params.uniqueId);
+  if (!data) {
+    res.status(404).send("Project not found");
+    return;
+  }
+  if (req.query.reset !== undefined) {
+    resetSession(req.params.uniqueId, data.project);
+    res.redirect(302, `/p/${req.params.uniqueId}/${encodeURIComponent(req.params.formName)}`);
+    return;
+  }
+  const session = getOrCreateSession(req.params.uniqueId, data.project);
+  const from = req.query.from ? String(req.query.from) : undefined;
+  res
+    .type("html")
+    .send(
+      runtime.renderFormPage(data.project, req.params.formName, HOST, req.params.uniqueId, session, {
+        fromLabel: from,
+      }),
+    );
+  saveSession(req.params.uniqueId, session);
+});
+
+app.post("/p/:uniqueId/:formName", express.urlencoded({ extended: true }), (req, res) => {
+  const data = store.getProjectByUniqueId(req.params.uniqueId);
+  if (!data) {
+    res.status(404).send("Project not found");
+    return;
+  }
+  const session = getOrCreateSession(req.params.uniqueId, data.project);
+  const html = runtime.handleFormSubmit(
+    data.project,
+    req.params.formName,
+    session,
+    req.body,
+    HOST,
+    req.params.uniqueId,
+  );
+  saveSession(req.params.uniqueId, session);
+  res.type("html").send(html);
+});
+
+app.get("/preview/:userId/:projectName/:formName", (req, res) => {
+  const data = store.getPreview(req.params.userId, req.params.projectName);
+  if (!data) {
+    res.status(404).send("Preview not found — use Preview tab in Designer");
+    return;
+  }
+  const session = getOrCreateSession(`preview-${req.params.userId}`, data.project);
+  res
+    .type("html")
+    .send(runtime.renderFormPage(data.project, req.params.formName, HOST, `preview-${req.params.userId}`, session));
+});
+
+app.get("/api/health", (_req, res) => {
+  res.json({
+    ok: true,
+    javaProxy: Boolean(JAVA_URL),
+    javaUrl: JAVA_URL || null,
+    host: HOST,
+    runtime: JAVA_URL ? "java" : "dev",
+  });
+});
+
+await resolveJavaBackend();
+
+app.listen(PORT, () => {
+  console.log(`Tawala dev API listening on http://localhost:${PORT}`);
+  const runtimeBase = JAVA_URL ? `${JAVA_URL.replace(/\/$/, "")}/p/{id}/{form}` : `${HOST}/p/{id}/{form}`;
+  console.log(`  Runtime URLs base: ${runtimeBase}`);
+  console.log(`  Dev credentials: dev/dev or designer/designer`);
+  if (JAVA_URL) console.log(`  Forwarding deploy to: ${JAVA_URL}/client`);
+  else console.log(`  Tip: start Docker (port 8080) and restart to deploy to Java`);
+});
+
+/** Minimal legacy XML project → JSON for /client uploads that include XML project body */
+function jsonFromLegacyXmlProject(node) {
+  if (!node) return null;
+  const name = node["@_name"] ?? node.name ?? "Untitled";
+  const themePath = node["@_themePath"] ?? node.themePath ?? "default";
+  const formsNode = node.forms?.form ?? node.form ?? [];
+  const forms = [].concat(formsNode).map((f) => ({
+    name: f["@_name"] ?? f.name,
+    startPoint: (f["@_startPoint"] ?? f.startPoint) === "true" || f.startPoint === true,
+    process: f["@_process"] ?? f.process,
+    preProcess: f["@_preProcess"] ?? f.preProcess,
+    themePath: f["@_themePath"] ?? f.themePath,
+    items: [],
+  }));
+  return { name, format: "2.0", themePath, forms, processes: [], documents: [] };
+}

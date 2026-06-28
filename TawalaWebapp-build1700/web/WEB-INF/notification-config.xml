@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+		<property name="host">
+			<value>${mail.host}</value>
+		</property>
+		<property name="javaMailProperties">
+			<props>
+				<prop key="mail.smtp.timeout">5000</prop>
+				<prop key="mail.smtp.connectiontimeout">5000</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="emailer" class="com.tawala.email.Emailer" lazy-init="false">
+		<property name="sender" ref="mailSender" />
+	</bean>
+	
+	<bean id="emailVerificationMessage" class="com.tawala.domain.notification.EmailVerificationMessage$StaticParameters" lazy-init="false">
+		<property name="messageTemplate" value="/WEB-INF/emailtemplates/emailVerificationMessageBody.txt" />
+		<property name="logoImage" value="/images/template/tawala-logo.gif" />
+		<property name="from" value="Tawala Registration &lt;registration@tawala.com&gt;" />
+		<property name="subject" value="Tawala Registration - Please Confirm Your Email" />
+		<property name="returnHostName" value="${emailmessage.returnHostName}" />
+	</bean>
+
+	<bean id="userApprovalNotification" class="com.tawala.domain.notification.UserApprovalNotification$StaticParameters" lazy-init="false">
+		<property name="messageTemplate" value="/WEB-INF/emailtemplates/userApprovalMessageBody.txt" />
+		<property name="logoImage" value="/images/template/tawala-logo.gif" />
+		<property name="from" value="Tawala Registration &lt;registration@tawala.com&gt;" />
+		<property name="subject" value="Tawala Registration Confirmation" />
+		<property name="returnHostName" value="${emailmessage.returnHostName}" />
+	</bean>
+
+	<bean id="userPutOnHoldNotification" class="com.tawala.domain.notification.UserPutOnHoldNotification$StaticParameters" lazy-init="false">
+		<property name="messageTemplate" value="/WEB-INF/emailtemplates/userPutOnHoldMessageBody.txt" />
+		<property name="logoImage" value="/images/template/tawala-logo.gif" />
+		<property name="from" value="Tawala Registration &lt;registration@tawala.com&gt;" />
+		<property name="subject" value="Tawala Registration" />
+	</bean>
+
+	<bean id="passwordResetNotification" class="com.tawala.domain.notification.PasswordResetNotification$StaticParameters" lazy-init="false">
+		<property name="messageTemplate" value="/WEB-INF/emailtemplates/passwordResetNotificationMessageBody.txt" />
+		<property name="logoImage" value="/images/template/tawala-logo.gif" />
+		<property name="from" value="Tawala &lt;registration@tawala.com&gt;" />
+		<property name="subject" value="Tawala Password Reset" />
+		<property name="returnHostName" value="${emailmessage.returnHostName}" />
+	</bean>
+
+	<bean id="defaultCustomizationMessage" class="com.tawala.email.DefaultCustomizationMailToURLBuilder" lazy-init="false">
+		<property name="bodyTemplate" value="/WEB-INF/emailtemplates/defaultCustomizationMessageBody.txt" />
+		<property name="subjectTemplate" value="Check this out - really cool!" />
+	</bean>
+
+	<bean id="invitationToProject" class="com.tawala.email.InvitationToProjectMailToURLBuilder" lazy-init="false">
+		<property name="bodyTemplate" value="/WEB-INF/emailtemplates/invitationToProjectMessageBody.txt" />
+		<property name="subjectTemplate" value="Invitation" />
+	</bean>
+
+	<bean id="projectLinksMessage" class="com.tawala.domain.notification.ProjectLinksMessage$StaticParameters" lazy-init="false">
+		<property name="messageTemplate" value="/WEB-INF/emailtemplates/sendEmailLinksMessageBody.txt" />
+		<property name="subject" value="Links to the new project" />
+		<property name="from" value="Tawala &lt;info@tawala.com&gt;" />
+	</bean>
+</beans>

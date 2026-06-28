@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="propertyPlaceHolderConfigurer" class="org.springframework.web.context.support.ServletContextPropertyPlaceholderConfigurer">
+		<property name="location" value="classpath:lucene-local-setup.properties" />
+	</bean>
+	
+	<bean id="projectIndexer" class="com.tawala.search.InProcessProjectIndexer">
+		<constructor-arg value="${lucene.directory.projects}" />
+	</bean>
+	<bean id="userIndexer" class="com.tawala.search.InProcessUserIndexer">
+		<constructor-arg value="${lucene.directory.users}" />
+	</bean>
+</beans>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="yslLeagueExchange" class="com.tawala.integration.ysl.LeagueDataExchange" lazy-init="false">
+		<property name="postURL" value="http://qa.yoursportsleague.com/spads/ReceiveMessage.jsp"/>
+		<property name="senderId" value="TAWALA"/>
+		<property name="senderPassword" value="t4w4l4"/>
+	</bean>
+
+	<bean id="YSLPlaceholderConfig" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+		<property name="location"><value>classpath:ysl-config.properties</value></property>
+		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+
+</beans>

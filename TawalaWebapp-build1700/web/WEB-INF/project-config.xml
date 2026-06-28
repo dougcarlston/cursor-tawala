@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="userProjectlPropertyConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>classpath:userproject.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="false" />
+	</bean>
+
+	<bean id="userProject" class="com.tawala.project.UserProject" lazy-init="false">
+		<property name="webSiteHostName" value="${projectruntime.hostname}" />
+	</bean>
+</beans>

@@ -1,0 +1,25 @@
+# Dependencies & build output
+**/node_modules/
+**/dist/
+**/ROOT.war
+**/.deployed/
+TawalaWebapp-build1700/build/
+TawalaWebapp-build1700/lib/*.jar
+
+# Large archives (rebuild from TawalaWebapp-build1700)
+NEWZIPS/
+backup/
+
+# IDE & OS
+.DS_Store
+.idea/
+.vscode/
+*.swp
+
+# Env & secrets
+.env
+.env.*
+*.pem
+
+# Logs
+*.log

@@ -1,0 +1,36 @@
+services:
+  postgres:
+    image: postgres:16
+    container_name: tawala-postgres
+    environment:
+      POSTGRES_USER: tawala_admin
+      POSTGRES_PASSWORD: tawala
+      POSTGRES_DB: tawala
+    ports:
+      - "5432:5432"
+    volumes:
+      - tawala_pg_data:/var/lib/postgresql/data
+      - ./db/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tawala_admin -d tawala"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  tawala:
+    build:
+      context: .
+      dockerfile: docker/tomcat/Dockerfile
+    container_name: tawala-tomcat
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - tawala_lucene:/var/tawala/lucene
+    restart: unless-stopped
+
+volumes:
+  tawala_pg_data:
+  tawala_lucene:

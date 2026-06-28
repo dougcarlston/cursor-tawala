@@ -1,0 +1,17 @@
+<img src='cid:tawalaLogo'>
+<p>
+	Dear {0}:
+</p>
+<p>
+	Your registration for the Tawala Systems Alpha Tester program is complete. We are employing 
+	new testers at each phase of development and will contact you by email when your registration 
+	is activated.
+</p>
+<p>
+	Thank you for participating!
+</p>
+<p>
+	Sincerely yours,
+	<br /><br />
+	The Tawala Team
+<p />

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="SampleProject" themePath="default" format="1.10" designerBuild="204">
+<pageHeader><text>Page Header</text></pageHeader><forms>
+<form name="Main" startPoint="true" themePath="default">
+<items>
+<heading label="H1" type="Main"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Main Heading</font></paragraph></heading>
+<heading label="H2" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Sub Heading</font></paragraph></heading>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Plain text</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Instructional text</font></paragraph></text>
+<text label="T3" style="error"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Error text</font></paragraph></text>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Fill in the blank  </font><blank label="a" length="20" required="false"/></paragraph></fib>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Multiple choice:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Choice 1</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Choice 2</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Choice 3</font></paragraph></choice></mc>
+</items>
+</form>
+</forms>
+</project>

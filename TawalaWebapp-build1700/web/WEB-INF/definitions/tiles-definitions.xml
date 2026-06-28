@@ -1,0 +1,1991 @@
+
+ <!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+	<!-- DEFAULT MAIN TEMPLATE -->
+	<definition name="template" page="/WEB-INF/jsp/layout/main.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+		
+		<!-- block definitions -->
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-download" value="/WEB-INF/jsp/blocks/block-download.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-manualtoc" value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />			
+		<put name="block-featuredprojects" value="/WEB-INF/jsp/blocks/block-featuredprojects.jsp" type="page" />			
+		<put name="block-administration" value="/WEB-INF/jsp/blocks/block-administration.jsp" type="page" />
+		<put name="block-categories" value="/WEB-INF/jsp/blocks/block-categories.jsp" type="page" />
+		<put name="block-search-categories" value="/WEB-INF/jsp/blocks/block-search-categories.jsp" type="page" />
+		<put name="block-tawalaissues" value="/WEB-INF/jsp/blocks/block-tawalaissues.jsp" type="page" />
+		<put name="block-libraryProjectDetails" value="/WEB-INF/jsp/blocks/block-libraryProjectDetails.jsp" type="page" />
+		<put name="block-nextlevel" value="/WEB-INF/jsp/blocks/block-nextlevel.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+		<put name="block-sharedDatasources" value="/WEB-INF/jsp/blocks/block-shared-datasources.jsp" type="page" />
+		<put name="block-project-restore" value="/WEB-INF/jsp/blocks/block-project-restore.jsp" type="page" />
+		<put name="block-user-themes" value="/WEB-INF/jsp/blocks/block-user-themes.jsp" type="page" />
+
+		<put name="onLoadJavascriptFunction" value="" />
+	    		
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/tawala/popup.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/css/tawala-base.css"/>
+	    </putList>
+		
+	    <putList name="additionalStyles" />
+		
+		<putList name="mainBlockList" />
+		<putList name="infoBlockList" />
+	</definition>
+
+
+	<!-- TEMPLATE T2 (2-column 25/75 split) -->
+	<definition name="template-t2" page="/WEB-INF/jsp/layout/layout-t2.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+		<put name="secondaryContent" value="" />
+		
+		<!-- block definitions -->
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-manualtoc" value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />			
+		<put name="block-featuredprojects" value="/WEB-INF/jsp/blocks/block-featuredprojects.jsp" type="page" />			
+		<put name="block-administration" value="/WEB-INF/jsp/blocks/block-administration.jsp" type="page" />
+		<put name="block-categories" value="/WEB-INF/jsp/blocks/block-categories.jsp" type="page" />
+		<put name="block-search-categories" value="/WEB-INF/jsp/blocks/block-search-categories.jsp" type="page" />
+		<put name="block-tawalaissues" value="/WEB-INF/jsp/blocks/block-tawalaissues.jsp" type="page" />
+		<put name="block-libraryProjectdetails" value="/WEB-INF/jsp/blocks/block-libraryProjectdetails.jsp" type="page" />
+		<put name="block-projectManagerProjectDetails" value="/WEB-INF/jsp/blocks/block-projectManagerProjectDetails.jsp" type="page" />
+		<put name="block-customizeProject" value="/WEB-INF/jsp/blocks/block-customizeProject.jsp" type="page" />
+		<put name="block-nextlevel" value="/WEB-INF/jsp/blocks/block-nextlevel.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+		<put name="block-sharedDatasources" value="/WEB-INF/jsp/blocks/block-shared-datasources.jsp" type="page" />
+		<put name="block-exampleCategories" value="/WEB-INF/jsp/blocks/block-exampleCategories.jsp" type="page" />
+		<put name="block-exampleDownload" value="/WEB-INF/jsp/blocks/block-exampleDownload.jsp" type="page" />
+		<put name="block-customizablesIntro" value="/WEB-INF/jsp/blocks/block-customizablesIntro.jsp" type="page" />
+		<put name="block-signup" value="/WEB-INF/jsp/blocks/block-signup.jsp" type="page" />
+		<put name="block-downloadDesigner" value="/WEB-INF/jsp/blocks/block-downloadDesigner.jsp" type="page" />
+		<put name="block-project-restore" value="/WEB-INF/jsp/blocks/block-project-restore.jsp" type="page" />
+		<put name="block-communitymenu" value="/WEB-INF/jsp/blocks/block-communitymenu.jsp" type="page" />
+		<put name="block-communityLibraryCategories" value="/WEB-INF/jsp/blocks/block-communityLibraryCategories.jsp" type="page" />
+		<put name="block-displayAvailableLibraries" value="/WEB-INF/jsp/blocks/block-displayAvailableLibraries.jsp" type="page" />
+		<put name="block-manualContents" value="/WEB-INF/jsp/blocks/block-manualContents.jsp" type="page" />
+		<put name="block-user-themes" value="/WEB-INF/jsp/blocks/block-user-themes.jsp" type="page" />
+		<put name="block-sportsdashboards-groups" value="/WEB-INF/jsp/blocks/block-sportsdashboards-groups.jsp" type="page" />
+		
+		<put name="onLoadJavascriptFunction" value="" />
+	    
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/tawala/popup.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	    	<add value="/scripts/yui/build/container/assets/skins/sam/container.css"/>
+	        <add value="/css/tawala-base.css"/>
+	    </putList>
+		
+	    <putList name="additionalStyles" />
+		
+		<putList name="mainBlockList" />
+		<putList name="infoBlockList" />
+	</definition>
+
+	<!-- TEMPLATE T5 (2-column 75/25 split) -->
+	<definition name="template-t5" page="/WEB-INF/jsp/layout/layout-t5.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala Systems" type="string" />
+		<put name="pageTitle" value="" type="string" />		
+		<put name="mainContent" value="" />
+		<put name="rightContent" value="" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="useBlockLoginIfNoUser" value="true" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+		
+		<!-- block definitions -->
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-download" value="/WEB-INF/jsp/blocks/block-download.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-manualtoc" value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />			
+		<put name="block-featuredprojects" value="/WEB-INF/jsp/blocks/block-featuredprojects.jsp" type="page" />			
+		<put name="block-administration" value="/WEB-INF/jsp/blocks/block-administration.jsp" type="page" />
+		<put name="block-categories" value="/WEB-INF/jsp/blocks/block-categories.jsp" type="page" />
+		<put name="block-search-categories" value="/WEB-INF/jsp/blocks/block-search-categories.jsp" type="page" />
+		<put name="block-tawalaissues" value="/WEB-INF/jsp/blocks/block-tawalaissues.jsp" type="page" />
+		<put name="block-libraryProjectDetails" value="/WEB-INF/jsp/blocks/block-libraryProjectDetails.jsp" type="page" />
+		<put name="block-projectManagerProjectDetails" value="/WEB-INF/jsp/blocks/block-projectManagerProjectDetails.jsp" type="page" />
+		<put name="block-customizeProject" value="/WEB-INF/jsp/blocks/block-customizeProject.jsp" type="page" />
+		<put name="block-nextlevel" value="/WEB-INF/jsp/blocks/block-nextlevel.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+		<put name="block-communitymenu" value="/WEB-INF/jsp/blocks/block-communitymenu.jsp" type="page" />
+
+		<put name="onLoadJavascriptFunction" value="" />
+	    
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/tawala/popup.js"/>
+	    </putList>
+
+	    <putList name="additionalScripts" />
+	    
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	        <add value="/css/tawala-base.css"/>
+	    </putList>
+
+	    <putList name="additionalStyles" />
+		
+		<putList name="mainBlockList" >
+		</putList>
+		<putList name="infoBlockList" >
+		</putList>
+	</definition>
+
+	<!-- TEMPLATE T6 (2-column 60/40 split) -->
+	<definition name="template-t6" page="/WEB-INF/jsp/layout/layout-t6.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="subName" value="" type="string" />
+		<put name="pageTitle" value="Tawala Systems" type="string" />
+		<put name="mainContent" value="" />
+		<put name="rightContent" value="" />
+		<put name="subMenu" value="" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="useBlockLoginIfNoUser" value="true" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+		
+		<!-- block definitions -->
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-login" value="/WEB-INF/jsp/blocks/block-login.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-manualtoc" value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />			
+		<put name="block-featuredprojects" value="/WEB-INF/jsp/blocks/block-featuredprojects.jsp" type="page" />			
+		<put name="block-administration" value="/WEB-INF/jsp/blocks/block-administration.jsp" type="page" />
+		<put name="block-categories" value="/WEB-INF/jsp/blocks/block-categories.jsp" type="page" />
+		<put name="block-search-categories" value="/WEB-INF/jsp/blocks/block-search-categories.jsp" type="page" />
+		<put name="block-tawalaissues" value="/WEB-INF/jsp/blocks/block-tawalaissues.jsp" type="page" />
+		<put name="block-libraryProjectDetails" value="/WEB-INF/jsp/blocks/block-libraryProjectDetails.jsp" type="page" />
+		<put name="block-projectManagerProjectdetails" value="/WEB-INF/jsp/blocks/block-projectManagerProjectDetails.jsp" type="page" />
+		<put name="block-customizeProject" value="/WEB-INF/jsp/blocks/block-customizeProject.jsp" type="page" />
+		<put name="block-nextlevel" value="/WEB-INF/jsp/blocks/block-nextlevel.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+		<put name="block-communitymenu" value="/WEB-INF/jsp/blocks/block-communitymenu.jsp" type="page" />
+		
+		<put name="onLoadJavascriptFunction" value="" />
+	    
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/tawala/popup.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	        <add value="/css/tawala.css"/>
+	    </putList>
+		
+	    <putList name="additionalStyles" />
+		
+		<putList name="mainBlockList" >
+		</putList>
+
+		<putList name="infoBlockList" >
+		</putList>
+	</definition>
+
+	<!-- TEMPLATE T7 (1-column) -->
+	<definition name="template-t7" page="/WEB-INF/jsp/layout/layout-t7.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala Systems" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+				
+		<!-- block definitions -->
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-download" value="/WEB-INF/jsp/blocks/block-download.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-manualtoc" value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />			
+		<put name="block-featuredprojects" value="/WEB-INF/jsp/blocks/block-featuredprojects.jsp" type="page" />			
+		<put name="block-administration" value="/WEB-INF/jsp/blocks/block-administration.jsp" type="page" />
+		<put name="block-categories" value="/WEB-INF/jsp/blocks/block-categories.jsp" type="page" />
+		<put name="block-search-categories" value="/WEB-INF/jsp/blocks/block-search-categories.jsp" type="page" />
+		<put name="block-tawalaissues" value="/WEB-INF/jsp/blocks/block-tawalaissues.jsp" type="page" />
+		<put name="block-libraryProjectDetails" value="/WEB-INF/jsp/blocks/block-libraryProjectDetails.jsp" type="page" />
+		<put name="block-projectManagerProjectdetails" value="/WEB-INF/jsp/blocks/block-projectManagerProjectDetails.jsp" type="page" />
+		<put name="block-customizeProject" value="/WEB-INF/jsp/blocks/block-customizeProject.jsp" type="page" />
+		<put name="block-nextlevel" value="/WEB-INF/jsp/blocks/block-nextlevel.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+		<put name="block-communitymenu" value="/WEB-INF/jsp/blocks/block-communitymenu.jsp" type="page" />
+
+		<put name="onLoadJavascriptFunction" value="" />
+	    
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/tawala/popup.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	        <add value="/css/tawala-base.css"/>
+	    </putList>
+
+	    <putList name="additionalStyles" />
+		
+		<putList name="mainBlockList" >
+		</putList>
+
+		<putList name="infoBlockList" >
+		</putList>
+	</definition>
+
+	<!-- TEMPLATE iFrame (template for use in an iFrame) -->
+	<definition name="template-iframe" page="/WEB-INF/jsp/layout/layout-iframe.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="" />
+		<put name="dialogdivs" value="" />
+
+		<put name="onLoadJavascriptFunction" value="" />
+	    
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/yui/build/treeview/treeview-min.js" />
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/tawala/popup.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	        <add value="/css/tawala-base.css"/>
+	    </putList>
+
+	    <putList name="additionalStyles" />
+		
+		<putList name="mainBlockList" >
+		</putList>
+
+	</definition>
+
+	<!-- TEMPLATE errorPage (for use with error pages. No menus) -->
+	<definition name="template-errorPage" page="/WEB-INF/jsp/layout/layout-errorPage.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala Systems" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+				
+		<put name="onLoadJavascriptFunction" value="" />
+	    
+	    <putList name="scripts">
+			<add value="/scripts/tawala.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/css/tawala-base.css"/>
+	    </putList>
+
+	    <putList name="additionalStyles"></putList>		
+		<putList name="mainBlockList" ></putList>
+		<putList name="infoBlockList" ></putList>
+	</definition>
+
+	<definition name="global.errors" path="/WEB-INF/jsp/layout/showGlobalErrors.jsp" >
+		<put name="commandName" value="" type="string" />
+	</definition>
+	<definition name="field.errors" path="/WEB-INF/jsp/layout/showFieldErrors.jsp" >
+		<put name="status" value="" type="string" />
+	</definition>
+
+	<definition name="library.base" extends="template-t2">
+		<put name="pageName" value="library" type="string" />
+		<put name="pageTitleBar" value="Tawala - Library" type="string" />
+		<put name="pageTitle" value="Library" type="string" />
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/yui/build/treeview/treeview-min.js"/>
+	    </putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	        <add value="/scripts/yui/build/treeview/assets/skins/sam/treeview.css"/>
+	        <add value="/css/pages/library.css"/>
+	    </putList>
+	</definition>
+	
+	<definition name="library.search" extends="library.base">
+		<put name="pageTitle" value="Tawala Libraries" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/search.jsp" type="page" />
+		<put name="onLoadJavascriptFunction" value="treeInit()" />
+		<putList name="infoBlockList" >
+			<add value="block-displayAvailableLibraries" type="string"  />
+			<add value="block-search-categories" type="string"  />
+			<add value="block-nextlevel" type="string"  />
+		</putList>
+	</definition>
+
+	<definition name="library.manage.categories" extends="library.base">
+		<put name="pageTitle" value="Edit Categories" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/manageCategories.jsp" type="page" />
+		<put name="onLoadJavascriptFunction" value="treeInit()" />
+		<putList name="infoBlockList" >
+			<add value="block-categories" type="string"  />
+		</putList>
+	</definition>
+
+	<definition name="library.edit.category" page="/WEB-INF/jsp/library/editCategory.jsp">
+	</definition>
+
+	<definition name="library.detail" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/detail.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/library/confirmationdialogs.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-libraryProjectdetails" type="string"  />
+		</putList>
+	</definition>
+
+	<definition name="library.project.delete.confirmation" extends="library.base">
+		<put name="mainContent" value="/WEB-INF/jsp/library/deleteProjectConfirmation.jsp" type="page" />
+	</definition>
+
+	<definition name="library.modify.project" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/editProject.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/library/confirmationdialogs.jsp" type="page" />
+		<putList name="infoBlockList" >
+			<add value="block-libraryProjectdetails" type="string"  />
+		</putList>
+	</definition>
+
+	<definition name="library.project.history" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/projectHistory.jsp" type="page" />
+		<putList name="infoBlockList" >
+			<add value="block-libraryProjectdetails" type="string"  />
+		</putList>
+	</definition>
+	
+	<definition name="library.modify.comment" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/modifyComment.jsp" type="page" />
+		<putList name="infoBlockList" >
+			<add value="block-libraryProjectdetails" type="string"  />
+		</putList>
+	</definition>
+	
+	<definition name="library.update.project.version" extends="template-iframe">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/addProjectVersion.jsp" type="page" />
+		<put name="onLoadJavascriptFunction" value="treeInit()" />
+
+	    <putList name="additionalStyles">
+	        <add value="/scripts/yui/build/treeview/assets/skins/sam/treeview.css"/>
+	    </putList>
+	</definition>
+	
+	<definition name="library.recent.changes" extends="library.base">
+		<put name="mainContent" value="/WEB-INF/jsp/library/recentChanges.jsp" type="page" />
+	</definition>
+	
+	<definition name="library.update.project.version.confirmation" extends="template-iframe">
+		<put name="mainContent" value="/WEB-INF/jsp/library/addProjectVersionConfirmation.jsp" type="page" />
+	</definition>
+
+	<definition name="library.revert.event" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/revertEvent.jsp" type="page" />
+	</definition>
+
+	<definition name="library.test.drive.main" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/testdrive.jsp" type="page" />
+		<putList name="infoBlockList" >
+			<add value="block-libraryProjectdetails" type="string"  />
+		</putList>
+	</definition>
+
+	<definition name="library.view.sample.data" extends="template-t7">
+		<put name="pageName" value="library" type="string" />
+	 	<put name="pageTitleBar" value="Tawala Systems - Sample Data" type="string" />
+	 	<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/viewSampleData.jsp" type="page" />
+	</definition>
+
+	<definition name="library.deploy.to.mytawala" extends="library.base">
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/deploy-to-my-tawala.jsp" type="page" />
+		<putList name="infoBlockList" >
+			<add value="block-libraryProjectdetails" type="string"  />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.view" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="My Tawala" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/view.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/projectmanager/confirmationdialogs.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/projectManager.js" />
+		</putList>
+		<putList name="infoBlockList">
+			<add value="block-account" type="string" />
+			<add value="block-sharedDatasources" type="string" />
+			<add value="block-nextlevel" type="string" />
+			<add value="block-project-restore" type="string" />
+			<add value="block-user-themes" type="string" />
+			<add value="block-sportsdashboards-groups" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.detail" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/detail.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/projectmanager/confirmationdialogs.jsp" type="page" />
+		<putList name="infoBlockList">
+			<add value="block-projectManagerProjectDetails" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+	    	<add value="/scripts/yui/build/datasource/datasource-beta-min.js" />
+	    	<add value="/scripts/yui/build/datatable/datatable-beta-min.js" />
+	    	<add value="/scripts/yui/build/button/button-min.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/pages/projectManager.js" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	    	<add value="/scripts/yui/build/datatable/assets/skins/sam/datatable.css"/>
+			<add value="/css/pages/projectManager.css"/>
+			<add value="/css/pages/dataview.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="projectmanager.update.yoursportsleague.data" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/update-yoursportsleague-data.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/projectmanager/confirmationdialogs.jsp" type="page" />
+		<putList name="infoBlockList">
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	    	<add value="/scripts/yui/build/container/assets/skins/sam/container.css"/>
+	    	<add value="/scripts/yui/build/datatable/assets/skins/sam/datatable.css"/>
+	    	<add value="/scripts/yui/build/button/assets/skins/sam/button.css"/>
+			<add value="/css/pages/projectManager.css"/>
+			<add value="/css/pages/dataview.css"/>
+	    </putList>
+	</definition>
+	
+	<definition name="projectmanager.upgrade.to.later.version" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/upgrade-to-later-version.jsp" type="page" />
+		<putList name="infoBlockList">
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+	    	<add value="/scripts/yui/build/datasource/datasource-beta-min.js" />
+	    	<add value="/scripts/yui/build/datatable/datatable-beta-min.js" />
+	    	<add value="/scripts/yui/build/button/button-min.js" />
+	    	<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/pages/projectManager.js" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	    	<add value="/scripts/yui/build/container/assets/skins/sam/container.css"/>
+	    	<add value="/scripts/yui/build/datatable/assets/skins/sam/datatable.css"/>
+	    	<add value="/scripts/yui/build/button/assets/skins/sam/button.css"/>
+			<add value="/css/pages/projectManager.css"/>
+			<add value="/css/pages/dataview.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="projectmanager.listDataSources" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/listDataSources.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/projectmanager/dataSourceConfirmationDialogs.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/projectManager.js" />
+		</putList>
+		<putList name="infoBlockList">
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+
+	<definition name="projectmanager.dataview" extends="template-t7">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - View Project Data" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/dataView.jsp" type="page" />
+		<put name="dialogdivs" value="/WEB-INF/jsp/projectmanager/confirmationdialogs.jsp" type="page" />
+
+	    <putList name="additionalScripts">
+	    	<add value="/scripts/yui/build/datasource/datasource-beta-min.js" />
+	    	<add value="/scripts/yui/build/datatable/datatable-beta-min.js" />
+	    	<add value="/scripts/yui/build/button/button-min.js" />
+	    	<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/pages/dataView.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	    	<add value="/scripts/yui/build/container/assets/skins/sam/container.css"/>
+	    	<add value="/scripts/yui/build/datatable/assets/skins/sam/datatable.css"/>
+	    	<add value="/scripts/yui/build/button/assets/skins/sam/button.css"/>
+			<add value="/css/pages/dataview.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="projectmanager.summaryview" extends="template-t7">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - View Project Summary" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/summaryView.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="projectmanager.publish" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Publish Project" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/publish.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="projectmanager.publishconfirm" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Publish Project" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/publishConfirmation.jsp" type="page" />
+	</definition>
+
+	<definition name="projectmanager.dataimport.template" extends="template-t7">
+		<put name="pageName" value="mytawala" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Import Project Data" type="string" />
+
+		<putList name="infoBlockList">
+			<add value="block-projectManagerProjectDetails" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/dataImport.js" />
+		</putList>
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="projectmanager.dataimport.start" extends="projectmanager.dataimport.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/dataimport/start.jsp" type="page" />
+	</definition>
+
+	<definition name="projectmanager.dataimport.map" extends="projectmanager.dataimport.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/dataimport/map.jsp" type="page" />
+	</definition>
+
+	<definition name="projectmanager.dataimport.approve" extends="projectmanager.dataimport.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/dataimport/approve.jsp" type="page" />
+	</definition>
+
+	<definition name="projectmanager.dataimport.confirm" extends="projectmanager.dataimport.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/dataimport/confirm.jsp" type="page" />
+	</definition>
+	
+	<definition name="projectmanager.how.to.include.in.another.page" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Add to webpage" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/webpageCode.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.invite.to.project" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Invite Other People to Project" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/invite.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.add.datasource" extends="template-t2">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Add Data Source" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/addDataSource.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<!-- Project Group related tiles -->
+	<definition name="projectmanager.manage.project.group" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Group" type="string" />
+		<put name="pageTitle" value="Project Group" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/manage-project-group.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.add.project.to.group.search.users" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Group" type="string" />
+		<put name="pageTitle" value="Project Group" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/search-users.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.add.project.to.group.select.user" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Group" type="string" />
+		<put name="pageTitle" value="Project Group" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/select-user.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.add.project.to.group.select.project" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Group" type="string" />
+		<put name="pageTitle" value="Project Group" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/select-project.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+	
+	<definition name="projectmanager.project.group.menu" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Group" type="string" />
+		<put name="pageTitle" value="Project Group" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/menu.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/late-registration-management.js" />
+		</putList>
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.project.group.roster.report.info" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Group" type="string" />
+		<put name="pageTitle" value="Project Group" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/roster-report-splash.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="projectmanager.project.group.coach.management" extends="template-t2">
+		<put name="pageName" value="projectGroup" type="string" />
+		<put name="pageTitleBar" value="Tawala - Coach Management" type="string" />
+		<put name="pageTitle" value="Coach Management" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/project-group/coach-management.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/coachManagement.js" />
+		</putList>
+
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboards-groups" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+	
+	<!-- Home page -->
+	<definition name="home" page="/WEB-INF/jsp/home/home.jsp">
+		<put name="pageName" value="home" type="string" />
+		<put name="pageTitle" value="Tawala - Home" type="string" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />		
+	
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/css/pages/home-tawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="home.page" page="/WEB-INF/jsp/home/homePage.jsp">
+		<put name="pageName" value="home" type="string" />
+		<put name="pageTitle" value="Tawala - Home" type="string" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />		
+
+		<!-- block definitions -->
+		<put name="block-sportsdashboard-callout" value="/WEB-INF/jsp/blocks/block-sportsdashboard-callout.jsp" type="page" />
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+	
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/css/pages/homepage.css"/>
+	    </putList>
+
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/yahoo-dom-event/yahoo-dom-event.js"/>
+			<add value="/scripts/yui/build/connection/connection-min.js"/>
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+	    </putList>
+
+		<putList name="infoBlockList">
+			<add value="block-sportsdashboard-callout" type="string" />
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>		
+	</definition>
+		
+	<definition name="home.new" page="/WEB-INF/jsp/home/home-new.jsp">
+		<put name="pageName" value="home" type="string" />
+		<put name="pageTitle" value="Tawala - Home" type="string" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />		
+
+	
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/css/pages/home-new.css"/>
+	        <add value="/css/slideshow.css"/>
+	    </putList>
+
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/json.js"/>
+			<add value="/scripts/tawala.js"/>
+			<add value="/scripts/pages/homepage.js"/>
+			<add value="/scripts/slideshow.js"/>
+	    </putList>
+
+		<putList name="infoBlockList">
+		</putList>		
+	</definition>
+		
+	<definition name="/reghome" extends="template-t5">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="My Tawala" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/mytawala/view.jsp" type="page" />
+
+		<putList name="mainBlockList" >
+			<add value="block-tawalaissues" type="string" />
+		</putList>
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-download" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/faq" extends="template-t2">
+		<put name="pageName" value="faq" type="string" />
+		<put name="pageTitleBar" value="Tawala - Community FAQ" type="string" />
+		<put name="pageTitle" value="Community Pages" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/faq.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-communitymenu" type="string" />
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/community.js" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/faq.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/whatsnew" extends="template-t5">
+		<put name="pageName" value="whatsnew" type="string" />
+		<put name="pageTitleBar" value="Tawala - What's New" type="string" />
+		<put name="pageTitle" value="What's New" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/whatsnew/view.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/info" extends="template-t5">
+		<put name="pageName" value="about" type="string" />
+		<put name="pageTitleBar" value="Tawala - Company Information" type="string" />
+		<put name="pageTitle" value="Company Information" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/info/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/terms" extends="template-t5">
+		<put name="pageName" value="privacy" type="string" />
+		<put name="pageTitle" value="Tawala - Terms and Conditions" type="string" />
+		<put name="pageTitle" value="Terms and Conditions" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/terms/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/privacy" extends="template-t5">
+		<put name="pageName" value="privacy" type="string" />
+		<put name="pageTitleBar" value="Tawala - Privacy Policy" type="string" />
+		<put name="pageTitle" value="Privacy Policy" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/privacy/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/jobs" extends="template-t5">
+		<put name="pageName" value="jobs" type="string" />
+		<put name="pageTitleBar" value="Tawala - Jobs" type="string" />
+		<put name="pageTitle" value="Jobs" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/jobs/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/news" extends="template-t5">
+		<put name="pageName" value="news" type="string" />
+		<put name="pageTitleBar" value="Tawala - News" type="string" />
+		<put name="pageTitle" value="Tawala News" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/news/view.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/news.js" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/download" extends="template-t2">
+		<put name="pageName" value="download" type="string" />
+		<put name="pageTitle" value="Tawala Systems - Download" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/download/view.jsp" type="page" />
+		<put name="onLoadJavascriptFunction" value="Tawala.getDownloadPageBuildVersion()" />
+		<putList name="leftBlockList" >
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<!-- For some reason the dev.tawala.com receives this url instead of /download -->
+	<definition name="/download/" extends="/download" />
+
+	<definition name="/manual" extends="template-t2">
+		<put name="pageName" value="designer" type="string" />
+		<put name="pageTitleBar" value="Tawala - Manual" type="string" />
+		<put name="pageTitle" value="Tawala Manual" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/manual/view.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />
+		</putList>
+
+		<putList name="additionalStyles" >
+			<add value="/css/pages/tutorialManual.css" type="page" />
+		</putList>
+	</definition>
+
+	<definition name="/tutorial1" extends="template-t2">
+		<put name="pageName" value="designer" type="string" />
+		<put name="pageTitleBar" value="Tawala - Tutorial" type="string" />
+		<put name="pageTitle" value="Tutorial: Introduction to Tawala Designer" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/tutorial1/view.jsp" type="page" />
+		<putList name="additionalStyles" >
+			<add value="/css/pages/tutorialManual.css" type="page" />
+		</putList>
+	</definition>
+
+	<definition name="registration" extends="template-t5">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sign Up" type="string" />
+		<put name="pageTitle" value="Sign Up" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/register.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/registration.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.confirmation" extends="template-t5">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sign Up" type="string" />
+		<put name="pageTitle" value="Sign Up Confirmation" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/confirmation.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.during.customization" extends="template-iframe">
+		<put name="pageheading" value="/WEB-INF/jsp/layout/blank.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/blank.jsp" type="page" />
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sign Up" type="string" />
+		<put name="pageTitle" value="Sign Up" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/registerDuringCustomization.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/registration.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.during.customization.confirmation" extends="template-iframe">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sign Up" type="string" />
+		<put name="pageTitle" value="Sign Up Confirmation" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/confirmationDuringCustomization.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.initial" extends="template-t2">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Create a Free Tawala Account" type="string" />
+		<put name="pageTitle" value="Create a Free Tawala Account" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/registerInitial.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-registerInitial.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/registration.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.initial.confirmation" extends="template-t2">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Take Tawala to the Next Level" type="string" />
+		<put name="pageTitle" value="Take Tawala to the Next Level" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/confirmationInitial.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.nextlevel.display" extends="template-t7">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Create your own Tawala Apps" type="string" />
+		<put name="pageTitle" value="Create your own Tawala Apps" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/nextLevel.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/registration.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="registration.nextlevel.confirmation" extends="template-t5">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitleBar" value="Tawala - Create your own Tawala Apps" type="string" />
+		<put name="pageTitle" value="Upgrade Successful" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/nextLevelConfirmation.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+
+	<definition name="registration.email.verified" extends="template-t2">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitle" value="Tawala Systems - Sign Up" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/emailVerified.jsp" type="page" />
+		<put name="leftBlockList" value="" />
+	</definition>
+
+	<definition name="registration.email.verification.error" extends="template-t2">
+		<put name="pageName" value="registration" type="string" />
+		<put name="pageTitle" value="Tawala Systems - Sign Up" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/emailVerificationError.jsp" type="page" />
+		<put name="leftBlockList" value="" />
+	</definition>
+
+	<definition name="user.password.change" extends="template-t5">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Change Password" type="string" />
+		<put name="pageTitle" value="Change Password" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/changePassword.jsp" type="page" />
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="user.account" extends="template-t5">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Account" type="string" />
+		<put name="pageTitle" value="My Account" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/registration/myaccount.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="admin.manage.users" extends="template-t2">
+		<put name="pageName" value="admin_ManageUsers" type="string" />
+		<put name="pageTitleBar" value="Tawala - Manage Users" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/manageusers.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+	</definition>
+
+	<definition name="view.user.detail" extends="template-t2">
+		<put name="pageName" value="admin_UserDetail" type="string" />
+		<put name="pageTitleBar" value="Tawala - User Information" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/userdetail.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+	</definition>
+	
+	<definition name="library.manage" extends="template-t2">
+		<put name="pageName" value="admin_ManageLibrary" type="string" />
+		<put name="pageTitleBar" value="Tawala - Manage Library" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/manageLibrary.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+		
+	</definition>
+	
+	<definition name="project.not.found" extends="template-errorPage">
+		<put name="pageTitleBar" value="Tawala - Project Not Found" type="string" />
+		<put name="pageTitle" value="Project Not Found" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/project/notfound.jsp" type="page" />
+	</definition>
+
+	<definition name="/projectThemes" page="/WEB-INF/jsp/project/themes.jsp" />
+	
+	<definition name="standalone-error" extends="template-t2">
+		<put name="pageName" value="home" type="string" />
+		<put name="pageTitle" value="Error" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/standalone-error.jsp" type="page" />
+	</definition>
+
+	<definition name="login.view" extends="template-t5">
+		<put name="pageName" value="login" type="string" />
+		<put name="pageTitleBar" value="Tawala - Login" type="string" />
+		<put name="pageTitle" value="Tawala Login" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/login/failedLogin.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/registration.css"/>
+	    </putList>
+	</definition>	
+	
+	<definition name="/designer" extends="template-t7">
+		<put name="pageName" value="designer" type="string" />
+		<put name="pageTitleBar" value="Tawala - Designer" type="string" />
+		<put name="pageTitle" value="Tawala Designer" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/designer/designer.jsp" type="page" />
+		<put name="onLoadJavascriptFunction" value="Tawala.getDownloadPageBuildVersion()" />
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/tawalaDesigner.css"/>
+	    </putList>
+	</definition>	
+	
+	<definition name="admin.hibernate.staticstics" extends="template-t7">
+		<put name="pageName" value="admin_HibernateStatistics" type="string" />
+		<put name="pageTitleBar" value="Tawala - Hibernate Statistics" type="string" />
+		<put name="pageTitle" value="Hibernate Statistics" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/viewHibernateStatistics.jsp" type="page" />
+	</definition>	
+	
+	<definition name="projectmanager.customization" extends="template-t7">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala - Customize Project" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/customization/main.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/scripts/yui/build/container/assets/container.css"/>
+	        <add value="/scripts/yui/build/tabview/assets/tabview.css"/>
+	        <add value="/css/round-tabs.css"/>
+			<add value="/css/pages/customization.css"/>
+	    </putList>
+		
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/element/element-beta-min.js" />
+			<add value="/scripts/yui/build/tabview/tabview-min.js" />
+			<add value="/scripts/pages/customization.js" />
+		</putList>
+
+		<putList name="infoBlockList" >
+		</putList>		
+	</definition>
+
+	<definition name="library.describe.project" extends="template-t2">
+		<put name="pageName" value="admin" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Description" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/describeProject.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    </putList>
+		
+	    <putList name="additionalScripts">
+		</putList>
+	</definition>
+
+	<definition name="list.user.domains" extends="template-t2">
+		<put name="pageName" value="admin_ManageUserDomains" type="string" />
+		<put name="pageTitleBar" value="Tawala - Display User Domains" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/userdomain/list.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+	</definition>
+	
+	<definition name="edit.user.domain" extends="template-t2">
+		<put name="pageName" value="admin_ManageUserDomains" type="string" />
+		<put name="pageTitleBar" value="Tawala - Edit User Domain" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/userdomain/edit.jsp" type="page" />
+
+	    <putList name="additionalScripts">
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+	</definition>
+	
+	<definition name="report.count.of.cloned.projects" extends="template-t2">
+		<put name="pageName" value="admin_CountOfClonedProjects" type="string" />
+		<put name="pageTitleBar" value="Tawala - Reports" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/report/countOfClonedProjects.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+	</definition>
+	
+	<definition name="/administration/userProjectReport" extends="template-t2">
+		<put name="pageName" value="admin_UserProjectReport" type="string" />
+		<put name="pageTitleBar" value="Tawala - User Project Report" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/userProjectReport.jsp" type="page" />
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+		
+	</definition>
+
+	<definition name="admin.search.project" extends="template-t2">
+		<put name="pageName" value="admin_SearchProject" type="string" />
+		<put name="pageTitleBar" value="Tawala - Search Project" type="string" />
+		<put name="pageTitle" value="Search Project" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/searchProject.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	    
+	</definition>
+	
+	<definition name="report.all.events" extends="template-t2">
+		<put name="pageName" value="admin_ReportAllEvents" type="string" />
+		<put name="pageTitleBar" value="Tawala - All Events Report" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/report/allEventsReport.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/scripts/yui/build/calendar/assets/calendar.css" />
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/calendar/calendar-min.js"/>
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<!-- All data export/import related tiles -->
+	<definition name="projectmanager.export.all.data.description" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Export All Data" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/all-data-import/export-all-data-description.jsp" type="page" />
+	</definition>
+	
+	<definition name="projectmanager.all.data.import.template" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Import Data" type="string" />
+	</definition>
+	<definition name="projectmanager.all.data.import.start" extends="projectmanager.all.data.import.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/all-data-import/start.jsp" type="page" />
+	</definition>
+	<definition name="projectmanager.all.data.import.approve" extends="projectmanager.all.data.import.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/all-data-import/approve.jsp" type="page" />
+	</definition>
+	<definition name="projectmanager.all.data.import.confirm" extends="projectmanager.all.data.import.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/all-data-import/confirm.jsp" type="page" />
+	</definition>
+
+	<!-- Backup and Restore related tiles -->
+	<definition name="projectmanager.backup.description" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Project Backup" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/backup-restore/backup-description.jsp" type="page" />
+	</definition>
+	<definition name="projectmanager.backup-restore.template" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Restore Project" type="string" />
+	</definition>
+	<definition name="projectmanager.backup-restore.start" extends="projectmanager.backup-restore.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/backup-restore/start-restore.jsp" type="page" />
+	</definition>
+	<definition name="projectmanager.backup-restore.approve" extends="projectmanager.backup-restore.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/backup-restore/approve-restore.jsp" type="page" />
+	</definition>
+	<definition name="projectmanager.backup-restore.confirm" extends="projectmanager.backup-restore.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/backup-restore/confirm-restore.jsp" type="page" />
+	</definition>
+
+	<!-- Online Backup Restore definitions -->
+	<definition name="projectmanager.online-backup-restore.template" extends="template-iframe">
+		<put name="pageName" value="mytawala" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Restore Project" type="string" />
+	</definition>
+	<definition name="projectmanager.online-backup-restore.approve" extends="projectmanager.online-backup-restore.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/backup-restore/online-approve-restore.jsp" type="page" />
+	</definition>
+	<definition name="projectmanager.online-backup-restore.confirm" extends="projectmanager.online-backup-restore.template">
+		<put name="mainContent" value="/WEB-INF/jsp/projectmanager/backup-restore/online-confirm-restore.jsp" type="page" />
+	</definition>
+	
+
+	<definition name="library.examples" extends="template-t2">
+		<put name="pageName" value="library" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Example Projects" type="string" />
+		<put name="pageTitle" value="Example Projects" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/examples.jsp" type="page" />
+
+		<putList name="infoBlockList">
+			<add value="block-exampleDownload" type="string" />
+			<add value="block-exampleCategories" type="string" />
+		</putList>
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/library.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/exampleProjects.js"/>
+	    </putList>
+	</definition>
+	
+	<definition name="library.customizables" extends="template-t2">
+		<put name="pageName" value="library" type="string" />
+	 	<put name="pageTitleBar" value="Tawala - Customizable Applications" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/library/customizables.jsp" type="page" />
+
+		<putList name="infoBlockList">
+			<add value="block-customizablesIntro" type="string" />
+			<add value="block-exampleCategories" type="string" />
+		</putList>
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/library.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/exampleProjects.js"/>
+	    </putList>
+	</definition>
+	
+	<definition name="/mytawala-newuser" extends="template-t2">
+		<put name="pageName" value="mytawala-newuser" type="string" />
+		<put name="pageTitleBar" value="Tawala - My Tawala" type="string" />
+		<put name="pageTitle" value="My Tawala" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/mytawala/mytawala-newuser.jsp" type="page" />
+	    <putList name="additionalStyles">
+			<add value="/css/pages/myTawala.css"/>
+	    </putList>
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/mytawala.js" />
+		</putList>
+		<putList name="infoBlockList">
+			<add value="block-downloadDesigner" type="string" />
+		</putList>
+	</definition>
+
+	<definition name="/communityNews" extends="template-t2">
+		<put name="pageName" value="community" type="string" />
+		<put name="pageTitleBar" value="Tawala - Community News" type="string" />
+		<put name="pageTitle" value="Community Pages" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/community/communityNews.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-communitymenu" type="string" />
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/community.js" />
+		</putList>
+
+		<putList name="additionalStyles" >
+			<add value="/css/pages/community.css" type="page" />
+		</putList>
+	</definition>
+
+	<definition name="community.library" extends="template-t2">
+		<put name="pageName" value="community" type="string" />
+		<put name="pageTitleBar" value="Tawala - Community Library" type="string" />
+		<put name="pageTitle" value="Community Pages" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/community/communityLibrary.jsp" type="page" />
+		<put name="onLoadJavascriptFunction" value="treeInit()" />
+
+		<putList name="infoBlockList" >
+			<add value="block-communitymenu" type="string" />
+			<add value="block-search-categories" type="string"  />
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/treeview/treeview-min.js"/>
+			<add value="/scripts/pages/community.js" />
+		</putList>
+
+		<putList name="additionalStyles" >
+	        <add value="/scripts/yui/build/treeview/assets/skins/sam/treeview.css"/>
+			<add value="/css/pages/community.css" type="page" />
+		</putList>
+	</definition>
+
+	<definition name="/help/manual" extends="template-t2">
+		<put name="pageName" value="help" type="string" />
+		<put name="pageTitleBar" value="Tawala - Help" type="string" />
+		<put name="pageTitle" value="Help" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/help/manual.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-manualContents" type="string" />
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/treeview/treeview-min.js" />
+			<add value="/scripts/pages/help.js" />
+		</putList>
+
+		<putList name="additionalStyles" >
+	        <add value="/scripts/yui/build/treeview/assets/treeview-menu.css"/>
+			<add value="/css/pages/help.css" type="page" />
+		</putList>
+	</definition>
+
+	<definition name="view.project.email" extends="template-t7">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - View Email" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/email/view.jsp" type="page" />
+	</definition>
+
+	<definition name="view.all.project.emails" extends="template-t7">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - View Email" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/email/view-all-project-emails.jsp" type="page" />
+
+	    <putList name="additionalScripts">
+	    	<add value="/scripts/yui/build/datasource/datasource-beta-min.js" />
+	    	<add value="/scripts/yui/build/datatable/datatable-beta-min.js" />
+	    	<add value="/scripts/yui/build/button/button-min.js" />
+	    	<add value="/scripts/yui/build/container/container-min.js" />
+			<add value="/scripts/pages/projectManager.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+		</putList>
+
+	    <putList name="additionalStyles">
+			<add value="/css/pages/projectManager.css"/>
+	    	<add value="/scripts/yui/build/container/assets/skins/sam/container.css"/>
+	    	<add value="/scripts/yui/build/datatable/assets/skins/sam/datatable.css"/>
+	    	<add value="/scripts/yui/build/button/assets/skins/sam/button.css"/>
+	    </putList>
+
+	</definition>
+
+	<definition name="edit.theme" extends="template-t7">
+		<put name="pageName" value="mytawala" type="string" />
+		<put name="pageTitleBar" value="Tawala - Theme Builder" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/theme/edit.jsp" type="page" />
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/yui/build/utilities/utilities.js" />
+			<add value="/scripts/yui/build/logger/logger.js" />
+			<add value="/scripts/yui/build/slider/slider-min.js" />
+			<add value="/scripts/yui/build/colorpicker/colorpicker-debug.js"/>
+			<add value="/scripts/yui/build/tabview/tabview-min.js" />
+			<add value="/scripts/pages/theme.js"/>
+		</putList>
+
+	    <putList name="additionalStyles">
+			<add value="/scripts/yui/build/fonts/fonts-min.css" />
+			<add value="/scripts/yui/build/colorpicker/assets/skins/sam/colorpicker.css" />
+			<add value="/scripts/yui/build/tabview/assets/skins/sam/tabview.css" />
+			
+			<add value="/css/pages/theme.css" />
+	    </putList>
+	</definition>
+	
+	<definition name="admin.upgrade.projects.with.newer.version" extends="template-t2">
+		<put name="pageName" value="admin_UpgradeProjects" type="string" />
+		<put name="pageTitleBar" value="Tawala - Upgrade Projects with Newer Versions" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/upgrade-projects-with-newer-version.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+	    
+		<putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+
+	</definition>
+
+	<definition name="admin.sports-dashboards.overview" extends="template-t2">
+		<put name="pageName" value="adminSD_Overview" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/overview.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/datasource/datasource-beta.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/yui/build/charts/charts-experimental.js" />
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	    
+	</definition>
+
+	<definition name="/administration/sports-dashboards/registration-details" extends="template-t2">
+		<put name="pageName" value="adminSD_Overview" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/registration-details.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/datasource/datasource-beta.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/yui/build/charts/charts-experimental.js" />
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	    
+	</definition>
+
+	<definition name="/administration/sports-dashboards/email-details" extends="template-t2">
+		<put name="pageName" value="adminSD_Overview" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/email-details.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/datasource/datasource-beta.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/yui/build/charts/charts-experimental.js" />
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	    
+	</definition>
+
+	<definition name="admin.sports-dashboard.task-management" extends="template-t2">
+		<put name="pageName" value="adminSD_ProjectTaskManagement" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/task-management.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	    
+	</definition>
+
+	<definition name="admin.sports-dashboard.create.new" extends="template-t2">
+		<put name="pageName" value="adminSD_CreateNewDashboard" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/create-new-dashboard.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/calendar/calendar-min.js"/>
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<definition name="admin.sports-dashboard.create.new.confirmation" extends="template-t2">
+		<put name="pageName" value="adminSD_CreateNewDashboard" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/create-new-dashboard-confirmation.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<definition name="/administration/sports-console/create-new-client" extends="template-t2">
+		<put name="pageName" value="adminSD_CreateNewClient" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/create-new-client.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<definition name="admin.sports-dashboard.view.task" extends="template-t2">
+		<put name="pageName" value="adminSD_ProjectTaskManagement" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/view-task.jsp" type="page" />
+
+		<put name="secondaryContent" value="" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<definition name="admin.sports-dashboard.task.prepare.for.release" extends="admin.sports-dashboard.view.task">
+		<put name="secondaryContent" value="/WEB-INF/jsp/admin/sportsdashboards/task/prepare-for-release.jsp" />
+	</definition>
+
+	<definition name="admin.sports-dashboard.task.create.invoice" extends="admin.sports-dashboard.view.task">
+		<put name="secondaryContent" value="/WEB-INF/jsp/admin/sportsdashboards/task/create-invoice.jsp" />
+	</definition>
+
+	<definition name="admin.sports-dashboard.task.create.purchase.order" extends="admin.sports-dashboard.view.task">
+		<put name="secondaryContent" value="/WEB-INF/jsp/admin/sportsdashboards/task/create-purchase-order.jsp" />
+	</definition>
+
+	<definition name="admin.sports-dashboard.view.process" extends="template-t2">
+		<put name="pageName" value="adminSD_ProjectDetails" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/view-process.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/yui/build/datasource/datasource-beta.js" />
+			<add value="/scripts/yui/build/json/json-min.js" />
+			<add value="/scripts/yui/build/charts/charts-experimental.js" />
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+
+	</definition>
+
+	<definition name="admin.sports-dashboard.list.processes.in.particular.state" extends="template-t2">
+		<put name="pageName" value="adminSD_ProjectTaskManagement" type="string" />
+		<put name="pageTitleBar" value="Tawala - Sports Dashboards Management Console" type="string" />
+		<put name="pageTitle" value="Sports Dashboards Management Console" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/sportsdashboards/list-processes-in-state.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<definition name="admin.assign.roles" extends="template-t2">
+		<put name="pageName" value="adminSD_AssignRoles" type="string" />
+		<put name="pageTitleBar" value="Tawala - Assign User Roles" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/assign-roles.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+	<definition name="admin.manage.urgent.message" extends="template-t2">
+		<put name="pageName" value="Manage Urgent Message" type="string" />
+		<put name="pageTitleBar" value="Tawala - Manage Urgent Message" type="string" />
+		<put name="pageTitle" value="Administration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/admin/manage-urgent-message.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="/WEB-INF/jsp/blocks/block-administrator.jsp" type="page" />
+		</putList>
+
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/administration.css"/>
+	    </putList>
+
+	    <putList name="additionalScripts">
+			<add value="/scripts/pages/administration.js"/>
+	    </putList>
+	</definition>
+
+</tiles-definitions>

@@ -1,0 +1,9 @@
+Dear Friends,
+
+Please click on the following link (or paste it into your browser) to respond to this invitation to %s:
+
+%s
+
+Best regards,
+
+<<add your name here>>

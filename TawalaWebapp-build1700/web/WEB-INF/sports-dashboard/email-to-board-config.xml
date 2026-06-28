@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="sdb-letter-to-org-board-email-template"
+		class="com.tawala.email.SportsDashboardLetterToOrgBoardEmail$EmailTemplate"
+		lazy-init="false">
+		<property name="subject" value="Tawala SportsDashboards" />
+		<property name="bcc" value="sales-admin@tawala.com" />
+		<property name="messageTemplate">
+			<value>
+<![CDATA[
+<html>
+	<head>
+	   <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	   <title>Tawala Sports Dashboards</title>
+	   <!-- link rel="stylesheet" type="text/css" href="screen.css" -->
+	</head>
+	<body style="background-color: #eeeeee;">
+
+		<table width="100%" border="0" cellspacing="0" cellpadding="0" class="bg1" 
+			style="background-color: #eeeeee;">
+			<tr>
+				<td align="center">
+					<table width="600" border="0" cellspacing="0" cellpadding="0" class="bg2" 
+						style="background-color: #ffffff;">
+		            	<tr>
+							<!-- start header -->
+		               		<td class="header" align="left" style="background-color: #eeeeee;">
+								<img src="http://www.tawala.com/images/email/emailboard-heading.gif" alt="Tawala Sports Dashboards" width="600" height="169" />
+		               		</td>
+							<!-- end header -->
+		            	</tr>
+		            	<tr>
+							<!-- start body -->
+		               		<td valign="top" class="body" 
+								style="padding: 0 20px 20px 20px; 
+										background-color: #ffffff;" 
+							>
+		                  		<table width="100%" border="0" cellspacing="0" cellpadding="0" style="padding-top: 12px;">
+		                     		<tr>
+										<td>
+											<p style="font-family: Arial; 
+														font-size: 13px; 
+														font-weight: normal; 
+														color: #333333; 
+														margin: 0 0 14px 0; 
+														padding: 0; "
+											>
+												<br />
+												{0}
+												<br />
+												<br />
+												<p style="font-family: Arial; 
+															font-size: 13px; 
+															font-weight: normal; 
+															color: #333333; 
+															margin: 0 0 14px 0; 
+															padding: 0; "
+												>
+													<a href="{1}">Link to Tawala SportsDashboards</a>
+												</p>
+											</p>
+		                        		</td>
+		                     		</tr>
+		                  		</table>
+		               		</td>
+							<!-- end body -->
+		            	</tr>
+		            	<tr>
+							<!-- start footer -->
+		               		<td valign="middle" align="left" class="footer" height="61" 
+								style="padding: 0 20px 0 20px; 
+										background-color: #7c8d36; 
+										height: 61px; vertical-align: middle;" 
+							>
+		                  		<p style="font-family: Arial;
+							   				font-size: 11px;
+							   				font-weight: normal;
+							   				color: #ffffff;
+							   				line-height: 16px;
+							   				margin: 0;
+							   				padding: 0;"
+							   	>
+								</p>
+		               		</td>
+							<!-- end footer -->
+		            	</tr>
+		         	</table>
+         
+		      	</td>
+		   	</tr>
+		</table>
+
+	</body>
+</html>
+]]>
+			</value>
+		</property>
+	</bean>
+	
+	<bean class="com.tawala.email.SportsDashboardLetterToOrgBoardEmail">
+		<property name="emailTemplate" ref="sdb-letter-to-org-board-email-template" />
+	</bean>
+</beans>

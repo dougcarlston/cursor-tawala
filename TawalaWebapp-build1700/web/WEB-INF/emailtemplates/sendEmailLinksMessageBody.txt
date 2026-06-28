@@ -1,0 +1,12 @@
+Hello,
+
+Below are the links you''ll need to access your newly customized Tawala project "{0}". 
+
+{1}
+
+If you registered for a free Tawala account and saved the project in your My Tawala area you may 
+also access the project from there as well.
+
+Best regards,
+
+The Tawala Team

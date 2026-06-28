@@ -1,0 +1,312 @@
+<project name="tawala" default="fullbuild">
+	<property file="build.properties" />
+
+	<property name="tomcat.home" value="c:/apache-tomcat-5.5.16" />
+
+	<property name="main-src" value="src" />
+	<property name="test-src" value="test/src" />
+	<property name="main-classes" value="build/exploded/WEB-INF/classes" />
+	<property name="test-classes" value="build/test/classes" />
+	<property name="jspc-classes" value="build/jspc/classes" />
+	<property name="buildinfo" value="build/buildinfo.txt" />
+	<property name="war.file" value="tawala.war" />
+	<property name="search-war.file" value="tawala-search.war" />
+	<property name="batch-war.file" value="tawala-batch.war" />
+	<property name="test-properties-directory" value="test-config" />
+
+	<property name="app.path" value="/" />
+
+	<property name="manager.url" value="http://localhost:8080/manager" />
+	<property name="manager.username" value="admin" />
+	<property name="manager.password" value="admin" />
+	<property name="deployed.location" value="c:/temp/tawala_app" />
+	<property name="search.app.deployed.location" value="c:/temp/tawala_search_app" />
+	<property name="batch.app.deployed.location" value="c:/temp/tawala_batch_app" />
+
+	<property name="svn.url" value="file://localhost/home/svn/repository" />
+
+	<exec executable="hostname" outputproperty="host.name" />
+
+	<path id="classpath-main">
+		<pathelement location="${main-classes}" />
+		<fileset dir="lib">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib/hibernate">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib/dev-only">
+			<include name="*.jar" />
+		</fileset>
+		<fileset dir="lib/dev-only/httpunit">
+			<include name="junit*.jar" />
+		</fileset>
+	</path>
+
+	<path id="classpath-test">
+		<pathelement location="${test-properties-directory}" />
+		<path refid="classpath-main" />
+		<pathelement location="${test-classes}" />
+		<pathelement location="web" />
+		<pathelement location="test-config" />
+		<fileset dir="lib/dev-only">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="compile">
+		<mkdir dir="${main-classes}" />
+		<javac destdir="${main-classes}" debug="on">
+			<classpath refid="classpath-main" />
+			<src path="${main-src}" />
+		</javac>
+		<mkdir dir="${test-classes}" />
+		<javac destdir="${test-classes}" debug="on">
+			<classpath refid="classpath-test" />
+			<src path="${test-src}" />
+		</javac>
+		<copy todir="${main-classes}">
+			<fileset dir="${main-src}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+
+	
+    <target name="jar-taglib" description="Builds the minimal jar needed for storing JSP Tag info">
+    	<jar destfile="lib/tawala-tags.jar" >
+    		<fileset dir="src" includes="META-INF/tawala.tld" />
+    	</jar>
+    </target>
+
+
+	<target name="test" depends="compile, jar-taglib, buildinfo" description="Run all tests">
+		<junit taskname="junit unit tests" printsummary="on" fork="on" haltonerror="true" haltonfailure="true">
+			<jvmarg value="-Xms256M" />
+			<jvmarg value="-Xmx1024M" />
+			<classpath refid="classpath-test" />
+			<formatter type="xml" />
+			<test name="AllTests" />
+		</junit>
+	</target>
+
+	<target name="clean" description="Remove all generated files">
+		<delete dir="build" />
+		<delete dir="tawala.war" />
+		<delete file="lib/tawala-tags.jar" />
+	</target>
+
+	<target name="set.label" unless="label">
+		<property name="label" value="manual build" />
+	</target>
+
+	<target name="buildinfo" depends="set.label">
+		<delete file="${buildinfo}" />
+		<tstamp>
+			<format property="build.time" pattern="yyyy/MM/dd HH:mm:ss" />
+		</tstamp>
+		<property name="host.name" value="unknown host" />
+		<echo file="${buildinfo}">
+            Built at ${build.time}
+            Built by ${user.name}
+            Built on ${host.name} in ${basedir}
+        	Build label: ${label}
+            Built with:
+            ${java.vm.vendor} Java ${java.vm.version}
+            ${ant.version}
+            ${os.name} ${os.arch} ${os.version}
+            build file ${ant.file}
+        </echo>
+
+	</target>
+
+	<target name="war" description="Build war file for release" depends="compile, jar-taglib, buildinfo">
+		<war duplicate="fail" destfile="${war.file}" webxml="web/WEB-INF/web.xml">
+			<fileset dir="web">
+				<exclude name="buildinfo.txt" />
+				<exclude name="WEB-INF/web.xml" />
+				<exclude name="WEB-INF/classes" />
+			</fileset>
+			<fileset file="build/buildinfo.txt" />
+			<lib dir="lib" >
+				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/hibernate" >
+				<include name="*.jar" />
+			</lib>
+			<classes dir="${main-classes}" />
+		</war>
+	</target>
+
+	<!-- Keep it in synch with "war" target! -->
+	<target name="war-without-videos" description="Builds fully functional war, but without videos" depends="compile, jar-taglib, buildinfo">
+		<war duplicate="fail" destfile="${war.file}.dev" webxml="web/WEB-INF/web.xml">
+			<fileset dir="web">
+				<exclude name="buildinfo.txt" />
+				<exclude name="WEB-INF/web.xml" />
+				<exclude name="demos/**" />
+				<exclude name="videos/**" />
+			</fileset>
+			<fileset file="build/buildinfo.txt" />
+			<lib dir="lib" >
+				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/hibernate" >
+				<include name="*.jar" />
+			</lib>
+			<classes dir="${main-classes}" />
+		</war>
+	</target>
+
+	<target name="fullbuild" description="full distribution, made from scratch" depends="clean, test, war, search-web-app-war, batch-web-app-war" />
+
+	<path id="classpath-svn">
+		<fileset dir="lib/dev-only">
+			<include name="svn*.jar" />
+		</fileset>
+	</path>
+
+	<taskdef resource="svntask.properties" classpathref="classpath-svn" />
+	<target name="label.build" description="Labels the build">
+		<svn >
+			<copy srcUrl="${svn.url}/webapp/trunk" destUrl="${svn.url}/webapp/tags/${label}" message="Tagging the build with label ${label}" />
+		</svn>
+	</target>
+	<target name="fullbuild.and.label" description="full distribution, made from scratch and tag the files" depends="fullbuild, label.build" >
+	</target>
+	<path id="ant.classpath">
+		<fileset dir="lib/dev-only/">
+			<include name="catalina-ant.jar" />
+		</fileset>
+	</path>
+	<taskdef name="deploy" classname="org.apache.catalina.ant.DeployTask" classpathref="ant.classpath" />
+	<taskdef name="stop" classname="org.apache.catalina.ant.StopTask" classpathref="ant.classpath" />
+	<taskdef name="start" classname="org.apache.catalina.ant.StartTask" classpathref="ant.classpath" />
+
+	<target name="copy.war.contents" description="Builds the war file without running the tests and deploys to the destination directory.">
+		<antcall target="war-without-videos"></antcall>
+		<unwar src="${war.file}.dev" dest="${deployed.location}" overwrite="true" />
+	</target>
+
+	<target name="deploy" description="Updates the application and forces Tomcat to redeploy">
+		<!--
+    	The reason for this dance is the problem with two conflicting switches in Tomcat: 
+    	reloading of JSPs and antiResource(JAR)Locking. One or the other has to be active at the same time.
+    	
+    	The default model is antiresourcelocking is off and JSP reloading is on. That means that one can't
+    	use the "deploy" task of Tomcat to force it to drop existing app. Stop and start seem to be able to
+    	accomplish this, at least in most scenarios. When absolutely necessary - stop Tomcat and use clean.and.redeploy
+    	target and restart Tomcat.
+    	
+    	There must be a better way of doing this, but for now... SL.
+    	-->
+		<stop url="${manager.url}" username="${manager.username}" password="${manager.password}" path="${app.path}" />
+
+		<antcall target="copy.war.contents" />
+
+		<start url="${manager.url}" username="${manager.username}" password="${manager.password}" path="${app.path}" />
+	</target>
+
+	<target name="clean.deployment" description="Removes the deployed app">
+		<delete dir="${deployed.location}" failonerror="true" />
+	</target>
+
+	<target name="clean.and.deploy" depends="clean.deployment, copy.war.contents" description="Removes and completely rebuilds the application from deployed location.">
+	</target>
+
+
+	<target name="redeploy non java files">
+		<copy todir="${deployed.location}/WEB-INF" flatten="false">
+			<fileset dir="web/WEB-INF" />
+		</copy>
+		<copy todir="${deployed.location}/css" flatten="false">
+			<fileset dir="web/css" />
+		</copy>
+		<copy todir="${deployed.location}/images" flatten="false">
+			<fileset dir="web/images" />
+		</copy>
+		<copy todir="${deployed.location}/scripts" flatten="false">
+			<fileset dir="web/scripts" />
+		</copy>
+		<copy todir="${deployed.location}/system" flatten="false">
+			<fileset dir="web/system" />
+		</copy>
+		<copy todir="${deployed.location}/help-content" flatten="false">
+			<fileset dir="web/help-content" />
+		</copy>
+		<copy todir="${deployed.location}/sports-faq-content" flatten="false">
+			<fileset dir="web/sports-faq-content" />
+		</copy>
+	</target>
+
+	<target name="jspc">
+		<taskdef classname="org.apache.jasper.JspC" name="jasper2">
+			<classpath id="jspc.classpath">
+				<pathelement location="${java.home}/../lib/tools.jar" />
+				<fileset dir="${tomcat.home}/bin">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${tomcat.home}/server/lib">
+					<include name="*.jar" />
+				</fileset>
+				<fileset dir="${tomcat.home}/common/lib">
+					<include name="*.jar" />
+				</fileset>
+				<path refid="classpath-main" />
+				<pathelement path="test" />
+			</classpath>
+		</taskdef>
+
+		<jasper2 validateXml="false" uriroot="web" webXmlFragment="generated_web.xml" outputDir="${jspc-classes}" verbose="1" failonerror="true" caching="true" />
+	</target>
+	
+	<!-- ================================= 
+          target: search-web-app              
+         ================================= -->
+    <target name="search-web-app-war" depends="clean, compile, buildinfo" description="Builds the web app that performs user and project searches">
+		<war duplicate="fail" destfile="${search-war.file}" webxml="search-web-app/WEB-INF/web.xml">
+			<fileset dir="search-web-app">
+				<exclude name="buildinfo.txt" />
+				<exclude name="WEB-INF/web.xml" />
+			</fileset>
+			<fileset file="build/buildinfo.txt" />
+			<lib dir="lib" >
+				<include name="*.jar" />
+			</lib>
+			<classes dir="${main-classes}" />
+		</war>
+    </target>
+	
+	<target name="copy-search-web-app-war">
+		<antcall target="search-web-app-war" />
+		<unwar src="${search-war.file}" dest="${search.app.deployed.location}" overwrite="true" />
+	</target>
+
+	<!-- ================================= 
+          target: batch-web-app              
+         ================================= -->
+    <target name="batch-web-app-war" depends="clean, compile, buildinfo" description="Builds the web app that runs batch jobs">
+		<war duplicate="fail" destfile="${batch-war.file}" webxml="batch-web-app/WEB-INF/web.xml">
+			<fileset dir="batch-web-app">
+				<exclude name="buildinfo.txt" />
+				<exclude name="WEB-INF/web.xml" />
+			</fileset>
+			<fileset file="build/buildinfo.txt" />
+			<lib dir="lib" >
+				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/batch-only" >
+				<include name="*.jar" />
+			</lib>
+			<lib dir="lib/hibernate" >
+				<include name="*.jar" />
+			</lib>
+			<classes dir="${main-classes}" />
+		</war>
+    </target>
+	
+	<target name="copy-batch-web-app-war">
+		<antcall target="batch-web-app-war" />
+		<copy file="${batch-war.file}" todir="${batch.app.deployed.location}" overwrite="true" />
+	</target>
+</project>

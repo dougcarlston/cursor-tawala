@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="sdb-contact-us-email-template"
+		class="com.tawala.email.SportsDashboardContactUsEmail$EmailTemplate"
+		lazy-init="false">
+		<property name="from"
+			value="Tawala Server &lt;info@tawala.com&gt;" />
+		<property name="toAddress"
+			value="Tawala Sales &lt;sales@tawala.com&gt;" />
+		<property name="subject" value="Sports Dashboard Free Trial Contact" />
+		<property name="messageTemplate">
+			<value><![CDATA[
+SportsDashboards Free Trial Contact Information
+
+Name: {0}
+Email: {1}
+Sport: {2}
+Website: {3}
+Contact Date: {4,date,full}
+]]>
+			</value>
+		</property>
+	</bean>
+	
+	<bean class="com.tawala.email.SportsDashboardContactUsEmail">
+		<property name="emailTemplate" ref="sdb-contact-us-email-template" />
+	</bean>
+</beans>

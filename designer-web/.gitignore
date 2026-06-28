@@ -1,0 +1,4 @@
+.dockerignore
+.deployed/
+node_modules/
+dist/

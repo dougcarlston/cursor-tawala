@@ -1,0 +1,521 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="sampleProject" class="com.tawala.web.project.theme.ViewSampleProjectController$SampleProjectHolder" lazy-init="false">
+		<property name="projectXML" value="/WEB-INF/SampleProject.tawala"/>
+	</bean>
+	<bean id="defaultGoogleAdSenseCode" class="java.lang.String">
+		<constructor-arg><value>
+		<![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Default Theme 120x240
+google_ad_slot = "1778931406";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></constructor-arg>
+	</bean>
+	
+	<bean id="themeInitializer" class="com.tawala.project.theme.CommonTheme$Initializer" lazy-init="false">
+		<property name="themes">
+			<list>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="plain"/>
+					<constructor-arg value="Plain"/>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode"/>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="default"/>
+					<constructor-arg value="Default"/>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode"/>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="style2"/>
+					<constructor-arg value="Big Q"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Big Q Theme 120x240
+google_ad_slot = "1909894872";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="red"/>
+					<constructor-arg value="Red"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Red Theme 120x600
+google_ad_slot = "7874927518";
+google_ad_width = 120;
+google_ad_height = 600;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="dark"/>
+					<constructor-arg value="Dark"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Dark Theme 120x600
+google_ad_slot = "9172849049";
+google_ad_width = 120;
+google_ad_height = 600;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="litegreen"/>
+					<constructor-arg value="Light Green"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Lite Green Theme 120x240
+google_ad_slot = "2938131828";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="yellow"/>
+					<constructor-arg value="Yellow"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Yellow Theme 120x240
+google_ad_slot = "1547201698";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="blueline"/>
+					<constructor-arg value="Blue Lined Paper"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Blue Lined Theme 120x240
+google_ad_slot = "4820041818";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="greenline"/>
+					<constructor-arg value="Green Lined Paper"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Green Lined Theme 120x240
+google_ad_slot = "5700786030";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="basicblue"/>
+					<constructor-arg value="Basic Blue"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Basic Blue Theme 120x240
+google_ad_slot = "4204913388";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="basicgreen"/>
+					<constructor-arg value="Basic Green"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Basic Green Theme 120x240
+google_ad_slot = "2266386966";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="basicyellow"/>
+					<constructor-arg value="Basic Yellow"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Basic Yellow Theme 120x240
+google_ad_slot = "1591891016";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="basicpink"/>
+					<constructor-arg value="Basic Pink"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Basic Pink Theme 120x240
+google_ad_slot = "8406929186";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="fullmoon"/>
+					<constructor-arg value="Full Moon"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/fullmoon/images/moon-heading.jpg" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="219" />
+							<constructor-arg value="200" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Full Moon Theme 120x240
+google_ad_slot = "3221474895";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="greentea"/>
+					<constructor-arg value="Green Tea"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Green Tea Theme 120x240
+google_ad_slot = "6298508572";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="tincarbell"/>
+					<constructor-arg value="Tin Car Bell"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/tincarbell/images/toycar-heading.jpg" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="201" />
+							<constructor-arg value="150" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Tin Car Bell Theme 120x240
+google_ad_slot = "2455319722";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="chocolate"/>
+					<constructor-arg value="Chocolate"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/chocolate/images/chocolate-heading.jpg" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="347" />
+							<constructor-arg value="150" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Chocolate Theme 120x240
+google_ad_slot = "6172793631";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="baseball"/>
+					<constructor-arg value="Baseball"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/baseball/images/baseball-pageheader.jpg" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="770" />
+							<constructor-arg value="134" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Baseball Theme 120x240
+google_ad_slot = "3070839566";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="lime"/>
+					<constructor-arg value="Lime"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/lime/images/lime-pageheader.jpg" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="839" />
+							<constructor-arg value="150" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Lime Theme 120x240
+google_ad_slot = "0383440076";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="salzburg"/>
+					<constructor-arg value="Salzburg"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Salzburg Theme 120x240
+google_ad_slot = "7855069466";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="dirtbowl"/>
+					<constructor-arg value="Dirtbowl"/>
+					<property name="mainBackgroundColor" value="365373"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Dirt Bowl Theme 120x240
+google_ad_slot = "0841813609";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="redrays"/>
+					<constructor-arg value="Red Rays"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/redrays/images/rays-pageheader.jpg" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="770" />
+							<constructor-arg value="161" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode"/>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="purplehaze"/>
+					<constructor-arg value="Purple Haze"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/purplehaze/images/purplehaze-pageheader.gif" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="869" />
+							<constructor-arg value="156" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Purple Haze Theme 120x240
+google_ad_slot = "1152502643";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="soup"/>
+					<constructor-arg value="Soup's On"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/soup/images/soup-pageheader.png" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="267" />
+							<constructor-arg value="197" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode" />
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="tennis"/>
+					<constructor-arg value="Tennis"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/tennis/images/tennis-pageheader.gif" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="770" />
+							<constructor-arg value="98" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode" />
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="orangeswirl"/>
+					<constructor-arg value="Orange Swirl"/>
+					<constructor-arg>
+						<bean class="com.tawala.web.oldhtml.Image">
+							<constructor-arg
+								value="/css/project/orangeswirl/images/orangeswirl-pageheader.gif" />
+							<constructor-arg value="Header" />
+							<constructor-arg value="770" />
+							<constructor-arg value="103" />
+						</bean>
+					</constructor-arg>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode" />
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="dirtbowl2"/>
+					<constructor-arg value="Dirtbowl - Variable Width"/>
+					<property name="mainBackgroundColor" value="365373"/>
+					<property name="googleAdSenseCode">
+					<value><![CDATA[
+<script type="text/javascript"><!--
+google_ad_client = "pub-1112704569001096";
+//Dirt Bowl Theme 120x240
+google_ad_slot = "0841813609";
+google_ad_width = 120;
+google_ad_height = 240;
+//--></script>
+<script type="text/javascript"
+src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
+</script>
+]]></value></property>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="mvsc"/>
+					<constructor-arg value="MVSC"/>
+				</bean>
+				<bean class="com.tawala.project.theme.CommonTheme">
+					<constructor-arg value="setup"/>
+					<constructor-arg value="Setup for Customization Wizard"/>
+					<property name="googleAdSenseCode" ref="defaultGoogleAdSenseCode"/>
+					<property name="visible" value="false" />
+				</bean>
+
+			</list>
+		</property>
+	</bean>
+</beans>

@@ -1,0 +1,18 @@
+<img src='cid:tawalaLogo'>
+<p>
+Dear {0}:
+</p>
+	Congratulations! Your account at Tawala Systems has been activated!  You are free to access all parts of the 
+	Tawala Website and to download and use the Tawala Designer and Invitation Manager applications!
+</p>
+<p>
+	Just go to <a href="{1}">{1}</a> to get started.  You may log on using the User name <strong>{2}</strong>.
+</p>
+<p>
+	Thank you for joining the Tawala community!
+</p>
+<p>
+	Sincerely yours,
+	<br /><br />
+	The Tawala Team
+</p>

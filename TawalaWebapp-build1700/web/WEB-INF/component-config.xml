@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="componentMessageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="WEB-INF/component" />
+	</bean>
+
+	<bean id="componentRepository" class="com.tawala.component.repository.Repository" lazy-init="false" singleton="true">
+		<property name="messageSource" ref="componentMessageSource"/>
+	</bean>
+</beans>

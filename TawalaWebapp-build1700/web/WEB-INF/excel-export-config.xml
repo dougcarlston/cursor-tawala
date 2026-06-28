@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="excelExportInitializer" class="com.tawala.web.project.ExcelDataExportTemplate$Initializer" lazy-init="true">
+		<property name="templates">
+			<map>
+				<entry key="sdt-roster"><value>/WEB-INF/excel-templates/roster-template.xls</value></entry>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- Team Roster Templates -->
+	<bean id="portlandCYOStandardTemplate" class="com.tawala.sportsdashboards.data.TeamRosterTemplate">
+		<constructor-arg><value>portland-cyo-roster</value></constructor-arg>
+		<constructor-arg><value>Portland CYO Roster (3 coaches, 20 players)</value></constructor-arg>
+		<constructor-arg><value>/WEB-INF/excel-templates/portland-cyo-roster-template-3coaches-20players.xls</value></constructor-arg>
+		<property name="maxNumberOfCoaches" value="3" />
+		<property name="maxNumberOfPlayers" value="20"/>
+	</bean>
+
+	<bean id="portlandCYOStandardTemplate2" class="com.tawala.sportsdashboards.data.TeamRosterTemplate">
+		<constructor-arg><value>portland-cyo-roster6x18</value></constructor-arg>
+		<constructor-arg><value>Portland CYO Roster (6 coaches, 18 players)</value></constructor-arg>
+		<constructor-arg><value>/WEB-INF/excel-templates/portland-cyo-roster-template-6coaches-18players.xls</value></constructor-arg>
+		<property name="maxNumberOfCoaches" value="6" />
+		<property name="maxNumberOfPlayers" value="18"/>
+	</bean>
+	
+	<bean id="portlandCYOTrackTemplate" class="com.tawala.sportsdashboards.data.TeamRosterTemplate">
+		<constructor-arg><value>portland-cyo-roster-track</value></constructor-arg>
+		<constructor-arg><value>Portland CYO Track Roster (15 coaches, 50 players)</value></constructor-arg>
+		<constructor-arg><value>/WEB-INF/excel-templates/portland-cyo-roster-template-track.xls</value></constructor-arg>
+		<property name="maxNumberOfCoaches" value="15" />
+		<property name="maxNumberOfPlayers" value="50"/>
+	</bean>
+	
+	<bean id="portlandCYOSwimmingTemplate" class="com.tawala.sportsdashboards.data.TeamRosterTemplate">
+		<constructor-arg><value>portland-cyo-roster-swimming-6-50</value></constructor-arg>
+		<constructor-arg><value>Portland CYO Swimming Roster (6 coaches, 50 players)</value></constructor-arg>
+		<constructor-arg><value>/WEB-INF/excel-templates/portland-cyo-roster-swimming-6-50.xls</value></constructor-arg>
+		<property name="maxNumberOfCoaches" value="6" />
+		<property name="maxNumberOfPlayers" value="50"/>
+	</bean>
+	
+	<bean id="portlandCYOcamphowardFootballTemplate" class="com.tawala.sportsdashboards.data.TeamRosterTemplate">
+		<constructor-arg><value>portland-cyo-roster-football-6-50</value></constructor-arg>
+		<constructor-arg><value>CYO Camp Howard Football Roster (6 coaches, 50 players)</value></constructor-arg>
+		<constructor-arg><value>/WEB-INF/excel-templates/portland-cyo-roster-football-6-50.xls</value></constructor-arg>
+		<property name="maxNumberOfCoaches" value="6" />
+		<property name="maxNumberOfPlayers" value="50"/>
+	</bean>
+
+	<bean id="gladeValleyTeamRosterTemplate" class="com.tawala.sportsdashboards.data.TeamRosterTemplate">
+		<constructor-arg><value>glade-valley-team-roster-6-50</value></constructor-arg>
+		<constructor-arg><value>Glade Valley Team Roster (6 coaches, 50 players)</value></constructor-arg>
+		<constructor-arg><value>/WEB-INF/excel-templates/glade-valley-team-roster-template-6-50.xls</value></constructor-arg>
+		<property name="maxNumberOfCoaches" value="6" />
+		<property name="maxNumberOfPlayers" value="50"/>
+	</bean>
+
+	<bean id="teamRosterTemplateInitializer" class="com.tawala.sportsdashboards.data.TeamRosterTemplate$Initializer" lazy-init="true">
+		<property name="templates">
+			<list>
+				<ref bean="portlandCYOStandardTemplate"/>
+				<ref bean="portlandCYOStandardTemplate2"/>
+				<ref bean="portlandCYOTrackTemplate"/>
+				<ref bean="portlandCYOSwimmingTemplate"/>
+				<ref bean="portlandCYOcamphowardFootballTemplate"/>
+				<ref bean="gladeValleyTeamRosterTemplate"/>
+			</list>
+		</property>
+	</bean>
+	
+</beans>

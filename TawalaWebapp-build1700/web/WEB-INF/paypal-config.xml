@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="payPalProperties" class="com.tawala.payment.paypal.PayPalProperties">
+		<property name="paypalSiteURL" value="https://www.sandbox.paypal.com" />
+	</bean>
+	
+	<bean class="com.tawala.payment.paypal.PayPalProperties" lazy-init="false">
+		<property name="singleton" ref="payPalProperties" />
+	</bean>
+	
+	<bean id="payPalPlaceholderConfig" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+		<property name="location"><value>classpath:paypal.properties</value></property>
+		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+</beans>

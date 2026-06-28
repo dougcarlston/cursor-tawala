@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+<!-- 
+	<bean id="databaseDataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/tawala" />
+	</bean>
+	-->
+	<bean id="mainDatabaseDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://localhost/tawala" />
+		<property name="username" value="tawala_user" />
+		<property name="password" value="tawala" />
+	</bean>
+	
+	<bean id="mainDatabaseSessionFactory" class="com.tawala.hibernate.TawalaSessionFactory$MainDatabase">
+		<property name="dataSource" ref="mainDatabaseDataSource" />
+	</bean>
+
+	<bean id="backupDatabaseDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="org.postgresql.Driver" />
+		<property name="url" value="jdbc:postgresql://localhost/tawala_backup" />
+		<property name="username" value="tawala_user" />
+		<property name="password" value="tawala" />
+	</bean>
+	
+	<bean id="backupDatabaseSessionFactory" class="com.tawala.hibernate.TawalaSessionFactory$BackupDatabase">
+		<property name="dataSource" ref="backupDatabaseDataSource" />
+	</bean>
+</beans>

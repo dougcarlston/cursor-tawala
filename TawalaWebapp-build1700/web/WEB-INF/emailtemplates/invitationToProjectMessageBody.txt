@@ -1,0 +1,11 @@
+Dear Friends,
+
+I prepared a %s for us to look at. Please go to 
+
+%s 
+
+to check it out.
+
+Regards,
+
+%s %s

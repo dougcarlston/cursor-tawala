@@ -1,0 +1,278 @@
+ <!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 1.1//EN"
+       "http://jakarta.apache.org/struts/dtds/tiles-config_1_1.dtd">
+
+<tiles-definitions>
+
+	<!-- DEFAULT SPORTS TEMPLATE -->
+	<definition name="sports-layout-2col-left" page="/WEB-INF/jsp/layout/sports-layout-2col-left.jsp">
+		<put name="pageName" value="" type="string" />
+		<put name="pageTitleBar" value="Tawala" type="string" />
+		<put name="pageTitle" value="" type="string" />
+		<put name="pageheading" value="/WEB-INF/jsp/layout/sports-pageheading.jsp" type="page" />
+		<put name="pagefooter" value="/WEB-INF/jsp/layout/sports-footer.jsp" type="page" />
+		<put name="dialogdivs" value="" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />
+		
+		<!-- block definitions -->
+		<put name="block-account" value="/WEB-INF/jsp/blocks/block-account.jsp" type="page" />
+		<put name="block-download" value="/WEB-INF/jsp/blocks/block-download.jsp" type="page" />
+		<put name="block-projectlist" value="/WEB-INF/jsp/blocks/block-projectlist.jsp" type="page" />
+		<put name="block-manualtoc" value="/WEB-INF/jsp/blocks/block-manualtoc.jsp" type="page" />			
+		<put name="block-featuredprojects" value="/WEB-INF/jsp/blocks/block-featuredprojects.jsp" type="page" />			
+		<put name="block-administration" value="/WEB-INF/jsp/blocks/block-administration.jsp" type="page" />
+		<put name="block-categories" value="/WEB-INF/jsp/blocks/block-categories.jsp" type="page" />
+		<put name="block-search-categories" value="/WEB-INF/jsp/blocks/block-search-categories.jsp" type="page" />
+		<put name="block-tawalaissues" value="/WEB-INF/jsp/blocks/block-tawalaissues.jsp" type="page" />
+		<put name="block-libraryProjectDetails" value="/WEB-INF/jsp/blocks/block-libraryProjectDetails.jsp" type="page" />
+		<put name="block-nextlevel" value="/WEB-INF/jsp/blocks/block-nextlevel.jsp" type="page" />
+		<put name="block-alphaMessage" value="/WEB-INF/jsp/blocks/block-alphaMessage.jsp" type="page" />
+		<put name="block-sharedDatasources" value="/WEB-INF/jsp/blocks/block-shared-datasources.jsp" type="page" />
+		<put name="block-project-restore" value="/WEB-INF/jsp/blocks/block-project-restore.jsp" type="page" />
+		<put name="block-user-themes" value="/WEB-INF/jsp/blocks/block-user-themes.jsp" type="page" />
+
+		<!-- Sports specific block definitions -->
+		<put name="block-sports-contactus" value="/WEB-INF/jsp/blocks/block-sports-contactus.jsp" type="page" />
+		<put name="block-sports-emailboard" value="/WEB-INF/jsp/blocks/block-sports-emailboard.jsp" type="page" />
+		<put name="block-sports-faq-toc" value="/WEB-INF/jsp/blocks/block-sports-faq-toc.jsp" type="page" />
+		<put name="block-sports-knowledgebase" value="/WEB-INF/jsp/blocks/block-sports-knowledgebase.jsp" type="page" />
+
+		<put name="onLoadJavascriptFunction" value="" />
+	    		
+	    <putList name="scripts">
+			<add value="/scripts/yui/build/utilities/utilities.js"/>
+			<add value="/scripts/tawala.js"/>
+	    </putList>
+	    
+	    <putList name="additionalScripts" />
+
+	    <putList name="tawalaScripts" />
+		
+	    <putList name="styles">
+	    	<add value="/scripts/yui/build/reset-fonts-grids/reset-fonts-grids.css" />
+	        <add value="/css/tawala-sports.css"/>
+	    </putList>
+		
+	    <putList name="additionalStyles" />
+
+	    <putList name="tawalaStyles" />
+		
+		<putList name="mainBlockList" />
+		<putList name="infoBlockList" />
+	</definition>
+
+	<definition name="/sportsdashboards/home" page="/WEB-INF/jsp/home/sportsHomePage.jsp">
+		<put name="pageName" value="home" type="string" />
+		<put name="pageTitle" value="Tawala Sports Dashboards" type="string" />
+		<put name="googleAnalytics" value="/WEB-INF/jsp/layout/googleAnalytics.jsp" type="page" />		
+	
+	    <putList name="styles">
+	    </putList>
+	</definition>
+<!-- 
+	<definition name="/sportsdashboards/faq" extends="sports-layout-2col-left">
+		<put name="pageName" value="faq" type="string" />
+		<put name="pageTitleBar" value="Tawala SportsDashboard Help" type="string" />
+		<put name="pageTitle" value="Tawala SportsDashboard Help" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-sports-faq-toc" type="string" />
+			<add value="block-account" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+	    	<add value="/scripts/pages/sports-faq.js" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/sports-faq.css"/>
+	    </putList>
+	</definition>
+-->
+	<definition name="sportsdashboards-faq" extends="sports-layout-2col-left">
+		<put name="pageName" value="faq" type="string" />
+		<put name="pageTitleBar" value="Tawala SportsDashboard Help" type="string" />
+		<put name="pageTitle" value="Tawala SportsDashboard Help" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/introduction.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-sports-faq-toc" type="string" />
+			<add value="block-sports-knowledgebase" type="string" />
+			<add value="block-account" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+	    	<add value="/scripts/pages/sports-faq.js" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/sports-faq.css"/>
+	    </putList>
+	</definition>
+	
+	<definition name="/sportsdashboards/faq/introduction" extends="sportsdashboards-faq">
+		<put name="pageName" value="introduction" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/introduction-faq.jsp" type="page" />	
+	</definition>
+	
+	<definition name="/sportsdashboards/faq" extends="sportsdashboards-faq">
+		<put name="pageName" value="introduction" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/introduction-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/gettingstarted" extends="sportsdashboards-faq">
+		<put name="pageName" value="gettingstarted" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/getting_started-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/setup" extends="sportsdashboards-faq">
+		<put name="pageName" value="setup" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/setup-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/paypal" extends="sportsdashboards-faq">
+		<put name="pageName" value="paypal" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/paypal-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/security" extends="sportsdashboards-faq">
+		<put name="pageName" value="security" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/security-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/recruitment" extends="sportsdashboards-faq">
+		<put name="pageName" value="recruitment" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/recruitment-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/registration" extends="sportsdashboards-faq">
+		<put name="pageName" value="registration" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/registration-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/faq/rosters" extends="sportsdashboards-faq">
+		<put name="pageName" value="rosters" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/faq/sportsfaq/team_rosters-faq.jsp" type="page" />	
+	</definition>
+
+	<definition name="/sportsdashboards/help/knowledgebase" extends="sportsdashboards-faq">
+		<put name="pageName" value="knowledgebase" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/help/sports-knowledgebase.jsp" type="page" />	
+	</definition>
+
+	<definition name="sportsdashboards.contactus" extends="sports-layout-2col-left">
+		<put name="pageName" value="contactus" type="string" />
+		<put name="pageTitleBar" value="Tawala SportsDashboard" type="string" />
+		<put name="pageTitle" value="Get Your SportsDashboards Free Trial Now!" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/formmail/sports-contactus.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-sports-contactus" type="string" />			
+		</putList>
+
+	    <putList name="additionalScripts">
+		</putList>
+		
+	    <putList name="additionalStyles">
+	    </putList>
+	</definition>
+
+	<definition name="sportsdashboards.emailboard" extends="sports-layout-2col-left">
+		<put name="pageName" value="contactus" type="string" />
+		<put name="pageTitleBar" value="Tawala SportsDashboard" type="string" />
+		<put name="pageTitle" value="Tell Others About SportsDashboards" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/formmail/sports-emailboard.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+			<add value="block-sports-emailboard" type="string" />
+		</putList>
+
+	    <putList name="additionalScripts">
+		</putList>
+		
+	    <putList name="additionalStyles">
+	    </putList>
+	</definition>
+
+	<definition name="/sportsdashboards/emailconfirmation" extends="sports-layout-2col-left">
+		<put name="pageName" value="contactus" type="string" />
+		<put name="pageTitleBar" value="Tawala SportsDashboard" type="string" />
+		<put name="pageTitle" value="Email Confirmation" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/formmail/sports-emailconfirmation.jsp" type="page" />
+
+		<putList name="infoBlockList" >
+		</putList>
+
+	    <putList name="additionalScripts">
+		</putList>
+		
+	    <putList name="additionalStyles">
+	    </putList>
+	</definition>
+
+	<definition name="/sportsdashboards/info" extends="sports-layout-2col-left">
+		<put name="pageName" value="about" type="string" />
+		<put name="pageTitleBar" value="Tawala - Company Information" type="string" />
+		<put name="pageTitle" value="Company Information" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/info/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/sportsdashboards/terms" extends="sports-layout-2col-left">
+		<put name="pageName" value="privacy" type="string" />
+		<put name="pageTitle" value="Tawala - Terms and Conditions" type="string" />
+		<put name="pageTitle" value="Terms and Conditions" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/terms/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/sportsdashboards/privacy" extends="sports-layout-2col-left">
+		<put name="pageName" value="privacy" type="string" />
+		<put name="pageTitleBar" value="Tawala - Privacy Policy" type="string" />
+		<put name="pageTitle" value="Privacy Policy" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/privacy/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+	<definition name="/sportsdashboards/jobs" extends="sports-layout-2col-left">
+		<put name="pageName" value="jobs" type="string" />
+		<put name="pageTitleBar" value="Tawala - Jobs" type="string" />
+		<put name="pageTitle" value="Jobs" type="string" />
+		<put name="mainContent" value="/WEB-INF/jsp/jobs/view.jsp" type="page" />
+		
+		<putList name="infoBlockList" >
+			<add value="block-account" type="string" />
+			<add value="block-projectlist" type="string" />
+		</putList>
+		
+	    <putList name="additionalStyles">
+	        <add value="/css/pages/myTawala.css"/>
+	    </putList>
+	</definition>
+
+</tiles-definitions>

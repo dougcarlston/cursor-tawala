@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<!--
+	- DispatcherServlet application context for the web tier.
+-->
+<beans>
+	<bean id="propertyPlaceholderConfigurer" class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+		<property name="locations">
+			<list>
+				<value>WEB-INF/mail.properties</value>
+				<value>WEB-INF/emailmessage.properties</value>
+				<value>classpath:emailmessage.properties</value>
+				<value>classpath:userproject.properties</value>
+				<value>classpath:sports-dashboard.properties</value>
+			</list>
+		</property>
+		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+	<bean id="placeholderConfig" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+		<property name="ignoreResourceNotFound" value="true" />
+		<property name="locations">
+			<list>
+				<value>classpath:dbconnection.properties</value>
+			</list>
+		</property>
+	</bean>
+
+	<import resource="hibernate-config.xml" />
+	<import resource="excel-export-config.xml" />
+	<import resource="notification-config.xml" />
+	<import resource="project-config.xml" />
+	<import resource="component-config.xml" />
+	<import resource="theme-config.xml" />
+	<import resource="paypal-config.xml" />
+	<import resource="runtime-behaviour-config.xml" />
+	<import resource="sports-dashboard/contact-us-config.xml"/>
+	<import resource="sports-dashboard/email-to-board-config.xml"/>
+	<import resource="jbpm-config.xml"/>
+	<import resource="ysl-config.xml" />
+
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" >
+		<property name="maxUploadSize" value="4096000" />
+		<property name="maxInMemorySize" value="4096000" />
+	</bean>
+
+	<bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="WEB-INF/message" />
+	</bean>
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.tiles.TilesJstlView" />
+	</bean>
+
+	<bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles.TilesConfigurer">
+		<property name="definitions">
+			<list>
+				<value>/WEB-INF/definitions/tiles-definitions.xml</value>
+				<value>/WEB-INF/definitions/sports-tiles-definitions.xml</value>
+			</list>
+		</property>
+	</bean>
+
+	<bean id="projectRuntimeMapping" class="com.tawala.web.controller.ProjectRuntimeControllerMapping" />
+	<bean id="sportsDashboardPromoMapping" class="com.tawala.web.controller.SportsDashboardPromoControllerMapping" />
+	<bean id="onlyAdministratorControllerMap" class="com.tawala.web.controller.OnlyAdministratorControllerMap" >
+		<property name="invoicingProjectId" value="${sports.dashboard.invoicing.project.id}" />
+		<property name="purchaseOrderProjectId" value="${sports.dashboard.purchase.order.project.id}"/>
+	</bean>
+	<bean id="onlyAuthenticatedUserControllerMap" class="com.tawala.web.controller.OnlyAuthenticatedUserControllerMap" />
+	<bean id="allowUnauthenticatedUserControllerMap" class="com.tawala.web.controller.AllowUnauthenticatedUserControllerMap" />
+	<bean id="landingPageControllerMap" class="com.tawala.web.controller.LandingPageMapping" />
+
+	<bean id="exceptionResolver" class="com.tawala.web.controller.ExceptionResolver" />
+</beans>

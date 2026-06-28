@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSpy v2007 sp2 (http://www.altova.com) by Sergei Lilichenko (Parasol Solutions, Inc.) -->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:tr="http://www.tawala.com/component-repository" targetNamespace="http://www.tawala.com/component-repository" elementFormDefault="qualified" attributeFormDefault="unqualified">
+    <xs:include schemaLocation=""></xs:include>
+    <xs:element name="component-repository">
+		<xs:annotation>
+			<xs:documentation>Comment describing your root element</xs:documentation>
+		</xs:annotation>
+		<xs:complexType>
+			<xs:sequence>
+				<xs:element name="categories">
+					<xs:complexType>
+						<xs:sequence>
+							<xs:element name="category"
+								type="tr:Category" maxOccurs="unbounded" />
+						</xs:sequence>
+					</xs:complexType>
+				</xs:element>
+				<xs:element name="display-component" type="tr:Component"
+					maxOccurs="unbounded" />
+				<xs:element name="function" type="tr:Function"
+					maxOccurs="unbounded" />
+				<xs:element name="blank-validator" type="tr:FIB-Validator" maxOccurs="unbounded" minOccurs="1"></xs:element>
+			</xs:sequence>
+			<xs:attribute name="signature" type="xs:string" use="required"/>
+		</xs:complexType>
+	</xs:element>
+	<xs:complexType name="Category">
+		<xs:sequence>
+			<xs:element name="category" type="tr:Category" minOccurs="0" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Category can contain subcategories</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="element-id" maxOccurs="unbounded">
+				<xs:annotation>
+					<xs:documentation>Reference to a component. Same component can belong to multiple categories</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Parameterizable">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>Full description of the component</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:element name="parameter" minOccurs="0" maxOccurs="unbounded">
+				<xs:complexType>
+					<xs:complexContent>
+						<xs:extension base="tr:Parameter"/>
+					</xs:complexContent>
+				</xs:complexType>
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="id" use="required">
+			<xs:annotation>
+				<xs:documentation>non-modifying internal id</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation>short name displayable to user</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="version" type="xs:positiveInteger" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Parameter">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string">
+				<xs:annotation>
+					<xs:documentation>full description of this parameter</xs:documentation>
+				</xs:annotation>
+			</xs:element>
+			<xs:choice>
+				<xs:element name="default-value" minOccurs="0" maxOccurs="1"/>
+				<xs:element name="choice" type="tr:Option" minOccurs="0" maxOccurs="unbounded"/>
+			</xs:choice>
+			<xs:element name="works-within-record-iteration" minOccurs="0" >
+				<xs:complexType>
+					<xs:attribute name="when" use="required">
+						<xs:simpleType>
+							<xs:restriction base="xs:string">
+								<xs:enumeration value="always"></xs:enumeration>
+								<xs:enumeration value="never"></xs:enumeration>
+							</xs:restriction>
+						</xs:simpleType>
+					</xs:attribute>
+					<xs:attribute name="record-list-name"
+						type="xs:string">
+					</xs:attribute>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="minimum" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="value" type="xs:integer" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="maximum" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="value" type="xs:integer" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="source-parameter" minOccurs="0">
+				<xs:complexType>
+					<xs:attribute name="source-id" use="required"/>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="parameter" type="tr:Parameter" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" use="required">
+			<xs:annotation>
+				<xs:documentation>non-modifyable system name</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="name" use="required">
+			<xs:annotation>
+				<xs:documentation>user-visible short name</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="required" type="xs:boolean" use="required"/>
+		<xs:attribute name="type" use="required">
+			<xs:annotation>
+				<xs:documentation>one of several types: integer, string, etc.</xs:documentation>
+			</xs:annotation>
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="int"/>
+					<xs:enumeration value="boolean"/>
+					<xs:enumeration value="text"/>
+					<xs:enumeration value="array"/>
+					<xs:enumeration value="float"/>
+					<xs:enumeration value="tawala-form"/>
+					<xs:enumeration value="tawala-field"/>
+					<xs:enumeration value="tawala-mcq"/>
+					<xs:enumeration value="tawala-blank"/>
+					<xs:enumeration value="tawala-conditions"/>
+					<xs:enumeration value="boolean-expression"/>
+					<xs:enumeration value="enumeration"/>
+					<xs:enumeration value="tawala-contents-field"/>
+					<xs:enumeration value="numeric-list"/>
+					<xs:enumeration value="parameter-collection"/>
+					<xs:enumeration value="expression"/>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
+	<xs:complexType name="Option">
+		<xs:attribute name="value" use="required"/>
+		<xs:attribute name="description" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="Component">
+		<xs:complexContent>
+			<xs:extension base="tr:Parameterizable"/>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="Function">
+		<xs:complexContent>
+			<xs:extension base="tr:Parameterizable">
+				<xs:attribute name="return-type" use="required"/>
+			</xs:extension>
+		</xs:complexContent>
+	</xs:complexType>
+	<xs:complexType name="FIB-Validator">
+		<xs:complexContent>
+			<xs:extension base="tr:Parameterizable" />
+		</xs:complexContent>
+	</xs:complexType>
+</xs:schema>

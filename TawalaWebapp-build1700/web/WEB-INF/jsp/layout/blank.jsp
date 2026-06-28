@@ -1,0 +1,2 @@
+<% 	// Intentionally left blank - to be used in cases where include jsps are not expected to produce any output.
+	// A better way to handle it might be to create a new template or figure out if Tiles will eat a non-existing jsp. %>
