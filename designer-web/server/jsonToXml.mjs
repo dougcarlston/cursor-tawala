@@ -2,6 +2,7 @@
 
 import { fibToXml } from "./fibToXml.mjs";
 import { registrationTextToXml } from "./registrationTextToXml.mjs";
+import { mcToXml } from "./mcToXml.mjs";
 
 const TAB_MC = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
@@ -37,6 +38,17 @@ function textContentToXml(content, style) {
   return richContentToXml(content);
 }
 
+function templateToFieldRef(value) {
+  const s = String(value ?? "");
+  const m = s.match(/^<<([^>]+)>>$/);
+  if (m) return `<string field="${escAttr(m[1])}"/>`;
+  return `<string value="${escAttr(s)}"/>`;
+}
+
+function conditionValueXml(value) {
+  return templateToFieldRef(value);
+}
+
 function conditionToXml(cond) {
   if (!cond) return "";
   if (Array.isArray(cond.or)) {
@@ -57,7 +69,7 @@ function conditionToXml(cond) {
   if (cond.value === undefined || cond.value === null) {
     return `<${op} field="${escAttr(cond.field)}"><string value=""/></${op}>`;
   }
-  return `<${op} field="${escAttr(cond.field)}"><string value="${escAttr(cond.value)}"/></${op}>`;
+  return `<${op} field="${escAttr(cond.field)}">${conditionValueXml(cond.value)}</${op}>`;
 }
 
 function xmlCommentText(s) {
@@ -66,12 +78,62 @@ function xmlCommentText(s) {
     .replace(/-$/g, "");
 }
 
+function addressToXml(tag, addr) {
+  if (!addr) return "";
+  if (Array.isArray(addr)) {
+    return addr.map((a) => addressToXml(tag, a)).join("");
+  }
+  if (addr.fieldRef) {
+    const alias = addr.aliasField ? ` aliasField="${escAttr(addr.aliasField)}"` : "";
+    return `<${tag} addressField="${escAttr(addr.fieldRef)}"${alias}/>`;
+  }
+  if (addr.literal != null) {
+    return `<${tag} address="${escAttr(addr.literal)}"/>`;
+  }
+  return "";
+}
+
+function sendToXml(cmd) {
+  const to = addressToXml("to", cmd.to);
+  const from = addressToXml("from", cmd.from);
+  const cc = addressToXml("cc", cmd.cc);
+  const bcc = addressToXml("bcc", cmd.bcc);
+  const subject = cmd.subject != null ? `<subject>${escText(cmd.subject)}</subject>` : "";
+  const body = cmd.body?.document
+    ? `<body document="${escAttr(cmd.body.document)}" reset="${cmd.body.reset === true ? "true" : "false"}" showHeader="${cmd.body.showHeader === false ? "false" : "true"}"/>`
+    : "";
+  if (!to && !from && !subject && !body) {
+    return `<!-- incomplete send command -->`;
+  }
+  return `<send>${to}${from}${cc}${bcc}${subject}${body}</send>`;
+}
+
+function showToXml(cmd) {
+  if (cmd.form) return `<show form="${escAttr(cmd.form)}"/>`;
+  if (cmd.document) {
+    const reset = cmd.reset === true ? "true" : "false";
+    return `<show document="${escAttr(cmd.document)}" reset="${reset}"/>`;
+  }
+  if (cmd.url) {
+    const parts = String(cmd.url).split(/(<<[^>]+>>)/).filter(Boolean);
+    const urlXml = parts
+      .map((part) => {
+        const m = part.match(/^<<([^>]+)>>$/);
+        if (m) return `<string field="${escAttr(m[1])}"/>`;
+        return `<string value="${escAttr(part)}"/>`;
+      })
+      .join("");
+    return `<show><url>${urlXml}</url></show>`;
+  }
+  return "<show/>";
+}
+
 function commandToXml(cmd) {
   switch (cmd.cmd) {
     case "comment":
       return `<!-- ${xmlCommentText(cmd.text)} -->`;
     case "set":
-      return `<set field="${escAttr(cmd.field)}"><string value="${escAttr(cmd.value)}"/></set>`;
+      return `<set field="${escAttr(cmd.field)}">${templateToFieldRef(cmd.value)}</set>`;
     case "get": {
       const forms = (cmd.sourceForms ?? [])
         .map((n) => `<form name="${escAttr(n)}"/>`)
@@ -92,6 +154,15 @@ function commandToXml(cmd) {
       const body = (cmd.do ?? []).map(commandToXml).join("");
       return `<foreach recordName="${escAttr(cmd.recordName)}" recordList="${escAttr(cmd.recordList)}">${body}</foreach>`;
     }
+    case "show":
+    case "showDocument":
+      return showToXml(
+        cmd.cmd === "showDocument"
+          ? { document: cmd.document, reset: cmd.reset }
+          : cmd,
+      );
+    case "send":
+      return sendToXml(cmd);
     default:
       return `<!-- unsupported command ${xmlCommentText(cmd.cmd)} -->`;
   }
@@ -149,20 +220,8 @@ function itemToXml(item, formName = "") {
     }
     case "fib":
       return fibToXml(item, escAttr, escText);
-    case "mc": {
-      const choices = (item.choices ?? [])
-        .map(
-          (c, i) =>
-            `<choice label="${escAttr(c.label ?? c.name ?? String.fromCharCode(97 + i))}"><paragraph indent="0" align="left">${TAB_MC}${fontXml(c.text)}</paragraph></choice>`,
-        )
-        .join("");
-      const mcStyle =
-        item.displayAs === "radio" ? "horizontal" : item.style ?? "";
-      const altLabel = item.name ? ` alternateLabel="${escAttr(item.name)}"` : "";
-      const styleAttr = mcStyle ? ` style="${escAttr(mcStyle)}"` : "";
-      const question = item.question ?? "";
-      return `<mc label="${escAttr(item.label)}"${altLabel} onlyone="${item.onlyone !== false ? "true" : "false"}" required="${item.required ? "true" : "false"}"${styleAttr}><question><paragraph indent="0" align="left">${TAB_MC}${fontXml(question, { bold: true })}</paragraph></question>${choices}</mc>`;
-    }
+    case "mc":
+      return mcToXml(item, escAttr, escText);
     case "field":
       return `<field name="${escAttr(item.name ?? item.fieldName)}"/>`;
     case "break":

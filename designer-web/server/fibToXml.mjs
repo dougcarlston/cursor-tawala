@@ -25,7 +25,7 @@ function blankXml(blank, letter, escAttr) {
   const req = blank.required ? "true" : "false";
   const len = blank.length ?? 20;
   const heightAttr = blank.height ? ` height="${blank.height}"` : "";
-  const altAttr = alt ? ` alternateLabel="${escAttr(alt)}"` : "";
+  const altAttr = alt && alt !== letter ? ` alternateLabel="${escAttr(alt)}"` : "";
   return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${heightAttr}/>`;
 }
 
