@@ -18,7 +18,7 @@ fi
 
 echo "Remote has unrelated history (GitHub 'Initial commit' README only)."
 echo "Merging origin/main, then pushing project commits..."
-git pull origin main --allow-unrelated-histories --no-edit
+git pull origin main --allow-unrelated-histories --no-rebase --no-edit
 git push -u origin main
 
 echo "Done: https://github.com/dougcarlston/cursor-tawala"
