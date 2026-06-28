@@ -48,6 +48,38 @@ docker compose exec postgres psql -U tawala_admin -d tawala_backup -c "\dt"
 
 To skip jBPM, remove or rename `02_jbpm_schema.sql` before first `docker compose up`.
 
+## DirtBowl dev data (local)
+
+After deploying from Designer, seed league/fee/address variables:
+
+```bash
+./scripts/dev-data.sh seed-admin
+```
+
+Remove test registrations (keeps AdminSetup):
+
+```bash
+./scripts/dev-data.sh cleanup-registrations
+```
+
+Check form row counts:
+
+```bash
+./scripts/dev-data.sh status
+```
+
+**Note:** Form data lives on `user_project.project_id` (shared storage), not the deployed version’s `project_id`. Re-run `seed-admin` after each Designer deploy if fee/address are blank.
+
+## Publish to GitHub
+
+From your Mac Terminal (so Git can prompt for login):
+
+```bash
+./scripts/publish-to-github.sh
+```
+
+Do **not** paste your GitHub password into Cursor chat. Use a [Personal Access Token](https://github.com/settings/tokens) when Git prompts for a password, or set up SSH keys.
+
 ## Connection strings
 
 | Role | User | Password | Database |

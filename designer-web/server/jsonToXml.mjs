@@ -47,12 +47,24 @@ function templateToFieldRef(value) {
 
 function valueToXml(value) {
   const s = String(value ?? "");
+  const addMatch = s.match(/^<<([^>]+)>>\s*\+\s*(\d+)$/);
+  if (addMatch) {
+    return `<add><operand field="${escAttr(addMatch[1])}"/><operand value="${escAttr(addMatch[2])}"/></add>`;
+  }
   if (!s.includes("<<")) return templateToFieldRef(s);
   return s
     .split(/(<<[^>]+>>)/)
     .filter((part) => part.length > 0)
     .map((part) => templateToFieldRef(part))
     .join("");
+}
+
+function setValueToXml(value) {
+  const body = valueToXml(value);
+  const arithmetic =
+    body.includes("<add>") || (body.match(/<string/g)?.length ?? 0) > 1;
+  const attr = arithmetic ? ' arithmeticAsText="false"' : "";
+  return { body, attr };
 }
 
 function conditionValueXml(value) {
@@ -174,8 +186,10 @@ function commandToXml(cmd, ctx = {}) {
   switch (cmd.cmd) {
     case "comment":
       return `<!-- ${xmlCommentText(cmd.text)} -->`;
-    case "set":
-      return `<set field="${escAttr(cmd.field)}">${valueToXml(cmd.value)}</set>`;
+    case "set": {
+      const { body, attr } = setValueToXml(cmd.value);
+      return `<set field="${escAttr(cmd.field)}"${attr}>${body}</set>`;
+    }
     case "get": {
       const forms = (cmd.sourceForms ?? [])
         .map((n) => `<form name="${escAttr(n)}"/>`)
@@ -245,8 +259,26 @@ function richNodesToXml(nodes) {
           return `<b>${richNodesToXml(n.nodes)}</b>`;
         case "italic":
           return `<i>${richNodesToXml(n.nodes)}</i>`;
+        case "underline":
+          return `<u>${richNodesToXml(n.nodes)}</u>`;
         case "field":
           return `<field name="${escAttr(n.name ?? n.field)}"/>`;
+        case "font": {
+          const color = n.color ? ` color="${escAttr(String(n.color).replace(/^#/, ""))}"` : "";
+          const face = n.face ? ` face="${escAttr(n.face)}"` : "";
+          const size = n.size ? ` size="${Math.round(Number(n.size) * 20)}"` : "";
+          return `<font${face}${size}${color}>${richNodesToXml(n.nodes)}</font>`;
+        }
+        case "invitation": {
+          const privateAttr = n.private ? ` private="true"` : "";
+          const projectAttr =
+            n.project != null ? ` project="${escAttr(n.project)}"` : ` project=""`;
+          const authField = n.authenticationTokenField ?? n.authField;
+          const auth = authField
+            ? `<authenticationTokenValue><string field="${escAttr(authField)}"/></authenticationTokenValue>`
+            : "";
+          return `<invitation form="${escAttr(n.form)}"${projectAttr}${privateAttr}>${auth}${escText(n.text ?? "")}</invitation>`;
+        }
         default:
           return richNodesToXml(n.nodes);
       }
