@@ -45,8 +45,18 @@ function templateToFieldRef(value) {
   return `<string value="${escAttr(s)}"/>`;
 }
 
+function valueToXml(value) {
+  const s = String(value ?? "");
+  if (!s.includes("<<")) return templateToFieldRef(s);
+  return s
+    .split(/(<<[^>]+>>)/)
+    .filter((part) => part.length > 0)
+    .map((part) => templateToFieldRef(part))
+    .join("");
+}
+
 function conditionValueXml(value) {
-  return templateToFieldRef(value);
+  return valueToXml(value);
 }
 
 function conditionToXml(cond) {
@@ -84,8 +94,9 @@ function addressToXml(tag, addr) {
     return addr.map((a) => addressToXml(tag, a)).join("");
   }
   if (addr.fieldRef) {
-    const alias = addr.aliasField ? ` aliasField="${escAttr(addr.aliasField)}"` : "";
-    return `<${tag} addressField="${escAttr(addr.fieldRef)}"${alias}/>`;
+    const aliasField = addr.aliasField ? ` aliasField="${escAttr(addr.aliasField)}"` : "";
+    const aliasLiteral = addr.aliasLiteral ? ` aliasLiteral="${escAttr(addr.aliasLiteral)}"` : "";
+    return `<${tag} addressField="${escAttr(addr.fieldRef)}"${aliasField}${aliasLiteral}/>`;
   }
   if (addr.literal != null) {
     return `<${tag} address="${escAttr(addr.literal)}"/>`;
@@ -93,9 +104,40 @@ function addressToXml(tag, addr) {
   return "";
 }
 
-function sendToXml(cmd) {
-  const to = addressToXml("to", cmd.to);
-  const from = addressToXml("from", cmd.from);
+const SEND_DOC_DEFAULTS = {
+  PostRegistrationLetterWithoutPaymentInstructions: {
+    to: "Registration:ParentEmail",
+    from: { fieldRef: "AdminEmail", aliasField: "AdminName" },
+  },
+  PostRegistrationLetterWithPaymentInstructions: {
+    to: "Registration:ParentEmail",
+    from: { fieldRef: "AdminEmail", aliasField: "AdminName" },
+  },
+  AdminRegNotification: {
+    to: "AdminEmail",
+    from: { fieldRef: "AdminEmail", aliasLiteral: "Dirt Bowl Automated Email Server" },
+  },
+  InvitationToCompleteRegistration: {
+    to: "AddPlayerToGroupRegistration:Parents' Email",
+    from: { fieldRef: "AdminEmail", aliasField: "AdminName" },
+  },
+};
+
+function inferSendAddresses(cmd, ctx = {}) {
+  const doc = cmd.body?.document;
+  const defaults = doc ? SEND_DOC_DEFAULTS[doc] : null;
+  if (!defaults) return { to: cmd.to, from: cmd.from };
+  const toField = ctx.emailTo ?? defaults.to;
+  return {
+    to: cmd.to ?? { fieldRef: toField },
+    from: cmd.from ?? defaults.from,
+  };
+}
+
+function sendToXml(cmd, ctx = {}) {
+  const { to: toAddr, from: fromAddr } = inferSendAddresses(cmd, ctx);
+  const to = addressToXml("to", toAddr);
+  const from = addressToXml("from", fromAddr);
   const cc = addressToXml("cc", cmd.cc);
   const bcc = addressToXml("bcc", cmd.bcc);
   const subject = cmd.subject != null ? `<subject>${escText(cmd.subject)}</subject>` : "";
@@ -128,12 +170,12 @@ function showToXml(cmd) {
   return "<show/>";
 }
 
-function commandToXml(cmd) {
+function commandToXml(cmd, ctx = {}) {
   switch (cmd.cmd) {
     case "comment":
       return `<!-- ${xmlCommentText(cmd.text)} -->`;
     case "set":
-      return `<set field="${escAttr(cmd.field)}">${templateToFieldRef(cmd.value)}</set>`;
+      return `<set field="${escAttr(cmd.field)}">${valueToXml(cmd.value)}</set>`;
     case "get": {
       const forms = (cmd.sourceForms ?? [])
         .map((n) => `<form name="${escAttr(n)}"/>`)
@@ -144,14 +186,19 @@ function commandToXml(cmd) {
       return `<get recordList="${escAttr(cmd.recordList)}"><forms>${forms}</forms>${where}</get>`;
     }
     case "if": {
-      const thenXml = (cmd.then ?? []).map(commandToXml).join("");
-      const elseXml = (cmd.else ?? []).map(commandToXml).join("");
+      const childCtx =
+        cmd.condition?.field === "Registration:ParentEmail2" &&
+        cmd.condition?.op === "isNotBlank"
+          ? { ...ctx, emailTo: "Registration:ParentEmail2" }
+          : ctx;
+      const thenXml = (cmd.then ?? []).map((c) => commandToXml(c, childCtx)).join("");
+      const elseXml = (cmd.else ?? []).map((c) => commandToXml(c, childCtx)).join("");
       return `<if><conditions>${conditionToXml(cmd.condition)}</conditions><trueSet>${thenXml}</trueSet><falseSet>${elseXml}</falseSet></if>`;
     }
     case "skip":
       return `<skip to="${escAttr(cmd.to)}"/>`;
     case "foreach": {
-      const body = (cmd.do ?? []).map(commandToXml).join("");
+      const body = (cmd.do ?? []).map((c) => commandToXml(c, ctx)).join("");
       return `<foreach recordName="${escAttr(cmd.recordName)}" recordList="${escAttr(cmd.recordList)}">${body}</foreach>`;
     }
     case "show":
@@ -162,7 +209,7 @@ function commandToXml(cmd) {
           : cmd,
       );
     case "send":
-      return sendToXml(cmd);
+      return sendToXml(cmd, ctx);
     default:
       return `<!-- unsupported command ${xmlCommentText(cmd.cmd)} -->`;
   }

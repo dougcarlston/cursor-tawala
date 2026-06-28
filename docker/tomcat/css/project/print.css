@@ -1,0 +1,7 @@
+/* Print stylesheet placeholder */
+@media print {
+  body {
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 10pt;
+  }
+}

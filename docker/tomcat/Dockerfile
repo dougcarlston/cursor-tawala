@@ -14,11 +14,14 @@ COPY docker/tomcat/jbpm.hibernate.properties /tmp/patch/jbpm.hibernate.propertie
 COPY docker/tomcat/lucene-local-setup.properties /tmp/patch/lucene-local-setup.properties
 COPY docker/tomcat/userproject.properties /tmp/patch/userproject.properties
 COPY docker/tomcat/sports-dashboard.properties /tmp/patch/sports-dashboard.properties
+COPY docker/tomcat/css /tmp/patch/css
 
 RUN mkdir -p /tmp/ROOT \
  && unzip -q /tmp/ROOT.war -d /tmp/ROOT \
  && rm -f /tmp/ROOT/WEB-INF/lib/postgresql-8.1*.jar \
  && cp /tmp/patch/*.properties /tmp/ROOT/WEB-INF/classes/ \
+ && mkdir -p /tmp/ROOT/css/project \
+ && cp -r /tmp/patch/css/project /tmp/ROOT/css/ \
  && cd /tmp/ROOT && jar cf /usr/local/tomcat/webapps/ROOT.war . \
  && rm -rf /tmp/ROOT /tmp/ROOT.war /tmp/patch
 
