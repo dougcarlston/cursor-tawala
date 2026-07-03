@@ -130,7 +130,7 @@ See `designer-web/README.md` for MVP scope and runtime gaps.
 3. **Gate reviews:** spec sign-off → first template URL → website wireframe.
 4. Agent reports: *what changed · URL to try · what I need from you*.
 
-**Chat workflow:** Paste openers and track names from [`CHAT_HANDOFF.md`](CHAT_HANDOFF.md). Cursor UI, context ring, rename/switch chats, billing: [`CURSOR_CHAT_GUIDE.md`](CURSOR_CHAT_GUIDE.md).
+**Chat workflow:** Paste openers and track names from [`CHAT_HANDOFF.md`](CHAT_HANDOFF.md). Cursor UI, context ring, rename/switch chats, billing: [`CURSOR_CHAT_GUIDE.md`](CURSOR_CHAT_GUIDE.md). **Morning setup (three chats):** [`MORNING_START.md`](MORNING_START.md).
 
 ---
 
