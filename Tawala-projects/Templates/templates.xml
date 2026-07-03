@@ -1,0 +1,58 @@
+<templates>
+	<categories>
+		<category cid="1"
+				  name="Basic"/>
+		<category cid="2"
+				  name="Activities"/>
+		<category cid="4"
+				  name="Meetings and Gatherings"/>
+		<category cid="5"
+				  name="Polls and Surveys"/>
+	</categories>
+	<projects>
+		<project label="Empty"
+				 file="Empty Project"
+				 cid="1">
+			<description>Start with an empty project.</description>
+		</project>
+		<project label="Form, Process and Document"
+				 file="Form with process connecting a document"
+				 cid="1">
+			<description>A simple project that contains a Form connected to Process and includes a Document.</description>
+		</project>
+		<project label="Form with Process"
+				 file="Form with process"
+				 cid="1">
+			<description>A simple project that contains a Form connected to Process.</description>
+		</project>
+		<project label="Get Together"
+				 file="Get Together Template"
+				 cid="4">
+			<description>Select the best date for a meeting.</description>
+		</project>
+		<project label="Multiple Question Survey"
+				 file="Multiple Question Survey Template"
+				 cid="5">
+			<description>A survey you can be modify to meet your needs.</description>
+		</project>
+		<project label="Sign-up Sheet"
+				 file="Signup Sheet Template"
+				 cid="2">
+			<description>A sign-up sheet you can be modify to meet your needs.</description>
+		</project>
+		<project label="Sign-up Sheet with E-mail"
+				 file="Signup Sheet Template w Email"
+				 cid="2">
+			<description>A sign-up sheet with e-mail that you can be modify to meet your needs.</description>
+		</project>
+		<project label="Simple Survey"
+				 file="Simple Survey Template"
+				 cid="5">
+			<description>A simple survey you can modify to meet your needs.</description>
+		</project>
+		<project label="Potluck"
+				file="Potluck Template"
+				cid="4">
+			<description>Arrange a potluck.</description></project>
+	</projects>
+</templates>

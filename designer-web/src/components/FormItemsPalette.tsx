@@ -1,17 +1,12 @@
-import { useProjectStore } from "@/store/projectStore";
-import { FORM_ITEM_PALETTE } from "@/types/tawala";
+import { FormInsertButtons } from "./FormInsertMenu";
 
-/** Mirrors legacy FormItemsPalette — insert form item types. */
+/** Left strip — insert form item types (legacy Items palette). */
 export function FormItemsPalette() {
-  const insertFormItem = useProjectStore((s) => s.insertFormItem);
-
   return (
-    <div className="form-items-palette">
-      {FORM_ITEM_PALETTE.map(({ label, type }) => (
-        <button key={type} type="button" onClick={() => insertFormItem(type)} title={label}>
-          {label}
-        </button>
-      ))}
+    <div className="form-items-palette-wrap">
+      <div className="form-items-palette-title">Insert item</div>
+      <p className="hint form-items-palette-hint">Adds to the open form at the end.</p>
+      <FormInsertButtons />
     </div>
   );
 }

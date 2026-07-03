@@ -5,16 +5,23 @@
 **/.deployed/
 TawalaWebapp-build1700/build/
 TawalaWebapp-build1700/lib/*.jar
+TawalaWebapp-build1700/tawala.war.dev
+TawalaWebapp-build1700/tools/apache-ant.tgz
+TawalaWebapp-build1700/tools/apache-ant-1.10.14/
 
 # Large archives (rebuild from TawalaWebapp-build1700)
 NEWZIPS/
 backup/
+Tawala-projects/PC-transfer/
 
 # IDE & OS
 .DS_Store
 .idea/
 .vscode/
 *.swp
+designer-web/tsconfig.tsbuildinfo
+**/.svn/
+38cc8cc73_Tawala_Key_Documents/
 
 # Env & secrets
 .env

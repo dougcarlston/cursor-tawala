@@ -1,0 +1,101 @@
+﻿
+    public abstract class CompositeParameterBase : ICompositeParameter
+    {
+        private const string xmlFormat = "<{0}>{1}</{0}>";
+        protected IParameterInfoCollection Parameters;
+
+        #region ICompositeParameter Members
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public string ToValueXml()
+        {
+            StringBuilder sbItems = new StringBuilder();
+
+            for (int i = 0; i < Parameters.Count; ++i)
+            {
+                object value = Properties[Parameters[i].Id];
+
+                string xml = string.Empty;
+
+                if (value is IFunctionParameterValue)
+                {
+                    xml = ((IFunctionParameterValue)value).ToValueXml();
+                }
+                else if (value != null)
+                {
+                    xml = value.ToString();
+                }
+
+                if (xml != string.Empty)
+                {
+                    sbItems.AppendFormat(xmlFormat, Parameters[i].Id, xml);
+                }
+            }
+
+            return sbItems.ToString();
+        }
+
+        public string FormattedString
+        {
+			get
+			{
+				throw new NotImplementedException();
+			}
+        }
+
+        public override string ToString()
+        {
+            return ToValueXml();
+        }
+
+        #endregion
+
+        #region IPropertyCollection Members
+
+        public object this[int index] { get { return Properties[index]; } set { Properties[index] = value; } }
+
+        public object this[string id] { get { return Properties[id]; } set { Properties[id] = value; } }
+
+        public object this[IParameterInfo info] { get { return Properties[info]; } set { Properties[info] = value; } }
+
+        public int PropertyCount { get { return Properties.PropertyCount; } }
+
+        #endregion
+
+        protected IPropertyCollection Properties { get { return properties; } set { properties = value; } }
+
+        protected virtual void NotifyChanged(string name) // generated code overrides but still calls base
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(name));
+            }
+        }
+
+        protected static IParameterInfoCollection LookupParameterInfo(Type type)
+        {
+            IFunctionInfo functionInfo = FunctionLoader.Repository.Functions[type.DeclaringType];
+
+            foreach (IParameterInfo pi in functionInfo.Parameters)
+            {
+                if (pi.PropertyType == type)
+                {
+                    return pi.Parameters;
+                }
+
+                if (typeof(ICompositeParameterCollection).IsAssignableFrom(pi.PropertyType))
+                {
+                    if (pi.PropertyType.BaseType.GetGenericArguments()[0] == type)
+                    {
+                        return pi.Parameters;
+                    }
+                }
+            }
+
+            return null;
+        }
+        
+        private IPropertyCollection properties;
+    }
+}

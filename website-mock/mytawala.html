@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - My Tawala</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css" />
+  <script src="js/demo-urls.js"></script>
+</head>
+<body data-tawala-page="mytawala" data-tawala-user="dev">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Your account</h3>
+          <p>Logged in as <b>dev</b> (local deploy user).</p>
+        </div>
+        <div class="block">
+          <h3>Designer</h3>
+          <p><a href="designer.html">Open Tawala Designer</a></p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="pageTitle"><h1>My Tawala</h1></div>
+
+        <div id="projectManager" class="section">
+          <div class="status">
+            <form onsubmit="return false;">
+              <div class="pageCtl">
+                <select><option>All</option><option>Active</option></select> projects,
+                <input type="text" class="text" value="25" size="3" /> per page,
+                sorted by <select><option>Name</option><option>Last updated</option></select>
+                <input type="submit" value="View" />
+              </div>
+            </form>
+          </div>
+
+          <table class="projectListing stripe ruler">
+            <thead>
+              <tr>
+                <th>&nbsp;</th>
+                <th class="left">Name</th>
+                <th>Created</th>
+                <th>Updated</th>
+                <th>Responses</th>
+                <th>Access</th>
+                <th>Start points</th>
+              </tr>
+            </thead>
+            <tbody id="projectRows"></tbody>
+          </table>
+
+          <div class="status" style="margin-top:12px;">
+            <div class="stats">Total Projects: <span id="projectCount">0</span> (mock — templates deployed via script)</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js"></script>
+  <script>
+    const DEPLOYED = [
+      {
+        key: "simple-survey",
+        created: "2026-06-27",
+        updated: "2026-06-27",
+        responses: "—",
+        accessed: "2026-06-27",
+      },
+      {
+        key: "signup-sheet",
+        created: "2026-06-27",
+        updated: "2026-06-27",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+      {
+        key: "form-with-process",
+        created: "2026-07-02",
+        updated: "2026-07-02",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+      {
+        key: "potluck",
+        created: "2026-07-02",
+        updated: "2026-07-02",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+      {
+        key: "get-together",
+        created: "2026-07-02",
+        updated: "2026-07-02",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+      {
+        key: "signup-sheet-email",
+        created: "2026-07-02",
+        updated: "2026-07-02",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+      {
+        key: "multiple-question-survey",
+        created: "2026-07-02",
+        updated: "2026-07-02",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+      {
+        key: "form-process-document",
+        created: "2026-07-02",
+        updated: "2026-07-02",
+        responses: "—",
+        accessed: "2026-07-02",
+      },
+    ];
+
+    TawalaChrome.mount();
+
+    const tbody = document.getElementById("projectRows");
+    tbody.innerHTML = DEPLOYED.map((row) => {
+      const p = TAWALA_DEMO_URLS[row.key];
+      const links = p.startPoints
+        .map((sp) => `<a href="${sp.url}" target="_blank" rel="noopener">${sp.label}</a>`)
+        .join(" · ");
+      return `<tr>
+        <td></td>
+        <td class="info left"><span class="title">${p.name}</span></td>
+        <td>${row.created}</td>
+        <td>${row.updated}</td>
+        <td>${row.responses}</td>
+        <td>${row.accessed}</td>
+        <td>${links}</td>
+      </tr>`;
+    }).join("");
+    document.getElementById("projectCount").textContent = String(DEPLOYED.length);
+  </script>
+</body>
+</html>

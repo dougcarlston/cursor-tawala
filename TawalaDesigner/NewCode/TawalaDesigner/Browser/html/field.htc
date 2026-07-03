@@ -1,0 +1,48 @@
+﻿<public:component tagname="field">
+
+<public:attach event="oncontentready" onevent="onContentReady()" />
+<public:property name="FieldID" put="putFieldID" get="getFieldID" />
+<public:property name="FieldName" put="putFieldName" get="getFieldName" />
+
+<script language="JScript">
+
+function onContentReady()
+{
+	element.className = "field";
+    element.contentEditable=false;
+    element.onresizestart = cancel;
+    element.onselectstart = cancel;
+    element.onbeforeeditfocus = cancel;
+    
+    element.addBehavior("notadroptarget.htc");
+}
+
+function putFieldID(val)
+{
+    element.fieldID=val;
+}
+
+function getFieldID()
+{
+    return element.fieldID;
+}
+
+function putFieldName(val)
+{
+    element.innerHTML = val;
+}
+
+function getFieldName()
+{
+    return element.innerHTML;
+}
+
+function cancel()
+{
+    event.returnValue=false;
+    event.cancelBubble=true;
+}
+
+</script>
+
+</public:component>

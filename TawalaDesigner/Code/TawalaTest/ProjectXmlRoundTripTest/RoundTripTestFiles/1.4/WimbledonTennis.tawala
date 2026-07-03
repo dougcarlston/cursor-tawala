@@ -1,0 +1,1750 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="WimbledonTennis" themePath="default" format="1.4">
+<forms>
+<form name="Chooser" startPoint="true" themePath="default" process="NameEm">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Form a fantasy tennis team for Wimbledon by drawing from the players below. You get to choose 4 players in men's singles, 4 players in women's singles, and 4 doubles teams. You also have the option to designate a player not included in this list as your choice to win one of the singles crowns.</font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Enter your e-mail address so we can notify you if you are the winner.</font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="true" alternateLabel="email"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Enter a name for your team by which it will be known on the Leaderboard</font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="28" required="false" alternateLabel="team"/></paragraph></fib>
+<mc label="Q3" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one men's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(1) Roger Federer, Switzerland</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(2) Rafael Nadal, Spain</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(3) Andy Roddick, United States</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(4) Novak Djokovic, Serbia</font></paragraph></choice></mc>
+<mc label="Q4" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one men's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(5) Fernado Gonzalez, Chile</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(6) Nikolay Davydenko, Russia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(7) Tomas Berdych, Czech Republic</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(8) Andy Murray, Great Britain</font></paragraph></choice></mc>
+<mc label="Q5" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one men's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(  9) James Blake, United States</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(10) Marcos Baghdatis, Cypress</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(11) Tommy Robredo, Spain</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(12) Richard Gasquet, France</font></paragraph></choice></mc>
+<mc label="Q6" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one men's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(13) Tommy Haas, Germany</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(14) Mikhaul Youzhny, Russia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(15) Ivan Ljubicic, Croatia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(16) Lleyton Hewitt, Australia</font></paragraph></choice></mc>
+<mc label="Q7" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one women's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(1) Justine Henin, Belgium</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(2) Maria Sharapova, Russia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(3) Jelena Jankovic, Serbia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(4) Amelie Mauremo, France</font></paragraph></choice></mc>
+<mc label="Q8" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one women's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(5) Svetlana Kuznetsova, Russia</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(6) Ana Ivanovic, Serbia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(7) Serena Williams, United States</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(8) Anna Chakvetadze, Russia</font></paragraph></choice></mc>
+<mc label="Q9" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one women's single player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(  9) Marina Hingis, Switzerland</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(10) Daniela Hantuchova, Slovakia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(11) Nadia Petrova, Russia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(12) Elene Dementieva, Russia</font></paragraph></choice></mc>
+<mc label="Q10" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one women's singles player.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(13) Dinara Safina, Russia</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(14) Nicole Vaidisova, Czech Republic</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(15) Patty Schnyder, Switzerland</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(16) Shahar Peer, Israel</font></paragraph></choice></mc>
+<mc label="Q11" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one doubles team.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(1) Bob Bryan (USA) and Mike Bryan (USA)</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(2) Jonas Bjorkman (SWE) and Max Mirnyi (BLR)</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(1) Lisa Raymond (USA) and Samantha Stosur (AUS)</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(2) Cara Black (ZIM) and Liezel Huber (RSA)</font></paragraph></choice></mc>
+<mc label="Q12" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one doubles team.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(3) Mark Knowles (B AH) and Daniel Nestor (CAN)</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(4) Fabrice Santoro (FRA) and Nenad Zimonjic ((SRB)</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(3) Yung-Jan Chan (TPE) and Chia-Jung Chuang (TPE)</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(4) Katarina Srebotnik (SLO) and Ai Sugiyama (JPN)</font></paragraph></choice></mc>
+<mc label="Q13" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one doubles team.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(5) Martin Damm (CZE) and Leander Paes (IND)</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(6) Paul Hanley (AUS) and Kevin Ullyett (ZIM)</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(5) Kveta Peschke (CZE) and Rennae Stubbs (AUS)</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(6) Alice Molik (AUS) and Mara Santangelo (ITA)</font></paragraph></choice></mc>
+<mc label="Q14" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Choose one doubles team.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(7) Jonathan Erlich (ISR) and Andy Ram (ISR) </font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(8) Simon Aspelin (SWE) and Julian Knowle (AUT)</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(7) Janette Husarova (SVK) and Meghann Shaughnessy (USA)</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">(8) Anabel Medina Garrigues (ESP) and Virginia Ruano Pascual (ESP)</font></paragraph></choice></mc>
+<fib label="Q15"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">(optional) </font><font face="Arial" size="240" color="000000">None of the above players will win the men's singles. This is my choice: </font><blank label="a" length="20" required="false" alternateLabel="mspik"/></paragraph></fib>
+<fib label="Q16"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">(optional) </font><font face="Arial" size="240" color="000000">None of the above players will win the women's singles. This is my choice:</font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="21" required="false" alternateLabel="wspik"/></paragraph></fib>
+<mc label="Q17" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Do you want to review your choices? (If you answer "Yes", you must change your answer to "No" after your review to proceed.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">No</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q17" value="a"/>
+</conditions>
+<trueSet>
+<skip to="Q1"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="MyScore" startPoint="false" themePath="default" process="TellEm">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Enter your team name to see your score. </font><blank label="a" length="19" required="false" alternateLabel="tname"/></paragraph></fib>
+</items>
+</form>
+<form name="DataEntry" startPoint="false" themePath="default" process="CountEm">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Enter player's tag </font><blank label="a" length="3" required="false" alternateLabel="Ptag"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Sets won </font><blank label="a" length="3" required="false" alternateLabel="SW"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Underdog bonus </font><blank label="b" length="3" required="false" alternateLabel="UB"/></paragraph></fib>
+<mc label="Q3" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Do another?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">No</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="WhoPiked" startPoint="false" themePath="default" process="Reminder2">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Forgot who you drafted for your team? Enter your team's name and we'll send your team's roster to you, </font><blank label="a" length="21" required="true" alternateLabel="WhoIsOn"/></paragraph></fib>
+</items>
+</form>
+<form name="Leaderboard" startPoint="false" themePath="default">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Final results:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="630"></cell><cell width="705"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Prev.</font></division></cell><cell width="750"></cell><cell width="6555"></cell></row><row><cell width="630"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Rank</font></division></cell><cell width="705"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Rank</font></division></cell><cell width="750"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Points</font></division></cell><cell width="6555"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Player</font></division></cell></row><row><cell width="630"><division indent="0" align="left"><font face="Arial" size="200" color="000000">1</font></division></cell><cell width="705"><division indent="0" align="left"><font face="Arial" size="200" color="000000">1</font></division></cell><cell width="750"><division indent="0" align="left"><font face="Arial" size="200" color="000000">174</font></division></cell><cell width="6555"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Dakota</font></division></cell></row><row><cell width="630"><division indent="0" align="left"><font face="Arial" size="200" color="000000">2</font></division></cell><cell width="705"><division indent="0" align="left"><font face="Arial" size="200" color="000000">2</font></division></cell><cell width="750"><division indent="0" align="left"><font face="Arial" size="200" color="000000">157</font></division></cell><cell width="6555"><division indent="0" align="left"><font face="Arial" size="200" color="000000">MissingAgassi</font></division></cell></row><row><cell width="630"><division indent="0" align="left"><font face="Arial" size="200" color="000000">3</font></division></cell><cell width="705"><division indent="0" align="left"><font face="Arial" size="200" color="000000">3T</font></division></cell><cell width="750"><division indent="0" align="left"><font face="Arial" size="200" color="000000">128</font></division></cell><cell width="6555"><division indent="0" align="left"><font face="Arial" size="200" color="000000">4Gabriela</font></division></cell></row><row><cell width="630"><division indent="0" align="left"><font face="Arial" size="200" color="000000">4</font></division></cell><cell width="705"><division indent="0" align="left"><font face="Arial" size="200" color="000000">3T</font></division></cell><cell width="750"><division indent="0" align="left"><font face="Arial" size="200" color="000000">126</font></division></cell><cell width="6555"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Dakota2</font></division></cell></row><row><cell width="630"></cell><cell width="705"></cell><cell width="750"></cell><cell width="6555"></cell></row></table></text>
+</items>
+</form>
+<form name="PlayerPoints" startPoint="false" themePath="default" process="PlayerPoints">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">To see the points accumulated by each French Open entrant included in this project, please press SUBMIT</font></paragraph></text>
+</items>
+</form>
+<form name="Tools" startPoint="false" themePath="default" process="Tools">
+<items>
+<mc label="Q1" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">You can:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">See who you drafted for your team.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Check your score.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">See the Leaderboard.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">See how the tennis pros have scored.</font></paragraph></choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="NameEm">
+<set field="Score" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="a"/>
+</conditions>
+<trueSet>
+<set field="M1" arithmeticAsText="false">
+<string value="Roger Federer"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="b"/>
+</conditions>
+<trueSet>
+<set field="M1" arithmeticAsText="false">
+<string value="Rafael Nadal"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="c"/>
+</conditions>
+<trueSet>
+<set field="M1" arithmeticAsText="false">
+<string value="Andy Roddick"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="M1" arithmeticAsText="false">
+<string value="Novak Djokovic"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q4" value="a"/>
+</conditions>
+<trueSet>
+<set field="M2" arithmeticAsText="false">
+<string value="Fernando Gonzalez"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q4" value="b"/>
+</conditions>
+<trueSet>
+<set field="M2" arithmeticAsText="false">
+<string value="Nikolay Davydenko"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q4" value="c"/>
+</conditions>
+<trueSet>
+<set field="M2" arithmeticAsText="false">
+<string value="Tomas Berdych"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="M2" arithmeticAsText="false">
+<string value="Andy Murray"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q5" value="a"/>
+</conditions>
+<trueSet>
+<set field="M3" arithmeticAsText="false">
+<string value="James Blake"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q5" value="b"/>
+</conditions>
+<trueSet>
+<set field="M3" arithmeticAsText="false">
+<string value="Marcos Baghdatis"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q5" value="c"/>
+</conditions>
+<trueSet>
+<set field="M3" arithmeticAsText="false">
+<string value="Tommy Robredo"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="M3" arithmeticAsText="false">
+<string value="Richard Gasquet"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q6" value="a"/>
+</conditions>
+<trueSet>
+<set field="M4" arithmeticAsText="false">
+<string value="Tommy Haas"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q6" value="b"/>
+</conditions>
+<trueSet>
+<set field="M4" arithmeticAsText="false">
+<string value="Mikhail Youzhny"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q6" value="c"/>
+</conditions>
+<trueSet>
+<set field="M4" arithmeticAsText="false">
+<string value="Ivan Ljubicic"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="M4" arithmeticAsText="false">
+<string value="Lleyton Hewitt"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q7" value="a"/>
+</conditions>
+<trueSet>
+<set field="W1" arithmeticAsText="false">
+<string value="Justine Henin"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q7" value="b"/>
+</conditions>
+<trueSet>
+<set field="W1" arithmeticAsText="false">
+<string value="Maria Sharapova"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q7" value="c"/>
+</conditions>
+<trueSet>
+<set field="W1" arithmeticAsText="false">
+<string value="Jelena Jankovic"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="W1" arithmeticAsText="false">
+<string value="Amelie Mauresmo"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q8" value="a"/>
+</conditions>
+<trueSet>
+<set field="W2" arithmeticAsText="false">
+<string value="Svetlana Kuznetsova"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q8" value="b"/>
+</conditions>
+<trueSet>
+<set field="W2" arithmeticAsText="false">
+<string value="Ana Ivanovic"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q8" value="c"/>
+</conditions>
+<trueSet>
+<set field="W2" arithmeticAsText="false">
+<string value="Serena Williams"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="W2" arithmeticAsText="false">
+<string value="Anna Chakvetadze"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q9" value="a"/>
+</conditions>
+<trueSet>
+<set field="W3" arithmeticAsText="false">
+<string value="Martina Hingis"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q9" value="b"/>
+</conditions>
+<trueSet>
+<set field="W3" arithmeticAsText="false">
+<string value="Daniela Hantuchova"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q9" value="c"/>
+</conditions>
+<trueSet>
+<set field="W3" arithmeticAsText="false">
+<string value="Nadia Petrova"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="W3" arithmeticAsText="false">
+<string value="Elena Dementieva"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q10" value="a"/>
+</conditions>
+<trueSet>
+<set field="W4" arithmeticAsText="false">
+<string value="Dinara Safina"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q10" value="b"/>
+</conditions>
+<trueSet>
+<set field="W4" arithmeticAsText="false">
+<string value="Nicole Vaidisova"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q10" value="c"/>
+</conditions>
+<trueSet>
+<set field="W4" arithmeticAsText="false">
+<string value="Patty Schnyder"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="W4" arithmeticAsText="false">
+<string value="Shahar Peer"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q11" value="a"/>
+</conditions>
+<trueSet>
+<set field="D1" arithmeticAsText="false">
+<string value="Bob Bryan and Mike Bryan"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q11" value="b"/>
+</conditions>
+<trueSet>
+<set field="D1" arithmeticAsText="false">
+<string value="Jonas Bjorkman and Max Mirnyi"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q11" value="c"/>
+</conditions>
+<trueSet>
+<set field="D1" arithmeticAsText="false">
+<string value="Lisa Raymond and Samantha Stosur"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="D1" arithmeticAsText="false">
+<string value="Cara Black and Liezel Huber"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q12" value="a"/>
+</conditions>
+<trueSet>
+<set field="D2" arithmeticAsText="false">
+<string value="Mark Knowles and Daniel Nestor"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q12" value="b"/>
+</conditions>
+<trueSet>
+<set field="D2" arithmeticAsText="false">
+<string value="Fabrice Santoro and Nenad Zimonic"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q12" value="c"/>
+</conditions>
+<trueSet>
+<set field="D2" arithmeticAsText="false">
+<sub>
+<operand value="Jung"/>
+<operand value="Chuang"/>
+</sub>
+</set>
+</trueSet>
+<falseSet>
+<set field="D2" arithmeticAsText="false">
+<string value="Katarina Srebotnik and Ai Sugiyama"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q13" value="a"/>
+</conditions>
+<trueSet>
+<set field="D3" arithmeticAsText="false">
+<string value="Martin Damm and Leander Paes"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q13" value="b"/>
+</conditions>
+<trueSet>
+<set field="D3" arithmeticAsText="false">
+<string value="Paul Hanley and Kevin Ullyett"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q13" value="c"/>
+</conditions>
+<trueSet>
+<set field="D3" arithmeticAsText="false">
+<string value="Kveta Peschke and Rennae Stubbs"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="D3" arithmeticAsText="false">
+<string value="Alicia Molik and Mara Santangelo"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q14" value="a"/>
+</conditions>
+<trueSet>
+<set field="D4" arithmeticAsText="false">
+<string value="Jonathan Erlich and Andy Ram"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q14" value="b"/>
+</conditions>
+<trueSet>
+<set field="D4" arithmeticAsText="false">
+<string value="Jonathan Erlich and Andy Ram"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q14" value="c"/>
+</conditions>
+<trueSet>
+<set field="D3" arithmeticAsText="false">
+<string value="Francesca Schiavone and Jonas Bjorkman"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="D3" arithmeticAsText="false">
+<string value="Kveta Peschke and Martin Damm"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<or>
+<isNotBlank field="Chooser:mspik" />
+<isNotBlank field="Chooser:wspik" />
+</or>
+</conditions>
+<trueSet>
+<show document="UrPicks1" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="UrPicks" reset="false"/>
+</falseSet>
+</if>
+</process>
+<process name="TellEm">
+<get recordList="Record List 2">
+<forms>
+<form name="Chooser"/>
+</forms>
+<conditions>
+<equals field="Record List 2:Chooser:team">
+<string field="MyScore:tname"/>
+</equals>
+</conditions></get>
+<foreach record="club" recordList="Record List 2">
+<set field="UrScore" arithmeticAsText="false">
+<string field="club:Chooser:Score"/>
+</set>
+<append document="UrScore" appendage="VUrScore"/>
+</foreach>
+<show document="UrScore" reset="true"/>
+</process>
+<process name="CountEm">
+<set field="Pscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Pscore" arithmeticAsText="false">
+<add>
+<operand field="Pscore"/>
+<operand field="DataEntry:SW"/>
+</add>
+</set>
+<set field="Pscore" arithmeticAsText="false">
+<add>
+<operand field="Pscore"/>
+<operand field="DataEntry:UB"/>
+</add>
+</set>
+<get recordList="Record List 4">
+<forms>
+<form name="Chooser"/>
+</forms>
+</get>
+<foreach record="Record4" recordList="Record List 4">
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q3" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="3a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q3" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="3b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q3" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="3c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q3" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="3d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q4" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="4a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q4" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="4b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q4" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="4c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q4" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="4d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q5" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="5a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q5" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="5b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q5" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="5c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q5" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="5d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q6" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="6a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q6" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="6b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q6" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="6c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q6" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="6d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q11" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="7a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q11" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="7b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q11" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="7c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q11" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="7d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q12" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="8a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q12" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="8b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q12" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="8c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q12" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="8d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q14" value="a"/>
+<equals field="DataEntry:Ptag">
+<string value="9a"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q14" value="b"/>
+<equals field="DataEntry:Ptag">
+<string value="9b"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q14" value="c"/>
+<equals field="DataEntry:Ptag">
+<string value="9c"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Record4:Chooser:Q14" value="d"/>
+<equals field="DataEntry:Ptag">
+<string value="9d"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Record4:Chooser:Score" arithmeticAsText="false">
+<add>
+<operand field="Record4:Chooser:Score"/>
+<operand field="Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<mcEquals field="DataEntry:Q3" value="a"/>
+</conditions>
+<trueSet>
+<show form="DataEntry"/>
+</trueSet>
+</if>
+</process>
+<process name="Reminder2">
+<get recordList="Record List 3">
+<forms>
+<form name="Chooser"/>
+</forms>
+<conditions>
+<equals field="Record List 3:Chooser:team">
+<string field="WhoPiked:WhoIsOn"/>
+</equals>
+</conditions></get>
+<foreach record="club2" recordList="Record List 3">
+<set field="RM1" arithmeticAsText="false">
+<string field="club2:Chooser:M1"/>
+</set>
+<set field="RM2" arithmeticAsText="false">
+<string field="club2:Chooser:M2"/>
+</set>
+<set field="RW1" arithmeticAsText="false">
+<string field="club2:Chooser:W1"/>
+</set>
+<set field="RW2" arithmeticAsText="false">
+<string field="club2:Chooser:W2"/>
+</set>
+<set field="RD1" arithmeticAsText="false">
+<string field="club2:Chooser:D1"/>
+</set>
+<set field="RD2" arithmeticAsText="false">
+<string field="club2:Chooser:D2"/>
+</set>
+<set field="RD3" arithmeticAsText="false">
+<string field="club2:Chooser:D3"/>
+</set>
+<set field="RMch" arithmeticAsText="false">
+<string field="club2:Chooser:mspik"/>
+</set>
+<set field="RWch" arithmeticAsText="false">
+<string field="club2:Chooser:wspik"/>
+</set>
+<append document="UrDraft" appendage="VUrDraft"/>
+</foreach>
+<show document="UrDraft" reset="true"/>
+</process>
+<process name="PlayerPoints">
+<set field="3askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="3bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="3cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="3dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="4askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="4bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="4cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="4dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="5askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="5bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="5cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="5dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="6askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="6bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="6cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="6dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="7askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="7bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="7cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="7dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="8askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="8bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="8cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="8dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="9askor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="9bskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="9cskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="9dskor" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="DataEntry"/>
+</forms>
+</get>
+<foreach record="Record5" recordList="Record List 5">
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="3a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="3askor" arithmeticAsText="false">
+<add>
+<operand field="3askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="3b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="3bskor" arithmeticAsText="false">
+<add>
+<operand field="3bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="3c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="3cskor" arithmeticAsText="false">
+<add>
+<operand field="3cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="3d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="3dskor" arithmeticAsText="false">
+<add>
+<operand field="3dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="4a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="4askor" arithmeticAsText="false">
+<add>
+<operand field="4askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="4b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="4bskor" arithmeticAsText="false">
+<add>
+<operand field="4bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="4c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="4cskor" arithmeticAsText="false">
+<add>
+<operand field="4cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="4d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="4dskor" arithmeticAsText="false">
+<add>
+<operand field="4dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="5a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="5askor" arithmeticAsText="false">
+<add>
+<operand field="5askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="5b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="5bskor" arithmeticAsText="false">
+<add>
+<operand field="5bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="5c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="5cskor" arithmeticAsText="false">
+<add>
+<operand field="5cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="5d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="5dskor" arithmeticAsText="false">
+<add>
+<operand field="5dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="6a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="6askor" arithmeticAsText="false">
+<add>
+<operand field="6askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="6b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="6bskor" arithmeticAsText="false">
+<add>
+<operand field="6bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="6c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="6cskor" arithmeticAsText="false">
+<add>
+<operand field="6cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="6d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="6dskor" arithmeticAsText="false">
+<add>
+<operand field="6dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="7a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="7askor" arithmeticAsText="false">
+<add>
+<operand field="7askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="7b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="7bskor" arithmeticAsText="false">
+<add>
+<operand field="7bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="7c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="7cskor" arithmeticAsText="false">
+<add>
+<operand field="7cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="7d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="7dskor" arithmeticAsText="false">
+<add>
+<operand field="7dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="8a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="8askor" arithmeticAsText="false">
+<add>
+<operand field="8askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="8b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="8bskor" arithmeticAsText="false">
+<add>
+<operand field="8bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="8c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="8cskor" arithmeticAsText="false">
+<add>
+<operand field="8cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="8d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="8dskor" arithmeticAsText="false">
+<add>
+<operand field="8dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="9a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="9askor" arithmeticAsText="false">
+<add>
+<operand field="9askor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="9b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="9bskor" arithmeticAsText="false">
+<add>
+<operand field="9bskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="9c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="9cskor" arithmeticAsText="false">
+<add>
+<operand field="9cskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Record5:DataEntry:Ptag">
+<string value="9d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="9dskor" arithmeticAsText="false">
+<add>
+<operand field="9dskor"/>
+<operand field="Record5:DataEntry:Pscore"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<append document="PlayerPoints" appendage="VPlayerPoints"/>
+<show document="PlayerPoints" reset="true"/>
+</process>
+<process name="Tools">
+<if>
+<conditions>
+<mcEquals field="Tools:Q1">
+<string value="a"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<show form="WhoPiked"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Tools:Q1" value="b"/>
+</conditions>
+<trueSet>
+<show form="MyScore"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Tools:Q1" value="c"/>
+</conditions>
+<trueSet>
+<show form="Leaderboard"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Tools:Q1" value="d"/>
+</conditions>
+<trueSet>
+<show form="PlayerPoints"/>
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="UrPicks">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">OK, here are the players you chose for the </font><font face="Arial" size="200" color="000000"><b><field name="Chooser:team"/></b></font><font face="Arial" size="200" color="000000"> team:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Your singles players:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="M1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="M2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="W1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="W2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Your doubles players:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D3"/></font></paragraph>
+</xmlData>
+</document>
+<document name="UrPicks1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Here are the players you chose for the </font><font face="Arial" size="200" color="000000"><b><field name="Chooser:team"/></b></font><font face="Arial" size="200" color="000000"> team:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Your singles players:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="M1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="M2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="W1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="W2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Your doubles players:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D3"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">In addition, you predicted the following player not seeded in the top 8 to win a singles title:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="Chooser:mspik"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="Chooser:wspik"/></font></paragraph>
+</xmlData>
+</document>
+<document name="UrScore">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">This is the current score for </font><font face="Arial" size="200" color="000000"><field name="MyScore:tname"/></font><font face="Arial" size="200" color="000000">:</font></paragraph>
+</xmlData>
+</document>
+<document name="VUrScore">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><b><field name="UrScore"/></b></paragraph>
+</xmlData>
+</document>
+<document name="UrDraft">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">This is the roster for team </font><font face="Arial" size="200" color="000000"><b><field name="WhoPiked:WhoIsOn"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="VUrDraft">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Singles:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RM1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RM2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RW1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RW2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Doubles:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RD1"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RD2"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="RD3"/></font></paragraph>
+</xmlData>
+</document>
+<document name="PlayerPoints">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="VPlayerPoints">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Men's Singles</b></font></division></cell><cell width="2160"></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Women's Singles</b></font></division></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Roger Federer</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="3askor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Justine Henin</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="4askor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Rafael Nadal</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="3bskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Maria Sharapova</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="4bskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Andy Roddick</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="3cskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Svetlana Kuznetsova</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="4cskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Nikolay Davydenko</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="3dskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Jelena Jankovic</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="4dskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Fernando Gonzalez</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="5askor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Amelie Mauresmo</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="6askor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Novak Djokovic</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="5bskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Nicole Vaidisova</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="6bskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Ivan Llubicic</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="5cskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Ana Ivanovic</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="6cskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">James Blake</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="5dskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Serena Williams</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="6dskor"/></font></division></cell></row><row><cell width="2160"></cell><cell width="2160"></cell><cell width="2160"></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Men's Doubles</b></font></division></cell><cell width="2160"></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Women's Doubles</b></font></division></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Bryan &amp; Bryan</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="7askor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Raymond &amp; Stosur</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="7cskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Bjorkman &amp; Mirnyi</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="7bskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Black &amp; Huber</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="7dskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Damm &amp; Paes</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="8askor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Yan &amp; Zheng</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="8cskor"/></font></division></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Santoro &amp; Zimonic</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="8bskor"/></font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Peschke &amp; Stubbs</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="8dskor"/></font></division></cell></row><row><cell width="2160"></cell><cell width="2160"></cell><cell width="2160"></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Mixed Doubles</b></font></division></cell><cell width="2160"></cell><cell width="2160"></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Raymond &amp; Bryan</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="9askor"/></font></division></cell><cell width="2160"></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Huber &amp; Ullyatt</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="9bskor"/></font></division></cell><cell width="2160"></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Schiavone &amp; Bjorkman</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="9cskor"/></font></division></cell><cell width="2160"></cell><cell width="2160"></cell></row><row><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Peschket &amp; Damm</font></division></cell><cell width="2160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="9dskor"/></font></division></cell><cell width="2160"></cell><cell width="2160"></cell></row></table>
+</xmlData>
+</document>
+</documents>
+</project>

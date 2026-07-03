@@ -1,0 +1,64 @@
+	internal static class Utility
+	{
+		internal static FunctionFilterConditions CreateDefaultFunctionFilterConditions()	
+		{
+			FunctionFilterConditions conditions = new FunctionFilterConditions();
+			conditions.Conditions = new Conditions();
+			return conditions;
+		}	
+		
+		internal static FunctionParameterConditions CreateDefaultFunctionParameterConditions()
+		{
+			return new FunctionParameterConditions();
+		}
+		
+		internal static Conditions CreateDefaultConditions()
+		{
+			return new Conditions();
+		}
+		
+		internal static XPathNavigator GetRootXPathNavigator()
+		{
+			if (rootXPathNavigator == null)
+			{
+				ResourceManager rm = new ResourceManager("functions", Assembly.GetExecutingAssembly());
+				
+				using (StringReader sr = new StringReader(rm.GetString("REPOSITORY_XML")))
+				{
+					rootXPathNavigator = new XPathDocument(sr).CreateNavigator();
+					rootXPathNavigator.MoveToFirstChild();
+				}
+			}
+			
+			return rootXPathNavigator.Clone();		
+		}
+		
+		internal static XPathNavigator GetXPathNavigatorForGid(string gid)
+		{
+            return GetRootXPathNavigator().SelectSingleNode(string.Format("//*[@gid='{0}']", gid));
+		}
+		
+		private static XPathNavigator rootXPathNavigator;
+
+        internal static void SetFunctionDefaultValues(IFunction instance)
+        {
+            IFunctionInfo functionInfo = instance.Info;
+
+            for (int i = 0; i < functionInfo.Parameters.Count; ++i)
+            {
+                IParameterInfo parameterInfo = functionInfo.Parameters[i];
+
+                XPathNavigator defaultValue = parameterInfo.Xml.SelectSingleNode("default-value");
+
+                if (defaultValue != null)
+                {
+                    TypeConverter parameterConverter = TypeDescriptor.GetConverter(parameterInfo.PropertyType);
+                    if (parameterConverter.CanConvertFrom(null, typeof(string)))
+                    {
+                        parameterInfo.SetValue(instance, parameterConverter.ConvertFromString(defaultValue.Value));
+                    }
+                }
+            }
+        }
+	}
+}

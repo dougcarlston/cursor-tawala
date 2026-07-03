@@ -1,0 +1,850 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Simple Poll v.5" themePath="basicblue" format="1.4">
+<forms>
+<form name="Main" startPoint="true" themePath="basicblue" process="Process 3">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="320" color="000000"><b>Survey on Attitudes about Intelligent Design</b></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Please mark the sentence about science with which you most closely agree:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Advances in science have been among the most important factors in the advance of civilization.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Advances in science have both helped and harmed human progress.  On balance, their influence has been positive.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Advances in science have both helped and harmed human progress.  On balance, their influence has been negative.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Science has set humanity on the wrong course.</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">I disagree with all these sentiments or have no opinion on this topic.</font></paragraph></choice></mc>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Please mark the sentence which most nearly reflects your views:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">A scientific approach toward the world is incompatible with a religious one and makes most religious beliefs untenable.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Scientific and religious beliefs generally conflict only when people try to extend the domain of one into territory more properly ceded to the other.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">A scientific approach must be constrained in areas where religious text has spoken.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">I disagree with all three sentiments or have no opinion.</font></paragraph></choice></mc>
+<mc label="Q3" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">To the best of your understanding, the scientific method is:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Using observation, experimentation and computation to arrive at theories about how the universe is organized and how it works.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">An approach toward science that requires that all facts be proved by experiment.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">A view of the world that denies the existence of a creator and the power of faith.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">None of these or no opinion.</font></paragraph></choice></mc>
+<mc label="Q4" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">To the best of your understanding, biological evolution is:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Change in the genetic composition of a population during successive generations, as a result of natural selection acting on the genetic variation among individuals, and resulting in the development of new species.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">A theory that men are in fact descended from apes.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">A theory that life is a random event, created by chance.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">None of the above or no opinion.</font></paragraph></choice></mc>
+<mc label="Q5" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">To the best of your understanding, intelligent design is:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">The idea that an intelligent designer played a role in some aspect of the evolution of life on earth, usually the origin of life itself.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">An explanation of the fact that human life could not have formed on this planet without the guidance of some form of superior being.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">A non-scientific bit of gibberish that is a thinly disguised version of religious creationism.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">None of the above or no opinion.</font></paragraph></choice></mc>
+<mc label="Q6" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">In the argument about various theories of evolution, the statement that most nearly approximates your view is:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Darwinian evolution is the best current thinking about evolution, and the only theory that should be taught on the subject in schools at this time.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Intelligent design is the best current thinking about evolution, and the only theory that should be taught on the subject in schools at this time.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Both theories are possible explanations of evolution, and both should be taught in schools at this time.</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">Neither theory should be taught in schools until people figure out which theory is right.</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000">None of the above or no opinion.</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Administration" startPoint="false" themePath="basicblue" preProcess="Process 1">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="930000">Thank you for participating.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions>       </paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<set field="Score1a" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1b" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1c" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1d" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1e" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Records">
+<forms>
+<form name="Main"/>
+</forms>
+</get>
+<foreach record="User" recordList="Records">
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q1" value="a"/>
+</conditions>
+<trueSet>
+<addTo field="Score1a">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q1" value="b"/>
+</conditions>
+<trueSet>
+<addTo field="Score1b">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q1" value="c"/>
+</conditions>
+<trueSet>
+<addTo field="Score1c">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q1" value="d"/>
+</conditions>
+<trueSet>
+<addTo field="Score1d">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q1" value="e"/>
+</conditions>
+<trueSet>
+<addTo field="Score1e">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<set field="Percenta" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1a"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentb" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1b"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentc" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1c"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentd" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1d"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percente" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1e"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Labela" arithmeticAsText="false">
+<string value="a) Advances in science have been among the most important factors in the advance of civilization."/>
+</set>
+<set field="Labelb" arithmeticAsText="false">
+<string value="b) Advances in science have both helped and harmed human progress.  On balance, their influence has been positive."/>
+</set>
+<set field="Labelc" arithmeticAsText="false">
+<string value="c) Advances in science have both helped and harmed human progress.  On balance, their influence has been negative."/>
+</set>
+<set field="Labeld" arithmeticAsText="false">
+<string value="d) Science has set humanity on the wrong course."/>
+</set>
+<set field="Labele" arithmeticAsText="false">
+<string value="e) I disagree with all these sentiments or have no opinion on this topic."/>
+</set>
+<set field="QLabel1" arithmeticAsText="false">
+<string value="1) Please mark the sentence about science with which you most closely agree:"/>
+</set>
+</foreach>
+<append document="Final Report" appendage="FiveChoiceAppend"/>
+<set field="Score1a" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1b" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1c" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1d" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1e" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<foreach record="User" recordList="Records">
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q2" value="a"/>
+</conditions>
+<trueSet>
+<addTo field="Score1a">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q2" value="b"/>
+</conditions>
+<trueSet>
+<addTo field="Score1b">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q2" value="c"/>
+</conditions>
+<trueSet>
+<addTo field="Score1c">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q2" value="d"/>
+</conditions>
+<trueSet>
+<addTo field="Score1d">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<set field="Percenta" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1a"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentb" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1b"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentc" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1c"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentd" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1d"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percente" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1e"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Labela" arithmeticAsText="false">
+<string value="a)  A scientific approach toward the world is incomopatible with a religious one and makes most religious beliefs untenable."/>
+</set>
+<set field="Labelb" arithmeticAsText="false">
+<string value="b) Scientific and religious beliefs generally conflict only when people try to extend the domain of one into territory more properly ceded to ther other."/>
+</set>
+<set field="Labelc" arithmeticAsText="false">
+<string value="c) A scientific approach must be constrained in areas where religious text has spoken."/>
+</set>
+<set field="Labeld" arithmeticAsText="false">
+<string value="d) I disagree with all three sentiments or have no opinion."/>
+</set>
+<set field="QLabel1" arithmeticAsText="false">
+<string value="2) Please mark the sentence which most nearly reflects your views:"/>
+</set>
+</foreach>
+<append document="Final Report" appendage="FourChoiceAppend"/>
+<set field="Score1a" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1b" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1c" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1d" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1e" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<foreach record="User" recordList="Records">
+<if>
+<conditions>
+<mcContains field="User:Main:Q3" value="a"/>
+</conditions>
+<trueSet>
+<addTo field="Score1a">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q3" value="b"/>
+</conditions>
+<trueSet>
+<addTo field="Score1b">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q3" value="c"/>
+</conditions>
+<trueSet>
+<addTo field="Score1c">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q3" value="d"/>
+</conditions>
+<trueSet>
+<addTo field="Score1d">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<set field="Percenta" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1a"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentb" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1b"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentc" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1c"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentd" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1d"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percente" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1e"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Labela" arithmeticAsText="false">
+<string value="a)  Using observation, experimentation and computation to arrive at theories about how the universe is organized and how it works."/>
+</set>
+<set field="Labelb" arithmeticAsText="false">
+<string value="b) An approach toward science that requires that all facts be proved by experiment."/>
+</set>
+<set field="Labelc" arithmeticAsText="false">
+<string value="c) A view of the world that denies the existence of a creator and the power of faith."/>
+</set>
+<set field="Labeld" arithmeticAsText="false">
+<string value="d) None of these or no opinion."/>
+</set>
+<set field="QLabel1" arithmeticAsText="false">
+<string value="3) To the best of your understanding, the scientific method is:"/>
+</set>
+</foreach>
+<append document="Final Report" appendage="FourChoiceAppend"/>
+<set field="Score1a" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1b" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1c" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1d" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1e" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<foreach record="User" recordList="Records">
+<if>
+<conditions>
+<mcContains field="User:Main:Q4" value="a"/>
+</conditions>
+<trueSet>
+<addTo field="Score1a">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q4" value="b"/>
+</conditions>
+<trueSet>
+<addTo field="Score1b">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q4" value="c"/>
+</conditions>
+<trueSet>
+<addTo field="Score1c">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q4" value="d"/>
+</conditions>
+<trueSet>
+<addTo field="Score1d">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<set field="Percenta" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1a"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentb" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1b"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentc" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1c"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentd" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1d"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percente" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1e"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Labela" arithmeticAsText="false">
+<string value="a)  Change in the genetic composition of a population during successive generations, as a result of natural selection acting on the genetic variation among individuals, and resulting in the development of new species."/>
+</set>
+<set field="Labelb" arithmeticAsText="false">
+<string value="b) A theory that men are in fact descended from apes."/>
+</set>
+<set field="Labelc" arithmeticAsText="false">
+<string value="c) A theory that life is a random event, created by chance."/>
+</set>
+<set field="Labeld" arithmeticAsText="false">
+<string value="d) None of these or no opinion."/>
+</set>
+<set field="QLabel1" arithmeticAsText="false">
+<string value="4) To the best of your understanding, biological evolution is:"/>
+</set>
+</foreach>
+<append document="Final Report" appendage="FourChoiceAppend"/>
+<set field="Score1a" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1b" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1c" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1d" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<foreach record="User" recordList="Records">
+<if>
+<conditions>
+<mcContains field="User:Main:Q5" value="a"/>
+</conditions>
+<trueSet>
+<addTo field="Score1a">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q5" value="b"/>
+</conditions>
+<trueSet>
+<addTo field="Score1b">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q5" value="c"/>
+</conditions>
+<trueSet>
+<addTo field="Score1c">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="User:Main:Q5" value="d"/>
+</conditions>
+<trueSet>
+<addTo field="Score1d">
+<operand value="1"/>
+</addTo>
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<set field="Percenta" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1a"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentb" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1b"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentc" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1c"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentd" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1d"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percente" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1e"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Labela" arithmeticAsText="false">
+<string value="a)  The idea that an intelligent designer played a role in some aspect of the evolution of life on earth, usually the origin of life itself."/>
+</set>
+<set field="Labelb" arithmeticAsText="false">
+<string value="b) An explanation of the fact that human life could not have formed on this planet without the guidance of some form of superior being."/>
+</set>
+<set field="Labelc" arithmeticAsText="false">
+<string value="c) An unscientific bit of gibberish that is a thinly disguised version of religious creationism."/>
+</set>
+<set field="Labeld" arithmeticAsText="false">
+<string value="d) None of these or no opinion."/>
+</set>
+<set field="QLabel1" arithmeticAsText="false">
+<string value="5) To the best of your understanding, intelligent design is:"/>
+</set>
+</foreach>
+<append document="Final Report" appendage="FourChoiceAppend"/>
+<set field="Score1a" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1b" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1c" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1d" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score1e" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<foreach record="User" recordList="Records">
+<addTo field="TotalResponses">
+<operand value="1"/>
+</addTo>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q6" value="a"/>
+</conditions>
+<trueSet>
+<addTo field="Score1a">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q6" value="b"/>
+</conditions>
+<trueSet>
+<addTo field="Score1b">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q6" value="c"/>
+</conditions>
+<trueSet>
+<addTo field="Score1c">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q6" value="d"/>
+</conditions>
+<trueSet>
+<addTo field="Score1d">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="User:Main:Q6" value="e"/>
+</conditions>
+<trueSet>
+<addTo field="Score1e">
+<operand value="1"/>
+</addTo>
+</trueSet>
+</if>
+<set field="Percenta" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1a"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentb" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1b"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentc" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1c"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percentd" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1d"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Percente" arithmeticAsText="false">
+<mul>
+<div>
+<operand field="Score1e"/>
+<operand field="TotalResponses"/>
+</div>
+<operand value="100"/>
+</mul>
+</set>
+<set field="Labela" arithmeticAsText="false">
+<string value="a) Darwinian evolution is the best current thinking about evolution, and the only theory that should be taught on the subject in schools at this time."/>
+</set>
+<set field="Labelb" arithmeticAsText="false">
+<string value="b) Intelligent design is the best current thinking about evolution, and the only theory that should be taught on the subject in schools at this time."/>
+</set>
+<set field="Labelc" arithmeticAsText="false">
+<string value="c) Both theories are possible explanations of evolution, and both should be taught in schools at this time."/>
+</set>
+<set field="Labeld" arithmeticAsText="false">
+<string value="d) Neither theory should be taught in schools until people figure out which theory is right."/>
+</set>
+<set field="Labele" arithmeticAsText="false">
+<string value="e) None of the above or no opinion."/>
+</set>
+<set field="QLabel1" arithmeticAsText="false">
+<string value="6) In the argument about various theories of evolution, the statement that most nearly approximates your view is:"/>
+</set>
+</foreach>
+<append document="Final Report" appendage="FiveChoiceAppend"/>
+<show document="Final Report" reset="true"/>
+</process>
+<process name="Process 3">
+<show form="Administration"/>
+</process>
+</processes>
+<documents>
+<document name="Final Report">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="360" color="000000"><b><u>Poll Responses</u></b></font></paragraph>
+</xmlData>
+</document>
+<document name="FiveChoiceAppend">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000"><b><field name="QLabel1"/></b></font></paragraph><table indent="0"><row><cell width="735"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000">Totals:</font></division></cell><cell width="585"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1a"/></font></division></cell><cell width="420"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000">OR</font></division></cell><cell width="735"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percenta"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8325"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labela"/></font></division></cell></row><row><cell width="735"/><cell width="585"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1b"/></font></division></cell><cell width="420"/><cell width="735"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percentb"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8325"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labelb"/></font></division></cell></row><row><cell width="735"/><cell width="585"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1c"/></font></division></cell><cell width="420"/><cell width="735"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percentc"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8325"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labelc"/></font></division></cell></row><row><cell width="735"/><cell width="585"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1d"/></font></division></cell><cell width="420"/><cell width="735"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percentd"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8325"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labeld"/></font></division></cell></row><row><cell width="735"/><cell width="585"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1e"/></font></division></cell><cell width="420"/><cell width="735"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percente"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8325"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labele"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="FourChoiceAppend">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="220" color="000000"><b><field name="QLabel1"/></b></font></paragraph><table indent="0"><row><cell width="690"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000">Totals:</font></division></cell><cell width="570"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1a"/></font></division></cell><cell width="405"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000">OR</font></division></cell><cell width="825"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percenta"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8310"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labela"/></font></division></cell></row><row><cell width="690"/><cell width="570"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1b"/></font></division></cell><cell width="405"/><cell width="825"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percentb"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8310"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labelb"/></font></division></cell></row><row><cell width="690"/><cell width="570"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1c"/></font></division></cell><cell width="405"/><cell width="825"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percentc"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8310"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labelc"/></font></division></cell></row><row><cell width="690"/><cell width="570"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Score1d"/></font></division></cell><cell width="405"/><cell width="825"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="CE0000"><field name="Percentd"/></font><font face="Microsoft Sans Serif" size="220" color="000000">%</font></division></cell><cell width="8310"><division indent="0" align="left"><font face="Microsoft Sans Serif" size="220" color="000000"><field name="Labeld"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="Thanks!">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Microsoft Sans Serif" size="240" color="000000"><i>Thank your for taking our survey!</i></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

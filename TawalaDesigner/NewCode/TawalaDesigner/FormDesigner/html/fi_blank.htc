@@ -1,0 +1,66 @@
+<public:attach event="oncontentready" onevent="onContentReady()" />
+<public:component tagName="Blank">
+<public:property name="Label" get="getLabel" put="putLabel" />
+<public:attach event="onresizeend" onevent="onResizeEnd()" />
+
+<script language="JScript">
+
+var input = null;
+
+init();
+
+function init()
+{
+}
+
+function onContentReady()
+{
+    element.id = window.external.GetBlankId(element.outerHTML);
+    element.firstChild.contentEditable = false;
+}
+
+function getLabel()
+{
+	var inputElement = element.firstChild;
+    return inputElement.value;
+}
+
+function putLabel(value)
+{
+	var inputElement = element.firstChild;
+    inputElement.value = value;
+}
+
+function onResizeEnd()
+{
+	var newHeight = removePixelUnits(event.srcElement.style.height);
+	newHeight = toNearestMultipleOfBlankHeight(newHeight);
+	event.srcElement.style.height = newHeight;
+
+	var newWidth = removePixelUnits(event.srcElement.style.width);
+	newWidth = toNearestMultipleOfBlankWidth(newWidth);
+	event.srcElement.style.width = newWidth;
+}
+
+function removePixelUnits(dimensionString)
+{
+	return (dimensionString.replace(/([0-9]+)px/g, "$1"));
+}
+
+function toNearestMultipleOfBlankHeight(heightInPixels)
+{
+	newHeight = (Number(heightInPixels) / 21).toFixed(0) * 21;
+	
+	return (newHeight == 0 ? 21 : newHeight);
+}
+
+function toNearestMultipleOfBlankWidth(widthInPixels)
+{
+	newWidth = (Number(widthInPixels) / 20).toFixed(0) * 20;
+	
+	return (newWidth == 0 ? 20 : newWidth);
+}
+
+</script>
+
+</public:component>

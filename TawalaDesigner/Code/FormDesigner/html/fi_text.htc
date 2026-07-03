@@ -1,0 +1,74 @@
+<public:component tagName="TextItem">
+
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+
+<public:property name="HasLabel" get="getHasLabel" />
+
+<public:property name="Contents" get="getContents" put="putContents" />
+
+<public:method name="SelectText" />
+
+<script type="text/jscript" src="common.js">
+</script>
+
+<script language="JScript">
+
+var div = null;
+
+init();
+
+function init()
+{
+    element.style.display="block";
+    element.FunctionsAllowed = "true";
+    
+    div = element.document.createElement("div");
+    div.className="textitem formitem";
+
+    div.addBehavior("editable.htc");
+    div.acceptFieldDrop = false;
+	element.appendChild(div);
+}
+
+function getHasLabel()
+{
+    return "true";
+}
+
+function putContents(value)
+{
+    div.innerHTML = value;
+}
+
+function getContents()
+{
+    return div.innerHTML;
+}
+
+function onActivate()
+{
+    if (window.external != null)
+    {
+        window.external.TextItemActivated(element.id);
+    }
+}
+
+function onDeactivate()
+{
+    if (window.external != null)
+    {
+        window.external.FormItemDeactivated(element.id);
+    }
+}
+
+function SelectText()
+{
+	var textRange = element.document.body.createTextRange();
+	textRange.moveToElementText(element);
+	textRange.select();
+}
+
+</script>
+
+</public:component>

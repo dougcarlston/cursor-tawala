@@ -1,0 +1,33 @@
+
+	public sealed class ${CLASSNAMEV} : FunctionBase
+	{
+		public ${CLASSNAMEV}() 
+		{
+			Properties = new PropertyCollection<${CLASSNAMEV}>(this, functionInfo.Parameters);
+		}
+		
+		${PROPERTIES}
+		
+  		public override IFunctionInfo Info { get { return functionInfo; } }
+  		  		
+		public override void BeginEdit()
+  		{
+  		    ForwardPropertyChanged += forward;
+  		}
+  		
+  		public override void EndEdit()
+  		{
+   		    ForwardPropertyChanged -= forward;
+  		}
+  		
+  		private static event PropertyChangedEventHandler ForwardPropertyChanged;
+  		
+  		private void forward(object sender, PropertyChangedEventArgs args)
+  		{
+ 		    NotifyChanged(args.PropertyName);
+  		}
+  		
+  		private static ${CLASSNAMEV}_FunctionInfo functionInfo = new ${CLASSNAMEV}_FunctionInfo();
+  		
+	}	
+}

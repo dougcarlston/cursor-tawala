@@ -1,0 +1,122 @@
+<public:component tagName="McqItem">
+
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+
+<public:property name="HasLabel" get="getHasLabel" />
+
+<public:property name="Question" get="getQuestion" put="putQuestion" />
+<public:property name="Choices" get="getChoices"  put="putChoices" />
+<public:property name="Contents" get="getContents" />
+
+<public:property name="ChoicesId" get="getChoicesId" />
+
+<script language="JScript">
+
+var pText = null;
+var pChoices = null;
+
+var divQuestion = null;
+var divChoices = null;
+
+init();
+
+function init()
+{
+    element.style.display = "block";
+    element.FunctionsAllowed = "true";
+   
+    divQuestion = document.createElement("div");
+    divChoices = document.createElement("div");
+	
+	divQuestion.className="mcqitemtext";
+	
+	divQuestion.addBehavior("editable.htc");
+    divQuestion.acceptFieldDrop = false;
+	
+	divQuestion.addBehavior("breakonenterkey.htc");
+	divQuestion.addBehavior("acceptsdraggedfields.htc");	
+	divQuestion.innerHTML = "[Question Text]"
+	
+	divChoices.id = element.document.uniqueID;
+	divChoices.className="mcqitemchoices";
+	divChoices.addBehavior("highlight.htc");
+	divChoices.onclick=editMcqChoices;
+	divChoices.UNSELECTABLE = true;
+	divChoices.onselectstart = onSelectStart;
+	
+	element.appendChild(divQuestion);
+	element.appendChild(divChoices);
+}
+
+function onSelectStart()
+{
+    event.returnValue = false;
+    event.cancelBubble = true;
+}
+
+function getHasLabel()
+{
+    return "true";
+}
+
+function getContents()
+{
+    return "<contents><question>" + divQuestion.innerHTML + "</question>" + divChoices.innerHTML + "</contents>";
+}
+
+function getQuestion()
+{
+    return divQuestion.innerHTML;
+}
+
+function putQuestion(html)
+{
+    divQuestion.innerHTML = html;
+}
+
+function getChoices()
+{
+    return divChoices.innerHTML;
+}
+
+function putChoices(html)
+{
+    divChoices.innerHTML = html;
+}
+
+function getChoicesId()
+{
+	return divChoices.id;
+}
+
+function editMcqChoices()
+{
+	event.cancelBubble=true;
+	event.returnValue=false;
+	
+	if (window.external != null)
+	{
+	    window.external.EditMcqChoices(element.id);
+	}
+}
+
+function onActivate()
+{
+    if (window.external != null)
+    {
+        window.external.McqItemActivated(element.id);
+    }
+}
+
+function onDeactivate()
+{
+    if (window.external != null)
+    {
+        window.external.FormItemDeactivated(element.id);
+    }
+}
+
+</script>
+
+</public:component>

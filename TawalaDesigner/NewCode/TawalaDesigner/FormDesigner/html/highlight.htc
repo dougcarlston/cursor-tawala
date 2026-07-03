@@ -1,0 +1,18 @@
+<public:component>
+
+<public:attach event="onmouseover" onevent="Hilite()" />
+<public:attach event="onmouseout" onevent="Restore()" />
+
+<script language="JScript">
+
+function Hilite()
+{
+	element.runtimeStyle.backgroundColor  = "rgb(255,255,160)";
+}
+
+function Restore()
+{ 
+     element.runtimeStyle.backgroundColor = "";
+}
+</script>
+</public:component>

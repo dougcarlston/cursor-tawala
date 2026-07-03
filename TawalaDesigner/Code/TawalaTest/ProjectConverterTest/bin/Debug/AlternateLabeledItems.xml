@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="stevebockman" password="tawalame" />
+<project name="AlternateLabeledItems" format="1.3">
+<forms>
+<form name="Form 1">
+<items>
+<text label="T1" alternateLabel="My Text">Text with alternate label.</text>
+<fib label="Q1" alternateLabel="My FIB">Fill in the blank with alternate label <blank label="a" length="10" required="false"/></fib>
+<mc label="Q2" alternateLabel="My MCQ" onlyone="true" required="false">
+<question>Multiple choice question with alternate label</question>
+<choice label="a"></choice>
+</mc>
+</items>
+</form>
+</forms>
+</project>
+</request>

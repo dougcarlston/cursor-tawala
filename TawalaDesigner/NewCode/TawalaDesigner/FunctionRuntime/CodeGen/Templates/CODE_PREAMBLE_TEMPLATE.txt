@@ -1,0 +1,25 @@
+//
+// Copyright © 2005-${YEAR} Tawala Systems, Inc. All rights reserved.
+//
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.IO;
+using System.Reflection;
+using System.Resources;
+using System.Text;
+using System.Xml.XPath;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+using Tawala.Projects;
+using Tawala.Projects.Forms;
+using Tawala.Functions.Runtime;
+using Tawala.Functions.Runtime.Private;
+
+namespace ${NAMESPACE}
+{

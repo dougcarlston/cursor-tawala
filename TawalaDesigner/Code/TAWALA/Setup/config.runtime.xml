@@ -1,0 +1,6 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tawalaRuntime
+  build-runtime="true"
+  buildClientURL="http://build.tawala.com/client"
+  buildProjectManagerURL="http://build.tawala.com/manage/projects">
+</tawalaRuntime>

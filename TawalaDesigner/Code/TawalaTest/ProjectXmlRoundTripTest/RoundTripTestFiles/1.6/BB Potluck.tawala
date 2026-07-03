@@ -1,0 +1,387 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="BB Potluck" themePath="basicyellow" format="1.6">
+<forms>
+<form name="Setup" startPoint="true" themePath="basicyellow" process="setup-post">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="360" color="000000"><b>Potluck Organizer</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Just fill in the information below and you're on your way to organizing your potluck dinner.</i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Event Title</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="46" required="false" alternateLabel="eventHeader"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Event Date and Time</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="46" required="false" alternateLabel="eventDateTime"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Event Location </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="46" required="false" alternateLabel="eventLocation"/></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Message</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="68" height="6" required="false" alternateLabel="SetupBody"/></paragraph></fib>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="008080"><b>Your name and e-mail are needed for sending out invitations to people on your shared e-mail list.</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></text>
+<fib label="Q5"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Your name</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="22" required="true" alternateLabel="SenderName"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">and e-mail address</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="b" length="22" required="true" alternateLabel="SenderEmail"/></paragraph></fib>
+<mc label="Q6" alternateLabel="showNotComing" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Show names of people who can't make the event</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">No</font></paragraph></choice></mc>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Once you've entered your information, click the Submit button to continue.</i></b></font></paragraph></text>
+</items>
+</form>
+<form name="Potluck Organizer" startPoint="true" themePath="basicyellow" process="mainMenu-post" preProcess="mainMenu-pre">
+<items>
+<field name="Email"/>
+<field name="attendeeName"/>
+<skipInstructions>
+<if>
+<conditions>
+<equals field="Potluck Organizer:Email">
+<string value="INVALID"/>
+</equals>
+</conditions>
+<trueSet>
+<skip to="No_InviteeID"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="008000"><i>Fill in the form below to let us know if you can make it and if so what you will bring</i></font><font face="Verdana" size="200" color="0000FF"><i>:</i></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Hello, </b></font><sp/><font face="Verdana" size="200" color="000000"><field name="Potluck Organizer:attendeeName"/></font></paragraph></text>
+<mc label="Q1" alternateLabel="attending" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Will you be able to come to the potluck?</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">No</font></paragraph></choice></mc>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>How many of you will be coming?</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="6" required="false" alternateLabel="numAdults"/><font face="Verdana" size="200" color="000000"> (Adults)        </font><blank label="b" length="6" required="false" alternateLabel="numKids"/><font face="Verdana" size="200" color="000000"> (Kids)</font></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Potluck Contribution</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="35" required="false" alternateLabel="contribution"/></paragraph></fib>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="808080"><i>Click the submit button to enter your information. When you're done you can close this window</i></font></paragraph></text>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Potluck Organizer:attending" value="b"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">You entered the following information:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="270"><row><cell width="2010"><division indent="0" align="left"><font face="Verdana" size="200" color="000000">Name</font></division></cell><cell width="5130"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><field name="Potluck Organizer:attendeeName"/></font></division></cell></row><row><cell width="2010"><division indent="0" align="left"><font face="Verdana" size="200" color="000000">Number of Adults</font></division></cell><cell width="5130"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><field name="Potluck Organizer:numAdults"/></font></division></cell></row><row><cell width="2010"><division indent="0" align="left"><font face="Verdana" size="200" color="000000">Number of Kids</font></division></cell><cell width="5130"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><field name="Potluck Organizer:numKids"/></font></division></cell></row><row><cell width="2010"><division indent="0" align="left"><font face="Verdana" size="200" color="000000">Dish</font></division></cell><cell width="5130"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><field name="Potluck Organizer:contribution"/></font></division></cell></row></table></text>
+<mc label="Q4" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Is this information correct</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Yes, save this information</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">No, I want to change what I entered</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Potluck Organizer:Q4">
+<string value="b"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T5" alternateLabel="No_InviteeID"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="FF0000">Sorry, but you didn't reach the Potluck Organizer by clicking on the link in your invitation.</font></paragraph></text>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="basicyellow">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="240" color="000000"><b>Administration</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><simple-list version="2"><simple-list-field>Record:Setup:eventHeader</simple-list-field><conditions><form name="Setup"/></conditions></simple-list></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="3600"></cell><cell width="1275"></cell><cell width="5925"></cell></row><row><cell width="3600"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><b>Total People coming so far:</b></font></division></cell><cell width="1275"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Adults:</font></division></cell><cell width="5925"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><sum version="1"><field>Record:Potluck Organizer:numAdults</field><conditions><form name="Potluck Organizer"/><conditions>
+<mcEquals field="Record:Potluck Organizer:attending">
+<string value="a"/>
+</mcEquals>
+</conditions></conditions></sum></font></division></cell></row><row><cell width="3600"></cell><cell width="1275"><division indent="0" align="left"><font face="Arial" size="200" color="000000">Kids:</font></division></cell><cell width="5925"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><sum version="1"><field>Record:Potluck Organizer:numKids</field><conditions><form name="Potluck Organizer"/><conditions>
+<mcEquals field="Record:Potluck Organizer:attending">
+<string value="a"/>
+</mcEquals>
+</conditions></conditions></sum></font></division></cell></row></table></text>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>People planning on coming and what they're bringing:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><itemization-table version="1"><number-of-columns>2</number-of-columns><column><header>Name</header><contents><field name="Record:Potluck Organizer:attendeeName" /></contents></column><column><header>Disk</header><contents><field name="Record:Potluck Organizer:contribution" /></contents></column><conditions><form name="Potluck Organizer"/><conditions>
+<mcEquals field="Record:Potluck Organizer:attending">
+<string value="a"/>
+</mcEquals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>People who can't come:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><itemization-table version="1"><number-of-columns>1</number-of-columns><column><header>Name</header><contents><field name="Record:Potluck Organizer:attendeeName" /></contents></column><conditions><form name="Potluck Organizer"/><conditions>
+<mcEquals field="Record:Potluck Organizer:attending">
+<string value="b"/>
+</mcEquals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+</items>
+</form>
+<form name="SharedInvite" startPoint="true" themePath="basicyellow" process="Invite-post">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="240" color="000000"><b><simple-list version="2"><simple-list-field>Record:Setup:eventHeader</simple-list-field><conditions><form name="Setup"/></conditions></simple-list></b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Click submit to invite everyone on your shared e-mail list.  Invitations will only be sent to confirmed e-mail addresses.</b></font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="mainMenu-pre">
+<set field="potluckIntroduction" arithmeticAsText="false">
+<string value="Please customize this application by running Setup"/>
+</set>
+<set field="potluckHeader" arithmeticAsText="false">
+<string value="Your Title Goes Here"/>
+</set>
+<set field="showWhosNotComing" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<get recordList="Setup Record List">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="SetupRec" recordList="Setup Record List">
+<if>
+<conditions>
+<isNotBlank field="SetupRec:Setup:SetupBody" />
+</conditions>
+<trueSet>
+<set field="potluckIntroduction" arithmeticAsText="false">
+<string field="SetupRec:Setup:SetupBody"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="SetupRec:Setup:eventHeader" />
+</conditions>
+<trueSet>
+<set field="potluckHeader" arithmeticAsText="false">
+<string field="SetupRec:Setup:eventHeader"/>
+</set>
+</trueSet>
+</if>
+<set field="potluckDateTime" arithmeticAsText="false">
+<string field="SetupRec:Setup:eventDateTime"/>
+</set>
+<set field="potluckLocation" arithmeticAsText="false">
+<string field="SetupRec:Setup:eventLocation"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="SetupRec:Setup:showNotComing">
+<string value="a"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<set field="showWhosNotComing" arithmeticAsText="false">
+<string value="true"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="showWhosNotComing" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</falseSet>
+</if>
+</foreach>
+<show document="Header" reset="true"/>
+<show document="introduction" reset="true"/>
+<show document="attendeeCount" reset="false"/>
+<show document="WhosComing" reset="true"/>
+<if>
+<conditions>
+<equals field="showWhosNotComing">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="WhosNot" reset="true"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isBlank field="_InviteeID" />
+</conditions>
+<trueSet>
+<set field="Potluck Organizer:Email" arithmeticAsText="false">
+<string value="INVALID"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Potluck Organizer:Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="LookupList">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<equals field="LookupList:BBSharedEmailList:Email">
+<string field="_InviteeID"/>
+</equals>
+</conditions></get>
+<foreach record="LookupRec" recordList="LookupList">
+<set field="Potluck Organizer:attendeeName" arithmeticAsText="false">
+<string field="LookupRec:BBSharedEmailList:First"/>
+<string value=" "/>
+<string field="LookupRec:BBSharedEmailList:Last"/>
+</set>
+</foreach>
+</falseSet>
+</if>
+</process>
+<process name="setup-post">
+<show document="Confirm Setup" reset="false"/>
+<if>
+<conditions>
+<mcEquals field="Setup:showNotComing" value="a"/>
+</conditions>
+<trueSet>
+<show document="Confirm NotComing" reset="false"/>
+</trueSet>
+</if>
+<show document="Confirm Form" reset="false"/>
+</process>
+<process name="mainMenu-post">
+<if>
+<conditions>
+<doesNotEqual field="Potluck Organizer:Email">
+<string value="INVALID"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<mcEquals field="Potluck Organizer:attending" value="a"/>
+</conditions>
+<trueSet>
+<show document="ThankYou Coming" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="ThankYou NotComing" reset="false"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+</process>
+<process name="Invite-post">
+<delete><form name="Potluck Organizer"/><conditions>
+<equals field="Record:Potluck Organizer:Email">
+<string value="INVALID"/>
+</equals>
+</conditions></delete>
+<comment>--</comment>
+<set field="fromName" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="fromEmail" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="potluckName" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<get recordList="SetupList">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="SetupRec" recordList="SetupList">
+<set field="fromName" arithmeticAsText="false">
+<string field="SetupRec:Setup:SenderName"/>
+</set>
+<set field="fromEmail" arithmeticAsText="false">
+<string field="SetupRec:Setup:SenderEmail"/>
+</set>
+<set field="potluckName" arithmeticAsText="false">
+<string field="SetupRec:Setup:eventHeader"/>
+</set>
+</foreach>
+<comment>--</comment>
+<get recordList="EmailList">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<and>
+<doesNotEqual field="EmailList:BBSharedEmailList:publishName">
+<string value="false"/>
+</doesNotEqual>
+<and>
+<doesNotEqual field="EmailList:BBSharedEmailList:DisplayEmail">
+<string value="** unconfirmed **"/>
+</doesNotEqual>
+<isBlank field="EmailList:BBSharedEmailList:PotluckInvitationSent" />
+</and>
+</and>
+</conditions></get>
+<foreach record="EmailRecord" recordList="EmailList">
+<set field="SendTo" arithmeticAsText="false">
+<string field="EmailRecord:BBSharedEmailList:Email"/>
+</set>
+<send>
+<to addressField="SendTo"/>
+<from addressField="fromEmail" aliasField="fromName"/>
+<subject><field name="potluckName"/></subject>
+<body document="Invite" reset="false"/>
+</send>
+<set field="EmailRecord:BBSharedEmailList:PotluckInvitationSent" arithmeticAsText="false">
+<string field="SendTo"/>
+</set>
+</foreach>
+</process>
+</processes>
+<documents>
+<document name="Header">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="360" color="000000"><b><field name="potluckHeader"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>When:  </b></font><sp/><font face="Verdana" size="200" color="000000"><field name="potluckDateTime"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Where:  </b></font><font face="Verdana" size="200" color="000000"><field name="potluckLocation"/></font></paragraph>
+</xmlData>
+</document>
+<document name="WhosComing">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>People planning on coming and what they're bringing:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="1"><number-of-columns>2</number-of-columns><column><header>Name</header><contents><field name="Record:Potluck Organizer:attendeeName" /></contents></column><column><header>Dish</header><contents><field name="Record:Potluck Organizer:contribution" /></contents></column><conditions><form name="Potluck Organizer"/><conditions>
+<and>
+<isNotBlank field="Record:Potluck Organizer:attendeeName" />
+<mcEquals field="Record:Potluck Organizer:attending">
+<string value="a"/>
+</mcEquals>
+</and>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="WhosNot">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>People who can't come:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="1"><number-of-columns>1</number-of-columns><column><header>Name</header><contents><field name="Record:Potluck Organizer:attendeeName" /></contents></column><conditions><form name="Potluck Organizer"/><conditions>
+<and>
+<isNotBlank field="Potluck Organizer:attendeeName" />
+<mcEquals field="Potluck Organizer:attending">
+<string value="b"/>
+</mcEquals>
+</and>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="attendeeCount">
+<xmlData>
+<table indent="0"><row><cell width="3210"></cell><cell width="915"></cell><cell width="4185"></cell></row><row><cell width="3210"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><b>Total People coming so far:</b></font></division></cell><cell width="915"><division indent="0" align="right"><font face="Verdana" size="200" color="000000">Adults: </font></division></cell><cell width="4185"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><sum version="1"><field>Potluck Organizer:numAdults</field><conditions><form name="Potluck Organizer"/><conditions>
+<mcEquals field="Record:Potluck Organizer:attending" value="a"/>
+</conditions></conditions></sum></font></division></cell></row><row><cell width="3210"></cell><cell width="915"><division indent="0" align="right"><font face="Verdana" size="200" color="000000">Kids: </font></division></cell><cell width="4185"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><sum version="1"><field>Potluck Organizer:numKids</field><conditions><form name="Potluck Organizer"/><conditions>
+<mcEquals field="Record:Potluck Organizer:attending" value="a"/>
+</conditions></conditions></sum></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="introduction">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><field name="potluckIntroduction"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Setup">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>This will be the format of your Potluck Organizer:</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="360" color="000000"><b><field name="Setup:eventHeader"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>When:  </b></font><sp/><font face="Verdana" size="200" color="000000"><field name="Setup:eventDateTime"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Where:  </b></font><font face="Verdana" size="200" color="000000"><field name="Setup:eventLocation"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><field name="Setup:SetupBody"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="3195"><division indent="0" align="left"><font face="Verdana" size="200" color="000000"><b>Total People coming so far:</b></font></division></cell><cell width="1155"><division indent="0" align="right"><font face="Verdana" size="200" color="000000">Adults: __</font></division></cell></row><row><cell width="3195"></cell><cell width="1155"><division indent="0" align="right"><font face="Verdana" size="200" color="000000">Kids: __</font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>People planning on coming and what they're bringing:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><i>    [List of attendees and their contirbutions]</i></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm NotComing">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>People who can't come:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><i>   [List of those who cannot attend]</i></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Form">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="008000"><i>Fill in the form below to let us know if you can make it and if so what you will bring:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Name</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">_____________________________</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Will you be able to come to the potlucK?</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">    a. Yes</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">    b. No</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>How many of you will be coming?</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">______ Adults       _____ Kids</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Potluck Contribution</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">_____________________________</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>If this looks correct, proceed to the next step (Review and Send).</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="ThankYou Coming">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Thank you for your response.</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>See you at </b></font><font face="Verdana" size="200" color="000000"><b><field name="potluckHeader"/></b></font><font face="Verdana" size="200" color="000000"><b>.</b></font></paragraph>
+</xmlData>
+</document>
+<document name="ThankYou NotComing">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Sorry you won't be able to attend!</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Thank you for responding.</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Admin Header">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="240" color="000000"><b>Administration</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="240" color="000000">Attendance information for</font><sp/><font face="Verdana" size="240" color="000000"><b><field name="potluckHeader"/></b></font><font face="Verdana" size="240" color="000000"><b>:</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Invite">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">You are invited to a potluck.  Click the link below to let us know whether or not you can attend.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0066CC"><u><invitation form="Potluck Organizer" project="" private="true"><authenticationTokenValue><string field="SendTo"/>
+</authenticationTokenValue>Potluck invitation</invitation></u></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

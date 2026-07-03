@@ -1,0 +1,332 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DrugRegistry" themePath="litegreen" format="1.6">
+<forms>
+<form name="Patient" startPoint="true" themePath="litegreen" process="GetMeds">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">This is a prototype of a drug registry program, where people can list their medications and medical professionals can check to determine what drugs their patients are taking.</font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">The impetus for this project is the U. of Arizona study which discovered that 1.5 million errors are made in dispensing drugs each year, causing thousands of deaths.</font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Name (First) </font><blank label="a" length="13" required="true" alternateLabel="FName"/><font face="Palatino Linotype" size="240" color="000000"> (Last) </font><blank label="b" length="19" required="true" alternateLabel="LName"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Last four digits of your Social Security Number </font><blank label="a" length="10" required="true" alternateLabel="SSN"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Zip code of your residence (5 digits only) </font><blank label="a" length="10" required="true" alternateLabel="zip"/></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Personal Physician </font><blank label="a" length="21" required="true" alternateLabel="Dr"/><font face="Palatino Linotype" size="240" color="000000"> Tel.: </font><blank label="b" length="13" required="true" alternateLabel="DrTel"/></paragraph></fib>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="280" color="000000">Enter the prescriptions you are taking in the following manner: name of drug, dosage</font></paragraph></text>
+<fib label="Q5"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="true" alternateLabel="Drug1"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="true" alternateLabel="Dose1"/></paragraph></fib>
+<fib label="Q6"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug2"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose2"/></paragraph></fib>
+<fib label="Q7"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug3"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose3"/></paragraph></fib>
+<fib label="Q8"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug4"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose4"/></paragraph></fib>
+<fib label="Q9"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug5"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose5"/></paragraph></fib>
+<fib label="Q10"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug6"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose6"/></paragraph></fib>
+<fib label="Q11"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug7"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose7"/></paragraph></fib>
+<fib label="Q12"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug8"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose8"/></paragraph></fib>
+<fib label="Q13"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug9"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose9"/></paragraph></fib>
+<fib label="Q14"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Drug: </font><blank label="a" length="20" required="false" alternateLabel="Drug10"/><font face="Palatino Linotype" size="240" color="000000"> Dose: </font><blank label="b" length="24" required="false" alternateLabel="Dose10"/></paragraph></fib>
+</items>
+</form>
+<form name="MedPros" startPoint="true" themePath="litegreen" process="GetRecords">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Use ListGetter to retrieve a list of persons registered. Use that list to supply the information required here to call up the data for any given person.</font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Patient's Name (First)</font><blank label="a" length="26" required="true" alternateLabel="P1Name"/><font face="Palatino Linotype" size="240" color="000000"> (Last) </font><blank label="b" length="22" required="true" alternateLabel="P2Name"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Last 4 digits of Patient's SSN </font><blank label="a" length="7" required="true" alternateLabel="PSSN"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Firt 5 digits of Patient's Zip Code </font><blank label="a" length="10" required="true" alternateLabel="Pzip"/></paragraph></fib>
+<field name="PFName"/>
+<field name="PLName"/>
+<field name="PDr"/>
+<field name="PDrTel"/>
+<field name="PDrug1"/>
+<field name="PDose1"/>
+<field name="PDrug2"/>
+<field name="PDose2"/>
+<field name="PDrug3"/>
+<field name="PDose3"/>
+<field name="PDrug4"/>
+<field name="PDose4"/>
+<field name="PDrug5"/>
+<field name="PDose5"/>
+<field name="PDrug6"/>
+<field name="PDose6"/>
+<field name="PDrug7"/>
+<field name="PDose7"/>
+<field name="PDrug8"/>
+<field name="PDose8"/>
+<field name="PDrug9"/>
+<field name="PDose9"/>
+<field name="PDrug10"/>
+<field name="PDose10"/>
+</items>
+</form>
+<form name="Houdini" startPoint="false" themePath="litegreen" process="MoveIt">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Please press SUBMIT to continue.</font></paragraph></text>
+</items>
+</form>
+<form name="ListGetter" startPoint="true" themePath="litegreen" process="ListEm">
+<items>
+<mc label="Q1" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Use this section to generate a list of all people who have registered their prescriptions in this registry.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">OK, generate the list.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">No thanks. I'll do it later.</font></paragraph></choice></mc>
+<field name="FListName"/>
+<field name="LListName"/>
+<field name="ListZip"/>
+<field name="ListSSN"/>
+<field name="ListDr"/>
+<field name="ListDrTel"/>
+</items>
+</form>
+</forms>
+<processes>
+<process name="GetMeds">
+<show document="RemindDR" reset="false"/>
+</process>
+<process name="GetRecords">
+<get recordList="Record List 1">
+<forms>
+<form name="Patient"/>
+</forms>
+<conditions>
+<and>
+<equals field="MedPros:P1Name">
+<string field="Patient:FName"/>
+</equals>
+<and>
+<equals field="MedPros:P2Name">
+<string field="Patient:LName"/>
+</equals>
+<and>
+<equals field="MedPros:PSSN">
+<string field="Patient:SSN"/>
+</equals>
+<equals field="MedPros:Pzip">
+<string field="Patient:zip"/>
+</equals>
+</and>
+</and>
+</and>
+</conditions></get>
+<foreach record="User" recordList="Record List 1">
+<set field="PFName" arithmeticAsText="false">
+<string field="User:Patient:FName"/>
+</set>
+<set field="MedPros:PFName" arithmeticAsText="false">
+<string field="User:Patient:FName"/>
+</set>
+<set field="PLName" arithmeticAsText="false">
+<string field="User:Patient:LName"/>
+</set>
+<set field="MedPros:PLName" arithmeticAsText="false">
+<string field="User:Patient:LName"/>
+</set>
+<set field="PDr" arithmeticAsText="false">
+<string field="User:Patient:Dr"/>
+</set>
+<set field="MedPros:PDr" arithmeticAsText="false">
+<string field="User:Patient:Dr"/>
+</set>
+<set field="PDrTel" arithmeticAsText="false">
+<string field="User:Patient:DrTel"/>
+</set>
+<set field="MedPros:PDrTel" arithmeticAsText="false">
+<string field="User:Patient:DrTel"/>
+</set>
+<set field="PDrug1" arithmeticAsText="false">
+<string field="User:Patient:Drug1"/>
+</set>
+<set field="MedPros:PDrug1" arithmeticAsText="false">
+<string field="User:Patient:Drug1"/>
+</set>
+<set field="PDose1" arithmeticAsText="false">
+<string field="User:Patient:Dose1"/>
+</set>
+<set field="MedPros:PDose1" arithmeticAsText="false">
+<string field="User:Patient:Dose1"/>
+</set>
+<set field="PDrug2" arithmeticAsText="false">
+<string field="User:Patient:Drug2"/>
+</set>
+<set field="MedPros:PDrug2" arithmeticAsText="false">
+<string field="User:Patient:Drug2"/>
+</set>
+<set field="PDose2" arithmeticAsText="false">
+<string field="User:Patient:Dose2"/>
+</set>
+<set field="MedPros:PDose2" arithmeticAsText="false">
+<string field="User:Patient:Dose2"/>
+</set>
+<set field="PDrug3" arithmeticAsText="false">
+<string field="User:Patient:Drug3"/>
+</set>
+<set field="MedPros:PDrug3" arithmeticAsText="false">
+<string field="User:Patient:Drug3"/>
+</set>
+<set field="PDose3" arithmeticAsText="false">
+<string field="User:Patient:Dose3"/>
+</set>
+<set field="MedPros:PDose3" arithmeticAsText="false">
+<string field="User:Patient:Dose3"/>
+</set>
+<set field="PDrug4" arithmeticAsText="false">
+<string field="User:Patient:Drug4"/>
+</set>
+<set field="MedPros:PDrug4" arithmeticAsText="false">
+<string field="User:Patient:Drug4"/>
+</set>
+<set field="PDose4" arithmeticAsText="false">
+<string field="User:Patient:Dose4"/>
+</set>
+<set field="MedPros:PDose4" arithmeticAsText="false">
+<string field="User:Patient:Dose4"/>
+</set>
+<set field="PDrug5" arithmeticAsText="false">
+<string field="User:Patient:Drug5"/>
+</set>
+<set field="MedPros:PDrug5" arithmeticAsText="false">
+<string field="User:Patient:Drug5"/>
+</set>
+<set field="PDose5" arithmeticAsText="false">
+<string field="User:Patient:Dose5"/>
+</set>
+<set field="MedPros:PDose5" arithmeticAsText="false">
+<string field="User:Patient:Dose5"/>
+</set>
+<set field="PDrug6" arithmeticAsText="false">
+<string field="User:Patient:Drug6"/>
+</set>
+<set field="MedPros:PDrug6" arithmeticAsText="false">
+<string field="User:Patient:Drug6"/>
+</set>
+<set field="PDose6" arithmeticAsText="false">
+<string field="User:Patient:Dose6"/>
+</set>
+<set field="MedPros:PDose6" arithmeticAsText="false">
+<string field="User:Patient:Dose6"/>
+</set>
+<set field="PDrug7" arithmeticAsText="false">
+<string field="User:Patient:Drug7"/>
+</set>
+<set field="MedPros:PDrug7" arithmeticAsText="false">
+<string field="User:Patient:Drug7"/>
+</set>
+<set field="PDose7" arithmeticAsText="false">
+<string field="User:Patient:Dose7"/>
+</set>
+<set field="MedPros:PDose7" arithmeticAsText="false">
+<string field="User:Patient:Dose7"/>
+</set>
+<set field="PDrug8" arithmeticAsText="false">
+<string field="User:Patient:Drug8"/>
+</set>
+<set field="MedPros:PDrug8" arithmeticAsText="false">
+<string field="User:Patient:Drug8"/>
+</set>
+<set field="PDose8" arithmeticAsText="false">
+<string field="User:Patient:Dose8"/>
+</set>
+<set field="MedPros:PDose8" arithmeticAsText="false">
+<string field="User:Patient:Dose8"/>
+</set>
+<set field="PDrug9" arithmeticAsText="false">
+<string field="User:Patient:Drug9"/>
+</set>
+<set field="MedPros:PDrug9" arithmeticAsText="false">
+<string field="User:Patient:Drug9"/>
+</set>
+<set field="PDose9" arithmeticAsText="false">
+<string field="User:Patient:Dose9"/>
+</set>
+<set field="MedPros:PDose9" arithmeticAsText="false">
+<string field="User:Patient:Dose9"/>
+</set>
+<set field="PDrug10" arithmeticAsText="false">
+<string field="User:Patient:Drug10"/>
+</set>
+<set field="MedPros:PDrug10" arithmeticAsText="false">
+<string field="User:Patient:Drug10"/>
+</set>
+<set field="PDose10" arithmeticAsText="false">
+<string field="User:Patient:Dose10"/>
+</set>
+<set field="MedPros:PDose10" arithmeticAsText="false">
+<string field="User:Patient:Dose10"/>
+</set>
+</foreach>
+<show document="PatientRecord" reset="false"/>
+<show form="Houdini"/>
+</process>
+<process name="MoveIt">
+<show form="MedPros"/>
+</process>
+<process name="ListEm">
+<if>
+<conditions>
+<mcEquals field="ListGetter:Q1" value="a"/>
+</conditions>
+<trueSet>
+<get recordList="Record List 2">
+<forms>
+<form name="Patient"/>
+</forms>
+</get>
+<foreach record="Entry" recordList="Record List 2">
+<set field="FListName" arithmeticAsText="false">
+<string field="Entry:Patient:FName"/>
+</set>
+<set field="ListGetter:FListName" arithmeticAsText="false">
+<string field="Entry:Patient:FName"/>
+</set>
+<set field="LListName" arithmeticAsText="false">
+<string field="Entry:Patient:LName"/>
+</set>
+<set field="ListGetter:LListName" arithmeticAsText="false">
+<string field="Entry:Patient:LName"/>
+</set>
+<set field="ListZip" arithmeticAsText="false">
+<string field="Entry:Patient:zip"/>
+</set>
+<set field="ListGetter:ListZip" arithmeticAsText="false">
+<string field="Entry:Patient:zip"/>
+</set>
+<set field="ListSSN" arithmeticAsText="false">
+<string field="Entry:Patient:SSN"/>
+</set>
+<set field="ListGetter:ListSSN" arithmeticAsText="false">
+<string field="Entry:Patient:SSN"/>
+</set>
+<set field="ListDr" arithmeticAsText="false">
+<string field="Entry:Patient:Dr"/>
+</set>
+<set field="ListGetter:ListDr" arithmeticAsText="false">
+<string field="Entry:Patient:Dr"/>
+</set>
+<set field="ListDrTel" arithmeticAsText="false">
+<string field="Entry:Patient:DrTel"/>
+</set>
+<set field="ListGetter:ListDrTel" arithmeticAsText="false">
+<string field="Entry:Patient:DrTel"/>
+</set>
+<append document="PatientList" appendage="VPatientList"/>
+</foreach>
+</trueSet>
+</if>
+<show document="PatientList" reset="true"/>
+</process>
+</processes>
+<documents>
+<document name="RemindDR">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">Thank you, </font><font face="Palatino Linotype" size="240" color="000000"><b><field name="Patient:FName"/></b></font><sp/><font face="Palatino Linotype" size="240" color="000000"><b><field name="Patient:LName"/></b></font><font face="Palatino Linotype" size="240" color="000000">, for registering your presciptions with this registry. Don't forget to tell your doctor(s) you are registered here.</font></paragraph>
+</xmlData>
+</document>
+<document name="PatientRecord">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000">These are the prescriptions </font><font face="Palatino Linotype" size="240" color="000000"><b><field name="PFName"/></b></font><sp/><font face="Palatino Linotype" size="240" color="000000"><b><field name="PLName"/></b></font><font face="Palatino Linotype" size="240" color="000000"> has registered. </font><font face="Palatino Linotype" size="240" color="000000"><field name="PFName"/></font><sp/><font face="Palatino Linotype" size="240" color="000000"><field name="PLName"/></font><font face="Palatino Linotype" size="240" color="000000">'s attending physician is </font><font face="Palatino Linotype" size="240" color="000000"><field name="PDr"/></font><font face="Palatino Linotype" size="240" color="000000">, who can be reached at </font><font face="Palatino Linotype" size="240" color="000000"><field name="PDrTel"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug1"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose1"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug2"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose2"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug3"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose3"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug4"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose4"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug5"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose5"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug6"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose6"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug7"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose7"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug8"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose8"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug9"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose9"/></font></division></cell></row><row><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDrug10"/></font></division></cell><cell width="4320"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="PDose10"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="PatientList">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Palatino Linotype" size="240" color="000000"><b>The following people have registered their prescriptions in this registry:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="VPatientList">
+<xmlData>
+<table indent="0"><row><cell width="3600"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="FListName"/></font><sp/><font face="Palatino Linotype" size="240" color="000000"><field name="LListName"/></font></division></cell><cell width="3600"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="ListZip"/></font><sp/><font face="Palatino Linotype" size="240" color="000000"><field name="ListSSN"/></font></division></cell><cell width="3600"><division indent="0" align="left"><font face="Palatino Linotype" size="240" color="000000"><field name="ListDr"/></font><sp/><font face="Palatino Linotype" size="240" color="000000"><field name="ListDrTel"/></font></division></cell></row></table>
+</xmlData>
+</document>
+</documents>
+</project>

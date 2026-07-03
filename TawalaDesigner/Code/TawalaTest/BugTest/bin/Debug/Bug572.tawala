@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Bug572" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+</form>
+</forms>
+<documents>
+<document name="Document 1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>Form 1</form-name><conditions><form name="Form 1" /></conditions></record-count></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

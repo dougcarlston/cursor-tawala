@@ -1,0 +1,17 @@
+<public:component>
+
+<public:attach event="ondragenter" onevent="doNotAllowDropOnElement()" />
+<public:attach event="ondragover" onevent="doNotAllowDropOnElement()" />
+<public:attach event="ondrop" onevent="doNotAllowDropOnElement()" />
+
+<script language="JScript">
+
+function doNotAllowDropOnElement()
+{
+	event.dataTransfer.dropEffect = "none";
+	event.returnValue = false;
+	event.cancelBubble = true;
+}
+
+</script>
+</public:component>

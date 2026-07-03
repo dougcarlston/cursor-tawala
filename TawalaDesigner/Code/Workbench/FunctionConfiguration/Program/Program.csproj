@@ -1,0 +1,96 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2EA40AFC-BC24-4466-9610-12A0B9E4D8BA}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Program</RootNamespace>
+    <AssemblyName>Program</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="ApplicationForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplicationForm.designer.cs">
+      <DependentUpon>ApplicationForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Program.cs" />
+    <Compile Include="SelectFunctionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="SelectFunctionDialog.Designer.cs">
+      <DependentUpon>SelectFunctionDialog.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ApplicationForm.resx">
+      <DependentUpon>ApplicationForm.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="SelectFunctionDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>SelectFunctionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\TAWALA\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TAWALA\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TAWALA\Project\Project.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Project</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TAWALA\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionConfiguration\FunctionConfiguration.csproj">
+      <Project>{6BFB6C46-4EFE-419A-A444-212B1740A212}</Project>
+      <Name>FunctionConfiguration</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

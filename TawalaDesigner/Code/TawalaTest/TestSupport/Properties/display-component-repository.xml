@@ -1,0 +1,339 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<tr:component-repository xmlns:tr="http://www.tawala.com/component-repository" signature="295897740">
+	<tr:categories>
+		<tr:category name="All">
+			<tr:element-id>simple-list</tr:element-id>
+			<tr:element-id>itemization-table</tr:element-id>
+			<tr:element-id>choice-tally-table</tr:element-id>
+			<tr:element-id>response-totals-table</tr:element-id>
+			<tr:element-id>popular-choice-correlation-table</tr:element-id>
+			<tr:element-id>popular-choice-display</tr:element-id>
+			<tr:element-id>sum</tr:element-id>
+			<tr:element-id>record-count</tr:element-id>
+			<tr:element-id>popular-choice-count</tr:element-id>
+			<tr:element-id>question-correlation-table</tr:element-id>
+			<tr:element-id>paypal-single-item-button</tr:element-id>
+			<tr:element-id>categorizer</tr:element-id>
+			<tr:element-id>display-mcq-label</tr:element-id>
+			<tr:element-id>link-to-project-details</tr:element-id>
+			<tr:element-id>display-image</tr:element-id>
+			<tr:element-id>project-email-count</tr:element-id>
+		</tr:category>
+		<tr:category name="Tables">
+			<tr:element-id>itemization-table</tr:element-id>
+			<tr:element-id>choice-tally-table</tr:element-id>
+			<tr:element-id>response-totals-table</tr:element-id>
+			<tr:element-id>popular-choice-correlation-table</tr:element-id>
+			<tr:element-id>simple-list</tr:element-id>
+			<tr:element-id>question-correlation-table</tr:element-id>
+			<tr:element-id>categorizer</tr:element-id>
+		</tr:category>
+		<tr:category name="Math Functions">
+			<tr:element-id>sum</tr:element-id>
+		</tr:category>
+		<tr:category name="Database Functions">
+			<tr:element-id>popular-choice-display</tr:element-id>
+			<tr:element-id>record-count</tr:element-id>
+			<tr:element-id>popular-choice-count</tr:element-id>
+		</tr:category>
+		<tr:category name="Payments">
+			<tr:element-id>paypal-single-item-button</tr:element-id>
+		</tr:category>
+	</tr:categories>
+	<tr:display-component id="simple-list" name="SINGLE QUESTION LIST" version="2">
+		<tr:description>Displays a list showing all the responses to a fill-in-the-blank question or recorded values for a hidden field.</tr:description>
+		<tr:parameter id="simple-list-field" type="tawala-blank" name="Name of question or hidden field" required="true">
+			<tr:description>The question or hidden field whose values you wish to display.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Show only responses from records" required="true">
+			<tr:description>Only the responses in records that match these conditions will be shown.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="itemization-table" name="MULTIPLE QUESTION LIST" version="2">
+		<tr:description>Displays a table showing a list of responses to specified questions in a Form.</tr:description>
+		<tr:parameter id="show-print-control" type="enumeration" name="Show link to print the table" required="true">
+			<tr:description>Show link to print the table</tr:description>
+			<tr:choice value="false" description="no"/>
+			<tr:choice value="true" description="yes"/>
+		</tr:parameter>
+		<tr:parameter id="show-export-control" type="enumeration" name="Show link to export the table to Excel" required="true">
+			<tr:description>Show link to export the table to Excel</tr:description>
+			<tr:choice value="false" description="no"/>
+			<tr:choice value="true" description="yes"/>
+		</tr:parameter>
+		<tr:parameter id="column" type="parameter-collection" name="Column Information" required="true">
+			<tr:description>Information about columns in the table.</tr:description>
+			<tr:source-parameter source-id="number-of-columns"/>
+			<tr:parameter id="header" type="expression" name="Column $n$ Heading" required="false">
+				<tr:description>The heading to display for column $n$.</tr:description>
+			</tr:parameter>
+			<tr:parameter id="contents" type="tawala-contents-field" name="Column $n$ Field" required="true">
+				<tr:description>The Field to display in column $n$.</tr:description>
+			</tr:parameter>
+			<tr:parameter id="display-conditions" type="boolean-expression" name="Column Display Condition" required="false">
+				<tr:description>Display this column only if the condition is met.</tr:description>
+			</tr:parameter>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Show only fields from records" required="true">
+			<tr:description>Only the fields in records that match these conditions will be shown. </tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="choice-tally-table" name="RESPONSE BAR GRAPH" version="1">
+		<tr:description>Displays a bar graph showing both the number and percentage of each response to a multiple-choice question.</tr:description>
+		<tr:parameter id="field" type="tawala-mcq" name="Question" required="true">
+			<tr:description>The multiple choice question whose number and percentage information you wish to show.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="true">
+			<tr:description>Only the records that match these conditions will be included in the calculation of the number and percentage values.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="response-totals-table" name="RESPONSE TOTALS" version="1">
+		<tr:description>Displays a table showing the count of each response to a multiple-choice question.</tr:description>
+		<tr:parameter id="layout-type" type="enumeration" name="Table Layout" required="true">
+			<tr:description>Determines the general layout of the RESPONSE TOTALS table. The "Tall" layout yields a table with "Choice" and "Count" columns. The "Wide" layout yields a table with "Choice" and "Count" rows.</tr:description>
+			<tr:choice value="vertical" description="Tall"/>
+			<tr:choice value="horizontal" description="Wide"/>
+		</tr:parameter>
+		<tr:parameter id="field" type="tawala-mcq" name="Question" required="true">
+			<tr:description>The multiple choice question whose count values you wish to show.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="true">
+			<tr:description>Only the records that match these conditions will be included in the calculation of the count values.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="popular-choice-correlation-table" name="RANKED MULTIQUESTION RESPONSE LIST" version="1">
+		<tr:description>Computes the most common response to a multiple-choice question and displays a list of the contents of an associated field for users who have chosen that response. It also compares the response choice of one multiple-choice question with a second multiple-choice question.</tr:description>
+		<tr:parameter id="rank" type="enumeration" name="Rank" required="true">
+			<tr:description>Indicates the ranking of the popular choice, e.g. first most popular, second most popular, etc.</tr:description>
+			<tr:choice value="1" description="first"/>
+			<tr:choice value="2" description="second"/>
+			<tr:choice value="3" description="third"/>
+		</tr:parameter>
+		<tr:parameter id="choice-available-field-name" type="tawala-mcq" name="Main Question" required="true">
+			<tr:description>The multiple choice question for which you wish to display popular choice information.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="choice-preferred-field-name" type="tawala-mcq" name="Second Question" required="true">
+			<tr:description>The multiple choice question to correlate with the main question.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="popular-choice-display-field-name" type="tawala-blank" name="Column One Contents" required="true">
+			<tr:description>The field whose values will be shown in the first column of the table.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Display only choices from records" required="true">
+			<tr:description>Only the choices in records that match these conditions will be shown.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="popular-choice-display" name="RANKED RESPONSE NAME" version="1">
+		<tr:description>Displays the text of the most popular response choice to a specified multiple-choice question.</tr:description>
+		<tr:parameter id="rank" type="enumeration" name="Rank" required="true">
+			<tr:description>Indicates the ranking of the popular choice, e.g. first most popular, second most popular, etc.</tr:description>
+			<tr:choice value="1" description="first"/>
+			<tr:choice value="2" description="second"/>
+			<tr:choice value="3" description="third"/>
+		</tr:parameter>
+		<tr:parameter id="popular-choice-field-name" type="tawala-mcq" name="Question" required="true">
+			<tr:description>The multiple choice question for which you wish to display popular choice information.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Display only text from records" required="true">
+			<tr:description>Only the choice text in records that match these conditions will be shown.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="question-correlation-table" name="QUESTION CORRELATION TABLE" version="1">
+		<tr:description>Displays a table showing the choices made by all respondents to a multiple choice question. The left-most column contains the names of the respondents (or any fill-in-the-blank or text field you choose to display). The other columns indicate which choices were selected. Optionally, a second multiple choice question can be designated to indicate the favored choice for each respondent.</tr:description>
+		<tr:parameter id="question-field-name" type="tawala-mcq" name="Question with all choices" required="true">
+			<tr:description>Drag-and-drop or double-click the multiple choice question whose responses you want to display in the table.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="display-field-name" type="tawala-blank" name="Field to display in left column" required="true">
+			<tr:description>Drag-and-drop or double-click a fill-in-the-blank or hidden field that you want to have appear as the "record identifier" in the table. (Often this will be the name of the respondent.)</tr:description>
+		</tr:parameter>
+		<tr:parameter id="preferred-choice-field-name" type="tawala-mcq" name="Question with preferred choice" required="false">
+			<tr:description>Drag-and-drop or double click a second multiple choice question that indicates the respondents' preferred choice, if several choices are allowed in the first question above. (Example: The first question might ask respondents for all available dates for an event; the second question would ask for the preferred date.)</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Display only the records" required="true">
+			<tr:description>Only the records that match these conditions will be displayed.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="paypal-single-item-button" name="PAYPAL SINGLE ITEM PURCHASE BUTTON" version="1">
+		<tr:description>Creates a button that allows you to sell a single item, request payment for services or receive a donation. Note: To use this function in your projects you must arrange for online payment support with Tawala Systems, Inc. Visit our website for further details.</tr:description>
+		<tr:parameter id="button-type" type="enumeration" name="Type of button" required="true">
+			<tr:description>Pick the transaction type that is appropriate for your case.</tr:description>
+			<tr:choice value="buy" description="Buy"/>
+			<tr:choice value="buy-logo" description="Buy (displays credit card logos)"/>
+			<tr:choice value="pay" description="Pay"/>
+			<tr:choice value="pay-logo" description="Pay (displays credit card logos)"/>
+			<tr:choice value="donate" description="Donate"/>
+			<tr:choice value="donate-logo" description="Donate (displays credit card logos)"/>
+		</tr:parameter>
+		<tr:parameter id="item" type="expression" name="Item/service description." required="true">
+			<tr:description>Field or variable that contains the description of the service. This description will be shown to the user during the payment process.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="amount" type="expression" name="Transaction amount." required="true">
+			<tr:description>Field or variable that contains the transaction amount.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="successful-payment-return-form-name" type="tawala-form" name="Return to this form on success." required="true">
+			<tr:description>After paying for this transaction the user will be redirected to this form.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="cancelled-payment-return-form-name" type="tawala-form" name="Return to this form on failure to pay." required="true">
+			<tr:description>If the transaction is cancelled or cannot be completed for some reason the user will be redirected to this form.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="status-field" type="tawala-blank" name="Store the transaction status in this field." required="true">
+			<tr:description>Upon successful transaction this field will be automatically updated with the status.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="amount-field" type="tawala-blank" name="Store the transaction amount in this field." required="true">
+			<tr:description>Upon successful transaction this field will be automatically updated with the amount paid.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="style-option" type="enumeration" name="Select how to style PayPal screens" required="true">
+			<tr:description>Choose how to style PayPal screens. If you have already done that using PayPal's administration tools select the first one.</tr:description>
+			<tr:choice value="paypal" description="PayPal Style"/>
+			<tr:choice value="tawala" description="Tawala Theme Style"/>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="categorizer" name="CATEGORIZER" version="2">
+		<tr:description>Provides an interactive (drag and drop) method for grouping stored records into categories.</tr:description>
+		<tr:parameter id="category-names" type="tawala-blank" name="Category Names" required="true">
+			<tr:description>The field whose values will be shown as the category names in the Target table.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="category-ids" type="tawala-blank" name="Category IDs" required="true">
+			<tr:description>The field whose values will be used as the category IDs. This is the identifier that will be stored in the "Category Storage Field" of a record when a category is assigned to that record.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="category-storage-field" type="tawala-blank" name="Category Storage Field" required="true">
+			<tr:description>This field in the Source list record will be set to the "Category ID" when that record is assigned a category.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="navigate-to" type="tawala-form" name="Show this form on completion" required="true">
+			<tr:description>When the user finishes the categorization and selects "Save Changes" this form will be shown.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="column" type="parameter-collection" name="Source Field Information" required="true">
+			<tr:description>Settings for the displayed fields in the Source table.</tr:description>
+			<tr:source-parameter source-id="number-of-columns"/>
+			<tr:parameter id="header" type="expression" name="Column $n$ Heading" required="false">
+				<tr:description>The heading to display for column $n$.</tr:description>
+			</tr:parameter>
+			<tr:parameter id="contents" type="tawala-contents-field" name="Column $n$ Field" required="true">
+				<tr:description>The Field to display in column $n$.</tr:description>
+			</tr:parameter>
+			<tr:parameter id="display-conditions" type="boolean-expression" name="Column Display Condition" required="false">
+				<tr:description>Column Display Condition</tr:description>
+			</tr:parameter>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Show only fields from records" required="true">
+			<tr:description>Only the fields in records that match these conditions will be shown in the Source list.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="dynamic-mcq" name="DYNAMIC MCQ" version="1">
+		<tr:description>Populate choices from stored data.</tr:description>
+		<tr:parameter id="display-expression" type="expression" name="Display text" required="true">
+			<tr:description>Field containing the text that will be displayed as the choices for this multiple choice question.</tr:description>
+			<tr:works-within-record-iteration when="always" record-list-name="Record"/>
+		</tr:parameter>
+		<tr:parameter id="value-expression" type="expression" name="Value" required="true">
+			<tr:description>Field containing a value that will be associated with the selection of a choice. For example, this could be a unique ID that you use for matching choices with other data, or it could be value (such as a price) associated with each item.</tr:description>
+			<tr:works-within-record-iteration when="always" record-list-name="Record"/>
+		</tr:parameter>
+		<tr:parameter id="sort-expression" type="expression" name="Sort by" required="false">
+			<tr:description>The choices will be sorted by this field in ascending order.</tr:description>
+			<tr:works-within-record-iteration when="always" record-list-name="Record"/>
+		</tr:parameter>
+		<tr:parameter id="record-selector" type="tawala-conditions" name="Only display choices meeting the specified conditions" required="true">
+			<tr:description>Only the records that match these conditions will be offered as choices.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="display-mcq-label" name="DISPLAY MULTIPLE-CHOICE QUESTION RESPONSES" version="1">
+		<tr:description>Displays the text of the response choice in a multiple-choice question.</tr:description>
+		<tr:parameter id="field-name" type="tawala-mcq" name="Multiple Choice Field" required="true">
+			<tr:description>The label of the selected multiple-choice question.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="display" type="enumeration" name="Display" required="true">
+			<tr:description>Select how the responses will be displayed.</tr:description>
+			<tr:choice value="label_only" description="only labels of selected choices"/>
+			<tr:choice value="all_choices" description="all choices, using the question layout"/>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="link-to-project-details" name="LINK TO PROJECT DETAILS IN MY TAWALA" version="1">
+		<tr:description>Creates a link to navigate to the project details of the current project.</tr:description>
+		<tr:parameter id="description" type="expression" name="Link text" required="true">
+			<tr:description>Text of the link.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="open-preference" type="enumeration" name="Open in" required="true">
+			<tr:description>Determines how the page will be open. </tr:description>
+			<tr:choice value="current-window" description="the current window"/>
+			<tr:choice value="new-window" description="a new window"/>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:display-component id="display-image" name="DISPLAY IMAGE" version="1">
+		<tr:description>Displays an image that can be accessed via a URL. The image can be a file uploaded via a Tawala "File Uploader" Form Item, or any other valid URL for an image on the Internet.</tr:description>
+		<tr:parameter id="source" type="expression" name="Image URL" required="true">
+			<tr:description>Field, variable or literal text containing the URL of the image. Can be a file uploaded via a Tawala "File Uploader" Form Item, or any valid URL of an image. The latter must start with http:// or https://.</tr:description>
+			<tr:works-within-record-iteration when="never"/>
+		</tr:parameter>
+		<tr:parameter id="width" type="expression" name="Display width" required="false">
+			<tr:description>Width in pixels for the displayed image. Leave blank to display image at its original width.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="height" type="expression" name="Display height" required="false">
+			<tr:description>Height in pixels for the displayed image. Leave blank to display image at its original height.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="alt_title" type="expression" name="Alternative name" required="false">
+			<tr:description>Text displayed when the user hovers their mouse over the image in most browsers.</tr:description>
+		</tr:parameter>
+	</tr:display-component>
+	<tr:function id="sum" name="SUM" version="1" return-type="double">
+		<tr:description>Calculates the sum of the values in a fill-in-the-blank question or hidden field.</tr:description>
+		<tr:parameter id="field" type="tawala-blank" name="Name of question or hidden field" required="true">
+			<tr:description>The blank or hidden field whose values you wish to sum.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="true">
+			<tr:description>Only the records that match these conditions will be included in the calculation of the sum.</tr:description>
+		</tr:parameter>
+	</tr:function>
+	<tr:function id="record-count" name="FORM RECORD COUNT" version="3" return-type="int">
+		<tr:description>Returns the number of responses received by a specified Form.</tr:description>
+		<tr:parameter id="form-name" type="tawala-form" name="Form" required="true">
+			<tr:description>The form whose records you wish to count.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Count only the records" required="true">
+			<tr:description>Only the records that match these conditions will be included in the calculation of the count.</tr:description>
+		</tr:parameter>
+	</tr:function>
+	<tr:function id="popular-choice-count" name="RANKED RESPONSE COUNTS" version="1" return-type="int">
+		<tr:description>Returns the number of responses that selected the most popular choice for a given multiple choice question.</tr:description>
+		<tr:parameter id="rank" type="enumeration" name="Rank" required="true">
+			<tr:description>Indicates the ranking of the popular choice, e.g. first most popular, second most popular, etc.</tr:description>
+			<tr:choice value="1" description="first"/>
+			<tr:choice value="2" description="second"/>
+			<tr:choice value="3" description="third"/>
+		</tr:parameter>
+		<tr:parameter id="popular-choice-field-name" type="tawala-mcq" name="Question" required="true">
+			<tr:description>The multiple choice question for which you wish to display popular choice information.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="false">
+			<tr:description>Only the records that match these conditions will be included in the calculation of the count.</tr:description>
+		</tr:parameter>
+	</tr:function>
+	<tr:function id="project-email-count" name="PROJECT EMAIL COUNT" version="1" return-type="int">
+		<tr:description>Count all emails sent for this project</tr:description>
+	</tr:function>
+	<tr:blank-validator id="email-validator" name="Email" version="1">
+		<tr:description>Checks for valid email</tr:description>
+		<tr:parameter id="error-message" type="expression" name="Error message" required="true">
+			<tr:description>Error message that will be displayed if the email address is invalid.</tr:description>
+			<tr:default-value>This email is not valid.</tr:default-value>
+		</tr:parameter>
+	</tr:blank-validator>
+	<tr:blank-validator id="integer-range-validator" name="Integer" version="1">
+		<tr:description>Checks for valid integer, optionally checking for the integer to be within limits.</tr:description>
+		<tr:parameter id="error-message" type="expression" name="Error message" required="true">
+			<tr:description>Error message that will be displayed if the email address is invalid.</tr:description>
+			<tr:default-value>This number is not valid.</tr:default-value>
+		</tr:parameter>
+		<tr:parameter id="lower-limit" type="expression" name="Lower limit" required="false">
+			<tr:description>Optional lower limit</tr:description>
+		</tr:parameter>
+		<tr:parameter id="upper-limit" type="expression" name="Upper limit" required="false">
+			<tr:description>Optional upper limit</tr:description>
+		</tr:parameter>
+	</tr:blank-validator>
+</tr:component-repository>

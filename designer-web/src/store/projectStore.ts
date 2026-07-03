@@ -2,6 +2,7 @@ import { create } from "zustand";
 import {
   createDefaultItem,
   emptyProject,
+  TawalaForm,
   FormItem,
   FormItemType,
   Selection,
@@ -39,12 +40,15 @@ interface ProjectState {
   setShowDeployResult: (show: boolean) => void;
   setCredentials: (credentials: DeployCredentials) => void;
   newProject: () => void;
+  loadTemplate: (samplePath: string) => Promise<void>;
   addForm: () => void;
   addProcess: () => void;
   addDocument: () => void;
   insertFormItem: (type: FormItemType) => void;
   updateFormItem: (formName: string, index: number, item: FormItem) => void;
+  updateForm: (formName: string, patch: Partial<TawalaForm>) => void;
   deleteFormItem: (formName: string, index: number) => void;
+  deleteSelectedFormItem: () => void;
   updateProcessCommands: (processName: string, commands: TawalaProcessCommand[]) => void;
   updateDocumentContent: (documentName: string, content: string | RichContentBlock[]) => void;
   selectForm: (name: string) => void;
@@ -56,7 +60,7 @@ interface ProjectState {
 export const useProjectStore = create<ProjectState>((set, get) => ({
   project: emptyProject(),
   dirty: false,
-  selection: { kind: "form", name: "Form1" },
+  selection: { kind: "form", name: "Form 1" },
   editorTab: "design",
   statusMessage: "Ready",
   selectedItemIndex: null,
@@ -83,10 +87,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({
       project,
       dirty: true,
-      selection: { kind: "form", name: "Form1" },
-      statusMessage: "New project",
+      selection: { kind: "form", name: "Form 1" },
+      statusMessage: "New empty project",
       selectedItemIndex: null,
     });
+  },
+
+  loadTemplate: async (samplePath) => {
+    const res = await fetch(`/samples/templates/${samplePath}`);
+    if (!res.ok) throw new Error(`Template not found: ${samplePath}`);
+    const raw = await res.text();
+    get().importJson(raw);
+    set({ dirty: true, statusMessage: `New project from template` });
   },
 
   addForm: () => {
@@ -164,18 +176,41 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ project: { ...project, forms }, dirty: true });
   },
 
+  updateForm: (formName, patch) => {
+    const { project } = get();
+    const forms = project.forms.map((f) => (f.name === formName ? { ...f, ...patch } : f));
+    set({
+      project: { ...project, forms },
+      dirty: true,
+      statusMessage: `Updated form ${formName}`,
+    });
+  },
+
   deleteFormItem: (formName, index) => {
-    const { project, selectedItemIndex } = get();
+    const { project, selectedItemIndex, selection } = get();
     const forms = project.forms.map((f) => {
       if (f.name !== formName) return f;
       return { ...f, items: f.items.filter((_, i) => i !== index) };
     });
+    let nextSelected: number | null = selectedItemIndex;
+    if (selection.kind === "form" && selection.name === formName) {
+      if (selectedItemIndex === index) nextSelected = null;
+      else if (selectedItemIndex !== null && selectedItemIndex > index) {
+        nextSelected = selectedItemIndex - 1;
+      }
+    }
     set({
       project: { ...project, forms },
       dirty: true,
-      selectedItemIndex: selectedItemIndex === index ? null : selectedItemIndex,
+      selectedItemIndex: nextSelected,
       statusMessage: "Deleted item",
     });
+  },
+
+  deleteSelectedFormItem: () => {
+    const { selection, selectedItemIndex } = get();
+    if (selection.kind !== "form" || !selection.name || selectedItemIndex === null) return;
+    get().deleteFormItem(selection.name, selectedItemIndex);
   },
 
   updateProcessCommands: (processName, commands) => {

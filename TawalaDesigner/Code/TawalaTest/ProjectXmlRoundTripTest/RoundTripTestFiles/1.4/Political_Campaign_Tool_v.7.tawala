@@ -1,0 +1,1375 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Political Campaign Tool v.6" themePath="litegreen" format="1.4">
+<forms>
+<form name="Petition" startPoint="true" themePath="litegreen" process="Process 1">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="560" color="000000"><b>Stargasville Mayor's Race</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000">Peter Fowler is running for Mayor of Stargasville.  You all know Peter, and you know what he stands for:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000"><b>--&gt; Pro-choice</b></font><font face="Courier New" size="200" color="000000"> when it comes to amending the 1992 Land Use Compact</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000"><b>--&gt; Pro-life</b></font><font face="Courier New" size="200" color="000000"> when it comes to the Citizens Anti-Speeding Initiative</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000"><b>--&gt; Pro-school</b></font><font face="Courier New" size="200" color="000000"> when it comes to the School Supplementary Assessment</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000"><b>--&gt; Pro-voter</b></font><font face="Courier New" size="200" color="000000"> when it come to representing YOUR interests.</font></paragraph></text>
+<mc label="Q1" alternateLabel="Waystohelp" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000">Peter needs your help.  Please help him him in as many of the following ways as you can.  Just check here:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000">If you are willing to sign Peter's nominating petition</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000">If you can host a coffee at your home or business for Peter</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000">If you can help the campaign financially</font></paragraph></choice></mc>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="000000">Remember, this is our town.  </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>LET'S PUT ONE OF OUR OWN IN CHARGE FOR A WHILE.</b></font></paragraph></text>
+</items>
+</form>
+<form name="Thanks" startPoint="false" themePath="litegreen" process="Process 3">
+<items>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Do you know the emails of other fellow citizens to whom we should send this solicitation? </font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">No</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="PetitionSign" startPoint="false" themePath="litegreen" process="Process 2">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000">Sign here to add your name to this petition:</font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Name: </font><blank label="a" length="14" required="true" alternateLabel="FirstName"/><font face="Courier New" size="220" color="000000"> (First) </font><blank label="b" length="14" required="true" alternateLabel="LastName"/><font face="Courier New" size="220" color="000000"> (Last)</font></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">of: </font><blank label="a" length="30" required="true" alternateLabel="Address"/><font face="Courier New" size="220" color="000000"> (Street Address)</font></paragraph></fib>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Stargasville, MD</font></paragraph></text>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Dated: </font><blank label="a" length="5" required="true" alternateLabel="Month"/><font face="Courier New" size="220" color="000000">/</font><blank label="b" length="5" required="true" alternateLabel="Day"/><font face="Courier New" size="220" color="000000">/2006</font></paragraph></fib>
+</items>
+</form>
+<form name="NewSolicit" startPoint="false" themePath="litegreen" process="Process 4">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Please enter the email address you'd like us to send the petition to: </font><blank label="a" length="18" required="false"/><font face="Courier New" size="220" color="000000">@</font><blank label="b" length="13" required="false"/><font face="Courier New" size="220" color="000000">.</font><blank label="c" length="4" required="false"/></paragraph></fib>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Would you like to send it to anyone else?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">No</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Financial" startPoint="false" themePath="litegreen" process="Process 6">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Financial support</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Thank you for your pledge of financial support.  As you know campaigns are expensive, and your help is greatly appreciated.</font></paragraph></text>
+<mc label="Q1" alternateLabel="CheckorCard" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Do you prefer to contribute</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">By check</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">By credit card</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<isNotBlank field="FullName"/>
+</conditions>
+<trueSet>
+<skip to="Q3"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Name:  </font><blank label="a" length="9" required="false" alternateLabel="FirstNa"/><font face="Courier New" size="220" color="000000">(First) </font><blank label="b" length="16" required="false" alternateLabel="LastNa"/><font face="Courier New" size="220" color="000000"> (Last)</font></paragraph></fib>
+<mc label="Q3" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">What are you able to contribute?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">$5</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">$10</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">$20</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">$100</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">$1,000</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Financial:CheckorCard" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Credit Card Number (no blanks):  </font><blank label="a" length="21" required="false" alternateLabel="CreditCard"/></paragraph></fib>
+<fib label="Q5"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Expiration Date: </font><blank label="a" length="2" required="true" alternateLabel="Month"/><font face="Courier New" size="220" color="000000"> /20 </font><blank label="b" length="2" required="true" alternateLabel="Year"/></paragraph></fib>
+</items>
+</form>
+<form name="Coffee Schedule" startPoint="false" themePath="litegreen" process="Process 5">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Coffee Schedule</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Peter will be holding coffees in supporters' homes three times a week during the month of October.  </font></paragraph></text>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Here is how the schedule looks right now:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="FF0000"><i>(An </i></font><font face="Courier New" size="220" color="FF0000"><b><i>X </i></b></font><font face="Courier New" size="220" color="FF0000"><i>following a date means that someone has already offered to host a coffee at that time.)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Week of October 1</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Tuesday, 4pm   </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week1Tu"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Thursday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week1Th"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Saturday, 4 pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week1Sa"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Week of October 8</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Tuesday, 4pm  </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week2Tu"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Thursday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week2Th"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Saturday, 4pm</font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week2Sa"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Week of October 15</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Tuesday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week3Tu"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Thursday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week3Th"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Saturday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week3Sa"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Week of October 22</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Tuesday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week3Sa"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Thursday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week4Th"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Courier New" size="220" color="000000">Saturday, 4pm </font><tab/><font face="Courier New" size="220" color="000000"><b><field name="Week4Sa"/></b></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Which week would you like to host a coffee?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">October 1</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">October 8</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">October 15</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">October 22</font></paragraph></choice></mc>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">And which day of that week works for you?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Tuesday</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Thursday</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Saturday</font></paragraph></choice></mc>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">May we please have your email in case we need to reach you to arrange details?   </font><blank label="a" length="23" required="false" alternateLabel="Email"/></paragraph></fib>
+<skipInstructions>
+<if>
+<conditions>
+<isNotBlank field="FullName"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">And your name?</font></paragraph></text>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Name:  </font><blank label="a" length="13" required="false" alternateLabel="FirstN"/><font face="Courier New" size="220" color="000000"> (First) </font><blank label="b" length="15" required="false" alternateLabel="LastN"/><font face="Courier New" size="220" color="000000"> (Last)</font></paragraph></fib>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="litegreen" process="Process 7">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Campaign Reports</b></font></paragraph></text>
+<mc label="Q1" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Which reports would you like to see (check as many as apply)?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Petition</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Coffee Schedule</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Financial Reports</font></paragraph></choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<set field="Petition" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Coffee" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Cash" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<if>
+<conditions>
+<mcContains field="Petition:Waystohelp" value="a"/>
+</conditions>
+<trueSet>
+<set field="Petition" arithmeticAsText="false">
+<string value="1"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Petition:Waystohelp" value="b"/>
+</conditions>
+<trueSet>
+<set field="Coffee" arithmeticAsText="false">
+<string value="1"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Petition:Waystohelp" value="c"/>
+</conditions>
+<trueSet>
+<set field="Cash" arithmeticAsText="false">
+<string value="1"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Petition">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<get recordList="Records">
+<forms>
+<form name="PetitionSign"/>
+</forms>
+</get>
+<foreach record="Voter" recordList="Records">
+<set field="Name" arithmeticAsText="false">
+<string field="Voter:PetitionSign:FirstName"/>
+<string value=" "/>
+<string field="Voter:PetitionSign:LastName"/>
+</set>
+<set field="AddressLine" arithmeticAsText="false">
+<string field="Voter:PetitionSign:Address"/>
+</set>
+<set field="VMonth" arithmeticAsText="false">
+<string field="Voter:PetitionSign:Month"/>
+</set>
+<set field="VDay" arithmeticAsText="false">
+<string field="Voter:PetitionSign:Day"/>
+</set>
+<if>
+<conditions>
+<doesNotEqual field="Name">
+<string value=" "/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<append document="PetitionHeader" appendage="SupporterCM"/>
+</trueSet>
+</if>
+</foreach>
+<show document="PetitionHeader" reset="true"/>
+<show form="PetitionSign"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Coffee">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<get recordList="Responses">
+<forms>
+<form name="Coffee Schedule"/>
+</forms>
+</get>
+<foreach record="User" recordList="Responses">
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week1Tu"/>
+</conditions>
+<trueSet>
+<set field="Week1Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week1Th"/>
+</conditions>
+<trueSet>
+<set field="Week1Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week1Sa"/>
+</conditions>
+<trueSet>
+<set field="Week1Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week2Tu"/>
+</conditions>
+<trueSet>
+<set field="Week2Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week2Th"/>
+</conditions>
+<trueSet>
+<set field="Week2Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week2Sa"/>
+</conditions>
+<trueSet>
+<set field="Week2Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week3Tu"/>
+</conditions>
+<trueSet>
+<set field="Week3Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week3Th"/>
+</conditions>
+<trueSet>
+<set field="Week3Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week3Sa"/>
+</conditions>
+<trueSet>
+<set field="Week3Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week4Tu"/>
+</conditions>
+<trueSet>
+<set field="Week4Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week4Th"/>
+</conditions>
+<trueSet>
+<set field="Week4Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week4Sa"/>
+</conditions>
+<trueSet>
+<set field="Week4Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show form="Coffee Schedule"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Cash">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="Financial"/>
+</trueSet>
+</if>
+<show form="Thanks"/>
+</process>
+<process name="Process 2">
+<set field="FullName" arithmeticAsText="false">
+<string field="PetitionSign:FirstName"/>
+<string value=" "/>
+<string field="PetitionSign:LastName"/>
+</set>
+<if>
+<conditions>
+<equals field="Coffee">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<get recordList="Responses">
+<forms>
+<form name="Coffee Schedule"/>
+</forms>
+</get>
+<foreach record="User" recordList="Responses">
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week1Tu"/>
+</conditions>
+<trueSet>
+<set field="Week1Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week1Th"/>
+</conditions>
+<trueSet>
+<set field="Week1Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week1Sa"/>
+</conditions>
+<trueSet>
+<set field="Week1Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week2Tu"/>
+</conditions>
+<trueSet>
+<set field="Week2Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week2Th"/>
+</conditions>
+<trueSet>
+<set field="Week2Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week2Sa"/>
+</conditions>
+<trueSet>
+<set field="Week2Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week3Tu"/>
+</conditions>
+<trueSet>
+<set field="Week3Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week3Th"/>
+</conditions>
+<trueSet>
+<set field="Week3Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week3Sa"/>
+</conditions>
+<trueSet>
+<set field="Week3Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week4Tu"/>
+</conditions>
+<trueSet>
+<set field="Week4Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Coffee Schedule:Week4Th"/>
+</conditions>
+<trueSet>
+<set field="Week4Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="User:Week4Sa"/>
+</conditions>
+<trueSet>
+<set field="Week4Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show form="Coffee Schedule"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Cash">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="Financial"/>
+</trueSet>
+</if>
+<show form="Thanks"/>
+</process>
+<process name="Process 3">
+<if>
+<conditions>
+<mcEquals field="Thanks:Q1" value="a"/>
+</conditions>
+<trueSet>
+<show form="NewSolicit"/>
+</trueSet>
+</if>
+<show document="Closing Thanks" reset="false"/>
+</process>
+<process name="Process 4">
+<set field="VoterEmail" arithmeticAsText="false">
+<string field="NewSolicit:Q1:a"/>
+<string value="@"/>
+<string field="NewSolicit:Q1:b"/>
+<string value="."/>
+<string field="NewSolicit:Q1:c"/>
+</set>
+<send>
+<to addressField="VoterEmail"/>
+<subject>Supporting Peter Fowler in his run for the Mayor's office</subject>
+<body inviteTo="Petition">Dear Friend ,
+
+I thought that you'd be interested in supporting Peter in his run for the Mayor's office.  If you would be willing to help his campaign, please click on this link, which will take you to his Web site.
+
+</body>
+</send>
+<if>
+<conditions>
+<mcEquals field="NewSolicit:Q2" value="a"/>
+</conditions>
+<trueSet>
+<show form="NewSolicit"/>
+</trueSet>
+</if>
+<show document="Closing Thanks" reset="false"/>
+</process>
+<process name="Process 5">
+<if>
+<conditions>
+<isBlank field="FullName"/>
+</conditions>
+<trueSet>
+<set field="FullName" arithmeticAsText="false">
+<string field="Coffee Schedule:FirstN"/>
+<string value=" "/>
+<string field="Coffee Schedule:LastN"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="a"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="a"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week1Tu"/>
+</conditions>
+<trueSet>
+<set field="Week1Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week1TuName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="a"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="b"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week1Th"/>
+</conditions>
+<trueSet>
+<set field="Week1Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week1ThName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="a"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="c"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week1Sa"/>
+</conditions>
+<trueSet>
+<set field="Week1Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week1SaName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="b"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="a"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week2Tu"/>
+</conditions>
+<trueSet>
+<set field="Week2Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week2TuName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="b"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="b"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week2Th"/>
+</conditions>
+<trueSet>
+<set field="Week2Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week2ThName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="b"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="c"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week2Sa"/>
+</conditions>
+<trueSet>
+<set field="Week2Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week2SaName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="c"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="a"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week3Tu"/>
+</conditions>
+<trueSet>
+<set field="Week3Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week3TuName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="c"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="b"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week3Th"/>
+</conditions>
+<trueSet>
+<set field="Week3Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week3ThName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="c"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="c"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week3Sa"/>
+</conditions>
+<trueSet>
+<set field="Week3Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week3SaName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="d"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="a"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week4Tu"/>
+</conditions>
+<trueSet>
+<set field="Week4Tu" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week4TuName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="d"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="b"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week4Th"/>
+</conditions>
+<trueSet>
+<set field="Week4Th" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week4ThName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Coffee Schedule:Q1">
+<string value="d"/>
+</mcEquals>
+<mcEquals field="Coffee Schedule:Q2">
+<string value="c"/>
+</mcEquals>
+</and>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Week4Sa"/>
+</conditions>
+<trueSet>
+<set field="Week4Sa" arithmeticAsText="false">
+<string value="X"/>
+</set>
+<set field="Week4SaName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</trueSet>
+<falseSet>
+<show document="Coffee Conflict Notice" reset="false"/>
+<show form="Coffee Schedule"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Cash">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="Financial"/>
+</trueSet>
+</if>
+<show form="Thanks"/>
+</process>
+<process name="Process 6">
+<if>
+<conditions>
+<isBlank field="FullName"/>
+</conditions>
+<trueSet>
+<set field="FullName" arithmeticAsText="false">
+<string field="Financial:FirstNa"/>
+<string value=" "/>
+<string field="Financial:LastNa"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="FullName" arithmeticAsText="false">
+<string field="FullName"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Financial:Q3" value="a"/>
+</conditions>
+<trueSet>
+<set field="Amt" arithmeticAsText="false">
+<string value="5"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Financial:Q3" value="b"/>
+</conditions>
+<trueSet>
+<set field="Amt" arithmeticAsText="false">
+<string value="10"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Financial:Q3" value="c"/>
+</conditions>
+<trueSet>
+<set field="Amt" arithmeticAsText="false">
+<string value="20"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Financial:Q3" value="d"/>
+</conditions>
+<trueSet>
+<set field="Amt" arithmeticAsText="false">
+<string value="100"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Financial:Q3" value="e"/>
+</conditions>
+<trueSet>
+<set field="Amt" arithmeticAsText="false">
+<string value="1000"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Financial:CheckorCard" value="a"/>
+</conditions>
+<trueSet>
+<show document="Check Pledge Reminder" reset="false"/>
+</trueSet>
+</if>
+<show form="Thanks"/>
+</process>
+<process name="Process 7">
+<if>
+<conditions>
+<mcContains field="Administration:Q1" value="a"/>
+</conditions>
+<trueSet>
+<get recordList="Record">
+<forms>
+<form name="PetitionSign"/>
+</forms>
+</get>
+<foreach record="Signer" recordList="Record">
+<set field="Name" arithmeticAsText="false">
+<string field="Signer:PetitionSign:FullName"/>
+</set>
+<set field="AddressLine" arithmeticAsText="false">
+<string field="Signer:PetitionSign:Address"/>
+</set>
+<set field="VMonth" arithmeticAsText="false">
+<string field="Signer:PetitionSign:Month"/>
+</set>
+<set field="VDay" arithmeticAsText="false">
+<string field="Signer:PetitionSign:Day"/>
+</set>
+<if>
+<conditions>
+<and>
+<isNotBlank field="Name"/>
+<and>
+<isNotBlank field="AddressLine"/>
+<and>
+<isNotBlank field="VMonth"/>
+<isNotBlank field="VDay"/>
+</and>
+</and>
+</and>
+</conditions>
+<trueSet>
+<append document="PetitionHeader" appendage="SupporterCM"/>
+</trueSet>
+</if>
+</foreach>
+<show document="PetitionHeader" reset="true"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<get recordList="Schedule">
+<forms>
+<form name="Coffee Schedule"/>
+</forms>
+</get>
+<foreach record="Supporter" recordList="Schedule">
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week1TuName"/>
+</conditions>
+<trueSet>
+<set field="Week1TuName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week1TuName"/>
+</set>
+<set field="Week1TuEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week1ThName"/>
+</conditions>
+<trueSet>
+<set field="Week1ThName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week1ThName"/>
+</set>
+<set field="Week1ThEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week1SaName"/>
+</conditions>
+<trueSet>
+<set field="Week1SaName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week1SaName"/>
+</set>
+<set field="Week1SaEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week2TuName"/>
+</conditions>
+<trueSet>
+<set field="Week2TuName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week2TuName"/>
+</set>
+<set field="Week2TuEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week2ThName"/>
+</conditions>
+<trueSet>
+<set field="Week2ThName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week2ThName"/>
+</set>
+<set field="Week2ThEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week2SaName"/>
+</conditions>
+<trueSet>
+<set field="Week2SaName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week1SaName"/>
+</set>
+<set field="Week2SaEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week3TuName"/>
+</conditions>
+<trueSet>
+<set field="Week3TuName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week3TuName"/>
+</set>
+<set field="Week3TuEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week3ThName"/>
+</conditions>
+<trueSet>
+<set field="Week3ThName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week3ThName"/>
+</set>
+<set field="Week3ThEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week3SaName"/>
+</conditions>
+<trueSet>
+<set field="Week3SaName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week3SaName"/>
+</set>
+<set field="Week3SaEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week4TuName"/>
+</conditions>
+<trueSet>
+<set field="Week4TuName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week4TuName"/>
+</set>
+<set field="Week4TuEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week4ThName"/>
+</conditions>
+<trueSet>
+<set field="Week4ThName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week4ThName"/>
+</set>
+<set field="Week4ThEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Supporter:Coffee Schedule:Week4SaName"/>
+</conditions>
+<trueSet>
+<set field="Week4SaName" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Week4SaName"/>
+</set>
+<set field="Week4SaEmail" arithmeticAsText="false">
+<string field="Supporter:Coffee Schedule:Email"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show document="Coffee Program" reset="true"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Administration:Q1" value="c"/>
+</conditions>
+<trueSet>
+<set field="CheckTotal" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="CCTotal" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotalFunds" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Contributors">
+<forms>
+<form name="Financial"/>
+</forms>
+</get>
+<foreach record="Moneybags" recordList="Contributors">
+<set field="TotalFunds" arithmeticAsText="false">
+<add>
+<operand field="TotalFunds"/>
+<operand field="Moneybags:Financial:Amt"/>
+</add>
+</set>
+<if>
+<conditions>
+<doesNotEqual field="Moneybags:Financial:Amt">
+<string value="0"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<mcEquals field="Moneybags:Financial:CheckorCard" value="a"/>
+</conditions>
+<trueSet>
+<set field="CheckTotal" arithmeticAsText="false">
+<add>
+<operand field="CheckTotal"/>
+<operand field="Moneybags:Financial:Amt"/>
+</add>
+</set>
+<set field="CL1" arithmeticAsText="false">
+<string field="Moneybags:Financial:Amt"/>
+</set>
+<set field="CL2" arithmeticAsText="false">
+<string field="Moneybags:Financial:FullName"/>
+</set>
+<append document="Check Pledge Summary" appendage="CMLine"/>
+</trueSet>
+<falseSet>
+<set field="CCTotal" arithmeticAsText="false">
+<add>
+<operand field="CCTotal"/>
+<operand field="Moneybags:Financial:Amt"/>
+</add>
+</set>
+<set field="ContributorLine" arithmeticAsText="false">
+<string field="Moneybags:Financial:Amt"/>
+</set>
+<set field="ContributorLine2" arithmeticAsText="false">
+<string field="Moneybags:Financial:FullName"/>
+</set>
+<set field="CL1" arithmeticAsText="false">
+<string field="Moneybags:Financial:CreditCard"/>
+</set>
+<set field="CL2" arithmeticAsText="false">
+<string field="Moneybags:Financial:Month"/>
+</set>
+<set field="CL3" arithmeticAsText="false">
+<string field="Moneybags:Financial:Year"/>
+</set>
+<append document="CreditCard Summary" appendage="CCLine"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+</foreach>
+<show document="Check Pledge Summary" reset="true"/>
+<show document="CreditCard Summary" reset="true"/>
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="PetitionHeader">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="FF0000"><b>=============================================================================================</b></font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="280" color="000000"><b>Petition for the Candidacy of PETER FOWLER </b></font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>for </b></font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>the Office of Mayor of Stargasville, Maryland</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">We the following citizens of Storgasville, hereby petition the Clerk of Fenton County to place upon the ballot the name of PETER FOWLER as a candidate for the Office of Mayor of Stargasville in the election of November 7, 2006:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="center"><span style="font-family:'Arial';font-size:12pt;color:#FF0000"><b>=============================================================================================</b></span></p><p style="margin-left:0pt" align="center"><span style="font-family:'Courier New';font-size:14pt;color:#000000"><b>Petition for the Candidacy of PETER FOWLER </b></span></p><p style="margin-left:0pt" align="center"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>for </b></span></p><p style="margin-left:0pt" align="center"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>the Office of Mayor of Stargasville, Maryland</b></span></p><p style="margin-left:0pt" align="left">&nbsp;</p><p style="margin-left:0pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">We the following citizens of Storgasville, hereby petition the Clerk of Fenton County to place upon the ballot the name of PETER FOWLER as a candidate for the Office of Mayor of Stargasville in the election of November 7, 2006:</span></p><p style="margin-left:0pt" align="left">&nbsp;</p>]]>
+</htmlData>
+</document>
+<document name="SupporterCM">
+<xmlData>
+<table indent="210"><row><cell width="1665"><division indent="0" align="left"><font face="Courier New" size="220" color="000000"><field name="VMonth"/></font><font face="Courier New" size="220" color="000000">/</font><font face="Courier New" size="220" color="000000"><field name="VDay"/></font><font face="Courier New" size="220" color="000000">/2006</font></division></cell><cell width="3390"><division indent="0" align="left"><sp/><font face="Courier New" size="220" color="000000"><field name="Name"/></font></division></cell><cell width="555"><division indent="0" align="left"><font face="Courier New" size="220" color="000000"> of</font></division></cell><cell width="4980"><division indent="0" align="left"><sp/><font face="Courier New" size="220" color="000000"><field name="AddressLine"/></font></division></cell></row></table>
+</xmlData>
+<htmlData>
+<![CDATA[<table style="margin-left:10pt;"><tr><td><div style="width:83pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;VMonth&gt;&gt;</span><span style="font-family:'Courier New';font-size:11pt;color:#000000">/</span><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;VDay&gt;&gt;</span><span style="font-family:'Courier New';font-size:11pt;color:#000000">/2006</span></div></div></td><td><div style="width:169pt;"><div style="margin-left:0pt;text-align:left"> <span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Name&gt;&gt;</span></div></div></td><td><div style="width:27pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"> of</span></div></div></td><td><div style="width:249pt;"><div style="margin-left:0pt;text-align:left"> <span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;AddressLine&gt;&gt;</span></div></div></td></tr></table>]]>
+</htmlData>
+</document>
+<document name="Closing Thanks">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Your support will help make Peter's election possible.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">And don't forget to vote for PETER FOWLER for Mayor in November!</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><i>Paid for by the Fowler Forever Committee of Stargasville</i></font></paragraph>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Your support will help make Peter's election possible.</span></p><p style="margin-left:0pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">And don't forget to vote for PETER FOWLER for Mayor in November!</span></p><p style="margin-left:0pt" align="left">&nbsp;</p><p style="margin-left:0pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><i>Paid for by the Fowler Forever Committee of Stargasville</i></span></p>]]>
+</htmlData>
+</document>
+<document name="Coffee Conflict Notice">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="200" color="FF0000"><b><i>You have chosen a date that is already filled. Pick a date and time that do NOT have an "X" next to them.</i></b></font></paragraph>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="left"><span style="font-family:'Courier New';font-size:10pt;color:#FF0000"><b><i>You have chosen a date that is already filled. Pick a date and time that do NOT have an "X" next to them.</i></b></span></p>]]>
+</htmlData>
+</document>
+<document name="Check Pledge Reminder">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000">Thank you for your pledge of $</font><font face="Courier New" size="220" color="000000"><field name="Amt"/></font><font face="Courier New" size="220" color="000000">. Please send your check to:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Fowler Forever Committee</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>1000 Main Street</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="000000"><b>Stargasville, MD 04156</b></font></paragraph>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Thank you for your pledge of $</span><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Amt&gt;&gt;</span><span style="font-family:'Courier New';font-size:11pt;color:#000000">. Please send your check to:</span></p><p style="margin-left:0pt" align="left">&nbsp;</p><p style="margin-left:36pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>Fowler Forever Committee</b></span></p><p style="margin-left:36pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>1000 Main Street</b></span></p><p style="margin-left:36pt" align="left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>Stargasville, MD 04156</b></span></p>]]>
+</htmlData>
+</document>
+<document name="Coffee Program">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="220" color="FF0000"><b>=============================================================================================</b></font></paragraph><table indent="0"><row><cell width="3600"/><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"/><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="280" color="5B005B"><b>Schedule of Coffees</b></font></division></cell><cell width="3600"/></row><row><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="220" color="000000"><b>Date</b></font></division></cell><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="220" color="000000"><b>at Home of </b></font></division></cell><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="220" color="000000"><b>Contact Info</b></font></division></cell></row><row><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="220" color="000000">---------------------------------</font></division></cell><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="220" color="000000">---------------------------------</font></division></cell><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="220" color="000000">---------------------------------</font></division></cell></row><row><cell width="3600"><division indent="0" align="left"><font face="Courier New" size="220" color="000000"><b><i>Week of October 1</i></b></font></division></cell><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Tuesday, 4pm </font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week1TuName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week1TuEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Thursday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week1ThName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week1ThEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Saturday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week1SaName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week1SaEmail"/></font></division></cell></row><row><cell width="3600"><division indent="0" align="left"><font face="Courier New" size="220" color="000000"><b><i>Week of October 8</i></b></font></division></cell><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Tuesday, 4pm </font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week2TuName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week2TuEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Thursday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week2ThName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week2ThEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Saturday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week2SaName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week2SaEmail"/></font></division></cell></row><row><cell width="3600"><division indent="0" align="left"><font face="Courier New" size="220" color="000000"><b><i>Week of October 15</i></b></font></division></cell><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Tuesday, 4pm </font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week3TuName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week3TuEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Thursday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week3ThName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week3ThEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Saturday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week3SaName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week3SaEmail"/></font></division></cell></row><row><cell width="3600"><division indent="0" align="left"><font face="Courier New" size="220" color="000000"><b><i>Week of October 22</i></b></font></division></cell><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Tuesday, 4pm </font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week4TuName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week4TuEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Thursday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week4ThName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week4ThEmail"/></font></division></cell></row><row><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000">Saturday, 4pm</font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week4SaName"/></font></division></cell><cell width="3600"><division indent="720" align="left"><font face="Courier New" size="220" color="000000"><field name="Week4SaEmail"/></font></division></cell></row></table>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="center"><span style="font-family:'Courier New';font-size:11pt;color:#FF0000"><b>=============================================================================================</b></span></p><table style="margin-left:0pt;"><tr><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:14pt;color:#5B005B"><b>Schedule of Coffees</b></span></div></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>Date</b></span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>at Home of </b></span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b>Contact Info</b></span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:11pt;color:#000000">---------------------------------</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:11pt;color:#000000">---------------------------------</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:11pt;color:#000000">---------------------------------</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b><i>Week of October 1</i></b></span></div></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Tuesday, 4pm </span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week1TuName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week1TuEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Thursday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week1ThName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week1ThEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Saturday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week1SaName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week1SaEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b><i>Week of October 8</i></b></span></div></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Tuesday, 4pm </span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week2TuName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week2TuEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Thursday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week2ThName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week2ThEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Saturday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week2SaName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week2SaEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b><i>Week of October 15</i></b></span></div></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Tuesday, 4pm </span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week3TuName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week3TuEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Thursday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week3ThName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week3ThEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Saturday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week3SaName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week3SaEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000"><b><i>Week of October 22</i></b></span></div></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Tuesday, 4pm </span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week4TuName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week4TuEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Thursday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week4ThName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week4ThEmail&gt;&gt;</span></div></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">Saturday, 4pm</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week4SaName&gt;&gt;</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:36pt;text-align:left"><span style="font-family:'Courier New';font-size:11pt;color:#000000">&lt;&lt;Week4SaEmail&gt;&gt;</span></div></div></td></tr></table>]]>
+</htmlData>
+</document>
+<document name="Check Pledge Summary">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Courier New" size="240" color="FF0000"><b>=============================================================================================</b></font></paragraph><table indent="0"><row><cell width="3600"/><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"/><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="280" color="400080"><b>Fundraising Report</b></font></division></cell><cell width="3600"/></row><row><cell width="3600"><division indent="0" align="right"><font face="Courier New" size="200" color="000000">Total Raised to Date: </font></division></cell><cell width="3600"><division indent="0" align="right"><font face="Courier New" size="200" color="000000">$</font><font face="Courier New" size="200" color="000000"><field name="TotalFunds"/></font></division></cell><cell width="3600"/></row><row><cell width="3600"><division indent="0" align="right"><font face="Courier New" size="200" color="000000">Check Pledges: </font></division></cell><cell width="3600"><division indent="0" align="right"><font face="Courier New" size="200" color="000000">$</font><font face="Courier New" size="200" color="000000"><field name="CheckTotal"/></font></division></cell><cell width="3600"/></row><row><cell width="3600"/><cell width="3600"/><cell width="3600"/></row><row><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="240" color="000000"><b>Amount</b></font></division></cell><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="240" color="000000"><b>Name</b></font></division></cell><cell width="3600"/></row><row><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">----------------------------</font></division></cell><cell width="3600"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">----------------------------</font></division></cell><cell width="3600"/></row></table>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="center"><span style="font-family:'Courier New';font-size:12pt;color:#FF0000"><b>=============================================================================================</b></span></p><table style="margin-left:0pt;"><tr><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:14pt;color:#400080"><b>Fundraising Report</b></span></div></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:right"><span style="font-family:'Courier New';font-size:10pt;color:#000000">Total Raised to Date: </span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:right"><span style="font-family:'Courier New';font-size:10pt;color:#000000">$</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;TotalFunds&gt;&gt;</span></div></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:right"><span style="font-family:'Courier New';font-size:10pt;color:#000000">Check Pledges: </span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:right"><span style="font-family:'Courier New';font-size:10pt;color:#000000">$</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CheckTotal&gt;&gt;</span></div></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:12pt;color:#000000"><b>Amount</b></span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:12pt;color:#000000"><b>Name</b></span></div></div></td><td><div style="width:180pt;"></div></td></tr><tr><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">----------------------------</span></div></div></td><td><div style="width:180pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">----------------------------</span></div></div></td><td><div style="width:180pt;"></div></td></tr></table>]]>
+</htmlData>
+</document>
+<document name="CreditCard Summary">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell></row><row><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">Credit Card Pledges:</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">$</font><font face="Courier New" size="200" color="000000"><field name="CCTotal"/></font></division></cell><cell width="2700"/><cell width="2700"/></row><row><cell width="2700"/><cell width="2700"/><cell width="2700"/><cell width="2700"/></row><row><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="240" color="000000"><b>Amount</b></font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="240" color="000000"><b>Name</b></font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="240" color="000000"><b>Credit Card #</b></font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="240" color="000000"><b>Expiration Date</b></font></division></cell></row><row><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">------------------------</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell><cell width="2700"><division indent="0" align="center"><font face="Courier New" size="200" color="000000">-------------------------</font></division></cell></row></table>
+</xmlData>
+<htmlData>
+<![CDATA[<p style="margin-left:0pt" align="center">&nbsp;</p><table style="margin-left:0pt;"><tr><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td></tr><tr><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">Credit Card Pledges:</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">$</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CCTotal&gt;&gt;</span></div></div></td><td><div style="width:135pt;"></div></td><td><div style="width:135pt;"></div></td></tr><tr><td><div style="width:135pt;"></div></td><td><div style="width:135pt;"></div></td><td><div style="width:135pt;"></div></td><td><div style="width:135pt;"></div></td></tr><tr><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:12pt;color:#000000"><b>Amount</b></span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:12pt;color:#000000"><b>Name</b></span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:12pt;color:#000000"><b>Credit Card #</b></span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:12pt;color:#000000"><b>Expiration Date</b></span></div></div></td></tr><tr><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">------------------------</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td><td><div style="width:135pt;"><div style="margin-left:0pt;text-align:center"><span style="font-family:'Courier New';font-size:10pt;color:#000000">-------------------------</span></div></div></td></tr></table>]]>
+</htmlData>
+</document>
+<document name="CMLine">
+<xmlData>
+<table indent="465"><row><cell width="3960"><division indent="0" align="left"><font face="Courier New" size="200" color="000000">$</font><font face="Courier New" size="200" color="000000"><field name="CL1"/></font></division></cell><cell width="6375"><division indent="0" align="left"><font face="Courier New" size="200" color="000000"><field name="CL2"/></font></division></cell></row></table>
+</xmlData>
+<htmlData>
+<![CDATA[<table style="margin-left:23pt;"><tr><td><div style="width:198pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:10pt;color:#000000">$</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CL1&gt;&gt;</span></div></div></td><td><div style="width:318pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CL2&gt;&gt;</span></div></div></td></tr></table>]]>
+</htmlData>
+</document>
+<document name="CCLine">
+<xmlData>
+<table indent="225"><row><cell width="2730"><division indent="0" align="left"><font face="Courier New" size="200" color="000000">$</font><font face="Courier New" size="200" color="000000"><field name="ContributorLine"/></font></division></cell><cell width="2445"><division indent="0" align="left"><font face="Courier New" size="200" color="000000"><field name="ContributorLine2"/></font></division></cell><cell width="3195"><division indent="0" align="left"><font face="Courier New" size="200" color="000000"># </font><font face="Courier New" size="200" color="000000"><field name="CL1"/></font></division></cell><cell width="2205"><division indent="0" align="left"><font face="Courier New" size="200" color="000000">Exp. </font><font face="Courier New" size="200" color="000000"><field name="CL2"/></font><font face="Courier New" size="200" color="000000">/</font><font face="Courier New" size="200" color="000000"><field name="CL3"/></font></division></cell></row></table>
+</xmlData>
+<htmlData>
+<![CDATA[<table style="margin-left:11pt;"><tr><td><div style="width:136pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:10pt;color:#000000">$</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;ContributorLine&gt;&gt;</span></div></div></td><td><div style="width:122pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;ContributorLine2&gt;&gt;</span></div></div></td><td><div style="width:159pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:10pt;color:#000000"># </span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CL1&gt;&gt;</span></div></div></td><td><div style="width:110pt;"><div style="margin-left:0pt;text-align:left"><span style="font-family:'Courier New';font-size:10pt;color:#000000">Exp. </span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CL2&gt;&gt;</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">/</span><span style="font-family:'Courier New';font-size:10pt;color:#000000">&lt;&lt;CL3&gt;&gt;</span></div></div></td></tr></table>]]>
+</htmlData>
+</document>
+</documents>
+</project>

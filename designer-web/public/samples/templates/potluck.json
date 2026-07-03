@@ -1,0 +1,90 @@
+{
+  "name": "Potluck Template",
+  "format": "2.0",
+  "themePath": "greentea",
+  "forms": [
+    {
+      "name": "Potluck Organizer",
+      "startPoint": true,
+      "themePath": "greentea",
+      "process": "Send Thanks",
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Potluck invites your friends to a potluck dinner, gets a headcount, and shows who is bringing what. Edit the questions below, then delete these instructions and deploy."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "Fill in the form below to let us know if you can make it and what you will bring:"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Name",
+          "blanks": [{ "name": "attendeeName", "length": 35 }]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "style": "horizontal",
+          "question": "Will you be able to come to the potluck?",
+          "choices": [
+            { "name": "a", "text": "Yes" },
+            { "name": "b", "text": "No" }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "freeform",
+          "prompt": "How many of you will be coming? / (Adults) / (Kids)",
+          "blanks": [
+            { "name": "numAdults", "length": 6 },
+            { "name": "numKids", "length": 6 }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "topLabels",
+          "prompt": "Potluck Contribution",
+          "blanks": [{ "name": "contribution", "length": 35 }]
+        }
+      ]
+    },
+    {
+      "name": "Report",
+      "themePath": "greentea",
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "content": "Use the legacy Potluck template on 8080 for the full organizer report, documents, and processes. This starter opens the main invitation form for editing in the browser Designer."
+        }
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "name": "Send Thanks",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "Full Potluck process chain (documents, if/show) — extend in Process editor or deploy legacy .tawala for full behavior."
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Details",
+      "content": "Edit the Details document with when and where your potluck will be held."
+    }
+  ]
+}

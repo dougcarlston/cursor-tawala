@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Get Together Template" themePath="default" format="1.6">
+<forms>
+<form name="Survey" startPoint="true" themePath="default" process="Process 1">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="240" color="000000"><b>Get Together Invitation </b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>Get Together helps pick the best time or date for an event or a meeting.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>Just replace the multiple choice questions below with two of your own describing the event you are inviting people to and the dates you want people to consider.  You can add up to ten choices, although the example below only has five.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>Once you are done modifying this form, delete these instructions and replace them with instructions for your invitees.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>Then click on the Deploy button ( </i></b></font><font face="Arial" size="200" color="000000"><image id="image1" width="22" height="23"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="835" numOfObjects="0" maxRecordSize="813" numOfParams="0"/>
+</image></font><font face="Arial" size="200" color="000080"><b><i>)  up above to create a Web page for your invitation.  </i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>Once you have deployed your project to the Web, you can get the Web links to the Get Together invitation  and the Report you'll use to review the results from your My Tawala page on the Tawala Website.  Send the Survey link to your pollees and then use Report to see how they responded.</i></b></font></paragraph></text>
+<mc label="Q1" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">We'd like to have dinner with you!  Which of the following dates works for you?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 3</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 4</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 6</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 9</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 10</font></paragraph></choice></mc>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Which date is your top preference?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 3</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 4</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 6</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 9</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">June 10</font></paragraph></choice></mc>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Name please: </font><blank label="a" length="29" required="false" alternateLabel="Name"/></paragraph></fib>
+</items>
+</form>
+<form name="Report" startPoint="false" themePath="default">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Here are the results so far:</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><question-correlation-table version="1"><question-field-name>Record:Survey:Q1</question-field-name><display-field-name>Record:Survey:Name</display-field-name><preferred-choice-field-name>Record:Survey:Q2</preferred-choice-field-name><conditions><form name="Survey"/></conditions></question-correlation-table></font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<show form="Report"/>
+</process>
+</processes>
+<images><imagedef id="image1"><imagedata imageFormat="PNG">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFU
+OE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xr
+TkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJc
+ff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEydd
+V+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8
+O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxT
+e1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCP
+pnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXI
+Zjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yA
+I2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVP
+tItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+S
+vTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomev
+P2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==</imagedata></imagedef></images></project>

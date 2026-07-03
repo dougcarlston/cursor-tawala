@@ -8,6 +8,8 @@ interface Props {
 
 const COMMAND_TEMPLATES: Record<string, TawalaProcessCommand> = {
   comment: { cmd: "comment", text: "-- note" },
+  show: { cmd: "show", form: "Report" },
+  showDocument: { cmd: "show", document: "Document 1" },
   set: { cmd: "set", field: "FieldName", value: "value" },
   get: { cmd: "get", recordList: "Records", sourceForms: ["Form1"] },
   if: {

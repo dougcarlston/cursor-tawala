@@ -1,0 +1,37 @@
+	
+	internal sealed class ${CLASSNAMEV}_FunctionInfo : IFunctionInfo
+	{
+		public IFunction CreateInstance() { IFunction function = new ${CLASSNAMEV}(); Utility.SetFunctionDefaultValues(function); return function; }
+
+		public IParameterInfoCollection Parameters { get { return parameters; } }
+
+		public string Id { get { return "${FID}"; } }
+
+		public string Name { get { return "${FNAME}";  } }
+
+		public string Description { get { return description; } }
+
+		public string Version { get { return "${FVERSION}"; } }
+
+		public Type Type { get { return typeof(${CLASSNAMEV}); } }
+
+		public XPathNavigator Xml { get { return xpathNavigator.Clone(); } }
+
+		public override string ToString()
+		{
+			return Name;
+		}
+
+		private readonly XPathNavigator xpathNavigator;
+		private readonly ParameterInfoCollection parameters;
+		private readonly string description;
+		
+		internal ${CLASSNAMEV}_FunctionInfo()
+		{
+			xpathNavigator = Utility.GetXPathNavigatorForGid("${GID}");
+			description = xpathNavigator.SelectSingleNode("child::description").Value;
+			
+			parameters = new ParameterInfoCollection(this, null, typeof(${CLASSNAMEV}));
+		}
+	}
+}

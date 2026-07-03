@@ -1,0 +1,164 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tawala.Functions.Runtime</RootNamespace>
+    <AssemblyName>FunctionRuntime</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="CodeGen\Creator.cs" />
+    <Compile Include="CodeGen\FunctionAssemblyCreator.cs" />
+    <Compile Include="CodeGen\FunctionClassCreator.cs" />
+    <Compile Include="CodeGen\Generator.cs" />
+    <Compile Include="CodeGen\IGenerator.cs" />
+    <Compile Include="CodeGen\ParameterPropertyCreator.cs" />
+    <Compile Include="IFunctionParameterXml.cs" />
+    <Compile Include="IParameterInfoCollection.cs" />
+    <Compile Include="ICategoryInfoCollection.cs" />
+    <Compile Include="Private\CategoryInfoCollection.cs" />
+    <Compile Include="Private\CompositeParameterBase.cs" />
+    <Compile Include="Private\CompositeParameterCollectionBase.cs" />
+    <Compile Include="Private\FunctionParameterTypeInfo.cs" />
+    <Compile Include="Private\ParameterInfoCollection.cs" />
+    <Compile Include="Private\FunctionInfoCollection.cs" />
+    <Compile Include="Private\CodeGeneratorAttributes.cs" />
+    <Compile Include="CompilationInfo.cs" />
+    <Compile Include="IFunctionParameterTypeInfo.cs" />
+    <Compile Include="Private\FunctionParameterTypeMapper.cs" />
+    <Compile Include="ParameterRestrictions.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="RuntimeTypeResolver.cs" />
+    <Compile Include="ICompositeParameterCollection.cs" />
+    <Compile Include="ICompositeParameter.cs" />
+    <Compile Include="IFunctionInfoCollection.cs" />
+    <Compile Include="IRequiresEditNotification.cs" />
+    <Compile Include="IXPathNavigatorProvider.cs" />
+    <Compile Include="Private\CategoryInfo.cs" />
+    <Compile Include="ICategoryInfo.cs" />
+    <Compile Include="FunctionLoader.cs" />
+    <Compile Include="Private\ParameterInfo.cs" />
+    <Compile Include="Private\FunctionInfo.cs" />
+    <Compile Include="IFunctionInfo.cs" />
+    <Compile Include="Private\Function.cs" />
+    <Compile Include="Private\FunctionRepository.cs" />
+    <Compile Include="IFunction.cs" />
+    <Compile Include="IFunctionRepository.cs" />
+    <Compile Include="IParameterInfo.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeGen\Templates\FUNCTION_REPOSITORY_TEMPLATE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeGen\Templates\ASSEMBLY_INFO_TEMPLATE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeGen\Templates\CODE_PREAMBLE_TEMPLATE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeGen\Templates\COMPOSITE_PROPERTY_TEMPLATE.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeGen\Templates\FUNCTION_TEMPLATE.txt" />
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="CodeGen\Templates\PARAMETER_PROPERTY_TEMPLATE.txt" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

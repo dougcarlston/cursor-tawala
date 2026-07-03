@@ -1,0 +1,80 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<project name="MyProject" designer="Guest" format="1.1">
+<forms>
+<form name="Form 1" process="Process 1">
+<items>
+<text label="T1">This is a text item in Form 1.</text>
+<fib>
+Name 1: <blank length="20" />
+</fib>
+<fib>
+Nickname 1: <blank length="20" />
+</fib>
+<mc label="Q3" onlyone="true" required="false">
+<question>This is a multiple choice question in Form 1.</question>
+<choice label="a">Choice 1</choice>
+<choice label="b">Choice 2</choice>
+<choice label="c">Choice 3</choice>
+</mc>
+</items>
+</form>
+<form name="Form 2">
+<items>
+<text label="T1">This is a text item in Form 2.</text>
+<fib>
+Name 2: <blank length="20" />
+</fib>
+<fib>
+Nickname 2: <blank length="20" />
+</fib>
+<mc label="Q3" onlyone="true" required="false">
+<question>This is a multiple choice question in Form 2.</question>
+<choice label="a">Choice 1</choice>
+<choice label="b">Choice 2</choice>
+<choice label="c">Choice 3</choice>
+</mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<show document="Document 1" />
+<if>
+<conditions>
+<isNotBlank field="Q1:a" />
+</conditions>
+<trueSet>
+<show document="Document 2" />
+</trueSet>
+<falseSet>
+<show document="Document 3" />
+</falseSet>
+</if>
+<if>
+<conditions>
+<equals field="Q1:a">
+<string field="Q2:a" />
+</equals>
+</conditions>
+<trueSet>
+<show document="Document 2" />
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Q1:a">
+<string value="Bozo" />
+</equals>
+</conditions>
+<trueSet>
+<show document="Document 2" />
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Document 1">This is Document 1. It has a field: <field name="Q1:a" /></document>
+<document name="Document 2">This is Document 2. It has a field: <field name="Q1:a" /></document>
+<document name="Document 3">This is Document 3. It has a field: <field name="Q1:a" /></document>
+</documents>
+</project>

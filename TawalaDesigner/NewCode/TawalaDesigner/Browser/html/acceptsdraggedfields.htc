@@ -1,0 +1,57 @@
+<public:component>
+
+<public:attach event="ondragenter" onevent="onDragEnter()" />
+<public:attach event="ondragover" onevent="onDragOver()" />
+<public:attach event="ondragleave" onevent="onDragLeave()" />
+<public:attach event="ondrop" onevent="onDrop()" />
+
+<script language="JScript">
+
+function onDragEnter()
+{
+	if (getDraggedFieldId() > 0) 
+	{
+		event.dataTransfer.dropEffect = "copy";
+		event.returnValue = false;
+		event.cancelBubble = true;
+	}
+}
+
+function onDragOver()
+{
+	if (getDraggedFieldId() > 0)
+	{
+		event.returnValue = false;
+		event.cancelBubble = true;
+	}
+}
+
+function onDragLeave()
+{
+	if (getDraggedFieldId() > 0)
+	{
+		event.dataTransfer.dropEffect = "none";
+		event.returnValue = false;
+		event.cancelBubble = true;
+	}
+}
+
+function onDrop()
+{
+	var fieldId = getDraggedFieldId();
+
+	if (fieldId > 0)
+	{
+		event.cancelBubble = true;
+		event.returnValue = false;
+		var xhtml = window.external.CreateFieldXhtml(fieldId);
+		var range = document.selection.createRange();
+		range.moveToPoint(event.x, event.y);
+		range.select();
+		range.pasteHTML(xhtml);
+	}
+}
+
+
+</script>
+</public:component>

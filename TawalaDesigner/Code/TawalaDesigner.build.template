@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<project name="FormDesigner" default="build">
+
+	<!-- Change the values of these to your own username and password for the SVN repository -->
+	<property name="svnUsername" value="MYUSERNAME" />
+	<property name="svnPassword" value="MYPASSWORD" />
+
+	<property name="buildFolder" value="." />
+	<property name="tawalaDesignerFolder" value="${buildFolder}/TawalaDesigner" />
+	<property name="tawalaDesignerTestFolder" value="${buildFolder}/TawalaDesignerTest" />
+	<property name="setupFolder" value="${tawalaDesignerFolder}/Setup/Release" />
+	<property name="devenvFolder" value="C:/Program Files/Microsoft Visual Studio 9.0/Common7/IDE" />
+	<property name="wzipseFolder" value="C:/Program Files/WinZip Self-Extractor" />
+	<property name="qaFolder" value="..\QA\NewTawalaDesigner" />
+	<property name="repositoryLocation" value="svn+ssh://${svnUsername}@svn.tawala.com/home/svn/repository/tawala_designer/trunk/Code" />
+	
+	<target name="build" depends="svnUpdate, runTests, makeZipFile, copyInstallerForQA">
+	</target>
+
+	<target name="svnUpdate" description="Update from SVN repository">
+		<svn-update
+			destination="${buildFolder}"
+			uri="${repositoryLocation}"
+			password="${svnPassword}"
+			verbose="true"
+			quiet="false"
+		/>
+	</target>
+
+	<target name="buildTawalaDesignerTestSolution">
+		<msbuild project="${tawalaDesignerTestFolder}/TawalaDesignerTest.sln" verbosity="Quiet">
+			<arg value="/property:Configuration=debug" />
+			<arg value="/t:Rebuild" />
+		</msbuild>
+	</target>
+
+	<target name="runTests" depends="buildTawalaDesignerTestSolution">
+		<exec program="nunit-console">
+			<arg value="${buildFolder}/TawalaDesignerTest.nunit" />
+		</exec>
+	</target>
+
+	<target name="buildTawalaDesignerSetupProject">
+		<exec program="devenv.exe" basedir="${devenvFolder}">
+			<arg value="${tawalaDesignerFolder}/TawalaDesigner.sln" />
+			<arg line="/rebuild Release" />
+			<arg line="/project Setup" />
+		</exec>
+	</target>
+
+	<target name="makeZipFile" depends ="buildTawalaDesignerSetupProject">
+		<zip zipfile="${setupFolder}/TawalaDesigner.zip">
+			<fileset basedir="${setupFolder}">
+				<include name="TawalaDesigner.msi" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="copyInstallerForQA">
+		<copy
+			file="${setupFolder}/TawalaDesigner.msi"
+			tofile="${qaFolder}/TawalaDesigner.msi"
+			overwrite="true"
+		/>
+	</target>
+
+</project>

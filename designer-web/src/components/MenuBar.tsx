@@ -1,16 +1,21 @@
 import { useState, useEffect, useRef, ReactNode } from "react";
 import { useProjectStore } from "@/store/projectStore";
+import { FORM_ITEM_PALETTE } from "@/types/tawala";
 
 interface Props {
+  onNewProject: () => void;
   onOpen: () => void;
-  onLoadSample: () => void;
   onDeploy: () => void;
+  onDelete: () => void;
+  canDelete: boolean;
 }
 
-export function MenuBar({ onOpen, onLoadSample, onDeploy }: Props) {
-  const newProject = useProjectStore((s) => s.newProject);
+export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, canDelete }: Props) {
   const exportJson = useProjectStore((s) => s.exportJson);
   const setStatus = useProjectStore((s) => s.setStatus);
+  const insertFormItem = useProjectStore((s) => s.insertFormItem);
+  const selection = useProjectStore((s) => s.selection);
+  const canInsert = selection.kind === "form" && Boolean(selection.name);
 
   const saveJson = () => {
     const blob = new Blob([exportJson()], { type: "application/json" });
@@ -26,14 +31,11 @@ export function MenuBar({ onOpen, onLoadSample, onDeploy }: Props) {
   return (
     <nav className="menu-bar">
       <MenuDrop label="File">
-        <button type="button" onClick={newProject}>
+        <button type="button" onClick={onNewProject}>
           New Project…
         </button>
         <button type="button" onClick={onOpen}>
           Open Project…
-        </button>
-        <button type="button" onClick={onLoadSample}>
-          Open DirtBowl Sample…
         </button>
         <div className="menu-separator" />
         <button type="button" onClick={saveJson}>
@@ -43,6 +45,18 @@ export function MenuBar({ onOpen, onLoadSample, onDeploy }: Props) {
         <button type="button" onClick={onDeploy}>
           Deploy…
         </button>
+      </MenuDrop>
+      <MenuDrop label="Insert">
+        {FORM_ITEM_PALETTE.map(({ label, type }) => (
+          <button
+            key={type}
+            type="button"
+            disabled={!canInsert}
+            onClick={() => insertFormItem(type)}
+          >
+            {label}
+          </button>
+        ))}
       </MenuDrop>
       <MenuDrop label="Edit">
         <button type="button" disabled>
@@ -54,7 +68,7 @@ export function MenuBar({ onOpen, onLoadSample, onDeploy }: Props) {
         <button type="button" disabled>
           Paste
         </button>
-        <button type="button" disabled>
+        <button type="button" disabled={!canDelete} onClick={onDelete}>
           Delete
         </button>
       </MenuDrop>

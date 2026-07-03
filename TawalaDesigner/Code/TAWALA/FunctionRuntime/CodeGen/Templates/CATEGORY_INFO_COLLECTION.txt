@@ -1,0 +1,35 @@
+  
+    internal sealed class CategoryInfoCollection : Collection<ICategoryInfo>, ICategoryInfoCollection
+    {
+        private readonly Dictionary<string, ICategoryInfo> nameToInfo = new Dictionary<string, ICategoryInfo>();
+
+        #region ICategoryInfoCollection Members
+
+        public ICategoryInfo this[string name] { get { return nameToInfo[name]; } }
+
+        public bool Contains(string name)
+        {
+            return nameToInfo.ContainsKey(name);
+        }
+
+        #endregion
+
+        internal void Initialize()
+        {
+            XPathExpression expression = XPathExpression.Compile("descendant::category");
+            expression.AddSort("@name", StringComparer.Ordinal);
+            XPathNodeIterator iterator = FunctionRepository.Instance.Xml.Select(expression);
+
+            while (iterator.MoveNext())
+            {
+                Add(new CategoryInfo(iterator.Current.Clone()));
+            }
+        }
+
+        protected override void InsertItem(int index, ICategoryInfo item)
+        {
+            base.InsertItem(index, item);
+            nameToInfo.Add(item.Name, item);
+        }
+    }
+}

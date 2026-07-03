@@ -1,0 +1,32 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsUI", "FormsUI\FormsUI.csproj", "{39129830-81F9-46F8-AEE0-A1201A62C0F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTest", "UnitTest\UnitTest.csproj", "{6A902E25-6D14-4546-8630-76036E2E19C9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AcceptanceTest", "AcceptanceTest\AcceptanceTest.csproj", "{97FA04A0-62A3-4FF1-9AB3-086F7B548CAF}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39129830-81F9-46F8-AEE0-A1201A62C0F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39129830-81F9-46F8-AEE0-A1201A62C0F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39129830-81F9-46F8-AEE0-A1201A62C0F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39129830-81F9-46F8-AEE0-A1201A62C0F9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6A902E25-6D14-4546-8630-76036E2E19C9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6A902E25-6D14-4546-8630-76036E2E19C9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6A902E25-6D14-4546-8630-76036E2E19C9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6A902E25-6D14-4546-8630-76036E2E19C9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{97FA04A0-62A3-4FF1-9AB3-086F7B548CAF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{97FA04A0-62A3-4FF1-9AB3-086F7B548CAF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{97FA04A0-62A3-4FF1-9AB3-086F7B548CAF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{97FA04A0-62A3-4FF1-9AB3-086F7B548CAF}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - Library</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css" />
+  <script src="js/demo-urls.js"></script>
+</head>
+<body data-tawala-page="library" data-tawala-status="compact">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Libraries</h3>
+          <p><b>Tawala Public Library</b></p>
+        </div>
+        <div class="block category-tree">
+          <h3>Categories</h3>
+          <ul>
+            <li><a href="library.html">All projects</a></li>
+            <li>Activities
+              <ul>
+                <li><a href="library.html?cat=activities">Sign-up sheets</a></li>
+              </ul>
+            </li>
+            <li>Polls
+              <ul>
+                <li><a href="library.html?cat=polls">Surveys</a></li>
+              </ul>
+            </li>
+            <li>Meetings
+              <ul>
+                <li><a href="library.html?cat=meetings">Potluck &amp; scheduling</a></li>
+              </ul>
+            </li>
+            <li>Basic
+              <ul>
+                <li><a href="library.html?cat=basic">Designer demos</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Next level</h3>
+          <p><a href="signup.html">Create your own Tawala apps</a> — free account.</p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="pageTitle"><h1>Tawala Libraries</h1></div>
+
+        <div id="library">
+          <div id="search">
+            <span class="category"><h3 id="listingTitle">All projects</h3></span>
+            <form method="get" id="searchForm" onsubmit="return filterLibrary(event)">
+              <span class="searchInput">
+                <input class="text" type="text" name="query" id="query" size="32" placeholder="Search projects…" />
+                <input class="button" type="submit" value="Search" />
+              </span>
+            </form>
+          </div>
+
+          <table class="projectListing stripe ruler">
+            <thead>
+              <tr>
+                <th class="left">Name</th>
+                <th class="left">Rating</th>
+                <th>Comments</th>
+                <th class="left">Updated</th>
+              </tr>
+            </thead>
+            <tbody id="projectRows"></tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js"></script>
+  <script>
+    const PROJECTS = [
+      {
+        id: "simple-survey",
+        name: "Simple Survey Template",
+        category: "Polls",
+        rating: "★★★★☆",
+        comments: 12,
+        updated: "2026-06-27",
+      },
+      {
+        id: "signup-sheet",
+        name: "Sign-up Sheet Template",
+        category: "Activities",
+        rating: "★★★★★",
+        comments: 8,
+        updated: "2026-06-27",
+      },
+      {
+        id: "form-with-process",
+        name: "Form with process",
+        category: "Basic (Designer demo)",
+        rating: "—",
+        comments: 0,
+        updated: "2026-07-02",
+      },
+      {
+        id: "potluck",
+        name: "Potluck Template",
+        category: "Meetings",
+        rating: "★★★★☆",
+        comments: 15,
+        updated: "2026-07-02",
+      },
+      {
+        id: "get-together",
+        name: "Get Together Template",
+        category: "Meetings",
+        rating: "★★★★☆",
+        comments: 11,
+        updated: "2026-07-02",
+      },
+      {
+        id: "signup-sheet-email",
+        name: "Sign-up Sheet Template w Email",
+        category: "Activities",
+        rating: "★★★★☆",
+        comments: 4,
+        updated: "2026-07-02",
+      },
+      {
+        id: "multiple-question-survey",
+        name: "Multiple Question Survey Template",
+        category: "Polls",
+        rating: "★★★★☆",
+        comments: 9,
+        updated: "2026-07-02",
+      },
+      {
+        id: "form-process-document",
+        name: "Form with process connecting a document",
+        category: "Basic (Designer demo)",
+        rating: "—",
+        comments: 0,
+        updated: "2026-07-02",
+      },
+    ];
+
+    function renderRows(rows) {
+      const tbody = document.getElementById("projectRows");
+      tbody.innerHTML = rows
+        .map(
+          (p) => `<tr class="link" onclick="location.href='library-detail.html?project=${p.id}'">
+            <td><span class="title">${p.name}</span><br /><small>${p.category}</small></td>
+            <td class="rating">${p.rating}</td>
+            <td>${p.comments}</td>
+            <td>${p.updated}</td>
+          </tr>`
+        )
+        .join("");
+    }
+
+    function applyFilters() {
+      const params = new URLSearchParams(location.search);
+      const cat = params.get("cat");
+      const q = (params.get("query") || "").toLowerCase();
+      let rows = PROJECTS;
+      if (cat === "polls") rows = rows.filter((p) => p.category === "Polls");
+      if (cat === "activities") rows = rows.filter((p) => p.category === "Activities");
+      if (cat === "templates") rows = rows.filter((p) => p.category === "Templates");
+      if (cat === "meetings") rows = rows.filter((p) => p.category === "Meetings");
+      if (cat === "basic") rows = rows.filter((p) => p.category.includes("Basic"));
+      if (q) rows = rows.filter((p) => p.name.toLowerCase().includes(q));
+      const title = document.getElementById("listingTitle");
+      if (q) title.textContent = `Search results for "${params.get("query")}"`;
+      else if (cat === "polls") title.textContent = 'All projects in "Polls" category';
+      else if (cat === "activities") title.textContent = 'All projects in "Activities" category';
+      else if (cat === "templates") title.textContent = 'All projects in "Templates" category';
+      else if (cat === "meetings") title.textContent = 'All projects in "Meetings" category';
+      else if (cat === "basic") title.textContent = 'All projects in "Basic" category';
+      else title.textContent = "All projects";
+      document.getElementById("query").value = params.get("query") || "";
+      renderRows(rows);
+    }
+
+    function filterLibrary(e) {
+      e.preventDefault();
+      const q = document.getElementById("query").value;
+      const params = new URLSearchParams(location.search);
+      if (q) params.set("query", q);
+      else params.delete("query");
+      location.search = params.toString();
+      return false;
+    }
+
+    TawalaChrome.mount();
+    applyFilters();
+  </script>
+</body>
+</html>

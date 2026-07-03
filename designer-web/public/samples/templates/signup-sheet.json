@@ -1,0 +1,98 @@
+{
+  "name": "Signup Sheet Template",
+  "format": "2.0",
+  "themePath": "baseball",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "themePath": "baseball",
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Sign-up Sheet Template"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Replace this text with your own instructions, then deploy. Delete this instruction box when you are done."
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Enter your full name here:",
+          "blanks": [
+            {
+              "name": "FirstName",
+              "alternateLabel": "FirstName",
+              "displayLabel": "First name",
+              "length": 50
+            },
+            {
+              "name": "LastName",
+              "alternateLabel": "LastName",
+              "displayLabel": "Last name",
+              "length": 50
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "",
+          "blanks": [
+            {
+              "name": "Email",
+              "alternateLabel": "Email",
+              "displayLabel": "Email",
+              "length": 50
+            },
+            {
+              "name": "Tel",
+              "alternateLabel": "Tel",
+              "displayLabel": "Telephone",
+              "length": 50
+            },
+            {
+              "name": "Address",
+              "alternateLabel": "Address",
+              "displayLabel": "Address",
+              "length": 50
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "nodes": [
+                {
+                  "type": "itemizationTable",
+                  "version": 1,
+                  "form": "Form 1",
+                  "columns": [
+                    { "header": "First", "field": "Record:Form 1:FirstName" },
+                    { "header": "Last", "field": "Record:Form 1:LastName" },
+                    { "header": "Email", "field": "Record:Form 1:Email" },
+                    { "header": "Phone", "field": "Record:Form 1:Tel" },
+                    { "header": "Address", "field": "Record:Form 1:Address" }
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "processes": [],
+  "documents": []
+}

@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - Login</title>
+  <link rel="stylesheet" href="css/tawala-mock.css" />
+</head>
+<body data-tawala-page="home" class="stub-page">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+    <div id="bd">
+      <div class="content">
+        <div class="pageTitle"><h1>Login</h1></div>
+        <div class="block stub-form">
+          <p>Sign in to access My Tawala and your deployed projects.</p>
+          <form onsubmit="alert('Mock site — login is not wired. Use My Tawala page for demo navigation.'); return false;">
+            <label for="userId">User ID</label>
+            <input type="text" id="userId" name="userId" value="dev" />
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" value="dev" />
+            <p style="margin-top:12px;">
+              <input type="submit" value="Login" />
+            </p>
+          </form>
+          <p class="note">
+            Stub page — legacy login posts to the Java webapp. For local deploy testing, the runtime uses user <b>dev</b> / <b>dev</b>.
+            <a href="mytawala.html">Continue to My Tawala mock →</a>
+          </p>
+        </div>
+      </div>
+    </div>
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js"></script>
+  <script>TawalaChrome.mount();</script>
+</body>
+</html>

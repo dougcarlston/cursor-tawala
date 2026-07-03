@@ -1,0 +1,128 @@
+<public:component>
+
+<public:attach event="oncontentready" onevent="onContentReady()" />
+<public:attach event="onmouseover" onevent="onMouseOver()" />
+<public:attach event="onmouseout" onevent="onMouseOut()" />
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+<public:attach event="onbeforedeactivate" onevent="onBeforeDeactivate()" />
+
+<public:attach event="onfocusin" onevent="onFocusIn()" />
+<public:attach event="onfocusout" onevent="onFocusOut()" />
+
+<public:attach event="ondragenter" onevent="onDragEnter()" />
+<public:attach event="ondragleave" onevent="onDragLeave()" />
+<public:attach event="ondrop" onevent="onDrop()" />
+
+<public:property name="AcceptFieldDrop" put="putAcceptFieldDrop" />
+
+<script language="JScript">
+var active = false;
+var oldContentEditable = false;
+var acceptFieldDrop = true;
+
+function onContentReady()
+{
+    element.tabIndex=0;
+    element.contentEditable=false;
+}
+
+function onDragEnter()
+{
+    if (isDropAllowed())
+    {
+        oldContentEditable = element.contentEditable;
+        element.contentEditable=true;
+    }
+}
+
+function onDragLeave()
+{
+    if (isDropAllowed())
+    {
+        element.contentEditable=oldContentEditable;
+    }
+}
+
+function onDrop()
+{
+    if (isDropAllowed())
+    {
+        oldContentEditable=true;
+        element.focus();
+    }
+}
+
+function isDropAllowed()
+{
+    return (acceptFieldDrop) && (!dropArea.RowDragInProgress);
+}
+
+
+function onMouseOver()
+{
+	highlightOn();
+}
+
+function onMouseOut()
+{
+	if (!active)
+		highlightOff();
+}
+
+function onActivate()
+{
+    beginEdit();
+}
+
+function onBeforeDeactivate()
+{
+}
+
+function onDeactivate()
+{
+    endEdit();
+}
+
+function onFocusIn()
+{
+    beginEdit();
+}
+
+function onFocusOut()
+{
+}
+
+function beginEdit()
+{
+    active = true;
+    element.contentEditable=true;
+    oldContentEditable = true;
+    highlightOn();
+}
+
+function endEdit()
+{
+    active = false;
+    element.contentEditable = false;
+    oldContentEditable = false;
+	highlightOff();
+}
+
+function highlightOn()
+{
+	 element.runtimeStyle.backgroundColor  = "rgb(255,255,160)";
+}
+
+function highlightOff()
+{
+    element.runtimeStyle.backgroundColor  = "";
+}
+
+function putAcceptFieldDrop(value)
+{
+	acceptFieldDrop = value;
+}
+
+</script>
+</public:component>

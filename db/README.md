@@ -54,6 +54,7 @@ After deploying from Designer, seed league/fee/address variables:
 
 ```bash
 ./scripts/dev-data.sh seed-admin
+./scripts/dev-data.sh seed-divisions   # Q5/Q6 division pickers on Registration
 ```
 
 Remove test registrations (keeps AdminSetup):
@@ -61,6 +62,8 @@ Remove test registrations (keeps AdminSetup):
 ```bash
 ./scripts/dev-data.sh cleanup-registrations
 ```
+
+See also `docs/COMPARING_RUNTIMES.md` for **5173 test bed** vs **8080 Java** Registration URLs.
 
 Check form row counts:
 

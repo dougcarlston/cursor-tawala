@@ -111,29 +111,33 @@ function renderQ4(item, ctx, formName) {
       <span class="reg-label reg-label-bold">Parent Email:</span>
       <div class="reg-fields reg-email-pair">
         ${textInput(formName, item, byName("ParentEmail"), ctx, { className: "reg-input reg-email" })}
-        <span class="reg-email-again-label"><b>Parent Email:</b> <em class="fib-hint fib-hint-inline">(again)</em></span>
+        <span class="reg-email-again-label"><em class="fib-hint fib-hint-inline">(again)</em></span>
         ${textInput(formName, item, byName("g"), ctx, { className: "reg-input reg-email reg-email-last" })}
       </div>
     </div>
     <div class="reg-field-row reg-email-row">
-      <span class="reg-label reg-label-bold">Additional Parent Email <em class="fib-hint fib-hint-inline">(optional)</em>:</span>
+      <span class="reg-label reg-label-bold reg-label-stack">
+        <span>Additional Parent Email:</span>
+        <em class="fib-hint">(optional)</em>
+      </span>
       <div class="reg-fields reg-email-pair">
         ${textInput(formName, item, byName("ParentEmail2"), ctx, { className: "reg-input reg-email" })}
-        <span class="reg-email-again-label"><b>Additional Parent Email:</b> <em class="fib-hint fib-hint-inline">(again)</em></span>
+        <span class="reg-email-again-label"><em class="fib-hint fib-hint-inline">(again)</em></span>
         ${textInput(formName, item, byName("ParentEmail2Confirm"), ctx, { className: "reg-input reg-email reg-email-last" })}
       </div>
     </div>
     <p class="reg-note-line"><em class="fib-hint">(All communications will be by email only)</em></p>
-    <div class="reg-field-row reg-phone-block">
-      <span class="reg-label reg-label-bold">Parent Phone Numbers <em class="fib-hint fib-hint-inline">(for emergencies)</em>:</span>
-    </div>
     <div class="reg-field-row reg-phone-row">
-      <span class="reg-label reg-label-bold">Phone 1:</span>
+      <span class="reg-label reg-label-bold reg-label-stack">
+        <span>Parent Phone Numbers:</span>
+        <em class="fib-hint">(for emergencies)</em>
+      </span>
       <div class="reg-fields reg-phone-line">
+        <span class="reg-inline-label reg-label-bold">P1:</span>
         ${textInput(formName, item, byName("Phone1"), ctx, { className: "reg-input reg-phone" })}
-        <span class="reg-inline-label reg-label-bold">Phone 2:</span>
+        <span class="reg-inline-label reg-label-bold">P2:</span>
         ${textInput(formName, item, byName("Phone2"), ctx, { className: "reg-input reg-phone" })}
-        <span class="reg-inline-label reg-label-bold">Phone 3:</span>
+        <span class="reg-inline-label reg-label-bold">P3:</span>
         ${textInput(formName, item, byName("Phone3"), ctx, { className: "reg-input reg-phone" })}
       </div>
     </div>
@@ -198,6 +202,11 @@ export function renderRegistrationFib(item, ctx, formName) {
 export function renderRegistrationText(item, ctx, formName, project) {
   switch (item.label) {
     case "T1": {
+      const msg = getFieldValue(ctx, "Message")?.trim();
+      if (!msg) return "";
+      return `<div class="text reg-message"><p><strong><em>${esc(msg)}</em></strong></p></div>`;
+    }
+    case "T10": {
       const msg = getFieldValue(ctx, "Message")?.trim();
       if (!msg) return "";
       return `<div class="text reg-message"><p><strong><em>${esc(msg)}</em></strong></p></div>`;
@@ -273,9 +282,14 @@ export function renderRegistrationMc(item, ctx) {
 
   if (item.label === "Q5") {
     const link = `<a href="#" class="reg-divisions-link" onclick="document.getElementById('divisions-help').showModal();return false;">click here</a>`;
-    const legend = `Please indicate the division in which you'd like to play: <em class="fib-hint fib-hint-inline">(To learn more about divisions, ${link})</em>`;
-    return `<fieldset class="mc mc-radio-aligned" id="item-${esc(itemKey(item))}"><legend>${legend}</legend><div class="mc-choices">${choices}</div></fieldset>
-      <dialog id="divisions-help" class="reg-help-dialog"><p>Divisions group players by age and skill. Your league administrator defines the available divisions each season.</p><form method="dialog"><button>Close</button></form></dialog>`;
+    const prompt = `<p class="reg-division-prompt"><strong>Please indicate the division in which you'd like to play:</strong> <em class="fib-hint fib-hint-inline">(To learn more about divisions, ${link})</em></p>`;
+    return `<div class="reg-division-block">${prompt}<fieldset class="mc mc-radio-aligned mc-divisions" id="item-${esc(itemKey(item))}"><div class="mc-choices">${choices}</div></fieldset>
+      <dialog id="divisions-help" class="reg-help-dialog"><p>Divisions group players by age and skill. Your league administrator defines the available divisions each season.</p><button type="button" class="reg-dialog-close" onclick="document.getElementById('divisions-help').close()">Close</button></dialog></div>`;
+  }
+
+  if (item.label === "Q6") {
+    const q = item.question ?? "If you played last year, please indicate the division in which you played:";
+    return `<div class="reg-division-block"><p class="reg-division-prompt"><strong>${esc(q)}</strong></p><fieldset class="mc mc-radio-aligned mc-divisions" id="item-${esc(itemKey(item))}"><div class="mc-choices">${choices}</div></fieldset></div>`;
   }
 
   if (item.label === "Q2") {

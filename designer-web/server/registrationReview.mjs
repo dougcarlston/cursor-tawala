@@ -39,7 +39,14 @@ function section(title, rows) {
 
 /** Build page-3 review synopsis — grouped sections matching legacy DirtBowl review page. */
 export function buildRegistrationReviewTable(form, ctx) {
-  const g = (ref) => getFieldValue(ctx, ref) || getFieldValue(ctx, `Registration:${ref}`) || "";
+  const pick = (...refs) => {
+    for (const ref of refs) {
+      const v = getFieldValue(ctx, ref);
+      if (v != null && String(v).trim() !== "") return v;
+    }
+    return "";
+  };
+  const g = (ref) => pick(ref, `Registration:${ref}`, `Q1:${ref}`, `Q4:${ref}`, `Q9:${ref}`, `Q12:${ref}`);
   const dob = [g("RegAgeMo"), g("RegAgeDay"), g("RegAgeYr")].filter(Boolean).join("/");
 
   const sexItem = form.items?.find((i) => i.name === "SexMCQ");
@@ -49,7 +56,7 @@ export function buildRegistrationReviewTable(form, ctx) {
   const coachItem = form.items?.find((i) => i.label === "Q7");
   const umpireItem = form.items?.find((i) => i.label === "Q8");
 
-  const friends = [g("Q10:a"), g("Q10:b"), g("Q10:c")]
+  const friends = [pick("Q10:a", "Friend:a", "Registration:Friend:a"), pick("Q10:b", "Friend:b"), pick("Q10:c", "Friend:c")]
     .filter((v) => v && String(v).trim())
     .join(", ");
 

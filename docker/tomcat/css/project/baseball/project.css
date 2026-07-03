@@ -1,0 +1,20 @@
+/* Baseball theme — stub until full assets are transferred from legacy install */
+
+body {
+  background-color: #1f4d1f;
+}
+
+#tawalaProjectContainer {
+  background-color: #f8f4e8;
+  border: 2px solid #8b4513;
+}
+
+h1.pageHeading {
+  color: #ffffff;
+  background-color: #8b0000;
+}
+
+table.component thead {
+  background-color: #1f4d1f;
+  color: #ffffff;
+}

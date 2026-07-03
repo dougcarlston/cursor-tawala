@@ -1,0 +1,81 @@
+
+    internal sealed class FunctionInfoCollection : Collection<IFunctionInfo>, IFunctionInfoCollection
+    {
+        private readonly Dictionary<string, IFunctionInfo> idToInfo = new Dictionary<string, IFunctionInfo>();
+        private readonly Dictionary<Type, IFunctionInfo> typeToInfo = new Dictionary<Type, IFunctionInfo>();
+
+        #region IFunctionInfoCollection Members
+
+        public IFunctionInfo this[string id] { get { return idToInfo[id]; } }
+
+        public IFunctionInfo this[Type type] { get { return typeToInfo[type]; } }
+
+        public bool Contains(string id)
+        {
+            return idToInfo.ContainsKey(id);
+        }
+
+        public bool Contains(Type type)
+        {
+            return typeToInfo.ContainsKey(type);
+        }
+
+        #endregion
+
+        internal void Initialize()
+        {
+            Type[] types = GetType().Assembly.GetTypes();
+            BindingFlags bindingFlags = BindingFlags.NonPublic | BindingFlags.Static | BindingFlags.GetField;
+            string interfaceName = typeof(IFunction).FullName;
+
+            for (int i = 0; i < types.Length; ++i)
+            {
+                Type type = types[i];
+                if (type.GetInterface(interfaceName) != null)
+                {
+                    Add(type.InvokeMember("functionInfo", bindingFlags, null, type, null) as IFunctionInfo);
+                }
+            }
+
+            Sort();
+        }
+
+        internal void Sort()
+        {
+            List<IFunctionInfo> list = new List<IFunctionInfo>(this);
+            list.Sort(compareFunctionInfoByName);
+            Clear();
+            for (int i = 0; i < list.Count; ++i)
+            {
+                Add(list[i]);
+            }
+        }
+
+        internal void Add(FunctionInfoCollection fic)
+        {
+            for (int i = 0; i < fic.Count; ++i)
+            {
+                Add(fic[i]);
+            }
+        }
+
+        protected override void InsertItem(int index, IFunctionInfo item)
+        {
+            base.InsertItem(index, item);
+            idToInfo.Add(item.Id, item);
+            typeToInfo.Add(item.Type, item);
+        }
+
+        protected override void ClearItems()
+        {
+            base.ClearItems();
+            idToInfo.Clear();
+            typeToInfo.Clear();
+        }
+
+        private static int compareFunctionInfoByName(IFunctionInfo info1, IFunctionInfo info2)
+        {
+            return info1.Name.CompareTo(info2.Name);
+        }
+    }
+}

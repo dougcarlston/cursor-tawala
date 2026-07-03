@@ -1,0 +1,45 @@
+---
+description: Local deploy to Tomcat (8080) and browser Designer; avoid legacy tawala.com assumptions
+globs: designer-web/**,docker/**,scripts/**,dirtbowl*
+alwaysApply: false
+---
+
+# Local deploy and test
+
+## Do not assume www.tawala.com
+
+Legacy C# Designer **Deploy** and **Project Manager** target the live Tawala website. For AI-Tawala work, use **local** deploy only unless the owner explicitly asks otherwise.
+
+## Deploy DirtBowl to Java (8080)
+
+From repo root (Tomcat must be running):
+
+```bash
+node scripts/deploy-dirtbowl-java.mjs
+```
+
+- Reads `designer-web/public/samples/dirtbowl_definition_v3.json`
+- POSTs XML to `http://localhost:8080/client` (credentials default `dev`/`dev`)
+- May run `scripts/dev-data.sh` seed unless `TAWALA_SKIP_SEED=1`
+
+Override: `TAWALA_JAVA_URL`, `TAWALA_DEV_USER`, `TAWALA_DEV_PASSWORD`.
+
+## Browser Designer deploy
+
+```bash
+cd designer-web && npm run dev
+```
+
+- UI: http://localhost:5173 — **File → Deploy** or toolbar Deploy
+- API: http://localhost:3001 — proxies via Vite
+- For Java backend: `TAWALA_JAVA_URL=http://localhost:8080` when running API
+
+## CSS / theme changes on 8080
+
+Project CSS lives under paths like `docker/tomcat/css/project/dirtbowl2/project.css`.
+
+After `docker cp` or file edits, **browser cache may hide changes**. Verify by opening the CSS URL directly or disabling cache in DevTools. Query string `?x=...` on deployed pages may not update when only the file on disk changes.
+
+## Registration parity work
+
+8080 fixes are often **export-time XML + project CSS**, not Designer-native layout. Prefer `registrationFibToXml.mjs` and theme CSS when aligning Registration pages; do not block browser Designer spec work on full visual parity unless the owner asks.

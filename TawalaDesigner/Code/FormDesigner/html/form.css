@@ -1,0 +1,150 @@
+﻿body
+{
+	background-color: White;
+	padding-bottom: 0px;
+}
+
+#formTable, #formTBody
+{
+	font: normal normal normal 10pt Arial;
+}
+
+#formTable
+{
+	margin: 0px;
+	padding: 0px;
+	border-collapse:collapse;
+}
+
+td.item, td.label
+{
+	border-style: solid;
+	border-width: 1px;
+	border-top-color:Black;
+	border-bottom-color:Black;
+	border-left-color:Gray;
+	border-right-color:Gray;
+}
+
+td.item
+{
+	width: 100%;
+	vertical-align: top;
+	padding: 1px;
+}
+
+td.label
+{
+	border-right-color: #808080;
+	background: #C0C0FF;
+	vertical-align: middle;
+}
+
+.ItemLabel
+{
+	padding: 1px;
+}
+
+div.label
+{
+	text-align: center;
+	padding: 1px 4px 2px 4px;
+	margin: 1px;
+	font: normal normal normal 10pt Tahoma;
+	white-space: nowrap;
+	cursor: default;
+}
+
+.formitem
+{
+	margin: 1px;
+}
+
+.hiddenfielditem
+{
+	vertical-align: middle;
+	text-align: left;
+	font: normal normal bold 10pt Arial;
+	padding: 1px 2px 1px 4px;
+}
+
+.headingitem
+{
+	padding: 2px 2px 16px 2px;
+}
+
+.subheadingitem
+{
+	padding: 2px 2px 12px 2px;
+}
+
+.textitem, .fibitem
+{
+	padding: 2px;
+}
+
+input.blank
+{
+	text-align: center;
+	font-style: italic;
+	font-size: 9pt;
+	font-family: Arial;
+	color: #404040;
+	vertical-align: middle;
+	behavior:url(notadroptarget.htc);
+}
+
+.mcqitemtext
+{
+	padding: 2px;
+	margin: 1px 1px 4px 1px;
+}
+
+.mcqitemchoices
+{
+	padding: 2px;
+	margin: 0px;
+}
+
+span.choice
+{
+	font-size: 9pt;
+	font-family: Lucida Console;
+	color: #606060;
+	vertical-align: middle;
+}
+
+.mcqitemchoices.*
+{
+	vertical-align: middle;
+}
+
+.breakitem, .skipitem
+{
+	font-size: 9pt;
+	text-align: center;
+	padding: 1px;
+}
+
+.breakitem
+{
+	background-color: rgb(224,224,224);
+	color: Black;
+	cursor: default;
+}
+
+.skipitem
+{
+	background-color: rgb(240,192,192);
+	cursor: hand;
+	color: Blue;
+	text-decoration: underline;
+}
+
+div.textitem p
+{
+	margin-top: 0pt;
+	margin-bottom: 0pt;
+	behavior:url(acceptsdraggedfields.htc);
+}
+

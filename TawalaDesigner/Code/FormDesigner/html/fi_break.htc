@@ -1,0 +1,17 @@
+<public:component tagName="BreakItem">
+
+<script language="JScript">
+
+init();
+
+function init()
+{
+    element.style.display="block";
+    element.className="breakitem";
+    element.innerText = "Page Break";
+    element.UNSELECTABLE = true;
+}
+
+</script>
+
+</public:component>

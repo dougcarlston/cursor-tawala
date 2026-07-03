@@ -195,8 +195,13 @@ body.tawala-theme-dirtbowl2 {
 
 /* Registration layout — aligned field column */
 .tawala-theme-dirtbowl2 {
-  --reg-label-width: 11.5rem;
+  --reg-label-width: 13.25rem;
   --reg-field-width: 28rem;
+  --reg-block-indent: 2rem;
+  --reg-q4-row-gap: 0.5rem;
+  --reg-name-gap: 1.25rem;
+  --reg-name-first-width: 12em;
+  --reg-name-last-width: 18em;
 }
 
 .tawala-theme-dirtbowl2 .reg-field-row {
@@ -236,7 +241,7 @@ body.tawala-theme-dirtbowl2 {
 .tawala-theme-dirtbowl2 .reg-hint-row.reg-name-hints {
   display: grid;
   grid-template-columns: 12em minmax(0, 1fr);
-  column-gap: 0.75rem;
+  column-gap: var(--reg-name-gap);
   width: var(--reg-field-width);
   max-width: 100%;
   box-sizing: border-box;
@@ -269,7 +274,7 @@ body.tawala-theme-dirtbowl2 {
   display: grid;
   grid-template-columns: 12em minmax(0, 1fr);
   row-gap: 0;
-  column-gap: 0.75rem;
+  column-gap: var(--reg-name-gap);
   flex: 0 0 var(--reg-field-width);
   width: var(--reg-field-width);
   max-width: 100%;
@@ -369,19 +374,55 @@ body.tawala-theme-dirtbowl2 {
 .tawala-theme-dirtbowl2 .reg-email-again-label {
   white-space: nowrap;
   align-self: center;
+  font-style: italic;
+  font-weight: normal;
+  font-size: 0.9em;
 }
 
 .tawala-theme-dirtbowl2 .reg-email-again-label b {
-  font-weight: bold;
+  display: none;
+}
+
+.tawala-theme-dirtbowl2 .reg-email-row .reg-fields {
+  align-items: start;
+  padding-top: 4px;
+}
+
+.tawala-theme-dirtbowl2 .reg-email-row .reg-email-pair {
+  align-items: center;
+}
+
+.tawala-theme-dirtbowl2 .reg-email-row .reg-input.reg-email {
+  margin: 0;
+  padding: 2px 6px;
+  line-height: 1.25;
+  align-self: center;
+}
+
+.tawala-theme-dirtbowl2 .reg-phone-row .reg-fields {
+  align-items: start;
+  padding-top: 4px;
 }
 
 .tawala-theme-dirtbowl2 .reg-phone-line {
   display: grid;
-  grid-template-columns: 1fr auto 1fr auto 1fr;
-  column-gap: 0.75rem;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 0.5rem;
   align-items: center;
   width: 100%;
   max-width: var(--reg-field-width);
+}
+
+.tawala-theme-dirtbowl2 .reg-phone-row .reg-inline-label {
+  line-height: 1.25;
+  align-self: center;
+}
+
+.tawala-theme-dirtbowl2 .reg-phone-row .reg-input.reg-phone {
+  margin: 0;
+  padding: 2px 6px;
+  line-height: 1.25;
+  align-self: center;
 }
 
 .tawala-theme-dirtbowl2 .reg-phone {
@@ -404,8 +445,53 @@ body.tawala-theme-dirtbowl2 {
   font-weight: bold;
 }
 
+.tawala-theme-dirtbowl2 .reg-phone-row > .reg-label-stack {
+  align-items: flex-start;
+  text-align: left;
+  padding-left: 0;
+}
+
+.tawala-theme-dirtbowl2 .reg-label-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.1rem;
+}
+
+.tawala-theme-dirtbowl2 .reg-label-stack > span {
+  display: block;
+}
+
+.tawala-theme-dirtbowl2 .reg-label-stack .fib-hint {
+  font-style: italic;
+  font-weight: normal;
+  font-size: 0.9em;
+}
+
+.tawala-theme-dirtbowl2 .fib-reg-q4 {
+  display: flex;
+  flex-direction: column;
+  gap: var(--reg-q4-row-gap);
+  margin-top: 0.5rem;
+  margin-bottom: 0.15rem;
+  padding-top: 0;
+}
+
+.tawala-theme-dirtbowl2 .fib-reg-q4 .reg-field-row,
+.tawala-theme-dirtbowl2 .fib-reg-q4 .reg-note-line {
+  margin-bottom: 0 !important;
+}
+
+.tawala-theme-dirtbowl2 .fib-reg-q4 .reg-hint-row {
+  margin-bottom: calc(-1 * var(--reg-q4-row-gap));
+}
+
+.tawala-theme-dirtbowl2 .fib-reg-q4 .reg-hint-row + .reg-field-row {
+  margin-top: 0.05rem;
+}
+
 .tawala-theme-dirtbowl2 .reg-note-line {
-  margin: 0.35rem 0 0.65rem calc(var(--reg-label-width) + 0.75rem);
+  margin: 0 0 0 calc(var(--reg-label-width) + 0.75rem);
 }
 
 .tawala-theme-dirtbowl2 .reg-friends-heading {
@@ -416,7 +502,7 @@ body.tawala-theme-dirtbowl2 {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  margin-left: calc(var(--reg-label-width) + 0.75rem);
+  margin-left: var(--reg-block-indent);
   max-width: var(--reg-field-width);
 }
 
@@ -449,13 +535,40 @@ body.tawala-theme-dirtbowl2 {
   font-weight: normal;
 }
 
-.tawala-theme-dirtbowl2 .mc-radio-aligned {
-  margin-left: 0;
+.tawala-theme-dirtbowl2 .reg-division-block {
+  margin-bottom: 0.85rem;
 }
 
-.tawala-theme-dirtbowl2 .mc-radio-aligned .mc-choices {
-  margin-left: calc(var(--reg-label-width) + 0.75rem);
+.tawala-theme-dirtbowl2 .reg-division-prompt {
+  margin: 0 0 0.35rem;
+  line-height: 1.45;
+}
+
+.tawala-theme-dirtbowl2 .reg-division-prompt strong {
+  font-weight: bold;
+}
+
+.tawala-theme-dirtbowl2 .mc-radio-aligned {
+  margin-left: 0;
+  border: none;
+  padding: 0;
+  margin-bottom: 0.35rem;
+}
+
+.tawala-theme-dirtbowl2 .mc-radio-aligned legend {
+  display: none;
+}
+
+.tawala-theme-dirtbowl2 .mc-radio-aligned .mc-choices,
+.tawala-theme-dirtbowl2 .mc-divisions .mc-choices {
+  margin-left: var(--reg-block-indent);
   padding-top: 0;
+}
+
+.tawala-theme-dirtbowl2 .mc-divisions .preview-mc-choice {
+  display: block;
+  margin: 0.15rem 0;
+  font-weight: normal;
 }
 
 .tawala-theme-dirtbowl2 .mc-sex .mc-choices {
@@ -468,7 +581,7 @@ body.tawala-theme-dirtbowl2 {
 }
 
 .tawala-theme-dirtbowl2 .mc-checkbox-compact .mc-choices {
-  margin-left: calc(var(--reg-label-width) + 0.75rem);
+  margin-left: var(--reg-block-indent);
 }
 
 .tawala-theme-dirtbowl2 .mc-checkbox-compact .preview-mc-choice {
@@ -640,4 +753,10 @@ body.tawala-theme-dirtbowl2 {
   border-radius: 6px;
   padding: 1rem;
   max-width: 420px;
+}
+
+.tawala-theme-dirtbowl2 .reg-dialog-close {
+  margin-top: 0.75rem;
+  padding: 6px 16px;
+  cursor: pointer;
 }

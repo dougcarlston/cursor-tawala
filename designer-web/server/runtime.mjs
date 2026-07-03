@@ -8,6 +8,7 @@ import {
   runProcessByName,
   visibleItems,
 } from "./runtimeEngine.mjs";
+import { renderDocumentsPage } from "./documentRenderer.mjs";
 import { fibRowFields, fibRowLabel, fibUsesLeftLabels, parseFibPrompt } from "./fibPrompt.mjs";
 import { getThemeCss, themeBodyClass } from "./themes/index.mjs";
 import {
@@ -75,6 +76,23 @@ function renderFib(item, ctx) {
   const rows = parseFibPrompt(prompt, blanks);
   const left = fibUsesLeftLabels(item.style);
 
+  if (item.style === "topLabels") {
+    const intro =
+      prompt.trim() && !prompt.includes("//") && !prompt.includes("/") ? prompt.trim() : "";
+    const fieldRows = blanks;
+    const rowHtml = fieldRows
+      .map((blank) => {
+        const label = blank.displayLabel?.trim() || "";
+        return `<div class="fib-row fib-top-label">
+          ${label ? `<div class="fib-top-label-text">${esc(label)}</div>` : ""}
+          <div class="fib-top-label-field"><input type="text" class="text" name="${esc(`${item.label}:${blank.name}`)}" size="${Math.max(blank.length ?? 20, 5)}" readonly="readonly" /></div>
+        </div>`;
+      })
+      .join("");
+    const introHtml = intro ? `<p class="fib-intro">${esc(intro)}</p>` : "";
+    return `<div class="fib fib-style-topLabels" id="item-${esc(itemKey(item))}">${introHtml}${rowHtml}</div>`;
+  }
+
   const rowHtml = rows
     .map((row) => {
       const label = fibRowLabel(row.segments);
@@ -125,6 +143,60 @@ function enhancePlainText(content, ctx, item) {
   return resolveTemplate(text, ctx);
 }
 
+function parseRecordField(field) {
+  const parts = String(field ?? "").split(":");
+  if (parts[0] === "Record" && parts.length >= 3) {
+    return { form: parts[1], name: parts.slice(2).join(":") };
+  }
+  return { form: null, name: String(field ?? "") };
+}
+
+function recordCellValue(row, ref, defaultForm) {
+  const name = ref.name;
+  if (row[name] != null && row[name] !== "") return row[name];
+  const form = ref.form ?? defaultForm;
+  if (form) {
+    const qualified = `${form}:${name}`;
+    if (row[qualified] != null && row[qualified] !== "") return row[qualified];
+  }
+  return "";
+}
+
+/** HTML facsimile of legacy itemization (MULTIPLE QUESTION LIST) tables. */
+function renderItemizationTableHtml(node, ctx) {
+  const columns = node.columns ?? [];
+  if (columns.length === 0) return "";
+
+  const sourceForm = node.form ?? ctx.formName;
+  const records = ctx.records?.[sourceForm] ?? [];
+  const headerCells = columns.map((c) => `<th>${esc(c.header)}</th>`).join("");
+
+  const bodyRows =
+    records.length === 0
+      ? ""
+      : records
+          .map((row, i) => {
+            const cls = i % 2 === 0 ? "even" : "odd";
+            const cells = columns
+              .map((col) => {
+                const ref = parseRecordField(col.field);
+                const val = recordCellValue(row, ref, sourceForm);
+                return `<td>${esc(val)}</td>`;
+              })
+              .join("");
+            return `<tr class="${cls}">${cells}</tr>`;
+          })
+          .join("\n");
+
+  const fixWidth = columns.length > 3;
+  const containerClass = fixWidth ? ' class="tawalaDataTable dtFixTableWidth"' : "";
+
+  return `<div${containerClass}><table class="component outline sortable stripe">
+<thead><tr>${headerCells}</tr></thead>
+<tbody>${bodyRows}</tbody>
+</table></div>`;
+}
+
 function renderRichNodes(nodes, ctx) {
   if (!nodes) return "";
   return nodes
@@ -149,6 +221,12 @@ function renderRichNodes(nodes, ctx) {
           const val = getFieldValue(ctx, n.name ?? n.field);
           return esc(val || `«${n.name ?? n.field}»`);
         }
+        case "itemizationTable":
+          return renderItemizationTableHtml(n, ctx);
+        case "choiceTallyTable":
+          return `<div class="preview-function-table"><em>Choice tally</em> (rendered on Java deploy)</div>`;
+        case "questionCorrelationTable":
+          return `<div class="preview-function-table"><em>Date correlation table</em> (rendered on Java deploy)</div>`;
         default:
           return renderRichNodes(n.nodes, ctx);
       }
@@ -166,8 +244,12 @@ function renderRichContent(content, ctx, item) {
   return content
     .map((block) => {
       if (block.type === "paragraph") {
+        const nodes = block.nodes ?? [];
+        if (nodes.length === 1 && nodes[0].type === "itemizationTable") {
+          return renderRichNodes(nodes, ctx);
+        }
         const align = block.align ? ` style="text-align:${block.align}"` : "";
-        return `<p${align}>${renderRichNodes(block.nodes, ctx)}</p>`;
+        return `<p${align}>${renderRichNodes(nodes, ctx)}</p>`;
       }
       if (block.type === "text") return esc(block.text);
       return "";
@@ -213,8 +295,13 @@ function renderItem(item, ctx, project) {
         const reg = renderRegistrationText(item, ctx, ctx.formName, project);
         if (reg !== null) return reg;
       }
+      let content = item.content;
+      if (ctx.formName === "RegStep2" && typeof content === "string") {
+        const fee = getFieldValue(ctx, "SignupFeeForIndividual") || "";
+        if (fee) content = content.replace(/payment of \$/gi, `payment of $${fee}`);
+      }
       const style = item.style && item.style !== "normal" ? ` ${esc(item.style)}` : "";
-      const inner = renderRichContent(item.content, ctx, item);
+      const inner = renderRichContent(content, ctx, item);
       if (!inner.trim()) return "";
       const wrapCls = item.style === "instructional" ? "text instructional reg-page-footer" : `text${style}`;
       return `<div class="${wrapCls}">${inner}</div>`;
@@ -246,11 +333,23 @@ function renderItem(item, ctx, project) {
   }
 }
 
+const COMPONENT_TABLE_CSS = `
+table.component { border-collapse: collapse; font-size: 1em; margin: 12px 0; }
+table.component.outline { border: 1px solid #cccccc; }
+table.component thead { background-color: #888888; color: #eeeeee; }
+table.component thead th { padding: .2em 1em; border: 1px solid #cccccc; }
+table.component tbody tr.odd { background-color: #f8f8f8; }
+table.component tbody tr.even { background-color: #ffffff; }
+table.component tbody tr:hover { background-color: #e8e8e8; }
+table.component td { padding-left: 1em; padding-right: 1em; line-height: 1.5em; border: 1px solid #dddddd; }
+`;
+
 function pageShell(title, body, banner, themePath) {
   const theme = themePath || "default";
   const bodyClass = themeBodyClass(theme);
   const themeCss = getThemeCss(theme);
   const isThemed = theme !== "default";
+  const bannerHtml = banner ? `<div class="dev-banner">${banner}</div>` : "";
 
   return `<!doctype html>
 <html lang="en">
@@ -259,6 +358,7 @@ function pageShell(title, body, banner, themePath) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
   <style>
+    ${COMPONENT_TABLE_CSS}
     ${!isThemed ? `body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; }
     h1 { font-size: 1.25rem; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
     .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }
@@ -270,7 +370,7 @@ function pageShell(title, body, banner, themePath) {
   </style>
 </head>
 <body class="${bodyClass}">
-  <div class="dev-banner">${banner}</div>
+  ${bannerHtml}
   ${body}
 </body>
 </html>`;
@@ -284,9 +384,8 @@ export function prepareFormContext(project, form, session) {
   const ctx = buildContext(session, form.name);
   ctx.formName = form.name;
 
-  if (form.preProcess && !session.preProcessDone[form.name]) {
+  if (form.preProcess) {
     runProcessByName(project, form.preProcess, ctx);
-    session.preProcessDone[form.name] = true;
     Object.assign(session.fields, ctx.fields);
   }
 
@@ -345,9 +444,10 @@ export function renderFormPage(project, formName, baseUrl, uniqueId, session, op
     ? ` · <a href="${resetUrl}">Start over</a> · runtime 2026-06-28`
     : "";
 
+  const showPageChrome = !options.designerPreview;
   const body = `
-  ${isRegistrationForm(formName) ? "" : `<div class="project-title">${esc(project.name)}</div>`}
-  <h1 class="form-title">${esc(formName)}</h1>
+  ${showPageChrome && !isRegistrationForm(formName) ? `<div class="project-title">${esc(project.name)}</div>` : ""}
+  ${showPageChrome ? `<h1 class="form-title">${esc(formName)}</h1>` : ""}
   <form class="tawala-form" method="post" action="${action}"${formAttrs}>
     <input type="hidden" name="segmentId" value="${state.segmentIndex}" />
     ${itemHtml}
@@ -357,12 +457,11 @@ export function renderFormPage(project, formName, baseUrl, uniqueId, session, op
     </div>
   </form>`;
 
-  return pageShell(
-    `${project.name} — ${formName}`,
-    body,
-    `Tawala dev runtime — ${esc(project.name)} / ${esc(formName)} — page ${state.segmentIndex + 1} of ${segments.length}${bannerExtra}`,
-    theme,
-  );
+  const banner = options.designerPreview
+    ? ""
+    : `Tawala dev runtime — ${esc(project.name)} / ${esc(formName)} — page ${state.segmentIndex + 1} of ${segments.length}${bannerExtra}`;
+
+  return pageShell(`${project.name} — ${formName}`, body, banner, theme);
 }
 
 export function handleFormSubmit(project, formName, session, body, baseUrl, uniqueId) {
@@ -399,9 +498,30 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
   const skipTarget = runSkipBlocks(prevSegment.skipBlocks, ctx);
   Object.assign(session.fields, ctx.fields);
 
-  if (skipTarget === "__EndOfForm__") {
+  const finishPostProcess = () => {
+    if (!form.process) return null;
+    const nav = runProcessByName(project, form.process, ctx);
+    Object.assign(session.fields, ctx.fields);
+    if (nav.type === "form") {
+      formState(session, nav.form).segmentIndex = 0;
+      formState(session, nav.form).skipStartLabel = null;
+      return renderFormPage(project, nav.form, baseUrl, uniqueId, session);
+    }
+    if (nav.type === "documents") {
+      return renderDocumentsPage(project, nav.documents, session, baseUrl, uniqueId, {
+        fromForm: formName,
+      });
+    }
     return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
-      note: "Registration saved in dev session. Payment/waiver (RegStep2) requires full Java backend.",
+      note: `Post-process “${form.process}” finished without a show step in dev runtime.`,
+    });
+  };
+
+  if (skipTarget === "__EndOfForm__") {
+    const finished = finishPostProcess();
+    if (finished) return finished;
+    return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
+      note: "Dev runtime recorded field values.",
     });
   }
 
@@ -419,9 +539,8 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
   }
 
   if (form.process) {
-    return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
-      note: `Post-process “${form.process}” is not fully executed in dev runtime.`,
-    });
+    const finished = finishPostProcess();
+    if (finished) return finished;
   }
 
   return renderSubmitAck(project, form, session, baseUrl, uniqueId);

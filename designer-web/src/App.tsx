@@ -1,21 +1,27 @@
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { MenuBar } from "./components/MenuBar";
 import { ToolBar } from "./components/ToolBar";
 import { ProjectExplorer } from "./components/ProjectExplorer";
-import { FieldsPalette } from "./components/FieldsPalette";
+import { InspectorPanel } from "./components/InspectorPanel";
 import { FormEditor } from "./components/FormEditor";
 import { ProcessEditor } from "./components/ProcessEditor";
 import { DocumentEditor } from "./components/DocumentEditor";
 import { StatusBar } from "./components/StatusBar";
 import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
+import { NewProjectDialog } from "./components/NewProjectDialog";
+import type { TemplateEntry } from "@/templates/catalog";
 
 export default function App() {
   const selection = useProjectStore((s) => s.selection);
   const importJson = useProjectStore((s) => s.importJson);
+  const loadTemplate = useProjectStore((s) => s.loadTemplate);
   const deploy = useProjectStore((s) => s.deploy);
+  const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
+  const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const fileRef = useRef<HTMLInputElement>(null);
+  const [showNewProject, setShowNewProject] = useState(false);
 
   const onOpenFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -32,17 +38,21 @@ export default function App() {
     e.target.value = "";
   };
 
-  const loadDirtbowlSample = async () => {
+  const onPickTemplate = async (template: TemplateEntry) => {
+    setShowNewProject(false);
     try {
-      const res = await fetch("/samples/dirtbowl_definition_v3.json");
-      if (!res.ok) throw new Error("not found");
-      importJson(await res.text());
-    } catch {
-      alert(
-        "DirtBowl sample not found. Copy dirtbowl_definition_v3.json to designer-web/public/samples/",
-      );
+      if (template.id === "empty") {
+        useProjectStore.getState().newProject();
+        return;
+      }
+      await loadTemplate(template.samplePath);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : "Could not load template.");
     }
   };
+
+  const canDelete =
+    selection.kind === "form" && selection.name != null && selectedItemIndex !== null;
 
   return (
     <div className="designer-app">
@@ -53,8 +63,14 @@ export default function App() {
         hidden
         onChange={onOpenFile}
       />
-      <MenuBar onOpen={() => fileRef.current?.click()} onLoadSample={loadDirtbowlSample} onDeploy={() => void deploy()} />
-      <ToolBar />
+      <MenuBar
+        onNewProject={() => setShowNewProject(true)}
+        onOpen={() => fileRef.current?.click()}
+        onDeploy={() => void deploy()}
+        onDelete={() => deleteSelectedFormItem()}
+        canDelete={canDelete}
+      />
+      <ToolBar onNewProject={() => setShowNewProject(true)} />
       <div className="designer-main">
         <aside className="designer-left">
           <ProjectExplorer />
@@ -73,12 +89,17 @@ export default function App() {
           )}
         </main>
         <aside className="designer-right">
-          <FieldsPalette />
+          <InspectorPanel />
         </aside>
       </div>
       <StatusBar />
       <LoginDialog />
       <DeployDialog />
+      <NewProjectDialog
+        open={showNewProject}
+        onClose={() => setShowNewProject(false)}
+        onSelect={(t) => void onPickTemplate(t)}
+      />
     </div>
   );
 }

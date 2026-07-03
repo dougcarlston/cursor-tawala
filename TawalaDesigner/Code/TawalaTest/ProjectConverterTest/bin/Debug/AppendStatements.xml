@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="JDF" password="jdf20q" />
+<project name="AppendStatements" format="1.3">
+<processes>
+<process name="Process 1">
+<append document="Document 1" appendage="Document 2"/>
+<append document="VirtualDoc 1" appendage="Document 2"/>
+</process>
+</processes>
+<documents>
+<document name="Document 1"></document>
+<document name="Document 2"></document>
+</documents>
+</project>
+</request>

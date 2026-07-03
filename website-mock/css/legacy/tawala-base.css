@@ -1,0 +1,1012 @@
+/***********************************
+ * HTML tags
+ ***********************************/
+html * {
+    word-spacing: 0.05em;
+    letter-spacing: 0px;
+}
+
+body {
+    color: #333333;
+    font-family:  arial,helvetica,sans-serif;
+    background-color: #afafaf;
+    padding-top: 10px;
+}
+
+a {
+    color: #4c78b2;
+/*    text-decoration: none; */
+	font-weight: bold;
+}
+
+    a:visited {
+        color: #6692cc;
+/*        text-decoration: none; */
+    }
+    
+    a:hover {
+        color: #385f93;
+        text-decoration: underline;
+    }
+
+    span a{
+        line-height: 0em;
+    }
+
+    a.headingStatusLink, a.headingStatusLink:visited {
+        color: #e7dd95;
+        padding-left: .2em;
+        padding-right: .2em;
+    }    
+
+img {
+    border: 0 solid #ffffff;
+}
+
+
+h1 {
+    font-size: 2em;
+    font-weight: bold;
+    color: #c24322;
+    padding-bottom: 8px;
+	overflow: hidden;
+}
+
+h2 {
+    font-size: 1.2em;
+    color: #8A66A4;
+    margin-bottom: 6px;
+}
+
+h3, h3 a {
+    color: #4d6581;
+    font-size: 1.3em;
+    margin-bottom: 6px;
+    padding-bottom: .1em;
+    font-weight: bold;
+    border-bottom: 0px solid #cccccc;
+}
+
+h4 {
+    color: #c24322;
+    font-size: 1.1em;
+    margin-bottom: 6px;
+}
+
+h5 {
+	color: #444444;
+    font-size: 1.1em;
+    font-weight: bold;
+    margin-top: .5em;
+    margin-bottom: 6px;
+}
+
+label {
+    font-size: .88em;
+    color: #777777;
+    line-height: 1.5em;
+    margin-top: 4px;;
+}
+
+input {
+    font-size: 1em;
+    margin-bottom: .6em;
+}
+
+	input.text, textarea, select {
+		border-top:	2px solid #7C7C7C;
+		border-right: 2px solid #C3C3C3;
+		border-bottom: 2px solid #DDDDDD;
+		border-left: 2px solid #C3C3C3;
+		padding: .2em .4em .2em .4em;
+	}
+	
+	input.button {
+		font-size: .9em;
+	}
+
+button {
+    font-size: .9em;
+    font-weight: 500;
+    padding: .1em 0 .3em 0;
+}
+
+ul.list {
+    padding: 0;
+    margin: 0;
+}
+
+    ul.list li {
+        padding-top: .5em;
+        font-size: .9em;
+    }
+
+	ul.insideDot li {
+	    list-style: disc inside;
+	    padding: 0;
+	    margin: 0;
+	}
+
+table{
+    width: 100%;
+    font-size: .9em;
+    vertical-align: middle;
+    text-align: center;
+}
+    
+    table th {
+        font-size: 1em;
+        font-weight: bold;
+        text-align: center;
+        padding-bottom: .4em;
+    }
+    
+    table a, table a:visited, table a:hover {
+    	text-decoration: none;
+    }
+    
+    table th a, table th a:visited, table th a:hover {
+    	color: #333333;
+    }
+    
+    table .left {
+        text-align: left;
+    }
+
+    table tr.link {
+    	cursor: pointer;
+    }
+
+/***********************************
+ * ID's
+ ***********************************/
+#hd, #bd {margin-bottom:0em; clear: both; }
+
+#bd {
+    background-color: #ffffff;
+}
+
+#hd {
+    height: 60px;
+    line-height: 0em;
+    background-image: url("../images/template/heading-blue-slice.gif");
+    background-repeat: repeat-x;
+
+}
+
+#doc {
+    margin:auto;text-align:left; /* leave unchanged */ 
+    width: 76.92em;/* non-IE */ 
+    *width: 75.09em;/* IE */ 
+    min-width: 600px;/* optional but recommended */ 
+}
+
+    #doc div, #doc p {
+        line-height: 1.5em;
+    }
+
+#ft {
+ 	font-size: .85em;
+	font-family: verdana;
+	background-color: #adadad;
+    color: #ffffff;
+    padding-bottom: 1em;
+    background-image: url("../images/template/bottom-corner-right.gif");
+    background-repeat: no-repeat;
+    background-position: top right;
+}
+
+    #ft .bottomCorner {
+        background-color: #ffffff;
+        width: 99%;
+        height: 10px;
+        margin: 0;
+        margin-right: 10px;
+        background-image: url("../images/template/bottom-corner-left.gif");
+        background-repeat: no-repeat;
+        background-position: bottom left;
+    }
+
+    #ft a {
+        color: #ffffff;
+    }
+
+    #ft a:hover {
+        color: #c24322;
+        text-decoration: underline;
+    }
+
+    #ft ul, ul.hMenu {
+        padding: 1.4em 0 0 1em;
+    }
+
+    #ft div ul li, ul.hMenu li {
+        display: inline;
+        padding-right: 1em;
+    }
+
+*html #hd {
+    margin-bottom: -3px;
+}
+
+#headingLogo {
+    line-height: 0em;
+    float: left;
+    width: 230px;
+    padding: 20px 0 0 12px;
+    margin: 0;
+    background-image: url("../images/template/heading-corner-left.gif");
+    background-position: top left;
+    background-repeat: no-repeat;
+}
+
+#headingMenu, #headingStatus {
+    font-size: 11px;
+    font-weight: normal;
+}
+
+#headingStatus {
+    float: right;
+	text-align:right;
+    width: 70%;
+    padding-top: .8em;
+    padding-right: .5em;
+    color: #ffffff;
+}
+
+#topRightCorner {
+    float: right;
+    width: 10px;
+    background-image: url("../images/template/heading-corner-right.gif");
+    background-position: top right;
+    background-repeat: no-repeat;
+}
+
+#doc #headingMenu {
+    float: right;
+    width: 75%;
+    text-align: right;
+    margin-top: 10px;
+    * margin-top: 6px;
+    margin-right: .5em;
+}
+
+	#headingMenu ul li {
+        * margin-top: 3px;
+        * padding-bottom: 3px;
+        float: right;
+        display: block;
+		padding-right: 1em;
+		padding-left: 1em;
+        text-align: center;
+    }
+
+    #headingMenu ul li.selected {
+/*
+    	margin-right: .2em;
+        margin-left: .2em;
+        background-image: url("../images/template/selected-tab-80.gif");
+        background-position: top left;
+        background-repeat: no-repeat;
+*/
+    }
+
+    #headingMenu a, #headingMenu a:visited {
+        display: block;
+        color: #c1dcff;
+        line-height: 25px;
+        * line-height: 25px;
+        font-weight: bold;
+		text-decoration: none;
+    }
+
+    #headingMenu a:hover {
+        color: #ffffff;
+        text-decoration: none;
+    }
+
+    #headingMenu ul li.selected,
+    #headingMenu ul li.selected a,
+    #headingMenu ul li.selected a:hover ,
+    #headingMenu ul li.selected a:visited {
+        color: #ffffff;
+        font-weight: bold;
+    }
+
+#ajaxStatus {
+	color: #cc4444;
+ 	padding-right: 4px;
+ 	font-size: 1em;
+ 	font-weight: bold;
+ 	text-align: right;
+ 	white-space: nowrap;	
+}
+
+/***********************************
+ * Classes
+ ***********************************/
+.clr {
+     clear: both;
+}
+
+/***********************************
+ * Structure
+ ***********************************/
+.pageTitle {
+    padding: .8em 0 0 0;
+}
+
+    .pageTitle h1 {
+        float: left;
+        width: 60%;
+        padding-left: 18px;
+        padding-bottom: .5em;
+    }
+
+    .pageTitle #opStatus {
+        float: right;
+        width: 36%;
+        color: green;
+    }
+
+.content {
+    margin: 0;
+    padding: 0em 0em 1.5em 0em;
+}
+
+    .yui-b.last .content {
+        padding: 0em 1em 0em 0em;
+    }
+
+    .content ul li{
+        padding-bottom: 6px;
+    }
+
+.block {
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.section {
+	display: block;
+	height: 1%;
+	padding: 1em;
+}
+	
+
+.blockLeft {
+    float: left;
+    width: 49%;
+}
+
+.blockRight {
+    float: right;
+    width: 49%;
+}
+
+/***********************************
+ * Styles
+ ***********************************/
+.error, .red {
+	color: red;
+}
+
+.message {
+	font-size: .9em;
+	font-style: italic;
+	color: #888888;
+	padding: 1em;
+}
+
+.strikeThrough { 
+	text-decoration: line-through; 
+}
+
+.evenColor {
+    background-color: transparent;
+}
+
+.oddColor {
+    background-color: #f8f8f8;
+}
+
+.ruled { 
+	background:#e8f2fc;
+}
+
+	.yui-b.last .ruled { 
+		background:#bbd5f0;
+		color: #000000;
+	}
+	
+#headingStatus .userName {
+    font-weight: bold;
+}
+
+.title {
+    font-weight: bold;
+}
+
+.description {
+    	color: #7e7e7e;
+    	font-size: .91em;
+	}
+
+#describeProject {
+		width: 80%;
+		margin-bottom: 1em;
+	}
+	
+	#describeProject .icon {
+		float: left;
+		padding-right: .9em;
+	}
+	
+	#describeProject div.description.short {
+		font-size: 1.2em;
+		color: #494949;
+		padding-top: 1.4em;
+		padding-bottom: .6em;
+	}
+
+	#describeProject div.description.long {
+		margin-bottom: 1em;
+	}
+
+.label {
+    font-weight: bold;
+    font-size: 1em;
+    padding-right: .4em;
+}
+
+.yui-b.last {
+    font-size: .9em;
+  	overflow: hidden;
+}
+
+    .yui-b.last .content .block {
+        background-color: #f3f3f3;
+        border: 1px solid #dddddd;
+    }
+
+    .yui-b.last .content .block .heading{
+        background-color: #d6d6d6;
+        height: 2em;
+    }
+
+    .yui-b.last .content .block .content{
+        padding: 1em;
+    }
+
+.newsItem {
+	padding-top: .8em;
+	padding-bottom: .5em;
+	border-bottom: 1px solid #f0f0f0;
+}
+
+	.newsItem ul {
+	    list-style: disc outside;
+	    padding-left: 1em;
+	    margin-left: 1em;
+	    margin-top: .5em;
+	}
+	
+    .newsItem .title {
+        font-size: 1.15em;
+        font-weight: bold;
+        color: #4e4e4e;
+        padding-right: 1em;
+    }
+
+    .newsItem .subTitle {
+        font-weight: bold;
+        color: #C6401A;
+        padding-top: .5em;
+    }
+
+    .newsItem .info {
+        font-size: .8em;
+        color: #4e4e4e;
+        padding-bottom: .5em;
+    }
+
+	.newsItem .date {
+        font-size: 1em;
+        color: #4e4e4e;
+        padding-bottom: .5em;
+	}
+	
+    .newsItem .text {
+    }
+        .newsItem .text p {
+            padding-top: .2em;
+            padding-bottom: .5em;
+        }
+
+/* table format for pages with forms to modify settings */ 
+table.form {
+	}
+
+	table.edit td {
+		padding-top: .6em;
+		text-align: left;
+		vertical-align: top;
+	}
+	
+	table.edit td.label {
+		text-align: right;
+		padding-right: .8em;
+	}
+	
+	table.edit td input, input {
+		margin: 0;
+	}
+
+/* basic table format for a list of items */
+table.list {
+	margin-top: .5em;
+}
+
+	table.list thead {
+		border-bottom: 1px solid #dddddd;
+	}
+	
+	table.list thead th {
+		text-align: left;
+	}
+		
+	table.list td {
+		line-height: 2.2em;
+		border-bottom: 1px solid #e3e3e3;
+		padding-left: .2em;
+	}
+	
+table.blockProjectList {
+	margin-top: 4px;
+	font-size: 1.1em;
+}
+
+	table.blockProjectList col.plName {
+		width: auto;
+	}
+	table.blockProjectList col.plCount {
+		width: 25px;
+	}
+
+	table.blockProjectList td.name {
+		text-overflow:ellipsis;
+		overflow: hidden;
+		white-space: nowrap;
+		* white-space: wrap;
+		display: block;
+		padding-left: .2em;
+	}
+	
+	table.blockProjectList td a,
+	table.blockProjectList td a:visited {
+		color: #666666;
+		text-decoration: none;
+	}
+
+/* table format used in Project Manager and Library project listing pages */
+table.projectListing {
+}
+
+	table.projectListing tbody {
+	}
+	
+	table.projectListing tfoot td {
+		margin-top: 1em;
+		border-top: 1px solid #dddddd;
+	}
+	
+	table.projectListing a {
+			text-decoration: none;
+			}
+
+	table.projectListing th {
+		border-left: 1px solid #dddddd;	
+		border-right: 1px solid #dddddd;	
+		border: 1px solid #dddddd;	
+		background-color: #ffffff;
+		padding: 0;
+		padding-left: .4em;
+		line-height: 2em;
+		background-image: url(../../images/list-heading-background.gif);
+		background-repeat: repeat-x;
+		height: 23px;
+	}
+	
+	table.projectListing th, #library th a {
+		color: #333333;
+		font-size: 1em;
+	}
+	 	
+ 	table.projectListing td {
+	    padding-left: 4px;
+	    padding-top: 4px;
+	    padding-bottom: 6px;
+	    vertical-align: top;
+	}
+
+	table.projectListing td.left {
+		padding-left: 4px;
+	}
+	
+	table.projectListing td.info {
+	}
+
+		table.projectListing td.info a {
+			text-decoration: none;
+		}
+	
+		table.projectListing td.info.construction {
+			background-position: right 20%;
+			background-repeat: no-repeat;
+			background-image:  url("/images/construction-small.gif");
+		}
+		
+		table.projectListing td.info.vetted {
+	/*
+			background-position: right 20%;
+			background-repeat: no-repeat;
+			background-image:  url("/images/construction-small.gif");
+	*/		
+		}
+		
+			table.projectListing td.info span.title a {
+			    font-weight: bold;
+			    font-size: 1.2em;
+			    line-height: 1.6em;
+			}
+		
+			table.projectListing td.info span.description {
+				font-size: 1em;
+				color: #333333;
+			}
+	
+	table.projectListing td.rating {
+	    text-align: left;
+		}
+
+.note {
+	text-align: justify;
+    border: 1px solid #dfdfdf;
+    background-color: #f5f5f5;
+    padding: 6px;
+    margin: 1em 2em;
+}
+
+	.note:before {
+	    content:"Note: ";
+	    font-weight: bold;
+	}
+
+.smallIcon {
+	padding-top: 0;
+	padding-right: .1em;
+}
+
+.editActions {
+	padding-top: 1em;;
+	padding-left: 1em;
+}
+	.editActions form {
+		display: inline;
+	}
+	
+/* via css class selector */
+.treemenu a { 
+	display: block;
+	}
+
+.treemenu a:hover { 
+	background-color: #bbd5f0;
+	}
+
+.treemenu .ygtvtn {background: transparent;  width:1em; height:20px; }
+.treemenu .ygtvtm { background: url(../images/menu/collapse.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvtmh { background: url(../images/menu/collapse.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvtp { background: url(../images/menu/expand.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvtph { background: url(../images/menu/expand.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvln { background: transparent; width:1em; height:20px; }
+.treemenu .ygtvlm { background: url(../images/menu/collapse.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvlmh { background: url(../images/menu/collapse.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvlp { background: url(../images/menu/expand.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvlph { background: url(../images/menu/expand.gif) 0 6px no-repeat; width:1em; height:22px; cursor:pointer; }
+.treemenu .ygtvloading { background: url(../images/menu/loading.gif) 0 6px no-repeat; width:1em; height:22px; }
+.treemenu .ygtvdepthcell { background: transparent; width:1em; height:20px; }
+.treemenu .ygtvblankdepthcell {background: transparent;  width:1em; height:20px; }
+.treemenu .ygtvitem { border: 0px solid gray; }  
+.treemenu .ygtvchildren { }  
+.treemenu .ygtvlabel, .ygtvlabel:link, .ygtvlabel:visited, .ygtvlabel:hover { 
+	font-size: 1.1em;
+	color: #333333;
+	line-height: 1.6em;
+	padding-left: .5em;
+}	
+
+/*****************************
+ popup dialogs
+******************************/
+.popup {
+	display: none;
+	visibility: hidden;
+	position: absolute;
+	width: 220px;
+	padding: 10px;
+	background-color: #f8f8f8;
+	border: 2px solid #4c78b2;
+	z-index: 999;
+	text-align: center;
+}
+        
+	.popup .title {
+		font-size: 1.2em;
+		color: #c24322;
+		font-weight: bold;
+		border-bottom: 1px solid #dddddd;
+		padding-bottom: 3px;
+		margin-bottom: 6px;
+	}
+	
+	.popup input, .popup button {
+		margin-right: 16px;
+	}
+
+.overlay {
+	display: none;
+	visibility: hidden;
+}
+
+div.controls {
+    float: right;
+    text-align: right;
+    padding-right: 4px;
+    z-index: 99;
+}
+
+	div.hide {
+		display: none;
+	}
+	
+	div.controls form, .controls form {
+	    display: inline;
+	}
+	
+	div.controls a {
+	    margin-right: 6px;
+	}
+	
+.status {
+	font-size: .85em;
+	color: #666666;
+}
+
+div.collapsible {
+	
+}
+
+	div.collapsible div.sectionContent {
+	}
+	
+	div.collapsible div.sectionContent.closed {
+		display: none;
+	}
+
+	div.collapsible .arrowDown {
+	    background-position: 0% 50%;
+	    background-repeat: no-repeat;
+	    background-image: url("../images/gray-arrow-down.gif");
+	}
+	
+	div.collapsible .arrowRight {
+	    background-position: 0% 50%;
+	    background-repeat: no-repeat;
+	    background-image: url("../images/gray-arrow-right.gif");
+	}
+	
+div.links {
+	color: #aaaaaa;
+}
+
+div.links a {
+	margin-right: .6em;
+	margin-left: .6em;
+}
+
+
+.mask { background-color:#000000; }
+
+/* Panel Skin CSS */
+.panel-container.shadow .underlay { background-color:#777; }
+
+/* Apply the border to the right side */
+.panel { border:0px solid #ffffff; overflow:visible; background:transparent; }
+
+/* Style the close icon */
+.panel .close { top:8px; right:10px; height:12px; width:12px; }
+
+/* Style the header with its associated corners */
+.panel .hd { padding:0; border:none; background: url("../images/template/panel-blue-background.gif"); color:#FFF; height:30px; margin-left:8px; margin-right:8px; text-align:left; vertical-align:middle; overflow:visible; }
+.panel .hd span { line-height:30px; vertical-align:middle; }
+.panel .hd .tl { width:10px;height:30px; top:0px;left:0; background:transparent url("../images/template/panel-blue-left-corner.gif"); position:absolute; }
+.panel .hd .tr { width:10px;height:30px; top:0px;right:0; background:transparent url("../images/template/panel-blue-right-corner.gif"); position:absolute; }
+
+/* Style the body with the left border */
+.panel .bd { overflow:hidden; padding:10px; border:none; background:#ffffff; margin:0 0px 0 0; }
+
+/* Style the footer with the bottom corner images */
+.panel .ft { background:#f3f3f3; font-size:11px; height:12px; padding:0px 10px; }
+.panel .ft span { line-height:22px; vertical-align:middle; }
+.panel .ft .bl { width:8px;height:12px; bottom:0;left:0; background:#f3f3f3; position:absolute; }
+.panel .ft .br { width:8px;height:12px; bottom:0;right:0; background:#f3f3f3; position:absolute; }
+
+
+div.levelLink {
+	padding-top: 2em;
+	text-align: center;
+}
+	
+	div.levelLink a {
+		text-decoration: none;
+		color: #666666;
+	}
+	
+	div.levelLink a span {
+		display: block;
+		text-align: right;
+		padding-right: 1.6em;
+		
+	}
+	
+/*
+ * CSS for dealing with print output
+ */
+.noprint {
+}
+
+@media print {
+	.noprint {display: none}
+}
+
+/*
+ * Component styles
+ */
+table.component {
+	border-collapse: collapse;
+	font-size: 1em;
+}
+	table.component.outline {
+		border: 1px solid #cccccc;				
+	}
+	
+	table.component thead {
+		background-color: #888888;
+		color: #eeeeee;
+	}
+
+		table.component thead th {
+			padding: .2em 1em;
+		}
+
+		table.component.outline thead th {
+			border: 1px solid #cccccc;
+		}
+
+	table.component td{
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+
+		table.component.outline tbody td{
+			border: 1px solid #dddddd;
+		}
+		
+		table.component tbody tr.odd{
+			background-color: #f8f8f8;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #e8e8e8;
+		}
+
+/* Basic Bar Graph from Apples to Oranges
+ *
+ * classes:
+ * 		graph: output a bar graph
+ *		outline: show the table outline
+ *		small, medium, large: set the width of the bar graph (default = medium)
+ *		color1 - color16: set the color of the bar graph
+ *		
+ *		Example of the HTML markup:
+ * 			<div class="graph color1">
+ *				<strong class="bar" style="width: 100%;"><span>100%</span></strong>
+ *			</div>
+ */
+.graph { 
+	position: relative; /* IE is dumb */
+	width: 200px; 
+	border: 1px solid #aaaaaa;
+	padding: 2px; 
+	margin-bottom: .2em;					
+	margin-top: .2em;					
+}
+
+	.graph.small {
+		width: 100px;
+	}
+	
+	.graph.medium {
+		width: 200px;
+	}
+	
+	.graph.large {
+		width: 300px;
+	}
+	
+	.graph .bar { 
+		display: block;	
+		position: relative;
+		text-align: center; 
+		background: #aaaaaa; 					
+		color: #333; 
+		font-size: .9em;
+		height: 1.3em; 
+		line-height: 1.4em;									
+	}
+
+	.graph.color1 { border-color: #B1D632; }
+		.graph.color1 .bar { background: #B1D632; }
+
+	.graph.color2 { border-color: #56a8e2; }
+		.graph.color2 .bar { background: #56a8e2; }
+
+	.graph.color3 { border-color:#ff8888; }
+		.graph.color3 .bar { background: #ff8888; }
+
+	.graph.color4 { border-color: #ffcc33; }
+		.graph.color4 .bar { background: #ffcc33; }
+
+	.graph.color5 { border-color: #FFFF88; }
+		.graph.color5 .bar { background: #FFFF88; }
+
+	.graph.color6 { border-color: #CDEB8B; }
+		.graph.color6 .bar { background: #CDEB8B; }
+
+	.graph.color7 { border-color: #C3D9FF; }
+		.graph.color7 .bar { background: #C3D9FF; }
+
+	.graph.color8 { border-color: #FF1A00; }
+		.graph.color8 .bar { background: #FF1A00; }
+
+	.graph.color9 { border-color: #FF7400; }
+		.graph.color9 .bar { background: #FF7400; }
+
+	.graph.color10 { border-color: #008C00; }
+		.graph.color10 .bar { background: #008C00; }
+
+	.graph.color11 { border-color: #4096EE; }
+		.graph.color11 .bar { background: #4096EE; }
+
+	.graph.color12 { border-color: #FF0084; }
+		.graph.color12 .bar { background: #FF0084; }
+
+	.graph.color13 { border-color: #6BBA70 }
+		.graph.color13 .bar { background: #6BBA70; }
+
+	.graph.color14 { border-color: #D15600; }
+		.graph.color14 .bar { background: #D15600; }
+
+	.graph.color15 { border-color: #C79810; }
+		.graph.color15 .bar { background: #C79810; }
+
+	.graph.color16 { border-color: #73880A; }
+		.graph.color16 .bar { background: #73880A; }
+
+	.graph .bar span { position: absolute; left: 1em; }
+	/* This extra markup is necessary because IE doesn't want to follow the rules for overflow: visible */

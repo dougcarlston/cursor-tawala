@@ -1,0 +1,172 @@
+<public:component tagName="FormContainer">
+
+<public:method name="InsertFormItem" />
+
+<public:method name="HandleFormItemSelect" />
+<public:method name="SelectSingleFormItem" />
+
+<public:property name="SelectionAnchor" />
+
+<script language="JScript">
+
+var doc = null;
+var body = null;
+
+init();
+
+function init()
+{
+    doc = element.document;
+    body = doc.body;
+    body.onclick=onBodyClick;
+    SelectionAnchor = null;
+}
+
+function InsertFormItem(formItem, index)
+{    
+    var row = formTBody.insertRow(index);
+    row.id = "row_" + formItem.id;
+    row.Selected = false;
+    row.onpropertychange = row_PropertyChange;
+    row.HasLabel = formItem.HasLabel;
+
+    row.LabelCell = row.insertCell();
+    row.ItemLabel = doc.createElement("t:ItemLabel");
+    row.ItemLabel.id = "label_" + formItem.id;
+    row.LabelCell.appendChild(row.ItemLabel);
+    row.ItemLabel.Attached();
+    
+    row.ItemCell = row.insertCell();
+    row.ItemCell.className="item";  
+    row.FormItem = formItem;
+    row.FormItemId = formItem.id;
+    row.ItemCell.appendChild(formItem);
+}
+
+function SelectSingleFormItem(rowToSelect)
+{
+    for (var i = formTBody.rows.length-1; i >= 0; --i)
+    {
+		var row = formTBody.rows[i];
+        if (row.Selected && row != rowToSelect)
+        {
+			row.Selected = false;
+        }
+    }
+    if (rowToSelect != null)
+    {
+        rowToSelect.Selected = true;
+        window.external.SingleFormItemSelected(rowToSelect.FormItemId);
+    }
+}
+
+function clearSelections()
+{
+	for (var i = 0; i < formTBody.rows.length; i++)
+	{
+		var row = formTBody.rows[i];
+		row.Selected = false;
+	}
+}
+
+function HandleFormItemSelect(row, cell)
+{
+    if (event.ctrlKey)
+    {
+        formItemCtrlSelect(row, cell);
+    }
+    else if (event.shiftKey)
+    {
+        formItemShiftSelect(row, cell);
+    }
+    else
+    {
+        formItemSelect(row, cell);
+    }
+}
+
+function formItemSelect(row, cell)
+{
+    row.Selected = true;
+}
+
+function formItemShiftSelect(row, cell)
+{
+    row.Selected = true;
+    
+    var start = SelectionAnchor.sectionRowIndex;
+    var end = row.sectionRowIndex;
+    
+    if (start > end)
+    {
+        var tmp = end;
+        end = start;
+        start = tmp;
+    }
+    
+    for (var i = 0; i < formTBody.rows.length; ++i)
+    {
+        var r = formTBody.rows[i];        
+        r.Selected = (i >= start && i <= end);
+    }
+}
+
+function formItemCtrlSelect(row, cell)
+{
+    row.Selected = !row.Selected;
+}
+
+function onBodyClick()
+{
+    clearSelections();
+    
+    var src = event.srcElement;
+    
+    if (src == element || src == dropArea || src == formContainer)
+    {
+        dropArea.focus();
+        SelectSingleFormItem(null);
+    }
+}
+
+function row_PropertyChange()
+{
+	if (event.propertyName == "Selected")
+	{
+    	var row = event.srcElement;
+
+        if (row.Selected)
+            row_Selected(row);
+        else
+            row_Deselected(row);
+	}
+}
+
+var selectedColor = "rgb(244, 184, 76)";
+
+function row_Selected(row)
+{
+    row.LabelCell.runtimeStyle.backgroundColor = selectedColor;		
+    
+    if (SelectionAnchor == null)
+    {
+        SelectionAnchor = row;
+        dropArea.InsertionPoint = row.sectionRowIndex;
+        row.LabelCell.focus();
+    }
+}
+
+function row_Deselected(row)
+{
+    row.LabelCell.runtimeStyle.backgroundColor = "";
+    
+    if (SelectionAnchor == row)
+    {
+        SelectionAnchor = null;
+        dropArea.InsertionPoint = -1;
+    }
+}
+
+</script>
+
+</public:component>

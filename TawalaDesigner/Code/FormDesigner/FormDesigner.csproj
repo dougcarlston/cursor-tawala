@@ -1,0 +1,523 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{64119070-D726-4F91-A9D4-72537DEB0786}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tawala.FormDesigner</RootNamespace>
+    <AssemblyName>FormDesigner</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1308;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA2101;-Microsoft.Globalization#CA1300;-Microsoft.Globalization#CA1307;-Microsoft.Globalization#CA1309;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2102;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2120;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124;-Microsoft.Security#CA2127;-Microsoft.Security#CA2128;-Microsoft.Security#CA2129</CodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1308;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA2101;-Microsoft.Globalization#CA1300;-Microsoft.Globalization#CA1307;-Microsoft.Globalization#CA1309;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2102;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2120;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124;-Microsoft.Security#CA2127;-Microsoft.Security#CA2128;-Microsoft.Security#CA2129</CodeAnalysisRules>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRules>-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1308;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA2101;-Microsoft.Globalization#CA1300;-Microsoft.Globalization#CA1307;-Microsoft.Globalization#CA1309;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2102;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2120;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124;-Microsoft.Security#CA2127;-Microsoft.Security#CA2128;-Microsoft.Security#CA2129</CodeAnalysisRules>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Dialogs\FormatTableDialog\FormatTableView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FormatTableDialog\FormatTableView.Designer.cs">
+      <DependentUpon>FormatTableView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\IMcqItemStylesView.cs" />
+    <Compile Include="Dialogs\IFibItemStylesView.cs" />
+    <Compile Include="Dialogs\FibAboveLabelsSample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FibAboveLabelsSample.Designer.cs">
+      <DependentUpon>FibAboveLabelsSample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FibFreeformSample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FibFreeformSample.designer.cs">
+      <DependentUpon>FibFreeformSample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FibLeftLabelsJustifiedSample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FibLeftLabelsJustifiedSample.designer.cs">
+      <DependentUpon>FibLeftLabelsJustifiedSample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FibLeftLabelsSample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FibLeftLabelsSample.designer.cs">
+      <DependentUpon>FibLeftLabelsSample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FibRightLabelsJustifiedSample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FibRightLabelsJustifiedSample.designer.cs">
+      <DependentUpon>FibRightLabelsJustifiedSample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FibRightLabelsSample.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FibRightLabelsSample.designer.cs">
+      <DependentUpon>FibRightLabelsSample.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\FIBItemStylesView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\FIBItemStylesView.designer.cs">
+      <DependentUpon>FIBItemStylesView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\ITextItemStylesView.cs" />
+    <Compile Include="Dialogs\McqItemStylesView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\McqItemStylesView.Designer.cs">
+      <DependentUpon>McqItemStylesView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SkipInstructionsDialog\SkipInstructionsStatementSelector.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SkipInstructionsDialog\SkipInstructionsStatementSelector.Designer.cs">
+      <DependentUpon>SkipInstructionsStatementSelector.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SkipInstructionsDialog\SkipInstructionsView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SkipInstructionsDialog\SkipInstructionsView.Designer.cs">
+      <DependentUpon>SkipInstructionsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\TextItemStylesView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\TextItemStylesView.designer.cs">
+      <DependentUpon>TextItemStylesView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormBrowserControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Preview\BackgroundGetFormPreviewUrl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Preview\FormPreview.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Preview\FormPreview.designer.cs">
+      <DependentUpon>FormPreview.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Preview\FormPreviewControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Preview\FormPreviewControl.designer.cs">
+      <DependentUpon>FormPreviewControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="TawalaFormDesigner.cs" />
+    <Compile Include="FormItemOptions\FormItemOptionsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormItemOptions\FormItemOptionsDialog.Designer.cs">
+      <DependentUpon>FormItemOptionsDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="GlobalSuppressions.cs" />
+    <Compile Include="FormItemOptions\HeadingOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\HeadingOptionsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormItemOptions\HeadingOptionsView.designer.cs">
+      <DependentUpon>HeadingOptionsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormItemOptions\IHeadingOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\IHeadingOptionsView.cs" />
+    <Compile Include="FormItemOptions\ITextOptionsView.cs" />
+    <Compile Include="FormItemOptions\ITextOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\TextOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\TextOptionsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormItemOptions\TextOptionsView.designer.cs">
+      <DependentUpon>TextOptionsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormItemOptions\McqOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\IMcqOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\FibOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\IFibOptionsPresenter.cs" />
+    <Compile Include="FormItemOptions\FibOptionsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormItemOptions\FibOptionsView.designer.cs">
+      <DependentUpon>FibOptionsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormItemOptions\IFibOptionsView.cs" />
+    <Compile Include="ITawalaFormDesigner.cs" />
+    <Compile Include="IMcqChoicesPresenter.cs" />
+    <Compile Include="IMcqChoicesView.cs" />
+    <Compile Include="McqChoicesPresenter.cs" />
+    <Compile Include="McqChoicesView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="McqChoicesView.designer.cs">
+      <DependentUpon>McqChoicesView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormPresenter.cs" />
+    <Compile Include="FormScriptingObject.cs" />
+    <Compile Include="FormView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FormView.Designer.cs">
+      <DependentUpon>FormView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormItemsPalette.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormItemsPalette.Designer.cs">
+      <DependentUpon>FormItemsPalette.cs</DependentUpon>
+    </Compile>
+    <Compile Include="FormItemOptions\McqOptionsView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FormItemOptions\McqOptionsView.designer.cs">
+      <DependentUpon>McqOptionsView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="OptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="OptionsPanel.designer.cs">
+      <DependentUpon>OptionsPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="PanelLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="PanelLabel.Designer.cs">
+      <DependentUpon>PanelLabel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Dialogs\FibAboveLabelsSample.resx">
+      <DependentUpon>FibAboveLabelsSample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FibFreeformSample.resx">
+      <DependentUpon>FibFreeformSample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FibLeftLabelsJustifiedSample.resx">
+      <DependentUpon>FibLeftLabelsJustifiedSample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FibLeftLabelsSample.resx">
+      <DependentUpon>FibLeftLabelsSample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FibRightLabelsJustifiedSample.resx">
+      <DependentUpon>FibRightLabelsJustifiedSample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FibRightLabelsSample.resx">
+      <DependentUpon>FibRightLabelsSample.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FIBItemStylesView.resx">
+      <DependentUpon>FIBItemStylesView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\FormatTableDialog\FormatTableView.resx">
+      <DependentUpon>FormatTableView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\McqItemStylesView.resx">
+      <DependentUpon>McqItemStylesView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SkipInstructionsDialog\SkipInstructionsStatementSelector.resx">
+      <DependentUpon>SkipInstructionsStatementSelector.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SkipInstructionsDialog\SkipInstructionsView.resx">
+      <DependentUpon>SkipInstructionsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\TextItemStylesView.resx">
+      <DependentUpon>TextItemStylesView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemOptions\FormItemOptionsDialog.resx">
+      <DependentUpon>FormItemOptionsDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemOptions\HeadingOptionsView.resx">
+      <DependentUpon>HeadingOptionsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemOptions\TextOptionsView.resx">
+      <DependentUpon>TextOptionsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemOptions\FibOptionsView.resx">
+      <DependentUpon>FibOptionsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="McqChoicesView.resx">
+      <DependentUpon>McqChoicesView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormView.resx">
+      <DependentUpon>FormView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemsPalette.resx">
+      <DependentUpon>FormItemsPalette.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FormItemOptions\McqOptionsView.resx">
+      <DependentUpon>McqOptionsView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="OptionsPanel.resx">
+      <DependentUpon>OptionsPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preview\FormPreview.resx">
+      <DependentUpon>FormPreview.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Preview\FormPreviewControl.resx">
+      <DependentUpon>FormPreviewControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="ToolWindowCaption.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ToolWindowCaption.designer.cs">
+      <DependentUpon>ToolWindowCaption.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="html\breakonenterkey.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\dataprovider.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_choice.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_blank.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\droparea.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\editable.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\exitonenterkey.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_break.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_fib.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_heading.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_hiddenfield.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_mcq.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_skip.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\fi_text.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\form.css">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\form.htm">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\formcontainer.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\highlight.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\Insert.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="html\label.htc">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Preview\FormPreviewException.htm" />
+    <Content Include="Preview\FormPreviewGenerating.htm" />
+    <Content Include="Preview\FormPreviewRefresh1.htm" />
+    <Content Include="Preview\FormPreviewRefresh2.htm" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\TawalaDesignerTest\Application\MainApplication.csproj">
+      <Project>{8613E442-1DEC-4050-A83C-F7261D410CC8}</Project>
+      <Name>MainApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaDesigner\Browser\Browser.csproj">
+      <Project>{AC59536A-6D42-460A-AA2D-E14C5FD7F75B}</Project>
+      <Name>Browser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaDesigner\ComponentDesigner\ComponentDesigner.csproj">
+      <Project>{0ED209C9-8BC5-4340-A604-15BF8D43A2EA}</Project>
+      <Name>ComponentDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaDesigner\Dialogs\Dialogs.csproj">
+      <Project>{83F99350-36AD-4AF2-83BB-2BCF2EA8CFE5}</Project>
+      <Name>Dialogs</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaDesigner\FunctionControls\FunctionControls.csproj">
+      <Project>{619E97A8-47CE-4623-B752-06FF33D842F3}</Project>
+      <Name>FunctionControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaDesigner\TawalaInterfaces\TawalaInterfaces.csproj">
+      <Project>{62431343-6FF1-4BC0-84E6-5C15F64CB86D}</Project>
+      <Name>TawalaInterfaces</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\FontSupport\FontSupport.csproj">
+      <Project>{245B890C-9981-4FF9-9FA0-0A828D8539E3}</Project>
+      <Name>FontSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\FunctionAssemblyCreation\FunctionAssemblyCreation.csproj">
+      <Project>{098832DE-E6F3-4CF7-AC7B-EDE2D56AAEBB}</Project>
+      <Name>FunctionAssemblyCreation</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\FunctionViewPresenter\FunctionViewPresenter.csproj">
+      <Project>{8546DB36-F4EA-49C0-925F-AD0124ECA727}</Project>
+      <Name>FunctionViewPresenter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\Processes\Processes.csproj">
+      <Project>{DA2F4203-642C-4AB3-94A4-B61778BF282C}</Project>
+      <Name>Processes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\Project\Project.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Project</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TAWALA\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>xcopy "$(SolutionDir)..\Tawala\Setup\TawalaDefault.ttf" "$(TargetDir)" /R /Y /C
+
+</PreBuildEvent>
+  </PropertyGroup>
+</Project>

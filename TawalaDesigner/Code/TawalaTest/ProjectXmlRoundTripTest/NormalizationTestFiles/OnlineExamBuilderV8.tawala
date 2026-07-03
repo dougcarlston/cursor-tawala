@@ -1,0 +1,1218 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="OnlineExamBuilderV8" themePath="default" format="1.15" designerBuild="243">
+<pageHeader></pageHeader><forms>
+<form name="SetupVariables" startPoint="false" themePath="default" process="Post-SetupVariables" preProcess="Pre-SetupVariables" blockBackButton="false">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="333333"><b>Exam Title</b></font><font color="000000"><b>:</b></font><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="40" required="true" alternateLabel="Title"></blank></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="333333"><b>Exam Date or Version</b></font><font color="333333">:</font><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="17" required="false" alternateLabel="Date"></blank></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="333333"><b>Pre-test instructions to examinee:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="65" height="3" required="false" alternateLabel="PreInstructions"></blank></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="333333"><b>Comments or instructions to examinee upon completion of test:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="65" height="3" required="false" alternateLabel="PostInstructions"></blank></paragraph></fib>
+<mc label="Q5" alternateLabel="UponCompletionOptions" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Upon completion of test:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Give examinee score </b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Give examinee correct answers</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Notify me by email</b></font></paragraph></choice></mc>
+<fib label="Q6"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="333333"><b>If you checked the email notification box above, please provide your email address:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="a" length="40" required="false" alternateLabel="EmailToNotify"></blank></paragraph></fib>
+<field name="ShowScore"/>
+<field name="ShowCorrectAnswers"/>
+<field name="NotifyByEmail"/>
+<field name="LastSessionId"/>
+</items>
+</form>
+<form name="Question" startPoint="false" themePath="default" process="Post-Questions" blockBackButton="false">
+<items>
+<text label="T1" alternateLabel="Beginning" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="2E4685"><b><i>Please enter exam question here:</i></b></font></paragraph></text>
+<fib label="Q1" alternateLabel="Question Text"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="70" required="true" alternateLabel="Question"></blank></paragraph></fib>
+<mc label="Q2" alternateLabel="TypeChoice" onlyone="true" required="true" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Question type:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Multiple choice</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Fill-in-the-blank</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Question:TypeChoice" value="a"/>
+</conditions>
+<trueSet>
+<skip to="MCQ choices"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="333333"><b><field name="Question:Question"/></b></font><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000000">Please enter correct answer:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="a" length="23" required="true" alternateLabel="FIBAnswer"></blank></paragraph></fib>
+<mc label="Q4" alternateLabel="Navigation choice1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>Add another Question</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>Edit this Question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>Finish Setup</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Question:Navigation choice1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Beginning"/>
+</trueSet>
+<falseSet>
+<skip to="__EndOfForm__"/>
+</falseSet>
+</if>
+</skipInstructions>
+<fib label="Q5" alternateLabel="MCQ choices"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b><field name="Question:Question"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Response Choices:</b></font><sp/><font size="240" color="2E4685"><i>(leave blank any fields you don't need)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="28" required="true" alternateLabel="Choice1"></blank></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="b" length="28" required="true" alternateLabel="Choice2"></blank></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="c" length="28" required="false" alternateLabel="Choice3"></blank></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="d" length="28" required="false" alternateLabel="Choice4"></blank></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="e" length="28" required="false" alternateLabel="Choice5"></blank></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="f" length="28" required="false" alternateLabel="Choice6"></blank></paragraph></fib>
+<break/>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Please enter correct answer:</font></paragraph></text>
+<mc label="Q6" alternateLabel="MCQAnswer" onlyone="true" required="true" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240" color="333333"><b><field name="Question:Question"/></b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Question:Choice1"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Question:Choice2"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Question:Choice3"/></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Question:Choice4"/></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Question:Choice5"/></font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Question:Choice6"/></font></paragraph></choice></mc>
+<mc label="Q7" alternateLabel="Navigation choice2" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Add another Question</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Edit this Question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Finish Setup</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Question:Navigation choice2" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Beginning"/>
+</trueSet>
+</if>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<field name="SequenceNumber"/>
+<field name="QuestionId"/>
+<field name="Type"/>
+<field name="DisplayChoices"/>
+<field name="Answer"/>
+<field name="CorrectAnswers"/>
+<field name="TotalAnswers"/>
+<field name="CorrectPercentage"/>
+</items>
+</form>
+<form name="Exam" startPoint="true" themePath="default" process="SetupExam" preProcess="SetupCustomizationVariables" blockBackButton="false">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000000">Name:  </font><blank label="a" length="53" required="true" alternateLabel="name"></blank></paragraph></fib>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000077"><b><i>You will be asked questions one at a time.  Please review your answer carefully before continuing as you will not have a chance to change your responses later.  Do not use the back arrow on your browser to try to change a response.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000077"><b><i>Press the Submit button below when you are ready to begin.</i></b></font></paragraph></text>
+<field name="id"/>
+<field name="status"/>
+<field name="score"/>
+<field name="scorePercentage"/>
+<field name="incorrectAnswers"/>
+</items>
+</form>
+<form name="Answer" startPoint="false" themePath="default" process="Post-Answer" preProcess="Pre-Answer" blockBackButton="false">
+<items>
+<skipInstructions>
+<if>
+<conditions>
+<equals field="QType">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<skip to="AnswerToMCQ"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000000"><field name="QNumber"/></font><font color="000000">) </font><font color="000000"><field name="Q"/></font><sp/><blank label="a" length="57" required="true" alternateLabel="AnswerToFIB"></blank></paragraph></fib>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q2" alternateLabel="AnswerToMCQ" onlyone="true" required="true" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="QNumber"/></font><font face="Arial" size="240">) </font><font face="Arial" size="240"><field name="Q"/></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="A"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="B"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="C"/></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="D"/></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="E"/></font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240"><field name="F"/></font></paragraph></choice></mc>
+<field name="QuestionId"/>
+<field name="Answer"/>
+<field name="SessionId"/>
+<field name="Correct"/>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="default" process="Post-Administration" preProcess="SetupCustomizationVariables" blockBackButton="false">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font>___________________________________________</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="220" color="4D6581"><b><field name="Customize_Title"/></b></font><font size="220" color="4D6581"><b> Administration</b></font></paragraph></text>
+<mc label="Q1" alternateLabel="MenuOption" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>Scores</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>See copy of exam</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Analysis of questions</b></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>Revise</b></font><font size="240" color="333333"><b> exam</b></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Delete all answers</b></font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Delete a question</b></font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240" color="333333"><b>Edit a question</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcDoesNotEqual field="Administration:MenuOption">
+<string value="e"/>
+</mcDoesNotEqual>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<mc label="Q2" alternateLabel="Delete Confirmation" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">Are you sure you would like to delete all answers?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">No</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcDoesNotEqual field="Administration:Delete Confirmation">
+<string value="a"/>
+</mcDoesNotEqual>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="CustomizationPreview" startPoint="true" themePath="default" process="Display Customization Preview" preProcess="SetupCustomizationVariables" blockBackButton="false">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Setup" startPoint="true" themePath="default" process="Post-Setup" preProcess="Pre-Setup" blockBackButton="false">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font>Your exam is now set up!</font></paragraph></text>
+<mc label="Q1" alternateLabel="Navigation" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240">If you want to revise it:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240">Update the description or other text</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240">Add a question</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240">Delete a question</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240">Edit a question</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Scoring" startPoint="false" themePath="default" process="Post-Scoring" blockBackButton="false">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Delete Question" startPoint="false" themePath="default" process="Post-Delete Question" preProcess="Pre-Delete Question" blockBackButton="false">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240" color="000000">Question # to delete:  </font><blank label="a" length="10" required="false" alternateLabel="questionNumber"></blank></paragraph></fib>
+</items>
+</form>
+<form name="Edit Question" startPoint="false" themePath="default" process="Post-Edit Question" preProcess="Pre-Edit Question" blockBackButton="false">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240" color="000000">Question # to edit:  </font><blank label="a" length="10" required="false" alternateLabel="questionNumber"></blank></paragraph></fib>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-SetupVariables">
+<comment>- variables for display in Final Poll and PollPost documents</comment>
+<set field="Customize_Title" arithmeticAsText="false">
+<string field="SetupVariables:Title"/>
+</set>
+<set field="Customize_Date" arithmeticAsText="false">
+<string field="SetupVariables:Date"/>
+</set>
+<set field="Customize_PreInstructions" arithmeticAsText="false">
+<string field="SetupVariables:PreInstructions"/>
+</set>
+<set field="Customize_PostInstructions" arithmeticAsText="false">
+<string field="SetupVariables:PostInstructions"/>
+</set>
+<if>
+<conditions>
+<mcContains field="SetupVariables:UponCompletionOptions" value="a"/>
+</conditions>
+<trueSet>
+<set field="SetupVariables:ShowScore" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="SetupVariables:ShowScore" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="SetupVariables:UponCompletionOptions" value="b"/>
+</conditions>
+<trueSet>
+<set field="SetupVariables:ShowCorrectAnswers" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="SetupVariables:ShowCorrectAnswers" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcContains field="SetupVariables:UponCompletionOptions" value="c"/>
+</conditions>
+<trueSet>
+<set field="SetupVariables:NotifyByEmail" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="SetupVariables:NotifyByEmail" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isBlank field="FirstViewOfSetup" />
+</conditions>
+<trueSet>
+<comment>- display the form that creates questions to maintain the flow.</comment>
+<set field="FirstViewOfSetup" arithmeticAsText="false">
+<string value="false"/>
+</set>
+<show form="Question"/>
+</trueSet>
+</if>
+<show form="Setup"/>
+</process>
+<process name="Post-Questions">
+<if>
+<conditions>
+<isBlank field="Question:QuestionId" />
+</conditions>
+<trueSet>
+<comment>-- Generate new question id and sequence number. They can be different</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<set field="SequenceNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<comment>- Replace with MAX() when functions become available in processes</comment>
+<get recordList="AllRecords">
+<forms>
+<form name="Question"/>
+</forms>
+</get>
+<foreach record="CurrentRecord" recordList="AllRecords">
+<if>
+<conditions>
+<isGreaterThanOrEqualTo field="CurrentRecord:Question:SequenceNumber">
+<string field="SequenceNumber"/>
+</isGreaterThanOrEqualTo>
+</conditions>
+<trueSet>
+<set field="SequenceNumber" arithmeticAsText="false">
+<add>
+<operand field="CurrentRecord:Question:SequenceNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isGreaterThanOrEqualTo field="CurrentRecord:Question:QuestionId">
+<string field="QNumber"/>
+</isGreaterThanOrEqualTo>
+</conditions>
+<trueSet>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="CurrentRecord:Question:QuestionId"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="Question:QuestionId" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<set field="Question:SequenceNumber" arithmeticAsText="false">
+<string field="SequenceNumber"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Question:TypeChoice" value="a"/>
+</conditions>
+<trueSet>
+<comment>- set the question type in the stored record for this question</comment>
+<set field="Question:Type" arithmeticAsText="false">
+<string value="MCQ"/>
+</set>
+<set field="Question:DisplayChoices" arithmeticAsText="false">
+<string value="a) "/>
+<string field="Question:Choice1"/>
+</set>
+<set field="Question:DisplayChoices" arithmeticAsText="false">
+<string field="Question:DisplayChoices"/>
+<string value=" b) "/>
+<string field="Question:Choice2"/>
+</set>
+<if>
+<conditions>
+<isNotBlank field="Question:Choice3" />
+</conditions>
+<trueSet>
+<set field="Question:DisplayChoices" arithmeticAsText="false">
+<string field="Question:DisplayChoices"/>
+<string value=" c) "/>
+<string field="Question:Choice3"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Question:Choice4" />
+</conditions>
+<trueSet>
+<set field="Question:DisplayChoices" arithmeticAsText="false">
+<string field="Question:DisplayChoices"/>
+<string value=" d) "/>
+<string field="Question:Choice4"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Question:Choice5" />
+</conditions>
+<trueSet>
+<set field="Question:DisplayChoices" arithmeticAsText="false">
+<string field="Question:DisplayChoices"/>
+<string value=" e) "/>
+<string field="Question:Choice5"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Question:Choice6" />
+</conditions>
+<trueSet>
+<set field="Question:DisplayChoices" arithmeticAsText="false">
+<string field="Question:DisplayChoices"/>
+<string value=" f) "/>
+<string field="Question:Choice6"/>
+</set>
+</trueSet>
+</if>
+<set field="Question:Answer" arithmeticAsText="false">
+<string field="Question:MCQAnswer"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Question:Navigation choice2" value="a"/>
+</conditions>
+<trueSet>
+<comment>- customizer wants to add another question</comment>
+<show form="Question"/>
+</trueSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Question:TypeChoice" value="b"/>
+</conditions>
+<trueSet>
+<comment>- set the question type in the stored record for this question</comment>
+<set field="Question:Type" arithmeticAsText="false">
+<string value="FIB"/>
+</set>
+<set field="Question:Answer" arithmeticAsText="false">
+<string field="Question:FIBAnswer"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Question:Navigation choice1" value="a"/>
+</conditions>
+<trueSet>
+<comment>- customizer wants to add another question</comment>
+<show form="Question"/>
+</trueSet>
+</if>
+</trueSet>
+</if>
+<comment>- customizer is done adding questions</comment>
+<if>
+<conditions>
+<and>
+<equals field="EditQuestionMode">
+<string value="yes"/>
+</equals>
+<equals field="AdministrationMode">
+<string value="yes"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<show form="Administration"/>
+</trueSet>
+<falseSet>
+<show form="Setup"/>
+</falseSet>
+</if>
+</process>
+<process name="SetupCustomizationVariables">
+<comment>- set the display variables for Final Poll and PostPoll documents</comment>
+<get recordList="Records">
+<forms>
+<form name="SetupVariables"/>
+</forms>
+</get>
+<foreach record="Configuration" recordList="Records">
+<set field="Customize_Title" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:Title"/>
+</set>
+<set field="Customize_Date" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:Date"/>
+</set>
+<set field="Customize_PreInstructions" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:PreInstructions"/>
+</set>
+<set field="Customize_PostInstructions" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:PostInstructions"/>
+</set>
+<set field="ShowScore" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:ShowScore"/>
+</set>
+<set field="ShowCorrectAnswers" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:ShowCorrectAnswers"/>
+</set>
+<if>
+<conditions>
+<and>
+<equals field="Configuration:SetupVariables:NotifyByEmail">
+<string value="yes"/>
+</equals>
+<isNotBlank field="Configuration:SetupVariables:EmailToNotify" />
+</and>
+</conditions>
+<trueSet>
+<set field="EmailConfirm" arithmeticAsText="false">
+<string field="Configuration:SetupVariables:EmailToNotify"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+</process>
+<process name="SetupExam">
+<comment>- set up the initial question number and the total question count</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<set field="LastQuestionId" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="IncorrectAnswers" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<comment>- until we have functions in processes we count records by hand....</comment>
+<set field="QuestionTotal" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="AllPollRecords">
+<forms>
+<form name="Question"/>
+</forms>
+</get>
+<foreach record="Record" recordList="AllPollRecords">
+<set field="QuestionTotal" arithmeticAsText="false">
+<add>
+<operand field="QuestionTotal"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<comment>- generate new session id</comment>
+<get recordList="Records">
+<forms>
+<form name="SetupVariables"/>
+</forms>
+</get>
+<foreach record="record" recordList="Records">
+<set field="record:SetupVariables:LastSessionId" arithmeticAsText="false">
+<add>
+<operand field="record:SetupVariables:LastSessionId"/>
+<operand value="1"/>
+</add>
+</set>
+<set field="Exam:id" arithmeticAsText="false">
+<string field="record:SetupVariables:LastSessionId"/>
+</set>
+</foreach>
+<set field="Exam:status" arithmeticAsText="false">
+<string value="in progress"/>
+</set>
+<set field="Score" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<comment>- now get the first answer</comment>
+<show form="Answer"/>
+</process>
+<process name="Pre-Answer">
+<comment>- fetch the current question to display in the PollLoop form</comment>
+<get recordList="QuestionRecords">
+<forms>
+<form name="Question"/>
+</forms>
+<conditions>
+<equals field="QuestionRecords:Question:SequenceNumber">
+<string field="QNumber"/>
+</equals>
+</conditions></get>
+<foreach record="Query" recordList="QuestionRecords">
+<set field="Q" arithmeticAsText="false">
+<string field="Query:Question:Question"/>
+</set>
+<set field="QType" arithmeticAsText="false">
+<string field="Query:Question:Type"/>
+</set>
+<set field="A" arithmeticAsText="false">
+<string field="Query:Question:Choice1"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Query:Question:Choice2"/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string field="Query:Question:Choice3"/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string field="Query:Question:Choice4"/>
+</set>
+<set field="E" arithmeticAsText="false">
+<string field="Query:Question:Choice5"/>
+</set>
+<set field="F" arithmeticAsText="false">
+<string field="Query:Question:Choice6"/>
+</set>
+<set field="CorrectAnswer" arithmeticAsText="false">
+<string field="Query:Question:Answer"/>
+</set>
+<set field="LastQuestionId" arithmeticAsText="false">
+<string field="Query:Question:QuestionId"/>
+</set>
+</foreach>
+</process>
+<process name="Post-Answer">
+<comment>- validate the session and restart the poll if expired</comment>
+<if>
+<conditions>
+<isBlank field="Exam:id" />
+</conditions>
+<trueSet>
+<show document="Session Expired Notification" reset="false"/>
+<show form="Exam"/>
+</trueSet>
+</if>
+<comment>- store the user's response</comment>
+<if>
+<conditions>
+<equals field="QType">
+<string value="FIB"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Answer:Answer" arithmeticAsText="false">
+<string field="Answer:AnswerToFIB"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Answer:Answer" arithmeticAsText="false">
+<string field="Answer:AnswerToMCQ"/>
+</set>
+</falseSet>
+</if>
+<comment>- Check the answer</comment>
+<if>
+<conditions>
+<equals field="Answer:Answer">
+<string field="CorrectAnswer"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Answer:Correct" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+<set field="Score" arithmeticAsText="false">
+<add>
+<operand field="Score"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="Answer:Correct" arithmeticAsText="false">
+<string value="no"/>
+</set>
+<if>
+<conditions>
+<isBlank field="IncorrectAnswers" />
+</conditions>
+<trueSet>
+<set field="IncorrectAnswers" arithmeticAsText="false">
+<string field="LastQuestionId"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="IncorrectAnswers" arithmeticAsText="false">
+<string field="IncorrectAnswers"/>
+<string value=", "/>
+<string field="LastQuestionId"/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<set field="Answer:QuestionId" arithmeticAsText="false">
+<string field="LastQuestionId"/>
+</set>
+<set field="Answer:SessionId" arithmeticAsText="false">
+<string field="Exam:id"/>
+</set>
+<comment>- set up for the next question</comment>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isLessThanOrEqualTo field="QNumber">
+<string field="QuestionTotal"/>
+</isLessThanOrEqualTo>
+</conditions>
+<trueSet>
+<comment>- and present it to the user</comment>
+<show form="Answer"/>
+</trueSet>
+</if>
+<comment>- Calculate the statistics and "close" the exam</comment>
+<set field="ScorePercentage" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="Score"/>
+<operand value="100"/>
+</mul>
+<operand field="QuestionTotal"/>
+</div>
+</set>
+<get recordList="ExamRecords">
+<forms>
+<form name="Exam"/>
+</forms>
+<conditions>
+<equals field="ExamRecords:Exam:id">
+<string field="Exam:id"/>
+</equals>
+</conditions></get>
+<foreach record="ExamRecord" recordList="ExamRecords">
+<set field="ExamRecord:Exam:status" arithmeticAsText="false">
+<string value="completed"/>
+</set>
+<set field="ExamRecord:Exam:score" arithmeticAsText="false">
+<string field="Score"/>
+</set>
+<set field="ExamRecord:Exam:incorrectAnswers" arithmeticAsText="false">
+<string field="IncorrectAnswers"/>
+</set>
+<set field="ExamRecord:Exam:scorePercentage" arithmeticAsText="false">
+<string field="ScorePercentage"/>
+</set>
+</foreach>
+<comment>- we end up here if there are no more questions</comment>
+<if>
+<conditions>
+<isNotBlank field="EmailConfirm" />
+</conditions>
+<trueSet>
+<send>
+<to addressField="EmailConfirm"/>
+<subject><field name="Exam:name"/> completed "<field name="Customize_Title"/>" - <field name="ScorePercentage"/>%</subject>
+<body document="Email Confirmation" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+</if>
+<comment>- This is an ugly trick in order to cause last record creation before some queries are run</comment>
+<show form="Scoring"/>
+</process>
+<process name="Post-Administration">
+<set field="AdministrationMode" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+<comment>- process the Administrator's choice from the Form</comment>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="a"/>
+</conditions>
+<trueSet>
+<comment>- View scores</comment>
+<show document="Student Scores" reset="false"/>
+<comment>- check for incomplete tests and display them if exist</comment>
+<set field="hasIncompleteExams" arithmeticAsText="false">
+<string value="false"/>
+</set>
+<get recordList="IncompleteExamRecords">
+<forms>
+<form name="Exam"/>
+</forms>
+<conditions>
+<equals field="IncompleteExamRecords:Exam:status">
+<string value="in progress"/>
+</equals>
+</conditions></get>
+<foreach record="Record" recordList="IncompleteExamRecords">
+<set field="hasIncompleteExams" arithmeticAsText="false">
+<string value="true"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<equals field="hasIncompleteExams">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Incomplete Tests" reset="false"/>
+</trueSet>
+</if>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="b"/>
+</conditions>
+<trueSet>
+<comment>- See all questions</comment>
+<show document="QuestionPreview" reset="false"/>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption">
+<string value="c"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>- See question statistics</comment>
+<get recordList="QuestionRecords">
+<forms>
+<form name="Question"/>
+</forms>
+</get>
+<foreach record="QuestionRecord" recordList="QuestionRecords">
+<set field="QuestionRecord:Question:TotalAnswers" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="QuestionRecord:Question:CorrectAnswers" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="AnswerRecords">
+<forms>
+<form name="Answer"/>
+</forms>
+<conditions>
+<equals field="AnswerRecords:Answer:QuestionId">
+<string field="QuestionRecord:Question:QuestionId"/>
+</equals>
+</conditions></get>
+<foreach record="AnswerRecord" recordList="AnswerRecords">
+<set field="QuestionRecord:Question:TotalAnswers" arithmeticAsText="false">
+<add>
+<operand field="QuestionRecord:Question:TotalAnswers"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<equals field="AnswerRecord:Answer:Correct">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="QuestionRecord:Question:CorrectAnswers" arithmeticAsText="false">
+<add>
+<operand field="QuestionRecord:Question:CorrectAnswers"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="QuestionRecord:Question:CorrectPercentage" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="QuestionRecord:Question:CorrectAnswers"/>
+<operand value="100"/>
+</mul>
+<operand field="QuestionRecord:Question:TotalAnswers"/>
+</div>
+</set>
+</foreach>
+<show document="Question Analysis Report" reset="false"/>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption">
+<string value="d"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>- Change the setup</comment>
+<show form="Setup"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption">
+<string value="e"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>- Delete all answers</comment>
+<delete><form name="Answer"/></delete>
+<delete><form name="Exam"/></delete>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption">
+<string value="f"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>- Delete a question</comment>
+<show form="Delete Question"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption">
+<string value="g"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>- Edit a question</comment>
+<show form="Edit Question"/>
+</trueSet>
+</if>
+</process>
+<process name="Pre-SetupVariables">
+<edit form="SetupVariables" submit="modify">
+</edit>
+</process>
+<process name="Display Customization Preview">
+<delete><form name="CustomizationPreview"/></delete>
+<show document="Exam Start" reset="false"/>
+<show document="QuestionPreview" reset="false"/>
+</process>
+<process name="Post-Setup">
+<if>
+<conditions>
+<mcEquals field="Setup:Navigation">
+<string value="a"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<show form="SetupVariables"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Setup:Navigation">
+<string value="b"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<show form="Question"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Setup:Navigation">
+<string value="c"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<show form="Delete Question"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Setup:Navigation">
+<string value="d"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<show form="Edit Question"/>
+</trueSet>
+</if>
+<show form="Setup"/>
+</process>
+<process name="Pre-Setup">
+<get recordList="QuestionRecords">
+<forms>
+<form name="Question"/>
+</forms>
+</get>
+<foreach record="Record" recordList="QuestionRecords">
+<set field="FirstViewOfSetup" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<isBlank field="FirstViewOfSetup" />
+</conditions>
+<trueSet>
+<comment>- start with the setup of the title, descriptions, etc.</comment>
+<show form="SetupVariables"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-Scoring">
+<if>
+<conditions>
+<equals field="ShowCorrectAnswers">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<comment>- show them</comment>
+<show document="End of Exam With Explanation" reset="false"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<equals field="ShowScore">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="End Of Exam With The Score" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Exam End" reset="false"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<comment>This will prevent Refresh button from affecting the statistics of the project</comment>
+<set field="Exam:id" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</process>
+<process name="Post-Delete Question">
+<comment>--- Find out the question's sequence number</comment>
+<get recordList="QuestionList">
+<forms>
+<form name="Question"/>
+</forms>
+<conditions>
+<equals field="QuestionList:Question:QuestionId">
+<string field="Delete Question:questionNumber"/>
+</equals>
+</conditions></get>
+<foreach record="CurrentRecord" recordList="QuestionList">
+<set field="RemovedSequenceNumber" arithmeticAsText="false">
+<string field="CurrentRecord:Question:SequenceNumber"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<isBlank field="RemovedSequenceNumber" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="AdministrationMode">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="Administration"/>
+</trueSet>
+<falseSet>
+<show form="Setup"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<comment>-- ... and shift the sequence numbers for the questions with higher numbers</comment>
+<get recordList="QuestionList">
+<forms>
+<form name="Question"/>
+</forms>
+<conditions>
+<isGreaterThan field="QuestionList:Question:SequenceNumber">
+<string field="RemovedSequenceNumber"/>
+</isGreaterThan>
+</conditions></get>
+<foreach record="CurrentRecord" recordList="QuestionList">
+<set field="CurrentRecord:Question:SequenceNumber" arithmeticAsText="false">
+<sub>
+<operand field="CurrentRecord:Question:SequenceNumber"/>
+<operand value="1"/>
+</sub>
+</set>
+</foreach>
+<comment>-- Purge the question and related answers</comment>
+<delete><form name="Answer"/><conditions>
+<equals field="Record:Answer:QuestionId">
+<string field="Delete Question:questionNumber"/>
+</equals>
+</conditions></delete>
+<delete><form name="Question"/><conditions>
+<equals field="Record:Question:QuestionId">
+<string field="Delete Question:questionNumber"/>
+</equals>
+</conditions></delete>
+<if>
+<conditions>
+<equals field="AdministrationMode">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="QuestionPreview" reset="false"/>
+<show form="Administration"/>
+</trueSet>
+<falseSet>
+<show form="Setup"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-Edit Question">
+<if>
+<conditions>
+<isBlank field="Edit Question:questionNumber" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="AdministrationMode">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="QuestionPreview" reset="false"/>
+<show form="Administration"/>
+</trueSet>
+<falseSet>
+<show form="Setup"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<set field="EditQuestionMode" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+<edit form="Question" submit="modify">
+<conditions>
+<equals field="Record:Question:QuestionId">
+<string field="Edit Question:questionNumber"/>
+</equals>
+</conditions>
+</edit>
+<comment>-- If we get here it means that nothing matched and we need to put an error message.</comment>
+<show document="Question Number is Incorrect" reset="false"/>
+<show form="Edit Question"/>
+</process>
+<process name="Pre-Delete Question">
+<if>
+<conditions>
+<equals field="AdministrationMode">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="QuestionPreview" reset="false"/>
+</trueSet>
+</if>
+</process>
+<process name="Pre-Edit Question">
+<if>
+<conditions>
+<equals field="AdministrationMode">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="QuestionPreview" reset="false"/>
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Exam Start">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><tab/><font size="280"><b><field name="Customize_Title"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><field name="Customize_Date"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/><tabStop position="17280"/></tabPositions><font size="240" color="000079"><b><i><field name="Customize_PreInstructions"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Exam End">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><field name="Customize_PostInstructions"/></font></paragraph>
+</xmlData>
+</document>
+<document name="QuestionPreview">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><b>Here are all the questions you entered so far:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font size="240"><itemization-table version="2"><show-print-control>false</show-print-control><show-export-control>false</show-export-control><column><header><string value="#"/>
+</header><contents><field name="Record:Question:QuestionId" /></contents></column><column><header><string value="Question"/>
+</header><contents><field name="Record:Question:Question" /></contents></column><column><header><string value="Choices"/>
+</header><contents><field name="Record:Question:DisplayChoices" /></contents></column><column><header><string value="Answer"/>
+</header><contents><field name="Record:Question:Answer" /></contents></column><conditions><form name="Question" /></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/></paragraph>
+</xmlData>
+</document>
+<document name="Session Expired Notification">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions><font size="240" color="FF8080"><b>Your session has expired. </b></font></paragraph>
+</xmlData>
+</document>
+<document name="Email Confirmation">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Exam:name"/></font><font size="240"> just completed </font><font size="240"><field name="Customize_Title"/></font><font size="240">, answering correctly </font><font size="240"><field name="ScorePercentage"/></font><font size="240">% of questions (</font><font size="240"><field name="Score"/></font><font size="240"> out of </font><font size="240"><field name="QuestionTotal"/></font><font size="240">).</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">To view exam reports or change it's setup go to </font><font size="240" color="000080"><u><invitation form="Administration" project=""><displayText><string value="this link"/>
+</displayText></invitation></u></font><font size="240">.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">Thank you for using Tawala!</font></paragraph>
+</xmlData>
+</document>
+<document name="End Of Exam With The Score">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Customize_PostInstructions"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">You correctly answered </font><font size="240"><field name="ScorePercentage"/></font><font size="240">% of questions (</font><font size="240"><field name="Score"/></font><font size="240"> out of </font><font size="240"><field name="QuestionTotal"/></font><font size="240">).</font></paragraph>
+</xmlData>
+</document>
+<document name="End of Exam With Explanation">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><field name="Customize_PostInstructions"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">You correctly answered </font><font size="240"><field name="ScorePercentage"/></font><font size="240">% of questions (</font><font size="240"><field name="Score"/></font><font size="240"> out of </font><font size="240"><field name="QuestionTotal"/></font><font size="240">).</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">Below are the details on how you answered each question:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><itemization-table version="2"><show-print-control>false</show-print-control><show-export-control>false</show-export-control><column><header><string value="#"/>
+</header><contents><field name="Record:Question:SequenceNumber" /></contents></column><column><header><string value="Question"/>
+</header><contents><field name="Record:Question:Question" /></contents></column><column><header><string value="Choices"/>
+</header><contents><field name="Record:Question:DisplayChoices" /></contents></column><column><header><string value="Correct Answer"/>
+</header><contents><field name="Record:Question:Answer" /></contents></column><column><header><string value="Your Answer"/>
+</header><contents><field name="Record:Answer:Answer" /></contents></column><conditions><form name="Question" /><form name="Answer" /><conditions>
+<and>
+<equals field="Record:Answer:SessionId">
+<string field="Exam:id"/>
+</equals>
+<equals field="Record:Question:QuestionId">
+<string field="Record:Answer:QuestionId"/>
+</equals>
+</and>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Student Scores">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions>Completed Tests:</paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><itemization-table version="2"><show-print-control>false</show-print-control><show-export-control>false</show-export-control><column><header><string value="Name"/>
+</header><contents><field name="Record:Exam:name" /></contents></column><column><header><string value="Number of Correct Answers"/>
+</header><contents><field name="Record:Exam:score" /></contents></column><column><header><string value="Percent Correct"/>
+</header><contents><field name="Record:Exam:scorePercentage" /></contents></column><column><header><string value="Question Number(s) Incorrectly Answered"/>
+</header><contents><field name="Record:Exam:incorrectAnswers" /></contents></column><conditions><form name="Exam" /><conditions>
+<equals field="Record:Exam:status">
+<string value="completed"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Incomplete Tests">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240">These examinees are still working on the test, or they have never finished:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><itemization-table version="2"><show-print-control>false</show-print-control><show-export-control>false</show-export-control><column><header><string value="Name"/>
+</header><contents><field name="Record:Exam:name" /></contents></column><conditions><form name="Exam" /><conditions>
+<equals field="Record:Exam:status">
+<string value="in progress"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Question Analysis Report">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="240"><itemization-table version="2"><show-print-control>false</show-print-control><show-export-control>false</show-export-control><column><header><string value="#"/>
+</header><contents><field name="Record:Question:QuestionId" /></contents></column><column><header><string value="Question"/>
+</header><contents><field name="Record:Question:Question" /></contents></column><column><header><string value="# of Correct Answers"/>
+</header><contents><field name="Record:Question:CorrectAnswers" /></contents></column><column><header><string value="Total Answers"/>
+</header><contents><field name="Record:Question:TotalAnswers" /></contents></column><column><header><string value="Percent Correct"/>
+</header><contents><field name="Record:Question:CorrectPercentage" /></contents></column><conditions><form name="Question" /></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Question Number is Incorrect">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions><font size="240" color="FF8080">There is no question with #</font><font size="240" color="FF8080"><field name="Delete Question:questionNumber"/></font><font size="240" color="FF8080">. Please try again.</font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

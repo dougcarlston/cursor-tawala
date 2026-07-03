@@ -1,0 +1,543 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="JDF" password="jdf20q" />
+<project name="Deli Menu" format="1.3">
+<forms>
+<form name="Menu" process="Process Order">
+<items>
+<text label="T1">Deli Sandwich Menu
+
+All sandwiches are $3.95 (plus extras)
+
+Fill out this form and press Submit to place your order.</text>
+<fib label="Q1">First Name: <blank label="a" alternateLabel="Name" length="10" /></fib>
+<fib label="Q2">Phone <blank label="a" alternateLabel="Phone 1" length="3" /> - <blank label="b" alternateLabel="Phone 2" length="4" /></fib>
+<mc label="Q3" onlyone="true" required="false"><question>Will you be picking up this order, or would you like us to deliver it to you?</question><choice label="a">Pick up</choice><choice label="b">Delivery (be sure to complete the address below)</choice></mc>
+<fib label="Q4">Address for delivery: <blank label="a" alternateLabel="Address" length="23" /></fib>
+<text label="T2">
+Your order:
+</text>
+<mc label="Q5" onlyone="true" required="false"><question>Meat:</question><choice label="a">Roast beef</choice><choice label="b">Turkey</choice><choice label="c">Ham</choice><choice label="d">Salami</choice><choice label="e">None</choice></mc>
+<mc label="Q6" onlyone="true" required="false"><question>Bread:</question><choice label="a">White</choice><choice label="b">Whole wheat</choice><choice label="c">Sourdough</choice><choice label="d">Rye</choice></mc>
+<mc label="Q7" onlyone="true" required="false"><question>Cheese:</question><choice label="a">American</choice><choice label="b">Cheddar</choice><choice label="c">Swiss</choice><choice label="d">Jack</choice><choice label="e">None</choice></mc>
+<mc label="Q8" onlyone="false" required="false"><question>Condiments:</question><choice label="a">Mayonnaise</choice><choice label="b">Mustard</choice><choice label="c">Lettuce</choice><choice label="d">Tomato</choice><choice label="e">Onion</choice></mc>
+<mc label="Q9" onlyone="false" required="false"><question>Extras (50 cents each):</question><choice label="a">Sauteed onions</choice><choice label="b">Sauerkraut</choice><choice label="c">Ranch dressing</choice><choice label="d">Special sauce</choice><choice label="e">Deli pickle</choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process Order">
+<set field="Cost">
+<string value="3.95" />
+</set>
+<set field="Meat">
+<string value="meatless" />
+</set>
+<if>
+<conditions>
+<mcEquals field="Q5" value="a" />
+</conditions>
+<trueSet>
+<set field="Meat">
+<string value="roast beef" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q5" value="b" />
+</conditions>
+<trueSet>
+<set field="Meat">
+<string value="turkey" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q5" value="c" />
+</conditions>
+<trueSet>
+<set field="Meat">
+<string value="ham" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q5" value="d" />
+</conditions>
+<trueSet>
+<set field="Meat">
+<string value="salami" />
+</set>
+</trueSet>
+</if>
+<set field="Bread">
+<string value="white" />
+</set>
+<if>
+<conditions>
+<mcEquals field="Q6" value="b" />
+</conditions>
+<trueSet>
+<set field="Bread">
+<string value="whole wheat" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q6" value="c" />
+</conditions>
+<trueSet>
+<set field="Bread">
+<string value="sourdough" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q6" value="d" />
+</conditions>
+<trueSet>
+<set field="Bread">
+<string value="rye" />
+</set>
+</trueSet>
+</if>
+<set field="Cheese">
+<string value="no" />
+</set>
+<if>
+<conditions>
+<mcEquals field="Q7" value="a" />
+</conditions>
+<trueSet>
+<set field="Cheese">
+<string value="American" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q7" value="b" />
+</conditions>
+<trueSet>
+<set field="Cheese">
+<string value="cheddar" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q7" value="c" />
+</conditions>
+<trueSet>
+<set field="Cheese">
+<string value="Swiss" />
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q7" value="d" />
+</conditions>
+<trueSet>
+<set field="Cheese">
+<string value="Jack" />
+</set>
+</trueSet>
+</if>
+<set field="separator">
+<string value=", " />
+</set>
+<set field="count">
+<string value="0" />
+</set>
+<if>
+<conditions>
+<mcContains field="Q8" value="a" />
+</conditions>
+<trueSet>
+<set field="Condiments">
+<string value="mayo" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q8" value="b" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Condiments">
+<string field="Condiments" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Condiments">
+<string field="Condiments" />
+<string value="mustard" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q8" value="c" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Condiments">
+<string field="Condiments" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Condiments">
+<string field="Condiments" />
+<string value="lettuce" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q8" value="d" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Condiments">
+<string field="Condiments" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Condiments">
+<string field="Condiments" />
+<string value="tomato" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q8" value="e" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Condiments">
+<string field="Condiments" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Condiments">
+<string field="Condiments" />
+<string value="onion" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="count">
+<string value="0" />
+</equals>
+</conditions>
+<trueSet>
+<set field="Condiments">
+<string value="none" />
+</set>
+</trueSet>
+</if>
+<set field="count">
+<string value="0" />
+</set>
+<if>
+<conditions>
+<mcContains field="Q9" value="a" />
+</conditions>
+<trueSet>
+<set field="Extras">
+<string value="sauteed onions" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q9" value="b" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Extras">
+<string field="Extras" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Extras">
+<string field="Extras" />
+<string value="sauerkraut" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q9" value="c" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Extras">
+<string field="Extras" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Extras">
+<string field="Extras" />
+<string value="Ranch dressing" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q9" value="d" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Extras">
+<string field="Extras" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Extras">
+<string field="Extras" />
+<string value="special sauce" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q9" value="e" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isGreaterThan field="count">
+<string value="0" />
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Extras">
+<string field="Extras" />
+<string field="separator" />
+</set>
+</trueSet>
+</if>
+<set field="Extras">
+<string field="Extras" />
+<string value="deli pickle" />
+</set>
+<set field="count">
+<add>
+<operand field="count" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="count">
+<string value="0" />
+</equals>
+</conditions>
+<trueSet>
+<set field="Extras">
+<string value="none" />
+</set>
+</trueSet>
+<falseSet>
+<set field="Extra Cost">
+<mul>
+<operand field="count" />
+<operand value="0.50" />
+</mul>
+</set>
+<set field="Cost">
+<add>
+<operand field="Cost" />
+<operand field="Extra Cost" />
+</add>
+</set>
+</falseSet>
+</if>
+<set field="Deliver">
+<string value="no" />
+</set>
+<if>
+<conditions>
+<mcEquals field="Q3" value="b" />
+</conditions>
+<trueSet>
+<set field="Cost">
+<add>
+<operand field="Cost" />
+<operand value="2.50" />
+</add>
+</set>
+<set field="Deliver">
+<string value="yes" />
+</set>
+<show document="Confirmation" />
+<show document="Delivery" />
+</trueSet>
+<falseSet>
+<show document="Confirmation" />
+<show document="Pick up" />
+</falseSet>
+</if>
+<send>
+<to addressLiteral="example@tawala.com" />
+<subject>Sandwich Order</subject>
+<body document="Order" />
+</send>
+</process>
+</processes>
+<documents>
+<document name="Confirmation">Thank you for your order, <field name="Name" />.
+
+You ordered a <field name="Meat" /> sandwich on <field name="Bread" /> with <field name="Cheese" /> cheese.
+
+Condiments: <field name="Condiments" />
+
+Extras: <field name="Extras" />
+
+Total cost:  $<field name="Cost" />
+
+(We will call you at <field name="Phone 1" />-<field name="Phone 2" /> to confirm your order.)</document>
+<document name="Pick up">
+Your order will be ready for you to pick up in 20 minutes.
+
+Online Deli
+1111 Mainline Blvd.
+555-1212</document>
+<document name="Delivery">
+Your order will be deliverd to you at <field name="Address" /> within 40 minutes.
+
+Online Deli
+1111 Mainline Blvd.
+555-1212</document>
+<document name="Order">Name:  <field name="Name" />
+
+Phone:  <field name="Phone 1" />-<field name="Phone 2" />
+
+Deliver?  <field name="Deliver" />
+Address:  <field name="Address" />
+
+Meat: <field name="Q5" />
+Bread: <field name="Q6" />
+Cheese: <field name="Q7" />
+Condiments: <field name="Q8" />
+Extras: <field name="Q9" />
+
+Cost:  <field name="Cost" /></document>
+</documents>
+</project>
+</request>

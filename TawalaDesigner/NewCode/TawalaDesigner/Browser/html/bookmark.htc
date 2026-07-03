@@ -1,0 +1,15 @@
+<public:component tagName="bookmark">
+
+<public:attach event="oncontentready" onevent="onContentReady()" />
+
+<script language="JScript">
+
+function onContentReady()
+{
+    element.style.display="none";
+    element.UNSELECTABLE=true;
+}
+
+</script>
+
+</public:component>

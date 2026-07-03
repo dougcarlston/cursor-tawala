@@ -76,16 +76,16 @@
         {
           "type": "fib",
           "label": "Q1",
-          "style": "leftAlignLabels",
+          "style": "",
           "prompt": "[First][Last]Name of Registrant: //Date of Birth: (mm/dd/yyyy)",
           "blanks": [
             {
               "name": "FirstName",
-              "length": 18
+              "length": 12
             },
             {
               "name": "LastName",
-              "length": 18
+              "length": 24
             },
             {
               "name": "RegAgeMo",
@@ -123,12 +123,12 @@
         {
           "type": "fib",
           "label": "Q3",
-          "style": "leftAlignLabels",
+          "style": "",
           "prompt": "Name of your School:",
           "blanks": [
             {
               "name": "a",
-              "length": 20
+              "length": 39
             }
           ]
         },
@@ -140,11 +140,11 @@
           "blanks": [
             {
               "name": "ParentFirstName",
-              "length": 18
+              "length": 12
             },
             {
               "name": "ParentLastName",
-              "length": 18
+              "length": 24
             },
             {
               "name": "Address",
@@ -196,6 +196,125 @@
         },
         {
           "type": "skipInstructions",
+          "label": "skip1dob",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Registration:RegAgeYr",
+                "op": "isLessThan",
+                "value": "100"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Please enter year of birth as a four digit number (e.g. \"1995\")."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Registration:RegAgeYr",
+                "op": "isLessThan",
+                "value": "1900"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth year cannot be before 1900."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Registration:RegAgeYr",
+                "op": "isGreaterThan",
+                "value": "<<SeasonYr>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth year cannot be in the future."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "or": [
+                  {
+                    "field": "Registration:RegAgeMo",
+                    "op": "isLessThan",
+                    "value": "1"
+                  },
+                  {
+                    "field": "Registration:RegAgeMo",
+                    "op": "isGreaterThan",
+                    "value": "12"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth month must be between 1 and 12."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "or": [
+                  {
+                    "field": "Registration:RegAgeDay",
+                    "op": "isLessThan",
+                    "value": "1"
+                  },
+                  {
+                    "field": "Registration:RegAgeDay",
+                    "op": "isGreaterThan",
+                    "value": "31"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth day must be between 1 and 31."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
           "label": "skip2",
           "commands": [
             {
@@ -213,6 +332,12 @@
               ]
             }
           ]
+        },
+        {
+          "type": "text",
+          "label": "T10",
+          "style": "normal",
+          "content": ""
         },
         {
           "type": "mc",
@@ -517,6 +642,100 @@
             {
               "cmd": "if",
               "condition": {
+                "field": "Registration:RegAgeYr",
+                "op": "isLessThan",
+                "value": "1900"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth year cannot be before 1900."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Registration:RegAgeYr",
+                "op": "isGreaterThan",
+                "value": "<<SeasonYr>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth year cannot be in the future."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "or": [
+                  {
+                    "field": "Registration:RegAgeMo",
+                    "op": "isLessThan",
+                    "value": "1"
+                  },
+                  {
+                    "field": "Registration:RegAgeMo",
+                    "op": "isGreaterThan",
+                    "value": "12"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth month must be between 1 and 12."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "or": [
+                  {
+                    "field": "Registration:RegAgeDay",
+                    "op": "isLessThan",
+                    "value": "1"
+                  },
+                  {
+                    "field": "Registration:RegAgeDay",
+                    "op": "isGreaterThan",
+                    "value": "31"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Birth day must be between 1 and 31."
+                },
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
                 "field": "Registration:ShirtSize",
                 "op": "mcIsBlank"
               },
@@ -528,7 +747,7 @@
                 },
                 {
                   "cmd": "skip",
-                  "to": "T1"
+                  "to": "T10"
                 }
               ]
             },
@@ -870,7 +1089,7 @@
           ]
         },
         {
-          "type": "heading",
+          "type": "subheading",
           "label": "H1",
           "content": "Step 1 of your registration has been completed."
         },
@@ -899,6 +1118,7 @@
         {
           "type": "text",
           "label": "T3",
+          "name": "OnlyWaiverIsNeeded",
           "style": "instructional",
           "content": "You still need to complete: A signed medical waiver. Press the Submit button below to display the waiver, which you need to print out, complete and sign, and mail to the address shown on the waiver. Note: DO NOT USE THE BACK BUTTON on your browser."
         },
@@ -921,6 +1141,7 @@
         {
           "type": "text",
           "label": "T5",
+          "name": "OnlyPaymentIsNeeded",
           "style": "instructional",
           "content": "You still need to submit: Your payment of $ Press the Submit button below to proceed to the payment options. Note: DO NOT USE THE BACK BUTTON on your browser."
         },
@@ -937,11 +1158,13 @@
         {
           "type": "text",
           "label": "T6",
+          "name": "EverythingIsReceived",
           "style": "normal",
           "content": "We have received both your payment and waiver. Thank you!"
         }
       ],
       "process": "Post-RegStep2",
+      "preProcess": "RetrieveAdminSetupVariables",
       "themePath": "dirtbowl2"
     },
     {
@@ -6824,7 +7047,14 @@
               },
               "then": [
                 {
-                  "cmd": "show"
+                  "cmd": "showDocument",
+                  "document": "PaymentByCheckInstructions",
+                  "reset": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "NavigationToPlayerDashboard",
+                  "reset": false
                 }
               ],
               "else": [
@@ -14881,7 +15111,9 @@
       "name": "Post-NavigationToPaymentByCheck",
       "commands": [
         {
-          "cmd": "show"
+          "cmd": "showDocument",
+          "document": "PaymentByCheckInstructions",
+          "reset": false
         }
       ]
     },

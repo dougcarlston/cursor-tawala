@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Var in Text from Classic" themePath="default" format="1.10" designerBuild="209">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Var"/></font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<set field="Var" arithmeticAsText="false">
+<string value="100"/>
+</set>
+</process>
+</processes>
+</project>

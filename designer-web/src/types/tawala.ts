@@ -13,7 +13,10 @@ export interface TawalaBlank {
   name: string;
   length?: number;
   required?: boolean;
+  /** Internal field name for Processes / Fields palette (legacy alternateLabel). */
   alternateLabel?: string;
+  /** Label shown above the input on the live form (topLabels and similar). */
+  displayLabel?: string;
 }
 
 export interface TawalaChoice {
@@ -36,7 +39,7 @@ export interface HeadingItem extends FormItemBase {
 
 export interface TextItem extends FormItemBase {
   type: "text";
-  content?: string;
+  content?: string | RichContentBlock[];
 }
 
 export interface FibItem extends FormItemBase {
@@ -196,7 +199,7 @@ export function emptyProject(): TawalaProject {
     themePath: "default",
     forms: [
       {
-        name: "Form1",
+        name: "Form 1",
         startPoint: true,
         items: [],
       },

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Bug572-FunctionBlank" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial">[Replace this with your question. Underscores create blanks.] </font><blank label="a" length="10" required="false"/></paragraph></fib>
+</items>
+</form>
+</forms>
+<documents>
+<document name="Document 1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><sum version="1"><field>Record:Form 1:Q1:a</field><conditions><form name="Form 1" /></conditions></sum></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

@@ -1,0 +1,118 @@
+body {
+	background-color: #C0C520;
+	font-family: georgia, serif;
+}
+
+h1.pageHeading {
+	height: 77px;
+	line-height: 2.4em;
+	color: #E0E0BE;
+	background-color: #8F8F21;
+}
+
+#tawalaProjectContainer {
+	color: #333333;
+	background-color: #ECF0CD;
+	border: 0px solid #cccccc;	
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 1px solid #cccccc;				
+	}
+	
+	table.component thead {
+		background-color: #755A1E;
+		color: #eeeeee;
+	}
+
+		table.component.outline thead th {
+			border: 1px solid #8F8F21;
+		}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #efF0dD;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #E0E0BE;
+		}
+
+		table.component.outline tbody td{
+			border: 1px solid #8F8F21;
+		}
+	
+.graph .bar { 
+	color: #ECF0CD; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #8F8F21; }
+	.graph.color1 .bar { background: #8F8F21; }
+
+.graph.color2 { border-color: #8F8F21; }
+	.graph.color2 .bar { background: #8F8F21; }
+
+.graph.color3 { border-color:#8F8F21; }
+	.graph.color3 .bar { background: #8F8F21; }
+
+.graph.color4 { border-color: #8F8F21; }
+	.graph.color4 .bar { background: #8F8F21; }
+
+.graph.color5 { border-color: #8F8F21; }
+	.graph.color5 .bar { background: #8F8F21; }
+
+.graph.color6 { border-color: #8F8F21; }
+	.graph.color6 .bar { background: #8F8F21; }
+
+.graph.color7 { border-color: #8F8F21; }
+	.graph.color7 .bar { background: #8F8F21; }
+
+.graph.color8 { border-color: #8F8F21; }
+	.graph.color8 .bar { background: #8F8F21; }
+
+.graph.color9 { border-color: #8F8F21; }
+	.graph.color9 .bar { background: #8F8F21; }
+
+.graph.color10 { border-color: #8F8F21; }
+	.graph.color10 .bar { background: #8F8F21; }
+
+.graph.color11 { border-color: #8F8F21; }
+	.graph.color11 .bar { background: #8F8F21; }
+
+.graph.color12 { border-color: #8F8F21; }
+	.graph.color12 .bar { background: #8F8F21; }
+
+.graph.color13 { border-color: #8F8F21 }
+	.graph.color13 .bar { background: #8F8F21; }
+
+.graph.color14 { border-color: #a3a892; }
+	.graph.color14 .bar { background: #8F8F21; }
+
+.graph.color15 { border-color: #8F8F21; }
+	.graph.color15 .bar { background: #8F8F21; }
+
+.graph.color16 { border-color: #8F8F21; }
+	.graph.color16 .bar { background: #8F8F21; }
+

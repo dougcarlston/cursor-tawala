@@ -1,0 +1,17 @@
+<public:component>
+
+<public:attach event="onkeypress" onevent="onKeyPress()" />
+
+<script language="JScript">
+
+function onKeyPress()
+{
+	if (event.keyCode == 13)
+	{
+		event.returnValue=false;
+		event.srcElement.blur();
+	}
+}
+
+</script>
+</public:component>

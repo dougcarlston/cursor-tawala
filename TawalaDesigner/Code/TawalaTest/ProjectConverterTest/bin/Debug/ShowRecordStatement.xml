@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="JDF" password="jdf20q" />
+<project name="ShowRecordStatement" themePath="default" format="1.4">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default" process="Process 1">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">[Replace this with your question. Underscores create blanks.] </font><blank label="a" length="10" required="false"/></paragraph></fib>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<edit form="Form 1" submit="modify">
+<conditions>
+<equals field="Record:Form 1:Q1:a">
+<string value="foo"/>
+</equals>
+</conditions>
+</edit>
+</process>
+</processes>
+</project>
+</request>

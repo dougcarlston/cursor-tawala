@@ -1,0 +1,309 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7815D5A4-70AF-463F-B10C-5F24B59DEC77}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TawalaDesigner</RootNamespace>
+    <AssemblyName>TawalaDesigner</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <PublishUrl>publish\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Management" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="ApplicationView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ApplicationView.Designer.cs">
+      <DependentUpon>ApplicationView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="DeploymentResult.cs" />
+    <Compile Include="Dialogs\AboutHelper.cs" />
+    <Compile Include="Dialogs\HelpAboutView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\HelpAboutView.designer.cs">
+      <DependentUpon>HelpAboutView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\DeployingProjectView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\DeployingProjectView.Designer.cs">
+      <DependentUpon>DeployingProjectView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\INewProjectPresenter.cs" />
+    <Compile Include="Dialogs\INewProjectView.cs" />
+    <Compile Include="Dialogs\IProjectDeployedPresenter.cs" />
+    <Compile Include="Dialogs\IProjectDeployedView.cs" />
+    <Compile Include="Dialogs\IStartupTasksPresenter.cs" />
+    <Compile Include="Dialogs\IStartupTasksView.cs" />
+    <Compile Include="Dialogs\NewProjectDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\NewProjectDialog.designer.cs">
+      <DependentUpon>NewProjectDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\NewProjectPresenter.cs" />
+    <Compile Include="Dialogs\ProjectDeployedPresenter.cs" />
+    <Compile Include="Dialogs\ProjectDeployedView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\ProjectDeployedView.Designer.cs">
+      <DependentUpon>ProjectDeployedView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\StartupTasksPresenter.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="ProjectDeployer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <EmbeddedResource Include="ApplicationView.resx">
+      <DependentUpon>ApplicationView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\HelpAboutView.resx">
+      <DependentUpon>HelpAboutView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\DeployingProjectView.resx">
+      <DependentUpon>DeployingProjectView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\NewProjectDialog.resx">
+      <DependentUpon>NewProjectDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\ProjectDeployedView.resx">
+      <DependentUpon>ProjectDeployedView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\StartupTasksView.resx">
+      <DependentUpon>StartupTasksView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <Compile Include="Dialogs\StartupTasksView.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\StartupTasksView.Designer.cs">
+      <DependentUpon>StartupTasksView.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FormDesigner\FormDesigner.csproj">
+      <Project>{64119070-D726-4F91-A9D4-72537DEB0786}</Project>
+      <Name>FormDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Application\MainApplication.csproj">
+      <Project>{8613E442-1DEC-4050-A83C-F7261D410CC8}</Project>
+      <Name>MainApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DocumentDesigner\DocumentDesigner.csproj">
+      <Project>{3324721B-A2A2-4C11-AA30-609370E213D1}</Project>
+      <Name>DocumentDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FontSupport\FontSupport.csproj">
+      <Project>{245B890C-9981-4FF9-9FA0-0A828D8539E3}</Project>
+      <Name>FontSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Projects\Projects.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Projects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Browser\Browser.csproj">
+      <Project>{AC59536A-6D42-460A-AA2D-E14C5FD7F75B}</Project>
+      <Name>Browser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectExplorer\ProjectExplorer.csproj">
+      <Project>{55533182-6777-4318-A076-B1E8294D62F7}</Project>
+      <Name>ProjectExplorer</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaInterfaces\TawalaInterfaces.csproj">
+      <Project>{62431343-6FF1-4BC0-84E6-5C15F64CB86D}</Project>
+      <Name>TawalaInterfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Document_New.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_copy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_cut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_paste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Folder_Open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Form_New.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Project_New.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Project_Save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.2.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 2.0 %28x86%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.0">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.0 %28x86%29</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Properties\StartupTasksViewBackground.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <PropertyGroup>
+    <PreBuildEvent>xcopy "$(SolutionDir)..\TawalaDesigner\Browser\html" %25TEMP%25\FormDesignerTest\html /I/Y 
+xcopy "$(SolutionDir)..\TawalaDesigner\DocumentDesigner\html" %25TEMP%25\FormDesignerTest\html /I/Y
+xcopy "$(SolutionDir)..\TawalaDesigner\Setup\config.xml" "$(TargetDir)" /R /Y /C
+xcopy "$(SolutionDir)..\TawalaDesigner\Setup\config.runtime.xml" "$(TargetDir)" /R /Y /C
+xcopy "$(SolutionDir)..\TawalaDesigner\FormDesigner\html" %25TEMP%25\FormDesignerTest\html /I/Y
+xcopy "$(SolutionDir)..\TawalaDesigner\Setup\TawalaDefault.ttf" "$(TargetDir)" /R /Y /C
+xcopy "$(SolutionDir)..\TawalaDesigner\Setup\Templates" "$(TargetDir)Templates" /R /Y /C /I</PreBuildEvent>
+  </PropertyGroup>
+</Project>

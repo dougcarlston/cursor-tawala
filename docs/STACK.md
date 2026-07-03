@@ -92,7 +92,13 @@ export TAWALA_JAVA_URL=http://localhost:8080
 cd designer-web && npm run dev
 ```
 
-The Docker image patches `ROOT.war` for container networking (`postgres` hostname, in-process Lucene search). Local `ant` builds still use `localhost` via `src/dbconnection.properties`.
+The Docker image patches `ROOT.war` for container networking (`postgres` hostname, in-process Lucene search). It also injects **project theme CSS** and **`/images/silk/`** icons (FamFamFam tick/star for correlation tables) from `docker/tomcat/`. See `docker/tomcat/README.md`. Rebuild after changing those assets:
+
+```bash
+docker compose build tawala && docker compose up -d tawala
+```
+
+Local `ant` builds still use `localhost` via `src/dbconnection.properties`.
 
 ### Manual build (without Docker for Tomcat)
 

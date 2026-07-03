@@ -1,0 +1,20 @@
+{
+  "name": "Form with process",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "process": "Process 1",
+      "items": []
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": []
+    }
+  ],
+  "documents": []
+}

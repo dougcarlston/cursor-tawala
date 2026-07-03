@@ -1,0 +1,65 @@
+<public:component tagName="HeadingItem">
+
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+
+<public:property name="HasLabel" get="getHasLabel" />
+
+<public:property name="Contents" get="getContents" put="putContents" />
+
+<script language="JScript">
+
+var h1 = null;
+
+init();
+
+function init()
+{
+    element.style.display="block";
+    
+    h1 = element.document.createElement("h1");
+    h1.className="headingitem formitem";
+    
+    h1.addBehavior("editable.htc");
+	h1.acceptFieldDrop = false;
+
+    h1.addBehavior("exitonenterkey.htc");
+    h1.addBehavior("acceptsdraggedfields.htc");
+	
+	element.appendChild(h1);
+}
+
+function getHasLabel()
+{
+    return "true";
+}
+
+function putContents(value)
+{
+    h1.innerHTML = value;
+}
+
+function getContents()
+{
+    return h1.innerHTML;
+}
+
+function onActivate()
+{
+    if (window.external != null)
+    {
+		window.external.HeadingItemActivated(element.id);
+    }
+}
+
+function onDeactivate()
+{
+    if (window.external != null)
+    {
+		window.external.FormItemDeactivated(element.id);
+    }
+}
+
+</script>
+
+</public:component>

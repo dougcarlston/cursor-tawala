@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Signup Sheet Template w Email" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default" process="Process 1">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="240" color="000000"><b>Sign up Sheet Template</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>To use this template, replace the text on this Form with your own text and then click on the Deploy button ( </i></b></font><font face="Arial" size="200" color="000000"><image id="image1" width="22" height="23"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="835" numOfObjects="0" maxRecordSize="813" numOfParams="0"/>
+</image></font><font face="Arial" size="200" color="000080"><b><i>)  up above to create a Web page for your new poll.  You will want to delete this instruction box as well.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>Once you have deployed your Web app, you can get the Web link to the Signup Sheet from your My Tawala page on the Tawala Website.  Send the link to your group or place it on your Website to drive traffic to your sheet.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>If you want email notification each time someone adds their name to this list, click on 'Process1' in the Project Explorer on the left of the Designer.  Then follow the directions that appear in the Process1 window.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><b><i>If you do NOT want email notification each time someone adds their name to this list, click on the 'Process1' in the Project Explorer on the left of the Designer and delete it by clicking on the Delete button (</i></b></font><font face="Arial" size="200" color="000000"><image id="image2" width="22" height="23"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="843" numOfObjects="0" maxRecordSize="816" numOfParams="0"/>
+</image></font><font face="Arial" size="200" color="000080"><b><i> ) above.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Name:   </b></font><blank label="a" length="16" required="false" alternateLabel="FirstName"/><font face="Arial" size="200" color="000000"> (first)  </font><blank label="b" length="19" required="false" alternateLabel="LastName"/><font face="Arial" size="200" color="000000"> (last)</font></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Contact information:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email:  </font><blank label="a" length="50" required="false" alternateLabel="Email"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Telephone: </font><blank label="b" length="45" required="false" alternateLabel="Tel"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Address: </font><blank label="c" length="48" required="false" alternateLabel="Address"/></paragraph></fib>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="1"><number-of-columns>5</number-of-columns><column><header>First</header><contents><field name="Record:Form 1:FirstName"/></contents></column><column><header>Last</header><contents><field name="Record:Form 1:LastName"/></contents></column><column><header>Email</header><contents><field name="Record:Form 1:Email"/></contents></column><column><header>Phone</header><contents><field name="Record:Form 1:Tel"/></contents></column><column><header>Address</header><contents><field name="Record:Form 1:Address"/></contents></column><conditions><form name="Form 1"/></conditions></itemization-table></font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<comment>Click on the line below, then insert your email address in place of "&lt;Insert your email address here&gt;."</comment>
+<send>
+<to addressLiteral="&lt;Insert your email address here&gt;"/>
+<subject>New Signup on Signup Sheet</subject>
+<body document="NewSignup" reset="false"/>
+</send>
+</process>
+</processes>
+<documents>
+<document name="NewSignup">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Form 1:FirstName"/></b></font><sp/><font face="Arial" size="200" color="000000"><b><field name="Form 1:LastName"/></b></font><sp/><font face="Arial" size="200" color="000000">has joined the signup sheet.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Contact information:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="660"><row><cell width="1425"><division indent="0" align="right"><font face="Arial" size="200" color="000000"><b>Email:</b></font></division></cell><cell width="272"/><cell width="8443"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Form 1:Email"/></font></division></cell></row><row><cell width="1425"><division indent="0" align="right"><font face="Arial" size="200" color="000000"><b>Telephone:</b></font></division></cell><cell width="272"/><cell width="8443"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Form 1:Tel"/></font></division></cell></row><row><cell width="1425"><division indent="0" align="right"><font face="Arial" size="200" color="000000"><b>Address:</b></font></division></cell><cell width="272"/><cell width="8443"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Form 1:Address"/></font></division></cell></row></table>
+</xmlData>
+</document>
+</documents>
+<images><imagedef id="image1"><imagedata imageFormat="PNG">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFU
+OE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xr
+TkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJc
+ff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEydd
+V+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8
+O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxT
+e1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCP
+pnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXI
+Zjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yA
+I2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVP
+tItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+S
+vTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomev
+P2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==</imagedata></imagedef><imagedef id="image2"><imagedata imageFormat="PNG">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAphJREFU
+OE+lzm1IE2EAB/AnKIKo8ENQQYHFKEha4kJGL7pUEJtvYRb5ISwTndgLQhlkYsoqCCvMFpyispZa
+nZbbyllL2/K23V5vXu7ttnZzzmlqC6WIcDNhMI6b9uUefl+e5///w7POH1oGDI/vxzJDwDsXYQh4
+5iIMAWI2QuVLSPUdyHV/naa9/+cKnDMRKnIXz7vhoO5Qnk3noUVrXYF9OkIVfPUO253u2shW8csw
+xEVLvRpiWiAkTwomcE8sAuPBMJWTXNB39ppZmbatnC8XbpgQVywlYMSfI7AfLpILanvEEpc3EI0A
+HgjTYK75MXG/NYk/vv0IUnPXoPOsFJxtCu+JMlPaOXHZ1RbhvQHZ4Lj/V3QIrIFwvDF3yNoB48kF
+GCvLXF5vqxISmZfU2eeh6uui5kdyhRJ1fI+tgGUyvKqVv2DQSxs737njGL4nQ84701pzswNq+6TS
+GIl56gSYJpbWQojlHnYBsT4J35LSyyuCmh+rtUbLt5+0PjD4llblgLUTudX2vVlv9qUrdqZ+Tkwb
+uVZv1tvjywBx/42Hw6ifX+VIzICPFjaVVogvXjFyCq3J+YZGkQYlaX0w4vhDY5Fhk/wq9zZuHze/
+saIagqChD2r0YZeVW2xl56F3nqm0JHUChvDfVEbdZLC4xruZM8RKv1VSKhKJEL111BZSm6dMT15g
+3NMYO9dwu2VYYY+tgNS8SLUoHiA3pWAJKXXZp+43No2M6ofH5qIFpSGgb39t5JXgrCx9ZcNbjT/6
+DmB0gYp8ILHvz3nOya4tr+yXKmRokJoqTDNaqVJVcll7/KykB45GoBsJ0fTLP9Y1CEVQp0TpiU/f
+m2YtuEPS2/e0vTuagi7VPEMAUs4yBFoHZxgCzdIphv4BrTJlhy6T7DUAAAAASUVORK5CYII=</imagedata></imagedef></images></project>

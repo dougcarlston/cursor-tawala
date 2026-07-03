@@ -1,0 +1,405 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Student Poll" themePath="default" format="1.4">
+<forms>
+<form name="Customize" startPoint="true" themePath="default" dataEntryOnly="true" process="Post-Customize">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000"><b>Poll or Survey</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Create a question with multiple responses. Have your friends answer online. You may offer two, three or four choices.</i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Title of your question:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="58" required="false" alternateLabel="TitleText"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Question text:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="58" height="5" required="false" alternateLabel="QuestionText"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Choice 1:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="58" required="false" alternateLabel="Choice1"/></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Choice 2:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="58" required="false" alternateLabel="Choice2"/></paragraph></fib>
+<fib label="Q5"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Choice 3:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="58" required="false" alternateLabel="Choice3"/></paragraph></fib>
+<fib label="Q6"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Choice 4:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="58" required="false" alternateLabel="Choice4"/></paragraph></fib>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>The following option produces a Report with a list of everyone's choices. It is not recommended if you will be polling a very large group.</i></b></font></paragraph></text>
+<mc label="Q7" alternateLabel="AskForNames" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Do you want to ask your users for their names? Or would you like to keep them anonymous?</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Ask for name</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Do not ask for name (anonymous)</b></font></paragraph></choice></mc>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Once you've entered your question with its choices, click the Submit button to continue.</i></b></font></paragraph></text>
+</items>
+</form>
+<form name="Start Questionnaire" startPoint="true" themePath="default" process="Post-StartQuestionnaire">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Questionnaire" startPoint="false" themePath="default" process="Post_Questionnaire">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="320" color="000000"><b><field name="QuestionnaireTitle"/></b></font></paragraph></text>
+<mc label="Q1" alternateLabel="UserResponse" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Question"/></b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 1"/></b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 2"/></b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 3"/></b></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 4"/></b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Questionnaire_Name" startPoint="false" themePath="default" process="Post_Questionnaire">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="320" color="000000"><b><field name="QuestionnaireTitle"/></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Please enter your name: </b></font><blank label="a" length="40" required="false" alternateLabel="Name"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions> </paragraph></fib>
+<mc label="Q2" alternateLabel="UserResponse" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Question"/></b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 1"/></b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 2"/></b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 3"/></b></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Choice 4"/></b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="default" process="Pre-Administration">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-StartQuestionnaire">
+<comment>get the display parameters for the current questionnaire</comment>
+<get recordList="Setup Records">
+<forms>
+<form name="Customize"/>
+</forms>
+</get>
+<foreach record="SetupRecord" recordList="Setup Records">
+<set field="QuestionnaireTitle" arithmeticAsText="false">
+<string field="SetupRecord:Customize:TitleText"/>
+</set>
+<set field="Question" arithmeticAsText="false">
+<string field="SetupRecord:Customize:QuestionText"/>
+</set>
+<set field="NumberOfChoices" arithmeticAsText="false">
+<string field="SetupRecord:Customize:NumberOfChoices"/>
+</set>
+<set field="Choice 1" arithmeticAsText="false">
+<string field="SetupRecord:Customize:Choice1"/>
+</set>
+<set field="Choice 2" arithmeticAsText="false">
+<string field="SetupRecord:Customize:Choice2"/>
+</set>
+<set field="Choice 3" arithmeticAsText="false">
+<string field="SetupRecord:Customize:Choice3"/>
+</set>
+<set field="Choice 4" arithmeticAsText="false">
+<string field="SetupRecord:Customize:Choice4"/>
+</set>
+<set field="IncludeName" arithmeticAsText="false">
+<string value="false"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="SetupRecord:Customize:AskForNames" value="a"/>
+</conditions>
+<trueSet>
+<set field="IncludeName" arithmeticAsText="false">
+<string value="true"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<equals field="IncludeName">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="Questionnaire_Name"/>
+</trueSet>
+</if>
+<show form="Questionnaire"/>
+</process>
+<process name="Post-Customize">
+<set field="NumberOfChoices" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Customize:AskForNames" value="a"/>
+</conditions>
+<trueSet>
+<append document="Confirm Customization" appendage="Confirm Name"/>
+</trueSet>
+</if>
+<append document="Confirm Customization" appendage="Confirm Question"/>
+<if>
+<conditions>
+<isNotBlank field="Customize:Choice1"/>
+</conditions>
+<trueSet>
+<set field="choiceLabel" arithmeticAsText="false">
+<string value="   a)  "/>
+</set>
+<set field="choiceText" arithmeticAsText="false">
+<string field="Customize:Choice1"/>
+</set>
+<append document="Confirm Customization" appendage="Confirm Choice"/>
+<set field="NumberOfChoices" arithmeticAsText="false">
+<add>
+<operand field="NumberOfChoices"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isNotBlank field="Customize:Choice2"/>
+</conditions>
+<trueSet>
+<set field="choiceLabel" arithmeticAsText="false">
+<string value="   b)  "/>
+</set>
+<set field="choiceText" arithmeticAsText="false">
+<string field="Customize:Choice2"/>
+</set>
+<append document="Confirm Customization" appendage="Confirm Choice"/>
+<set field="NumberOfChoices" arithmeticAsText="false">
+<add>
+<operand field="NumberOfChoices"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isNotBlank field="Customize:Choice3"/>
+</conditions>
+<trueSet>
+<set field="choiceLabel" arithmeticAsText="false">
+<string value="   c)  "/>
+</set>
+<set field="choiceText" arithmeticAsText="false">
+<string field="Customize:Choice3"/>
+</set>
+<append document="Confirm Customization" appendage="Confirm Choice"/>
+<set field="NumberOfChoices" arithmeticAsText="false">
+<add>
+<operand field="NumberOfChoices"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isNotBlank field="Customize:Choice4"/>
+</conditions>
+<trueSet>
+<set field="choiceLabel" arithmeticAsText="false">
+<string value="   d)  "/>
+</set>
+<set field="choiceText" arithmeticAsText="false">
+<string field="Customize:Choice4"/>
+</set>
+<append document="Confirm Customization" appendage="Confirm Choice"/>
+<set field="NumberOfChoices" arithmeticAsText="false">
+<add>
+<operand field="NumberOfChoices"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</trueSet>
+</if>
+</trueSet>
+<falseSet>
+<show document="Choice Count Error" reset="false"/>
+<show form="Customize"/>
+</falseSet>
+</if>
+</trueSet>
+<falseSet>
+<show document="Choice Count Error" reset="false"/>
+<show form="Customize"/>
+</falseSet>
+</if>
+<comment>"clear" previous submissions to keep them from being counted in results</comment>
+<if>
+<conditions>
+<mcEquals field="Customize:AskForNames" value="a"/>
+</conditions>
+<trueSet>
+<get recordList="recordsWithName">
+<forms>
+<form name="Questionnaire_Name"/>
+</forms>
+</get>
+<foreach record="nameRecord" recordList="recordsWithName">
+<set field="nameRecord:Questionnaire_Name:activeRecord" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</foreach>
+</trueSet>
+<falseSet>
+<get recordList="records">
+<forms>
+<form name="Questionnaire"/>
+</forms>
+</get>
+<foreach record="record" recordList="records">
+<set field="record:Questionnaire:activeRecord" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</foreach>
+</falseSet>
+</if>
+<append document="Confirm Customization" appendage="Confirm Footer"/>
+<show document="Confirm Customization" reset="true"/>
+</process>
+<process name="Post_Questionnaire">
+<comment>flag to include this record in all results counts</comment>
+<set field="activeRecord" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<show document="Questionnaire Done" reset="false"/>
+</process>
+<process name="Post_Qustionnaire_Name">
+<comment>flag to include this record in all results counts</comment>
+<set field="activeRecord" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<show document="Questionnaire Done" reset="false"/>
+</process>
+<process name="Pre-Administration">
+<get recordList="Settings">
+<forms>
+<form name="Customize"/>
+</forms>
+</get>
+<foreach record="Setting" recordList="Settings">
+<set field="QuestionnaireTitle" arithmeticAsText="false">
+<string field="Setting:Customize:TitleText"/>
+</set>
+<set field="Question" arithmeticAsText="false">
+<string field="Setting:Customize:QuestionText"/>
+</set>
+<set field="NumberOfChoices" arithmeticAsText="false">
+<string field="Setting:Customize:NumberOfChoices"/>
+</set>
+<set field="Choice 1" arithmeticAsText="false">
+<string field="Setting:Customize:Choice1"/>
+</set>
+<set field="Choice 2" arithmeticAsText="false">
+<string field="Setting:Customize:Choice2"/>
+</set>
+<set field="Choice 3" arithmeticAsText="false">
+<string field="Setting:Customize:Choice3"/>
+</set>
+<set field="Choice 4" arithmeticAsText="false">
+<string field="Setting:Customize:Choice4"/>
+</set>
+<set field="IncludeName" arithmeticAsText="false">
+<string value="false"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Setting:Customize:AskForNames" value="a"/>
+</conditions>
+<trueSet>
+<set field="IncludeName" arithmeticAsText="false">
+<string value="true"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="KeyLabel_a" arithmeticAsText="false">
+<string value="a = "/>
+<string field="Choice 1"/>
+</set>
+<set field="KeyLabel_b" arithmeticAsText="false">
+<string value="b = "/>
+<string field="Choice 2"/>
+</set>
+<if>
+<conditions>
+<isNotBlank field="Choice 3"/>
+</conditions>
+<trueSet>
+<set field="KeyLabel_c" arithmeticAsText="false">
+<string value="c = "/>
+<string field="Choice 3"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Choice 4"/>
+</conditions>
+<trueSet>
+<set field="KeyLabel_d" arithmeticAsText="false">
+<string value="d = "/>
+<string field="Choice 4"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="IncludeName">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Results with Names" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Results" reset="false"/>
+</falseSet>
+</if>
+<show document="Results Footer" reset="false"/>
+</process>
+<process name="Post-Administration">
+</process>
+</processes>
+<documents>
+<document name="Confirm Customization">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>This will be the format of your customized question:</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="320" color="000000"><b><field name="Customize:TitleText"/></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Choice">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="choiceLabel"/></b></font><sp/><sp/><font face="Arial" size="200" color="000000"><b><field name="choiceText"/></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Footer">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>If this looks correct, proceed to the next step (Review and Send).</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>To make a change or correction </i></b></font><font face="Arial" size="200" color="000080"><b><i><u><invitation form="Customize" project="">click here</invitation></u></i></b></font><font face="Arial" size="200" color="0000FF"><b><i>.</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Name">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Please enter your name: ________________________________________</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Choice Count Error">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="FF0000"><b>You must offer at least two choices.</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Question">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="Customize:QuestionText"/></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Questionnaire Done">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Thank you.</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>If you'd like to see the results so far </b></font><font face="Arial" size="200" color="000080"><b><u><invitation form="Administration" project="">click here.</invitation></u></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Results">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="320" color="000000"><b><field name="QuestionnaireTitle"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Responses to question:  </b></font><font face="Arial" size="200" color="000000"><b><field name="Question"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><choice-tally-table version="1"><field>Questionnaire:UserResponse</field><conditions><form name="Questionnaire"/><conditions>
+<equals field="Record:Questionnaire:activeRecord">
+<string value="1"/>
+</equals>
+</conditions></conditions></choice-tally-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Results with Names">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="320" color="000000"><b><field name="QuestionnaireTitle"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Responses to question:  </b></font><font face="Arial" size="200" color="000000"><b><field name="Question"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Totals:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><choice-tally-table version="1"><field>Record:Questionnaire_Name:UserResponse</field><conditions><form name="Questionnaire_Name"/><conditions>
+<equals field="Record:Questionnaire_Name:activeRecord">
+<string value="1"/>
+</equals>
+</conditions></conditions></choice-tally-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>By respondent:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="1"><number-of-columns>2</number-of-columns><column><header>Name</header><contents><field name="Record:Questionnaire_Name:Name"/></contents></column><column><header>Choice</header><contents><field name="Record:Questionnaire_Name:UserResponse"/></contents></column><conditions><form name="Questionnaire_Name"/><conditions>
+<equals field="Record:Questionnaire_Name:activeRecord">
+<string value="1"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Results Footer">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">You may return to this page at any time to see the latest results.</font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

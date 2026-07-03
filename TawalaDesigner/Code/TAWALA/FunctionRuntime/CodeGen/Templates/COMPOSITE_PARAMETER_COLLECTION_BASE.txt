@@ -1,0 +1,48 @@
+
+    public abstract class CompositeParameterCollectionBase<T> : BindingList<ICompositeParameter>, ICompositeParameterCollection
+        where T : CompositeParameterBase, ICompositeParameter, new()
+    {
+        #region ICompositeParameterCollection Members
+
+        public override string ToString()
+        {
+            StringBuilder sbXml = new StringBuilder();
+
+            foreach (ICompositeParameter composite in this)
+            {
+                sbXml.Append(composite.ToString());
+            }
+
+            return sbXml.ToString();
+        }
+
+        public ICompositeParameter CreateItem()
+        {
+            return new T();
+        }
+
+        public BindingList<ICompositeParameter> CreateBindingList()
+        {
+            return this;
+        }
+
+        protected string ToValueXml(string ccid)
+        {
+            StringBuilder sbXml = new StringBuilder();
+            foreach (ICompositeParameter composite in this)
+            {
+                sbXml.AppendFormat("<{0}>{1}</{0}>", ccid, composite.ToValueXml());
+            }
+            return sbXml.ToString();
+        }
+
+        #endregion
+
+        #region IFunctionParameterValue Members
+
+        public abstract string ToValueXml();
+        public abstract string FormattedString { get; }
+
+        #endregion
+    }
+}

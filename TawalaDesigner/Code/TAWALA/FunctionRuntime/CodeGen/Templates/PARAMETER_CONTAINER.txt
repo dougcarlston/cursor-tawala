@@ -1,0 +1,11 @@
+			
+		private PARAMETER_CONTAINER parameter_container;
+		
+		public class PARAMETER_CONTAINER : PARAMETER_CONTAINER_BASE
+		{
+			public PARAMETER_CONTAINER(object owner) : base(owner)
+			{
+			}
+			
+			${PROPERTIES}
+		}

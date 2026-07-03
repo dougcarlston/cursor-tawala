@@ -3,6 +3,13 @@ import { XMLParser } from "fast-xml-parser";
 import * as store from "./store.mjs";
 import * as runtime from "./runtime.mjs";
 import { buildUploadRequest } from "./jsonToXml.mjs";
+import {
+  filterStartpointsForMarkedForms,
+  parseDeployFailure,
+  parseStartpointsForProject,
+  startPointFormNames,
+  uniqueIdFromStartpoints,
+} from "./deployParse.mjs";
 import { getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
@@ -146,21 +153,6 @@ function failureXml(id, message) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="failure">\n  <error id="${id}" message="${message}"/>\n</response>\n`;
 }
 
-function parseStartpointsFromXml(xmlText) {
-  const points = [];
-  const re = /<startpoint form="([^"]+)" url="([^"]+)"/g;
-  let m;
-  while ((m = re.exec(xmlText))) {
-    points.push({ form: m[1], url: m[2] });
-  }
-  return points;
-}
-
-function parseDeployFailure(xmlText) {
-  const m = xmlText.match(/<error id="([^"]+)" message="([^"]*)"/);
-  return m ? `${m[1]}: ${m[2]}` : null;
-}
-
 /** JSON deploy from web Designer */
 app.post("/api/deploy", async (req, res) => {
   const { credentials, project } = req.body ?? {};
@@ -181,14 +173,36 @@ app.post("/api/deploy", async (req, res) => {
       if (JAVA_URL) {
         const xml = buildUploadRequest(credentials, project);
         const javaResponse = await forwardToJava(xml);
-        const startpoints = parseStartpointsFromXml(javaResponse);
+        const allForProject = parseStartpointsForProject(javaResponse, project.name);
+        const startpoints = filterStartpointsForMarkedForms(project, allForProject);
         const failure = parseDeployFailure(javaResponse);
-        if (failure || (!javaResponse.includes('status="success"') && startpoints.length === 0)) {
-          const snippet = javaResponse.replace(/\s+/g, " ").slice(0, 200);
+        if (failure) {
           res.status(502).json({
             status: "failure",
             mode: "java",
-            error: failure ?? `Java backend did not return deployment URLs (${snippet})`,
+            error: failure,
+            raw: javaResponse.slice(0, 2000),
+          });
+          return;
+        }
+        if (!javaResponse.includes('status="success"') || startpoints.length === 0) {
+          const snippet = javaResponse.replace(/\s+/g, " ").slice(0, 200);
+          const marked = startPointFormNames(project);
+          let error;
+          if (marked.size === 0) {
+            error = `No forms marked as Starting Point in "${project.name}". Open a form, check Starting Point in Properties, then deploy again.`;
+          } else if (allForProject.length === 0) {
+            error = `Java deploy returned no start points for project "${project.name}". Restart the dev API if you still see DirtBowl URLs.`;
+          } else {
+            error = `Java deploy did not return URLs for the Starting Point form(s): ${[...marked].join(", ")}.`;
+          }
+          if (!javaResponse.includes('status="success"')) {
+            error = `Java backend did not return success (${snippet})`;
+          }
+          res.status(502).json({
+            status: "failure",
+            mode: "java",
+            error,
             raw: javaResponse.slice(0, 2000),
           });
           return;
@@ -197,17 +211,19 @@ app.post("/api/deploy", async (req, res) => {
           status: "success",
           mode: "java",
           project: project.name,
+          uniqueId: uniqueIdFromStartpoints(startpoints),
           startpoints,
-          raw: javaResponse,
         });
         return;
       }
 
     const entry = store.saveProject(credentials.user, project);
-    const startpoints = (project.forms ?? []).map((form) => ({
-      form: form.name,
-      url: `${HOST}/p/${entry.uniqueId}/${encodeURIComponent(form.name)}`,
-    }));
+    const startpoints = (project.forms ?? [])
+      .filter((f) => f.startPoint === true)
+      .map((form) => ({
+        form: form.name,
+        url: `${HOST}/p/${entry.uniqueId}/${encodeURIComponent(form.name)}`,
+      }));
     res.json({
       status: "success",
       mode: "dev",
@@ -263,6 +279,16 @@ app.post("/p/:uniqueId/:formName", express.urlencoded({ extended: true }), (req,
   res.type("html").send(html);
 });
 
+app.post("/api/preview", (req, res) => {
+  const { project } = req.body ?? {};
+  if (!project?.name) {
+    res.status(400).json({ error: "project required" });
+    return;
+  }
+  store.putPreview("designer", project);
+  res.json({ ok: true, project: project.name });
+});
+
 app.get("/preview/:userId/:projectName/:formName", (req, res) => {
   const data = store.getPreview(req.params.userId, req.params.projectName);
   if (!data) {
@@ -272,7 +298,11 @@ app.get("/preview/:userId/:projectName/:formName", (req, res) => {
   const session = getOrCreateSession(`preview-${req.params.userId}`, data.project);
   res
     .type("html")
-    .send(runtime.renderFormPage(data.project, req.params.formName, HOST, `preview-${req.params.userId}`, session));
+    .send(
+      runtime.renderFormPage(data.project, req.params.formName, HOST, `preview-${req.params.userId}`, session, {
+        designerPreview: true,
+      }),
+    );
 });
 
 app.get("/api/health", (_req, res) => {

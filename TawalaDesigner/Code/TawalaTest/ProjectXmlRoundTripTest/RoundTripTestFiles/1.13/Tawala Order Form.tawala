@@ -1,0 +1,856 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Tawala Order Form" themePath="litegreen" format="1.13" designerBuild="236">
+<pageHeader><image id="__HEADER__8cb2502dddc9280" width="698" height="61"/></pageHeader><forms>
+<form name="OrderForm" startPoint="true" themePath="litegreen" process="Process 1" preProcess="Process 3">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala SportsDashboards Purchase Order </font></paragraph></heading>
+<text label="T1" style="error"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Message"/></font></paragraph></text>
+<fib label="Q1" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Organization:</b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="OrgName"/></paragraph></fib>
+<fib label="Q2" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Address:</b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="Address"/></paragraph></fib>
+<fib label="Q3" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Contact:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="Contact"/></paragraph></fib>
+<fib label="Q4" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Product/Service Description:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="Description"/></paragraph></fib>
+<fib label="Q5" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Phone:</b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="Phone"/></paragraph></fib>
+<fib label="Q6" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Fax:</b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="Fax"/></paragraph></fib>
+<fib label="Q7" style="rightAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="Email"/></paragraph></fib>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><b>Application Services:</b></font><font>  Tawala SportsDashboard, related Applications and Web Services.  </font></division><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><b>Fees:</b></font><font>  For Customer's use of the Applications and Web Services (i.e. activities that are administered, recorded, tracked or processed using the Application Services), Client shall pay Tawala a flat fee of </font><font><field name="Rate"/></font><font>. All payments shall be made within thirty (30) days of the invoice date.  However, if Customer has elected to utilize an online payment service in connection with its use of the Application Services (e.g., PayPal), any fees owed by Customer to such online payment services that may be enabled through the Application Service are not included in the fees payable hereunder and must be paid by Customer separately to such third parties.    </font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="5158"><division indent="0" align="left"><font><b>Training:</b></font><font>  Up to two (2) hours of online training regarding use of the Application Services will be provided by Tawala to the appropriate Customer representative.  Additional training hours may be purchased at Tawala's generally applicable rates.</font></division></cell><cell width="272"></cell><cell width="5370"><division indent="0" align="left"><font><b>Initial Service Term: </b></font><font> One Year </font></division></cell></row></table></text>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000000"><b>Purchase Agreement</b></font></paragraph></text>
+<fib label="Q8" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">This Purchase Agreement ("Agreement") is entered into on this date of:</font><font face="Arial" size="200" color="000000">  </font><blank label="a" length="4" required="false" alternateLabel="Month"/><font face="Arial" size="200" color="000000"> /</font><blank label="b" length="4" required="false" alternateLabel="Day"/><font face="Arial" size="200" color="000000">/ 20</font><blank label="c" length="3" required="false" alternateLabel="Year"/><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>(mm/dd/yy) </i></font><font face="Arial" size="200" color="000000">(the "Effective Date") between Tawala Systems, Inc., with its principle place of </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">business at 120 Locust Ave., San Rafael, CA ("Tawala"), and the Customer listed above ("Customer").</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>This Agreement includes and incorporates the above Order Form, as well as the accompanying Terms</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>and Conditions and contains, among other things, warranty disclaimers, liability limitations and use</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>limitations.</i></font><font face="Arial" size="200" color="000000">  There shall be no force or effect to any different terms of any related purchase order or </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">similar form even if signed </font><font face="Arial" size="200" color="000000">by the parties after the date hereof.</font></paragraph></fib>
+<text label="T4" style="error"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Note: You aren't done yet! </b></font><font> To place this Order,  scroll to the bottom of this page, check the acceptance box, and press the Submit button.</font></paragraph></text>
+<text label="T5" style="instructional"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Terms and Conditions</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>1. APPLICATION SERVICES AND SUPPORT</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>1.1 Subject to the terms and conditions of this Agreement, Tawala will use reasonable efforts to provide the Application Services.  Prior to using the Application Services, Customer will be required to register for a Tawala account and provide the information requested in the registration process (e.g., user name, password, and billing information).  Tawala reserves the right to refuse registration to any person for any reason.</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>1.2 Subject to the terms hereof, Tawala will endeavor to provide Customer with reasonable support services, through electronic mail or another online mechanism, in accordance with Tawala's standard practice.  </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>2. RESTRICTIONS AND RESPONSIBILITIES</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>2.1 This is a contract for Application Services and any software that is provided will be installed, accessed and maintained only by or for Tawala and no license is granted thereto, except that Customer shall have the non-exclusive, non-sublicensable, non-transferable right to reproduce and customize certain software that Tawala may make available for download and customization, solely for use in connection with Customer's use of the Application Service in accordance with the terms hereof.  Except for the foregoing, Customer will not, directly or indirectly: reverse engineer, decompile, disassemble or otherwise attempt to discover the source code, object code or underlying structure, ideas or algorithms of the Application Services or any software, documentation or data related to the Application Services ("Software"); modify, translate, or create derivative works based on the Application Services or any Software; use the Application Services or any Software for timesharing or service bureau purposes or otherwise for the benefit of a third party (other than Customer's end users); or remove any proprietary notices or labels.  </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>2.2 Customer represents, covenants, and warrants that Customer will use the Application Services only in compliance with Tawala"s standard published policies then in effect (the "Policy") and all applicable laws and regulations (including but not limited to policies and laws related to spamming, privacy, intellectual property, consumer and child protection, obscenity or defamation).  Customer shall immediately inform Tawala of any actual or alleged violation of the foregoing (by Customer or any third party).  Customer hereby agrees to indemnify and hold harmless Tawala against any damages, losses, liabilities, settlements and expenses (including without limitation costs and attorneys' fees) in connection with any claim or action that arises from an alleged violation of the foregoing or otherwise from Customer's use of Application Services.  Although Tawala has no obligation to monitor the content provided by Customer or Customer's use of the Application Services, Tawala may do so and may remove any such content or prohibit any use of the Application Services it believes may be (or alleged to be) in violation of the foregoing.</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>2.3 Customer shall be responsible for obtaining and maintaining any equipment and ancillary services needed to connect to, access or otherwise use the Application Services, including, without limitation, modems, hardware, operating system, web browsers, long distance and local telephone service (collectively, "Equipment").  Customer shall also be responsible for maintaining the security of the Equipment, Customer account, passwords (including but not limited to administrative and user passwords) and files, and for all uses of Customer account or the Equipment with or without Customer's knowledge or consent.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>3. CONFIDENTIALITY</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>3.1 Each party (the "Receiving Party") understands that the other party (the "Disclosing Party") has disclosed or may disclose information relating to the Disclosing Party's business (hereinafter referred to as "Proprietary Information" of the Disclosing Party).  The Receiving Party agrees: (i) to take reasonable precautions to protect such Proprietary Information, and (ii) not to use (except as expressly permitted herein) or divulge to any third person any such Proprietary Information.  The Disclosing Party agrees that the foregoing shall not apply with respect to any information after five (5) years following the disclosure thereof or any information that the Receiving Party can document (a) is or becomes generally available to the public, or (b) was in its possession or known by it prior to receipt from the Disclosing Party, or (c) was rightfully disclosed to it without restriction by a third party, or (d) was independently developed without use of any Proprietary Information of the Disclosing Party or (e) is required by law.  </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>3.2 In any event, Tawala may collect data with respect to and report on the aggregate response rate and other aggregate measures of the Application Services' performance.  </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>3.3 Tawala understands that the information Customer and its members load into the software is exclusive property of Customer or its members.  Tawala will not resell, disclose, transfer, or make available Customer's data to any third party unless required for delivery of services or required to do so by law.  Tawala will not retain in any form any part of Customer information, nor will it permit any authorized third party to do so, following termination of this Agreement.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>4. PAYMENT OF FEES</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>4.1 Customer will pay Tawala the then applicable fees set forth in the Order Form for the Application Services (the "Fees") as provided therein.  Tawala reserves the right to change the Fees or applicable charges and to institute new charges and Fees at the end of the Initial Service Term or then-current renewal term, upon thirty (30) days prior notice to Customer (which may be sent by email).  If Customer believes that Tawala has charged Customer incorrectly, Customer must contact Tawala no later than 60 days after the closing date on the first billing statement in which the error or problem appeared, in order to receive an adjustment or credit.  Inquiries should be directed to Tawala's customer support department. </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>4.2 Tawala may choose to bill through an invoice, in which case, full payment for invoices issued must be received by Tawala thirty (30) days after the invoice date, or the Application Services may be terminated.  Unpaid invoices are subject to a finance charge of 1.5% per month on any outstanding balance, or the maximum permitted by law, whichever is lower, plus all expenses of collection. Customer shall be responsible for all taxes associated with Customer's activities through the Application Services, but not for taxes attributable to Tawala Systems, Inc.  as a business, such as state and local income taxes charged to Tawala and based on Tawala's net income, gross receipts tax, business license taxes, or other such similar taxes.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>5. TERMINATION</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>5.1 Subject to earlier termination as provided below, this Service Agreement is for the Initial Service Term as specified in the Order Form, and shall be automatically renewed for additional periods of the same duration as the Initial Service Term, unless either party requests termination at least thirty (30) days prior to the end of the then-current term.</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>5.2 In addition to any other remedies it may have, Tawala may also terminate this Service Agreement upon thirty (30) days' notice (or without notice in the case of nonpayment, violation of Section 2.2. or if Tawala believes in good faith that Customer is otherwise using the Application Services to engage in any inappropriate or illegal behavior), if Customer breaches any of the terms or conditions of this Service Agreement.  Customer will pay in full for the Application Services up to and including the last day on which the Application Services are provided. Upon any termination, Tawala may, but is not obligated to, delete archived data.  Either party may also terminate this Agreement for any reason at any time upon ninety (90) days prior written notice.  All sections of this Service Agreement which by their nature should survive termination will survive termination, including, without limitation, accrued rights to payment, confidentiality obligations, warranty disclaimers, and limitations of liability. </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>6. WARRANTY AND DISCLAIMER</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>Tawala shall use reasonable efforts consistent with prevailing industry standards to maintain the Application Services in a manner which minimizes errors and interruptions in the Application Services.  Application Services may be temporarily unavailable for scheduled maintenance or for unscheduled emergency maintenance, either by Tawala or by third-party providers, or because of other causes beyond Tawala's reasonable control, but Tawala shall use reasonable efforts to provide advance notice in writing or by e-mail of any scheduled service disruption.  HOWEVER, TAWALA DOES NOT WARRANT THAT THE APPLICATION SERVICES WILL BE UNINTERRUPTED OR ERROR FREE; NOR DOES IT MAKE ANY WARRANTY AS TO THE RESULTS THAT MAY BE OBTAINED FROM USE OF THE APPLICATION SERVICES.  THE APPLICATION SERVICES AND PROFESSIONAL SERVICES ARE PROVIDED "AS IS" AND TAWALA DISCLAIMS ALL WARRANTIES, EXPRESS OR IMPLIED, INCLUDING, BUT NOT LIMITED TO, IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>7. LIMITATION OF LIABILITY</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>NOTWITHSTANDING ANYTHING TO THE CONTRARY, EXCEPT FOR BODILY INJURY OF A PERSON, TAWALA AND ITS SUPPLIERS (INCLUDING BUT NOT LIMITED TO ALL EQUIPMENT AND TECHNOLOGY SUPPLIERS), OFFICERS, AFFILIATES, REPRESENTATIVES, CONTRACTORS AND EMPLOYEES SHALL NOT BE RESPONSIBLE OR LIABLE WITH RESPECT TO ANY SUBJECT MATTER OF THIS AGREEMENT OR TERMS AND CONDITIONS RELATED THERETO UNDER ANY CONTRACT, NEGLIGENCE, STRICT LIABILITY OR OTHER THEORY: (A) FOR ERROR OR INTERRUPTION OF USE OR FOR LOSS OR INACCURACY OR CORRUPTION OF DATA OR COST OF PROCUREMENT OF SUBSTITUTE GOODS, SERVICES OR TECHNOLOGY OR LOSS OF BUSINESS; (B) FOR ANY INDIRECT, EXEMPLARY, INCIDENTAL, SPECIAL OR CONSEQUENTIAL DAMAGES; (C) FOR ANY MATTER BEYOND TAWALA'S REASONABLE CONTROL; OR (D) FOR ANY AMOUNTS THAT, TOGETHER WITH AMOUNTS ASSOCIATED WITH ALL OTHER CLAIMS, EXCEED THE FEES PAID BY CUSTOMER TO TAWALA FOR THE SERVICES UNDER THIS AGREEMENT IN THE 12 MONTHS PRIOR TO THE ACT THAT GAVE RISE TO THE LIABILITY, IN EACH CASE, WHETHER OR NOT TAWALA HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>8. GOVERNMENT MATTERS</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>Customer may not remove or export from the United States or allow the export or re-export of the Application Services, Software or anything related thereto, or any direct product thereof in violation of any restrictions, laws or regulations of the United States Department of Commerce, the United States Department of Treasury Office of Foreign Assets Control, or any other United States or foreign agency or authority.  As defined in FAR section 2.101, the Software and documentation are "commercial items" and according to DFAR section 252.227-7014(a)(1) and (5) are deemed to be "commercial computer software" and "commercial computer software documentation."  Consistent with DFAR section 227.7202 and FAR section 12.212, any use modification, reproduction, release, performance, display, or disclosure of such commercial software or commercial software documentation by the U.S. Government will be governed solely by the terms of this Agreement and will be prohibited except to the extent expressly permitted by the terms of this Service Agreement.  </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>9. MISCELLANEOUS</b></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>If any provision of this Agreement is found to be unenforceable or invalid, that provision will be limited or eliminated to the minimum extent necessary so that this Agreement will otherwise remain in full force and effect and enforceable.  This Agreement is not assignable, transferable or sublicensable by Customer except with Tawala's prior written consent.  Tawala may transfer and assign any of its rights and obligations under this Agreement without consent.  This Agreement is the complete and exclusive statement of the mutual understanding of the parties and supersedes and cancels all previous written and oral agreements, communications and other understandings relating to the subject matter of this Agreement, and that all waivers and modifications must be in a writing signed by both parties, except as otherwise provided herein.  No agency, partnership, joint venture, or employment is created as a result of this Agreement and Customer does not have any authority of any kind to bind Tawala in any respect whatsoever.  In any action or proceeding to enforce rights under this Agreement, the prevailing party will be entitled to recover costs and attorneys' fees.  All notices under this Agreement will be in writing and will be deemed to have been duly given when received, if personally delivered; when receipt is electronically confirmed, if transmitted by facsimile or e-mail; the day after it is sent, if sent for next day delivery by recognized overnight delivery service; and upon receipt, if sent by certified or registered mail, return receipt requested.  This Agreement shall be governed by the laws of the State of California without regard to its conflict of laws provisions.  </font></paragraph></text>
+<mc label="Q9" alternateLabel="Signature" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>By checking this box, Customer agrees to all of the terms of this Agreement.</b></font></paragraph></choice></mc>
+<skipInstructions>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<or>
+<isBlank field="OrderForm:OrgName" />
+<or>
+<isBlank field="OrderForm:Address" />
+<or>
+<isBlank field="OrderForm:Contact" />
+<isBlank field="OrderForm:Phone" />
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="All contact information must be filled out before continuing."/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isBlank field="OrderForm:Email" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="All contact information must be filled out before continuing."/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<isLessThan field="OrderForm:Month">
+<string value="1"/>
+</isLessThan>
+<or>
+<isGreaterThan field="OrderForm:Month">
+<string value="12"/>
+</isGreaterThan>
+<or>
+<isLessThan field="OrderForm:Day">
+<string value="1"/>
+</isLessThan>
+<isGreaterThan field="OrderForm:Day">
+<string value="31"/>
+</isGreaterThan>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="Please complete the date fields below."/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<isLessThan field="OrderForm:Year">
+<string value="8"/>
+</isLessThan>
+<isGreaterThan field="OrderForm:Year">
+<string value="50"/>
+</isGreaterThan>
+</or>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="Please complete the date fields below."/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcIsBlank field="OrderForm:Signature" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="Please accept this Agreement by checking the acceptance box at the bottom of this form."/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+</skipInstructions>
+<field name="Date"/>
+<field name="PurchaseNumber"/>
+<field name="QuotedPrice"/>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="litegreen" dataSourceName="PurchaseOrders" process="Process 2" preProcess="Process 4">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="B00000"><b><i><field name="Message"/></i></b></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send a purchase order link to a new customer</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add a missing/received purchase order to database</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View orders sent</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View all completed purchase orders received</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send a copy of purchase order to a customer</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View/Send a purchase order report to someone</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Delete a purchase order from database</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Price"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="c"/>
+</conditions>
+<trueSet>
+<skip to="H4"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="d"/>
+</conditions>
+<trueSet>
+<skip to="H5"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="e"/>
+</conditions>
+<trueSet>
+<skip to="H8"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="f"/>
+</conditions>
+<trueSet>
+<skip to="H9"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="g"/>
+</conditions>
+<trueSet>
+<skip to="H6"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Administration:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<heading label="H2" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<fib label="Q2" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send order to:  </font><blank label="a" length="20" required="false" alternateLabel="First"/><sp/><sp/><font face="Arial" size="200" color="000000"><i>(first)  </i></font><blank label="b" length="18" required="false" alternateLabel="Last"/><sp/><font face="Arial" size="200" color="000000"><i>(last)</i></font></paragraph></fib>
+<fib label="Q3" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">at this email: </font><blank label="a" length="55" required="false" alternateLabel="CustomerEmail"/></paragraph></fib>
+<fib label="Q4" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Today's date </font><font face="Arial" size="200" color="000000"><i>(mm/dd/yyyy):</i></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="PODate"/></paragraph></fib>
+<fib label="Q5" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Organization: </font><blank label="a" length="55" required="false" alternateLabel="Organization"/></paragraph></fib>
+<fib label="Q6" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Product/Services Description: </font><blank label="a" length="55" required="false" alternateLabel="ProdDesc"/></paragraph></fib>
+<fib label="Q7" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Sent by </font><font face="Arial" size="200" color="000000"><i>(name)</i></font><sp/><blank label="a" length="55" required="false" alternateLabel="SentName"/></paragraph></fib>
+<fib label="Q8" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>(email)</i></font><sp/><blank label="a" length="55" required="false" alternateLabel="SentEmail"/></paragraph></fib>
+<fib label="Q9" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Message body </font><font face="Arial" size="200" color="000000"><i>(omit Salutation and Close)</i></font><font face="Arial" size="200" color="000000">: </font><blank label="a" length="53" height="10" required="false" alternateLabel="Body"/></paragraph></fib>
+<mc label="Q10" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Copy me on this order</font></paragraph></choice></mc>
+<fib label="Q11" alternateLabel="CCs" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send additional copies of order to the following email(s): </font><blank label="a" length="20" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="b" length="20" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="c" length="20" required="false"/></paragraph></fib>
+<mc label="Q12" alternateLabel="Price" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Purchase price:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Flat Fee</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Fee per registrant</font></paragraph></choice></mc>
+<skipInstructions>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<mcIsBlank field="Administration:Price" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="You must select a price!"/>
+</set>
+<skip to="H1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Price" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Q14"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q13" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Flat Fee:  $ </font><blank label="a" length="20" required="false" alternateLabel="FlatFee"/></paragraph></fib>
+<skipInstructions>
+<skip to="H3"/>
+</skipInstructions>
+<fib label="Q14" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Fee per registrant: $ </font><blank label="a" length="20" required="false" alternateLabel="FeePerPlayer"/></paragraph></fib>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<heading label="H3" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Here is how your message will look:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="450"><row><cell width="2940"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="272"></cell><cell width="7138"><division indent="0" align="left"><font><field name="Administration:First"/></font><sp/><font><field name="Administration:Last"/></font><font> (</font><font><field name="Administration:CustomerEmail"/></font><font>)</font></division></cell></row><row><cell width="2940"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="272"></cell><cell width="7138"><division indent="0" align="left"><font><field name="Administration:SentName"/></font><font>  (</font><font><field name="Administration:SentEmail"/></font><font>)</font></division></cell></row><row><cell width="2940"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="272"></cell><cell width="7138"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2940"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="272"></cell><cell width="7138"><division indent="0" align="left"><font><field name="Administration:Organization"/></font><font> Tawala SportsDashboards Purchase Order</font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="420"><row><cell width="10380"><division indent="0" align="left"><font>Dear </font><font><field name="Administration:First"/></font><font><i>,</i></font></division></cell></row><row><cell width="10380"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10380"><division indent="0" align="left"><font><field name="Administration:Body"/></font></division></cell></row><row><cell width="10380"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10380"><division indent="0" align="left"><font>Yours,</font></division></cell></row><row><cell width="10380"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10380"><division indent="0" align="left"><font><field name="Administration:SentName"/></font></division></cell></row><row><cell width="10380"><division indent="0" align="left"><font><field name="Administration:SentEmail"/></font></division></cell></row></table></text>
+<mc label="Q15" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send the message</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit message further</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Abandon message</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administration:Q15" value="b"/>
+</conditions>
+<trueSet>
+<skip to="H2"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q15" value="c"/>
+</conditions>
+<trueSet>
+<skip to="H1"/>
+</trueSet>
+</if>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<heading label="H4" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Purchase orders sent:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="PO #"/>
+</header><contents><field name="Record:Administration:ID" /></contents></column><column><header><string value="Date"/>
+</header><contents><field name="Record:Administration:PODate" /></contents></column><column><header><string value="Organization"/>
+</header><contents><field name="Record:Administration:Organization" /></contents></column><column><header><string value="Description"/>
+</header><contents><field name="Record:Administration:ProdDesc" /></contents></column><column><header><string value="First"/>
+</header><contents><field name="Record:Administration:First" /></contents></column><column><header><string value="Last"/>
+</header><contents><field name="Record:Administration:Last" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:Administration:CustomerEmail" /></contents></column><column><header><string value="Price"/>
+</header><contents><field name="Record:Administration:QuotedPrice" /></contents></column><conditions><form name="Administration" /><conditions>
+<isNotBlank field="Record:Administration:ID" />
+</conditions></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<heading label="H5" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<text label="T4" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Completed Agreements received:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="PO Number"/>
+</header><contents><field name="Record:OrderForm:PurchaseNumber" /></contents></column><column><header><string value="Date"/>
+</header><contents><field name="Record:OrderForm:Date" /></contents></column><column><header><string value="Organization"/>
+</header><contents><field name="Record:OrderForm:OrgName" /></contents></column><column><header><string value="Contact"/>
+</header><contents><field name="Record:OrderForm:Contact" /></contents></column><column><header><string value="Description"/>
+</header><contents><field name="Record:OrderForm:Description" /></contents></column><column><header><string value="Price"/>
+</header><contents><field name="Record:OrderForm:QuotedPrice" /></contents></column><column><header><string value="Address"/>
+</header><contents><field name="Record:OrderForm:Address" /></contents></column><column><header><string value="Phone"/>
+</header><contents><field name="Record:OrderForm:Phone" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:OrderForm:Email" /></contents></column><conditions><form name="OrderForm" /></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<heading label="H6" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<mc label="Q16" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Agreement to delete:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:OrderForm:OrgName"/>
+<string value=" ("/>
+<field name="Record:OrderForm:Contact"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:OrderForm:PurchaseNumber"/>
+</value-expression><sort-expression><field name="Record:OrderForm:OrgName"/>
+</sort-expression><record-selector><form name="OrderForm" /></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcIsBlank field="Administration:Q16" />
+</conditions>
+<trueSet>
+<skip to="H1"/>
+</trueSet>
+</if>
+</skipInstructions>
+<heading label="H7" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<text label="T5" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Delete </font><font><display-mcq-label version="1"><field-name>Administration:Q16</field-name><display>label_only</display></display-mcq-label></font></paragraph></text>
+<mc label="Q17" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<heading label="H8" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<mc label="Q18" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Which PO do you want to resend?</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Administration:First"/>
+<string value=" "/>
+<field name="Record:Administration:Last"/>
+<string value=" (Invoice #"/>
+<field name="Record:Administration:ID"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:Administration:ID"/>
+</value-expression><sort-expression><field name="Record:Administration:ID"/>
+</sort-expression><record-selector><form name="Administration" /><conditions>
+<isNotBlank field="Record:Administration:ID" />
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<heading label="H9" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala ASP Order Form Administrator</font></paragraph></heading>
+<text label="T6" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To view reports, just press Submit.  To send a report, add email address:</font></paragraph></text>
+<fib label="Q19" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email:</font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false"/></paragraph></fib>
+<field name="QuotedPrice"/>
+<field name="ID"/>
+<field name="AgreementRecd"/>
+</items>
+</form>
+<form name="PasswordEntry" startPoint="false" themePath="litegreen" process="Process 5">
+<items>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter Password: </font><blank label="a" length="20" required="false" alternateLabel="password"/></paragraph></fib>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<set field="OrderForm:Date" arithmeticAsText="true">
+<string field="OrderForm:Month"/>
+<string value="/"/>
+<string field="OrderForm:Day"/>
+<string value="/20"/>
+<string field="OrderForm:Year"/>
+</set>
+<if>
+<conditions>
+<mcContains field="OrderForm:Signature" value="a"/>
+</conditions>
+<trueSet>
+<get recordList="Record List 1">
+<forms>
+<form name="Administration"/>
+</forms>
+<conditions>
+<equals field="Record List 1:Administration:ID">
+<string field="_InviteeID"/>
+</equals>
+</conditions></get>
+<foreach record="SignedRecord" recordList="Record List 1">
+<set field="SignedRecord:Administration:AgreementRecd" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+</foreach>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="AdminEntry">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="OrderForm:PurchaseNumber" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="AdminEntry" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="OrderForm"/>
+</forms>
+</get>
+<foreach record="RecordedEntry" recordList="Record List 5">
+<if>
+<conditions>
+<isGreaterThanOrEqualTo field="RecordedEntry:OrderForm:PurchaseNumber">
+<string field="OrderForm:PurchaseNumber"/>
+</isGreaterThanOrEqualTo>
+</conditions>
+<trueSet>
+<set field="OrderForm:PurchaseNumber" arithmeticAsText="false">
+<add>
+<operand field="RecordedEntry:OrderForm:PurchaseNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="Check" arithmeticAsText="false">
+<string value="No"/>
+</set>
+<get recordList="Record List 6">
+<forms>
+<form name="Administration"/>
+</forms>
+<conditions>
+<and>
+<equals field="Record List 6:Administration:Organization">
+<string field="OrderForm:OrgName"/>
+</equals>
+<equals field="Record List 6:Administration:ProdDesc">
+<string field="OrderForm:Description"/>
+</equals>
+</and>
+</conditions></get>
+<foreach record="Duplicate" recordList="Record List 6">
+<set field="Check" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<set field="Duplicate:Administration:AgreementRecd" arithmeticAsText="false">
+<string field="OrderForm:PurchaseNumber"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<equals field="Check">
+<string value="No"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="No match found for this received PO in list of PO&apos;s sent.  Check Org name and Description."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<show form="Administration"/>
+</trueSet>
+</if>
+<show document="Thankyou" reset="false"/>
+</process>
+<process name="Process 2">
+<if>
+<conditions>
+<mcEquals field="Administration:Price" value="b"/>
+</conditions>
+<trueSet>
+<set field="Administration:QuotedPrice" arithmeticAsText="false">
+<string value="$"/>
+<string field="Administration:FeePerPlayer"/>
+<string value=" Dollars per Registrant"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Administration:QuotedPrice" arithmeticAsText="false">
+<string value="$"/>
+<string field="Administration:FlatFee"/>
+<string value=" Dollars"/>
+</set>
+</falseSet>
+</if>
+<comment>Send  a purchase order link to a new customer</comment>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="a"/>
+</conditions>
+<trueSet>
+<set field="Administration:ID" arithmeticAsText="false">
+<string value="1000"/>
+</set>
+<get recordList="Record List 3">
+<forms>
+<form name="Administration"/>
+</forms>
+</get>
+<foreach record="IDNo" recordList="Record List 3">
+<if>
+<conditions>
+<isLessThanOrEqualTo field="Administration:ID">
+<string field="IDNo:Administration:ID"/>
+</isLessThanOrEqualTo>
+</conditions>
+<trueSet>
+<set field="Administration:ID" arithmeticAsText="false">
+<add>
+<operand field="IDNo:Administration:ID"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="CEmail" arithmeticAsText="false">
+<string field="Administration:CustomerEmail"/>
+</set>
+<set field="COrg" arithmeticAsText="false">
+<string field="Administration:Organization"/>
+</set>
+<set field="CFirst" arithmeticAsText="false">
+<string field="Administration:First"/>
+</set>
+<set field="CLast" arithmeticAsText="false">
+<string field="Administration:Last"/>
+</set>
+<set field="Cbody" arithmeticAsText="false">
+<string field="Administration:Body"/>
+</set>
+<set field="CSentName" arithmeticAsText="false">
+<string field="Administration:SentName"/>
+</set>
+<set field="CSentEmail" arithmeticAsText="false">
+<string field="Administration:SentEmail"/>
+</set>
+<set field="CID" arithmeticAsText="false">
+<string field="Administration:ID"/>
+</set>
+<send>
+<to addressField="CEmail"/>
+<from addressField="CSentEmail" aliasField="CSentName"/>
+<subject><field name="COrg"/> Tawala SportsDashboards Purchase Order</subject>
+<body document="Email" reset="false" showHeader="true"/>
+</send>
+<set field="Message" arithmeticAsText="false">
+<string value="Purchase Order sent."/>
+</set>
+<show document="Message" reset="false"/>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<mcContains field="Administration:Q10" value="a"/>
+</conditions>
+<trueSet>
+<send>
+<to addressField="CSentEmail"/>
+<from addressLiteral="donotreply@tawala.com" aliasLiteral="Tawala SportsDashboard Services"/>
+<subject>PO sent to <field name="Administration:First"/> <field name="Administration:Last"/></subject>
+<body document="Email" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Administration:CCs:a" />
+</conditions>
+<trueSet>
+<send>
+<to addressField="Administration:CCs:a"/>
+<from addressLiteral="donotreply@tawala.com" aliasLiteral="Tawala SportsDashboard Services"/>
+<subject>PO sent to <field name="Administration:First"/> <field name="Administration:Last"/></subject>
+<body document="Email" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Administration:CCs:b" />
+</conditions>
+<trueSet>
+<send>
+<to addressField="Administration:CCs:b"/>
+<from addressLiteral="donotreply@tawala.com" aliasLiteral="Tawala SportsDashboard Services"/>
+<subject>PO sent to <field name="Administration:First"/> <field name="Administration:Last"/></subject>
+<body document="Email" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Administration:CCs:c" />
+</conditions>
+<trueSet>
+<send>
+<to addressField="Administration:CCs:c"/>
+<from addressLiteral="donotreply@tawala.com" aliasLiteral="Tawala SportsDashboard Services"/>
+<subject>PO sent to <field name="Administration:First"/> <field name="Administration:Last"/></subject>
+<body document="Email" reset="false" showHeader="true"/>
+</send>
+</trueSet>
+</if>
+</trueSet>
+</if>
+<comment>Add a purchase order to database</comment>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<set field="AdminEntry" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<show form="OrderForm"/>
+</trueSet>
+</if>
+<comment>Send a copy of purchase order to a customer</comment>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="e"/>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="No purchase order selected."/>
+</set>
+<get recordList="Record List 4">
+<forms>
+<form name="Administration"/>
+</forms>
+<conditions>
+<equals field="Record List 4:Administration:ID">
+<string field="Administration:Q18"/>
+</equals>
+</conditions></get>
+<foreach record="Such" recordList="Record List 4">
+<set field="CFirst" arithmeticAsText="false">
+<string field="Such:Administration:First"/>
+</set>
+<set field="Cbody" arithmeticAsText="false">
+<string field="Such:Administration:Body"/>
+</set>
+<set field="CSentName" arithmeticAsText="false">
+<string field="Such:Administration:SentName"/>
+</set>
+<set field="CSentEmail" arithmeticAsText="false">
+<string field="Such:Administration:SentEmail"/>
+</set>
+<set field="CID" arithmeticAsText="false">
+<string field="Such:Administration:ID"/>
+</set>
+<send>
+<to addressField="Such:Administration:CustomerEmail"/>
+<from addressField="CSentEmail" aliasField="CSentName"/>
+<subject>Duplicate Copy - Tawala Dashboards Purchase Order Form</subject>
+<body document="Email" reset="false" showHeader="true"/>
+</send>
+<set field="Message" arithmeticAsText="false">
+<string value="Copy of purchase order to "/>
+<string field="Such:Administration:First"/>
+<string value=" "/>
+<string field="Such:Administration:Last"/>
+<string value=" sent."/>
+</set>
+</foreach>
+</trueSet>
+</if>
+<comment>Send purchase order report to someone</comment>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="f"/>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<isNotBlank field="Administration:Q19:a" />
+</conditions>
+<trueSet>
+<send>
+<to addressField="Administration:Q19:a"/>
+<from addressLiteral="donotreply@tawala.com" aliasLiteral="Tawala SportsDashboards Automated Monitoring"/>
+<subject>Purchase Order Report</subject>
+<body document="Report" reset="false" showHeader="true"/>
+</send>
+<set field="Message" arithmeticAsText="false">
+<string value="Purchase order report sent to "/>
+<string field="Administration:Q19:a"/>
+</set>
+<show form="Administration"/>
+</trueSet>
+<falseSet>
+<show document="Return" reset="false"/>
+<show document="Report" reset="false"/>
+<show document="Return" reset="false"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<comment>Delete a PO from database</comment>
+<if>
+<conditions>
+<and>
+<mcEquals field="Administration:Q1" value="g"/>
+<mcEquals field="Administration:Q17" value="a"/>
+</and>
+</conditions>
+<trueSet>
+<delete><form name="OrderForm"/><conditions>
+<mcEquals field="Administration:Q16">
+<string field="Record:OrderForm:PurchaseNumber"/>
+</mcEquals>
+</conditions></delete>
+<set field="Message" arithmeticAsText="false">
+<string value="Record Deleted."/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Administration:Q1" value="f"/>
+</conditions>
+<trueSet>
+<show form="Administration"/>
+</trueSet>
+</if>
+</process>
+<process name="Process 3">
+<if>
+<conditions>
+<equals field="AdminEntry">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="OrderForm:QuotedPrice" arithmeticAsText="false">
+<string field="Administration:QuotedPrice"/>
+</set>
+</trueSet>
+<falseSet>
+<get recordList="Record List 2">
+<forms>
+<form name="Administration"/>
+</forms>
+<conditions>
+<equals field="Record List 2:Administration:ID">
+<string field="_InviteeID"/>
+</equals>
+</conditions></get>
+<foreach record="SuchCustomer" recordList="Record List 2">
+<set field="OrderForm:OrgName" arithmeticAsText="false">
+<string field="SuchCustomer:Administration:Organization"/>
+</set>
+<set field="OrderForm:Email" arithmeticAsText="false">
+<string field="SuchCustomer:Administration:CustomerEmail"/>
+</set>
+<set field="OrderForm:Description" arithmeticAsText="false">
+<string field="SuchCustomer:Administration:ProdDesc"/>
+</set>
+<set field="OrderForm:Contact" arithmeticAsText="false">
+<string field="SuchCustomer:Administration:First"/>
+<string value=" "/>
+<string field="SuchCustomer:Administration:Last"/>
+</set>
+<set field="Rate" arithmeticAsText="false">
+<string field="SuchCustomer:Administration:QuotedPrice"/>
+</set>
+<set field="OrderForm:QuotedPrice" arithmeticAsText="false">
+<string field="Rate"/>
+</set>
+<set field="OrderForm:PurchaseNumber" arithmeticAsText="false">
+<string field="SuchCustomer:Administration:ID"/>
+</set>
+</foreach>
+</falseSet>
+</if>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</process>
+<process name="Process 4">
+<delete><form name="Administration"/><conditions>
+<mcDoesNotEqual field="Record:Administration:Q1" value="a"/>
+</conditions></delete>
+<if>
+<conditions>
+<doesNotEqual field="checkid">
+<string value="OK"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<show form="PasswordEntry"/>
+</trueSet>
+</if>
+</process>
+<process name="Process 5">
+<if>
+<conditions>
+<equals field="PasswordEntry:password">
+<string value="Luwatuwa"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="checkid" arithmeticAsText="false">
+<string value="OK"/>
+</set>
+<show form="Administration"/>
+</trueSet>
+</if>
+<show form="PasswordEntry"/>
+</process>
+</processes>
+<documents>
+<document name="Email">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Dear </font><font><field name="CFirst"/></font><font>,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Cbody"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Best regards,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="CSentName"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="CSentEmail"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Here is your link: </font><font color="000080"><u><invitation form="OrderForm" project="" private="true"><authenticationTokenValue><string field="CID"/>
+</authenticationTokenValue>Tawala SportsDashboards Online Purchase Order</invitation></u></font></paragraph>
+</xmlData>
+</document>
+<document name="Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="CE0000"><b><i><field name="Message"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Thankyou">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Thank you for your business. We look forward to a successful season working with you.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Best regards,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Tawala SportsDashboards</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Customer Service</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Report">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Purchase Orders requests sent (may contain inaccurate information):</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="PO #"/>
+</header><contents><field name="Record:Administration:ID" /></contents></column><column><header><string value="Date"/>
+</header><contents><field name="Record:Administration:PODate" /></contents></column><column><header><string value="Organization"/>
+</header><contents><field name="Record:Administration:Organization" /></contents></column><column><header><string value="Description"/>
+</header><contents><field name="Record:Administration:ProdDesc" /></contents></column><column><header><string value="First"/>
+</header><contents><field name="Record:Administration:First" /></contents></column><column><header><string value="Last"/>
+</header><contents><field name="Record:Administration:Last" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:Administration:CustomerEmail" /></contents></column><column><header><string value="Price"/>
+</header><contents><field name="Record:Administration:QuotedPrice" /></contents></column><conditions><form name="Administration" /><conditions>
+<isNotBlank field="Record:Administration:ID" />
+</conditions></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Purchase Orders for which no return copy has been received:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="PO #"/>
+</header><contents><field name="Record:Administration:ID" /></contents></column><column><header><string value="Date"/>
+</header><contents><field name="Record:Administration:PODate" /></contents></column><column><header><string value="Organization"/>
+</header><contents><field name="Record:Administration:Organization" /></contents></column><column><header><string value="Description"/>
+</header><contents><field name="Record:Administration:ProdDesc" /></contents></column><column><header><string value="First"/>
+</header><contents><field name="Record:Administration:First" /></contents></column><column><header><string value="Last"/>
+</header><contents><field name="Record:Administration:Last" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:Administration:CustomerEmail" /></contents></column><column><header><string value="Price"/>
+</header><contents><field name="Record:Administration:QuotedPrice" /></contents></column><conditions><form name="Administration" /><conditions>
+<and>
+<isNotBlank field="Record:Administration:ID" />
+<isBlank field="Record:Administration:AgreementRecd" />
+</and>
+</conditions></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Completed/corrected purchase orders received:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="PO Number"/>
+</header><contents><field name="Record:OrderForm:PurchaseNumber" /></contents></column><column><header><string value="Date"/>
+</header><contents><field name="Record:OrderForm:Date" /></contents></column><column><header><string value="Organization"/>
+</header><contents><field name="Record:OrderForm:OrgName" /></contents></column><column><header><string value="Contact"/>
+</header><contents><field name="Record:OrderForm:Contact" /></contents></column><column><header><string value="Description"/>
+</header><contents><field name="Record:OrderForm:Description" /></contents></column><column><header><string value="Price"/>
+</header><contents><field name="Record:OrderForm:QuotedPrice" /></contents></column><column><header><string value="Address"/>
+</header><contents><field name="Record:OrderForm:Address" /></contents></column><column><header><string value="Phone"/>
+</header><contents><field name="Record:OrderForm:Phone" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:OrderForm:Email" /></contents></column><conditions><form name="OrderForm" /></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Return">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Return to Main Menu</invitation></u></font></paragraph>
+</xmlData>
+</document>
+</documents>
+<images><imagedef id="__HEADER__8cb2502dddc9280"><imagedata imageFormat="JPEG">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p/T6fcVO08DZ4vLmI3L5xE9PbMffJEPK2hWhnpLAK+x2koyMvoZH8SHHcyIncyiesdURMxN4TjHYLDPXC153PusQTeWamLw2s3JlUWtJKQaCny1ISadqjNO37fYYdv4XEwymOm1Ex444x1t4Xtbw9er13ORubtozymbes3ek9D6TbeudJ5TX+M1tphxrLVrGfjPT7rPKnYNqTlXyQ4nrS+lko1oSW1JEn4qIviS9kwlF3Xae27XExnfjOJnKLYTOmPvr6vOIY3q/05rmbpHUnqT2Dp9w70V7AkzXzLW7R81ySGedlnWRkSXJnLmbVzEko1KTsUoiI/oax7cDh8mJz29+Pdt59bxMTafxIeXZWLy2IyGY0tqNuTTU2lXa8dm2xbdlSXsNM2WZkRnLmoNMxCtn7JUR/kcR3Dh5cXenDLyYyzLOApBZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOABZwALOACVrZ/sr6fkxMj5ZwEBZwASrG5hpjNB+1tLzWrqe+17gTxOLmt0yzlypqimF855rmIMk/uX8SUcBu+0dx2+Jhu45xN84tFvn4/VMSo9cT9OaWzeHy+q8c+y7PBoTPb41hLkrOc6lEVGpWmyiJCVfsf1PaZEWwy2iv23f2NrkRub0TMR1iI9fK/WCGizuZ1lrxy+yWvM68yZv3U1zJ07czDxjKWtRmiRIb7Uy9ktOxPyNPyVs2qPaPXuHeN/lZzqmMfQmWRpl060hmcXnsElDR9iJ6Zzb4p+KVEX0VLVs/tWkzSov6GYocXl58fdx3cZ6xNR80Nrl8njGntV5r/QLF7hWOQdSc26xD5ElKZWXKZ83RtzkzJnylTzL5q+REfyUv6bDIi23P7ls58nHkbETGUTEzE+vy9UzLee4NU4LXUvT2A0Zp95pzTLbP5HVmrJb0pSVP8w8MzRNSUmdN2pI5s1Svls+pp2F+oud377s8jZ/T2YmLzeb/AITKZlj+utRstHZ6c7y+Pm5bTuWx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qqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwU3PdvvHl9YNVWCm57t948vrBqqwqpuu7ffbt5XWDVVkP/Z</imagedata></imagedef></images></project>

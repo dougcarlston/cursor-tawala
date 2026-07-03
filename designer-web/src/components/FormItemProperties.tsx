@@ -1,5 +1,25 @@
-import { FormItem } from "@/types/tawala";
+import { FibItem, FormItem, TawalaBlank, TawalaChoice } from "@/types/tawala";
 import { RichTextEditor } from "./RichTextEditor";
+import {
+  hasStructuredTextContent,
+  StructuredTextProperties,
+} from "./StructuredTextProperties";
+
+function nextChoiceName(choices: TawalaChoice[]): string {
+  for (let i = 0; i < 26; i++) {
+    const name = String.fromCharCode(97 + i);
+    if (!choices.some((c) => c.name === name)) return name;
+  }
+  return `c${choices.length + 1}`;
+}
+
+function nextBlankName(blanks: TawalaBlank[]): string {
+  for (let i = 0; i < 26; i++) {
+    const name = String.fromCharCode(97 + i);
+    if (!blanks.some((b) => b.name === name)) return name;
+  }
+  return `f${blanks.length + 1}`;
+}
 
 interface Props {
   item: FormItem;
@@ -8,9 +28,9 @@ interface Props {
 
 export function FormItemProperties({ item, onChange }: Props) {
   return (
-    <div className="properties-panel">
+    <div className="properties-panel properties-panel-compact">
       <label>
-        Label
+        Item label
         <input value={item.label} onChange={(e) => onChange({ label: e.target.value })} />
       </label>
 
@@ -31,14 +51,21 @@ export function FormItemProperties({ item, onChange }: Props) {
             </label>
           )}
           {item.type === "text" ? (
-            <label>
-              Content
-              <RichTextEditor
-                html={typeof item.content === "string" ? item.content : ""}
-                onChange={(html) => onChange({ content: html })}
-                placeholder="Enter text…"
+            hasStructuredTextContent(item.content) ? (
+              <StructuredTextProperties
+                content={item.content}
+                onChange={(content) => onChange({ content })}
               />
-            </label>
+            ) : (
+              <label>
+                Content
+                <RichTextEditor
+                  html={typeof item.content === "string" ? item.content : ""}
+                  onChange={(html) => onChange({ content: html })}
+                  placeholder="Enter text…"
+                />
+              </label>
+            )
           ) : (
             <label>
               Content
@@ -52,17 +79,7 @@ export function FormItemProperties({ item, onChange }: Props) {
       )}
 
       {item.type === "fib" && (
-        <>
-          <label>
-            Prompt
-            <textarea
-              value={item.prompt ?? ""}
-              rows={3}
-              onChange={(e) => onChange({ prompt: e.target.value })}
-            />
-          </label>
-          <p className="hint">Blanks: {(item.blanks ?? []).map((b) => b.name).join(", ")}</p>
-        </>
+        <FibItemProperties item={item} onChange={onChange} />
       )}
 
       {item.type === "mc" && (
@@ -75,27 +92,53 @@ export function FormItemProperties({ item, onChange }: Props) {
               onChange={(e) => onChange({ question: e.target.value })}
             />
           </label>
-          <label>
+          <label className="property-checkbox">
             <input
               type="checkbox"
               checked={item.onlyone !== false}
               onChange={(e) => onChange({ onlyone: e.target.checked })}
-            />{" "}
+            />
             Only one choice
           </label>
           {(item.choices ?? []).map((c, i) => (
-            <label key={c.name}>
-              Choice {c.name}
-              <input
-                value={c.text}
-                onChange={(e) => {
-                  const choices = [...(item.choices ?? [])];
-                  choices[i] = { ...c, text: e.target.value };
+            <div key={c.name} className="mc-choice-row">
+              <label>
+                Choice {c.name}
+                <input
+                  value={c.text}
+                  onChange={(e) => {
+                    const choices = [...(item.choices ?? [])];
+                    choices[i] = { ...c, text: e.target.value };
+                    onChange({ choices });
+                  }}
+                />
+              </label>
+              <button
+                type="button"
+                className="mc-choice-remove"
+                title="Remove choice"
+                disabled={(item.choices ?? []).length <= 1}
+                onClick={() => {
+                  const choices = (item.choices ?? []).filter((_, j) => j !== i);
                   onChange({ choices });
                 }}
-              />
-            </label>
+              >
+                −
+              </button>
+            </div>
           ))}
+          <button
+            type="button"
+            className="mc-choice-add"
+            onClick={() => {
+              const choices = [...(item.choices ?? [])];
+              const name = nextChoiceName(choices);
+              choices.push({ name, text: `Choice ${name}` });
+              onChange({ choices });
+            }}
+          >
+            + Add choice
+          </button>
         </>
       )}
 
@@ -127,5 +170,109 @@ export function FormItemProperties({ item, onChange }: Props) {
         </label>
       )}
     </div>
+  );
+}
+
+function FibItemProperties({
+  item,
+  onChange,
+}: {
+  item: FibItem;
+  onChange: (patch: Partial<FibItem>) => void;
+}) {
+  const blanks = item.blanks ?? [];
+
+  return (
+    <>
+      <label>
+        Question
+        <textarea
+          value={item.prompt ?? ""}
+          rows={2}
+          onChange={(e) => onChange({ prompt: e.target.value })}
+          placeholder="e.g. Enter your full name here:"
+        />
+      </label>
+      <p className="hint">
+        Shown above this item&apos;s response fields. Per-field labels below are separate from
+        stored field names used in processes and tables.
+      </p>
+      <div className="fib-fields-toolbar">
+        <span>Response fields ({blanks.length})</span>
+        <button
+          type="button"
+          className="fib-field-add"
+          onClick={() => {
+            const name = nextBlankName(blanks);
+            onChange({
+              blanks: [
+                ...blanks,
+                {
+                  name,
+                  alternateLabel: name,
+                  displayLabel: "",
+                  length: 20,
+                },
+              ],
+            });
+          }}
+        >
+          + Add field
+        </button>
+      </div>
+      {blanks.map((b, i) => (
+        <details key={`${b.name}-${i}`} className="fib-field-details" open={i === 0}>
+          <summary>{b.displayLabel?.trim() || `Field ${i + 1}`}</summary>
+          <div className="fib-field-grid">
+            <label>
+              Label on form
+              <input
+                value={b.displayLabel ?? ""}
+                placeholder="Shown to respondent"
+                onChange={(e) => {
+                  const next = [...blanks];
+                  next[i] = { ...b, displayLabel: e.target.value };
+                  onChange({ blanks: next });
+                }}
+              />
+            </label>
+            <label>
+              Stored name
+              <input
+                value={b.alternateLabel ?? b.name}
+                onChange={(e) => {
+                  const next = [...blanks];
+                  next[i] = { ...b, alternateLabel: e.target.value };
+                  onChange({ blanks: next });
+                }}
+              />
+            </label>
+            <label>
+              Width
+              <input
+                type="number"
+                min={5}
+                max={120}
+                value={b.length ?? 20}
+                onChange={(e) => {
+                  const next = [...blanks];
+                  next[i] = { ...b, length: Number(e.target.value) || 20 };
+                  onChange({ blanks: next });
+                }}
+              />
+            </label>
+            <button
+              type="button"
+              className="fib-field-remove"
+              disabled={blanks.length <= 1}
+              title="Remove this response field"
+              onClick={() => onChange({ blanks: blanks.filter((_, j) => j !== i) })}
+            >
+              Remove field
+            </button>
+          </div>
+        </details>
+      ))}
+    </>
   );
 }

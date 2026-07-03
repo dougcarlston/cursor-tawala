@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="JDF" password="jdf20q" />
+<project name="DocumentOldMultiLine" themePath="default" format="1.3">
+<documents>
+<document name="Document 1">One line followed by a CR/LF.
+Second line followed by two CR/LFs.
+
+Third line followed by three CR/LF's
+
+
+Fourth and final line.</document>
+</documents>
+</project>
+</request>

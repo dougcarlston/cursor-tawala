@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Bug572-FunctionMCQ" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial">Question</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial">No</font></paragraph></choice></mc>
+</items>
+</form>
+</forms>
+<documents>
+<document name="Document 1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><choice-tally-table version="1"><field>Record:Form 1:Q1</field><conditions><form name="Form 1" /></conditions></choice-tally-table></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

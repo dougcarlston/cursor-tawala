@@ -1,0 +1,261 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{546E7D89-AF93-48FA-87FF-F0CA00F8BD01}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TawalaTest.AcceptanceTest</RootNamespace>
+    <AssemblyName>AcceptanceTest</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="NMock2, Version=1.0.2313.18049, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\NMock2\NMock2.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.4.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL" />
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Conditions\MCQIsAnswered1344.cs" />
+    <Compile Include="Data Access\SharedDataInFunctions2144.cs" />
+    <Compile Include="Designer App Performance\ProcessModificationTest2692.cs" />
+    <Compile Include="Designer App Performance\ProcessSelectionTest2691.cs" />
+    <Compile Include="Document Styles\DesignerAppliesTextStyles2454.cs" />
+    <Compile Include="File Uploader\FileUploadItemTest03071.cs" />
+    <Compile Include="Form Item Styles\DesignerControlsPaddingOfMcqItem3030.cs" />
+    <Compile Include="Form Item Styles\DesignerControlsPaddingOfTextItem3027.cs" />
+    <Compile Include="Form Item Styles\MCQColumnCountTest2544.cs" />
+    <Compile Include="Form Item Styles\JustifiedFibStylesTest2460.cs" />
+    <Compile Include="Form Item Styles\DefaultStyleTopLabelsTest2461.cs" />
+    <Compile Include="Form Item Styles\DefaultGlobalStyleSelectionTest2478.cs" />
+    <Compile Include="Form Item Styles\LocalTextStylesTest2277.cs" />
+    <Compile Include="Form Item Styles\GlobalTextStylesTest2276.cs" />
+    <Compile Include="Form Item Styles\LocalMCQStylesTest2275.cs" />
+    <Compile Include="Form Item Styles\GlobalMCQStylesTest2274.cs" />
+    <Compile Include="Form Item Styles\HeadingsTest2346.cs" />
+    <Compile Include="Form Item Styles\LocalFibStylesTest2273.cs" />
+    <Compile Include="Form Item Styles\GlobalFibStylesTest2272.cs" />
+    <Compile Include="Conditions\MatchMultipleSelectionMCQChoiceWithField2792.cs" />
+    <Compile Include="Fields And Fields Palette\FieldsAndFieldsPalette.cs" />
+    <Compile Include="Form Items\BlankValidation3187.cs" />
+    <Compile Include="Form Items\ConditionalDisplayOfMCQs2990.cs" />
+    <Compile Include="Form Items\ConditionalDisplayOfFIBs2991.cs" />
+    <Compile Include="Form Items\ConditionalDisplayOfTextItems3000.cs" />
+    <Compile Include="Form Items\ConditionalDisplayOfHeadingItems3013.cs" />
+    <Compile Include="Form Items\DynamicMCQsWithExpressions2806.cs" />
+    <Compile Include="Form Items\DynamicMCQs2388.cs" />
+    <Compile Include="Form Items\HiddenFields2150.cs" />
+    <Compile Include="Formatted Documents\DefaultTabStops2357.cs" />
+    <Compile Include="Formatted FIBs\DefaultTabStopsInFIBs2403.cs" />
+    <Compile Include="Formatted MCQs\DefaultTabStopsInMCQs2403.cs" />
+    <Compile Include="Formatted Text Items\DefaultTabStopsInTextItems2403.cs" />
+    <Compile Include="Forms\BackButtonProperty3090.cs" />
+    <Compile Include="Functions\ConditionalDisplayOfColumnsInCertainFunctions3018.cs" />
+    <Compile Include="Functions\VariablesInHeadersInMultipleQuestionListFunction2925.cs" />
+    <Compile Include="Functions\ExpressionsInHeadersInMultipleQuestionListFunction2924.cs" />
+    <Compile Include="Functions\FunctionInTextItemTest2163.cs" />
+    <Compile Include="Hidden Fields\TemporaryVariablesTest2151.cs" />
+    <Compile Include="Hyperlinks\DesignerUsesExpressionInDisplayText3202.cs" />
+    <Compile Include="Hyperlinks\InsertHyperlinkWithoutDisplayText0000.cs" />
+    <Compile Include="Hyperlinks\InsertHyperlinkWithConditions3083.cs" />
+    <Compile Include="Hyperlinks\DesignerInsertsHyperlinkInDocument2747.cs" />
+    <Compile Include="Invitations\ArithmeticOperatorsAsTextInInvitationDisplayText3204.cs" />
+    <Compile Include="Invitations\ArithmeticOperatorsAsTextInInvitationAuthenticationToken3205.cs" />
+    <Compile Include="Invitations\InvitationDisplayTextIsExpression3193.cs" />
+    <Compile Include="NamespaceSetupTeardown.cs" />
+    <Compile Include="Page Headers\PageHeaderChangeUpdatesPreview2541.cs" />
+    <Compile Include="Page Headers\PageHeaderImage2350.cs" />
+    <Compile Include="Page Headers\PageHeaderText2349.cs" />
+    <Compile Include="Process Statements\PageHeaderInEmails2876.cs" />
+    <Compile Include="Process Statements\FieldsInCcBoxTest2856.cs" />
+    <Compile Include="Project XML\CannotLoadNewerXmlFormatVersion3024.cs" />
+    <Compile Include="Undo Redo In Processes\UndoMoveGroupTest2606.cs" />
+    <Compile Include="Undo Redo In Processes\UndoMoveTest2604.cs" />
+    <Compile Include="Undo Redo In Processes\UndoPasteGroupTest2602.cs" />
+    <Compile Include="Undo Redo In Processes\UndoPasteTest2600.cs" />
+    <Compile Include="Undo Redo In Processes\UndoCutGroupTest2598.cs" />
+    <Compile Include="Undo Redo In Processes\UndoCutTest2596.cs" />
+    <Compile Include="Undo Redo In Processes\UndoModifyTest2590.cs" />
+    <Compile Include="Undo Redo In Processes\TestProcessEditor.cs" />
+    <Compile Include="Undo Redo In Processes\TestProcessMemento.cs" />
+    <Compile Include="Undo Redo In Processes\UndoRedoActionVisibleTest2610.cs" />
+    <Compile Include="Undo Redo In Processes\UndoAddTest2588.cs" />
+    <Compile Include="Undo Redo In Processes\UndoDeleteGroupTest2594.cs" />
+    <Compile Include="Undo Redo In Processes\UndoDeleteTest2592.cs" />
+    <Compile Include="Process Statements\ShowRecordStatement2067.cs" />
+    <Compile Include="Data Access\GetDataFromOtherProjects2121.cs" />
+    <Compile Include="Form Items\Story1759 - Fields in MCQs.cs" />
+    <Compile Include="Form Items\Story1361 - Fields in Fibs.cs" />
+    <Compile Include="Form Items\TextEntryBoxTest1193.cs" />
+    <Compile Include="Formatted Documents\Story 1794 - Tab Positions.cs" />
+    <Compile Include="Formatted FIBs\Story1731TestTabCharacters.cs" />
+    <Compile Include="Formatted FIBs\Story1738 - Font selection, size and color.cs" />
+    <Compile Include="Formatted FIBs\Story1737 - Bold, italic and underline.cs" />
+    <Compile Include="Formatted FIBs\TableTest1745.cs" />
+    <Compile Include="Formatted MCQs\RtfTest1739.cs" />
+    <Compile Include="Formatted MCQs\Story1741 - Font selection, size and color.cs" />
+    <Compile Include="Formatted MCQs\Story1740 - Bold, italic and underline.cs" />
+    <Compile Include="Formatted Text Items\JustificationTest1736.cs" />
+    <Compile Include="Formatted Text Items\FontColorTest1735.cs" />
+    <Compile Include="Formatted Text Items\FontSizeTest1734.cs" />
+    <Compile Include="Formatted Text Items\IndentTest1736.cs" />
+    <Compile Include="Formatted Text Items\Story1733TestFontSelection.cs" />
+    <Compile Include="Formatted Text Items\TabCharactersTest1762.cs" />
+    <Compile Include="Formatted Text Items\TableTest1573.cs" />
+    <Compile Include="Forms UI\DisplayLastRecordTest2076.cs" />
+    <Compile Include="Functions\ConfigurationValuesPersistedForInitialFunction2006.cs" />
+    <Compile Include="Functions\RecordQualifiedParametersTest2056.cs" />
+    <Compile Include="Functions\DesignerSelectsFormTest2036.cs" />
+    <Compile Include="Functions\ItemizationTableFunctionTest2020.cs" />
+    <Compile Include="Functions\DesignerCanApplyConditionsToFunctions2022.cs" />
+    <Compile Include="Functions\DesignerInsertsInitialFunctionFieldInDocument2002.cs" />
+    <Compile Include="Functions\DesignerConfiguresInitialFunction2003.cs" />
+    <Compile Include="Functions\DesignerSeesFunctionsTest2001.cs" />
+    <Compile Include="Functions\FunctionTest.cs" />
+    <Compile Include="Get and For Each\CompareRecordFieldsTest1902.cs" />
+    <Compile Include="Get and For Each\DefaultGetStatementCheckedForms1959.cs" />
+    <Compile Include="Images\ImageInDocumentTest1060.cs" />
+    <Compile Include="Invitations\PrivateInvitationInDocument1602.cs" />
+    <Compile Include="Process Statements\DeleteStoredRecordTest1885.cs" />
+    <Compile Include="Process Statements\ReturnEmailAddressTest1310.cs" />
+    <Compile Include="Project Customization\ProcessBeforeFormTest1901.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Process Statements\FieldsInSubjectBoxTest1921.cs" />
+    <Compile Include="Youth Sports Services\HyperlinkExpressionTest2814.cs" />
+    <Compile Include="Youth Sports Services\ShowUrlStatementTest2798.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TAWALA\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Controls\Controls.csproj">
+      <Project>{4F0A6D51-0E78-41AB-BBD7-CB9D2EA86670}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Core\Core.csproj">
+      <Project>{3878667C-1FD0-411C-B936-2E57ACEE8C71}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\DesignerUI\DesignerUI.csproj">
+      <Project>{487C6BA1-0F4F-4B88-B5CB-AC9B47CE02DE}</Project>
+      <Name>DesignerUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Documents\Documents.csproj">
+      <Project>{1E6D58CF-C25B-42C1-982D-01C4C83FD5D1}</Project>
+      <Name>Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\FunctionControls\FunctionControls.csproj">
+      <Project>{92985673-814F-4316-B7F9-19078EE36EDA}</Project>
+      <Name>FunctionControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Functions\Functions.csproj">
+      <Project>{83728549-B86D-414D-A2AA-7B16515A138D}</Project>
+      <Name>Functions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\FunctionViewPresenter\FunctionViewPresenter.csproj">
+      <Project>{8546DB36-F4EA-49C0-925F-AD0124ECA727}</Project>
+      <Name>FunctionViewPresenter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Processes\Processes.csproj">
+      <Project>{DA2F4203-642C-4AB3-94A4-B61778BF282C}</Project>
+      <Name>Processes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Projects\Projects.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Projects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\RtfSupport\RtfSupport.csproj">
+      <Project>{07F1A28C-D83A-4F06-9FFA-6BBA9C40D38A}</Project>
+      <Name>RtfSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\TextEditor\TextEditor.csproj">
+      <Project>{0BEDC378-9483-468E-97E9-C6DBFEE17127}</Project>
+      <Name>TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\UndoSupport\UndoSupport.csproj">
+      <Project>{19BC857A-3A83-4811-A618-0DD4F0601311}</Project>
+      <Name>UndoSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectTest\ProjectTest.csproj">
+      <Project>{D4F104CF-4CAE-44C2-878C-7F3ED60EF94E}</Project>
+      <Name>ProjectTest</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestSupport\TestSupport.csproj">
+      <Project>{0F28CF83-EE9A-4F98-B989-FF6557A675B7}</Project>
+      <Name>TestSupport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,36 @@
+---
+description: Separate scopes for browser Designer, 8080 Registration parity, and legacy UI documentation
+alwaysApply: true
+---
+
+# Work scopes — keep them separate
+
+This repo has three parallel tracks. Do not merge them in one change unless the owner asks.
+
+## 1. Legacy Designer documentation (owner-led)
+
+- **Goal**: Accurate specs in `Tawala_Key_Documents/DESIGNER_*.md` from screenshots and owner notes.
+- **Output**: Markdown specs + gap tables vs `designer-web`.
+- **Not required**: Implementing features in code the same session.
+
+## 2. Browser Designer (`designer-web/`)
+
+- **Goal**: Reimplement legacy Designer behavior in the browser.
+- **Source of truth**: `Tawala_Key_Documents/DESIGNER_*.md` + `TawalaDesigner/` C# code.
+- **Preview/deploy**: Local 5173/3001 and optionally 8080 — never www.tawala.com by default.
+
+## 3. Registration / DirtBowl runtime parity (8080)
+
+- **Goal**: End-user forms on Tomcat match expected layout and behavior (e.g. DirtBowl Registration).
+- **Typical paths**: `designer-web/server/registrationFibToXml.mjs`, `docker/tomcat/css/`, deploy scripts.
+- **Paused items** (unless owner reopens): Page 2+, Review headers, RegStep2, full theme parity across all pages.
+
+## Default priorities when unclear
+
+1. Owner is documenting UI → update specs, do not refactor code.
+2. Owner asks to implement a Designer feature → `designer-web/` + cite spec section.
+3. Owner asks about Registration look/feel on 8080 → runtime XML/CSS/deploy, not palette UX.
+
+## Commits and PRs
+
+Only commit or open PRs when the owner explicitly asks. Documentation-only sessions usually need no git activity.

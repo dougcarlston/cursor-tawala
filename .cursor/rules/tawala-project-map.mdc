@@ -1,0 +1,39 @@
+---
+description: AI-Tawala repository layout, runtimes, and reference code
+alwaysApply: true
+---
+
+# AI-Tawala project map
+
+Work in **~/Projects/AI-Tawala** (not the home directory) for all substantive changes.
+
+## Runtimes
+
+| Target | URL | Role |
+|--------|-----|------|
+| Browser Designer | http://localhost:5173 | `designer-web/` UI (Vite) |
+| Designer dev API | http://localhost:3001 | JSON deploy, form runtime (`designer-web/server/`) |
+| Java / Tomcat | http://localhost:8080 | Legacy webapp (Registration, DirtBowl parity tests) |
+
+Start browser Designer: `cd designer-web && npm run dev`.
+
+## Key directories
+
+- `designer-web/` — browser Designer reimplementation (React + Express)
+- `TawalaDesigner/Code/TAWALA/` — legacy C# WinForms Designer (authoritative UI/XML behavior)
+- `TawalaWebapp-build1700/` — Java webapp source
+- `docker/` — Tomcat/CSS containers for local 8080
+- `Tawala_Key_Documents/` — owner specs, Designer UI documentation, project history
+- `scripts/` — deploy and dev helpers (e.g. `deploy-dirtbowl-java.mjs`)
+
+## Reference docs (read before guessing)
+
+- `Tawala_Key_Documents/TAWALA_PROJECT_SUMMARY.md` — product/architecture overview
+- `Tawala_Key_Documents/DESIGNER_*.md` — legacy Designer UI specs (menus, form items, canvas)
+- `designer-web/README.md` — how to run and deploy from browser Designer
+
+## Legacy vs new
+
+- **Legacy Designer** = C# desktop app; owner documents it from screenshots on an old PC (Jan 2011 build in places).
+- **Browser Designer** = `designer-web/`; goal is parity with legacy, not a new product design.
+- **8080 runtime** = truth for end-user Registration HTML/CSS until browser Designer can express layouts natively.

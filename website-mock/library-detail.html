@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - Project Details</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css" />
+  <script src="js/demo-urls.js"></script>
+</head>
+<body data-tawala-page="library" data-tawala-status="compact">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Library</h3>
+          <p><a href="library.html">← Back to search</a></p>
+        </div>
+        <div class="block" id="sidebarMeta"></div>
+      </div>
+
+      <div class="content">
+        <div class="pageTitle"><h1 id="pageTitle">Project Details</h1></div>
+
+        <div class="section" id="projectDetails">
+          <h1 id="projectName"></h1>
+          <div id="description" class="section">
+            <h3 class="sectionHeading">Description</h3>
+            <div class="sectionContent">
+              <div id="shortDescription"></div>
+              <br />
+              <div>
+                <div class="label"><b>Detailed Description</b></div>
+                <div id="longDescription"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="testDriveBox">
+          <b>Test drive this project</b> (local Java runtime)
+          <p id="testDriveBlurb"></p>
+          <p>
+            <a class="button" id="testDrivePrimary" href="#" target="_blank" rel="noopener">Test Drive Latest Version</a>
+            <a href="mytawala.html">View in My Tawala</a>
+          </p>
+          <ul class="startPointList" id="startPoints"></ul>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js"></script>
+  <script>
+    TawalaChrome.mount();
+
+    const id = new URLSearchParams(location.search).get("project") || "simple-survey";
+    const project = TAWALA_DEMO_URLS[id];
+    if (!project) {
+      document.querySelector("#doc .content").innerHTML =
+        "<p>Unknown project. <a href='library.html'>Back to library</a></p>";
+    } else {
+      document.title = "Tawala - " + project.name;
+      document.getElementById("projectName").textContent = project.name;
+      document.getElementById("shortDescription").textContent = project.shortDescription;
+      document.getElementById("longDescription").textContent = project.longDescription;
+      document.getElementById("testDriveBlurb").textContent =
+        "Opens the deployed template on localhost:8080. Redeploy with scripts/deploy-tawala-template.mjs if the link is stale.";
+      document.getElementById("testDrivePrimary").href = project.testDriveUrl;
+      document.getElementById("sidebarMeta").innerHTML =
+        "<p><b>Category:</b> " + project.category + "</p>";
+      document.getElementById("startPoints").innerHTML = project.startPoints
+        .map((sp) => `<li><a href="${sp.url}" target="_blank" rel="noopener">${sp.label}</a></li>`)
+        .join("");
+    }
+  </script>
+</body>
+</html>

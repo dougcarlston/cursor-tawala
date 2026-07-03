@@ -1,0 +1,43 @@
+---
+description: How to document legacy Tawala Designer UI from owner screenshots and notes
+alwaysApply: true
+---
+
+# Legacy Designer documentation workflow
+
+When the owner sends **screenshots**, **hover text**, or **narrative** about the C# Designer:
+
+1. **Read existing specs first** in `Tawala_Key_Documents/`:
+   - `DESIGNER_MENU_SPEC.md` — menus, toolbars, explorer, Fields panel
+   - `DESIGNER_STARTUP_AND_FORM_CANVAS.md` — startup, templates, canvas tabs
+   - `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` — Text, FIB, MCQ, File Uploader (deferred)
+   - `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` — Hidden Field, Page Break, Skip Instructions
+   - `DESIGNER_FORM_ITEMS_HEADING.md` — Heading item
+   - `DESIGNER_FORM_FORMAT_TOOLBAR.md` — Form format toolbar vs Document
+   - `DESIGNER_TEMPLATE_MATRIX.md` — New Project templates + deploy smoke tests
+   - `DESIGNER_PROCESS_STATEMENTS_*.md` — If, Show, Send, Append/Get/ForEach/Delete/Set/Comment
+   - `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` — Insert menu (Form/Process/Document), Invitation, Hyperlink, Function picker
+   - `DESIGNER_UI_REFERENCE.md` — older reference; prefer newer DESIGNER_* files when they conflict
+
+2. **Cross-check C# source** when UI behavior is unclear:
+   - `TawalaDesigner/Code/TAWALA/DesignerUI/` — shell, explorer, main toolbar
+   - `TawalaDesigner/Code/TAWALA/Forms/` — form item views
+   - `TawalaDesigner/Code/TAWALA/Processes/` — process/skip statement editors
+   - `TawalaDesigner/Code/TAWALA/Documents/` — document editor, format toolbar
+
+3. **Update the right spec file** — extend in place; do not create duplicate markdown unless the owner asks.
+
+4. **Capture accurately**:
+   - Exact **tooltip / hover** strings
+   - **Greyed vs enabled** toolbar and menu states
+   - **Open questions** in a table when owner is uncertain
+
+5. **Known legacy build limits** (owner's Jan 2011 Designer):
+   - **Preview** tab tries www.tawala.com — broken offline
+   - **Deploy Project** and **Project Manager** need www.tawala.com — fail offline
+   - **File Uploader** may be missing on that build; confirm via `TawalaDesigner` source and SportsDashboards XML
+   - **Undo / Redo** may be always greyed on that build
+
+6. **List `designer-web` gaps** in spec files when documenting legacy features (what exists in C# vs what browser Designer lacks).
+
+7. **Terminology**: use **SportsDashboards** (not "SportsBoard") for the divisions/file-upload reference project.

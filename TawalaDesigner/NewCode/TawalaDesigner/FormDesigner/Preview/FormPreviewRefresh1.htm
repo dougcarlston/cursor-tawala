@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>Form Preview</title>
+	<style type="text/css">
+		body { font: 14pt Arial Bold; color: blue; }
+    </style>
+
+	<script type="text/javascript">
+		function onRefreshClicked()
+		{
+			window.external.HTMLRefreshButton_Clicked();
+		}
+	</script>
+
+</head>
+<body>
+	<div style="text-align: center;">
+		<p>
+			&nbsp;</p>
+		<p>
+			Canceling previous preview request.</p>
+		<p>
+			Please press the refresh button in a moment to try again.</p>
+		<p>
+			&nbsp;</p>
+		<p>
+			<button id="refreshButton" onclick="onRefreshClicked()">
+				Refresh</button></p>
+		<p>
+			&nbsp;</p>
+	</div>
+</body>
+</html>

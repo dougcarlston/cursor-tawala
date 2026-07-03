@@ -1,0 +1,96 @@
+{
+  "name": "Get Together Template",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Survey",
+      "startPoint": true,
+      "process": "Process 1",
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Get Together Invitation"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Get Together helps pick the best time or date for an event. Replace the questions below with your own dates, then delete these instructions and deploy."
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": false,
+          "style": "vertical",
+          "question": "We'd like to have dinner with you! Which of the following dates works for you?",
+          "choices": [
+            { "name": "a", "text": "June 3" },
+            { "name": "b", "text": "June 4" },
+            { "name": "c", "text": "June 6" },
+            { "name": "d", "text": "June 9" },
+            { "name": "e", "text": "June 10" }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "style": "vertical",
+          "question": "Which date is your top preference?",
+          "choices": [
+            { "name": "a", "text": "June 3" },
+            { "name": "b", "text": "June 4" },
+            { "name": "c", "text": "June 6" },
+            { "name": "d", "text": "June 9" },
+            { "name": "e", "text": "June 10" }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "topLabels",
+          "prompt": "Name please:",
+          "blanks": [{ "name": "Name", "length": 29 }]
+        }
+      ]
+    },
+    {
+      "name": "Report",
+      "themePath": "default",
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "content": [
+            {
+              "type": "paragraph",
+              "nodes": [{ "type": "text", "text": "Here are the results so far:" }]
+            },
+            {
+              "type": "paragraph",
+              "nodes": [
+                {
+                  "type": "questionCorrelationTable",
+                  "questionField": "Record:Survey:Q1",
+                  "displayField": "Record:Survey:Name",
+                  "preferredField": "Record:Survey:Q2",
+                  "form": "Survey"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [{ "cmd": "show", "form": "Report" }]
+    }
+  ],
+  "documents": []
+}

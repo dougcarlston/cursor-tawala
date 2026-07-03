@@ -1,0 +1,49 @@
+
+		public class __composite_${PNAME} : CompositeParameterBase
+		{
+			public  __composite_${PNAME}()
+			{
+				Parameters = LookupParameterInfo(GetType());
+				Properties = new PropertyCollection<__composite_${PNAME}>(this, Parameters);	
+			}
+		
+		    ${PROPERTIES}
+		}
+		
+		public class __composite_collection_${PNAME} : CompositeParameterCollectionBase<__composite_${PNAME}>
+		{				
+			protected override void OnListChanged(ListChangedEventArgs e)
+			{
+				base.OnListChanged(e);
+				
+				if (ForwardPropertyChanged != null)
+				{
+					ForwardPropertyChanged(this, new PropertyChangedEventArgs("${PNAME}"));
+				}
+			}
+				    
+		    public override string ToValueXml()
+		    {
+				return ToValueXml("${CCID}");
+		    }
+
+			public override string FormattedString
+			{
+				get
+				{
+					throw new NotImplementedException();
+				}
+			}
+		}
+		
+		private __composite_collection_${PNAME}  prop_${FNAME} = new __composite_collection_${PNAME}();
+
+        [ParameterProperty("${GID}", typeof(__composite_${PNAME}), typeof(__composite_collection_${PNAME}))]
+		public __composite_collection_${PNAME} ${PNAME}
+		{
+			get	{ return prop_${FNAME};	}
+			set
+			{
+				if (prop_${FNAME} != value)	{ prop_${FNAME} = value; NotifyChanged("${PNAME}");	}
+			}
+		}

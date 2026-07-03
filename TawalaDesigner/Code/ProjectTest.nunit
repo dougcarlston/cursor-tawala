@@ -1,0 +1,9 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="TawalaTest\ProjectTest\bin\Debug\ProjectTest.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto">
+    <assembly path="TawalaTest\ProjectTest\bin\Release\ProjectTest.dll" />
+  </Config>
+</NUnitProject>

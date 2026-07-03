@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<tawala
+  build="31"
+  build-name="Alpha"
+  clientURL="http://www.tawala.com/client"
+  projectManagerURL ="http://www.tawala.com/manage/projects"
+  devClientURL="http://dev.tawala.com/client"
+  devProjectManagerURL ="http://dev.tawala.com/manage/projects">
+</tawala>

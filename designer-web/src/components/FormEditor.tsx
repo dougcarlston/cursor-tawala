@@ -1,8 +1,10 @@
+import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
-import { FormItem, RichContentBlock } from "@/types/tawala";
+import { syncPreviewProject } from "@/api/preview";
+import { FormItem } from "@/types/tawala";
 import { FormItemsPalette } from "./FormItemsPalette";
-import { RichTextEditor } from "./RichTextEditor";
-import { FormItemProperties } from "./FormItemProperties";
+import { FibFieldPreview } from "./FibFieldPreview";
+import { FunctionTableBadge } from "./FunctionTableBadge";
 
 interface Props {
   formName: string;
@@ -14,24 +16,52 @@ export function FormEditor({ formName }: Props) {
   const setEditorTab = useProjectStore((s) => s.setEditorTab);
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
-  const updateFormItem = useProjectStore((s) => s.updateFormItem);
   const deleteFormItem = useProjectStore((s) => s.deleteFormItem);
+  const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [previewError, setPreviewError] = useState<string | null>(null);
 
   const form = project.forms.find((f) => f.name === formName);
   if (!form) {
     return <div className="placeholder-editor">Form not found: {formName}</div>;
   }
 
-  const selectedItem =
-    selectedItemIndex !== null ? form.items[selectedItemIndex] : undefined;
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (editorTab !== "design") return;
+      if (selectedItemIndex === null) return;
+      const target = e.target as HTMLElement | null;
+      if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
+      if (e.key === "Delete" || e.key === "Backspace") {
+        e.preventDefault();
+        deleteSelectedFormItem();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [editorTab, selectedItemIndex, deleteSelectedFormItem]);
 
-  const patchItem = (patch: Partial<FormItem>) => {
-    if (selectedItemIndex === null || !selectedItem) return;
-    updateFormItem(formName, selectedItemIndex, { ...selectedItem, ...patch } as FormItem);
-  };
+  useEffect(() => {
+    if (editorTab !== "preview") return;
+    let cancelled = false;
+    setPreviewError(null);
+    void syncPreviewProject(project, formName)
+      .then(() => {
+        if (cancelled) return;
+        const url = `/preview/designer/${encodeURIComponent(project.name)}/${encodeURIComponent(formName)}`;
+        setPreviewUrl(`${url}?t=${Date.now()}`);
+      })
+      .catch((e) => {
+        if (!cancelled) setPreviewError(e instanceof Error ? e.message : String(e));
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [editorTab, project, formName]);
 
   return (
     <div className="form-editor">
+      <div className="form-window-title">Form — {formName}</div>
       <div className="form-tabs">
         <button
           type="button"
@@ -50,75 +80,66 @@ export function FormEditor({ formName }: Props) {
       </div>
 
       {editorTab === "design" ? (
-        <div className="form-design-layout">
-          <div className="form-design-main">
+        <div className="form-design-body">
+          <div className="form-insert-strip">
             <FormItemsPalette />
-            <div className="form-canvas">
-              {form.items.length === 0 ? (
-                <p className="hint">
-                  Insert items from the palette, then click an item to edit properties and rich
-                  text.
-                </p>
-              ) : (
-                form.items.map((item, i) => (
-                  <div
-                    key={`${item.label}-${i}`}
-                    className={`form-item-block${selectedItemIndex === i ? " selected" : ""}`}
-                    onClick={() => setSelectedItemIndex(i)}
-                  >
-                    <div className="form-item-label">
-                      [{item.type}] {item.label}
-                      <button
-                        type="button"
-                        className="item-delete"
-                        title="Delete"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteFormItem(formName, i);
-                        }}
-                      >
-                        ×
-                      </button>
-                    </div>
-                    <PreviewItem item={item} />
-                  </div>
-                ))
-              )}
-            </div>
           </div>
-          <aside className="form-properties">
-            <div className="panel-title">Properties</div>
-            {selectedItem ? (
-              <FormItemProperties item={selectedItem} onChange={patchItem} />
-            ) : (
-              <p className="hint" style={{ padding: 8 }}>
-                Select a form item to edit
+          <div
+            className="form-canvas"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) setSelectedItemIndex(null);
+            }}
+          >
+            {form.items.length === 0 ? (
+              <p className="hint form-canvas-hint">
+                Drag items from the palette on the left to create your form, or click a palette
+                button to insert.
               </p>
+            ) : (
+              form.items.map((item, i) => (
+                <div
+                  key={`${item.label}-${i}`}
+                  className={`form-item-block${selectedItemIndex === i ? " selected" : ""}`}
+                  onClick={() => setSelectedItemIndex(i)}
+                >
+                  <div className="form-item-label">
+                    <span>
+                      [{item.type}] {item.label}
+                    </span>
+                    <button
+                      type="button"
+                      className="item-delete"
+                      title="Delete item"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        deleteFormItem(formName, i);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </div>
+                  <CanvasItem item={item} />
+                </div>
+              ))
             )}
-          </aside>
+          </div>
         </div>
       ) : (
-        <div className="preview-frame">
-          <PreviewForm items={form.items} />
+        <div className="preview-frame preview-frame-runtime">
+          {previewError ? (
+            <p className="hint">Preview failed: {previewError}</p>
+          ) : previewUrl ? (
+            <iframe title={`Preview ${formName}`} src={previewUrl} className="form-preview-iframe" />
+          ) : (
+            <p className="hint">Loading preview…</p>
+          )}
         </div>
       )}
     </div>
   );
 }
 
-function PreviewForm({ items }: { items: FormItem[] }) {
-  return (
-    <form onSubmit={(e) => e.preventDefault()}>
-      {items.map((item, i) => (
-        <div key={`${item.label}-${i}`}>
-          <PreviewItem item={item} />
-        </div>
-      ))}
-    </form>
-  );
-}
-
-export function PreviewItem({ item }: { item: FormItem }) {
+function CanvasItem({ item }: { item: FormItem }) {
   switch (item.type) {
     case "heading":
       return item.level === "sub" ? (
@@ -127,30 +148,17 @@ export function PreviewItem({ item }: { item: FormItem }) {
         <h2 className="preview-heading-main">{item.content ?? item.label}</h2>
       );
     case "text":
+      if (Array.isArray(item.content)) {
+        return <FunctionTableBadge content={item.content} />;
+      }
       return (
         <div
-          className="text-block"
-          dangerouslySetInnerHTML={{
-            __html:
-              typeof item.content === "string"
-                ? item.content
-                : Array.isArray(item.content)
-                  ? richBlocksToHtml(item.content as RichContentBlock[])
-                  : "",
-          }}
+          className={`text-block${item.style === "instructional" ? " instructional" : ""}`}
+          dangerouslySetInnerHTML={{ __html: typeof item.content === "string" ? item.content : "" }}
         />
       );
     case "fib":
-      return (
-        <div>
-          <p>{typeof item.prompt === "string" ? item.prompt : ""}</p>
-          {(item.blanks ?? []).map((b) => (
-            <span key={b.name} className="preview-fib-blank" title={b.name}>
-              &nbsp;
-            </span>
-          ))}
-        </div>
-      );
+      return <FibFieldPreview item={item} />;
     case "mc":
       return (
         <fieldset>
@@ -161,6 +169,7 @@ export function PreviewItem({ item }: { item: FormItem }) {
                 type={item.onlyone !== false ? "radio" : "checkbox"}
                 name={item.label}
                 value={c.name}
+                readOnly
               />{" "}
               {c.text}
             </label>
@@ -180,22 +189,4 @@ export function PreviewItem({ item }: { item: FormItem }) {
     default:
       return null;
   }
-}
-
-function richBlocksToHtml(blocks: RichContentBlock[]): string {
-  return blocks
-    .map((b) => {
-      if (b.type === "paragraph") {
-        const inner = (b.nodes ?? [])
-          .map((n) => {
-            if (n.type === "text") return n.text ?? "";
-            if (n.type === "bold") return `<strong>${n.nodes?.[0]?.text ?? ""}</strong>`;
-            return "";
-          })
-          .join("");
-        return `<p>${inner}</p>`;
-      }
-      return "";
-    })
-    .join("");
 }

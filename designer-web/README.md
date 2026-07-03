@@ -35,13 +35,9 @@ After deploy, the dialog lists **start point URLs** like:
 
 Open those links to exercise the dev runtime HTML forms.
 
-## Load DirtBowl sample
+## Load DirtBowl (advanced)
 
-```bash
-cp ../dirtbowl_definition_v3.json public/samples/
-```
-
-Then **File → Open DirtBowl Sample…**, edit, and deploy.
+DirtBowl is no longer on **File** menu — use **Open Project…** with `public/samples/dirtbowl_definition_v3.json`, or deploy via `node scripts/deploy-dirtbowl-java.mjs` from the repo root. It will move to the website **Library** as an advanced sample.
 
 ## Proxy to Java backend (build-1700)
 
@@ -63,7 +59,24 @@ Deploy converts JSON → XML (`server/jsonToXml.mjs`) and POSTs to `/client` lik
 | 2 — Item property panels, delete | Partial (properties for main types) |
 | 3 — Rich text, process editor, documents | Done (MVP) |
 | 4 — Deploy + dev runtime v2 | Done |
-| 5 — Full Java + PostgreSQL integration | Documented — needs WAR (see `../docs/STACK.md`) |
+| 5 — **New Project templates** (featured home apps) | **In progress** — File → New Project… |
+| 6 — Full Java + PostgreSQL integration | Documented — see `../docs/STACK.md` |
+
+### New Project templates (July 2026)
+
+**File → New Project…** opens the legacy template catalog. JSON starters live in `public/samples/templates/`:
+
+| Template | File |
+|----------|------|
+| Simple Survey | `simple-survey.json` |
+| Sign-up Sheet | `signup-sheet.json` |
+| Potluck (simplified starter) | `potluck.json` |
+| Get Together | `get-together.json` |
+| Empty / Form+Process / Form+Process+Document | `empty-project.json`, etc. |
+
+Deploy to **8080** with `TAWALA_JAVA_URL=http://localhost:8080 npm run dev:api` (or `scripts/dev-java.sh`). Survey/report function tables export via `jsonToXml.mjs` (`choiceTallyTable`, `itemizationTable`, `questionCorrelationTable`).
+
+**Not in browser Designer yet:** Sign-up Sheet w Email (blocked on mail backlog), full Potluck process/doc chain, `.tawala` import.
 
 ### Phase 3 notes
 

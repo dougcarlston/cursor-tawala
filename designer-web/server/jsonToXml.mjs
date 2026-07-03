@@ -1,6 +1,7 @@
 /** Best-effort JSON format 2.0 → legacy XML for Java /client upload. */
 
 import { fibToXml } from "./fibToXml.mjs";
+import { registrationFibToXml } from "./registrationFibToXml.mjs";
 import { registrationTextToXml } from "./registrationTextToXml.mjs";
 import { mcToXml } from "./mcToXml.mjs";
 
@@ -213,7 +214,7 @@ function commandToXml(cmd, ctx = {}) {
       return `<skip to="${escAttr(cmd.to)}"/>`;
     case "foreach": {
       const body = (cmd.do ?? []).map((c) => commandToXml(c, ctx)).join("");
-      return `<foreach recordName="${escAttr(cmd.recordName)}" recordList="${escAttr(cmd.recordList)}">${body}</foreach>`;
+      return `<foreach record="${escAttr(cmd.recordName)}" recordList="${escAttr(cmd.recordList)}">${body}</foreach>`;
     }
     case "show":
     case "showDocument":
@@ -279,6 +280,19 @@ function richNodesToXml(nodes) {
             : "";
           return `<invitation form="${escAttr(n.form)}"${projectAttr}${privateAttr}>${auth}${escText(n.text ?? "")}</invitation>`;
         }
+        case "choiceTallyTable":
+          return `<choice-tally-table version="1"><field>${escAttr(n.field)}</field><conditions><form name="${escAttr(n.form)}"/></conditions></choice-tally-table>`;
+        case "itemizationTable": {
+          const cols = (n.columns ?? [])
+            .map(
+              (col) =>
+                `<column><header>${escText(col.header)}</header><contents><field name="${escAttr(col.field)}"/></contents></column>`,
+            )
+            .join("");
+          return `<itemization-table version="${n.version ?? 1}"><number-of-columns>${(n.columns ?? []).length}</number-of-columns>${cols}<conditions><form name="${escAttr(n.form)}"/></conditions></itemization-table>`;
+        }
+        case "questionCorrelationTable":
+          return `<question-correlation-table version="1"><question-field-name>${escAttr(n.questionField)}</question-field-name><display-field-name>${escAttr(n.displayField)}</display-field-name><preferred-choice-field-name>${escAttr(n.preferredField)}</preferred-choice-field-name><conditions><form name="${escAttr(n.form)}"/></conditions></question-correlation-table>`;
         default:
           return richNodesToXml(n.nodes);
       }
@@ -287,18 +301,27 @@ function richNodesToXml(nodes) {
 }
 
 function itemToXml(item, formName = "") {
+  const altLabel = item.alternateLabel ?? item.name;
+  const altAttr =
+    altLabel && altLabel !== item.label ? ` alternateLabel="${escAttr(altLabel)}"` : "";
+
   switch (item.type) {
     case "heading":
-      return `<heading label="${escAttr(item.label)}" style="main">${escText(item.content)}</heading>`;
+      return `<heading label="${escAttr(item.label)}" type="Main">${escText(item.content)}</heading>`;
     case "subheading":
-      return `<heading label="${escAttr(item.label)}" style="sub">${escText(item.content)}</heading>`;
+      return `<heading label="${escAttr(item.label)}" type="Sub">${escText(item.content)}</heading>`;
     case "text": {
       const legacy = registrationTextToXml(item, formName);
       const body = legacy ?? textContentToXml(item.content, item.style);
-      return `<text label="${escAttr(item.label)}" style="${escAttr(item.style ?? "normal")}">${body}</text>`;
+      return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}">${body}</text>`;
     }
-    case "fib":
+    case "fib": {
+      if (formName === "Registration") {
+        const regFib = registrationFibToXml(item, escAttr, escText);
+        if (regFib) return regFib;
+      }
       return fibToXml(item, escAttr, escText);
+    }
     case "mc":
       return mcToXml(item, escAttr, escText);
     case "field":

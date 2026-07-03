@@ -16,6 +16,10 @@ case "$cmd" in
     echo "Seeding AdminSetup for latest deployed project..."
     psql -f - < "$ROOT/scripts/seed-dirtbowl-admin-setup.sql"
     ;;
+  seed-divisions)
+    echo "Seeding Divisions for latest deployed project..."
+    psql -f - < "$ROOT/scripts/seed-dirtbowl-divisions.sql"
+    ;;
   cleanup-registrations)
     echo "Removing test Registration / RegStep2 submissions..."
     psql -f - < "$ROOT/scripts/cleanup-test-registrations.sql"
@@ -28,6 +32,7 @@ case "$cmd" in
 Usage: ./scripts/dev-data.sh <command>
 
   seed-admin              Insert/replace AdminSetup (fee, address, league)
+  seed-divisions          Insert/replace Divisions (Q5/Q6 pickers)
   cleanup-registrations   Delete Registration + RegStep2 test rows
   status                  Show submission counts by form
 

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - Home</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/homepage.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css" />
+  <script src="js/demo-urls.js"></script>
+</head>
+<body data-tawala-page="home">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="subheading">
+      <div id="tagLine">Surveys, Sign Ups, Event Planning — all in seconds and for FREE</div>
+      <div id="subtagline">
+        A wide set of easy-to-use email and Web tools that you can put to work immediately with absolutely no technical knowledge.
+      </div>
+    </div>
+
+    <div id="featuredApps">
+      <div id="featuredFree">
+        <p><b>Tawala Featured Solutions</b>&nbsp;&nbsp; All absolutely free. No registration required!</p>
+      </div>
+      <div id="apps">
+        <div class="webapp">
+          <a href="library-detail.html?project=simple-survey" class="icon" title="Simple Survey">📊</a>
+          <div class="title"><a href="library-detail.html?project=simple-survey">Simple Survey Template</a></div>
+          <p>One multiple-choice question with an instant results report.</p>
+          <div class="links"><a href="library-detail.html?project=simple-survey">Tell me more…</a></div>
+        </div>
+        <div class="webapp">
+          <a href="library-detail.html?project=signup-sheet" class="icon" title="Sign-up Sheet">📋</a>
+          <div class="title"><a href="library-detail.html?project=signup-sheet">Sign-up Sheet Template</a></div>
+          <p>Collect contact info; see signups in a live table on the same page.</p>
+          <div class="links"><a href="library-detail.html?project=signup-sheet">Tell me more…</a></div>
+        </div>
+        <div class="webapp">
+          <a href="library-detail.html?project=potluck" class="icon" title="Potluck">🍽</a>
+          <div class="title"><a href="library-detail.html?project=potluck">Potluck Template</a></div>
+          <p>Coordinate who brings what; RSVPs and dishes on a shared report.</p>
+          <div class="links"><a href="library-detail.html?project=potluck">Tell me more…</a></div>
+        </div>
+        <div class="webapp">
+          <a href="library-detail.html?project=get-together" class="icon" title="Get Together">📅</a>
+          <div class="title"><a href="library-detail.html?project=get-together">Get Together Template</a></div>
+          <p>Find a date that works for everyone — availability and top pick.</p>
+          <div class="links"><a href="library-detail.html?project=get-together">Tell me more…</a></div>
+        </div>
+      </div>
+      <div class="featuredLinks">
+        <div class="link1"><a href="library.html">Browse the Project Library →</a></div>
+        <div class="link2"><a href="mytawala.html">Open My Tawala (deployed projects) →</a></div>
+      </div>
+    </div>
+
+    <div id="bd" class="home-layout">
+      <div id="yui-main">
+        <div class="content">
+          <div class="block">
+            <h4>Featured Solutions</h4>
+            <div id="featuredList">
+              <div class="webapp" style="border:none;background:transparent;padding:0;min-height:0;">
+                <div class="title"><a href="library-detail.html?project=simple-survey">Simple Survey Template</a></div>
+                <p>Replace the sample MCQ, deploy, and share the Survey link. Respondents see tallies on the Report form.</p>
+                <div class="links"><a href="library-detail.html?project=simple-survey">Tell me more… →</a></div>
+              </div>
+              <div class="webapp" style="border:none;background:transparent;padding:0;min-height:0;margin-top:12px;">
+                <div class="title"><a href="library-detail.html?project=signup-sheet">Sign-up Sheet Template</a></div>
+                <p>Inline itemization table lists First, Last, Email, Phone, and Address as people sign up.</p>
+                <div class="links"><a href="library-detail.html?project=signup-sheet">Tell me more… →</a></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Your account</h3>
+          <p>Not logged in. <a href="signup.html">Sign up free</a> to save customized apps.</p>
+        </div>
+        <div class="block">
+          <h3>Quick test drive</h3>
+          <p><a id="homeSurveyLink" href="#">Simple Survey</a></p>
+          <p><a id="homeSignupLink" href="#">Sign-up Sheet</a></p>
+          <p><a id="homePotluckLink" href="#">Potluck</a></p>
+          <p><a id="homeGetTogetherLink" href="#">Get Together</a></p>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js"></script>
+  <script>
+    TawalaChrome.mount();
+    document.getElementById("homeSurveyLink").href = TAWALA_DEMO_URLS["simple-survey"].testDriveUrl;
+    document.getElementById("homeSignupLink").href = TAWALA_DEMO_URLS["signup-sheet"].testDriveUrl;
+    document.getElementById("homePotluckLink").href = TAWALA_DEMO_URLS["potluck"].testDriveUrl;
+    document.getElementById("homeGetTogetherLink").href = TAWALA_DEMO_URLS["get-together"].testDriveUrl;
+  </script>
+</body>
+</html>

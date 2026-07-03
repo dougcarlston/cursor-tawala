@@ -1,0 +1,16 @@
+<public:component tagName="Data-Provider">
+
+<script language="JScript">
+
+var input = null;
+
+init();
+
+function init()
+{
+    element.id = element.document.uniqueID;
+}
+
+</script>
+
+</public:component>

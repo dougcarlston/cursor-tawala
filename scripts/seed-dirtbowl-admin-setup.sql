@@ -4,6 +4,8 @@
 WITH target AS (
   SELECT up.project_id
   FROM user_project up
+  JOIN users u ON u.user_id = up.user_id
+  WHERE u.user_name = 'dev'
   ORDER BY up.user_project_id DESC
   LIMIT 1
 ),
@@ -32,7 +34,7 @@ SELECT
   <entry><string>IndividualSignupFee</string><string-array><string>75</string></string-array></entry>
   <entry><string>ChargeDescription</string><string-array><string>Dirt Bowl registration</string></string-array></entry>
   <entry><string>PlayerIDGenerator</string><string-array><string>1000</string></string-array></entry>
-  <entry><string>UsingDivisions?</string><string-array><string> </string></string-array></entry>
+  <entry><string>UsingDivisions?</string><string-array><string>Yes</string></string-array></entry>
 </linked-hash-map>',
   'AdminSetup',
   NOW(),
@@ -44,6 +46,8 @@ FROM submission s
 JOIN (
   SELECT up.project_id
   FROM user_project up
+  JOIN users u ON u.user_id = up.user_id
+  WHERE u.user_name = 'dev'
   ORDER BY up.user_project_id DESC
   LIMIT 1
 ) latest ON latest.project_id = s.project_id

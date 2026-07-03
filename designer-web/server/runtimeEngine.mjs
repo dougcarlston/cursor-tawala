@@ -155,6 +155,18 @@ export function runCommand(cmd, ctx) {
     }
     case "skip":
       return cmd.to;
+    case "send":
+      return null;
+    case "showDocument": {
+      ctx._nav = ctx._nav ?? { showForm: null, documents: [] };
+      ctx._nav.documents.push(cmd.document);
+      return null;
+    }
+    case "show": {
+      ctx._nav = ctx._nav ?? { showForm: null, documents: [] };
+      ctx._nav.showForm = cmd.form;
+      return "__PROCESS_DONE__";
+    }
     default:
       return null;
   }
@@ -163,6 +175,7 @@ export function runCommand(cmd, ctx) {
 export function runCommands(commands, ctx) {
   for (const cmd of commands ?? []) {
     const skip = runCommand(cmd, ctx);
+    if (skip === "__PROCESS_DONE__") return skip;
     if (skip) return skip;
   }
   return null;
@@ -170,16 +183,23 @@ export function runCommands(commands, ctx) {
 
 export function runProcessByName(project, processName, ctx) {
   const proc = project.processes?.find((p) => p.name === processName);
-  if (!proc) return null;
-  return runCommands(proc.commands, ctx);
+  if (!proc) return { type: "none" };
+  ctx._nav = { showForm: null, documents: [] };
+  runCommands(proc.commands, ctx);
+  if (ctx._nav.showForm) return { type: "form", form: ctx._nav.showForm };
+  if (ctx._nav.documents.length) {
+    return { type: "documents", documents: [...ctx._nav.documents] };
+  }
+  return { type: "none" };
 }
 
+// Legacy helper — kept for skipInstructions-only callers
 export function runSkipInstructions(form, ctx) {
   let skipTarget = null;
   for (const item of form.items ?? []) {
     if (item.type !== "skipInstructions") continue;
     const result = runCommands(item.commands, ctx);
-    if (result) skipTarget = result;
+    if (result && result !== "__PROCESS_DONE__") skipTarget = result;
   }
   return skipTarget;
 }

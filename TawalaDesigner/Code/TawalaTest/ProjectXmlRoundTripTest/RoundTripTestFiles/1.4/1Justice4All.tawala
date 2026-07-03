@@ -1,0 +1,1786 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="1Justice4All" themePath="default" format="1.4">
+<forms>
+<form name="Chooser" startPoint="true" themePath="default" process="NameEm">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">In this Fearless Fantasy game, Justices earn points for their activity. Points are awarded as follows: </font><font face="Arial" size="200" color="000000"><b>Slip opinions:</b></font><font face="Arial" size="200" color="000000"> 1 point for a vote with the majority, 3 points for writing the majority opinion, 2 points for writing a concurring opinion joined by one or more Justices, 2 points for writing a dissenting opinion joined by one or more Justices, 1 point for writing a concurring opinion or a dissenting opinion in which no other Justice joins. </font><font face="Arial" size="200" color="000000"><b>Term opinions relating to orders:</b></font><font face="Arial" size="200" color="000000">1 point. </font><font face="Arial" size="200" color="000000"><b>Term In-Chambers opinions:</b></font><font face="Arial" size="200" color="000000"> 1 point. You choose one Justice as your representative and a second Justice to serve as your tiebreaker.</font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Enter your e-mail address </font><blank label="a" length="24" required="true" alternateLabel="email"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Choose an Alias for your entry in the Leaderboard </font><blank label="a" length="16" required="true" alternateLabel="alias"/></paragraph></fib>
+<mc label="Q3" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your representative?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="a"/>
+</conditions>
+<trueSet>
+<skip to="Q4"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Q5"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="c"/>
+</conditions>
+<trueSet>
+<skip to="Q6"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="d"/>
+</conditions>
+<trueSet>
+<skip to="Q7"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="e"/>
+</conditions>
+<trueSet>
+<skip to="Q8"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="f"/>
+</conditions>
+<trueSet>
+<skip to="Q9"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="g"/>
+</conditions>
+<trueSet>
+<skip to="Q10"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="h"/>
+</conditions>
+<trueSet>
+<skip to="Q11"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="i"/>
+</conditions>
+<trueSet>
+<skip to="Q12"/>
+</trueSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</skipInstructions>
+<mc label="Q4" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tiebreaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q5" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q6" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q7" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q8" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q9" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q10" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q11" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q12" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice do you choose for your tie-breaker?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="DataEntry" startPoint="true" themePath="default" process="Mover">
+<items>
+<mc label="Q1" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justices were in the majority?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice authored the opinion?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice><choice label="j"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">I marked one by mistake</font></paragraph></choice></mc>
+<mc label="Q3" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice(s) wrote concurring or dissent opinions joined by more than one other Justice?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<mc label="Q4" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice(s) wrote concurring or dissent opinions NOT joined by another Justice?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<mc label="Q5" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice(s) authored term opinions related to orders?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<mc label="Q6" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Which Justice(s) authored Term In-Chambers opinions?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Chief Justice John G. Roberts, Jr.</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice John Paul Stevens</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Antonin Scalia</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Anthony M. Kennedy</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice David Hackett Souter</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Clarence Thomas</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Ruth Bader Ginsburg</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Stephen G. Breyer</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Associate Justice Samuel Anthony Alito, Jr.</font></paragraph></choice></mc>
+<mc label="Q7" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Another entry?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">No</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Calculate" startPoint="true" themePath="default" process="SkorIt">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Press SUBMIT to calculate scores.</font></paragraph></text>
+</items>
+</form>
+<form name="Leaderboard" startPoint="true" themePath="default" process="RankEm">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Scores will generally be posted by 6 p.m. PST on the days when the Court announces decisions. </font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Scores through the decisions of March 20.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="1185"/><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000"><b>Barristers League</b></font></division></cell><cell width="1920"/></row><row><cell width="1185"><division indent="0" align="left"><font face="Arial" size="240" color="000000"><b>Points</b></font></division></cell><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000"><b>Player</b></font></division></cell><cell width="1920"><division indent="0" align="left"><font face="Arial" size="240" color="000000"><b>Tiebreaker Pts</b></font></division></cell></row><row><cell width="1185"><division indent="0" align="left"><font face="Arial" size="240" color="000000">27</font></division></cell><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000">Dakota</font></division></cell><cell width="1920"><division indent="0" align="left"><font face="Arial" size="240" color="000000">25</font></division></cell></row><row><cell width="1185"><division indent="0" align="left"><font face="Arial" size="240" color="000000">27</font></division></cell><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000">Chooser</font></division></cell><cell width="1920"><division indent="0" align="left"><font face="Arial" size="240" color="000000">21</font></division></cell></row><row><cell width="1185"><division indent="0" align="left"><font face="Arial" size="240" color="000000">20</font></division></cell><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000">Galvelbreakers</font></division></cell><cell width="1920"><division indent="0" align="left"><font face="Arial" size="240" color="000000">19</font></division></cell></row><row><cell width="1185"><division indent="0" align="left"><font face="Arial" size="240" color="000000">19</font></division></cell><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000">Sean T</font></division></cell><cell width="1920"><division indent="0" align="left"><font face="Arial" size="240" color="000000">20</font></division></cell></row><row><cell width="1185"><division indent="0" align="left"><font face="Arial" size="240" color="000000">17</font></division></cell><cell width="2655"><division indent="0" align="left"><font face="Arial" size="240" color="000000">Librawoman</font></division></cell><cell width="1920"><division indent="0" align="left"><font face="Arial" size="240" color="000000">21</font></division></cell></row><row><cell width="1185"><division indent="0" align="left">16</division></cell><cell width="2655"><division indent="0" align="left">DougC</division></cell><cell width="1920"><division indent="0" align="left">25</division></cell></row><row><cell width="1185"/><cell width="2655"/><cell width="1920"/></row><row><cell width="1185"/><cell width="2655"/><cell width="1920"/></row><row><cell width="1185"/><cell width="2655"/><cell width="1920"/></row></table></text>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Thanks for playing!</font></paragraph></text>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Press SUBMIT to see the points earned by each Justice since Jan. 1, 2007</font></paragraph></text>
+</items>
+</form>
+<form name="Iforget" startPoint="true" themePath="default" process="FindEm">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Forgotten your alias? Enter your e-mail address and we'll send it to you. </font><blank label="a" length="26" required="true" alternateLabel="email1"/></paragraph></fib>
+</items>
+</form>
+<form name="RulesChange" startPoint="false" themePath="default" process="Shorten">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Press SUBMIT to continue</font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="NameEm">
+<set field="Count" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<set field="League" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TBscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 3">
+<forms>
+<form name="Chooser"/>
+</forms>
+</get>
+<foreach record="Record" recordList="Record List 3">
+<if>
+<conditions>
+<isNotBlank field="Chooser:email"/>
+</conditions>
+<trueSet>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<isLessThanOrEqualTo field="Count">
+<string value="9"/>
+</isLessThanOrEqualTo>
+</conditions>
+<trueSet>
+<set field="League" arithmeticAsText="false">
+<string value="Barristers"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<isGreaterThanOrEqualTo field="Count">
+<string value="10"/>
+</isGreaterThanOrEqualTo>
+<isLessThanOrEqualTo field="Count">
+<string value="18"/>
+</isLessThanOrEqualTo>
+</and>
+</conditions>
+<trueSet>
+<set field="League" arithmeticAsText="false">
+<string value="Judges"/>
+</set>
+</trueSet>
+</if>
+<comment>Additional league names: Jurists, Solicitors</comment>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="a"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Chief Justice John G. Roberts, Jr."/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="b"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice John Paul Stevens"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="c"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice Antonin Scalia"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="d"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice Anthony M. Kennedy"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="e"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice David Hackett Souter"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="f"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice Clarence Thomas"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="g"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice Ruth Bader Ginsburg"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="h"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice Stephen G. Breyer"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<mcEquals field="Chooser:Q3" value="i"/>
+</conditions>
+<trueSet>
+<set field="Prime" arithmeticAsText="false">
+<string value="Associate Justice Samuel Anthony Alito, Jr."/>
+</set>
+</trueSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q5" value="a"/>
+<or>
+<mcEquals field="Chooser:Q6" value="a"/>
+<or>
+<mcEquals field="Chooser:Q7" value="a"/>
+<or>
+<mcEquals field="Chooser:Q8" value="a"/>
+<or>
+<mcEquals field="Chooser:Q9" value="a"/>
+<or>
+<mcEquals field="Chooser:Q10" value="a"/>
+<or>
+<mcEquals field="Chooser:Q11" value="a"/>
+<mcEquals field="Chooser:Q12" value="a"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Chief Justice John G. Roberts, Jr."/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="a"/>
+<or>
+<mcEquals field="Chooser:Q6" value="b"/>
+<or>
+<mcEquals field="Chooser:Q7" value="b"/>
+<or>
+<mcEquals field="Chooser:Q8" value="b"/>
+<or>
+<mcEquals field="Chooser:Q9" value="b"/>
+<or>
+<mcEquals field="Chooser:Q10" value="b"/>
+<or>
+<mcEquals field="Chooser:Q11" value="b"/>
+<mcEquals field="Chooser:Q12" value="b"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice John Paul Stevens"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="b"/>
+<or>
+<mcEquals field="Chooser:Q5" value="b"/>
+<or>
+<mcEquals field="Chooser:Q7" value="c"/>
+<or>
+<mcEquals field="Chooser:Q8" value="c"/>
+<or>
+<mcEquals field="Chooser:Q9" value="c"/>
+<or>
+<mcEquals field="Chooser:Q10" value="c"/>
+<or>
+<mcEquals field="Chooser:Q11" value="c"/>
+<mcEquals field="Chooser:Q12" value="c"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice Antonin Scalia"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="c"/>
+<or>
+<mcEquals field="Chooser:Q5" value="c"/>
+<or>
+<mcEquals field="Chooser:Q6" value="c"/>
+<or>
+<mcEquals field="Chooser:Q8" value="d"/>
+<or>
+<mcEquals field="Chooser:Q9" value="d"/>
+<or>
+<mcEquals field="Chooser:Q10" value="d"/>
+<or>
+<mcEquals field="Chooser:Q11" value="d"/>
+<mcEquals field="Chooser:Q12" value="d"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice Anthony M. Kennedy"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="d"/>
+<or>
+<mcEquals field="Chooser:Q5" value="d"/>
+<or>
+<mcEquals field="Chooser:Q6" value="d"/>
+<or>
+<mcEquals field="Chooser:Q7" value="d"/>
+<or>
+<mcEquals field="Chooser:Q9" value="e"/>
+<or>
+<mcEquals field="Chooser:Q10" value="e"/>
+<or>
+<mcEquals field="Chooser:Q11" value="e"/>
+<mcEquals field="Chooser:Q12" value="e"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice David Hackett Souter"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="e"/>
+<or>
+<mcEquals field="Chooser:Q5" value="e"/>
+<or>
+<mcEquals field="Chooser:Q6" value="e"/>
+<or>
+<mcEquals field="Chooser:Q7" value="e"/>
+<or>
+<mcEquals field="Chooser:Q8" value="e"/>
+<or>
+<mcEquals field="Chooser:Q10" value="f"/>
+<or>
+<mcEquals field="Chooser:Q11" value="f"/>
+<mcEquals field="Chooser:Q12" value="f"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice Clarence Thomas"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="f"/>
+<or>
+<mcEquals field="Chooser:Q5" value="f"/>
+<or>
+<mcEquals field="Chooser:Q6" value="f"/>
+<or>
+<mcEquals field="Chooser:Q7" value="f"/>
+<or>
+<mcEquals field="Chooser:Q8" value="f"/>
+<or>
+<mcEquals field="Chooser:Q9" value="f"/>
+<or>
+<mcEquals field="Chooser:Q11" value="g"/>
+<mcEquals field="Chooser:Q12" value="g"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice Ruth Bader Ginsburg"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="g"/>
+<or>
+<mcEquals field="Chooser:Q5" value="g"/>
+<or>
+<mcEquals field="Chooser:Q6" value="g"/>
+<or>
+<mcEquals field="Chooser:Q7" value="g"/>
+<or>
+<mcEquals field="Chooser:Q8" value="g"/>
+<or>
+<mcEquals field="Chooser:Q9" value="g"/>
+<or>
+<mcEquals field="Chooser:Q10" value="g"/>
+<mcEquals field="Chooser:Q12" value="h"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice Stephen G. Breyer"/>
+</set>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<or>
+<mcEquals field="Chooser:Q4" value="h"/>
+<or>
+<mcEquals field="Chooser:Q5" value="h"/>
+<or>
+<mcEquals field="Chooser:Q6" value="h"/>
+<or>
+<mcEquals field="Chooser:Q7" value="h"/>
+<or>
+<mcEquals field="Chooser:Q8" value="h"/>
+<or>
+<mcEquals field="Chooser:Q9" value="h"/>
+<or>
+<mcEquals field="Chooser:Q10" value="h"/>
+<mcEquals field="Chooser:Q11" value="h"/>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="TB" arithmeticAsText="false">
+<string value="Associate Justice Samuel Anthony Alito, Jr."/>
+</set>
+</trueSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<show document="UrPiks" reset="false"/>
+</process>
+<process name="SkorIt">
+<set field="JRscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="JSscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="ASscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="AKscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="DSscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="CTscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="RGscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="SBscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="SAscore" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 1">
+<forms>
+<form name="DataEntry"/>
+</forms>
+</get>
+<foreach record="Case" recordList="Record List 1">
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="a"/>
+</conditions>
+<trueSet>
+<set field="JRscore" arithmeticAsText="false">
+<add>
+<operand field="JRscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="b"/>
+</conditions>
+<trueSet>
+<set field="JSscore" arithmeticAsText="false">
+<add>
+<operand field="JSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="c"/>
+</conditions>
+<trueSet>
+<set field="ASscore" arithmeticAsText="false">
+<add>
+<operand field="ASscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="d"/>
+</conditions>
+<trueSet>
+<set field="AKscore" arithmeticAsText="false">
+<add>
+<operand field="AKscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="e"/>
+</conditions>
+<trueSet>
+<set field="DSscore" arithmeticAsText="false">
+<add>
+<operand field="DSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="f"/>
+</conditions>
+<trueSet>
+<set field="CTscore" arithmeticAsText="false">
+<add>
+<operand field="CTscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="g"/>
+</conditions>
+<trueSet>
+<set field="RGscore" arithmeticAsText="false">
+<add>
+<operand field="RGscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="h"/>
+</conditions>
+<trueSet>
+<set field="SBscore" arithmeticAsText="false">
+<add>
+<operand field="SBscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q1" value="i"/>
+</conditions>
+<trueSet>
+<set field="SAscore" arithmeticAsText="false">
+<add>
+<operand field="SAscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2">
+<string value="a"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<set field="JRscore" arithmeticAsText="false">
+<add>
+<operand field="JRscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="b"/>
+</conditions>
+<trueSet>
+<set field="JSscore" arithmeticAsText="false">
+<add>
+<operand field="JSscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="c"/>
+</conditions>
+<trueSet>
+<set field="ASscore" arithmeticAsText="false">
+<add>
+<operand field="ASscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="d"/>
+</conditions>
+<trueSet>
+<set field="AKscore" arithmeticAsText="false">
+<add>
+<operand field="AKscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="e"/>
+</conditions>
+<trueSet>
+<set field="DSscore" arithmeticAsText="false">
+<add>
+<operand field="DSscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="f"/>
+</conditions>
+<trueSet>
+<set field="CTscore" arithmeticAsText="false">
+<add>
+<operand field="CTscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="g"/>
+</conditions>
+<trueSet>
+<set field="RGscore" arithmeticAsText="false">
+<add>
+<operand field="RGscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="h"/>
+</conditions>
+<trueSet>
+<set field="SBscore" arithmeticAsText="false">
+<add>
+<operand field="SBscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Case:DataEntry:Q2" value="i"/>
+</conditions>
+<trueSet>
+<set field="SAscore" arithmeticAsText="false">
+<add>
+<operand field="SAscore"/>
+<operand value="3"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="a"/>
+</conditions>
+<trueSet>
+<set field="JRscore" arithmeticAsText="false">
+<add>
+<operand field="JRscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="b"/>
+</conditions>
+<trueSet>
+<set field="JSscore" arithmeticAsText="false">
+<add>
+<operand field="JSscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="c"/>
+</conditions>
+<trueSet>
+<set field="ASscore" arithmeticAsText="false">
+<add>
+<operand field="ASscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="d"/>
+</conditions>
+<trueSet>
+<set field="AKscore" arithmeticAsText="false">
+<add>
+<operand field="AKscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="e"/>
+</conditions>
+<trueSet>
+<set field="DSscore" arithmeticAsText="false">
+<add>
+<operand field="DSscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="f"/>
+</conditions>
+<trueSet>
+<set field="CTscore" arithmeticAsText="false">
+<add>
+<operand field="CTscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="g"/>
+</conditions>
+<trueSet>
+<set field="RGscore" arithmeticAsText="false">
+<add>
+<operand field="RGscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="h"/>
+</conditions>
+<trueSet>
+<set field="SBscore" arithmeticAsText="false">
+<add>
+<operand field="SBscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q3" value="i"/>
+</conditions>
+<trueSet>
+<set field="SAscore" arithmeticAsText="false">
+<add>
+<operand field="SAscore"/>
+<operand value="2"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="a"/>
+</conditions>
+<trueSet>
+<set field="JRscore" arithmeticAsText="false">
+<add>
+<operand field="JRscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="b"/>
+</conditions>
+<trueSet>
+<set field="JSscore" arithmeticAsText="false">
+<add>
+<operand field="JSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="c"/>
+</conditions>
+<trueSet>
+<set field="ASscore" arithmeticAsText="false">
+<add>
+<operand field="ASscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="d"/>
+</conditions>
+<trueSet>
+<set field="AKscore" arithmeticAsText="false">
+<add>
+<operand field="AKscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="e"/>
+</conditions>
+<trueSet>
+<set field="DSscore" arithmeticAsText="false">
+<add>
+<operand field="DSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="f"/>
+</conditions>
+<trueSet>
+<set field="CTscore" arithmeticAsText="false">
+<add>
+<operand field="CTscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="g"/>
+</conditions>
+<trueSet>
+<set field="RGscore" arithmeticAsText="false">
+<add>
+<operand field="RGscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="h"/>
+</conditions>
+<trueSet>
+<set field="SBscore" arithmeticAsText="false">
+<add>
+<operand field="SBscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q4" value="i"/>
+</conditions>
+<trueSet>
+<set field="SAscore" arithmeticAsText="false">
+<add>
+<operand field="SAscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="a"/>
+</conditions>
+<trueSet>
+<set field="JRscore" arithmeticAsText="false">
+<add>
+<operand field="JRscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="b"/>
+</conditions>
+<trueSet>
+<set field="JSscore" arithmeticAsText="false">
+<add>
+<operand field="JSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="c"/>
+</conditions>
+<trueSet>
+<set field="ASscore" arithmeticAsText="false">
+<add>
+<operand field="ASscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="d"/>
+</conditions>
+<trueSet>
+<set field="AKscore" arithmeticAsText="false">
+<add>
+<operand field="AKscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="e"/>
+</conditions>
+<trueSet>
+<set field="DSscore" arithmeticAsText="false">
+<add>
+<operand field="DSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="f"/>
+</conditions>
+<trueSet>
+<set field="CTscore" arithmeticAsText="false">
+<add>
+<operand field="CTscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="g"/>
+</conditions>
+<trueSet>
+<set field="RGscore" arithmeticAsText="false">
+<add>
+<operand field="RGscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="h"/>
+</conditions>
+<trueSet>
+<set field="SBscore" arithmeticAsText="false">
+<add>
+<operand field="SBscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q5" value="i"/>
+</conditions>
+<trueSet>
+<set field="SAscore" arithmeticAsText="false">
+<add>
+<operand field="SAscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="a"/>
+</conditions>
+<trueSet>
+<set field="JRscore" arithmeticAsText="false">
+<add>
+<operand field="JRscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="b"/>
+</conditions>
+<trueSet>
+<set field="JSscore" arithmeticAsText="false">
+<add>
+<operand field="JSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="c"/>
+</conditions>
+<trueSet>
+<set field="ASscore" arithmeticAsText="false">
+<add>
+<operand field="ASscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="d"/>
+</conditions>
+<trueSet>
+<set field="AKscore" arithmeticAsText="false">
+<add>
+<operand field="AKscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="e"/>
+</conditions>
+<trueSet>
+<set field="DSscore" arithmeticAsText="false">
+<add>
+<operand field="DSscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="f"/>
+</conditions>
+<trueSet>
+<set field="CTscore" arithmeticAsText="false">
+<add>
+<operand field="CTscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="g"/>
+</conditions>
+<trueSet>
+<set field="RGscore" arithmeticAsText="false">
+<add>
+<operand field="RGscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="h"/>
+</conditions>
+<trueSet>
+<set field="SBscore" arithmeticAsText="false">
+<add>
+<operand field="SBscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Case:DataEntry:Q6" value="i"/>
+</conditions>
+<trueSet>
+<set field="SAscore" arithmeticAsText="false">
+<add>
+<operand field="SAscore"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<get recordList="Record List 2">
+<forms>
+<form name="Chooser"/>
+</forms>
+</get>
+<foreach record="Player" recordList="Record List 2">
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Chief Justice John G. Roberts, Jr."/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="JRscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Chief Justice John G. Roberts, Jr."/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="JRscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice John Paul Stevens"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="JSscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice John Paul Stevens"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="JSscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice Antonin Scalia"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="ASscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice Antonin Scalia"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="ASscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice Anthony M. Kennedy"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="AKscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice Anthony M. Kennedy"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="AKscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice David Hackett Souter"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="DSscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice David Hackett Souter"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="DSscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice Clarence Thomas"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="CTscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice Clarence Thomas"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="CTscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice Ruth Bader Ginsburg"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="RGscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice Ruth Bader Ginsburg"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="RGscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice Stephen G. Breyer"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="SBscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice Stephen G. Breyer"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="SBscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:Prime">
+<string value="Associate Justice Samuel Anthony Alito, Jr."/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:Score" arithmeticAsText="false">
+<string field="SAscore"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Player:Chooser:TB">
+<string value="Associate Justice Samuel Anthony Alito, Jr."/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Player:Chooser:TBscore" arithmeticAsText="false">
+<string field="SAscore"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+</process>
+<process name="Mover">
+<if>
+<conditions>
+<mcEquals field="DataEntry:Q7" value="a"/>
+</conditions>
+<trueSet>
+<show form="DataEntry"/>
+</trueSet>
+<falseSet>
+<show form="Calculate"/>
+</falseSet>
+</if>
+</process>
+<process name="FindEm">
+<get recordList="Record List 5">
+<forms>
+<form name="Chooser"/>
+</forms>
+<conditions>
+<equals field="Record List 5:Chooser:email">
+<string field="Iforget:email1"/>
+</equals>
+</conditions></get>
+<foreach record="User" recordList="Record List 5">
+<set field="UrAlias" arithmeticAsText="false">
+<string field="User:Chooser:alias"/>
+</set>
+<append document="AliasDoc" appendage="VAliasDoc"/>
+</foreach>
+<send>
+<to addressField="Iforget:email1"/>
+<cc addressLiteral="softalk@sbcglobal.net"/>
+<subject>Your One Justice For All alias</subject>
+<body document="AliasDoc" reset="true"/>
+</send>
+</process>
+<process name="ShowEm">
+<if>
+<conditions>
+<mcEquals field="Unknown Field" value="b"/>
+</conditions>
+<trueSet>
+<show document="Thanks" reset="false"/>
+</trueSet>
+</if>
+</process>
+<process name="Shorten">
+<get recordList="Record List 6">
+<forms>
+<form name="Chooser"/>
+</forms>
+</get>
+<foreach record="member" recordList="Record List 6">
+<send>
+<to addressField="member:Chooser:email"/>
+<cc addressLiteral="softalk@sbcglobal.net"/>
+<subject>1Justice4All scores and rule change</subject>
+<body document="RulesDoc" reset="true"/>
+</send>
+</foreach>
+</process>
+<process name="RankEm">
+<get recordList="Record List 7">
+<forms>
+<form name="Calculate"/>
+</forms>
+</get>
+<foreach record="Record7" recordList="Record List 7">
+<set field="JR" arithmeticAsText="false">
+<string value="Chief Justice John G. Roberts, Jr."/>
+</set>
+<set field="JRscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:JRscore"/>
+</set>
+<set field="JS" arithmeticAsText="false">
+<string value="Justice John Paul Stevens"/>
+</set>
+<set field="JSscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:JSscore"/>
+</set>
+<set field="AS" arithmeticAsText="false">
+<string value="Justice Antonin Scalia"/>
+</set>
+<set field="ASscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:ASscore"/>
+</set>
+<set field="AK" arithmeticAsText="false">
+<string value="Justice Anthony M. Kennedy"/>
+</set>
+<set field="AKscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:AKscore"/>
+</set>
+<set field="DS" arithmeticAsText="false">
+<string value="Justice David Hackett Souter"/>
+</set>
+<set field="DSscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:DSscore"/>
+</set>
+<set field="CT" arithmeticAsText="false">
+<string value="Justice Clarence Thomas"/>
+</set>
+<set field="CTscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:CTscore"/>
+</set>
+<set field="RG" arithmeticAsText="false">
+<string value="Justice Ruth Bader Ginsburg"/>
+</set>
+<set field="RGscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:RGscore"/>
+</set>
+<set field="SB" arithmeticAsText="false">
+<string value="Justice Stephen G. Breyer"/>
+</set>
+<set field="SBscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:SBscore"/>
+</set>
+<set field="SA" arithmeticAsText="false">
+<string value="Justice Samuel Anthony Alito, Jr."/>
+</set>
+<set field="SAscore1" arithmeticAsText="false">
+<string field="Record7:Calculate:SAscore"/>
+</set>
+</foreach>
+<append document="JusticeSkor" appendage="VJusticeSkor"/>
+<show document="JusticeSkor" reset="true"/>
+</process>
+<process name="Process 8">
+</process>
+</processes>
+<documents>
+<document name="UrPiks">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000"><b><field name="Chooser:alias"/></b></font><font face="Arial" size="240" color="000000">, You are in </font><font face="Arial" size="240" color="000000"><b><i><field name="League"/></i></b></font><font face="Arial" size="240" color="000000"> League. </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions>Your judicial representative is:</paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000"><field name="Prime"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Your tiebreaker is:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000"><field name="TB"/></font></paragraph>
+</xmlData>
+</document>
+<document name="UserNotes">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">This is a straightforward fantasy-type project with the scoring explained in a text block in the Chooser form.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">The Court often announces several decisions in a sitting and the DataEntry form allows the designer to input the results of each decision discretely.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Once all the day's decisions have been entered, the Calculate form must be run to update the score.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">The various League scores are maintained manually in the Leaderboard form in tables contained in text blocks, until I can figure out how to sort by player and league.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Leagues consist of 9 players each. The designer must keep an eye out for the number of participants, because the League names and numerical boundaries are set in an IF instruction in the NameEm process. The designer needs to stay a comfortable distance ahead of the sign-up rate.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">The limit of 9 players to a league may still result in duplicate entries. There are only 72 discrete possibilities for a player, so duplicates are not only possible, but expected. Separating the players into leagues and limiting the leagues to 9 players reduces the chance of duplicate entries in a given league.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="AliasDoc">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Hi,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000">Thanks for playing One Justice For All. Your alias is:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="VAliasDoc">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000"><b><field name="UrAlias"/></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Barristers">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="VBarristers">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="Score"/></font><sp/><font face="Arial" size="200" color="000000"><field name="UrAlias"/></font><sp/><font face="Arial" size="200" color="000000"><field name="TBscore"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Thanks">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions>Thank you for playing.</paragraph>
+</xmlData>
+</document>
+<document name="RulesDoc">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Hi,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Thanks for playing 1Justice4All. The first scores in are. To check the Leaderboard, go to the front page of the contest at dragonstwo.com and refresh your browser to reflect changes in URLs.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">We are changing the duration of this contest to a total of 4 Supreme Court sittings -- a sitting for this purpose constitutes any day in which the Court announces decisions. Previously, the contest had been planned to run through the entire Supreme Court term.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Also note that all future contests have been cancelled.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">The dragonstwo team</font></paragraph>
+</xmlData>
+</document>
+<document name="VRulesDoc">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="JusticeSkor">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Shown are the points earned by each Justice since Jan. 1 (not in sorted order):</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="VJusticeSkor">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Justice</b></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Points</b></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="JR"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="JRscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="JS"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="JSscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="AS"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="ASscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="AK"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="AKscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="DS"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="DSscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="CT"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="CTscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="RG"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="RGscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="SB"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="SBscore1"/></font></division></cell></row><row><cell width="3360"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="SA"/></font></division></cell><cell width="2400"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="SAscore1"/></font></division></cell></row></table>
+</xmlData>
+</document>
+</documents>
+</project>

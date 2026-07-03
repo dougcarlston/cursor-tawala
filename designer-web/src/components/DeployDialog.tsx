@@ -17,7 +17,10 @@ export function DeployDialog() {
         </p>
         {lastDeploy.startpoints && lastDeploy.startpoints.length > 0 ? (
           <>
-            <p className="hint">Open a start point to test the live form:</p>
+            <p className="hint">
+              Only forms marked <strong>Starting Point</strong> in form Properties are listed
+              here.
+            </p>
             <ul className="deploy-urls">
               {lastDeploy.startpoints.map((sp) => (
                 <li key={sp.form}>

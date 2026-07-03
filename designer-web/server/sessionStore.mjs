@@ -61,6 +61,7 @@ function seedDefaultRecords(project, session) {
         Season: "2026",
         IndividualSignupFee: "75",
         ChargeDescription: "Summer league registration",
+        "UsingDivisions?": "Yes",
       },
     ];
   }
@@ -85,6 +86,8 @@ export function getOrCreateSession(uniqueId, project) {
   if (!session) {
     session = createSession(project);
     saveSession(uniqueId, session);
+  } else {
+    seedDefaultRecords(project, session);
   }
   scrubRegistrationBlankCollisions(session);
   return session;

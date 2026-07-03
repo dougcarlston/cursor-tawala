@@ -1,0 +1,1252 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Generic Communicator" themePath="orangeswirl" format="1.12" designerBuild="221">
+<pageHeader></pageHeader><styles fibItemStyle="leftAlignLabelsJustified" /><forms>
+<form name="Start" startPoint="true" themePath="orangeswirl" process="Post-Start">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Communicator</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This utility allows you to:</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- create a message to send out to your entire contact list, </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- add an optional multiple choice question to that communication, </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- review the responses your receive to that question.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>The list management tools make it possible to add, edit, delete or audit email records for validity.</font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Review and send current communication to list</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Review responses from current communication</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Compose new communication to send to list </font><font face="Arial" size="200" color="000000"><b><i>(Warning:</i></b></font><font face="Arial" size="200" color="000000"><i> Deletes  prior message and response data)</i></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">List Management Tools </font><font face="Arial" size="200" color="000000"><i>(View, Add, Edit, Delete and Audit records)</i></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Quit</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="DataBase" startPoint="false" themePath="orangeswirl" process="Post-DataBase" preProcess="Pre-Database">
+<items>
+<fib label="Q1" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Add Name to List:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Name: </font><blank label="a" length="20" required="false"/><sp/><font face="Arial" size="200" color="000000"><i>(first) </i></font><blank label="b" length="20" required="false"/><sp/><font face="Arial" size="200" color="000000"><i>(last)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email: </font><blank label="c" length="20" required="false"/></paragraph></fib>
+<field name="FirstName"/>
+<field name="LastName"/>
+<field name="Email Address"/>
+<field name="Response"/>
+<field name="BadEmail?"/>
+</items>
+</form>
+<form name="Composer" startPoint="false" themePath="orangeswirl" process="Post-Composer">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Composer</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Compose or review your message below, then press the Submit button.  You will still have an opportunity after that to abandon or modify the message before it is sent.</font></paragraph></text>
+<fib label="Q1" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>From:</b></font><sp/><font face="Arial" size="200" color="000000"><i>(Name)</i></font><sp/><blank label="a" length="27" required="false" alternateLabel="FromPerson"/></paragraph></fib>
+<fib label="Q2" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>From:</b></font><sp/><font face="Arial" size="200" color="000000"><i>(Email)</i></font><sp/><blank label="a" length="27" required="false" alternateLabel="FromEmail"/></paragraph></fib>
+<fib label="Q3" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Subject:</b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="27" required="false" alternateLabel="Subject"/></paragraph></fib>
+<fib label="Q4" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Body of Message:</b></font><sp/><blank label="a" length="61" height="10" required="false" alternateLabel="Body"/></paragraph></fib>
+<fib label="Q5" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Closing:</b></font><font face="Arial" size="200" color="000000"> (</font><font face="Arial" size="200" color="000000"><i>e.g. Yours truly, Jack</i></font><font face="Arial" size="200" color="000000">) </font><blank label="a" length="61" height="5" required="false" alternateLabel="Closing"/></paragraph></fib>
+<break/>
+<text label="T3" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Your message will look like this:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2775"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font>&lt;FirstName&gt;</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font color="000000"><field name="Composer:FromPerson"/></font><font> (</font><font><field name="Composer:FromEmail"/></font><font>)</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:Subject"/></font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Body"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Closing"/></font></division></cell></row><row><cell width="10800"></cell></row></table></text>
+<mc label="Q6" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send this message like this, without a question attached</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add multiple choice question to the message </font><font face="Arial" size="200" color="000000"><i>(or include current one)</i></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit this message further</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return to Main Menu </font><font face="Arial" size="200" color="000000"><b>without</b></font><font face="Arial" size="200" color="000000"> sending this message for the present</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Composer:Q6" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+</skipInstructions>
+<field name="QuestionAdded?"/>
+<field name="Sent?"/>
+</items>
+</form>
+<form name="AddQuestion" startPoint="false" themePath="orangeswirl" process="Post-AddQuestion" preProcess="Pre-AddQuestion">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Multiple Choice Question</font></paragraph></text>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please enter Question here: </font><blank label="a" length="55" required="false" alternateLabel="Question"/></paragraph></fib>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Response Choices: </font><font face="Arial" size="200" color="000000"><i>(leave blank any you don't need)</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="A"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="b" length="20" required="false" alternateLabel="B"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="c" length="20" required="false" alternateLabel="C"/></paragraph></fib>
+<skipInstructions>
+<if>
+<conditions>
+<or>
+<isBlank field="AddQuestion:Question" />
+<isBlank field="AddQuestion:A" />
+</or>
+</conditions>
+<trueSet>
+<skip to="Q3"/>
+</trueSet>
+</if>
+</skipInstructions>
+<break/>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Your message will now look like this:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2775"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font>&lt;FirstName&gt;</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:FromPerson"/></font><font> (</font><font><field name="Composer:FromEmail"/></font><font>)</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:Subject"/></font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Body"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="AddQuestion:Question"/></font></division></cell></row><row><cell width="10800"><division indent="720" align="left"><font><field name="AddQuestion:A"/></font></division><division indent="720" align="left"><font><field name="AddQuestion:B"/></font></division><division indent="720" align="left"><font><field name="AddQuestion:C"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Closing"/></font></division></cell></row></table></text>
+<mc label="Q3" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send this message as is</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit the message further</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit the question further</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return to Main Menu </font><font face="Arial" size="200" color="000000"><b>without</b></font><font face="Arial" size="200" color="000000"> sending this message for the present</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcIsBlank field="AddQuestion:Q3" />
+</conditions>
+<trueSet>
+<skip to="T2"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="GetResponse1" startPoint="false" themePath="orangeswirl" process="Post-Response1">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="SendEmail" startPoint="false" themePath="orangeswirl" process="Post-SendEmail">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="GetResponse2" startPoint="false" themePath="orangeswirl" process="Post-Response2">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="GetResponse3" startPoint="false" themePath="orangeswirl" process="Post-Response3">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Report" startPoint="false" themePath="orangeswirl" process="Post-Report">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><b>The last question and the count of responses to each answer was:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="a"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsA"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="b"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsB"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="c"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsC"/></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>See list of individuals who answered:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="AnsA"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="AnsB"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="AnsC"/></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Report:Q1" value="d"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Report:Q1" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T5"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Report:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T4"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="a"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsA"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><number-of-columns>2</number-of-columns><column><header><string value="Name"/>
+</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="a"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T4" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="b"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><font><field name="AnsB"/></font><sp/></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><number-of-columns>2</number-of-columns><column><header><string value="Name"/>
+</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="b"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T5" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="c"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><font><field name="AnsC"/></font><sp/></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><number-of-columns>2</number-of-columns><column><header><string value="Name"/>
+</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="c"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+</items>
+</form>
+<form name="Utilities" startPoint="false" themePath="orangeswirl" process="Post-Utilities">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">List Management</font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View the list</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add a record to the list</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit/delete record</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Audit emails for validity</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return to Main Menu</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="c"/>
+</conditions>
+<trueSet>
+<skip to="Q2"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Utilities:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>You may sort the list by clicking on any heading.</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><number-of-columns>3</number-of-columns><column><header><string value="First"/>
+</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header><string value="Last"/>
+</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header><string value="Email"/>
+</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="T1"/>
+</skipInstructions>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter part or all of the email of the record you want to edit or delete: </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="a" length="20" required="false" alternateLabel="TargetEmail"/></paragraph></fib>
+</items>
+</form>
+<form name="MessageUnsent" startPoint="false" themePath="orangeswirl" process="Post-MessageUnsent">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Your previous message has not yet been sent.</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Here is what it looks like:</i></font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2685"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font>&lt;Receipient&gt;</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="FromN"/></font><font> (</font><font><field name="FromE"/></font><font>)</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="Sub"/></font></division></cell></row><row><cell width="2685"></cell><cell width="272"></cell><cell width="7843"></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyStart"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Query"/></font></division><division indent="720" align="left"><font><field name="AnsA"/></font></division><division indent="720" align="left"><font><field name="AnsB"/></font></division><division indent="720" align="left"><font><field name="AnsC"/></font></division></cell></row><row><cell width="10800"></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyClose"/></font></division></cell></row></table></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure that you want to abandon this effort and start over?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes, throw this email message away</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, I want to edit or send this email</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Just return me to the Main Menu please</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="MessageAlreadySent" startPoint="false" themePath="orangeswirl" process="Post-MessageAlreadySent">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Your previous message has already been sent out at least once.</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Here is what it looks like.</i></font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2685"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font face="Arial" size="200" color="000000">&lt;Recipient&gt;</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="FromN"/></font><font> (</font><font><field name="FromE"/></font><font>)</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="Sub"/></font></division></cell></row><row><cell width="2685"></cell><cell width="272"></cell><cell width="7843"></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyStart"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Query"/></font></division><division indent="720" align="left"><font><field name="AnsA"/></font></division><division indent="720" align="left"><font><field name="AnsB"/></font></division><division indent="720" align="left"><font><field name="AnsC"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyClose"/></font></division></cell></row></table></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure that you want to send or edit it again? </font><font face="Arial" size="200" color="000000"><i>(Responses will be added to previous ones in reports)</i></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, that wasn't my intent.  Please return to Main Menu.</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Thanks" startPoint="false" themePath="orangeswirl" process="Post-Thanks">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Thank you!</font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Here is the information we have for you in our records.  Would you please help us keep it up to date?</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Name: </b></font><font><field name="Recipient"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Email: </b></font><font><field name="Email"/></font></paragraph></text>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To change or add information just fill in the appropriate field and press Submit </font><font><i>(leave blank to keep as is)</i></font></paragraph></text>
+<fib label="Q1" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Name:</b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="NewFirst"/><sp/><font face="Arial" size="200" color="000000"><i>(first) </i></font><blank label="b" length="20" required="false" alternateLabel="NewLast"/><sp/><font face="Arial" size="200" color="000000"><i>(last)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email: </b></font><blank label="c" length="20" required="false" alternateLabel="NewEmail"/></paragraph></fib>
+</items>
+</form>
+<form name="EditDelete" startPoint="false" themePath="orangeswirl" process="Post-EditDelete">
+<items>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark record that you wish to edit or delete:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:DataBase:FirstName"/>
+<string value=" "/>
+<field name="Record:DataBase:LastName"/>
+<string value=" ("/>
+<field name="Record:DataBase:Email Address"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:DataBase:Email Address"/>
+</value-expression><sort-expression><field name="Record:DataBase:LastName"/>
+</sort-expression><record-selector><form name="DataBase" /><conditions>
+<contains field="Record:DataBase:Email Address">
+<string field="Target"/>
+</contains>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+<mc label="Q2" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b><i>Edit this record</i></b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b><i>Delete this record</i></b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Audit1" startPoint="false" themePath="orangeswirl" process="Post-Audit1">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Audit Emails</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This utility checks the entire contact list for valid email addresses.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>If it finds a record with more than one valid email or with none, it will give you a chance to edit it so that it will work properly with the Communicator.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>You will have the opportunity to edit, delete or pass each record that fails the audit test.</font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Proceed</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Audit2" startPoint="false" themePath="orangeswirl" process="Post-Audit2" preProcess="Pre-Audit2">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Audit Emails</font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Possible bad record:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Name:</b></font><sp/><sp/><font><field name="Recipient"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Email:   </b></font><font><field name="Email"/></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit this record</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Delete this record</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark this email as valid</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Break off Audit for now, leaving this record unchanged</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T4"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Audit2:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Record to edit:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Name:</b></font><sp/><sp/><font><field name="Recipient"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Email:</b></font><sp/><sp/><font><field name="Email"/></font></paragraph></text>
+<fib label="Q2" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">To change or add information, just fill in the appropriate field and press Submit </font><font face="Arial" size="200" color="000000"><i>(leave a field blank to keep as is)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Name:</b></font><font face="Arial" size="200" color="000000">  </font><blank label="a" length="20" required="false" alternateLabel="ChangeName"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email:</b></font><font face="Arial" size="200" color="000000">  </font><blank label="b" length="20" required="false" alternateLabel="ChangeEmail"/></paragraph></fib>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T4" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Record to delete:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Name:</b></font><sp/><sp/><font><field name="Recipient"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Email:</b></font><sp/><sp/><font><field name="Email"/></font></paragraph></text>
+<mc label="Q3" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, leave as is</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="OptOut" startPoint="false" themePath="orangeswirl" process="Post-OptOut">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-Start">
+<set field="PrevMessage" arithmeticAsText="false">
+<string value="No"/>
+</set>
+<set field="PrevMsgSent" arithmeticAsText="false">
+<string value="No"/>
+</set>
+<get recordList="Record List 1">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="Msg" recordList="Record List 1">
+<set field="PrevMessage" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<if>
+<conditions>
+<equals field="Msg:Composer:Sent?">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="PrevMsgSent" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<set field="FromN" arithmeticAsText="false">
+<string field="Msg:Composer:FromPerson"/>
+</set>
+<set field="FromE" arithmeticAsText="false">
+<string field="Msg:Composer:FromEmail"/>
+</set>
+<set field="Sub" arithmeticAsText="false">
+<string field="Msg:Composer:Subject"/>
+</set>
+<set field="BodyStart" arithmeticAsText="false">
+<string field="Msg:Composer:Body"/>
+</set>
+<set field="BodyClose" arithmeticAsText="false">
+<string field="Msg:Composer:Closing"/>
+</set>
+<if>
+<conditions>
+<equals field="Msg:Composer:QuestionAdded?">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<get recordList="Record List 3">
+<forms>
+<form name="AddQuestion"/>
+</forms>
+</get>
+<foreach record="Q" recordList="Record List 3">
+<set field="Query" arithmeticAsText="false">
+<string field="Q:AddQuestion:Question"/>
+</set>
+<set field="AnsA" arithmeticAsText="false">
+<string field="Q:AddQuestion:A"/>
+</set>
+<set field="AnsB" arithmeticAsText="false">
+<string field="Q:AddQuestion:B"/>
+</set>
+<set field="AnsC" arithmeticAsText="false">
+<string field="Q:AddQuestion:C"/>
+</set>
+</foreach>
+</trueSet>
+<falseSet>
+<set field="Query" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="AnsA" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="AnsB" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="AnsC" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="a"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="PrevMessage">
+<string value="No"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="No prior communication found."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<equals field="PrevMsgSent">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="MessageAlreadySent"/>
+</trueSet>
+<falseSet>
+<edit form="Composer" submit="modify">
+</edit>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="b"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Query" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="There was no question in the last email sent out."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+</if>
+<show form="Report"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="c"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<and>
+<equals field="PrevMsgSent">
+<string value="No"/>
+</equals>
+<equals field="PrevMessage">
+<string value="Yes"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<show form="MessageUnsent"/>
+</trueSet>
+</if>
+<delete><form name="Composer"/></delete>
+<delete><form name="AddQuestion"/></delete>
+<get recordList="Record List 4">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="SuchRecord" recordList="Record List 4">
+<set field="SuchRecord:DataBase:Response" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</foreach>
+<show form="Composer"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="d"/>
+</conditions>
+<trueSet>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Start:Q1" value="e"/>
+</conditions>
+<trueSet>
+<show form="Start"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-Composer">
+<if>
+<conditions>
+<mcEquals field="Composer:Q6" value="a"/>
+</conditions>
+<trueSet>
+<comment>Send as is</comment>
+<set field="Composer:QuestionAdded?" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<show form="SendEmail"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Composer:Q6" value="b"/>
+</conditions>
+<trueSet>
+<comment>Add a question</comment>
+<set field="Composer:QuestionAdded?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<show form="AddQuestion"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Composer:Q6" value="d"/>
+</conditions>
+<trueSet>
+<comment>Abandon</comment>
+<show form="Start"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-AddQuestion">
+<get recordList="Record List 11">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="Composition" recordList="Record List 11">
+<set field="Composition:Composer:QuestionAdded?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="a"/>
+</conditions>
+<trueSet>
+<show form="SendEmail"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="b"/>
+</conditions>
+<trueSet>
+<edit form="Composer" submit="modify">
+</edit>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="d"/>
+</conditions>
+<trueSet>
+<show form="Start"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-SendEmail">
+<set field="BodyStart" arithmeticAsText="false">
+<string field="Composer:Body"/>
+</set>
+<set field="BodyClose" arithmeticAsText="false">
+<string field="Composer:Closing"/>
+</set>
+<set field="FromN" arithmeticAsText="false">
+<string field="Composer:FromPerson"/>
+</set>
+<set field="FromE" arithmeticAsText="false">
+<string field="Composer:FromEmail"/>
+</set>
+<set field="Sub" arithmeticAsText="false">
+<string field="Composer:Subject"/>
+</set>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 2">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="Email" recordList="Record List 2">
+<set field="FirstN" arithmeticAsText="false">
+<string field="Email:DataBase:FirstName"/>
+</set>
+<set field="Recipient" arithmeticAsText="false">
+<string field="Email:DataBase:Email Address"/>
+</set>
+<if>
+<conditions>
+<equals field="Composer:QuestionAdded?">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Query" arithmeticAsText="false">
+<string field="AddQuestion:Question"/>
+</set>
+<set field="AnsA" arithmeticAsText="false">
+<string field="AddQuestion:A"/>
+</set>
+<set field="AnsB" arithmeticAsText="false">
+<string field="AddQuestion:B"/>
+</set>
+<set field="AnsC" arithmeticAsText="false">
+<string field="AddQuestion:C"/>
+</set>
+<append document="Letter" appendage="Questionnaire"/>
+</trueSet>
+</if>
+<append document="Letter" appendage="LetterClose"/>
+<send>
+<to addressField="Recipient"/>
+<from addressField="FromE" aliasField="FromN"/>
+<subject><field name="Sub"/></subject>
+<body document="Letter" reset="true" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<get recordList="Record List 10">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="SentStatus" recordList="Record List 10">
+<set field="SentStatus:Composer:Sent?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string field="Count"/>
+<string value=" email messages sent out."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</process>
+<process name="Post-Response1">
+<set field="Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 5:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item1" recordList="Record List 5">
+<set field="Recipient" arithmeticAsText="false">
+<string field="Item1:DataBase:FirstName"/>
+<string value=" "/>
+<string field="Item1:DataBase:LastName"/>
+</set>
+<set field="Item1:DataBase:Response" arithmeticAsText="false">
+<string value="a"/>
+</set>
+</foreach>
+<show form="Thanks"/>
+</process>
+<process name="Post-Response2">
+<set field="Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="Record List 6">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 6:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item2" recordList="Record List 6">
+<set field="Recipient" arithmeticAsText="false">
+<string field="Item2:DataBase:FirstName"/>
+<string value=" "/>
+<string field="Item2:DataBase:LastName"/>
+</set>
+<set field="Item2:DataBase:Response" arithmeticAsText="false">
+<string value="b"/>
+</set>
+</foreach>
+<show form="Thanks"/>
+</process>
+<process name="Post-Response3">
+<set field="Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="Record List 7">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 7:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item3" recordList="Record List 7">
+<set field="Recipient" arithmeticAsText="false">
+<string field="Item3:DataBase:FirstName"/>
+<string value=" "/>
+<string field="Item3:DataBase:LastName"/>
+</set>
+<set field="Item3:DataBase:Response" arithmeticAsText="false">
+<string value="c"/>
+</set>
+</foreach>
+<show form="Thanks"/>
+</process>
+<process name="Post-MessageUnsent">
+<if>
+<conditions>
+<mcEquals field="MessageUnsent:Q1" value="a"/>
+</conditions>
+<trueSet>
+<delete><form name="Composer"/></delete>
+<delete><form name="AddQuestion"/></delete>
+<get recordList="Record List 8">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="Response" recordList="Record List 8">
+<set field="Response:DataBase:Response" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</foreach>
+<show form="Composer"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="MessageUnsent:Q1" value="b"/>
+</conditions>
+<trueSet>
+<edit form="Composer" submit="modify">
+</edit>
+</trueSet>
+</if>
+<show form="Start"/>
+</process>
+<process name="Post-MessageAlreadySent">
+<if>
+<conditions>
+<mcEquals field="MessageAlreadySent:Q1" value="a"/>
+</conditions>
+<trueSet>
+<edit form="Composer" submit="modify">
+</edit>
+</trueSet>
+</if>
+<show form="Start"/>
+</process>
+<process name="Post-Thanks">
+<if>
+<conditions>
+<or>
+<isNotBlank field="Thanks:NewFirst" />
+<isNotBlank field="Thanks:NewLast" />
+</or>
+</conditions>
+<trueSet>
+<get recordList="Record List 9">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 9:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="SuchPerson" recordList="Record List 9">
+<if>
+<conditions>
+<isNotBlank field="Thanks:NewFirst" />
+</conditions>
+<trueSet>
+<set field="SuchPerson:DataBase:FirstName" arithmeticAsText="false">
+<string field="Thanks:NewFirst"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Thanks:NewLast" />
+</conditions>
+<trueSet>
+<set field="SuchPerson:DataBase:LastName" arithmeticAsText="false">
+<string field="Thanks:NewLast"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Thanks:NewEmail" />
+</conditions>
+<trueSet>
+<set field="SuchPerson:DataBase:Email Address" arithmeticAsText="false">
+<string field="Thanks:NewEmail"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+</trueSet>
+</if>
+</process>
+<process name="Post-Report">
+<show form="Report"/>
+</process>
+<process name="Post-Utilities">
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="b"/>
+</conditions>
+<trueSet>
+<comment>Add record to list</comment>
+<show form="DataBase"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="c"/>
+</conditions>
+<trueSet>
+<comment>Edit/delete record</comment>
+<set field="Target" arithmeticAsText="false">
+<string field="Utilities:TargetEmail"/>
+</set>
+<show form="EditDelete"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="d"/>
+</conditions>
+<trueSet>
+<comment>Audit Emails</comment>
+<show form="Audit1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="e"/>
+</conditions>
+<trueSet>
+<show form="Start"/>
+</trueSet>
+</if>
+<show form="Utilities"/>
+</process>
+<process name="Pre-AddQuestion">
+<edit form="AddQuestion" submit="modify">
+</edit>
+</process>
+<process name="Post-DataBase">
+<set field="DataBase:FirstName" arithmeticAsText="false">
+<string field="DataBase:Q1:a"/>
+</set>
+<set field="DataBase:LastName" arithmeticAsText="false">
+<string field="DataBase:Q1:b"/>
+</set>
+<set field="DataBase:Email Address" arithmeticAsText="false">
+<string field="DataBase:Q1:c"/>
+</set>
+<if>
+<conditions>
+<doesNotEqual field="Edit">
+<string value="Yes"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string field="DataBase:FirstName"/>
+<string value=" "/>
+<string field="DataBase:LastName"/>
+<string value=" added to contact list."/>
+</set>
+</trueSet>
+<falseSet>
+<comment>If not unique, treat this as an edit command</comment>
+<set field="Edit" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Message" arithmeticAsText="false">
+<string field="DataBase:Q1:a"/>
+<string value=" "/>
+<string field="DataBase:Q1:b"/>
+<string value=" edited."/>
+</set>
+</falseSet>
+</if>
+<show document="Message" reset="false"/>
+<show form="Utilities"/>
+</process>
+<process name="Post-EditDelete">
+<if>
+<conditions>
+<mcEquals field="EditDelete:Q2" value="b"/>
+</conditions>
+<trueSet>
+<set field="RecordID" arithmeticAsText="false">
+<string field="EditDelete:Q1"/>
+</set>
+<delete><form name="DataBase"/><conditions>
+<equals field="Record:DataBase:Email Address">
+<string field="EditDelete:Q1"/>
+</equals>
+</conditions></delete>
+<set field="Message" arithmeticAsText="false">
+<string field="EditDelete:Q1"/>
+<string value=" address deleted."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Utilities"/>
+</trueSet>
+<falseSet>
+<set field="Edit" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<edit form="DataBase" submit="modify">
+<conditions>
+<equals field="Record:DataBase:Email Address">
+<string field="EditDelete:Q1"/>
+</equals>
+</conditions>
+</edit>
+</falseSet>
+</if>
+</process>
+<process name="Post-Audit1">
+<if>
+<conditions>
+<mcDoesNotEqual field="Audit1:Q1" value="a"/>
+</conditions>
+<trueSet>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<get recordList="Record List 16">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="AuditableRecord" recordList="Record List 16">
+<if>
+<conditions>
+<doesNotEqual field="AuditableRecord:DataBase:BadEmail?">
+<string value="Valid"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<or>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value="@"/>
+</doesNotContain>
+<or>
+<contains field="AuditableRecord:DataBase:Email Address">
+<string value=" "/>
+</contains>
+<or>
+<contains field="AuditableRecord:DataBase:Email Address">
+<string value=","/>
+</contains>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value="."/>
+</doesNotContain>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="AuditableRecord:DataBase:BadEmail?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".com"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".net"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".org"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".mil"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".gov"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".biz"/>
+</doesNotContain>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".us"/>
+</doesNotContain>
+</and>
+</and>
+</and>
+</and>
+</and>
+</and>
+</conditions>
+<trueSet>
+<set field="AuditableRecord:DataBase:BadEmail?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+</trueSet>
+</if>
+</foreach>
+<show form="Audit2"/>
+</process>
+<process name="Pre-Audit2">
+<set field="Done" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<get recordList="Record List 17">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Record List 17:DataBase:BadEmail?">
+<string value="Yes"/>
+</equals>
+</conditions></get>
+<foreach record="SuspectOne" recordList="Record List 17">
+<set field="Recipient" arithmeticAsText="false">
+<string field="SuspectOne:DataBase:FirstName"/>
+</set>
+<set field="Email" arithmeticAsText="false">
+<string field="SuspectOne:DataBase:Email Address"/>
+</set>
+<set field="Done" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<equals field="Done">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="All records have been checked."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Utilities"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-Audit2">
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="d"/>
+</conditions>
+<trueSet>
+<comment>Break Off</comment>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Audit2:Q1" value="b"/>
+<mcEquals field="Audit2:Q3" value="a"/>
+</and>
+</conditions>
+<trueSet>
+<comment>Delete</comment>
+<delete><form name="DataBase"/><conditions>
+<equals field="Email">
+<string field="Record:DataBase:Email Address"/>
+</equals>
+</conditions></delete>
+</trueSet>
+</if>
+<get recordList="Record List 18">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 18:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="AuditRepair" recordList="Record List 18">
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="a"/>
+</conditions>
+<trueSet>
+<comment>Edit</comment>
+<if>
+<conditions>
+<isNotBlank field="Audit2:ChangeName" />
+</conditions>
+<trueSet>
+<set field="AuditRepair:DataBase:Name" arithmeticAsText="false">
+<string field="Audit2:ChangeName"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Audit2:ChangeEmail" />
+</conditions>
+<trueSet>
+<set field="AuditRepair:DataBase:Email Address" arithmeticAsText="false">
+<string field="Audit2:ChangeEmail"/>
+</set>
+</trueSet>
+</if>
+<set field="AuditRepair:DataBase:BadEmail?" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="c"/>
+</conditions>
+<trueSet>
+<comment>Mark Record OK</comment>
+<set field="AuditRepair:DataBase:BadEmail?" arithmeticAsText="false">
+<string value="Valid"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show form="Audit2"/>
+</process>
+<process name="Post-OptOut">
+<delete><form name="DataBase"/><conditions>
+<equals field="_InviteeID">
+<string field="Record:DataBase:Email Address"/>
+</equals>
+</conditions></delete>
+<get recordList="Record List 19">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="Record" recordList="Record List 19">
+<set field="FromN" arithmeticAsText="false">
+<string field="Record:Composer:FromPerson"/>
+</set>
+</foreach>
+<show document="OptOut" reset="false"/>
+</process>
+<process name="Pre-Database">
+<if>
+<conditions>
+<equals field="Edit">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="DataBase:Q1:a" arithmeticAsText="false">
+<string field="DataBase:FirstName"/>
+</set>
+<set field="DataBase:Q1:b" arithmeticAsText="false">
+<string field="DataBase:LastName"/>
+</set>
+<set field="DataBase:Q1:c" arithmeticAsText="false">
+<string field="DataBase:Email Address"/>
+</set>
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Letter">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Dear </font><font><field name="FirstN"/></font><font>,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="BodyStart"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Questionnaire">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000080"><u><invitation form="GetResponse1" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>[   ]</invitation></u></font><sp/><font color="000000"><field name="AnsA"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000080"><u><invitation form="GetResponse2" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>[   ]</invitation></u></font><sp/><font color="000000"><field name="AnsB"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000080"><u><invitation form="GetResponse3" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>[   ]</invitation></u></font><sp/><font color="000000"><field name="AnsC"/></font><sp/></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="AE0000"><i>(Please click in the box before the response you wish to record)</i></font></paragraph>
+</xmlData>
+</document>
+<document name="Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280" color="A80000"><b><i><field name="Message"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="LetterClose">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="BodyClose"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>If you do not want to continue to receive these kinds of communications from me in the future, </i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>please </i></font><font color="000080"><i><u><invitation form="OptOut" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>click here</invitation></u></i></font><font><i> and I will remove your name from this list.</i></font></paragraph>
+</xmlData>
+</document>
+<document name="OptOut">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Thanks.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>I've taken you off my mailing list.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="FromN"/></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

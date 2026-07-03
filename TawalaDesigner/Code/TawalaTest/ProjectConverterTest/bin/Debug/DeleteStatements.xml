@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="stevebockman" password="tawalame" />
+<project name="DeleteStatements" format="1.3">
+<forms>
+<form name="Form 1" process="Process 1">
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<delete>
+<form name="Form 1"/>
+</delete>
+</process>
+</processes>
+</project>
+</request>

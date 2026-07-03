@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="ProjectXmlDocumentEmpty296" xml:space="preserve">
+    <value>&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;project name="Untitled" themePath="default" format="1.4"&gt;
+&lt;documents&gt;
+&lt;document name="Document 1"&gt;
+&lt;xmlData&gt;
+&lt;paragraph indent="0" align="left"&gt;&lt;tabPositions&gt;&lt;tabStop position="720"/&gt;&lt;/tabPositions&gt;&lt;/paragraph&gt;
+&lt;/xmlData&gt;
+&lt;/document&gt;
+&lt;/documents&gt;
+&lt;/project&gt;</value>
+  </data>
+  <data name="ProjectXmlDocumentWithFibField296" xml:space="preserve">
+    <value>&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;project name="Untitled" themePath="default" format="1.4"&gt;
+&lt;forms&gt;
+&lt;form name="Form 1" startPoint="true" themePath="default"&gt;
+&lt;items&gt;
+&lt;fib label="Q1"&gt;&lt;paragraph indent="0" align="left"&gt;&lt;tabPositions&gt;&lt;tabStop position="144"/&gt;&lt;/tabPositions&gt;&lt;font face="Arial" size="200" color="000000"&gt;[Replace this with your question. Underscores create blanks.] &lt;/font&gt;&lt;blank label="a" length="10" required="false"/&gt;&lt;/paragraph&gt;&lt;/fib&gt;
+&lt;/items&gt;
+&lt;/form&gt;
+&lt;/forms&gt;
+&lt;documents&gt;
+&lt;document name="Document 1"&gt;
+&lt;xmlData&gt;
+&lt;paragraph indent="0" align="left"&gt;&lt;tabPositions&gt;&lt;tabStop position="144"/&gt;&lt;/tabPositions&gt;&lt;font face="Arial" size="200" color="000000"&gt;&lt;field name="Form 1:Q1:a"/&gt;&lt;/font&gt;&lt;/paragraph&gt;
+&lt;/xmlData&gt;
+&lt;/document&gt;
+&lt;/documents&gt;
+&lt;/project&gt;</value>
+  </data>
+  <data name="ProjectXmlDocumentWithVariableField296" xml:space="preserve">
+    <value>&lt;?xml version="1.0" encoding="utf-8" ?&gt;
+&lt;project name="Untitled" themePath="default" format="1.4"&gt;
+&lt;processes&gt;
+&lt;process name="Process 1"&gt;
+&lt;set field="MyVariable" arithmeticAsText="false"&gt;
+&lt;string value="1"/&gt;
+&lt;/set&gt;
+&lt;/process&gt;
+&lt;/processes&gt;
+&lt;documents&gt;
+&lt;document name="Document 1"&gt;
+&lt;xmlData&gt;
+&lt;paragraph indent="0" align="left"&gt;&lt;tabPositions&gt;&lt;tabStop position="720"/&gt;&lt;/tabPositions&gt;&lt;font face="Arial" size="200" color="000000"&gt;&lt;field name="MyVariable"/&gt;&lt;/font&gt;&lt;/paragraph&gt;
+&lt;/xmlData&gt;
+&lt;/document&gt;
+&lt;/documents&gt;
+&lt;/project&gt;</value>
+  </data>
+  <data name="RtfWithFibField296" xml:space="preserve">
+    <value>{\rtf1\ansi\ansicpg1252\uc1\deff0{\fonttbl
+{\f0\fswiss\fcharset0\fprq2 Arial;}
+{\f1\froman\fcharset2\fprq2 Symbol;}}
+{\colortbl;\red0\green0\blue0;\red255\green255\blue255;}
+{\stylesheet{\s0\itap0\f0\fs24 [Normal];}{\*\cs10\additive Default Paragraph Font;}}
+{\*\generator TX_RTF32 12.0.500.502;}
+\deftab1134\paperw12240\paperh15840\margl720\margt720\margr720\margb720\notabind\pard\itap0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\plain\f0\fs20{\*\txfieldstart\txfieldtype0\txfieldflags219\txfielddataval14\txfielddata 54004600240046006f0072006d00200031003a00510031003a0061000000}&lt;&lt;Form 1:Q1:a&gt;&gt;{\*\txfieldend}\par }</value>
+  </data>
+  <data name="RtfWithTable296" xml:space="preserve">
+    <value>{\rtf1\ansi\ansicpg1252\uc1\deff0{\fonttbl
+{\f0\fswiss\fcharset0\fprq2 Arial;}
+{\f1\froman\fcharset2\fprq2 Symbol;}}
+{\colortbl;\red0\green0\blue0;\red255\green255\blue255;}
+{\stylesheet{\s0\itap0\f0\fs24 [Normal];}{\*\cs10\additive Default Paragraph Font;}}
+{\*\generator TX_RTF32 12.0.500.502;}
+\deftab1134\paperw12240\paperh15840\margl720\margt720\margr720\margb720\notabind\pard\itap0\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\plain\f0\fs20\par\trowd\irow0\irowband0\trgaph36\trleft0\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl36\trpaddr36\trpaddfl3\trpaddft3\trpaddfr3\trpaddfb3\clvertalt\clftsWidth3\clwWidth5400\cellx5400\clvertalt\clftsWidth3\clwWidth5400\cellx10800\pard\intbl\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\cell\cell\row\trowd\irow1\irowband1\trgaph36\trleft0\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl36\trpaddr36\trpaddfl3\trpaddft3\trpaddfr3\trpaddfb3\clvertalt\clftsWidth3\clwWidth5400\cellx5400\clvertalt\clftsWidth3\clwWidth5400\cellx10800\pard\intbl\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\cell\cell\row\trowd\irow2\irowband2\trgaph36\trleft0\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl36\trpaddr36\trpaddfl3\trpaddft3\trpaddfr3\trpaddfb3\clvertalt\clftsWidth3\clwWidth5400\cellx5400\clvertalt\clftsWidth3\clwWidth5400\cellx10800\pard\intbl\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\cell\cell\row\trowd\irow3\irowband3\lastrow\trgaph36\trleft0\trftsWidth1\trftsWidthB3\trftsWidthA3\trpaddl36\trpaddr36\trpaddfl3\trpaddft3\trpaddfr3\trpaddfb3\clvertalt\clftsWidth3\clwWidth5400\cellx5400\clvertalt\clftsWidth3\clwWidth5400\cellx10800\pard\intbl\tx720\tx1440\tx2160\tx2880\tx3600\tx4320\tx5040\tx5760\tx6480\tx7200\tx7920\tx8640\tx9360\tx10080\cell\cell\row\pard\itap0 }</value>
+  </data>
+</root>

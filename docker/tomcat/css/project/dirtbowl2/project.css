@@ -1,39 +1,676 @@
-/* Dirt Bowl theme — legacy project.css for Java runtime email/document rendering */
+/* Dirt Bowl theme — Java runtime (Registration, RegStep2, payment pages) */
+
+:root {
+  --tawala-bg: #f3ece1;
+  --tawala-text: #4a3728;
+  --tawala-border: #4a3728;
+  --tawala-input-bg: #ffffff;
+  --tawala-instructional-bg: #e8ecf8;
+  --tawala-instructional-border: #5b7fc7;
+  --tawala-instructional-text: #2a4a8a;
+  --tawala-submit-bg: #5c4033;
+  --reg-label-width: 13.25rem;
+  --reg-tabbed-label-width: 232px;
+  --reg-field-width: 28rem;
+  --reg-block-indent: 2rem;
+  --reg-name-first-width: 12em;
+  --reg-name-last-width: 18em;
+  --reg-name-gap: 1.25rem;
+  --reg-name-pair-width: calc(
+    var(--reg-name-first-width) + var(--reg-name-gap) + var(--reg-name-last-width)
+  );
+  --reg-field-area-width: var(--reg-name-pair-width);
+  --reg-q4-row-gap: 0.5rem;
+}
+
 body {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  background: #f3ece1;
-  color: #4a3728;
-  font-size: 10pt;
+  font-family: Georgia, "Times New Roman", Times, serif !important;
+  background: var(--tawala-bg);
+  color: var(--tawala-text);
+  font-size: 16px !important;
+  line-height: 1.45;
+}
+
+#tawalaProjectContainer {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 1.5rem 1.25rem 2.5rem;
+  font-size: 16px;
+}
+
+#form {
+  margin-top: 0.5rem;
+  font-size: 16px;
+}
+
+/* Banner / director blocks — override inline pt sizes from rich-text XML */
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 16pt"],
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 14pt"],
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 11pt"] {
+  font-size: 1.35rem !important;
+}
+
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 12pt"],
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 9pt"] {
+  font-size: 1.05rem !important;
+}
+
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 10pt"],
+#form > .text.normal:nth-of-type(2) span[style*="font-size: 8pt"] {
+  font-size: 0.95rem !important;
+}
+
+#form > .text.normal:nth-of-type(3) span[style*="font-size: 12pt"],
+#form > .text.normal:nth-of-type(3) span[style*="font-size: 10pt"] {
+  font-size: 1rem !important;
 }
 
 .text {
-  margin: 0.5em 0;
+  margin: 0.65rem 0;
 }
 
-.text.instructional {
-  font-style: italic;
-  color: #2a4a8a;
-}
-
+.text.instructional,
 div.text.instructional {
-  background: #e8ecf8;
-  border-left: 4px solid #5b7fc7;
+  background: var(--tawala-instructional-bg);
+  border-left: 4px solid var(--tawala-instructional-border);
   padding: 10px 14px;
+  margin: 1.25rem 0;
+  font-style: italic;
+  color: var(--tawala-instructional-text);
+  font-size: 16px;
 }
 
-.fib,
-.mc {
-  margin: 0.5em 0;
+/* Registration info block (T4) — no row divider lines */
+#form .text.normal > table td {
+  border: none !important;
+  padding: 2px 8px;
+  vertical-align: top;
+  font-size: 15px;
+}
+
+#form .text.normal > table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+}
+
+/* Left-aligned FIB rows (label | field | remainder) */
+table.fib {
+  width: 100%;
+  max-width: calc(var(--reg-label-width) + var(--reg-field-width) + 0.75rem);
+  margin-bottom: 0.55rem;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+table.fib td.label.left {
+  width: var(--reg-label-width);
+  min-width: var(--reg-label-width);
+  vertical-align: middle;
+  padding: 4px 12px 4px 0;
+  font-weight: bold;
+}
+
+table.fib td.blank,
+table.fib td.remainder {
+  vertical-align: middle;
+  padding: 2px 0;
+}
+
+table.fib td.remainder input {
+  margin-left: 0.35rem;
+}
+
+/* Tabbed FIB rows — 5173 vertical rhythm */
+div.fib {
+  margin-bottom: 0.15rem;
+}
+
+table.TAWALA-tabbed-paragraph {
+  table-layout: fixed;
+  width: 100%;
+  max-width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+  margin-bottom: 0.08rem;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+table.TAWALA-tabbed-paragraph td {
+  vertical-align: middle;
+  padding: 2px 4px 2px 0;
+  border: none !important;
+}
+
+/* Beat inline width: Npx from Java tab stops (4031 twips = 201px) */
+table.TAWALA-tabbed-paragraph td:first-child {
+  width: var(--reg-tabbed-label-width) !important;
+  min-width: var(--reg-tabbed-label-width) !important;
+  max-width: var(--reg-tabbed-label-width) !important;
+  padding-right: 12px;
+  font-weight: bold;
+  white-space: normal;
+  box-sizing: border-box;
+}
+
+/* Two-column rows — field cell starts after widened label column */
+table.TAWALA-tabbed-paragraph:not(:has(td:nth-child(3))) td:nth-child(2) {
+  width: var(--reg-field-area-width) !important;
+  max-width: var(--reg-field-area-width) !important;
+  box-sizing: border-box;
+}
+
+/* Registrant / parent name pairs — hint row + two name fields */
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]),
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="FirstName"]),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"]) {
+  table-layout: fixed;
+  width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+  max-width: 100%;
+}
+
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]),
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) {
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]) + table,
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) + table {
+  margin-top: 0.05rem;
+}
+
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]) td,
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) td,
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="FirstName"]) td,
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"]) td {
+  vertical-align: middle;
+  padding-top: 0;
+  padding-bottom: 2px;
+}
+
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]) td:nth-child(1),
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) td:nth-child(1),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="FirstName"]) td:nth-child(1),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"]) td:nth-child(1) {
+  width: var(--reg-tabbed-label-width) !important;
+  min-width: var(--reg-tabbed-label-width) !important;
+  max-width: var(--reg-tabbed-label-width) !important;
+  padding-right: 12px !important;
+  box-sizing: border-box;
+}
+
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]) td:nth-child(2),
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) td:nth-child(2),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="FirstName"]) td:nth-child(2),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"]) td:nth-child(2) {
+  width: var(--reg-name-first-width) !important;
+  min-width: var(--reg-name-first-width) !important;
+  max-width: var(--reg-name-first-width) !important;
+  padding-right: 0 !important;
+  box-sizing: border-box;
+}
+
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="FirstName"]) td:nth-child(3),
+div.fib > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) td:nth-child(3),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="FirstName"]) td:nth-child(3),
+div.fib > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"]) td:nth-child(3) {
+  width: calc(var(--reg-field-area-width) - var(--reg-name-first-width)) !important;
+  min-width: calc(var(--reg-field-area-width) - var(--reg-name-first-width)) !important;
+  max-width: calc(var(--reg-field-area-width) - var(--reg-name-first-width)) !important;
+  padding-left: var(--reg-name-gap) !important;
+  box-sizing: border-box;
+}
+
+/* School + full-width single-column field rows */
+table.TAWALA-tabbed-paragraph:has(input[name="Q3:a"]) {
+  table-layout: fixed;
+  width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+  max-width: 100%;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Q3:a"]) td:nth-child(2) {
+  width: var(--reg-field-area-width) !important;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Q3:a"]) input {
+  width: 100% !important;
+  max-width: var(--reg-field-area-width);
+  box-sizing: border-box;
+}
+
+/* Address + City + Zip on one line (5173 reg-address-line) */
+table.TAWALA-tabbed-paragraph:has(input[name="Address"]) {
+  table-layout: fixed;
+  width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+  max-width: 100%;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Address"]) td:nth-child(2) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto 10ch auto 5ch;
+  column-gap: 0.75rem;
+  align-items: center;
+  width: var(--reg-field-area-width) !important;
+  box-sizing: border-box;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Address"]) td:nth-child(2) input {
+  width: 100% !important;
+  min-width: 0;
+  max-width: none;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Address"]) td:nth-child(2) b,
+table.TAWALA-tabbed-paragraph:has(input[name="Address"]) td:nth-child(2) strong {
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+/* Parent email pairs — two boxes per row (5173 reg-email-pair) */
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]),
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) {
+  table-layout: fixed;
+  width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+  max-width: 100%;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]) td:first-child,
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:first-child {
+  vertical-align: top !important;
+  padding-top: 2px !important;
+  padding-bottom: 0 !important;
+  padding-left: 0 !important;
+  line-height: 1.45;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:first-child i {
+  display: block;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 0.9em;
+  margin-top: 0.1rem;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]) td:nth-child(2),
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:nth-child(2) {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+  column-gap: 0.75rem;
+  align-items: center;
+  align-content: start;
+  vertical-align: top !important;
+  padding-top: 2px !important;
+  line-height: 1.45;
+  width: var(--reg-field-area-width) !important;
+  box-sizing: border-box;
+}
+
+/* Legacy XML still repeats the field label before (again) — hide it */
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]) td:nth-child(2) strong,
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:nth-child(2) strong {
+  display: none;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]) td:nth-child(2) input,
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:nth-child(2) input {
+  width: 100% !important;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 2px 6px;
+  line-height: 1.25;
+  align-self: center;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]) td:nth-child(2) i,
+table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:nth-child(2) i {
+  font-style: italic;
+  font-weight: normal;
+  white-space: nowrap;
+  align-self: center;
+}
+
+/* Parent block (Q4) — uniform row spacing (5173 fib-reg-q4 flex + gap) */
+div.fib:has(input[name="ParentFirstName"]) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--reg-q4-row-gap);
+  margin-top: 0.5rem;
+  margin-bottom: 0.15rem;
+  padding-top: 0;
+}
+
+div.fib:has(input[name="ParentFirstName"]) > table.TAWALA-tabbed-paragraph,
+div.fib:has(input[name="ParentFirstName"]) > div:not([class]) {
+  margin: 0 !important;
+}
+
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"]) {
+  margin-bottom: calc(-1 * var(--reg-q4-row-gap)) !important;
+  line-height: 1.1;
+}
+
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"])
+  + table {
+  margin-top: 0.05rem !important;
+}
+
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(+ table input[name="ParentFirstName"])
+  td {
+  vertical-align: baseline;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+/* Top-align labels so label-to-label gaps match row gap, not row height */
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"])
+  td,
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="Address"])
+  td {
+  vertical-align: top !important;
+  padding-top: 2px !important;
+  padding-bottom: 0 !important;
+}
+
+/* Email-only note — field-column alignment (Java renders as bare div) */
+div.fib:has(input[name="ParentFirstName"]) > div:not([class]) {
+  font-style: italic;
+  font-size: 0.9em;
+  padding: 0;
+  line-height: 1.3;
+  margin-left: calc(var(--reg-tabbed-label-width) + 0.75rem) !important;
+}
+
+/* Parent Phone Numbers — four columns: label | P1 | P2 | P3 */
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) {
+  table-layout: fixed;
+  width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+  max-width: 100%;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child {
+  width: var(--reg-tabbed-label-width) !important;
+  min-width: var(--reg-tabbed-label-width) !important;
+  max-width: var(--reg-tabbed-label-width) !important;
+  padding-left: 0 !important;
+  padding-right: 12px !important;
+  font-weight: bold;
+  font-style: normal;
+  font-size: 16px;
+  text-align: left;
+  vertical-align: top !important;
+  padding-top: 2px !important;
+  padding-bottom: 0 !important;
+  line-height: 1.45;
+  box-sizing: border-box;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child i {
+  display: block;
+  font-weight: normal;
+  font-style: italic;
+  font-size: 0.9em;
+  margin-top: 0.1rem;
+  text-align: left;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2),
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3),
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4) {
+  vertical-align: top !important;
+  padding-top: 2px !important;
+  padding-right: 0.5rem !important;
+  white-space: nowrap;
+  width: auto !important;
+  max-width: none !important;
+  box-sizing: border-box;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:last-child {
+  padding-right: 0 !important;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2) strong,
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3) strong,
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4) strong {
+  font-weight: bold;
+  white-space: nowrap;
+  margin-right: 0.35rem;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) input {
+  width: 6.5em !important;
+  max-width: none;
+  min-width: 0;
+  margin: 0;
+  padding: 2px 6px;
+  line-height: 1.25;
+  display: inline-block !important;
+  vertical-align: middle;
+  box-sizing: border-box;
+}
+
+/* Hint text — italic (First / Last) */
+table.TAWALA-tabbed-paragraph td i {
+  font-style: italic;
+  font-size: 0.9em;
+  color: var(--tawala-text);
+  font-weight: normal;
+}
+
+input.text,
+input[type="text"] {
+  font-family: inherit;
+  font-size: 16px !important;
+  border: 1px solid var(--tawala-border);
+  background: var(--tawala-input-bg);
+  color: var(--tawala-text);
+  padding: 4px 6px;
+  box-sizing: border-box;
+  vertical-align: middle;
+}
+
+#tawalaField_FirstName,
+#tawalaField_ParentFirstName,
+input[name="FirstName"],
+input[name="ParentFirstName"] {
+  width: 100% !important;
+  max-width: var(--reg-name-first-width);
+  box-sizing: border-box;
+}
+
+#tawalaField_LastName,
+#tawalaField_ParentLastName,
+input[name="LastName"],
+input[name="ParentLastName"] {
+  width: 100% !important;
+  max-width: none;
+  box-sizing: border-box;
+}
+
+#tawalaField_RegAgeMo,
+#tawalaField_RegAgeDay {
+  width: 2.75em !important;
+  max-width: 2.75em;
+  text-align: center;
+}
+
+#tawalaField_RegAgeYr {
+  width: 4.75em !important;
+  max-width: 4.75em;
+  text-align: center;
+}
+
+/* DOB — hint inline with label; date boxes in field column */
+table.TAWALA-tabbed-paragraph tr:has(#tawalaField_RegAgeMo) td:first-child {
+  white-space: nowrap;
+  font-weight: bold;
+}
+
+table.TAWALA-tabbed-paragraph tr:has(#tawalaField_RegAgeMo) td:first-child i {
+  font-style: italic;
+  font-size: 0.9em;
+  font-weight: normal;
+  margin-left: 0.25rem;
+}
+
+table.TAWALA-tabbed-paragraph tr:has(#tawalaField_RegAgeMo) td {
+  vertical-align: middle;
+}
+
+table.TAWALA-tabbed-paragraph tr:has(#tawalaField_RegAgeMo) td:nth-child(2) {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  gap: 0.25rem;
+  white-space: nowrap;
+  width: var(--reg-field-area-width) !important;
+  box-sizing: border-box;
+}
+
+/* Multiple choice */
+.mcRadio,
+.mcCheckbox {
+  margin: 0.55rem 0;
+  clear: both;
+  font-size: 16px;
+}
+
+label.question {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 0.35rem;
+}
+
+.mcRadio.horizontal label.question {
+  display: inline-block;
+  margin-right: 1rem;
+  margin-bottom: 0;
+  vertical-align: middle;
+}
+
+/* Sex MCQ — label in label column, Boy/Girl aligned with date month field */
+#SexMCQContainer.mcRadio.horizontal {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  flex-wrap: nowrap;
+  margin: 0.08rem 0 0.55rem;
+  max-width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
+}
+
+#SexMCQContainer.mcRadio.horizontal label.question {
+  display: block;
+  flex: 0 0 var(--reg-tabbed-label-width);
+  width: var(--reg-tabbed-label-width);
+  min-width: var(--reg-tabbed-label-width);
+  max-width: var(--reg-tabbed-label-width);
+  padding-right: 12px;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+#SexMCQContainer.mcRadio.horizontal .answer {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 1.5rem 0 0;
+  font-weight: normal;
+}
+
+.mcRadio.horizontal .answer {
+  display: inline-block;
+  margin-right: 1.5rem;
+  font-weight: normal;
+}
+
+.mcRadio.vertical .answer,
+.mcRadio:not(.horizontal):not(.multicolumn) .answer {
+  display: block;
+  margin: 0.12rem 0 0.12rem var(--reg-block-indent);
+  font-weight: normal;
+}
+
+.mcRadio.multicolumn {
+  margin-left: 0;
+}
+
+.mcRadio.multicolumn table.answer {
+  margin-left: var(--reg-block-indent);
+  border-collapse: collapse;
+}
+
+.mcRadio.multicolumn table.answer td {
+  padding: 0.15rem 2rem 0.15rem 0;
+  vertical-align: middle;
+  font-weight: normal;
+}
+
+.mcCheckbox .answer {
+  display: block;
+  margin: 0.1rem 0 0.1rem var(--reg-block-indent);
+  font-weight: normal;
+}
+
+.mcRadio input,
+.mcCheckbox input {
+  margin-right: 6px;
+}
+
+/* Review page — 3-column summary tables only */
+#form .text.normal table:has(tr > td:nth-child(3):last-child) td {
+  padding: 5px 10px;
+  vertical-align: top;
+  border-bottom: 1px solid #c9bfb0;
+  font-size: 16px;
+}
+
+#form .text.normal table:has(tr > td:nth-child(3):last-child) tr:last-child td {
+  border-bottom: none;
+}
+
+#form .text.normal table:has(tr > td:nth-child(3):last-child) td:first-child {
+  text-align: right;
+  width: 42%;
+  padding-right: 12px;
+}
+
+#form .text.normal table:has(tr > td:nth-child(3):last-child) td:nth-child(3) {
+  text-align: left;
+}
+
+/* Review confirm MCQ (Q13) */
+#form .mcRadio.vertical {
+  border-top: 1px solid #c9bfb0;
+  padding-top: 1rem;
+  margin-top: 1.25rem;
 }
 
 .submitButton {
-  margin-top: 1em;
+  margin-top: 1.25rem;
+  text-align: right;
 }
 
 input.button,
 input[type="submit"] {
-  background: #5c4033;
+  background: var(--tawala-submit-bg);
   color: #fff;
-  border: 1px solid #4a3728;
-  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+input.button:hover,
+input[type="submit"]:hover {
+  filter: brightness(1.08);
 }

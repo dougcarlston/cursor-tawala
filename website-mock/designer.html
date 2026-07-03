@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - Designer</title>
+  <link rel="stylesheet" href="css/tawala-mock.css" />
+</head>
+<body data-tawala-page="mytawala" data-tawala-user="dev" class="stub-page">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+    <div id="bd">
+      <div class="content">
+        <div class="pageTitle"><h1>Tawala Designer</h1></div>
+        <div class="block">
+          <p>
+            The legacy <b>Tawala Designer</b> is a desktop application for building forms, processes, and documents.
+          </p>
+          <p>
+            This website mock does not launch the Designer. For browser-based work, see <code>designer-web/</code> in the AI-Tawala repo (separate dev server on port 5173).
+          </p>
+          <p>
+            To deploy templates to local Java without the Designer Deploy button, use:
+          </p>
+          <pre style="background:#f4f4f4;padding:8px;overflow:auto;">node scripts/deploy-tawala-template.mjs "Template Name"</pre>
+          <p><a href="library.html">Browse templates in Library →</a></p>
+          <p class="stub-form note">Stub page — legacy nav linked to <code>/designer</code> download flow.</p>
+        </div>
+      </div>
+    </div>
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js"></script>
+  <script>TawalaChrome.mount();</script>
+</body>
+</html>

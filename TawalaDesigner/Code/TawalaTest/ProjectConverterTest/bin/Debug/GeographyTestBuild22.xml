@@ -1,0 +1,311 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="JDF" password="jdf20q" />
+<project name="Geography Test" format="1.3">
+<forms>
+<form name="Form 1" process="Process 1">
+<items>
+<text label="T1">                                                           Geography Test</text>
+<fib label="Q1">Please enter today's date (mm/dd/yy):  <blank label="a" length="12" /></fib>
+<fib label="Q2">Name:  <blank label="a" length="15" /> (First) <blank label="b" length="23" /> (Last)</fib>
+<mc label="Q3" onlyone="true" required="false"><question>1. What is the largest country in the world in terms of area?</question><choice label="a">United States</choice><choice label="b">China</choice><choice label="c">Brazil</choice><choice label="d">Canada</choice><choice label="e">Russia</choice><choice label="f">Greenland</choice></mc>
+<mc label="Q4" onlyone="true" required="false"><question>2. Which end of the Panama Canal is farther east?</question><choice label="a">Pacific end</choice><choice label="b">Gulf end</choice></mc>
+<mc label="Q5" onlyone="true" required="false"><question>3. Which country has the largest number of contiguous neighbors?</question><choice label="a">China</choice><choice label="b">Russia</choice><choice label="c">Brazil</choice><choice label="d">Democratic Republic of Congo</choice><choice label="e">Germany</choice><choice label="f">Nigeria</choice></mc>
+<fib label="Q6">4. How many?  <blank label="a" length="10" /></fib>
+<mc label="Q7" onlyone="true" required="false"><question>5. Which of the following cities is the farthest north?</question><choice label="a">Rome, Italy</choice><choice label="b">New York, USA</choice><choice label="c">Tokyo, Japan</choice></mc>
+<mc label="Q8" onlyone="false" required="false"><question>6. Which of the following cities is in the Southern Hemisphere (check as many as apply)?</question><choice label="a">Singapore</choice><choice label="b">Hong Kong</choice><choice label="c">Caracas</choice><choice label="d">Nairobi</choice><choice label="e">Djakarta</choice></mc>
+<mc label="Q9" onlyone="true" required="false"><question>7. Which of the following cities lies farthest to the east?</question><choice label="a">New York, USA</choice><choice label="b">Santiago, Chile</choice><choice label="c">Havana, Cuba</choice><choice label="d">Montreal, Canada</choice></mc>
+<fib label="Q10">8. How many countries do NOT belong to the United Nations?  <blank label="a" length="10" /></fib>
+<fib label="Q11">9. What's the largest entirely landlocked country?  <blank label="a" length="15" /></fib>
+<fib label="Q12">10. What's the country that covers the greatest latitude range?   <blank label="a" length="10" /></fib>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<set field="Score">
+<string value="0" />
+</set>
+<if>
+<conditions>
+<mcEquals field="Q3" value="e" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q4" value="a" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q5" value="a" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Q6:a">
+<string value="14" />
+</equals>
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q7" value="a" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q8" value="d" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value=".5" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcContains field="Q8" value="e" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value=".5" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Q9" value="b" />
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Q10:a">
+<string value="2" />
+</equals>
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Q10:a">
+<string value="1" />
+</equals>
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="Q11:a">
+<string value="Kazakhstan" />
+</contains>
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="Q12:a">
+<string value="USA" />
+</contains>
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="Q12:a">
+<string value="United States" />
+</contains>
+</conditions>
+<trueSet>
+<set field="Score">
+<add>
+<operand field="Score" />
+<operand value="1" />
+</add>
+</set>
+</trueSet>
+</if>
+<set field="Score">
+<mul>
+<operand field="Score" />
+<operand value="10" />
+</mul>
+</set>
+<show document="Document 2" />
+<if>
+<conditions>
+<isLessThanOrEqualTo field="Score">
+<string value="50" />
+</isLessThanOrEqualTo>
+</conditions>
+<trueSet>
+<show document="Document 1" />
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Score">
+<string value="100" />
+</equals>
+</conditions>
+<trueSet>
+<show document="Document 3" />
+</trueSet>
+</if>
+<if>
+<conditions>
+<isLessThan field="Score">
+<string value="100" />
+</isLessThan>
+</conditions>
+<trueSet>
+<show document="Document 4" />
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Document 1">You're going to have to work a little harder!  Study the correct answers and try again.</document>
+<document name="Document 2">GEOGRAPHY EXAM RESULTS
+
+Examinee: <field name="Q2:a" /> <field name="Q2:b" />
+       Date: <field name="Q1:a" />
+
+Dear <field name="Q2:a" />,
+
+Your score on the Geography test was <field name="Score" />%.
+</document>
+<document name="Document 3">Congratulations on a perfect score.  No need to show you the answers!
+</document>
+<document name="Document 4">Here are the correct test answers.
+
+1) What is the largest country in the world in terms of area?
+
+     Russia.  This isn't even close.  Look at a map.  And this is AFTER they lost much of
+     their territory in the breakup of the Soviet Union.
+
+2) Which end of the Panama Canal is farther east?
+
+     Surprisingly, it's the Pacific end.  Panama runs mostly east and west.  The Canal runs
+     from the Gulf end in the Northwest to the Pacific end in the Southeast.
+
+3) Which country has the largest number of contiguous neighbors?
+
+     That would be China.  The breakup of the old Soviet Union added several new ones.
+
+4) How many?
+
+     There are 14!  Going clockwise they are: Vietnam, Laos, Burma, India, Bhutan, Nepal,
+     Pakistan, Afghanistan, Tajikistan, Kyrgystan, Kazakhstan, Mongolia, Russia, and
+     North Korea.
+
+5) Which of the following cities is the farthest north?
+
+     It's Rome, Italy.  Blame it on the Gulf Stream.
+
+6) Which of the following cities is in the Southern Hemisphere?
+
+     Nairobi and Djakarta.  The others are just warm.
+
+7) Which of the following cities lies farthest to the East?
+
+     It's Santiago, Chile.  South America lies almost entirely east (and south) of North America.
+
+8) How many countries do NOT belong to the United Nations?
+
+     You could answer 1 or 2, depending on whether you accept Taiwan as a separate
+     country or not.  The other non-member is the Vatican.
+
+9) What's the largest entirely landlocked country?
+
+     Kazakhstan, by a country mile.
+
+10) What's the country that covers the greatest latitude range?
+
+     It's the USA, thanks to Hawaii and Alaska.  If you only counted the 48 contiguous states,
+     the winner would be Canada.</document>
+</documents>
+</project>
+</request>

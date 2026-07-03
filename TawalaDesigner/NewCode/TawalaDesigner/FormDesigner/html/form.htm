@@ -1,0 +1,39 @@
+<html xmlns:t="tawala">
+<head>
+	<title>Form</title>
+	<?import namespace="t" implementation="bookmark.htc" /> 
+	<?import namespace="t" implementation="function.htc" /> 
+	<?import namespace="t" implementation="field.htc" />
+	<?import namespace="t" implementation="droparea.htc" /> 
+    <?import namespace="t" implementation="formcontainer.htc" />
+    <?import namespace="t" implementation="label.htc" />
+	<?import namespace="t" implementation="link.htc" />
+    <?import namespace="t" implementation="fi_text.htc" />
+	<?import namespace="t" implementation="fi_break.htc" />
+ 	<?import namespace="t" implementation="fi_heading.htc" /> 
+ 	<?import namespace="t" implementation="fi_hiddenfield.htc" />
+ 	<?import namespace="t" implementation="fi_fib.htc" /> 
+ 	<?import namespace="t" implementation="fi_blank.htc" /> 
+  	<?import namespace="t" implementation="fi_choice.htc" /> 
+	<?import namespace="t" implementation="fi_mcq.htc" /> 
+ 	<?import namespace="t" implementation="fi_skip.htc" />
+ 	
+    <meta http-equiv="Content-Script-Type" content="text/jscript" />
+    
+    <link rel="Stylesheet" href="common.css" type="text/css" />
+    <link rel="Stylesheet" href="form.css" type="text/css" />
+
+    <script type="text/jscript" src="common.js">
+    </script>
+
+</head>
+<body>
+    <t:DropArea id="dropArea">
+    <t:FormContainer id="formContainer">
+	    <table id="formTable" border="0" cellpadding="0" cellspacing="0">
+            <tbody id="formTBody"></tbody>
+	    </table>
+	</t:FormContainer>
+    </t:DropArea>
+</body>
+</html>

@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{92985673-814F-4316-B7F9-19078EE36EDA}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tawala.Function.Controls</RootNamespace>
+    <AssemblyName>FunctionControls</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Drawing.Design" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Behaviors\TextBoxContextMenuBehavior.cs" />
+    <Compile Include="Design\ConfigureParametersLayoutPanelDesigner.cs" />
+    <Compile Include="Editor\ConfigureFunctionButtons.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Editor\ConfigureFunctionButtons.Designer.cs">
+      <DependentUpon>ConfigureFunctionButtons.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\ConfigureFunctionInfo.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Editor\ConfigureFunctionInfo.Designer.cs">
+      <DependentUpon>ConfigureFunctionInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\ConfigureParametersLayoutPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Editor\ConfigureParametersLayoutPanel.Designer.cs">
+      <DependentUpon>ConfigureParametersLayoutPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Bindings\FormBindingList.cs" />
+    <Compile Include="Parameters\Controls\ColumnListControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ColumnListControl.Designer.cs">
+      <DependentUpon>ColumnListControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Controls\ColumnControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ColumnControl.Designer.cs">
+      <DependentUpon>ColumnControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionControl.Designer.cs">
+      <DependentUpon>ConditionControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionLeftFieldControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionOperatorControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionRightExpressionControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ColumnContentsControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ColumnHeadingControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\FunctionConditionListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\FunctionConditionListControl.designer.cs">
+      <DependentUpon>FunctionConditionListControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionListControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ConditionListControl.Designer.cs">
+      <DependentUpon>ConditionListControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\ReferencedFormsHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Behaviors\Behaviors.cs" />
+    <Compile Include="Behaviors\DebugInitEventsBehavior.cs" />
+    <Compile Include="Behaviors\DragDropBehavior.cs" />
+    <Compile Include="Behaviors\FieldPaletteDoubleClickBehavior.cs" />
+    <Compile Include="Behaviors\HighlightBehavior.cs" />
+    <Compile Include="Editor\ConfigureFunctionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editor\ConfigureFunctionDialog.Designer.cs">
+      <DependentUpon>ConfigureFunctionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\InsertFunctionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Editor\InsertFunctionDialog.Designer.cs">
+      <DependentUpon>InsertFunctionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Binders\CompoundExpressionBinder.cs" />
+    <Compile Include="Parameters\Binders\EnumerationBinder.cs" />
+    <Compile Include="Parameters\Binders\FieldBaseBinder.cs" />
+    <Compile Include="Parameters\Binders\FormBinder.cs" />
+    <Compile Include="Parameters\Binders\LocalFormBinder.cs" />
+    <Compile Include="Parameters\Binders\NumericListBinder.cs" />
+    <Compile Include="Parameters\Binders\ParameterBinder.cs" />
+    <Compile Include="Parameters\Binders\TextBinder.cs" />
+    <Compile Include="Parameters\Bindings\BaseBinding.cs" />
+    <Compile Include="Parameters\Bindings\EditBinding.cs" />
+    <Compile Include="Parameters\Bindings\ViewBinding.cs" />
+    <Compile Include="Parameters\Controls\BlankFieldControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\CompoundExpressionControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ContentFieldControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\FieldTextBaseControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\McqFieldControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\ComboBoxControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\SingleLineEditPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Parameters\Controls\SingleLineEditPanel.Designer.cs">
+      <DependentUpon>SingleLineEditPanel.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Parameters\Controls\TextControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Parameters\ControlManager.cs" />
+    <Compile Include="Parameters\ParameterUtils.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Editor\ConfigureFunctionButtons.resx">
+      <DependentUpon>ConfigureFunctionButtons.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editor\ConfigureFunctionDialog.resx">
+      <DependentUpon>ConfigureFunctionDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editor\ConfigureFunctionInfo.resx">
+      <DependentUpon>ConfigureFunctionInfo.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editor\InsertFunctionDialog.resx">
+      <DependentUpon>InsertFunctionDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Editor\ConfigureParametersLayoutPanel.resx">
+      <DependentUpon>ConfigureParametersLayoutPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\ColumnListControl.resx">
+      <DependentUpon>ColumnListControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\ColumnControl.resx">
+      <DependentUpon>ColumnControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\ConditionControl.resx">
+      <DependentUpon>ConditionControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\FieldTextBaseControl.resx">
+      <DependentUpon>FieldTextBaseControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\FunctionConditionListControl.resx">
+      <DependentUpon>FunctionConditionListControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\ConditionListControl.resx">
+      <DependentUpon>ConditionListControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Parameters\Controls\SingleLineEditPanel.resx">
+      <DependentUpon>SingleLineEditPanel.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Controls\Controls.csproj">
+      <Project>{4F0A6D51-0E78-41AB-BBD7-CB9D2EA86670}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Core\Core.csproj">
+      <Project>{3878667C-1FD0-411C-B936-2E57ACEE8C71}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Functions\Functions.csproj">
+      <Project>{83728549-B86D-414D-A2AA-7B16515A138D}</Project>
+      <Name>Functions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionViewPresenter\FunctionViewPresenter.csproj">
+      <Project>{8546DB36-F4EA-49C0-925F-AD0124ECA727}</Project>
+      <Name>FunctionViewPresenter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Projects\Projects.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Projects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

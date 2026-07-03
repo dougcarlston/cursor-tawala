@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Tawala - Sign Up</title>
+  <link rel="stylesheet" href="css/tawala-mock.css" />
+</head>
+<body data-tawala-page="home" class="stub-page">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+    <div id="bd">
+      <div class="content">
+        <div class="pageTitle"><h1>Sign Up</h1></div>
+        <div class="block stub-form">
+          <p>
+            Please register for your <b>FREE</b> account.
+          </p>
+          <p>
+            Registration creates your own private space in My Tawala, where you can deploy and manage projects.
+          </p>
+          <form onsubmit="alert('Mock site — registration is not wired.'); return false;">
+            <label for="newUserId">Choose a User ID</label>
+            <input type="text" id="newUserId" name="newUserId" />
+            <label for="email">Email</label>
+            <input type="text" id="email" name="email" />
+            <label for="newPassword">Password</label>
+            <input type="password" id="newPassword" name="newPassword" />
+            <p style="margin-top:12px;">
+              <input type="submit" value="Create account" />
+            </p>
+          </form>
+          <p class="note">Stub page — from legacy <code>registration/register.jsp</code>. Already have an account? <a href="login.html">Login</a>.</p>
+        </div>
+      </div>
+    </div>
+    <div id="tawala-chrome-footer"></div>
+  </div>
+  <script src="js/chrome.js"></script>
+  <script>TawalaChrome.mount();</script>
+</body>
+</html>
