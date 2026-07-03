@@ -1,0 +1,20 @@
+/* Red Rays theme — stub until full assets are transferred from legacy install */
+
+body {
+  background-color: #8b0000;
+}
+
+#tawalaProjectContainer {
+  background-color: #fff5f5;
+  border: 2px solid #cc0000;
+}
+
+h1.pageHeading {
+  color: #ffffff;
+  background-color: #cc0000;
+}
+
+table.component thead {
+  background-color: #8b0000;
+  color: #ffffff;
+}

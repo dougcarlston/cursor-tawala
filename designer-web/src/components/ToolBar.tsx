@@ -7,6 +7,8 @@ interface Props {
 
 export function ToolBar({ onNewProject }: Props) {
   const addForm = useProjectStore((s) => s.addForm);
+  const addProcess = useProjectStore((s) => s.addProcess);
+  const addDocument = useProjectStore((s) => s.addDocument);
   const exportJson = useProjectStore((s) => s.exportJson);
   const deploy = useProjectStore((s) => s.deploy);
   const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
@@ -14,6 +16,12 @@ export function ToolBar({ onNewProject }: Props) {
   const selection = useProjectStore((s) => s.selection);
   const canDelete =
     selection.kind === "form" && selection.name != null && selectedItemIndex !== null;
+  const addAction =
+    selection.kind === "process" || selection.kind === "processes"
+      ? { label: "+Process", title: "New Process", onClick: addProcess }
+      : selection.kind === "document" || selection.kind === "documents"
+        ? { label: "+Document", title: "New Document", onClick: addDocument }
+        : { label: "+Form", title: "New Form", onClick: addForm };
 
   const save = () => {
     const blob = new Blob([exportJson()], { type: "application/json" });
@@ -33,8 +41,8 @@ export function ToolBar({ onNewProject }: Props) {
       <button type="button" title="Save" onClick={save}>
         Save
       </button>
-      <button type="button" title="New Form" onClick={addForm}>
-        +Form
+      <button type="button" title={addAction.title} onClick={addAction.onClick}>
+        {addAction.label}
       </button>
       <button
         type="button"

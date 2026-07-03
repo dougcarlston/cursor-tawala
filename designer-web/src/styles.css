@@ -424,19 +424,51 @@ textarea {
   margin: 0 0 8px;
 }
 
-.function-table-badge {
-  display: inline-block;
-  padding: 8px 12px;
-  border: 1px dashed #888;
-  background: #f4f4f4;
-  font-size: 12px;
+.function-table-preview {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
-.function-table-badge-cols {
-  display: block;
-  margin-top: 4px;
+.function-table-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  border: 1px dashed #9a9a9a;
+  background: #f8f8f8;
+  font-size: 11px;
   font-weight: normal;
-  color: #444;
+  line-height: 1.25;
+}
+
+.function-table-standalone {
+  padding: 0;
+  border: none;
+  background: transparent;
+  max-width: fit-content;
+}
+
+.function-table-label,
+.function-table-inline {
+  font-size: inherit;
+  font-weight: normal;
+}
+
+.function-table-token {
+  display: inline-block;
+  padding: 0 4px;
+  border: 1px solid #6d85b7;
+  border-radius: 3px;
+  background: #eef3ff;
+  color: #27406d;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.function-table-inline {
+  vertical-align: baseline;
+  user-select: none;
 }
 
 .fib-blank-props {
@@ -666,6 +698,10 @@ textarea {
 .structured-text-props .hint {
   margin: 0 0 8px;
   font-size: 10px;
+}
+
+.structured-text-props textarea {
+  resize: vertical;
 }
 
 .preview-mc-choice {
@@ -923,6 +959,8 @@ textarea {
 
 .rich-toolbar {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 2px;
   padding: 4px;
   border-bottom: 1px solid var(--border);
@@ -935,6 +973,16 @@ textarea {
   border: 1px solid var(--border);
   background: #fff;
   padding: 0 6px;
+}
+
+.rich-toolbar button.active {
+  border-color: var(--accent);
+  background: #e8f0fe;
+  font-weight: 600;
+}
+
+.rich-toolbar select {
+  min-width: 136px;
 }
 
 .rich-surface {

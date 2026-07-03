@@ -134,13 +134,32 @@ function renderFib(item, ctx) {
   return `<div class="fib fib-style-${esc(item.style || "default")}" id="item-${esc(itemKey(item))}">${rowHtml}</div>`;
 }
 
-function enhancePlainText(content, ctx, item) {
-  let text = content;
+const RICH_TEXT_HTML_TAG_RE = /<\/?(?:p|div|span|strong|b|em|i|u|font|br)(?:\s[^>]*)*\/?>/i;
+
+function applyLegacyTextSubstitutions(content, ctx) {
+  let text = String(content ?? "");
   if (text.includes('""')) {
     const league = getFieldValue(ctx, "League") || "Dirt Bowl";
     text = text.replace(/""/g, league);
   }
+  return text;
+}
+
+function enhancePlainText(content, ctx, item) {
+  const text = applyLegacyTextSubstitutions(content, ctx);
   return resolveTemplate(text, ctx);
+}
+
+function containsRichTextHtml(content) {
+  return RICH_TEXT_HTML_TAG_RE.test(content);
+}
+
+function enhanceRichTextHtml(content, ctx) {
+  const html = applyLegacyTextSubstitutions(content, ctx);
+  const replaceTemplate = (_match, ref) => esc(getFieldValue(ctx, String(ref).trim()));
+  return html
+    .replace(/&lt;&lt;([\s\S]+?)&gt;&gt;/g, replaceTemplate)
+    .replace(/<<([^>]+)>>/g, replaceTemplate);
 }
 
 function parseRecordField(field) {
@@ -234,9 +253,20 @@ function renderRichNodes(nodes, ctx) {
     .join("");
 }
 
+function isBlockFunctionNode(node) {
+  return (
+    node?.type === "itemizationTable" ||
+    node?.type === "choiceTallyTable" ||
+    node?.type === "questionCorrelationTable"
+  );
+}
+
 function renderRichContent(content, ctx, item) {
   if (!content) return "";
   if (typeof content === "string") {
+    if (containsRichTextHtml(content)) {
+      return enhanceRichTextHtml(content, ctx);
+    }
     const text = enhancePlainText(content, ctx, item);
     return `<p>${esc(text)}</p>`;
   }
@@ -245,8 +275,27 @@ function renderRichContent(content, ctx, item) {
     .map((block) => {
       if (block.type === "paragraph") {
         const nodes = block.nodes ?? [];
-        if (nodes.length === 1 && nodes[0].type === "itemizationTable") {
-          return renderRichNodes(nodes, ctx);
+        if (nodes.some(isBlockFunctionNode)) {
+          const align = block.align ? ` style="text-align:${block.align}"` : "";
+          const parts = [];
+          let inlineNodes = [];
+          const flushInlineNodes = () => {
+            if (!inlineNodes.length) return;
+            parts.push(`<p${align}>${renderRichNodes(inlineNodes, ctx)}</p>`);
+            inlineNodes = [];
+          };
+
+          for (const node of nodes) {
+            if (isBlockFunctionNode(node)) {
+              flushInlineNodes();
+              parts.push(renderRichNodes([node], ctx));
+            } else {
+              inlineNodes.push(node);
+            }
+          }
+
+          flushInlineNodes();
+          return parts.join("\n");
         }
         const align = block.align ? ` style="text-align:${block.align}"` : "";
         return `<p${align}>${renderRichNodes(nodes, ctx)}</p>`;

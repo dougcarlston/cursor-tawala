@@ -1,6 +1,6 @@
 # Comparing Registration: dev test bed (:5173) vs Java (:8080)
 
-The Designer ships **two runtimes** for exercising forms. They use the **same JSON project**, but Registration rendering differs today.
+The Designer ships **two runtimes** for exercising forms. They use the **same JSON project**, but Registration rendering differs today. As of July 2026, **DirtBowl Registration** is the main Preview-vs-Deploy parity sample.
 
 ## Side-by-side
 
@@ -78,6 +78,26 @@ After **File → Deploy**, the deploy dialog lists start-point URLs for the acti
 | `:5173/p/…/Registration` | `:8080/p/…/Registration` |
 
 Walk the same path on both: page 1 → segment 1 (jersey/friends) → review → RegStep2 → payment instructions.
+
+## Current findings (July 2026)
+
+Keep Preview-vs-Deploy notes in three buckets so fixes stay scoped:
+
+| Bucket | Current conclusion |
+|--------|--------------------|
+| **Style / theme parity** | Main active parity issue. Continue theme/CSS work next; it is smaller than full Designer architecture work and benefits multiple tracks. |
+| **Data / seed mismatch** | Keep separate from rendering bugs. Admin / division seed differences can change what Registration shows and can look like layout regressions. |
+| **General authoring architecture** | Browser Designer still lacks the legacy multi-window / MDI shell and easy visibility into Pre/Post processes, so DirtBowl is not yet a meaningful large-project authoring test. |
+
+DirtBowl is still useful as a **Preview / Deploy stress test**, even though it is not yet the right browser-Designer authoring benchmark.
+
+## Current DirtBowl Registration parity pass
+
+- Fixed: **Sex of Registrant** MCQ alignment.
+- Fixed: **Parent Phone Numbers** overlap / crowding.
+- Fixed: Submit button styling.
+- Improved: overall Deploy parity is substantially closer to Preview.
+- Remaining refinement: grouped lower parent-contact block vertical spacing.
 
 ## What is intentionally different today
 

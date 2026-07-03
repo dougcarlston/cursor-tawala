@@ -81,6 +81,12 @@
 - Visible prompt text and alternate label are **independent** (important for export/runtime field names).
 - **Multiple blanks** in one FIB item: **each blank** has its own Alternate Label (default `Qn:a`, `Qn:b`, …).
 
+### Backlog parity note (July 2026)
+
+- **Backlog / parity only:** preserve support for a **secondary smaller and/or italic hint style** for FIB labels or parenthetical helper text.
+- Use the DirtBowl example screenshot as a reference when revisiting FIB rendering parity in `designer-web`.
+- Saved image path: `/Users/DougC1/.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Screenshot_2026-07-03_at_2.26.25_PM-a0b04c0f-0e0b-4528-81ff-ec95a8fd481b.png`
+
 ---
 
 ## Multiple Choice — MCQ (Q2+)

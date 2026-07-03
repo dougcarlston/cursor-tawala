@@ -367,12 +367,21 @@ div.fib:has(input[name="ParentFirstName"])
   padding-bottom: 0;
 }
 
-/* Top-align labels so label-to-label gaps match row gap, not row height */
+/* Top-align Q4 content rows so row spacing follows the flex gap consistently. */
 div.fib:has(input[name="ParentFirstName"])
   > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"])
   td,
 div.fib:has(input[name="ParentFirstName"])
   > table.TAWALA-tabbed-paragraph:has(input[name="Address"])
+  td,
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"])
+  td,
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"])
+  td,
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="Phone1"])
   td {
   vertical-align: top !important;
   padding-top: 2px !important;
@@ -393,6 +402,13 @@ table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) {
   table-layout: fixed;
   width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
   max-width: 100%;
+}
+
+table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) tr {
+  display: grid;
+  grid-template-columns: var(--reg-tabbed-label-width) repeat(3, minmax(0, 1fr));
+  column-gap: 0.5rem;
+  align-items: start;
 }
 
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child {
@@ -424,17 +440,17 @@ table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child i {
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2),
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3),
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4) {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
   vertical-align: top !important;
   padding-top: 2px !important;
-  padding-right: 0.5rem !important;
+  padding-right: 0 !important;
   white-space: nowrap;
   width: auto !important;
   max-width: none !important;
+  min-width: 0;
   box-sizing: border-box;
-}
-
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:last-child {
-  padding-right: 0 !important;
 }
 
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2) strong,
@@ -442,11 +458,13 @@ table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3) strong,
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4) strong {
   font-weight: bold;
   white-space: nowrap;
-  margin-right: 0.35rem;
+  margin-right: 0;
+  flex: 0 0 auto;
 }
 
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) input {
-  width: 6.5em !important;
+  flex: 1 1 auto;
+  width: 100% !important;
   max-width: none;
   min-width: 0;
   margin: 0;
@@ -580,8 +598,24 @@ label.question {
 #SexMCQContainer.mcRadio.horizontal .answer {
   display: inline-flex;
   align-items: center;
-  margin: 0 1.5rem 0 0;
+  gap: 0.35rem;
+  margin: 0 1.35rem 0 0;
   font-weight: normal;
+  font-size: 0;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+#SexMCQContainer.mcRadio.horizontal .answer input {
+  margin: 0;
+  flex: 0 0 auto;
+}
+
+#SexMCQContainer.mcRadio.horizontal .answer label {
+  display: inline-block;
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.1;
 }
 
 .mcRadio.horizontal .answer {
@@ -652,25 +686,30 @@ label.question {
   margin-top: 1.25rem;
 }
 
-.submitButton {
+#form .submitButton {
   margin-top: 1.25rem;
   text-align: right;
 }
 
-input.button,
-input[type="submit"] {
+#form .submitButton input.button,
+#form .submitButton input[type="submit"] {
   background: var(--tawala-submit-bg);
   color: #fff;
   border: none;
   border-radius: 6px;
-  padding: 10px 28px;
+  padding: 10px 28px !important;
   font-family: inherit;
   font-size: 16px;
   font-weight: bold;
+  line-height: 1.2;
+  text-transform: capitalize;
   cursor: pointer;
+  box-shadow: none;
+  -webkit-appearance: none;
+  appearance: none;
 }
 
-input.button:hover,
-input[type="submit"]:hover {
+#form .submitButton input.button:hover,
+#form .submitButton input[type="submit"]:hover {
   filter: brightness(1.08);
 }

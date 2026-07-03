@@ -208,22 +208,23 @@ export function fibToXml(item, escAttr, escText) {
   const letters = new Map(blanks.map((b, i) => [b, blankLetter(i)]));
 
   let parts = [];
-  if (!prompt.trim() && blanks.length > 0) {
+  if (style === "topLabels") {
+    const rows = parseFibPrompt(prompt, blanks);
+    const hasDisplayLabels = blanks.some((b) => b.displayLabel?.trim());
+    parts = hasDisplayLabels
+      ? topLabelsFromBlanks(item, letters, escAttr, escText)
+      : rows.length > 0
+        ? topLabelsRowsXml(rows, letters, escAttr, escText)
+        : emptyPromptBlanksXml(blanks, escAttr, escText);
+  } else if (!prompt.trim() && blanks.length > 0) {
     parts = emptyPromptBlanksXml(blanks, escAttr, escText);
   } else {
     const rows = parseFibPrompt(prompt, blanks);
-    if (style === "topLabels") {
-      const hasDisplayLabels = blanks.some((b) => b.displayLabel?.trim());
-      parts = hasDisplayLabels
-        ? topLabelsFromBlanks(item, letters, escAttr, escText)
-        : topLabelsRowsXml(rows, letters, escAttr, escText);
-    } else {
-      for (const row of rows) {
-        if (left) {
-          parts.push(leftAlignRowXml(row, letters, escAttr, escText));
-        } else {
-          parts.push(...defaultRowXml(row, letters, escAttr, escText));
-        }
+    for (const row of rows) {
+      if (left) {
+        parts.push(leftAlignRowXml(row, letters, escAttr, escText));
+      } else {
+        parts.push(...defaultRowXml(row, letters, escAttr, escText));
       }
     }
   }

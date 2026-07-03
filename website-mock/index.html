@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tawala - Home</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/homepage.css" />
@@ -83,10 +84,11 @@
         </div>
         <div class="block">
           <h3>Quick test drive</h3>
-          <p><a id="homeSurveyLink" href="#">Simple Survey</a></p>
-          <p><a id="homeSignupLink" href="#">Sign-up Sheet</a></p>
-          <p><a id="homePotluckLink" href="#">Potluck</a></p>
-          <p><a id="homeGetTogetherLink" href="#">Get Together</a></p>
+          <p class="note" style="font-size:11px;color:#666;margin:0 0 8px;">Opens deployed templates on localhost:8080.</p>
+          <a class="test-drive-link" id="homeSurveyLink" href="#">Simple Survey</a>
+          <a class="test-drive-link" id="homeSignupLink" href="#">Sign-up Sheet</a>
+          <a class="test-drive-link" id="homePotluckLink" href="#">Potluck</a>
+          <a class="test-drive-link" id="homeGetTogetherLink" href="#">Get Together</a>
         </div>
       </div>
     </div>
@@ -96,10 +98,13 @@
   <script src="js/chrome.js"></script>
   <script>
     TawalaChrome.mount();
-    document.getElementById("homeSurveyLink").href = TAWALA_DEMO_URLS["simple-survey"].testDriveUrl;
-    document.getElementById("homeSignupLink").href = TAWALA_DEMO_URLS["signup-sheet"].testDriveUrl;
-    document.getElementById("homePotluckLink").href = TAWALA_DEMO_URLS["potluck"].testDriveUrl;
-    document.getElementById("homeGetTogetherLink").href = TAWALA_DEMO_URLS["get-together"].testDriveUrl;
+    ["homeSurveyLink", "homeSignupLink", "homePotluckLink", "homeGetTogetherLink"].forEach((id, i) => {
+      const keys = ["simple-survey", "signup-sheet", "potluck", "get-together"];
+      const el = document.getElementById(id);
+      el.href = TAWALA_DEMO_URLS[keys[i]].testDriveUrl;
+      el.target = "_blank";
+      el.rel = "noopener";
+    });
   </script>
 </body>
 </html>

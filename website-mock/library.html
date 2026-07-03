@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
@@ -76,6 +77,7 @@
             </thead>
             <tbody id="projectRows"></tbody>
           </table>
+          <p id="libraryEmpty" class="library-empty" hidden>No projects match your search. <a href="library.html">Show all projects</a></p>
         </div>
       </div>
     </div>
@@ -154,6 +156,16 @@
 
     function renderRows(rows) {
       const tbody = document.getElementById("projectRows");
+      const empty = document.getElementById("libraryEmpty");
+      const table = tbody.closest("table");
+      if (!rows.length) {
+        tbody.innerHTML = "";
+        empty.hidden = false;
+        table.hidden = true;
+        return;
+      }
+      empty.hidden = true;
+      table.hidden = false;
       tbody.innerHTML = rows
         .map(
           (p) => `<tr class="link" onclick="location.href='library-detail.html?project=${p.id}'">
@@ -164,6 +176,15 @@
           </tr>`
         )
         .join("");
+    }
+
+    function highlightCategory(cat) {
+      document.querySelectorAll(".category-tree a").forEach((a) => {
+        const href = a.getAttribute("href") || "";
+        const isAll = !cat && href === "library.html";
+        const isMatch = cat && href === `library.html?cat=${cat}`;
+        a.classList.toggle("active", isAll || isMatch);
+      });
     }
 
     function applyFilters() {
@@ -178,14 +199,16 @@
       if (cat === "basic") rows = rows.filter((p) => p.category.includes("Basic"));
       if (q) rows = rows.filter((p) => p.name.toLowerCase().includes(q));
       const title = document.getElementById("listingTitle");
-      if (q) title.textContent = `Search results for "${params.get("query")}"`;
-      else if (cat === "polls") title.textContent = 'All projects in "Polls" category';
+      if (q) {
+        title.innerHTML = `Search results for "${params.get("query")}" <a class="library-clear-search" href="library.html${cat ? "?cat=" + cat : ""}">(clear)</a>`;
+      } else if (cat === "polls") title.textContent = 'All projects in "Polls" category';
       else if (cat === "activities") title.textContent = 'All projects in "Activities" category';
       else if (cat === "templates") title.textContent = 'All projects in "Templates" category';
       else if (cat === "meetings") title.textContent = 'All projects in "Meetings" category';
       else if (cat === "basic") title.textContent = 'All projects in "Basic" category';
       else title.textContent = "All projects";
       document.getElementById("query").value = params.get("query") || "";
+      highlightCategory(cat);
       renderRows(rows);
     }
 

@@ -46,11 +46,11 @@ node scripts/deploy-tawala-template.mjs "Simple Survey Template"
 | Template | Deploy | Start URL | Smoke test | Status |
 |----------|--------|-----------|------------|--------|
 | Simple Survey Template | OK | See matrix | Submit MCQ → Report tallies | **Passed** (owner, June 2026) |
-| Signup Sheet Template | OK | See matrix | FIB submit → Thank You → back → table grows | **Passed** (owner, July 2026) |
+| Signup Sheet Template | OK | See matrix | FIB submit → Thank You → back → table grows | **Passed** (owner, July 2026) — effectively done for the current browser Designer phase; remaining issues are general Designer / deploy UX, not template-specific |
 | Form with Process | OK | See matrix | Blank form (Designer demo — not a sample app) | **Passed** (owner, July 2026) |
 | Form with process connecting a document | OK | See matrix | Submit → empty **Document 1** shell | **Passed** (owner, July 2026) — empty doc by design; spinner gif patched |
 | Signup Sheet Template w Email | OK | See matrix | FIB + table OK; **Send** needs SMTP | **Blocked** — outbound mail deferred (see Backlog) |
-| Get Together Template | OK | See matrix | Survey → Report correlation table | **Passed w/ caveats** (owner, July 2026) |
+| Get Together Template | OK | See matrix | Survey → Report correlation table | **Passed** (owner, July 2026) — Preview + Deploy both passed; no template-specific errors found |
 | Multiple Question Survey Template | OK | See matrix | Multi MCQ → Report tallies + table | **Passed** (owner, July 2026) |
 | Potluck Template | OK | See matrix | Organizer → Details + thank-you doc | **Passed w/ caveats** (owner, July 2026) |
 | Empty Project | — | — | N/A | — |
@@ -60,6 +60,8 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 ---
 
 ## Phase 3 — Website mock
+
+**Parked July 2026 — Sign-up Sheet / Get Together gate is now met; keep this parked while Preview-vs-Deploy parity remains the next focus.**
 
 **Goal:** Browseable rough draft of tawala.com / MyTawala / Library from legacy JSP/CSS.
 
@@ -92,13 +94,17 @@ Serve: `cd website-mock && python3 -m http.server 5500` → http://localhost:550
 | File → New Project… template picker | **Done** — featured 4 + Basic templates |
 | JSON starters in `public/samples/templates/` | **Done** |
 | Deploy dialog — project-scoped URLs only | **Done** — `server/deployParse.mjs` filters Java response; **restart `npm run dev`** after pull |
-| Deploy featured templates to 8080 | **Simple Survey passed** (owner, July 2026) — **Sign-up Sheet** next |
+| Deploy featured templates to 8080 | **Simple Survey, Sign-up Sheet, and Get Together passed** (owner, July 2026) — remaining work is now general Designer / deploy UX |
 | DirtBowl off File menu | **Done** — open via **Open Project…** or `deploy-dirtbowl-java.mjs` |
 | DirtBowl → website Library | Backlog — then no “master menu” of all dev-user start points |
 | Full Potluck / email templates | Deferred |
 | `.tawala` → JSON import | Backlog |
 | FIB canvas layout (mix text + blanks freely) | Backlog — owner July 2026; current block layout is MVP |
 | Fields palette drag into text/docs/process | Partial — drag source wired; drop targets backlog |
+| DirtBowl authoring as a browser-Designer test | **Blocked** — browser Designer lacks the legacy multi-window / MDI flow and Pre/Post process visibility needed for meaningful large-project authoring |
+| DirtBowl Registration as parity sample | **Active** — use as the shared Preview / Deploy stress test while theme/CSS parity is tightened |
+
+**Phase note (owner, July 2026):** Sign-up Sheet is effectively complete for the current browser Designer phase, and Get Together also passed Preview + Deploy without template-specific errors. The next useful slice is Preview-vs-Deploy parity work, not more template-by-template authoring passes.
 
 **Prerequisites before Process editing (owner July 2026)** — not needed for Sign-up Sheet yet, but **required before** serious Process work:
 
@@ -106,6 +112,23 @@ Serve: `cd website-mock && python3 -m http.server 5500` → http://localhost:550
 |------|----------|--------|
 | **Insertion-point arrow** (Form / Process / Document) | **Blocker for Processes** | Legacy blue arrow marks where the next insert lands; replicate before Process editor work. Defer during Sign-up Sheet pass only. |
 | **Move Up / Move Down** (form items, process statements, document blocks) | **Blocker for Processes** | Essential once a script or form has more than a few lines; legacy Designer had this throughout. Defer during Sign-up Sheet pass only. |
+| **Large-project / multi-window project visibility** | **Blocker for DirtBowl authoring** | Browser Designer still lacks the legacy MDI-style shell and easy visibility into Form, Pre-Process, and Post-Process windows. Until that exists, DirtBowl is not a meaningful authoring test for large projects. |
+
+**Preview vs Deploy parity findings (owner, July 2026)** — use DirtBowl Registration as the sample and keep the findings split so fixes stay scoped:
+
+| Bucket | Status / note |
+|------|--------|
+| **Style / theme parity** | Active next phase — continue theme/CSS parity before full Designer architecture work; it is smaller and benefits multiple tracks. |
+| **Data / seed mismatch** | Separate issue bucket — admin/division seed differences can mimic UI bugs; track independently from CSS/theme work. |
+| **General authoring architecture** | Deferred blocker — full DirtBowl authoring waits on multi-window / MDI parity plus Pre/Post process visibility. |
+
+**DirtBowl Registration parity pass (July 2026):**
+
+- Fixed: **Sex of Registrant** MCQ alignment.
+- Fixed: **Parent Phone Numbers** overlap / crowding.
+- Fixed: Submit button styling.
+- Improved: overall Deploy parity is substantially closer to Preview.
+- Remaining refinement: grouped lower parent-contact block vertical spacing.
 
 Run: `cd designer-web && npm run dev` → http://localhost:5173 — **File → New Project…**
 
