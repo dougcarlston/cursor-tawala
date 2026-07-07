@@ -15,7 +15,7 @@ Two pieces of work landed while you were away. **Neither is pushed** — review 
 | Hash | What |
 |------|------|
 | `9b5264b` | **Fields Phase 2** — drag & double-click field tokens into editors (with drop guardrails) |
-| _(MDI)_ | **MDI Pass 1** — canvas window shell for forms/processes/documents *(hash added on commit — see git log)* |
+| `e88d3ba` | **MDI Pass 1** — canvas window shell for forms/processes/documents |
 
 Push both when you're happy: `git push` (branch is ahead of `origin/main`).
 
