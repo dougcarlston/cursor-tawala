@@ -1,5 +1,7 @@
 # Chat handoff — three parallel tracks
 
+**New to Cursor?** Start here: [`docs/START_NEW_CHAT.md`](START_NEW_CHAT.md) — step-by-step new chat + copy-paste Start Script.
+
 Use this file when starting or resuming a Cursor chat. Copy the **5-line opener** for the track you are working on, paste it as your first message, and rename the chat to match the suggested title.
 
 Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CURSOR_CHAT_GUIDE.md`](CURSOR_CHAT_GUIDE.md).
