@@ -60,8 +60,10 @@ export function FormEditor({ formName }: Props) {
   }, [editorTab, project, formName]);
 
   return (
+    // The MDI window title bar (`Form - Name`) is the single window heading now,
+    // so the editor body starts straight at the Design/Preview tabs — no duplicate
+    // inner title (owner Decision 3, July 2026).
     <div className="form-editor">
-      <div className="form-window-title">Form — {formName}</div>
       <div className="form-tabs">
         <button
           type="button"

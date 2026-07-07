@@ -25,7 +25,9 @@ Push both when you're happy: `git push` (branch is ahead of `origin/main`).
 cd designer-web && npm run dev      # UI on http://localhost:5173 (or 5174 if busy)
 ```
 
-- **MDI:** The center canvas is now a **window manager**. On load, `Form 1` opens as a window. In **Project Explorer**, click any **form / process / document** → it opens (or focuses) an overlapping window.
+- **MDI:** The center canvas is now a **window manager**. **On load the canvas is EMPTY** (owner decision D2 — no form auto-opens). In **Project Explorer**, **single-click** any **form / process / document** → it opens (or focuses) an overlapping window.
+  - Each new window **cascades down-and-right** from the previous one (D1); the cascade resets when the canvas is emptied.
+  - **Forms open in Design mode** (D3); Process/Document windows have no Design/Preview tab.
   - **Drag** a window by its title bar; **resize** from any edge/corner; **click** a background window to bring it to front.
   - **Minimize** (`_`) sends it to the bottom taskbar; click the taskbar chip to restore. **Close** (`×`) removes it.
   - Open several at once (DirtBowl test: Registration form + a Pre/Post process + a document).
@@ -37,12 +39,18 @@ cd designer-web && npm run dev      # UI on http://localhost:5173 (or 5174 if bu
 - **Real editors** are embedded (not placeholders): `FormEditor`, `ProcessEditor`, `DocumentEditor` render inside each window frame.
 - The only empty-state placeholder is when **no** windows are open (all closed): a "Select a form… to open a window" hint.
 
-### 4. Open questions / decisions needed from you
+### 4. Open questions / decisions — RESOLVED (owner, July 2026)
 
-1. **Open trigger:** Pass 1 opens a window on **single click** of an Explorer leaf. Legacy used **double-click** to open the MDI child (single-click just selects). Want single-click, double-click, or a right-click "Open" — your call.
-2. **Per-window editor state:** Design/Preview tab and the selected form item are still **global**, so multiple open form windows share them. Worth the Pass 2 refactor to make them per-window?
-3. **Windows menu:** Add a legacy-style **Windows** menu (list + tile/cascade) in Pass 2?
-4. **Auto-open first form on load** — kept the canvas from being blank. Keep, or start with an empty canvas?
+Three MDI window-open decisions were confirmed and implemented on top of Pass 1 (`e88d3ba`). **Not committed** — pending owner review of the Pass 1 checklist.
+
+1. **Open trigger → SINGLE-CLICK (D1).** Single-click an Explorer leaf opens (or focuses) its window on top; each new window **cascades down-and-right** from the previous one and resets when the canvas empties. Re-opening an already-open entity focuses it (no duplicate). *(Was: single vs double vs right-click "Open".)*
+2. **Per-window editor state → still Pass 2.** Design/Preview tab + selected item remain **global**. **D3 partial fix:** opening a form always defaults the shared tab to **Design**, so a freshly opened form is never left on another form's Preview. Full per-window tab/item state is still the Pass 2 refactor.
+3. **Windows menu →** still Pass 2 (unchanged).
+4. **Auto-open first form → NO; START EMPTY (D2).** The canvas opens with no windows; the placeholder hint shows until the first click.
+
+**Also (D3):** window title format confirmed `{Type} - {name}` (already matched); **Forms open in Design**, and Process/Document windows have **no Design/Preview** tab. Removed the redundant inner `Form — Name` heading (the window title bar is the single heading now). See `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §2 (D1–D3 table) for the full write-up.
+
+**Conflict note (owner checklist review):** §6 checklist item _"click a form/process/document → window opens"_ still passes (now single-click, empty start). The old checklist line _"On load, `Form 1` opens as a window"_ is **superseded by D2 (start empty)** — verify the empty-canvas placeholder instead.
 
 ### 5. Recommended next steps (Pass 2)
 
@@ -53,8 +61,13 @@ cd designer-web && npm run dev      # UI on http://localhost:5173 (or 5174 if bu
 
 ### 6. How to verify (checklist)
 
-- [ ] `cd designer-web && npm run build` → clean `tsc -b && vite build` (verified this session).
-- [ ] `npm run dev`, click a form/process/document → window opens.
+- [ ] `cd designer-web && npm run build` → clean `tsc -b && vite build` (`tsc -b` re-verified after D1–D3).
+- [ ] `npm run dev`, **new project / load a template → canvas is EMPTY** (placeholder hint, no auto-opened form) — **D2**.
+- [ ] **Single-click** a form/process/document → window opens on top — **D1**.
+- [ ] Open a second, then a third node → each new window **cascades down-right**, revealing the prior title bar — **D1**.
+- [ ] Single-click **Registration** → window opens showing **Design** (not Preview) — **D3**.
+- [ ] Open a **process** and a **document** → their windows have **no Design/Preview tab** (just the editor); titles read `Process - …` / `Document - …` — **D3**.
+- [ ] Close all windows, open a new one → cascade **restarts at the origin** — **D1**.
 - [ ] Drag / resize / minimize+restore / close a window.
 - [ ] Open 3 windows, click between them → z-order front works.
 - [ ] Rename a form in Explorer while its window is open → title updates, no "not found".

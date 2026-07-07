@@ -428,13 +428,6 @@ textarea {
   min-width: 0;
 }
 
-.form-window-title {
-  padding: 4px 10px;
-  font-weight: 600;
-  background: linear-gradient(180deg, #fafafa 0%, #e8e8e8 100%);
-  border-bottom: 1px solid var(--border);
-}
-
 .form-tabs {
   display: flex;
   border-bottom: 1px solid var(--border);
@@ -1424,6 +1417,48 @@ textarea {
 .process-list li button.selected {
   background: #e8f0fe;
   font-weight: 600;
+}
+
+/* Contained hover tooltip for buttons inside MDI windows (process/document command
+   toolbars, row delete). Unlike native `title` tooltips — which the browser paints at
+   OS level, so they spill past the window frame and linger for seconds (owner Bug 2,
+   July 2026) — this tip is a normal DOM node, clipped to the window's scroll box. */
+.win-tip {
+  position: relative;
+  display: inline-flex;
+}
+
+.win-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 50;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: #2f2f2f;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.4;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.08s ease;
+}
+
+/* Anchor to the right edge for tips near a container's right side (e.g. the row
+   delete button in the narrow process list) so the tip opens inward, not clipped. */
+.win-tip-right::after {
+  left: auto;
+  right: 0;
+}
+
+.win-tip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.3s;
 }
 
 .process-toolbar {

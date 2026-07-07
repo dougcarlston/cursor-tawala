@@ -71,9 +71,14 @@ export function ProcessEditor({ processName }: Props) {
         <div className="process-list">
           <div className="process-toolbar">
             {Object.keys(COMMAND_TEMPLATES).map((t) => (
-              <button key={t} type="button" onClick={() => addCommand(t)} title={`Add ${t}`}>
-                +{t}
-              </button>
+              // Contained hover tip (`.win-tip`) instead of a native `title`: native tooltips
+              // render at OS level and spill outside the MDI window, then linger a couple of
+              // seconds (owner Bug 2, July 2026). This one is clipped to the window.
+              <span key={t} className="win-tip" data-tip={`Add ${t}`}>
+                <button type="button" onClick={() => addCommand(t)}>
+                  +{t}
+                </button>
+              </span>
             ))}
           </div>
           <ul>
@@ -86,14 +91,15 @@ export function ProcessEditor({ processName }: Props) {
                 >
                   {i + 1}. {c.cmd}
                 </button>
-                <button
-                  type="button"
-                  className="item-delete"
-                  title="Remove"
-                  onClick={() => setCommands(commands.filter((_, j) => j !== i))}
-                >
-                  ×
-                </button>
+                <span className="win-tip win-tip-right" data-tip="Remove">
+                  <button
+                    type="button"
+                    className="item-delete"
+                    onClick={() => setCommands(commands.filter((_, j) => j !== i))}
+                  >
+                    ×
+                  </button>
+                </span>
               </li>
             ))}
           </ul>

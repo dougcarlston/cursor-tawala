@@ -106,19 +106,28 @@ Variables           ← expanded
 
 **Legacy:** Designers can open Forms, Processes, and Documents in **separate MDI child windows** with multiple windows open at once. The **Windows** menu lists open children; the center pane hosts `Form - …`, `Process - …`, `Document - …` windows simultaneously.
 
-**Browser Designer (`designer-web`) — Pass 1 (July 2026): implemented.** The center canvas is now a **window manager** (`src/components/mdi/`). Clicking a form / process / document leaf in Project Explorer **opens** (or **focuses**) an overlapping MDI child window. Windows **drag** by title bar, **resize** from all edges/corners, **stack** with click-to-front z-order, **minimize** to a bottom taskbar, and **close**. Title bars read `Form - Name` / `Process - Name` / `Document - Name` (matching the legacy screenshot). Each window embeds the **real single-pane editor** (`FormEditor` / `ProcessEditor` / `DocumentEditor`), not a placeholder.
+**Browser Designer (`designer-web`) — Pass 1 (July 2026): implemented.** The center canvas is now a **window manager** (`src/components/mdi/`). **Single-clicking** a form / process / document leaf in Project Explorer **opens** (or **focuses**) an overlapping MDI child window. Windows **drag** by title bar, **resize** from all edges/corners, **stack** with click-to-front z-order, **minimize** to a bottom taskbar, and **close**. Title bars read `Form - Name` / `Process - Name` / `Document - Name` (matching the legacy screenshot). Each window embeds the **real single-pane editor** (`FormEditor` / `ProcessEditor` / `DocumentEditor`), not a placeholder.
 
 | Pass 1 — done | Deferred (Pass 2+) |
 |---------------|--------------------|
-| Open window from Explorer leaf; re-open focuses existing window (`id = kind:name`) | **Windows menu** listing open children |
+| **Single-click** Explorer leaf opens window; re-open focuses existing window (`id = kind:name`, no duplicate) | **Windows menu** listing open children |
 | Drag (title bar), resize (8 handles), click-to-front z-order | Yellow **connection banner** in process windows (§3, §6) |
 | Minimize → taskbar; restore; close | Properties **popup** migration (§5) |
-| Embedded real editors; title `Type - Name`; cascade offset on open | Persist window layout to the project file |
+| Embedded real editors; title `Type - Name`; **cascade down-right** from previous window (resets when canvas empties) | Persist window layout to the project file |
 | Windows re-key on entity **rename**; cleared on new/open project | **Snap / cascade / tile** commands; maximize |
-| Auto-open first form on project load so the canvas is never blank | Per-window editor **tab** state (Design/Preview and selected item are still **global** — see limitations) |
+| **Canvas starts EMPTY** (no auto-open); placeholder shows until first click | Per-window editor **tab** state (Design/Preview and selected item are still **global** — see limitations) |
+| **Forms open in Design mode**; Process/Document windows have no Design/Preview tab | |
+
+**Owner decisions — July 2026 (MDI window-open behavior; confirmed):**
+
+| # | Decision | Legacy / owner rule | Pass 1 browser status |
+|---|----------|---------------------|-----------------------|
+| D1 | **Single-click open + cascade** | Single-click a Form / Process / Document in Explorer → opens on the canvas, raised to the top (focused). Each new window **cascades down-and-right** from the previous one, far enough to reveal the prior window's title bar (~24–30px). Re-opening an already-open entity **focuses** it (no duplicate). | **Done** — `openWindow` opens/raises on single-click; `cascadeIndex` steps each new window by `WINDOW_CASCADE_STEP` (28px), wraps after 8, and resets to origin when the canvas empties. |
+| D2 | **Start empty** | On project load the canvas has **no windows open** (do not auto-open the first form). Empty-canvas placeholder shows when nothing is open. | **Done** — initial state, `newProject`, `importJson`, `setProject` all leave `openWindows: []`; `CanvasWindowManager` renders the "Select a form / process / document…" placeholder. |
+| D3 | **Title format + Forms open in Design** | Title bar reads `{Type} - {name}` (e.g. `Form - Registration`, `Process - admin-post`, `Document - WhosComing`). **Forms always open in Design** (not Preview). **No Preview** for Processes or Documents — only Forms have Design/Preview tabs. | **Done** — MDI title bar already `Type - Name`; `openWindow` resets the (still-global) `editorTab` to `design` whenever a form opens; Process/Document editors have no Design/Preview tabs. Removed the redundant inner `Form — Name` heading (window title bar is now the single heading). |
 
 **Known Pass 1 limitations (documented, acceptable for a shell):**
-- `editorTab` (Design/Preview) and `selectedItemIndex` live in the **global** store, so all open **form** windows share the active Design/Preview tab and highlighted item. Per-window editor state is a Pass 2 refactor.
+- `editorTab` (Design/Preview) and `selectedItemIndex` live in the **global** store, so all open **form** windows share the active Design/Preview tab and highlighted item. Per-window editor state is a Pass 2 refactor. **D3 mitigation:** opening a form always **resets the shared tab to Design**, so a newly opened form window is never left showing another form's Preview — but switching one form window to Preview still affects the others until Pass 2.
 - Each embedded `FormEditor` registers a global Delete/Backspace key handler; duplicate handlers are **safe** (guarded on `selectedItemIndex === null`) but should be de-duplicated in Pass 2.
 - No maximize button yet (minimize + close only).
 
@@ -289,3 +298,15 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 | `designer-web/src/styles.css` | `.mdi-*` window chrome: surface backdrop, title bar (active blue / inactive grey), controls, resize handles, taskbar. | **Done** (Pass 1) |
 
 *Verified: `tsc -b && vite build` clean (July 2026). Live browser walkthrough not run in this session — Cursor IDE browser tab was unavailable (see CHAT_HANDOFF manual test steps). Deferred to Pass 2: Windows menu, process connection banner, per-window editor tab/item state, layout persistence, snap/cascade/tile, maximize.*
+
+### Owner window-open decisions (D1–D3, July 2026)
+
+Applied on top of the Pass 1 shell (commit `e88d3ba`) — **not committed** pending owner review of the Pass 1 checklist.
+
+| File | Change | Decision |
+|------|--------|----------|
+| `designer-web/src/store/projectStore.ts` | **Start empty:** removed the seeded `Form 1` window and the auto-open in `newProject` / `importJson`; initial `openWindows: []`, `activeWindowId: null`. **Cascade:** added `cascadeIndex` state — new windows offset via `cascadeBounds(cascadeIndex)` (down-right, wraps after `WINDOW_CASCADE_WRAP`), incremented per new window, reset to 0 on `closeWindow` when the canvas empties and on `setProject` / `newProject` / `importJson`. **Forms → Design:** `openWindow` resets the global `editorTab` to `"design"` when a form opens (both open and re-focus paths); Process/Document leave it untouched. | D1, D2, D3 |
+| `designer-web/src/components/FormEditor.tsx` | Removed the redundant inner `Form — {name}` heading (`.form-window-title`); the MDI window title bar (`Form - Name`) is now the single window heading. Editor body starts at the Design/Preview tabs. | D3 |
+| `designer-web/src/styles.css` | Dropped the now-unused `.form-window-title` rule. | D3 |
+
+*Verified: `tsc -b` clean (July 2026). Manual browser walkthrough left to the owner (see CHAT_HANDOFF § "MDI window-open decisions"). Title-bar format `Type - Name` already matched the owner spec (D3) — no change needed to `CanvasWindow.tsx`. Process/Document windows already had no Design/Preview tabs (D3). Per-window Design/Preview + selected-item state remains **global** (Pass 2); D3 only guarantees the initial/default is Design when a form opens.*

@@ -44,8 +44,15 @@ export interface DesignerWindow {
 }
 
 const WINDOW_DEFAULT_SIZE = { w: 640, h: 460 };
-/** Cascade step for newly opened windows so they stack partially offset. */
+/**
+ * Cascade step for newly opened windows so each steps down-and-right from the
+ * previous one (owner decision, July 2026). Must clear a title bar so the prior
+ * window's `Type - Name` heading stays visible — ~28px ≈ title-bar height + a
+ * small nudge.
+ */
 const WINDOW_CASCADE_STEP = 28;
+/** Wrap the cascade back to the origin after this many steps so windows stay on-canvas. */
+const WINDOW_CASCADE_WRAP = 8;
 
 function windowId(kind: WindowKind, name: string): string {
   return `${kind}:${name}`;
@@ -55,9 +62,14 @@ function maxZ(windows: DesignerWindow[]): number {
   return windows.reduce((m, w) => Math.max(m, w.z), 0);
 }
 
-/** Position/size for the next cascaded window given how many are already open. */
-function cascadeBounds(count: number): Pick<DesignerWindow, "x" | "y" | "w" | "h"> {
-  const offset = (count % 8) * WINDOW_CASCADE_STEP;
+/**
+ * Position/size for the next cascaded window. `step` is the running cascade
+ * index (0 for the first window after an empty canvas); each increment offsets
+ * the window down and to the right, wrapping back to the origin after
+ * `WINDOW_CASCADE_WRAP` so long sessions never march off-screen.
+ */
+function cascadeBounds(step: number): Pick<DesignerWindow, "x" | "y" | "w" | "h"> {
+  const offset = (step % WINDOW_CASCADE_WRAP) * WINDOW_CASCADE_STEP;
   return { x: 20 + offset, y: 20 + offset, w: WINDOW_DEFAULT_SIZE.w, h: WINDOW_DEFAULT_SIZE.h };
 }
 
@@ -88,6 +100,8 @@ interface ProjectState {
   showDeployResult: boolean;
   openWindows: DesignerWindow[];
   activeWindowId: string | null;
+  /** Running cascade index for the next opened window; resets when the canvas empties. */
+  cascadeIndex: number;
   openWindow: (kind: WindowKind, name: string) => void;
   closeWindow: (id: string) => void;
   focusWindow: (id: string) => void;
@@ -140,34 +154,47 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   lastDeploy: null,
   showLogin: false,
   showDeployResult: false,
-  // Seed the default "Form 1" as an open MDI child so the canvas is not blank on
-  // first mount (matches the default `selection`). Cleared on new/open project.
-  openWindows: [
-    { id: windowId("form", "Form 1"), kind: "form", name: "Form 1", ...cascadeBounds(0), z: 1, minimized: false },
-  ],
-  activeWindowId: windowId("form", "Form 1"),
+  // Owner decision (July 2026): the canvas starts EMPTY — no window is auto-opened
+  // on first mount or project load. The empty-canvas placeholder shows until the
+  // designer single-clicks a form / process / document in Project Explorer.
+  openWindows: [],
+  activeWindowId: null,
+  cascadeIndex: 0,
 
   openWindow: (kind, name) => {
-    const { openWindows } = get();
+    const { openWindows, cascadeIndex } = get();
     const id = windowId(kind, name);
     const existing = openWindows.find((w) => w.id === id);
     const topZ = maxZ(openWindows) + 1;
+    // Decision 3 (July 2026): Forms always open in Design mode. The Design/Preview
+    // tab is still a GLOBAL store field in Pass 1, so opening any form resets the
+    // shared tab to Design (true per-window tab state is Pass 2). Processes and
+    // Documents have no Design/Preview tab, so leave the tab untouched for them.
+    const tabPatch: Partial<ProjectState> = kind === "form" ? { editorTab: "design" } : {};
     if (existing) {
+      // Owner rule: re-opening an already-open entity focuses/raises it (no duplicate).
+      // Preserve the selected form item when the entity is unchanged so re-focusing the
+      // window you're editing does not clear the Inspector's field-drop target (Bug fix,
+      // July 2026: "worked once then refused"). Switching to a different entity resets it.
+      const { selection, selectedItemIndex } = get();
+      const sameEntity = selection.kind === kind && selection.name === name;
       set({
         openWindows: openWindows.map((w) =>
           w.id === id ? { ...w, z: topZ, minimized: false } : w,
         ),
         activeWindowId: id,
         selection: { kind, name },
-        selectedItemIndex: null,
+        selectedItemIndex: sameEntity ? selectedItemIndex : null,
+        ...tabPatch,
       });
       return;
     }
+    // Decision 1: each new window cascades down-and-right from the previous one.
     const win: DesignerWindow = {
       id,
       kind,
       name,
-      ...cascadeBounds(openWindows.length),
+      ...cascadeBounds(cascadeIndex),
       z: topZ,
       minimized: false,
     };
@@ -176,6 +203,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: id,
       selection: { kind, name },
       selectedItemIndex: null,
+      cascadeIndex: cascadeIndex + 1,
+      ...tabPatch,
     });
   },
 
@@ -187,19 +216,30 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       // Fall back to the top-most remaining window.
       nextActive = next.reduce((top, w) => (w.z > top.z ? w : top), next[0]).id;
     }
-    set({ openWindows: next, activeWindowId: nextActive });
+    set({
+      openWindows: next,
+      activeWindowId: nextActive,
+      // Decision 1: reset the cascade once the canvas is empty so the next window
+      // opens back at the origin instead of continuing to march down-right.
+      ...(next.length === 0 ? { cascadeIndex: 0 } : {}),
+    });
   },
 
   focusWindow: (id) => {
-    const { openWindows } = get();
+    const { openWindows, selection, selectedItemIndex } = get();
     const target = openWindows.find((w) => w.id === id);
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
+    // Bug fix (July 2026): clicking or DRAGGING a window calls focusWindow, which used to
+    // clear selectedItemIndex — silently removing the Inspector's field-drop editor so
+    // field drops "worked once then refused" after any window move. Keep the selected item
+    // when the focused window is the entity already being edited; only reset when switching.
+    const sameEntity = selection.kind === target.kind && selection.name === target.name;
     set({
       openWindows: openWindows.map((w) => (w.id === id ? { ...w, z: topZ } : w)),
       activeWindowId: id,
       selection: { kind: target.kind, name: target.name },
-      selectedItemIndex: null,
+      selectedItemIndex: sameEntity ? selectedItemIndex : null,
     });
   },
 
@@ -217,17 +257,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   restoreWindow: (id) => {
-    const { openWindows } = get();
+    const { openWindows, selection, selectedItemIndex } = get();
     const target = openWindows.find((w) => w.id === id);
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
+    const sameEntity = selection.kind === target.kind && selection.name === target.name;
     set({
       openWindows: openWindows.map((w) =>
         w.id === id ? { ...w, minimized: false, z: topZ } : w,
       ),
       activeWindowId: id,
       selection: { kind: target.kind, name: target.name },
-      selectedItemIndex: null,
+      selectedItemIndex: sameEntity ? selectedItemIndex : null,
     });
   },
 
@@ -246,6 +287,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selectedItemIndex: null,
       openWindows: [],
       activeWindowId: null,
+      cascadeIndex: 0,
     }),
   setSelection: (selection) => set({ selection, selectedItemIndex: null }),
   setEditorTab: (editorTab) => set({ editorTab }),
@@ -265,6 +307,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const project = empty
       ? { ...emptyProject(), forms: [], processes: [], documents: [] }
       : emptyProject();
+    // Decision 2 (July 2026): start empty — do NOT auto-open the first form. The
+    // canvas shows its placeholder until the designer clicks a node in Explorer.
     set({
       project,
       dirty: true,
@@ -273,8 +317,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selectedItemIndex: null,
       openWindows: [],
       activeWindowId: null,
+      cascadeIndex: 0,
     });
-    if (!empty) get().openWindow("form", "Form 1");
   },
 
   loadTemplate: async (samplePath) => {
@@ -570,6 +614,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   importJson: (raw) => {
     const project = JSON.parse(raw) as TawalaProject;
     const firstForm = project.forms[0]?.name;
+    // Decision 2 (July 2026): start empty on load — select the first form in the
+    // tree for context, but do NOT auto-open a window; the canvas stays empty
+    // until the designer single-clicks a node.
     set({
       project,
       dirty: false,
@@ -578,8 +625,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selectedItemIndex: null,
       openWindows: [],
       activeWindowId: null,
+      cascadeIndex: 0,
     });
-    if (firstForm) get().openWindow("form", firstForm);
   },
 
   deploy: async () => {
