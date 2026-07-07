@@ -135,6 +135,7 @@ interface ProjectState {
   updateForm: (formName: string, patch: Partial<TawalaForm>) => void;
   deleteFormItem: (formName: string, index: number) => void;
   deleteSelectedFormItem: () => void;
+  insertProcessCommand: (command: TawalaProcessCommand) => void;
   updateProcessCommands: (processName: string, commands: TawalaProcessCommand[]) => void;
   updateDocumentContent: (documentName: string, content: string | RichContentBlock[]) => void;
   selectForm: (name: string) => void;
@@ -209,16 +210,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   closeWindow: (id) => {
-    const { openWindows, activeWindowId } = get();
+    const { openWindows, activeWindowId, selection, selectedItemIndex } = get();
     const next = openWindows.filter((w) => w.id !== id);
     let nextActive = activeWindowId === id ? null : activeWindowId;
     if (nextActive === null && next.length > 0) {
       // Fall back to the top-most remaining window.
       nextActive = next.reduce((top, w) => (w.z > top.z ? w : top), next[0]).id;
     }
+    // Bug fix (owner Issue 2, July 2026): keep `selection` — which drives the docked
+    // palette (Items/Processes) and every insert target — in sync with the window that
+    // becomes active. Previously close/minimize moved `activeWindowId` to a fallback
+    // window WITHOUT updating `selection`, so closing a Process/Document that fell back
+    // to a Form window left the Items palette greyed even though a Form was active.
+    const nextActiveWin = nextActive ? next.find((w) => w.id === nextActive) ?? null : null;
+    const sameEntity =
+      !nextActiveWin ||
+      (selection.kind === nextActiveWin.kind && selection.name === nextActiveWin.name);
     set({
       openWindows: next,
       activeWindowId: nextActive,
+      selection: nextActiveWin ? { kind: nextActiveWin.kind, name: nextActiveWin.name } : selection,
+      selectedItemIndex: sameEntity ? selectedItemIndex : null,
       // Decision 1: reset the cascade once the canvas is empty so the next window
       // opens back at the origin instead of continuing to march down-right.
       ...(next.length === 0 ? { cascadeIndex: 0 } : {}),
@@ -244,7 +256,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   minimizeWindow: (id) => {
-    const { openWindows, activeWindowId } = get();
+    const { openWindows, activeWindowId, selection, selectedItemIndex } = get();
     const next = openWindows.map((w) => (w.id === id ? { ...w, minimized: true } : w));
     let nextActive = activeWindowId;
     if (activeWindowId === id) {
@@ -253,7 +265,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         ? visible.reduce((top, w) => (w.z > top.z ? w : top), visible[0]).id
         : null;
     }
-    set({ openWindows: next, activeWindowId: nextActive });
+    // Same selection-sync as closeWindow: the palette + insert target must follow the
+    // window that becomes active when the current one is minimized (owner Issue 2).
+    const nextActiveWin = nextActive ? next.find((w) => w.id === nextActive) ?? null : null;
+    const sameEntity =
+      !nextActiveWin ||
+      (selection.kind === nextActiveWin.kind && selection.name === nextActiveWin.name);
+    set({
+      openWindows: next,
+      activeWindowId: nextActive,
+      selection: nextActiveWin ? { kind: nextActiveWin.kind, name: nextActiveWin.name } : selection,
+      selectedItemIndex: sameEntity ? selectedItemIndex : null,
+    });
   },
 
   restoreWindow: (id) => {
@@ -591,6 +614,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { selection, selectedItemIndex } = get();
     if (selection.kind !== "form" || !selection.name || selectedItemIndex === null) return;
     get().deleteFormItem(selection.name, selectedItemIndex);
+  },
+
+  // Docked Processes/Statements palette insert (owner Issue 1, July 2026): mirrors
+  // `insertFormItem` but targets the active PROCESS window. `selection` tracks the
+  // active window (see focusWindow/openWindow/closeWindow), so the palette always
+  // appends the statement to the process the designer is looking at.
+  insertProcessCommand: (command) => {
+    const { project, selection } = get();
+    if (selection.kind !== "process" || !selection.name) return;
+    const processes = project.processes ?? [];
+    if (!processes.some((p) => p.name === selection.name)) return;
+    const nextProcesses = processes.map((p) =>
+      p.name === selection.name
+        ? { ...p, commands: [...(p.commands ?? []), structuredClone(command)] }
+        : p,
+    );
+    set({
+      project: { ...project, processes: nextProcesses },
+      dirty: true,
+      statusMessage: `Inserted ${command.cmd} statement`,
+    });
   },
 
   updateProcessCommands: (processName, commands) => {

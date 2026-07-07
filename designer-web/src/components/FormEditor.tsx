@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
-import { FormItemsPalette } from "./FormItemsPalette";
 import { FibFieldPreview } from "./FibFieldPreview";
 import { FunctionTableBadge } from "./FunctionTableBadge";
+import { HeadingCanvasRow } from "./HeadingCanvasRow";
 
 interface Props {
   formName: string;
@@ -82,10 +82,11 @@ export function FormEditor({ formName }: Props) {
       </div>
 
       {editorTab === "design" ? (
+        // The Items palette used to live inside each form window (a left strip).
+        // Owner decision D-Items-palette-placement (July 2026): it now docks beside
+        // Project Explorer (see App.tsx `.designer-items`), matching legacy layout,
+        // so the window body is just the canvas.
         <div className="form-design-body">
-          <div className="form-insert-strip">
-            <FormItemsPalette />
-          </div>
           <div
             className="form-canvas"
             onClick={(e) => {
@@ -98,31 +99,44 @@ export function FormEditor({ formName }: Props) {
                 button to insert.
               </p>
             ) : (
-              form.items.map((item, i) => (
-                <div
-                  key={`${item.label}-${i}`}
-                  className={`form-item-block${selectedItemIndex === i ? " selected" : ""}`}
-                  onClick={() => setSelectedItemIndex(i)}
-                >
-                  <div className="form-item-label">
-                    <span>
-                      [{item.type}] {item.label}
-                    </span>
-                    <button
-                      type="button"
-                      className="item-delete"
-                      title="Delete item"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        deleteFormItem(formName, i);
-                      }}
-                    >
-                      Delete
-                    </button>
+              form.items.map((item, i) =>
+                // Heading is the first canvas-inline WYSIWYG item (spec:
+                // DESIGNER_FORM_ITEMS_HEADING.md): its own edit/collapse row with badge +
+                // on-canvas Heading Type, no debug label bar / Delete chrome / dashed wrapper.
+                item.type === "heading" ? (
+                  <HeadingCanvasRow
+                    key={`${item.label}-${i}`}
+                    item={item}
+                    index={i}
+                    formName={formName}
+                    selected={selectedItemIndex === i}
+                  />
+                ) : (
+                  <div
+                    key={`${item.label}-${i}`}
+                    className={`form-item-block${selectedItemIndex === i ? " selected" : ""}`}
+                    onClick={() => setSelectedItemIndex(i)}
+                  >
+                    <div className="form-item-label">
+                      <span>
+                        [{item.type}] {item.label}
+                      </span>
+                      <button
+                        type="button"
+                        className="item-delete"
+                        title="Delete item"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          deleteFormItem(formName, i);
+                        }}
+                      >
+                        Delete
+                      </button>
+                    </div>
+                    <CanvasItem item={item} />
                   </div>
-                  <CanvasItem item={item} />
-                </div>
-              ))
+                ),
+              )
             )}
           </div>
         </div>
@@ -141,14 +155,10 @@ export function FormEditor({ formName }: Props) {
   );
 }
 
-function CanvasItem({ item }: { item: FormItem }) {
+// Headings render via `HeadingCanvasRow` (canvas WYSIWYG). CanvasItem handles the
+// remaining item types inside the generic `.form-item-block` wrapper.
+function CanvasItem({ item }: { item: Exclude<FormItem, { type: "heading" }> }) {
   switch (item.type) {
-    case "heading":
-      return item.level === "sub" ? (
-        <h3 className="preview-heading-sub">{item.content ?? item.label}</h3>
-      ) : (
-        <h2 className="preview-heading-main">{item.content ?? item.label}</h2>
-      );
     case "text":
       if (Array.isArray(item.content)) {
         return <FunctionTableBadge content={item.content} />;

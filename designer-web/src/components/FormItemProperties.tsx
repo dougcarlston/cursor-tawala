@@ -30,54 +30,39 @@ interface Props {
 export function FormItemProperties({ item, onChange }: Props) {
   return (
     <div className="properties-panel properties-panel-compact">
-      <label>
-        Item label
-        <FieldTextInput value={item.label} onValueChange={(v) => onChange({ label: v })} />
-      </label>
-
-      {(item.type === "heading" || item.type === "text") && (
-        <>
-          {item.type === "heading" && (
-            <label>
-              Level
-              <select
-                value={item.level ?? "main"}
-                onChange={(e) =>
-                  onChange({ level: e.target.value as "main" | "sub" })
-                }
-              >
-                <option value="main">Main heading</option>
-                <option value="sub">Sub heading</option>
-              </select>
-            </label>
-          )}
-          {item.type === "text" ? (
-            hasStructuredTextContent(item.content) ? (
-              <StructuredTextProperties
-                content={item.content}
-                onChange={(content) => onChange({ content })}
-              />
-            ) : (
-              <label>
-                Content
-                <RichTextEditor
-                  html={typeof item.content === "string" ? item.content : ""}
-                  onChange={(html) => onChange({ content: html })}
-                  placeholder="Enter text…"
-                />
-              </label>
-            )
-          ) : (
-            <label>
-              Content
-              <FieldTextInput
-                value={item.content ?? ""}
-                onValueChange={(v) => onChange({ content: v })}
-              />
-            </label>
-          )}
-        </>
+      {/* Heading is fully canvas-inline: its label is edited in the badge, its text and
+          per-run Main/Sub sizing in the inline editor. None of it lives here — the canvas
+          row is the source of truth (owner, July 2026; DESIGNER_FORM_ITEMS_HEADING.md). */}
+      {item.type !== "heading" && (
+        <label>
+          Item label
+          <FieldTextInput value={item.label} onValueChange={(v) => onChange({ label: v })} />
+        </label>
       )}
+
+      {item.type === "heading" && (
+        <p className="hint">
+          Edit the heading label in its badge, and the text / Main-Sub sizing directly on the
+          canvas. Select text, then choose Main or Sub to size just that part.
+        </p>
+      )}
+
+      {item.type === "text" &&
+        (hasStructuredTextContent(item.content) ? (
+          <StructuredTextProperties
+            content={item.content}
+            onChange={(content) => onChange({ content })}
+          />
+        ) : (
+          <label>
+            Content
+            <RichTextEditor
+              html={typeof item.content === "string" ? item.content : ""}
+              onChange={(html) => onChange({ content: html })}
+              placeholder="Enter text…"
+            />
+          </label>
+        ))}
 
       {item.type === "fib" && (
         <FibItemProperties item={item} onChange={onChange} />

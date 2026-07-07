@@ -6,18 +6,47 @@ Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CUR
 
 ---
 
+## ⏱️ Session checkpoint — July 2026
+
+**Track:** Browser Designer (`designer-web/`). **Commit + push** requested by owner (this checkpoint).
+
+### Implemented this session
+
+- **Docked Items palette** beside Project Explorer; removed from inside Form windows.
+- **Process Statements palette** replaces Items when a Process window is active (context swap).
+- **No Items column** when a Document window is active (Document uses format toolbar path, not form insert).
+- **Heading canvas WYSIWYG** (`HeadingCanvasRow`) — edit/collapse, click-to-activate, legacy placeholder on insert.
+- **Selection sync** on MDI window close/minimize so docked palettes target the correct active window.
+- **Per-run Main/Sub** heading sizing on canvas; **badge label** editing (H1/H2-style badge).
+
+### Documented only (not coded)
+
+- **Text WYSIWYG** remains blocked on a shared **Formatting Palette** shell (see `DESIGNER_FORM_FORMAT_TOOLBAR.md`, Text section in `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`).
+- **Per-item Properties popups** — incremental migration deferred; permanent Properties panel stays for non-Heading items.
+
+### Next
+
+1. **Formatting Palette** shell (row 2, app-wide enable/disable rules).
+2. **Text canvas row** (`TextCanvasRow`) once palette focus context exists.
+
+### Key files
+
+`App.tsx`, `FormEditor.tsx`, `FormItemsPalette.tsx`, `ProcessStatementsPalette.tsx`, `HeadingCanvasRow.tsx`, `processStatements.ts`, `projectStore.ts`, `styles.css`, `types/tawala.ts`, `jsonToXml.mjs`, `runtime.mjs`, specs under `Tawala_Key_Documents/DESIGNER_FORM_*`, `docs/DESIGNER_BACKLOG_ARCHITECTURE.md`.
+
+---
+
 ## ⏱️ When you return — session catch-up (July 2026, unattended session)
 
-Two pieces of work landed while you were away. **Neither is pushed** — review locally, then push when ready.
+Earlier catch-up notes (MDI Pass 1, Fields Phase 2, D1–D3). Those commits are on **`origin/main`**; use this section for verify checklists, not push status.
 
-### 1. Commits made (local `main`, NOT pushed)
+### 1. Commits (on `origin/main` — historical)
 
 | Hash | What |
 |------|------|
 | `9b5264b` | **Fields Phase 2** — drag & double-click field tokens into editors (with drop guardrails) |
 | `e88d3ba` | **MDI Pass 1** — canvas window shell for forms/processes/documents |
 
-Push both when you're happy: `git push` (branch is ahead of `origin/main`).
+Already pushed; see `git log origin/main` for current tip.
 
 ### 2. What works now — how to test
 
@@ -41,7 +70,7 @@ cd designer-web && npm run dev      # UI on http://localhost:5173 (or 5174 if bu
 
 ### 4. Open questions / decisions — RESOLVED (owner, July 2026)
 
-Three MDI window-open decisions were confirmed and implemented on top of Pass 1 (`e88d3ba`). **Not committed** — pending owner review of the Pass 1 checklist.
+Three MDI window-open decisions were confirmed and implemented on top of Pass 1 (`e88d3ba`) — shipped in subsequent commits on `main`.
 
 1. **Open trigger → SINGLE-CLICK (D1).** Single-click an Explorer leaf opens (or focuses) its window on top; each new window **cascades down-and-right** from the previous one and resets when the canvas empties. Re-opening an already-open entity focuses it (no duplicate). *(Was: single vs double vs right-click "Open".)*
 2. **Per-window editor state → still Pass 2.** Design/Preview tab + selected item remain **global**. **D3 partial fix:** opening a form always defaults the shared tab to **Design**, so a freshly opened form is never left on another form's Preview. Full per-window tab/item state is still the Pass 2 refactor.
@@ -58,6 +87,77 @@ Three MDI window-open decisions were confirmed and implemented on top of Pass 1 
 - **Windows** menu (list open children, cascade/tile), maximize button, layout persistence to the project file.
 - Process-window **yellow connection banner** (§3/§6) once Form↔Process Connect UI exists.
 - Double-click-to-open + right-click context menu if you prefer legacy click semantics.
+
+### 5b. Form item canvas WYSIWYG — Heading first (July 2026, **implemented**)
+
+Owner references:
+
+| State | Screenshot |
+|-------|------------|
+| **Insert / editing** | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Drag_Heading_to_Canvas-e9347d50-26e5-4d29-b855-df7089e8b8d1.png` |
+| **Finished / blur (collapsed)** | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Finished_Heading-be3d8494-10d0-4818-8857-bc062ba4c222.png` |
+
+**Spec:** `Tawala_Key_Documents/DESIGNER_FORM_ITEMS_HEADING.md` (state machine, property table, gap table).
+
+**Target (legacy):** Click **Heading** in docked Items bar → row on **Form - …** Design canvas:
+
+1. **Editing:** orange **H1** badge, inline placeholder `[Replace this with heading of your own.]` **selected**, **Heading Type: Main** dropdown on canvas.
+2. **Blur / finished:** collapse to **H1** badge + heading text only (e.g. `Welcome Campers!`) — **no** Heading Type row, no editing chrome.
+3. **Activation:** same as Text — **click the heading box** when focus was elsewhere to enter edit mode (restore editing chrome from collapsed state).
+
+Heading is a **canvas-inline exception**: label, text, and type live on the canvas in Design mode; no per-item Properties popup needed. Permanent Properties panel stays for other items.
+
+**Items dock — DONE:** `FormItemsPalette` beside Explorer; `insertFormItem` → active form.
+
+**Heading WYSIWYG — DONE:** `FormEditor.tsx` uses `HeadingCanvasRow`; legacy placeholder on insert; edit/collapse; Main/Sub on canvas; badge label edit; Heading Type removed from permanent Properties for Heading selection.
+
+**Still deferred:** Properties popup per item for non-Heading items (D-Form-items); rich-text toolbar / RTF via shared Formatting Palette.
+
+### 5c. Text item + Formatting Palette dependency (July 2026, document only)
+
+Owner references:
+
+| State | Screenshot |
+|-------|------------|
+| **Text selected on Form canvas** | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Text_Item_in_Forms-e712e814-aeeb-4eae-8601-29da8826b108.png` |
+| **Formatting Palette detail (Document)** | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Text_Tools_Palette-3a4f7923-cab1-46fb-b320-3555eaacc3be.png` |
+
+**Specs:** `Tawala_Key_Documents/DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` (Text section), `DESIGNER_FORM_FORMAT_TOOLBAR.md`, `DESIGNER_DOCUMENT_EDITOR.md` § Document format toolbar.
+
+**Target (legacy):**
+
+1. **Text** is **canvas-inline WYSIWYG** like Heading — orange **T1** badge, placeholder **`[Replace this with text of your own.]`** selected on insert, **no Properties popup**.
+2. **Formatting Palette** (row 2, app shell) is **shared** across Form Text items and Documents — **not** inside the form window.
+3. **Palette rules:** Heading focus → **entire palette greyed**; Text focus → **palette live**; table delete/row-column tools (#12–13) greyed until cursor is in a table.
+4. Full Text WYSIWYG is **blocked on** shared Formatting Palette implementation (palette also critical for Documents).
+
+**Repo assets located:**
+
+| Asset | Path |
+|-------|------|
+| Form format toolbar spec | `Tawala_Key_Documents/DESIGNER_FORM_FORMAT_TOOLBAR.md` |
+| Document format toolbar spec | `Tawala_Key_Documents/DESIGNER_DOCUMENT_EDITOR.md` |
+| Legacy C# enable/disable | `TawalaDesigner/Code/TAWALA/Forms/MDIFormView.cs` (`Application_Idle`), `Documents/MDIDocumentView.cs` |
+| Browser toolbar (row 1 only) | `designer-web/src/components/ToolBar.tsx` |
+| Embedded mini rich toolbar | `designer-web/src/components/RichTextEditor.tsx` (B/I/U + size — Properties/Document only) |
+| Text canvas (static preview) | `designer-web/src/components/FormEditor.tsx` `CanvasItem` `"text"` branch |
+
+**Gap:** No shell-level Formatting Palette; Text edits in permanent Properties panel; canvas shows static HTML. `RichTextEditor` mini-toolbar is not the legacy shared palette.
+
+**Resolved (owner, July 2026):** Heading and Text share **click-to-activate** — **click the box** when focus was elsewhere to make inline editing live. **Blur contrast only:** Heading **collapses** to badge + text (Heading Type hidden); Text has **almost no visual difference** between edit and non-edit. See `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § Design-mode edit behavior.
+
+**Recommended implementation order:**
+
+1. **Shared `FormattingPalette`** component — row 2 below menu bar; 14 controls per spec; disabled by default.
+2. **Rich-text focus context** — track active editor + parent kind (Heading / Text / Document / FIB / MCQ); wire palette enable/disable rules.
+3. **Heading WYSIWYG** (in progress) — validates palette greyed when Heading focused.
+4. **`TextCanvasRow`** — canvas-inline badge + contentEditable body; remove Text from Properties panel.
+5. **Migrate `RichTextEditor`** — drop embedded toolbar; surface becomes palette target.
+6. **Document editor** — reuse same palette when Document MDI active.
+7. **Table tools** — `CursorInTable` detection; conditional enable for #12–13.
+8. **fx / Insert menu** — function picker wired to palette **fx** button.
+
+**Not in scope this pass:** Full Text WYSIWYG or palette implementation unless trivial doc-only.
 
 ### 6. How to verify (checklist)
 

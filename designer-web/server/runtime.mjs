@@ -33,6 +33,21 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * Heading content may carry inline per-run size markup (`<span class="heading-size-*">`).
+ * The runtime renders headings at a single theme size (`<h2>`/`<h3>`), so reduce to plain
+ * text (decoding editor entities) rather than emitting escaped `<span>` tags. Per-run size
+ * parity in the runtime is deferred.
+ */
+function headingPlainText(content) {
+  return String(content ?? "")
+    .replace(/\u200b/g, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
 function formState(session, formName) {
   if (!session.formState) session.formState = {};
   if (!session.formState[formName]) {
@@ -337,8 +352,8 @@ function renderItem(item, ctx, project) {
     case "heading":
     case "subheading":
       return item.type === "subheading"
-        ? `<h3>${esc(item.content)}</h3>`
-        : `<h2>${esc(item.content)}</h2>`;
+        ? `<h3>${esc(headingPlainText(item.content))}</h3>`
+        : `<h2>${esc(headingPlainText(item.content))}</h2>`;
     case "text": {
       if (isRegistrationForm(ctx.formName)) {
         const reg = renderRegistrationText(item, ctx, ctx.formName, project);

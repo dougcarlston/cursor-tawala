@@ -3,6 +3,8 @@ import { useProjectStore } from "@/store/projectStore";
 import { MenuBar } from "./components/MenuBar";
 import { ToolBar } from "./components/ToolBar";
 import { ProjectExplorer } from "./components/ProjectExplorer";
+import { FormItemsPalette } from "./components/FormItemsPalette";
+import { ProcessStatementsPalette } from "./components/ProcessStatementsPalette";
 import { InspectorPanel } from "./components/InspectorPanel";
 import { CanvasWindowManager } from "./components/mdi/CanvasWindowManager";
 import { StatusBar } from "./components/StatusBar";
@@ -13,6 +15,8 @@ import type { TemplateEntry } from "@/templates/catalog";
 
 export default function App() {
   const selection = useProjectStore((s) => s.selection);
+  const openWindows = useProjectStore((s) => s.openWindows);
+  const activeWindowId = useProjectStore((s) => s.activeWindowId);
   const importJson = useProjectStore((s) => s.importJson);
   const loadTemplate = useProjectStore((s) => s.loadTemplate);
   const deploy = useProjectStore((s) => s.deploy);
@@ -72,6 +76,13 @@ export default function App() {
   const canDelete =
     selection.kind === "form" && selection.name != null && selectedItemIndex !== null;
 
+  // Owner Issue 1 (July 2026): the docked left palette CONTEXT-SWAPS on the active
+  // MDI window kind — Items for a Form, the Statements palette ("Processes") for a
+  // Process, and nothing at all for a Document (or an empty canvas), matching the
+  // legacy Designer where the toolbox column tracks the active-node type.
+  const activeWindow = openWindows.find((w) => w.id === activeWindowId) ?? null;
+  const activeKind = activeWindow?.kind ?? null;
+
   return (
     <div className="designer-app">
       <input
@@ -93,6 +104,16 @@ export default function App() {
         <aside className="designer-left">
           <ProjectExplorer />
         </aside>
+        {activeKind === "form" && (
+          <aside className="designer-items">
+            <FormItemsPalette />
+          </aside>
+        )}
+        {activeKind === "process" && (
+          <aside className="designer-items">
+            <ProcessStatementsPalette />
+          </aside>
+        )}
         <main className="designer-center">
           <CanvasWindowManager />
         </main>

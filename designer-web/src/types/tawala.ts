@@ -33,7 +33,20 @@ export interface FormItemBase {
 
 export interface HeadingItem extends FormItemBase {
   type: "heading";
+  /**
+   * Legacy whole-item size (Main/Sub). Kept only for backward-compat / migration:
+   * older headings stored one size for the whole box here. New headings encode size
+   * per run inside `content` markup (see below) and leave `level` unset. When both are
+   * absent, size defaults to Main. See `DESIGNER_FORM_ITEMS_HEADING.md`.
+   */
   level?: "main" | "sub";
+  /**
+   * Heading text. May be plain text (legacy) or minimal inline markup with per-run
+   * size: `<span class="heading-size-sub">…</span>` / `<span class="heading-size-main">…</span>`.
+   * Bare (unwrapped) text renders at Main size. Only these two size classes are used —
+   * no bold/italic/color (that is the Text item). Rendered per-selection in
+   * `HeadingCanvasRow`.
+   */
   content?: string;
 }
 
@@ -163,10 +176,16 @@ export const FORM_ITEM_PALETTE: { label: string; type: FormItemType; tag: string
   { label: "Skip Instructions", type: "skipInstructions", tag: "SkipItem" },
 ];
 
+/**
+ * Legacy default heading text (`Resources.HeadingItemDefaultRTF`). Inserted selected
+ * so the designer can type over it immediately (see `HeadingCanvasRow` select-all).
+ */
+export const HEADING_PLACEHOLDER = "[Replace this with heading of your own.]";
+
 export function createDefaultItem(type: FormItemType, label: string): FormItem {
   switch (type) {
     case "heading":
-      return { type, label, level: "main", content: "New heading" };
+      return { type, label, level: "main", content: HEADING_PLACEHOLDER };
     case "text":
       return { type, label, content: "" };
     case "fib":

@@ -21,6 +21,21 @@ function escText(s) {
     .replace(/>/g, "&gt;");
 }
 
+/**
+ * Heading content may carry inline per-run size markup (`<span class="heading-size-*">`).
+ * The legacy `<heading>` XML has a single whole-item `type`, so per-run sizes can't be
+ * expressed here — reduce to plain text (decoding the entities the editor introduced) so we
+ * emit the heading text, never escaped `<span>` tags. Full per-run parity is deferred.
+ */
+function headingPlainText(content) {
+  return String(content ?? "")
+    .replace(/\u200b/g, "")
+    .replace(/<[^>]*>/g, "")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
 function fontXml(text, { bold = false, italic = false, size = 200 } = {}) {
   let inner = escText(text);
   if (italic) inner = `<i>${inner}</i>`;
@@ -307,9 +322,9 @@ function itemToXml(item, formName = "") {
 
   switch (item.type) {
     case "heading":
-      return `<heading label="${escAttr(item.label)}" type="Main">${escText(item.content)}</heading>`;
+      return `<heading label="${escAttr(item.label)}" type="Main">${escText(headingPlainText(item.content))}</heading>`;
     case "subheading":
-      return `<heading label="${escAttr(item.label)}" type="Sub">${escText(item.content)}</heading>`;
+      return `<heading label="${escAttr(item.label)}" type="Sub">${escText(headingPlainText(item.content))}</heading>`;
     case "text": {
       const legacy = registrationTextToXml(item, formName);
       const body = legacy ?? textContentToXml(item.content, item.style);

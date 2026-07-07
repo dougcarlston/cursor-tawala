@@ -13,7 +13,7 @@ Same core as Document toolbar (Font Face through Insert or Delete Row or Column,
 | 1–13 | Font, color, B/I/U, indent, alignment, tables | See `DESIGNER_DOCUMENT_EDITOR.md` |
 | 14 | **fx** | **Insert or edit a function** — enabled only in **Text** item body |
 
-When cursor is in a **Heading** item, the **entire** format toolbar is greyed (source: `TargetTextEditor.Parent is HeadingView`). See `DESIGNER_FORM_ITEMS_HEADING.md`.
+When cursor is in a **Heading** item, the **entire** format toolbar is greyed (source: `TargetTextEditor.Parent is HeadingView`). See `DESIGNER_FORM_ITEMS_HEADING.md`. When cursor is in a **Text** item, the toolbar is **live** — see `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` (July 2026 owner screenshots).
 
 ---
 

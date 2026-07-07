@@ -20,7 +20,7 @@ Related: `DESIGNER_MENU_SPEC.md`, `DESIGNER_UI_REFERENCE.md` (display functions)
 | **Row 2 toolbar** | **Document format toolbar** — appears below menu bar when Document MDI child is active |
 
 Screenshot references:
-- Toolbar overview: `assets/Text_Tools_Palette-*.png`
+- Toolbar overview: `assets/Text_Tools_Palette-*.png`, `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Text_Tools_Palette-3a4f7923-cab1-46fb-b320-3555eaacc3be.png` (July 2026 owner ref)
 - Font face: `assets/Formatting_-_Fonts-*.png`
 - Font size: `assets/Formatting_-_Font_Size1-*.png`, `Formatting_-_Font_Size2-*.png`
 - Font color: `assets/Formatting_-_Font_Color-*.png`, `Formatting_-_Font_Color_-_Recent-*.png`, `Formatting_-_Font_Color_-_Choose_Color-*.png`

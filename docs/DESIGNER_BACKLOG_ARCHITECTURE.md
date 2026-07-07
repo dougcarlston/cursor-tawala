@@ -125,6 +125,7 @@ Variables           ← expanded
 | D1 | **Single-click open + cascade** | Single-click a Form / Process / Document in Explorer → opens on the canvas, raised to the top (focused). Each new window **cascades down-and-right** from the previous one, far enough to reveal the prior window's title bar (~24–30px). Re-opening an already-open entity **focuses** it (no duplicate). | **Done** — `openWindow` opens/raises on single-click; `cascadeIndex` steps each new window by `WINDOW_CASCADE_STEP` (28px), wraps after 8, and resets to origin when the canvas empties. |
 | D2 | **Start empty** | On project load the canvas has **no windows open** (do not auto-open the first form). Empty-canvas placeholder shows when nothing is open. | **Done** — initial state, `newProject`, `importJson`, `setProject` all leave `openWindows: []`; `CanvasWindowManager` renders the "Select a form / process / document…" placeholder. |
 | D3 | **Title format + Forms open in Design** | Title bar reads `{Type} - {name}` (e.g. `Form - Registration`, `Process - admin-post`, `Document - WhosComing`). **Forms always open in Design** (not Preview). **No Preview** for Processes or Documents — only Forms have Design/Preview tabs. | **Done** — MDI title bar already `Type - Name`; `openWindow` resets the (still-global) `editorTab` to `design` whenever a form opens; Process/Document editors have no Design/Preview tabs. Removed the redundant inner `Form — Name` heading (window title bar is now the single heading). |
+| D-Windows-on-close | **All windows close on project close** | Closing a project (File → Close Project, opening a different project, New Project, template load, import) **closes all MDI canvas windows**. Window layout is **not** restored across project sessions — aligns with **D2 "start empty"** on load. | **Done** — `newProject`, `importJson` (Open Project / template load), and `setProject` all reset `openWindows: []` / `activeWindowId: null` / `cascadeIndex: 0`. There is no standalone "Close Project" action in the browser menu today; every project-switch path already clears the canvas. Layout persistence remains a Pass 2 non-goal per this decision. |
 
 **Known Pass 1 limitations (documented, acceptable for a shell):**
 - `editorTab` (Design/Preview) and `selectedItemIndex` live in the **global** store, so all open **form** windows share the active Design/Preview tab and highlighted item. Per-window editor state is a Pass 2 refactor. **D3 mitigation:** opening a form always **resets the shared tab to Design**, so a newly opened form window is never left showing another form's Preview — but switching one form window to Preview still affects the others until Pass 2.
@@ -205,11 +206,17 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 
 **Browser Designer:** A **permanent Properties panel** wastes too much horizontal space compared to legacy popup-on-select behavior.
 
+**Owner decision — D-Form-items strategy (July 2026, document only for now):**
+
+- Build form items **one at a time** (Heading, Text, FIB, MCQ, File Uploader, Hidden Field, Page Break, Skip Instructions), migrating each item's editing to a **per-item Properties popup** incrementally.
+- **Keep the permanent Properties / Inspector panel until the migration is complete** — do **not** remove the docked panel while some items still rely on it. Both can coexist during the transition (the popup becomes the primary editor per migrated item; the panel remains the fallback for the rest).
+- This is a **documentation-only** decision this pass — no per-item popup was built. First implementation step (when scheduled): pick one item type, add its popup on select/double-click, and leave the permanent panel in place for the others.
+
 **Spec cross-refs:**
 - `DESIGNER_UI_REFERENCE.md` — Form Properties, Item Properties dialogs (confirmed fields)
 - `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` — validation popups (popup pattern elsewhere in legacy UI)
 
-**Impact:** Editing density on smaller screens; diverges from legacy interaction model designers expect.
+**Impact:** Editing density on smaller screens; diverges from legacy interaction model designers expect. Incremental migration (D-Form-items) avoids a big-bang rewrite and keeps the tool usable while popups land item by item.
 
 ---
 
@@ -219,12 +226,30 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 
 **Browser Designer:** Simplified single toolbar; no per-child merged Format / Tables / Tools strips.
 
+### Formatting Palette — shared Form Text + Document dependency (July 2026)
+
+Owner term: **Formatting Palette** = legacy **format toolbar row 2** (not the Items/Statements docked palette).
+
+| Topic | Detail |
+|-------|--------|
+| **What** | 14-control rich-text toolbar: font face/size, color, reset, B/I/U, indent, alignment, insert/delete table, row/column tools, **fx** |
+| **Where** | App shell **row 2**, below menu bar — visible when Form or Document MDI child is active |
+| **Shared by** | Form **Text** item inline editors **and** Document body editor — same component, same enable rules |
+| **Blocked work** | Text canvas WYSIWYG (`TextCanvasRow`), full Document editor, table editing — all depend on palette + focus context |
+| **Today** | `ToolBar.tsx` = row 1 only; `RichTextEditor.tsx` has embedded B/I/U/size mini-toolbar in Properties/Document — **not** legacy palette |
+
+**Enable rules (summary):** Heading focus → entire palette greyed; Text/Document focus → live; FIB/MCQ → B/I/U only; table delete/row-column (#12–13) → `CursorInTable` only. Full table: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` Text section.
+
+**Recommended build order:** (1) shared `FormattingPalette` shell component, (2) rich-text focus context store, (3) Heading WYSIWYG (palette grey test), (4) `TextCanvasRow`, (5) lift `RichTextEditor` off embedded toolbar, (6) Document editor palette hookup, (7) table cursor detection, (8) **fx** / Insert Function.
+
 **Spec cross-refs:**
 - `DESIGNER_MENU_SPEC.md` — main icon toolbar, Format toolbar (row 2 per MDI child), browser gap table
 - `DESIGNER_FORM_FORMAT_TOOLBAR.md` — Form vs Document format toolbar
 - `DESIGNER_DOCUMENT_EDITOR.md` — Document format toolbar on row 2
+- `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` — Text item + palette inventory and gap table
+- `docs/CHAT_HANDOFF.md` §5c — Text item + palette dependency handoff
 
-**Impact:** Slower design and editing workflow; fewer commands one click away compared to legacy.
+**Impact:** Slower design and editing workflow; fewer commands one click away compared to legacy. Text and Document authoring cannot reach parity until palette lands.
 
 ---
 
@@ -232,7 +257,9 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 
 **Legacy (owner observation, July 2026):** Dragging the **right edge** of the **Project Explorer** column widens or narrows that column. The **Items** palette (form selected) and **Statements** palette (process selected) — both docked on the Explorer’s **right side** — **move and resize together** with the Explorer. Those middle-column palettes **cannot** be repositioned, widened, or expanded **independently** of the Explorer column today.
 
-**Future capability (backlog — not Phase 1):** Independent resize, move, and expand of Items / Statements relative to the Project Explorer column. Until then, browser and legacy shells treat the Explorer + middle palette as a **coupled** left block.
+**Owner decision — D-Items-palette-placement (July 2026, IMPLEMENTED):** The **Items** palette is **out of the Form window** and now **docks beside Project Explorer** as its own left column (`.designer-items`, order: Explorer | **Items** | MDI canvas | Fields), matching the legacy layout in `assets/ClickNewForm-*.png`. It is **always docked/visible**; buttons **grey out** when the active window is a Process/Document or no form is selected (legacy: Items is only actionable while designing a form). Buttons insert into the **currently selected form** — `focusWindow` keeps store `selection` in sync with the active window, and `insertFormItem` targets `selection.name`. The **Statements** palette (process context) is still a future item — legacy swaps Items↔Statements by active-node kind; the browser shows Items only for now.
+
+**Future capability (backlog — not Phase 1):** Independent resize, move, and expand of Items / Statements relative to the Project Explorer column; a **Statements** palette that replaces Items when a process is the active context (legacy `showFormSpecificItems`); column-width drag. Until then, the Items column is a **fixed-width** docked left block.
 
 **Spec cross-refs:**
 - `DESIGNER_MENU_SPEC.md` — Project Explorer § Panel resize; middle column (Items / Statements)
@@ -254,7 +281,7 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 
 ---
 
-*Last updated: July 2026 — Owner decisions Q1–Q4 (Fields leaves, variable scope, collapse defaults, `_InviteeID` ordering); Phase 1 browser status refreshed in §1 and §4 gap tables; §7 Explorer ↔ Items/Statements panel coupling (backlog).*
+*Last updated: July 2026 — Owner decisions Q1–Q4 (Fields leaves, variable scope, collapse defaults, `_InviteeID` ordering); Phase 1 browser status refreshed in §1 and §4 gap tables; §7 Explorer ↔ Items/Statements panel coupling (backlog); **D-Items-palette-placement** (Items palette docked beside Explorer — §7, implemented), **D-Windows-on-close** (all windows close on project close — §2, verified), **D-Form-items strategy** (incremental per-item Properties popups; keep permanent panel until migration done — §5, documented); **Formatting Palette** shared Form Text + Document dependency (§6).*
 
 ---
 
@@ -310,3 +337,21 @@ Applied on top of the Pass 1 shell (commit `e88d3ba`) — **not committed** pend
 | `designer-web/src/styles.css` | Dropped the now-unused `.form-window-title` rule. | D3 |
 
 *Verified: `tsc -b` clean (July 2026). Manual browser walkthrough left to the owner (see CHAT_HANDOFF § "MDI window-open decisions"). Title-bar format `Type - Name` already matched the owner spec (D3) — no change needed to `CanvasWindow.tsx`. Process/Document windows already had no Design/Preview tabs (D3). Per-window Design/Preview + selected-item state remains **global** (Pass 2); D3 only guarantees the initial/default is Design when a form opens.*
+
+---
+
+## Follow-up code changes — implemented (Items palette dock + windows-on-close, July 2026)
+
+Owner decisions **D-Items-palette-placement** (implement now) and **D-Windows-on-close** (document; already satisfied). **Not committed** — pending owner review.
+
+| File | Change | Decision |
+|------|--------|----------|
+| `designer-web/src/App.tsx` | Added a docked `<aside class="designer-items">` column **between** Project Explorer and the MDI canvas, rendering `<FormItemsPalette />`. Layout is now Explorer \| **Items** \| canvas \| Fields. | D-Items-palette-placement |
+| `designer-web/src/components/FormItemsPalette.tsx` | Repurposed from an in-window "Insert item" strip into a docked **Items** panel (`panel-title` "Items" + `FormInsertButtons`). | D-Items-palette-placement |
+| `designer-web/src/components/FormEditor.tsx` | Removed the in-window `.form-insert-strip` / `<FormItemsPalette />`; the form window body is now just the Design canvas (Items no longer lives inside each form window). | D-Items-palette-placement |
+| `designer-web/src/styles.css` | Added `.designer-items` docked column (fixed ~150px) + button styling (hover/disabled); removed the now-orphaned `.form-insert-strip`, `.form-items-palette-wrap/-title/-hint` rules. | D-Items-palette-placement |
+| `designer-web/src/store/projectStore.ts` | **No change needed** — `newProject`, `importJson` (Open Project / template load), and `setProject` already reset `openWindows: []` / `activeWindowId: null` / `cascadeIndex: 0`, so all project-switch paths close every MDI window. No standalone "Close Project" action exists in the browser menu yet. | D-Windows-on-close (verified) |
+
+**How Items targets the active form:** the palette buttons (`FormInsertButtons`) read store `selection` and call `insertFormItem(type)`, which inserts into `selection.name`. `focusWindow` / `openWindow` keep `selection` synced to the active MDI window's entity, so clicking a form window (or opening one) makes the docked Items palette target that form. When the active window is a Process/Document (`selection.kind !== "form"`) the buttons are `disabled` (greyed).
+
+*Verified: `tsc -b` clean (July 2026). Manual browser walkthrough left to the owner (see CHAT_HANDOFF checklist).*
