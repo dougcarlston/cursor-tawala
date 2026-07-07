@@ -28,6 +28,7 @@
 | Image | Path | Shows |
 |-------|------|-------|
 | Explorer close-up | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Project_Explorer-16cbb1fb-21b3-4372-ae93-f067205db3de.png` | Forms tree with linked Pre/Post processes, explorer toolbar icons |
+| Explorer toolbar + Toggle Start Point tooltip | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Project_Explorer_Menu-b12501c1-827e-463b-a59c-7141d2d9c4ab.png` | Full 7-icon explorer toolbar (New Form/Process/Document, Move Up/Down, Toggle Form Starting Point, Block Back Button) with separators; `Toggle Form Starting Point` native tooltip over a selected form |
 | Full MDI layout | `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Forms_-_Parent_Coachs-d61cde9a-0b21-48f6-a29f-c8c0a2a9ead1.png` | Form + two Process windows, Items palette, Fields panel, connection banners |
 
 Panel title bar: **Project Explorer** (blue title bar, white text). Tree uses **dotted connector lines** between parent and child nodes (WinForms `TreeView`).

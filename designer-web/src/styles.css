@@ -180,17 +180,107 @@ textarea {
 
 .explorer-toolbar {
   display: flex;
-  gap: 2px;
+  align-items: center;
+  gap: 1px;
   padding: 2px;
   border-bottom: 1px solid var(--border);
 }
 
 .explorer-toolbar button {
-  width: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 23px;
   height: 22px;
-  border: 1px solid var(--border);
-  background: #fff;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
   font-size: 11px;
+  cursor: default;
+}
+
+.explorer-toolbar button:hover:not(:disabled) {
+  border-color: #a8c7f0;
+  background: #eaf2fd;
+}
+
+.explorer-toolbar button:active:not(:disabled) {
+  background: #d6e6fb;
+}
+
+.explorer-toolbar button.toggled {
+  border-color: #7aa7e0;
+  background: #d0e3fa;
+}
+
+.explorer-toolbar button:disabled {
+  opacity: 0.4;
+}
+
+.explorer-toolbar button svg {
+  display: block;
+}
+
+.explorer-toolbar-sep {
+  width: 1px;
+  align-self: stretch;
+  margin: 2px 3px;
+  background: var(--border-dark, #c0c0c0);
+}
+
+/* Wrapper for each toolbar button so custom tooltips work even on disabled
+   (greyed) buttons, where native `title` tooltips do not appear. */
+.explorer-tip {
+  position: relative;
+  display: inline-flex;
+}
+
+/* Route hover past a disabled button to the wrapper so its tooltip shows. */
+.explorer-tip button:disabled {
+  pointer-events: none;
+}
+
+.explorer-tip::after {
+  content: attr(data-tip);
+  position: absolute;
+  top: calc(100% + 5px);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 50;
+  white-space: nowrap;
+  padding: 3px 7px;
+  border-radius: 3px;
+  background: #2f2f2f;
+  color: #fff;
+  font-size: 11px;
+  line-height: 1.4;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.08s ease;
+}
+
+.explorer-tip:hover::after {
+  opacity: 1;
+  visibility: visible;
+  transition-delay: 0.3s;
+}
+
+/* Edge buttons: the default centered tooltip overflows the panel/viewport edge
+   for the leftmost and rightmost buttons. Anchor the first tooltip to the
+   button's left edge (extends rightward) and the last to its right edge
+   (extends leftward) so no tooltip is clipped. */
+.explorer-toolbar .explorer-tip:first-child::after {
+  left: 0;
+  transform: none;
+}
+
+.explorer-toolbar .explorer-tip:last-child::after {
+  left: auto;
+  right: 0;
+  transform: none;
 }
 
 .tree {
@@ -285,6 +375,20 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+/* Inline rename editor (click-and-hold on a selected tree node). */
+.tree-rename-input {
+  flex: 1;
+  min-width: 0;
+  margin: -1px 0;
+  padding: 0 2px;
+  border: 1px solid #4a6fa5;
+  border-radius: 2px;
+  font: inherit;
+  line-height: normal;
+  color: #000;
+  background: #fff;
 }
 
 .fields-palette {

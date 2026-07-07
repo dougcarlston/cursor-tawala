@@ -62,7 +62,7 @@ export default function App() {
     setShowNewProject(false);
     try {
       if (template.id === "empty") {
-        useProjectStore.getState().newProject();
+        useProjectStore.getState().newProject({ empty: true });
         return;
       }
       await loadTemplate(template.samplePath);

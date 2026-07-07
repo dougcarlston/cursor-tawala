@@ -14,10 +14,14 @@ import {
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
 
-function nextLabel(prefix: string, existing: string[]): string {
+// Legacy naming (TawalaDesigner Project.AddForm/AddProcess/AddDocument):
+// nodes are "Form 1", "Process 1", "Document 1" (base name + space + number),
+// while form-item labels are "Q1"/"T1"/"H1" (no space). Pass `separator` to
+// pick the right convention.
+function nextLabel(prefix: string, existing: string[], separator = ""): string {
   let n = 1;
-  while (existing.includes(`${prefix}${n}`)) n++;
-  return `${prefix}${n}`;
+  while (existing.includes(`${prefix}${separator}${n}`)) n++;
+  return `${prefix}${separator}${n}`;
 }
 
 interface ProjectState {
@@ -39,11 +43,17 @@ interface ProjectState {
   setShowLogin: (show: boolean) => void;
   setShowDeployResult: (show: boolean) => void;
   setCredentials: (credentials: DeployCredentials) => void;
-  newProject: () => void;
+  newProject: (options?: { empty?: boolean }) => void;
   loadTemplate: (samplePath: string) => Promise<void>;
   addForm: () => void;
   addProcess: () => void;
   addDocument: () => void;
+  toggleFormStartPoint: (name: string) => void;
+  toggleFormBlockBack: (name: string) => void;
+  moveSelectedNode: (direction: "up" | "down") => void;
+  renameForm: (oldName: string, newName: string) => boolean;
+  renameProcess: (oldName: string, newName: string) => boolean;
+  renameDocument: (oldName: string, newName: string) => boolean;
   insertFormItem: (type: FormItemType) => void;
   updateFormItem: (formName: string, index: number, item: FormItem) => void;
   updateForm: (formName: string, patch: Partial<TawalaForm>) => void;
@@ -82,13 +92,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ credentials, showLogin: false });
   },
 
-  newProject: () => {
-    const project = emptyProject();
+  newProject: (options) => {
+    // Default (blank) project auto-creates one "Form 1"; the explicit "Empty"
+    // template must produce a truly empty project with no forms/processes/documents.
+    const empty = options?.empty ?? false;
+    const project = empty
+      ? { ...emptyProject(), forms: [], processes: [], documents: [] }
+      : emptyProject();
     set({
       project,
       dirty: true,
-      selection: { kind: "form", name: "Form 1" },
-      statusMessage: "New empty project",
+      selection: empty ? { kind: "forms" } : { kind: "form", name: "Form 1" },
+      statusMessage: empty ? "New empty project" : "New project",
       selectedItemIndex: null,
     });
   },
@@ -104,7 +119,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   addForm: () => {
     const { project } = get();
     const names = project.forms.map((f) => f.name);
-    const name = nextLabel("Form", names);
+    const name = nextLabel("Form", names, " ");
     const forms = [...project.forms, { name, items: [] }];
     set({
       project: { ...project, forms },
@@ -118,7 +133,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { project } = get();
     const processes = project.processes ?? [];
     const names = processes.map((p) => p.name);
-    const name = nextLabel("Process", names);
+    const name = nextLabel("Process", names, " ");
     set({
       project: { ...project, processes: [...processes, { name, commands: [] }] },
       dirty: true,
@@ -131,7 +146,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { project } = get();
     const documents = project.documents ?? [];
     const names = documents.map((d) => d.name);
-    const name = nextLabel("Document", names);
+    const name = nextLabel("Document", names, " ");
     set({
       project: {
         ...project,
@@ -141,6 +156,146 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: { kind: "document", name },
       statusMessage: `Added document ${name}`,
     });
+  },
+
+  toggleFormStartPoint: (name) => {
+    const { project } = get();
+    const target = project.forms.find((f) => f.name === name);
+    if (!target) return;
+    const next = !target.startPoint;
+    const forms = project.forms.map((f) =>
+      f.name === name ? { ...f, startPoint: next } : f,
+    );
+    set({
+      project: { ...project, forms },
+      dirty: true,
+      statusMessage: next
+        ? `${name} is now the starting point`
+        : `${name} is no longer the starting point`,
+    });
+  },
+
+  toggleFormBlockBack: (name) => {
+    const { project } = get();
+    const target = project.forms.find((f) => f.name === name);
+    if (!target) return;
+    const next = !target.blockBackButton;
+    const forms = project.forms.map((f) =>
+      f.name === name ? { ...f, blockBackButton: next } : f,
+    );
+    set({
+      project: { ...project, forms },
+      dirty: true,
+      statusMessage: next
+        ? `Back button blocked on ${name}`
+        : `Back button allowed on ${name}`,
+    });
+  },
+
+  moveSelectedNode: (direction) => {
+    const { project, selection } = get();
+    const delta = direction === "up" ? -1 : 1;
+
+    const reorder = <T extends { name: string }>(list: T[]): T[] | null => {
+      const index = list.findIndex((n) => n.name === selection.name);
+      const target = index + delta;
+      if (index < 0 || target < 0 || target >= list.length) return null;
+      const next = [...list];
+      const [moved] = next.splice(index, 1);
+      next.splice(target, 0, moved);
+      return next;
+    };
+
+    if (selection.kind === "form") {
+      const forms = reorder(project.forms);
+      if (!forms) return;
+      set({ project: { ...project, forms }, dirty: true, statusMessage: `Moved ${selection.name} ${direction}` });
+    } else if (selection.kind === "process") {
+      const processes = reorder(project.processes ?? []);
+      if (!processes) return;
+      set({ project: { ...project, processes }, dirty: true, statusMessage: `Moved ${selection.name} ${direction}` });
+    } else if (selection.kind === "document") {
+      const documents = reorder(project.documents ?? []);
+      if (!documents) return;
+      set({ project: { ...project, documents }, dirty: true, statusMessage: `Moved ${selection.name} ${direction}` });
+    }
+  },
+
+  // Inline rename (legacy ComponentList.Rename): trims whitespace, rejects empty and
+  // duplicate names within the same category. Returns true on success, false when the
+  // name was rejected so the UI can surface feedback.
+  renameForm: (oldName, newName) => {
+    const { project, selection } = get();
+    const trimmed = newName.trim();
+    if (!trimmed) return false;
+    if (trimmed === oldName) return true;
+    if (!project.forms.some((f) => f.name === oldName)) return false;
+    if (project.forms.some((f) => f.name === trimmed)) return false;
+    const forms = project.forms.map((f) =>
+      f.name === oldName ? { ...f, name: trimmed } : f,
+    );
+    const selectionMoved =
+      selection.kind === "form" && selection.name === oldName;
+    set({
+      project: { ...project, forms },
+      dirty: true,
+      selection: selectionMoved ? { kind: "form", name: trimmed } : selection,
+      statusMessage: `Renamed form to ${trimmed}`,
+    });
+    return true;
+  },
+
+  renameProcess: (oldName, newName) => {
+    const { project, selection } = get();
+    const processes = project.processes ?? [];
+    const trimmed = newName.trim();
+    if (!trimmed) return false;
+    if (trimmed === oldName) return true;
+    if (!processes.some((p) => p.name === oldName)) return false;
+    if (processes.some((p) => p.name === trimmed)) return false;
+    const nextProcesses = processes.map((p) =>
+      p.name === oldName ? { ...p, name: trimmed } : p,
+    );
+    // Process references live as name strings on forms (preProcess / process);
+    // update every link so form → process wiring survives the rename.
+    const forms = project.forms.map((f) => {
+      if (f.preProcess !== oldName && f.process !== oldName) return f;
+      const next = { ...f };
+      if (f.preProcess === oldName) next.preProcess = trimmed;
+      if (f.process === oldName) next.process = trimmed;
+      return next;
+    });
+    const selectionMoved =
+      selection.kind === "process" && selection.name === oldName;
+    set({
+      project: { ...project, processes: nextProcesses, forms },
+      dirty: true,
+      selection: selectionMoved ? { kind: "process", name: trimmed } : selection,
+      statusMessage: `Renamed process to ${trimmed}`,
+    });
+    return true;
+  },
+
+  renameDocument: (oldName, newName) => {
+    const { project, selection } = get();
+    const documents = project.documents ?? [];
+    const trimmed = newName.trim();
+    if (!trimmed) return false;
+    if (trimmed === oldName) return true;
+    if (!documents.some((d) => d.name === oldName)) return false;
+    if (documents.some((d) => d.name === trimmed)) return false;
+    const nextDocuments = documents.map((d) =>
+      d.name === oldName ? { ...d, name: trimmed } : d,
+    );
+    const selectionMoved =
+      selection.kind === "document" && selection.name === oldName;
+    set({
+      project: { ...project, documents: nextDocuments },
+      dirty: true,
+      selection: selectionMoved ? { kind: "document", name: trimmed } : selection,
+      statusMessage: `Renamed document to ${trimmed}`,
+    });
+    return true;
   },
 
   selectForm: (name) => set({ selection: { kind: "form", name }, selectedItemIndex: null }),

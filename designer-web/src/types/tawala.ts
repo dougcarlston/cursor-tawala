@@ -91,6 +91,8 @@ export type FormItem =
 export interface TawalaForm {
   name: string;
   startPoint?: boolean;
+  /** Legacy "Block Back Button" flag (C# IForm.BlockBackButton). */
+  blockBackButton?: boolean;
   process?: string;
   preProcess?: string;
   themePath?: string;
