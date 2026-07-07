@@ -1,5 +1,6 @@
 import { FibItem, FormItem, TawalaBlank, TawalaChoice } from "@/types/tawala";
 import { RichTextEditor } from "./RichTextEditor";
+import { FieldTextArea, FieldTextInput, NameTextInput } from "./FieldDropInputs";
 import {
   hasStructuredTextContent,
   StructuredTextProperties,
@@ -31,7 +32,7 @@ export function FormItemProperties({ item, onChange }: Props) {
     <div className="properties-panel properties-panel-compact">
       <label>
         Item label
-        <input value={item.label} onChange={(e) => onChange({ label: e.target.value })} />
+        <FieldTextInput value={item.label} onValueChange={(v) => onChange({ label: v })} />
       </label>
 
       {(item.type === "heading" || item.type === "text") && (
@@ -69,9 +70,9 @@ export function FormItemProperties({ item, onChange }: Props) {
           ) : (
             <label>
               Content
-              <input
+              <FieldTextInput
                 value={item.content ?? ""}
-                onChange={(e) => onChange({ content: e.target.value })}
+                onValueChange={(v) => onChange({ content: v })}
               />
             </label>
           )}
@@ -86,10 +87,10 @@ export function FormItemProperties({ item, onChange }: Props) {
         <>
           <label>
             Question
-            <textarea
+            <FieldTextArea
               value={item.question ?? ""}
               rows={2}
-              onChange={(e) => onChange({ question: e.target.value })}
+              onValueChange={(v) => onChange({ question: v })}
             />
           </label>
           <label className="property-checkbox">
@@ -186,10 +187,10 @@ function FibItemProperties({
     <>
       <label>
         Question
-        <textarea
+        <FieldTextArea
           value={item.prompt ?? ""}
           rows={2}
-          onChange={(e) => onChange({ prompt: e.target.value })}
+          onValueChange={(v) => onChange({ prompt: v })}
           placeholder="e.g. Enter your full name here:"
         />
       </label>
@@ -226,7 +227,9 @@ function FibItemProperties({
           <div className="fib-field-grid">
             <label>
               Label on form
-              <input
+              {/* FIB capture-box label: field drops NOT allowed (owner rule, July 2026).
+                  Fine-grained FIB drop zones are deferred to the WYSIWYG canvas redesign. */}
+              <NameTextInput
                 value={b.displayLabel ?? ""}
                 placeholder="Shown to respondent"
                 onChange={(e) => {
@@ -238,7 +241,8 @@ function FibItemProperties({
             </label>
             <label>
               Stored name
-              <input
+              {/* Field identifier used in processes/tables: field drops NOT allowed. */}
+              <NameTextInput
                 value={b.alternateLabel ?? b.name}
                 onChange={(e) => {
                   const next = [...blanks];

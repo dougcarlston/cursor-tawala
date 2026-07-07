@@ -283,7 +283,23 @@ Rationale (owner): ease of use on large projects — fold everything, then expan
 
 Only **field leaves** drag (not form folder headers or the Variables folder header).
 
-**Browser Designer backlog:** `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` **§1** — Phase 1 tree (all forms + Variables + `[-]`/`[+]`) largely landed; remaining: variable discovery scope (Q2), collapse defaults (Q3), `_InviteeID` pin (Q4), left-margin resize (Phase 1b), drag-and-drop into editors (Phase 2).
+**Allowed vs forbidden drop targets — browser Designer (owner rule, July 2026):**
+
+| Target | Field/variable drop? | Notes |
+|--------|----------------------|-------|
+| **Text** box content (rich-text + single-line) | ✅ Allowed | |
+| **Heading** box content / item label | ✅ Allowed | |
+| **FIB question** text | ✅ Allowed | Prompt shown above the response fields |
+| **MCQ** question | ✅ Allowed | |
+| Document body (rich-text) | ✅ Allowed | |
+| Process command **JSON** textarea | ✅ Allowed | via native `text/plain` token |
+| **Form / Process / Document name** (Explorer rename) | ❌ Forbidden | Name/identifier field — drop rejected |
+| **FIB capture-box labels** ("Label on form") | ❌ Forbidden | Labels on the actual input blanks — drop rejected |
+| **FIB stored name** (field identifier) | ❌ Forbidden | Used in processes/tables — drop rejected |
+
+**FIB drop-target parity is BLOCKED on the WYSIWYG item redesign (backlog).** Fine-grained FIB drop zones — question text vs blanks vs capture-label areas — can't be finalized in today's non-WYSIWYG properties UI. Owner defers this until Forms/Documents items are true WYSIWYG windows on the canvas, where question text is visible in the item window but capture labels are not. Until then only the FIB **question** accepts drops; all capture-box/stored-name fields reject them. Cross-ref: `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §1 (Allowed vs forbidden drop targets; FIB / layout backlog).
+
+**Browser Designer backlog:** `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` **§1** — Phase 1 tree (all forms + Variables + `[-]`/`[+]`) largely landed; remaining: left-margin resize (Phase 1b). Q2–Q4 landed; **drag-and-drop + double-click into editors landed (Phase 2, July 2026)** — inserts `<<name>>` at the caret in item property editors (Text/Heading content, FIB question, MCQ question), the rich-text surface, and process JSON. Name fields (Form/Process/Document names, FIB capture-box labels, FIB stored names) reject drops; fine-grained FIB drop map and Records/RecordSet drop context deferred.
 
 ### Owner decisions — July 2026 (Fields + Explorer)
 
@@ -611,7 +627,7 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 |------|--------|----------------|
 | Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Gaps:** auto-name on attach when Connect Pre/Post UI exists; `[-]`/`[+]` chrome, dotted lines, toolbar icons 4–7, rename/reorder, default-expanded forms on first open |
 | Middle column | Items / Statements / empty | Form items palette only; always visible |
-| Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; drag source only, no drop targets |
+| Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; **Phase 2 (July 2026):** drag **and** double-click insert `<<name>>` into item property editors, rich-text surface, and process JSON (Records/RecordSet drop context deferred) |
 | Insert | Context-sensitive (3 menus) | Partial; no Process insert |
 | Format / Themes / Tabs | Full | Minimal |
 | MDI Windows menu | Yes | Single editor pane |

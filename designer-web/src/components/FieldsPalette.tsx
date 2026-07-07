@@ -5,6 +5,11 @@ import {
   formFieldNames,
   type FieldLeaf,
 } from "@/lib/projectModel";
+import {
+  fieldToken,
+  insertFieldIntoActiveTarget,
+  setFieldDragData,
+} from "@/lib/fieldInsertion";
 
 interface FormBranch {
   name: string;
@@ -16,7 +21,8 @@ interface FormBranch {
  * Right-hand Fields tree (legacy `FieldsPalette.cs` parity):
  * one branch per form (all forms, field-name leaves) plus a Variables branch.
  * Per-node `[-]`/`[+]` collapse keeps DirtBowl-scale lists usable; leaves are drag
- * sources (editor drop targets are Phase 2). Selection highlight tracks the active leaf.
+ * sources and double-click inserters that drop `<<name>>` tokens into editors (Phase 2,
+ * `fieldInsertion.ts`). Selection highlight tracks the active leaf.
  */
 export function FieldsPalette({
   project,
@@ -188,17 +194,21 @@ function FieldLeafRow({
         aria-selected={selected}
         tabIndex={0}
         draggable
-        title={leaf.dragValue}
+        title={`Drag or double-click to insert ${fieldToken(leaf.dragValue)}`}
         onClick={onSelect}
+        onDoubleClick={() => {
+          onSelect();
+          insertFieldIntoActiveTarget(leaf.dragValue);
+        }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             onSelect();
+            insertFieldIntoActiveTarget(leaf.dragValue);
           }
         }}
         onDragStart={(ev) => {
-          ev.dataTransfer.setData("text/plain", leaf.dragValue);
-          ev.dataTransfer.effectAllowed = "copy";
+          setFieldDragData(ev.dataTransfer, leaf.dragValue);
         }}
       >
         {leaf.name}

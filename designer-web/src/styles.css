@@ -830,6 +830,14 @@ textarea {
   padding: 8px;
 }
 
+/* Fields panel drag-and-drop (Phase 2): highlight a valid `<<field>>` drop target. */
+.field-drop-active,
+.rich-surface.field-drop-active {
+  outline: 2px dashed var(--accent);
+  outline-offset: -1px;
+  background: #eef5ff;
+}
+
 .preview-heading-main {
   font-size: 1.5rem;
   font-weight: bold;

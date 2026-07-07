@@ -1,4 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  fieldToken,
+  hasFieldDrag,
+  readFieldDragName,
+  setActiveFieldTarget,
+} from "@/lib/fieldInsertion";
 
 interface Props {
   html: string;
@@ -60,6 +66,29 @@ function normalizeFontSizeValue(value: unknown) {
   return DEFAULT_FORMAT_STATE.fontSize;
 }
 
+/** Caret Range at a viewport point, across Chromium (`caretRangeFromPoint`) and Firefox. */
+function caretRangeAtPoint(x: number, y: number): Range | null {
+  const doc = document as Document & {
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+    caretPositionFromPoint?: (
+      x: number,
+      y: number,
+    ) => { offsetNode: Node; offset: number } | null;
+  };
+  if (typeof doc.caretRangeFromPoint === "function") {
+    return doc.caretRangeFromPoint(x, y);
+  }
+  if (typeof doc.caretPositionFromPoint === "function") {
+    const pos = doc.caretPositionFromPoint(x, y);
+    if (!pos) return null;
+    const range = document.createRange();
+    range.setStart(pos.offsetNode, pos.offset);
+    range.collapse(true);
+    return range;
+  }
+  return null;
+}
+
 function unwrapElement(el: Element) {
   const parent = el.parentNode;
   if (!parent) return;
@@ -104,6 +133,7 @@ export function RichTextEditor({ html, onChange, placeholder }: Props) {
   const lastHtml = useRef(html);
   const savedRangeRef = useRef<Range | null>(null);
   const [formatState, setFormatState] = useState(DEFAULT_FORMAT_STATE);
+  const [fieldDragOver, setFieldDragOver] = useState(false);
 
   const selectionIsInside = (selection: Selection | null, el: HTMLDivElement) => {
     if (!selection) return false;
@@ -241,6 +271,38 @@ export function RichTextEditor({ html, onChange, placeholder }: Props) {
     syncToolbarState();
   };
 
+  /** Insert a `<<field>>` token at the current (or restored) caret. */
+  const insertFieldToken = (name: string) => {
+    const el = surfaceRef.current;
+    if (!el) return;
+    el.focus();
+    restoreSelection();
+    document.execCommand("insertText", false, fieldToken(name));
+    stripFontSizeFormatting(el);
+    const nextHtml = el.innerHTML;
+    lastHtml.current = nextHtml;
+    onChange(nextHtml);
+    syncToolbarState();
+  };
+
+  const handleFieldDrop = (e: React.DragEvent<HTMLDivElement>) => {
+    setFieldDragOver(false);
+    const name = readFieldDragName(e.dataTransfer);
+    if (!name) return;
+    e.preventDefault();
+    const el = surfaceRef.current;
+    if (el) {
+      const range = caretRangeAtPoint(e.clientX, e.clientY);
+      const selection = document.getSelection();
+      if (range && selection && el.contains(range.commonAncestorContainer)) {
+        selection.removeAllRanges();
+        selection.addRange(range);
+        savedRangeRef.current = range.cloneRange();
+      }
+    }
+    insertFieldToken(name);
+  };
+
   return (
     <div
       className="rich-editor"
@@ -305,10 +367,20 @@ export function RichTextEditor({ html, onChange, placeholder }: Props) {
       </div>
       <div
         ref={surfaceRef}
-        className="rich-surface"
+        className={`rich-surface${fieldDragOver ? " field-drop-active" : ""}`}
         contentEditable
         suppressContentEditableWarning
         data-placeholder={placeholder}
+        onDragOver={(e) => {
+          if (!hasFieldDrag(e.dataTransfer)) return;
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+          if (!fieldDragOver) setFieldDragOver(true);
+        }}
+        onDragLeave={() => {
+          if (fieldDragOver) setFieldDragOver(false);
+        }}
+        onDrop={handleFieldDrop}
         onInput={(e) => {
           const target = e.target as HTMLDivElement;
           stripFontSizeFormatting(target);
@@ -317,7 +389,10 @@ export function RichTextEditor({ html, onChange, placeholder }: Props) {
           onChange(next);
           syncToolbarState();
         }}
-        onFocus={() => syncToolbarState()}
+        onFocus={() => {
+          setActiveFieldTarget(insertFieldToken);
+          syncToolbarState();
+        }}
         onKeyUp={() => syncToolbarState()}
         onMouseDown={() => {
           savedRangeRef.current = null;

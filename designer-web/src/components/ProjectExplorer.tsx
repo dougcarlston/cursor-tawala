@@ -2,6 +2,7 @@ import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode 
 import { useProjectStore } from "@/store/projectStore";
 import type { Selection } from "@/types/tawala";
 import { linkedProcessesForForm } from "@/lib/projectModel";
+import { fieldDropRejectHandlers } from "./FieldDropInputs";
 
 /** Category of a renamable tree leaf. */
 type RenameKind = "form" | "process" | "document";
@@ -500,6 +501,7 @@ function RenameInput({
       className="tree-rename-input"
       value={value}
       spellCheck={false}
+      {...fieldDropRejectHandlers<HTMLInputElement>()}
       onChange={(e) => setValue(e.target.value)}
       onKeyDown={(e) => {
         e.stopPropagation();

@@ -52,7 +52,23 @@ Variables           ← expanded
 **Owner requirements (Item 1 backlog):**
 
 1. **Variables section** — **Done** — branch present; variable **discovery scope** now covers Set/Append/arithmetic targets plus `<<variable>>` references in Get/ForEach/Delete/If (Q2), `_InviteeID` pinned first (Q4).
-2. **Drag-and-drop Fields → canvas/editors** — documented prerequisite for serious authoring. **Phase 2** — drag source exists; drop targets not wired.
+2. **Drag-and-drop Fields → canvas/editors** — documented prerequisite for serious authoring. **Phase 2 (July 2026) — landed (first pass):** leaves drag **and** double-click to insert `<<name>>` at the caret in form-item property editors (item label, Text content, FIB **question**, MCQ question) and the rich-text surface (Text + Document body); process command JSON textarea accepts the token via native text drop. Deferred: Records/RecordSet drop context, structured itemization token editor, per-editor validation on invalid drops.
+
+   **Allowed vs forbidden drop targets (owner rule, July 2026):**
+
+   | Target | Field/variable drop? | Notes |
+   |--------|----------------------|-------|
+   | **Text** box content (rich-text surface + single-line) | ✅ Allowed | |
+   | **Heading** box content / item label | ✅ Allowed | |
+   | **FIB question** text | ✅ Allowed | The prompt shown above the response fields |
+   | **MCQ** question | ✅ Allowed | |
+   | Document body (rich-text) | ✅ Allowed | |
+   | Process command **JSON** textarea | ✅ Allowed | via native `text/plain` token |
+   | **Form / Process / Document name** (Explorer rename) | ❌ Forbidden | Name/identifier field; drop rejected (`fieldDropRejectHandlers`) |
+   | **FIB capture-box labels** ("Label on form") | ❌ Forbidden | The labels on the actual input blanks — drop rejected |
+   | **FIB stored name** (field identifier) | ❌ Forbidden | Used in processes/tables; drop rejected |
+
+   **Deferred — FIB fine-grained drop map (BLOCKED on WYSIWYG item redesign):** distinguishing FIB question text vs blanks vs capture-label areas as separate drop zones is deferred until Forms/Documents items are true **WYSIWYG windows on the canvas**, where question text is visible in the item window but capture labels are not. Owner: this is hard to finalize/explain in the current non-WYSIWYG properties UI. Until then only the FIB **question** accepts drops and all capture-box/stored-name fields reject them. See **§ FIB / layout backlog** and `DESIGNER_MENU_SPEC.md` § Fields panel.
 3. **Per-node collapse/expand (`[-]` / `[+]`)** — **Done** — first-open defaults aligned (Q3): Fields all-collapsed, Explorer all-forms-expanded.
 4. **Left-margin column resize** — **Phase 1b**. No column splitter today (fixed CSS width).
 
@@ -73,8 +89,8 @@ Variables           ← expanded
 | Form children | **Field names** as flat leaves (Q1, Q2, Name) | Flat **field-name leaves** (`formFieldNames`) | Validate multi-blank FIB edge cases vs C# |
 | **Variables** | **Variables** node; `_InviteeID` first, then A–Z | **Variables** branch; recursive discovery (Q2) + `_InviteeID` pin, then A–Z (Q4) | — |
 | Tree selection | Highlight on selected node | Leaf selection highlight | — |
-| Drag to editor | Inserts `<<…>>` token | Drag **source** on leaves only | **No drop targets** (Phase 2) |
-| Double-click insert | Yes | No | Phase 2 |
+| Drag to editor | Inserts `<<…>>` token | **Drag source + drop targets** — inserts `<<name>>` at caret in item property editors, rich-text surface, process JSON | Records/RecordSet drop context; invalid-drop validation |
+| Double-click insert | Yes | **Yes** — inserts into last-focused editor field (`insertFieldIntoActiveTarget`) | — |
 | **First-open collapse** | All form folders **and** Variables **collapsed** | **All form folders + Variables collapsed** (Q3) | — |
 | Collapse persistence | Session only; **not** saved with project | Session `useState` only | Aligned |
 | Panel width | **Draggable left margin** (`FieldsPanel.cs`) | **Fixed** ~280px | Phase 1b resize |
@@ -225,3 +241,19 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 | `designer-web/src/components/ProjectExplorer.tsx` | Initializes `expandedForms` with **all** `project.forms.map(f => f.name)` (and re-seeds on form-set change) so linked Pre/Post children are visible on first open. Added Pre/Post-process gear icons, form/folder/document node icons. | **Done** (Q3) |
 
 *DirtBowl stress-test check (July 2026): Variables node lists 76 entries — `_InviteeID` first, remainder alphabetical, and now includes ForEach/Get-only references (e.g. `Candidate`, `Coach`, `Count`, `X`) that Set/Append scanning alone missed.*
+
+---
+
+## Follow-up code changes — implemented (Fields Phase 2 drag-and-drop, July 2026)
+
+| File | Change | Status |
+|------|--------|--------|
+| `designer-web/src/lib/fieldInsertion.ts` | New helper: `FIELD_DRAG_MIME` custom drag payload + `text/plain` `<<name>>` token, `hasFieldDrag`/`readFieldDragName` (dragover-safe via `dataTransfer.types`), `insertTokenAtCaret`, and a module-level active-target registry (`setActiveFieldTarget` / `insertFieldIntoActiveTarget`) for double-click insert at last-focused editor. | **Done** (Phase 2) |
+| `designer-web/src/components/FieldDropInputs.tsx` | `FieldTextInput` / `FieldTextArea` accept drops (shared `useFieldDropTarget`: caret `<<name>>` insertion, `field-drop-active` highlight, focus-time double-click target). Plus `fieldDropRejectHandlers` + `NameTextInput` that **reject** field drops on name/identifier fields (owner rule, July 2026). | **Done** (Phase 2) |
+| `designer-web/src/components/FieldsPalette.tsx` | Leaves now emit the dual drag payload (`setFieldDragData`) and insert on **double-click** / Enter (`insertFieldIntoActiveTarget`); tooltip explains drag/double-click. | **Done** (Phase 2) |
+| `designer-web/src/components/FormItemProperties.tsx` | Drop targets wired for item **label**, single-line **Content** (heading/MCQ text), FIB **question**, and MCQ **question**. FIB **capture-box label** ("Label on form") and **stored name** now use `NameTextInput` and **reject** drops (owner rule). | **Done** (Phase 2) |
+| `designer-web/src/components/ProjectExplorer.tsx` | Inline Form/Process/Document **rename** input rejects field drops (`fieldDropRejectHandlers`) — name fields must not accept `<<field>>` tokens. | **Done** (Phase 2) |
+| `designer-web/src/components/RichTextEditor.tsx` | contentEditable surface accepts field drops at the drop point (`caretRangeFromPoint` / `caretPositionFromPoint`) and registers as the double-click target on focus — covers Text content and Document body. | **Done** (Phase 2) |
+| `designer-web/src/styles.css` | `.field-drop-active` dashed-accent highlight for valid drop targets. | **Done** (Phase 2) |
+
+*Deferred (documented gaps): **FIB fine-grained drop map (BLOCKED on WYSIWYG item redesign)** — question text vs blanks vs capture-label drop zones can't be finalized until Forms/Documents items are true WYSIWYG windows on the canvas; Records / RecordSet tree nodes as drop context; drop into the structured **MULTIPLE QUESTION LIST** itemization token editor; invalid-drop validation/error surfacing; process command editing is JSON-textarea only (native token drop works, no structured condition field yet).*
