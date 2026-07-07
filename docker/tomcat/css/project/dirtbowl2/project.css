@@ -420,17 +420,21 @@ table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) {
   max-width: 100%;
 }
 
+/* The 0.5rem column-gap also sits between the label track and the P1 column,
+   which pushed P1 ~8px right of the field column (email input / note line). Shrink
+   the label track by that gap so P1 lands flush at the label-column width, matching
+   Preview and the email/note alignment. Inter-phone gap stays 0.5rem. */
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) tr {
   display: grid;
-  grid-template-columns: var(--reg-tabbed-label-width) repeat(3, minmax(0, 1fr));
+  grid-template-columns: calc(var(--reg-tabbed-label-width) - 0.5rem) repeat(3, minmax(0, 1fr));
   column-gap: 0.5rem;
   align-items: start;
 }
 
 table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child {
-  width: var(--reg-tabbed-label-width) !important;
-  min-width: var(--reg-tabbed-label-width) !important;
-  max-width: var(--reg-tabbed-label-width) !important;
+  width: calc(var(--reg-tabbed-label-width) - 0.5rem) !important;
+  min-width: calc(var(--reg-tabbed-label-width) - 0.5rem) !important;
+  max-width: calc(var(--reg-tabbed-label-width) - 0.5rem) !important;
   padding-left: 0 !important;
   padding-right: 12px !important;
   font-weight: bold;

@@ -68,12 +68,24 @@ textarea {
 
 .designer-right {
   width: 280px;
-  min-width: 240px;
+  min-width: 60px;
   border-left: 1px solid var(--border);
   background: var(--panel);
   display: flex;
   flex-direction: column;
   min-height: 0;
+}
+
+/* Grey vertical resize bar on the Fields column's left margin (FieldsPanel.cs parity). */
+.designer-right-splitter {
+  flex: 0 0 4px;
+  cursor: ew-resize;
+  background: linear-gradient(90deg, var(--border) 0%, #d8d8d8 50%, var(--border) 100%);
+  border-left: 1px solid var(--border-dark);
+}
+
+.designer-right-splitter:hover {
+  background: var(--border-dark);
 }
 
 .panel-title {
@@ -187,10 +199,12 @@ textarea {
   padding: 4px 0;
 }
 
+/* Dotted connector lines mimic the WinForms TreeView (matches Fields tree). */
 .tree ul {
   list-style: none;
-  margin: 0;
-  padding-left: 16px;
+  margin: 0 0 0 12px;
+  padding-left: 6px;
+  border-left: 1px dotted var(--border-dark);
 }
 
 .tree-root {
@@ -200,8 +214,8 @@ textarea {
 .tree-node {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 2px 6px;
+  gap: 3px;
+  padding: 1px 6px;
   cursor: default;
   user-select: none;
 }
@@ -215,10 +229,62 @@ textarea {
   color: var(--tree-hover-text);
 }
 
-.tree-toggle {
-  width: 12px;
-  text-align: center;
-  font-size: 10px;
+/* Shared [-]/[+] collapse control for Project Explorer and Fields tree. */
+.tree-collapse-toggle,
+.fields-tree-toggle {
+  width: 20px;
+  flex-shrink: 0;
+  border: none;
+  background: transparent;
+  padding: 0;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 11px;
+  color: #444;
+  cursor: pointer;
+  text-align: left;
+  white-space: pre;
+}
+
+.tree-collapse-toggle:disabled,
+.fields-tree-toggle:disabled {
+  cursor: default;
+  color: transparent;
+}
+
+.tree-node.selected .tree-collapse-toggle {
+  color: var(--tree-hover-text);
+}
+
+.tree-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+}
+
+.tree-icon svg {
+  display: block;
+}
+
+.tree-icon-overlay {
+  position: relative;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+}
+
+.tree-icon-gear-overlay {
+  position: absolute;
+  right: -3px;
+  bottom: -2px;
+}
+
+.tree-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .fields-palette {
@@ -583,73 +649,80 @@ textarea {
   padding: 4px;
 }
 
-.fields-palette-compact {
-  padding: 4px 8px 8px;
+/* Legacy Fields tree (FieldsPalette.cs): all-form branches + Variables, [-]/[+] collapse. */
+.fields-tree {
+  padding: 4px 6px 8px;
   overflow: auto;
   flex: 1;
   min-height: 0;
+  font-size: 11px;
 }
 
-.fields-form-toggle,
-.fields-item-toggle {
+.fields-branch {
+  margin: 0;
+}
+
+.fields-branch-header {
   display: flex;
   align-items: center;
-  gap: 4px;
-  width: 100%;
-  border: none;
-  background: transparent;
-  text-align: left;
-  font-size: 11px;
+  gap: 2px;
+  padding: 1px 2px;
   font-weight: 600;
-  padding: 4px 2px;
-  cursor: pointer;
+  user-select: none;
 }
 
-.fields-form-toggle:hover,
-.fields-item-toggle:hover {
-  background: #f0f0f0;
-}
-
-.fields-chevron {
-  width: 12px;
-  flex-shrink: 0;
-  color: #666;
-}
-
-.fields-form-body {
-  padding-left: 8px;
-}
-
-.fields-item-group {
-  margin-bottom: 2px;
-}
-
-.fields-item-count {
-  margin-left: auto;
-  font-weight: normal;
-  color: #666;
-  font-size: 10px;
-}
-
-.fields-list {
-  list-style: none;
-  margin: 0;
-  padding: 0 0 4px 16px;
-}
-
-.field-row {
-  display: block;
-  font-size: 11px;
-  padding: 2px 0;
-  cursor: grab;
-  color: #222;
-}
-
-.field-row:hover {
+.fields-branch-header.active .fields-branch-name {
   color: var(--accent);
 }
 
-.fields-palette-empty {
+.fields-branch-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fields-branch-star {
+  color: #c8a000;
+}
+
+/* Dotted connector lines mimic the WinForms TreeView. */
+.fields-leaf-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 2px 0;
+  margin-left: 9px;
+  border-left: 1px dotted var(--border-dark);
+}
+
+.fields-leaf-list li {
+  padding-left: 10px;
+}
+
+.fields-leaf {
+  display: block;
+  padding: 1px 4px;
+  cursor: grab;
+  color: #222;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fields-leaf:hover {
+  background: #e8f0fe;
+}
+
+.fields-leaf.selected {
+  background: var(--tree-hover);
+  color: var(--tree-hover-text);
+}
+
+.fields-leaf:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.fields-tree-empty {
   padding: 8px;
 }
 
@@ -769,8 +842,9 @@ textarea {
 }
 
 .inspector-properties {
-  flex: 1;
+  flex: 0 1 auto;
   min-height: 120px;
+  max-height: 55%;
   overflow: auto;
   border-bottom: 1px solid var(--border);
 }
@@ -813,6 +887,11 @@ textarea {
   flex: 0 1 auto;
   max-height: 40%;
   overflow: auto;
+}
+
+.inspector-panel .fields-tree {
+  flex: 1 1 auto;
+  min-height: 80px;
 }
 
 .inspector-back-to-form {

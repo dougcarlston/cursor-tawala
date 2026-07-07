@@ -71,8 +71,8 @@ export function InspectorPanel() {
         ) : null}
       </div>
 
-      <div className="panel-title inspector-fields-title">Fields Palette</div>
-      <FieldsPalette form={form} formName={form?.name} />
+      <div className="panel-title inspector-fields-title">Fields</div>
+      <FieldsPalette project={project} activeFormName={form?.name} />
     </div>
   );
 }

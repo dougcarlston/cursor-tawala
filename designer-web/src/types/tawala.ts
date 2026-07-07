@@ -54,11 +54,15 @@ export interface McItem extends FormItemBase {
   required?: boolean;
   choices?: TawalaChoice[];
   question?: string;
+  /** Stored field name for <<…>> references (exported as alternateLabel). */
+  name?: string;
 }
 
 export interface FieldItem extends FormItemBase {
   type: "field";
   fieldName?: string;
+  /** Stored field name in JSON projects (DirtBowl uses `name`). */
+  name?: string;
 }
 
 export interface BreakItem extends FormItemBase {

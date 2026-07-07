@@ -22,6 +22,26 @@ export default function App() {
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const fileRef = useRef<HTMLInputElement>(null);
   const [showNewProject, setShowNewProject] = useState(false);
+  const [rightWidth, setRightWidth] = useState(280);
+
+  // Legacy FieldsPanel.cs: drag the left margin to resize; min 60px, capped near full width.
+  const startResizeRight = (e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    const startX = e.clientX;
+    const startWidth = rightWidth;
+    const onMove = (ev: PointerEvent) => {
+      const next = startWidth + (startX - ev.clientX);
+      setRightWidth(Math.max(60, Math.min(next, window.innerWidth - 200)));
+    };
+    const onUp = () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      document.body.style.cursor = "";
+    };
+    document.body.style.cursor = "ew-resize";
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+  };
 
   const onOpenFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -88,7 +108,17 @@ export default function App() {
             </div>
           )}
         </main>
-        <aside className="designer-right">
+        <div
+          className="designer-right-splitter"
+          role="separator"
+          aria-orientation="vertical"
+          aria-label="Resize Fields column"
+          onPointerDown={startResizeRight}
+        />
+        <aside
+          className="designer-right"
+          style={{ width: rightWidth, minWidth: 60, flex: "0 0 auto" }}
+        >
           <InspectorPanel />
         </aside>
       </div>
