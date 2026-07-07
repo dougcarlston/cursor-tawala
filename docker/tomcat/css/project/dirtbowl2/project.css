@@ -388,13 +388,29 @@ div.fib:has(input[name="ParentFirstName"])
   padding-bottom: 0 !important;
 }
 
-/* Email-only note — field-column alignment (Java renders as bare div) */
+/* Q4 Parent Name + Address inputs — match the email/phone input sizing so the
+   inline-block line box isn't inflated by the base 0.65rem input margin. Without
+   this, these single-line rows render ~52px tall (vs ~28px on 5173) and break the
+   Q4 row-to-row vertical rhythm. Email/phone inputs already reset margin:0. */
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="ParentFirstName"]) input,
+div.fib:has(input[name="ParentFirstName"])
+  > table.TAWALA-tabbed-paragraph:has(input[name="Address"]) input {
+  margin: 0;
+  padding: 2px 6px;
+  line-height: 1.25;
+}
+
+/* Email-only note — field-column alignment (Java renders as bare div).
+   Align with the field column: the tabbed field cell starts flush at the
+   label-column width (no inter-cell gap), so match 5173 where the note lines
+   up with the input column edge rather than 0.75rem past it. */
 div.fib:has(input[name="ParentFirstName"]) > div:not([class]) {
   font-style: italic;
   font-size: 0.9em;
   padding: 0;
   line-height: 1.3;
-  margin-left: calc(var(--reg-tabbed-label-width) + 0.75rem) !important;
+  margin-left: var(--reg-tabbed-label-width) !important;
 }
 
 /* Parent Phone Numbers — four columns: label | P1 | P2 | P3 */

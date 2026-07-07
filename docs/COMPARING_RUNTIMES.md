@@ -1,6 +1,6 @@
 # Comparing Registration: dev test bed (:5173) vs Java (:8080)
 
-The Designer ships **two runtimes** for exercising forms. They use the **same JSON project**, but Registration rendering differs today. As of July 2026, **DirtBowl Registration** is the main Preview-vs-Deploy parity sample.
+The Designer ships **two runtimes** for exercising forms. They use the **same JSON project**, but Registration rendering differed during the July 2026 parity pass. **DirtBowl Registration page 1** Preview/Deploy parity is **substantially complete / closed for now**, pending owner visual verification of the final Q4 email-note alignment fix.
 
 ## Side-by-side
 
@@ -81,23 +81,35 @@ Walk the same path on both: page 1 → segment 1 (jersey/friends) → review →
 
 ## Current findings (July 2026)
 
-Keep Preview-vs-Deploy notes in three buckets so fixes stay scoped:
+Preview-vs-Deploy notes were kept in three buckets; **page 1 style/theme parity is substantially complete** pending owner sign-off on the final Q4 CSS tweak.
 
 | Bucket | Current conclusion |
 |--------|--------------------|
-| **Style / theme parity** | Main active parity issue. Continue theme/CSS work next; it is smaller than full Designer architecture work and benefits multiple tracks. |
+| **Style / theme parity** | **Substantially complete / closed for now** — page 1 Deploy closely matches Preview after MCQ, phone, submit, and Q4 parent-contact passes. Uncommitted fix: Q4 email-only note `margin-left` in `docker/tomcat/css/project/dirtbowl2/project.css` (align note with field column, not label column + gap). |
 | **Data / seed mismatch** | Keep separate from rendering bugs. Admin / division seed differences can change what Registration shows and can look like layout regressions. |
-| **General authoring architecture** | Browser Designer still lacks the legacy multi-window / MDI shell and easy visibility into Pre/Post processes, so DirtBowl is not yet a meaningful large-project authoring test. |
+| **General authoring architecture** | **Documented backlog** — DirtBowl stress-testing surfaced five structural browser-Designer gaps (MDI, form–process links, collapsible explorer, properties popups, multiple menu bars). See [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md). |
 
-DirtBowl is still useful as a **Preview / Deploy stress test**, even though it is not yet the right browser-Designer authoring benchmark.
+### DirtBowl as stress test (not authoring benchmark)
 
-## Current DirtBowl Registration parity pass
+DirtBowl served its purpose: **surfacing failures not visible in small templates**. Simple Survey, Sign-up Sheet, and Get Together passed Preview + Deploy earlier without exposing these issues. DirtBowl remains useful for **runtime regression checks** on Registration; it is **not** the right browser-Designer authoring benchmark until architecture backlog items land.
+
+## DirtBowl Registration parity pass — page 1 (closed pending Q4 verify)
 
 - Fixed: **Sex of Registrant** MCQ alignment.
 - Fixed: **Parent Phone Numbers** overlap / crowding.
 - Fixed: Submit button styling.
-- Improved: overall Deploy parity is substantially closer to Preview.
-- Remaining refinement: grouped lower parent-contact block vertical spacing.
+- Fixed: Q4 parent-contact block row spacing (`--reg-q4-row-gap` flex layout in `project.css`).
+- **Pending owner verify:** Q4 email-only note field-column alignment (`margin-left: var(--reg-tabbed-label-width)` on bare `div` under Parent block).
+
+### Designer architecture findings (from DirtBowl stress test)
+
+Captured in [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md) with cross-refs to `Tawala_Key_Documents/DESIGNER_*.md`:
+
+1. Multi-window / MDI architecture
+2. Forms ↔ Processes connection transparency
+3. Collapsible Explorer menus (Fields; Processes under Forms)
+4. Properties panel vs legacy popup dialogs
+5. Multiple context-sensitive menu bars
 
 ## What is intentionally different today
 

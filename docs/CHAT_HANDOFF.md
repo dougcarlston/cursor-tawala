@@ -8,15 +8,15 @@ Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CUR
 
 ## Chat 1 — Browser Designer (`designer-web/`)
 
-**Suggested title:** `Designer — Sign-up Sheet & Phase 4`
+**Suggested title:** `Designer — architecture backlog & Phase 4`
 
 ### 5-line paste opener
 
 ```
 Project: AI-Tawala (~/Projects/AI-Tawala)
 Track: Browser Designer — designer-web/ (Phase 4)
-Goal: Continue Sign-up Sheet template in browser Designer; deploy smoke test on 8080
-Read first: docs/ROADMAP.md Phase 4, designer-web/README.md, Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md
+Goal: Implement Designer architecture backlog (MDI, explorer, properties UX); not Registration CSS parity
+Read first: docs/DESIGNER_BACKLOG_ARCHITECTURE.md, docs/ROADMAP.md Phase 4, Tawala_Key_Documents/DESIGNER_MENU_SPEC.md
 Constraints: Do not mix 8080 CSS/docker or website-mock work in this chat; preview/deploy local only (5173/3001/8080, not www.tawala.com)
 ```
 
@@ -24,11 +24,15 @@ Constraints: Do not mix 8080 CSS/docker or website-mock work in this chat; previ
 
 - Browser Designer shell running at http://localhost:5173 (`cd designer-web && npm run dev`).
 - **File → New Project…** template picker with featured starters in `public/samples/templates/`.
-- **Simple Survey** deploy smoke test **passed** (owner, July 2026).
-- **Sign-up Sheet** in progress — next featured template to exercise FIB + itemization table.
+- **Simple Survey**, **Sign-up Sheet**, and **Get Together** deploy smoke tests **passed** (owner, July 2026).
+- **DirtBowl Registration page 1** Preview/Deploy parity **substantially complete** — pending owner verify of final Q4 email-note CSS fix (uncommitted `docker/tomcat/css/project/dirtbowl2/project.css`).
+- DirtBowl stress test documented five **architecture backlog** items: [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md).
 - Deploy dialog filters Java response to project-scoped URLs (`server/deployParse.mjs`); restart dev server after pull.
 - Preview/runtime fixes landed in `server/` and `src/api/`.
-- **Not built yet (blockers for Process work, deferred during Sign-up Sheet pass):**
+- **Not built yet (blockers for Process work and large-project authoring):**
+  - Multi-window / MDI shell (see architecture backlog)
+  - Forms ↔ Processes transparency in explorer
+  - Collapsible explorer; properties popups vs permanent panel; multiple menu bars
   - Insertion-point arrow (Form / Process / Document)
   - Move Up / Move Down for form items, process statements, document blocks
   - Full Fields palette drop targets; `.tawala` import; Potluck / email templates
@@ -48,10 +52,10 @@ Constraints: Do not mix 8080 CSS/docker or website-mock work in this chat; previ
 
 ### Immediate phases ahead
 
-1. **Sign-up Sheet** — open template in Designer, deploy to 8080, owner smoke test (FIB submit → Thank You → back → table grows).
-2. **UX feedback** — canvas layout, inspector, deploy dialog after owner tries Sign-up Sheet.
-3. **Get Together** — next featured template after Sign-up Sheet passes.
-4. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
+1. **Designer architecture backlog** — MDI, explorer collapse, form–process links, properties popups, menu bars ([`DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)).
+2. **Owner verify** — DirtBowl Registration page 1 Q4 email-note alignment on `:8080` vs `:5173`; then commit `project.css` + doc updates.
+3. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
+4. **UX feedback** — canvas layout, inspector after architecture items land.
 5. **Backlog** — DirtBowl → website Library link, FIB free-mix layout, `.tawala` import, outbound email (separate session).
 
 ---
@@ -99,7 +103,7 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 2. **Sign-up Sheet w Email** — dedicated session when SMTP decision is made (JavaMailSender vs relay).
 3. Theme/CSS gaps — owner reports visual breakage on specific template URLs.
 4. Docker image refresh after CSS edits.
-5. Registration / DirtBowl runtime parity (paused unless owner reopens Page 2+, Review headers, RegStep2).
+5. Registration / DirtBowl runtime parity — **page 1 substantially complete** (July 2026); paused unless owner reopens Page 2+, Review headers, RegStep2. Pending: owner verify Q4 email-note CSS fix before commit.
 
 ---
 
@@ -154,8 +158,8 @@ Constraints: Do not change designer-web or Tomcat deploy logic here; link to Pha
 
 | Action | Which chat |
 |--------|------------|
-| **Continue this chat** | Designer (Chat 1) — active Phase 4 work |
-| **Focus first** | Designer — Sign-up Sheet deploy + UX |
+| **Continue this chat** | Designer (Chat 1) — architecture backlog |
+| **Focus first** | Designer — architecture backlog (MDI, explorer, properties) |
 | **Park** | 8080 (Chat 2) and Website (Chat 3) — resume when deploy breaks or mock needs polish |
 
 ### Practical split

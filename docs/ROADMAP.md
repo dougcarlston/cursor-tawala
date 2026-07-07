@@ -61,7 +61,7 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 
 ## Phase 3 — Website mock
 
-**Parked July 2026 — Sign-up Sheet / Get Together gate is now met; keep this parked while Preview-vs-Deploy parity remains the next focus.**
+**Parked July 2026 — Sign-up Sheet / Get Together gate met; DirtBowl Registration page 1 parity substantially complete (July 2026). Resume when mock needs polish or test-drive URLs change.**
 
 **Goal:** Browseable rough draft of tawala.com / MyTawala / Library from legacy JSP/CSS.
 
@@ -102,9 +102,9 @@ Serve: `cd website-mock && python3 -m http.server 5500` → http://localhost:550
 | FIB canvas layout (mix text + blanks freely) | Backlog — owner July 2026; current block layout is MVP |
 | Fields palette drag into text/docs/process | Partial — drag source wired; drop targets backlog |
 | DirtBowl authoring as a browser-Designer test | **Blocked** — browser Designer lacks the legacy multi-window / MDI flow and Pre/Post process visibility needed for meaningful large-project authoring |
-| DirtBowl Registration as parity sample | **Active** — use as the shared Preview / Deploy stress test while theme/CSS parity is tightened |
+| DirtBowl Registration page 1 Preview/Deploy parity | **Substantially complete / closed for now** — pending owner visual verification of final Q4 gap fix (email note field-column alignment in `docker/tomcat/css/project/dirtbowl2/project.css`) |
 
-**Phase note (owner, July 2026):** Sign-up Sheet is effectively complete for the current browser Designer phase, and Get Together also passed Preview + Deploy without template-specific errors. The next useful slice is Preview-vs-Deploy parity work, not more template-by-template authoring passes.
+**Phase note (owner, July 2026):** Sign-up Sheet is effectively complete for the current browser Designer phase, and Get Together also passed Preview + Deploy without template-specific errors. **DirtBowl Registration page 1** Preview/Deploy parity is substantially complete after the Q4 parent-contact pass; DirtBowl fulfilled its role as a **stress test** (surfacing gaps invisible in Simple Survey, Sign-up Sheet, Get Together). **Next focus:** Designer architecture backlog ([`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)), not more template-by-template parity passes.
 
 **Prerequisites before Process editing (owner July 2026)** — not needed for Sign-up Sheet yet, but **required before** serious Process work:
 
@@ -114,21 +114,24 @@ Serve: `cd website-mock && python3 -m http.server 5500` → http://localhost:550
 | **Move Up / Move Down** (form items, process statements, document blocks) | **Blocker for Processes** | Essential once a script or form has more than a few lines; legacy Designer had this throughout. Defer during Sign-up Sheet pass only. |
 | **Large-project / multi-window project visibility** | **Blocker for DirtBowl authoring** | Browser Designer still lacks the legacy MDI-style shell and easy visibility into Form, Pre-Process, and Post-Process windows. Until that exists, DirtBowl is not a meaningful authoring test for large projects. |
 
-**Preview vs Deploy parity findings (owner, July 2026)** — use DirtBowl Registration as the sample and keep the findings split so fixes stay scoped:
+**Preview vs Deploy parity findings (owner, July 2026)** — DirtBowl Registration page 1; findings split so fixes stayed scoped:
 
 | Bucket | Status / note |
 |------|--------|
-| **Style / theme parity** | Active next phase — continue theme/CSS parity before full Designer architecture work; it is smaller and benefits multiple tracks. |
+| **Style / theme parity** | **Substantially complete / closed for now** — page 1 Deploy matches Preview closely after MCQ, phone, submit, and Q4 parent-contact passes. Pending owner sign-off on final Q4 email-note alignment fix (uncommitted `project.css`). |
 | **Data / seed mismatch** | Separate issue bucket — admin/division seed differences can mimic UI bugs; track independently from CSS/theme work. |
-| **General authoring architecture** | Deferred blocker — full DirtBowl authoring waits on multi-window / MDI parity plus Pre/Post process visibility. |
+| **General authoring architecture** | **Documented backlog** — stress-testing DirtBowl surfaced five structural gaps; see [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md). Full DirtBowl authoring still waits on MDI + explorer + properties UX. |
 
-**DirtBowl Registration parity pass (July 2026):**
+**DirtBowl Registration parity pass (July 2026) — page 1 closed pending final Q4 verify:**
 
 - Fixed: **Sex of Registrant** MCQ alignment.
 - Fixed: **Parent Phone Numbers** overlap / crowding.
 - Fixed: Submit button styling.
-- Improved: overall Deploy parity is substantially closer to Preview.
-- Remaining refinement: grouped lower parent-contact block vertical spacing.
+- Fixed: Q4 parent-contact block row spacing (`--reg-q4-row-gap` flex layout).
+- Pending owner verify: Q4 **email-only note** field-column alignment (`margin-left` on bare `div` under Parent block).
+- **DirtBowl stress-test outcome:** Simple Survey, Sign-up Sheet, and Get Together passed without exposing these structural Designer gaps; DirtBowl did.
+
+**Designer architecture backlog (from DirtBowl stress test):** [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md) — MDI multi-window, Forms↔Processes transparency, collapsible Explorer, properties popups vs permanent panel, multiple context menu bars.
 
 Run: `cd designer-web && npm run dev` → http://localhost:5173 — **File → New Project…**
 
@@ -142,6 +145,7 @@ See `designer-web/README.md` for MVP scope and runtime gaps.
 
 | Item | Context | Notes |
 |------|---------|--------|
+| **Designer architecture (browser vs legacy)** | DirtBowl stress test (July 2026) | Five structural gaps: MDI multi-window, Forms↔Processes transparency, collapsible Explorer, properties popups, multiple menu bars. Full detail: [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md). Cross-refs: `Tawala_Key_Documents/DESIGNER_MENU_SPEC.md`, `DESIGNER_STARTUP_AND_FORM_CANVAS.md`, `DESIGNER_UI_REFERENCE.md`, `DESIGNER_DOCUMENT_EDITOR.md`. |
 | **Outbound email (8080)** | Sign-up Sheet w Email template; any `Send` process | Legacy stack already uses Spring **`JavaMailSender`** (`WEB-INF/notification-config.xml`, `mail.properties` → `mail.host`). Docker has no SMTP today. **Owner (July 2026):** prefer extending **JavaMailSender** (real SMTP host / relay) over a Resend-specific adapter — but **decision deferred**; revisit in a dedicated session. Owner also has a Resend account if we compare options later. Unblocks: Sign-up Sheet w Email end-to-end smoke test. |
 
 ---
@@ -157,4 +161,4 @@ See `designer-web/README.md` for MVP scope and runtime gaps.
 
 ---
 
-*Last updated: July 2026.*
+*Last updated: July 2026 — DirtBowl Registration page 1 parity closed pending Q4 verify; architecture backlog added.*
