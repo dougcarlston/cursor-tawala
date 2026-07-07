@@ -24,6 +24,57 @@ function nextLabel(prefix: string, existing: string[], separator = ""): string {
   return `${prefix}${separator}${n}`;
 }
 
+// --- MDI window shell (backlog §2 Multi-window / MDI, Pass 1, July 2026) ------
+// Legacy Designer opens Forms, Processes, and Documents as separate overlapping
+// MDI child windows on the center canvas. `openWindows` models those children;
+// `id` is `${kind}:${name}` so re-opening the same entity focuses its window.
+
+export type WindowKind = "form" | "process" | "document";
+
+export interface DesignerWindow {
+  id: string;
+  kind: WindowKind;
+  name: string;
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  z: number;
+  minimized: boolean;
+}
+
+const WINDOW_DEFAULT_SIZE = { w: 640, h: 460 };
+/** Cascade step for newly opened windows so they stack partially offset. */
+const WINDOW_CASCADE_STEP = 28;
+
+function windowId(kind: WindowKind, name: string): string {
+  return `${kind}:${name}`;
+}
+
+function maxZ(windows: DesignerWindow[]): number {
+  return windows.reduce((m, w) => Math.max(m, w.z), 0);
+}
+
+/** Position/size for the next cascaded window given how many are already open. */
+function cascadeBounds(count: number): Pick<DesignerWindow, "x" | "y" | "w" | "h"> {
+  const offset = (count % 8) * WINDOW_CASCADE_STEP;
+  return { x: 20 + offset, y: 20 + offset, w: WINDOW_DEFAULT_SIZE.w, h: WINDOW_DEFAULT_SIZE.h };
+}
+
+/** Re-key any open window after its underlying entity is renamed. */
+function remapWindows(
+  windows: DesignerWindow[],
+  kind: WindowKind,
+  oldName: string,
+  newName: string,
+): DesignerWindow[] {
+  return windows.map((w) =>
+    w.kind === kind && w.name === oldName
+      ? { ...w, name: newName, id: windowId(kind, newName) }
+      : w,
+  );
+}
+
 interface ProjectState {
   project: TawalaProject;
   dirty: boolean;
@@ -35,6 +86,17 @@ interface ProjectState {
   lastDeploy: DeployResult | null;
   showLogin: boolean;
   showDeployResult: boolean;
+  openWindows: DesignerWindow[];
+  activeWindowId: string | null;
+  openWindow: (kind: WindowKind, name: string) => void;
+  closeWindow: (id: string) => void;
+  focusWindow: (id: string) => void;
+  minimizeWindow: (id: string) => void;
+  restoreWindow: (id: string) => void;
+  setWindowBounds: (
+    id: string,
+    bounds: Partial<Pick<DesignerWindow, "x" | "y" | "w" | "h">>,
+  ) => void;
   setProject: (project: TawalaProject) => void;
   setSelection: (selection: Selection) => void;
   setEditorTab: (tab: EditorTab) => void;
@@ -78,9 +140,113 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   lastDeploy: null,
   showLogin: false,
   showDeployResult: false,
+  // Seed the default "Form 1" as an open MDI child so the canvas is not blank on
+  // first mount (matches the default `selection`). Cleared on new/open project.
+  openWindows: [
+    { id: windowId("form", "Form 1"), kind: "form", name: "Form 1", ...cascadeBounds(0), z: 1, minimized: false },
+  ],
+  activeWindowId: windowId("form", "Form 1"),
+
+  openWindow: (kind, name) => {
+    const { openWindows } = get();
+    const id = windowId(kind, name);
+    const existing = openWindows.find((w) => w.id === id);
+    const topZ = maxZ(openWindows) + 1;
+    if (existing) {
+      set({
+        openWindows: openWindows.map((w) =>
+          w.id === id ? { ...w, z: topZ, minimized: false } : w,
+        ),
+        activeWindowId: id,
+        selection: { kind, name },
+        selectedItemIndex: null,
+      });
+      return;
+    }
+    const win: DesignerWindow = {
+      id,
+      kind,
+      name,
+      ...cascadeBounds(openWindows.length),
+      z: topZ,
+      minimized: false,
+    };
+    set({
+      openWindows: [...openWindows, win],
+      activeWindowId: id,
+      selection: { kind, name },
+      selectedItemIndex: null,
+    });
+  },
+
+  closeWindow: (id) => {
+    const { openWindows, activeWindowId } = get();
+    const next = openWindows.filter((w) => w.id !== id);
+    let nextActive = activeWindowId === id ? null : activeWindowId;
+    if (nextActive === null && next.length > 0) {
+      // Fall back to the top-most remaining window.
+      nextActive = next.reduce((top, w) => (w.z > top.z ? w : top), next[0]).id;
+    }
+    set({ openWindows: next, activeWindowId: nextActive });
+  },
+
+  focusWindow: (id) => {
+    const { openWindows } = get();
+    const target = openWindows.find((w) => w.id === id);
+    if (!target) return;
+    const topZ = maxZ(openWindows) + 1;
+    set({
+      openWindows: openWindows.map((w) => (w.id === id ? { ...w, z: topZ } : w)),
+      activeWindowId: id,
+      selection: { kind: target.kind, name: target.name },
+      selectedItemIndex: null,
+    });
+  },
+
+  minimizeWindow: (id) => {
+    const { openWindows, activeWindowId } = get();
+    const next = openWindows.map((w) => (w.id === id ? { ...w, minimized: true } : w));
+    let nextActive = activeWindowId;
+    if (activeWindowId === id) {
+      const visible = next.filter((w) => !w.minimized);
+      nextActive = visible.length
+        ? visible.reduce((top, w) => (w.z > top.z ? w : top), visible[0]).id
+        : null;
+    }
+    set({ openWindows: next, activeWindowId: nextActive });
+  },
+
+  restoreWindow: (id) => {
+    const { openWindows } = get();
+    const target = openWindows.find((w) => w.id === id);
+    if (!target) return;
+    const topZ = maxZ(openWindows) + 1;
+    set({
+      openWindows: openWindows.map((w) =>
+        w.id === id ? { ...w, minimized: false, z: topZ } : w,
+      ),
+      activeWindowId: id,
+      selection: { kind: target.kind, name: target.name },
+      selectedItemIndex: null,
+    });
+  },
+
+  setWindowBounds: (id, bounds) => {
+    const { openWindows } = get();
+    set({
+      openWindows: openWindows.map((w) => (w.id === id ? { ...w, ...bounds } : w)),
+    });
+  },
 
   setProject: (project) =>
-    set({ project, dirty: false, statusMessage: `Opened ${project.name}`, selectedItemIndex: null }),
+    set({
+      project,
+      dirty: false,
+      statusMessage: `Opened ${project.name}`,
+      selectedItemIndex: null,
+      openWindows: [],
+      activeWindowId: null,
+    }),
   setSelection: (selection) => set({ selection, selectedItemIndex: null }),
   setEditorTab: (editorTab) => set({ editorTab }),
   setStatus: (statusMessage) => set({ statusMessage }),
@@ -105,7 +271,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: empty ? { kind: "forms" } : { kind: "form", name: "Form 1" },
       statusMessage: empty ? "New empty project" : "New project",
       selectedItemIndex: null,
+      openWindows: [],
+      activeWindowId: null,
     });
+    if (!empty) get().openWindow("form", "Form 1");
   },
 
   loadTemplate: async (samplePath) => {
@@ -225,7 +394,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   // duplicate names within the same category. Returns true on success, false when the
   // name was rejected so the UI can surface feedback.
   renameForm: (oldName, newName) => {
-    const { project, selection } = get();
+    const { project, selection, openWindows, activeWindowId } = get();
     const trimmed = newName.trim();
     if (!trimmed) return false;
     if (trimmed === oldName) return true;
@@ -236,17 +405,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     );
     const selectionMoved =
       selection.kind === "form" && selection.name === oldName;
+    const oldWinId = windowId("form", oldName);
     set({
       project: { ...project, forms },
       dirty: true,
       selection: selectionMoved ? { kind: "form", name: trimmed } : selection,
       statusMessage: `Renamed form to ${trimmed}`,
+      openWindows: remapWindows(openWindows, "form", oldName, trimmed),
+      activeWindowId:
+        activeWindowId === oldWinId ? windowId("form", trimmed) : activeWindowId,
     });
     return true;
   },
 
   renameProcess: (oldName, newName) => {
-    const { project, selection } = get();
+    const { project, selection, openWindows, activeWindowId } = get();
     const processes = project.processes ?? [];
     const trimmed = newName.trim();
     if (!trimmed) return false;
@@ -267,17 +440,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     });
     const selectionMoved =
       selection.kind === "process" && selection.name === oldName;
+    const oldWinId = windowId("process", oldName);
     set({
       project: { ...project, processes: nextProcesses, forms },
       dirty: true,
       selection: selectionMoved ? { kind: "process", name: trimmed } : selection,
       statusMessage: `Renamed process to ${trimmed}`,
+      openWindows: remapWindows(openWindows, "process", oldName, trimmed),
+      activeWindowId:
+        activeWindowId === oldWinId ? windowId("process", trimmed) : activeWindowId,
     });
     return true;
   },
 
   renameDocument: (oldName, newName) => {
-    const { project, selection } = get();
+    const { project, selection, openWindows, activeWindowId } = get();
     const documents = project.documents ?? [];
     const trimmed = newName.trim();
     if (!trimmed) return false;
@@ -289,11 +466,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     );
     const selectionMoved =
       selection.kind === "document" && selection.name === oldName;
+    const oldWinId = windowId("document", oldName);
     set({
       project: { ...project, documents: nextDocuments },
       dirty: true,
       selection: selectionMoved ? { kind: "document", name: trimmed } : selection,
       statusMessage: `Renamed document to ${trimmed}`,
+      openWindows: remapWindows(openWindows, "document", oldName, trimmed),
+      activeWindowId:
+        activeWindowId === oldWinId ? windowId("document", trimmed) : activeWindowId,
     });
     return true;
   },
@@ -395,7 +576,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: firstForm ? { kind: "form", name: firstForm } : { kind: "forms" },
       statusMessage: `Loaded ${project.name}`,
       selectedItemIndex: null,
+      openWindows: [],
+      activeWindowId: null,
     });
+    if (firstForm) get().openWindow("form", firstForm);
   },
 
   deploy: async () => {

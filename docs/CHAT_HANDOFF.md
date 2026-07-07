@@ -6,6 +6,67 @@ Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CUR
 
 ---
 
+## ⏱️ When you return — session catch-up (July 2026, unattended session)
+
+Two pieces of work landed while you were away. **Neither is pushed** — review locally, then push when ready.
+
+### 1. Commits made (local `main`, NOT pushed)
+
+| Hash | What |
+|------|------|
+| `9b5264b` | **Fields Phase 2** — drag & double-click field tokens into editors (with drop guardrails) |
+| _(MDI)_ | **MDI Pass 1** — canvas window shell for forms/processes/documents *(hash added on commit — see git log)* |
+
+Push both when you're happy: `git push` (branch is ahead of `origin/main`).
+
+### 2. What works now — how to test
+
+```
+cd designer-web && npm run dev      # UI on http://localhost:5173 (or 5174 if busy)
+```
+
+- **MDI:** The center canvas is now a **window manager**. On load, `Form 1` opens as a window. In **Project Explorer**, click any **form / process / document** → it opens (or focuses) an overlapping window.
+  - **Drag** a window by its title bar; **resize** from any edge/corner; **click** a background window to bring it to front.
+  - **Minimize** (`_`) sends it to the bottom taskbar; click the taskbar chip to restore. **Close** (`×`) removes it.
+  - Open several at once (DirtBowl test: Registration form + a Pre/Post process + a document).
+  - Titles read `Form - ParentCoaches`, `Process - Pre-ParentCoaches`, etc.
+- **Fields Phase 2:** From the right-hand **Fields** tree, **drag** a field leaf onto a Text/Heading/FIB-question/MCQ editor or the rich-text surface → inserts `<<name>>`; or **double-click** a leaf to insert into the last-focused editor. Name fields (form/process/document rename, FIB capture-box labels, FIB stored names) **reject** drops.
+
+### 3. Placeholder vs real editor in windows
+
+- **Real editors** are embedded (not placeholders): `FormEditor`, `ProcessEditor`, `DocumentEditor` render inside each window frame.
+- The only empty-state placeholder is when **no** windows are open (all closed): a "Select a form… to open a window" hint.
+
+### 4. Open questions / decisions needed from you
+
+1. **Open trigger:** Pass 1 opens a window on **single click** of an Explorer leaf. Legacy used **double-click** to open the MDI child (single-click just selects). Want single-click, double-click, or a right-click "Open" — your call.
+2. **Per-window editor state:** Design/Preview tab and the selected form item are still **global**, so multiple open form windows share them. Worth the Pass 2 refactor to make them per-window?
+3. **Windows menu:** Add a legacy-style **Windows** menu (list + tile/cascade) in Pass 2?
+4. **Auto-open first form on load** — kept the canvas from being blank. Keep, or start with an empty canvas?
+
+### 5. Recommended next steps (Pass 2)
+
+- Per-window editor state (tab + selected item) instead of global store fields.
+- **Windows** menu (list open children, cascade/tile), maximize button, layout persistence to the project file.
+- Process-window **yellow connection banner** (§3/§6) once Form↔Process Connect UI exists.
+- Double-click-to-open + right-click context menu if you prefer legacy click semantics.
+
+### 6. How to verify (checklist)
+
+- [ ] `cd designer-web && npm run build` → clean `tsc -b && vite build` (verified this session).
+- [ ] `npm run dev`, click a form/process/document → window opens.
+- [ ] Drag / resize / minimize+restore / close a window.
+- [ ] Open 3 windows, click between them → z-order front works.
+- [ ] Rename a form in Explorer while its window is open → title updates, no "not found".
+- [ ] Fields drag + double-click still insert `<<name>>`; name fields still reject.
+
+### 7. Blockers hit
+
+- **Live browser walkthrough not run** — the Cursor IDE browser tab was unavailable in this unattended session (new tabs vanished). Verified instead via clean `tsc -b && vite build` + dev-server HTTP 200 smoke test. Please run the manual checklist above.
+- Stray empty `package-lock.json` at the **repo root** (from an accidental root `npm`) left **untracked** — safe to delete; not part of either commit.
+
+---
+
 ## Chat 1 — Browser Designer (`designer-web/`)
 
 **Suggested title:** `Designer — architecture backlog & Phase 4`
@@ -29,13 +90,17 @@ Constraints: Do not mix 8080 CSS/docker or website-mock work in this chat; previ
 - DirtBowl stress test documented five **architecture backlog** items: [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md).
 - Deploy dialog filters Java response to project-scoped URLs (`server/deployParse.mjs`); restart dev server after pull.
 - Preview/runtime fixes landed in `server/` and `src/api/`.
+- **Landed (July 2026):**
+  - **Multi-window / MDI shell — Pass 1** (`src/components/mdi/`): open/close/drag/resize/minimize/z-order windows from Explorer; embedded real editors. See backlog §2 for Pass 2 items.
+  - **Fields palette drop targets — Phase 2** (`9b5264b`): drag + double-click `<<name>>` insert with name-field guardrails.
+  - Explorer Phase 1 collapse + linked Pre/Post processes; inline rename.
 - **Not built yet (blockers for Process work and large-project authoring):**
-  - Multi-window / MDI shell (see architecture backlog)
-  - Forms ↔ Processes transparency in explorer
-  - Collapsible explorer; properties popups vs permanent panel; multiple menu bars
+  - MDI Pass 2: Windows menu, per-window editor tab/item state, connection banner, layout persistence, tile/cascade/maximize
+  - Forms ↔ Processes **editing** (Connect Pre/Post UI, auto-name on attach)
+  - Properties popups vs permanent panel; multiple merged menu bars
   - Insertion-point arrow (Form / Process / Document)
   - Move Up / Move Down for form items, process statements, document blocks
-  - Full Fields palette drop targets; `.tawala` import; Potluck / email templates
+  - Fine-grained FIB drop map (blocked on WYSIWYG); `.tawala` import; Potluck / email templates
 - Repo checkpoint pushed: `897ac8a` — *Checkpoint browser Designer, deploy pipeline, and legacy reference assets.*
 
 ### Key files

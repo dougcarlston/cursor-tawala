@@ -903,6 +903,206 @@ textarea {
   font-size: 14px;
 }
 
+/* --- MDI canvas window shell (backlog §2, Pass 1) -------------------------- */
+.mdi-canvas {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.mdi-surface {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  background: #6b7a91;
+  background-image: linear-gradient(135deg, #7a8aa3 0%, #5f6e85 100%);
+}
+
+.mdi-window {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  min-width: 320px;
+  min-height: 180px;
+  background: var(--panel);
+  border: 1px solid var(--border-dark);
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.35);
+}
+
+.mdi-window.active {
+  box-shadow: 3px 3px 14px rgba(0, 0, 0, 0.5);
+}
+
+.mdi-titlebar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 24px;
+  padding: 0 4px 0 6px;
+  background: linear-gradient(180deg, #d7d2c4 0%, #cfc9ba 100%);
+  border-bottom: 1px solid var(--border);
+  color: #333;
+  cursor: move;
+  user-select: none;
+  flex: 0 0 auto;
+}
+
+.mdi-window.active .mdi-titlebar {
+  background: linear-gradient(180deg, #3f7fd6 0%, #2f63b5 100%);
+  color: #fff;
+}
+
+.mdi-title-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
+.mdi-title-text {
+  flex: 1;
+  font-weight: 600;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mdi-controls {
+  display: flex;
+  gap: 3px;
+}
+
+.mdi-control {
+  width: 20px;
+  height: 18px;
+  padding: 0;
+  line-height: 1;
+  border: 1px solid var(--border-dark);
+  background: #ece9d8;
+  color: #000;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.mdi-control:hover {
+  background: #f5f3e7;
+}
+
+.mdi-control-close:hover {
+  background: #e81123;
+  color: #fff;
+  border-color: #b10f1c;
+}
+
+.mdi-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  background: var(--panel);
+}
+
+.mdi-body .form-editor {
+  height: 100%;
+}
+
+/* Resize handles: thin edges + 12px corner squares. */
+.mdi-resize {
+  position: absolute;
+  z-index: 2;
+}
+.mdi-resize-n {
+  top: -3px;
+  left: 6px;
+  right: 6px;
+  height: 6px;
+  cursor: ns-resize;
+}
+.mdi-resize-s {
+  bottom: -3px;
+  left: 6px;
+  right: 6px;
+  height: 6px;
+  cursor: ns-resize;
+}
+.mdi-resize-e {
+  top: 6px;
+  bottom: 6px;
+  right: -3px;
+  width: 6px;
+  cursor: ew-resize;
+}
+.mdi-resize-w {
+  top: 6px;
+  bottom: 6px;
+  left: -3px;
+  width: 6px;
+  cursor: ew-resize;
+}
+.mdi-resize-ne {
+  top: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+}
+.mdi-resize-nw {
+  top: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+.mdi-resize-se {
+  bottom: -3px;
+  right: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: nwse-resize;
+}
+.mdi-resize-sw {
+  bottom: -3px;
+  left: -3px;
+  width: 12px;
+  height: 12px;
+  cursor: nesw-resize;
+}
+
+.mdi-taskbar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 0 0 auto;
+  padding: 3px 6px;
+  background: var(--toolbar-bg);
+  border-top: 1px solid var(--border);
+  overflow-x: auto;
+}
+
+.mdi-taskbar-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 220px;
+  padding: 3px 8px;
+  border: 1px solid var(--border-dark);
+  background: #f5f3e7;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.mdi-taskbar-item:hover {
+  background: #fff;
+}
+
+.mdi-taskbar-icon {
+  font-size: 12px;
+  line-height: 1;
+}
+
 .status-bar {
   display: flex;
   justify-content: space-between;

@@ -106,15 +106,32 @@ Variables           ← expanded
 
 **Legacy:** Designers can open Forms, Processes, and Documents in **separate MDI child windows** with multiple windows open at once. The **Windows** menu lists open children; the center pane hosts `Form - …`, `Process - …`, `Document - …` windows simultaneously.
 
-**Browser Designer (`designer-web`):** Server-side layout uses a **single editor pane** — no MDI, no Windows menu, no parallel Form + Process + Document windows.
+**Browser Designer (`designer-web`) — Pass 1 (July 2026): implemented.** The center canvas is now a **window manager** (`src/components/mdi/`). Clicking a form / process / document leaf in Project Explorer **opens** (or **focuses**) an overlapping MDI child window. Windows **drag** by title bar, **resize** from all edges/corners, **stack** with click-to-front z-order, **minimize** to a bottom taskbar, and **close**. Title bars read `Form - Name` / `Process - Name` / `Document - Name` (matching the legacy screenshot). Each window embeds the **real single-pane editor** (`FormEditor` / `ProcessEditor` / `DocumentEditor`), not a placeholder.
+
+| Pass 1 — done | Deferred (Pass 2+) |
+|---------------|--------------------|
+| Open window from Explorer leaf; re-open focuses existing window (`id = kind:name`) | **Windows menu** listing open children |
+| Drag (title bar), resize (8 handles), click-to-front z-order | Yellow **connection banner** in process windows (§3, §6) |
+| Minimize → taskbar; restore; close | Properties **popup** migration (§5) |
+| Embedded real editors; title `Type - Name`; cascade offset on open | Persist window layout to the project file |
+| Windows re-key on entity **rename**; cleared on new/open project | **Snap / cascade / tile** commands; maximize |
+| Auto-open first form on project load so the canvas is never blank | Per-window editor **tab** state (Design/Preview and selected item are still **global** — see limitations) |
+
+**Known Pass 1 limitations (documented, acceptable for a shell):**
+- `editorTab` (Design/Preview) and `selectedItemIndex` live in the **global** store, so all open **form** windows share the active Design/Preview tab and highlighted item. Per-window editor state is a Pass 2 refactor.
+- Each embedded `FormEditor` registers a global Delete/Backspace key handler; duplicate handlers are **safe** (guarded on `selectedItemIndex === null`) but should be de-duplicated in Pass 2.
+- No maximize button yet (minimize + close only).
+
+**State/actions (`projectStore.ts`):** `openWindows: DesignerWindow[]` (`id, kind, name, x, y, w, h, z, minimized`), `activeWindowId`, and `openWindow / closeWindow / focusWindow / minimizeWindow / restoreWindow / setWindowBounds`.
 
 **Spec cross-refs:**
 - `DESIGNER_MENU_SPEC.md` — shell layout (Project Explorer | MDI windows | Fields), Windows menu, MDI gap table
 - `DESIGNER_STARTUP_AND_FORM_CANVAS.md` — Form canvas as center MDI child on Design tab
 - `DESIGNER_DOCUMENT_EDITOR.md` — Document MDI child window
 - `DESIGNER_PROCESS_STATEMENTS_IF.md` — Process MDI window
+- Owner MDI screenshot: `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Forms_-_Parent_Coachs-d61cde9a-0b21-48f6-a29f-c8c0a2a9ead1.png`
 
-**Impact:** Blocks meaningful **large-project authoring** (e.g. full DirtBowl edit pass). Does **not** block using DirtBowl as a Preview / Deploy parity sample.
+**Impact:** Pass 1 unblocks **large-project authoring** (open Registration + a process + a document side by side). Full parity (Windows menu, connection banners, per-window tab state, layout persistence) remains Pass 2+.
 
 ---
 
@@ -257,3 +274,18 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 | `designer-web/src/styles.css` | `.field-drop-active` dashed-accent highlight for valid drop targets. | **Done** (Phase 2) |
 
 *Deferred (documented gaps): **FIB fine-grained drop map (BLOCKED on WYSIWYG item redesign)** — question text vs blanks vs capture-label drop zones can't be finalized until Forms/Documents items are true WYSIWYG windows on the canvas; Records / RecordSet tree nodes as drop context; drop into the structured **MULTIPLE QUESTION LIST** itemization token editor; invalid-drop validation/error surfacing; process command editing is JSON-textarea only (native token drop works, no structured condition field yet).*
+
+---
+
+## Follow-up code changes — implemented (MDI window shell Pass 1, July 2026)
+
+| File | Change | Status |
+|------|--------|--------|
+| `designer-web/src/store/projectStore.ts` | Added MDI window model + actions: `openWindows` / `activeWindowId` state and `openWindow` (open-or-focus by `kind:name`, cascade offset), `closeWindow`, `focusWindow`, `minimizeWindow`, `restoreWindow`, `setWindowBounds`. Windows cleared on `setProject` / `newProject` / `importJson`; auto-open first form on load; **re-keyed on rename** (`renameForm` / `renameProcess` / `renameDocument`). | **Done** (Pass 1) |
+| `designer-web/src/components/mdi/CanvasWindow.tsx` | Single MDI child: title bar drag, 8 resize handles (edges + corners, min 320×180), click-to-front, minimize/close controls, title `Type - Name`. Body embeds real `FormEditor` / `ProcessEditor` / `DocumentEditor`. | **Done** (Pass 1) |
+| `designer-web/src/components/mdi/CanvasWindowManager.tsx` | Canvas host: renders visible windows absolutely inside `.designer-center`, minimized taskbar, empty-state placeholder. | **Done** (Pass 1) |
+| `designer-web/src/App.tsx` | Center pane now renders `<CanvasWindowManager />` instead of the single selection-driven editor. | **Done** (Pass 1) |
+| `designer-web/src/components/ProjectExplorer.tsx` | Form / process / document leaf clicks now call `openWindow(kind, name)` (open-or-focus) instead of bare `setSelection`. | **Done** (Pass 1) |
+| `designer-web/src/styles.css` | `.mdi-*` window chrome: surface backdrop, title bar (active blue / inactive grey), controls, resize handles, taskbar. | **Done** (Pass 1) |
+
+*Verified: `tsc -b && vite build` clean (July 2026). Live browser walkthrough not run in this session — Cursor IDE browser tab was unavailable (see CHAT_HANDOFF manual test steps). Deferred to Pass 2: Windows menu, process connection banner, per-window editor tab/item state, layout persistence, snap/cascade/tile, maximize.*

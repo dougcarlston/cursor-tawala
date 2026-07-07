@@ -4,9 +4,7 @@ import { MenuBar } from "./components/MenuBar";
 import { ToolBar } from "./components/ToolBar";
 import { ProjectExplorer } from "./components/ProjectExplorer";
 import { InspectorPanel } from "./components/InspectorPanel";
-import { FormEditor } from "./components/FormEditor";
-import { ProcessEditor } from "./components/ProcessEditor";
-import { DocumentEditor } from "./components/DocumentEditor";
+import { CanvasWindowManager } from "./components/mdi/CanvasWindowManager";
 import { StatusBar } from "./components/StatusBar";
 import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
@@ -96,17 +94,7 @@ export default function App() {
           <ProjectExplorer />
         </aside>
         <main className="designer-center">
-          {selection.kind === "form" && selection.name ? (
-            <FormEditor formName={selection.name} />
-          ) : selection.kind === "process" && selection.name ? (
-            <ProcessEditor processName={selection.name} />
-          ) : selection.kind === "document" && selection.name ? (
-            <DocumentEditor documentName={selection.name} />
-          ) : (
-            <div className="placeholder-editor">
-              Select a form, process, or document in Project Explorer
-            </div>
-          )}
+          <CanvasWindowManager />
         </main>
         <div
           className="designer-right-splitter"

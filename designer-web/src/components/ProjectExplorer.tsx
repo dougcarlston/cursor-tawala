@@ -19,6 +19,7 @@ export function ProjectExplorer() {
   const project = useProjectStore((s) => s.project);
   const selection = useProjectStore((s) => s.selection);
   const setSelection = useProjectStore((s) => s.setSelection);
+  const openWindow = useProjectStore((s) => s.openWindow);
   const addForm = useProjectStore((s) => s.addForm);
   const addProcess = useProjectStore((s) => s.addProcess);
   const addDocument = useProjectStore((s) => s.addDocument);
@@ -186,7 +187,7 @@ export function ProjectExplorer() {
                           expanded={formExpanded}
                           onToggle={() => toggleForm(form.name)}
                           selected={isSelected({ kind: "form", name: form.name })}
-                          onSelect={() => setSelection({ kind: "form", name: form.name })}
+                          onSelect={() => openWindow("form", form.name)}
                           leaf={links.length === 0}
                           editing={editing?.key === formKey}
                           onBeginRename={() =>
@@ -213,9 +214,7 @@ export function ProjectExplorer() {
                                     expanded={false}
                                     onToggle={() => {}}
                                     selected={isSelected({ kind: "process", name: link.name })}
-                                    onSelect={() =>
-                                      setSelection({ kind: "process", name: link.name })
-                                    }
+                                    onSelect={() => openWindow("process", link.name)}
                                     leaf
                                     editing={editing?.key === linkKey}
                                     onBeginRename={() =>
@@ -270,9 +269,7 @@ export function ProjectExplorer() {
                           expanded={false}
                           onToggle={() => {}}
                           selected={isSelected({ kind: "process", name: proc.name })}
-                          onSelect={() =>
-                            setSelection({ kind: "process", name: proc.name })
-                          }
+                          onSelect={() => openWindow("process", proc.name)}
                           leaf
                           editing={editing?.key === procKey}
                           onBeginRename={() =>
@@ -312,9 +309,7 @@ export function ProjectExplorer() {
                           expanded={false}
                           onToggle={() => {}}
                           selected={isSelected({ kind: "document", name: doc.name })}
-                          onSelect={() =>
-                            setSelection({ kind: "document", name: doc.name })
-                          }
+                          onSelect={() => openWindow("document", doc.name)}
                           leaf
                           editing={editing?.key === docKey}
                           onBeginRename={() =>
