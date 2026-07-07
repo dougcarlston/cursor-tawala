@@ -104,9 +104,9 @@ Variables           ← expanded
 
 ## 3. Forms ↔ Processes connection transparency
 
-**Legacy:** Form ↔ Process links are explicit in **Form Properties** (PreProcess / PostProcess) and visible in the project tree. Processes are named and tied to forms in a way designers can inspect and navigate.
+**Legacy:** Form ↔ Process links are explicit in **Form Properties** (PreProcess / PostProcess) and visible in the project tree. When a process is **attached** to a form, the Designer **auto-names** it `Pre-Process1` / `Post-Process1` (or the next available number); the designer may **rename** to any label and **need not keep** the `Pre-` / `Post-` prefix. **Pre vs Post role** is determined by the form linkage (`preProcess` / `process` on form JSON) and by **explorer icons** (gear vs form+gear) — **not** by parsing the process name (e.g. `RetrieveAdminSetupVariables` is a Pre-process with no `Pre-` prefix).
 
-**Browser Designer:** **Phase 1 (July 2026)** reads `preProcess` / `process` on each form in project JSON and shows linked processes under the form in Project Explorer (`linkedProcessesForForm`). Deploy pipeline already serializes these fields. Still missing: **Form Properties** UI to edit links, process-editor **yellow connection banner**, and Edit → Connect/Disconnect Pre/Post-Process menu actions.
+**Browser Designer:** **Phase 1 (July 2026)** reads `preProcess` / `process` on each form in project JSON and shows linked processes under the form in Project Explorer (`linkedProcessesForForm`), with Pre/Post **icons** driven by linkage. Deploy pipeline already serializes these fields. Still missing: **Form Properties** UI to edit links (including **auto-name on attach**), process-editor **yellow connection banner**, and Edit → Connect/Disconnect Pre/Post-Process menu actions.
 
 **Spec cross-refs:**
 - `DESIGNER_UI_REFERENCE.md` — Form Properties (PreProcess / PostProcess), PostProcess terminology
@@ -121,8 +121,8 @@ Variables           ← expanded
 
 **Legacy (owner screenshots, July 2026):** Explorer sections **collapse** with **`[-]` / `[+]`** — vital for large **Forms** trees. Each **form** is a parent node (form grid icon) that expands to show linked processes as children:
 
-- **Pre-process** — solid purple **gear** icon; process name as label (often `Pre-{FormName}`, sometimes descriptive e.g. `RetrieveAdminSetupVariables`).
-- **Post-process** — **form icon + gear overlay**; label typically `Post-{FormName}`.
+- **Pre-process** — solid purple **gear** icon (top-associated child); process **name** as label (default on attach: `Pre-ProcessN`; designer may rename — role is **not** inferred from the name string).
+- **Post-process** — **form icon + gear overlay** (bottom-associated child); default on attach: `Post-ProcessN`; labels often `Post-{FormName}` after rename in older projects.
 
 Forms, Processes, and Documents are separate collapsible folders. Dotted tree lines connect parents to children. Explorer toolbar above the tree has seven icon buttons (New Form/Process/Document, reorder, start point, block back). See `DESIGNER_MENU_SPEC.md` § Project Explorer and reference images listed there.
 
@@ -131,11 +131,11 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 | Done (Phase 1 core) | Not yet (polish / backlog) |
 |---------------------|----------------------------|
 | Collapsible **Forms** / **Processes** / **Documents** section folders | WinForms-style **`[-]` / `[+]`** (today: ▼/▶) |
-| Linked processes nested under each form (`linkedProcessesForForm` from `preProcess` / `process` on form JSON) | **Gear** and **form+gear** icons on child nodes |
-| Per-form expand/collapse for linked process children | Process **name only** in tree (legacy); browser uses `Pre: name` / `Post: name` text prefixes |
-| Selection opens process same as flat Processes list | Dotted connector lines; full **7-icon** explorer toolbar (browser: F/P/D text only); rename, reorder, ★/block-back toolbar toggles |
-| **First-open default:** all form nodes **expanded** (Q3); Pre/Post-process **gear** + form/folder/document node icons | |
-| | **MDI** multiple simultaneous Form + Process windows; yellow **connection banner** in process editor (§6, `DESIGNER_PROCESS_STATEMENTS_IF.md`) |
+| Linked processes nested under each form (`linkedProcessesForForm` from `preProcess` / `process` on form JSON) | **Auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`) when Connect Pre/Post UI ships |
+| Per-form expand/collapse for linked process children | Dotted connector lines; full **7-icon** explorer toolbar (browser: F/P/D text only); rename, reorder, ★/block-back toolbar toggles |
+| Process **name** labels; Pre/Post role from JSON linkage + **gear** / **form+gear** icons (not name prefix) | |
+| Selection opens process same as flat Processes list | **MDI** multiple simultaneous Form + Process windows; yellow **connection banner** in process editor (§6, `DESIGNER_PROCESS_STATEMENTS_IF.md`) |
+| **First-open default:** all form nodes **expanded** (Q3); form/folder/document node icons | |
 
 **Owner decisions — July 2026 (Explorer collapse):**
 
@@ -186,6 +186,20 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 
 ---
 
+## 7. Panel docking & resize (Explorer ↔ Items / Statements)
+
+**Legacy (owner observation, July 2026):** Dragging the **right edge** of the **Project Explorer** column widens or narrows that column. The **Items** palette (form selected) and **Statements** palette (process selected) — both docked on the Explorer’s **right side** — **move and resize together** with the Explorer. Those middle-column palettes **cannot** be repositioned, widened, or expanded **independently** of the Explorer column today.
+
+**Future capability (backlog — not Phase 1):** Independent resize, move, and expand of Items / Statements relative to the Project Explorer column. Until then, browser and legacy shells treat the Explorer + middle palette as a **coupled** left block.
+
+**Spec cross-refs:**
+- `DESIGNER_MENU_SPEC.md` — Project Explorer § Panel resize; middle column (Items / Statements)
+- This doc **§2** — MDI / shell layout (Explorer | Items/Statements | MDI | Fields)
+
+**Impact:** Low urgency for DirtBowl parity; matters for designers who want a wide Items strip or a narrow Explorer without dragging both together. Owner: “we’ll get to that eventually.”
+
+---
+
 ## Already recorded elsewhere (not duplicated here)
 
 | Item | Where |
@@ -198,7 +212,7 @@ Forms, Processes, and Documents are separate collapsible folders. Dotted tree li
 
 ---
 
-*Last updated: July 2026 — Owner decisions Q1–Q4 (Fields leaves, variable scope, collapse defaults, `_InviteeID` ordering); Phase 1 browser status refreshed in §1 and §4 gap tables.*
+*Last updated: July 2026 — Owner decisions Q1–Q4 (Fields leaves, variable scope, collapse defaults, `_InviteeID` ordering); Phase 1 browser status refreshed in §1 and §4 gap tables; §7 Explorer ↔ Items/Statements panel coupling (backlog).*
 
 ---
 

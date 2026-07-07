@@ -69,13 +69,32 @@ Top-level folders under the project root: **Forms**, **Processes**, **Documents*
 
 **Child order under a form:** Pre-process first (if any), then Post-process (if any). A form may have only a Post-process, only a Pre-process, or both.
 
-**Naming:** Child nodes show the **process name** as stored in the project — not a `Pre:` / `Post:` text prefix in the label.
+**Naming (owner correction, July 2026):** Child nodes show the **process name** as stored in the project — not a `Pre:` / `Post:` text prefix in the label.
 
-| Pattern | Example | Notes |
-|---------|---------|-------|
-| `Pre-{FormName}` | `Pre-ParentCoaches`, `Pre-ShowAllRosters` | Common default when Pre-process is created for a form |
-| Descriptive Pre-process name | `RetrieveAdminSetupVariables` | Under `NavigationToPaymentByCheck` — still uses **gear** icon |
-| `Post-{FormName}` | `Post-ParentCoaches`, `Post-NavigationToPaymentByCheck` | Nearly always `Post-` + parent form name |
+When a process is **attached to a Form** (connected as Pre- or Post-process), the Designer **automatically assigns** a default name:
+
+| Role | Default name pattern |
+|------|----------------------|
+| Pre-process | `Pre-Process1` (or `Pre-Process2`, … next available number) |
+| Post-process | `Post-Process1` (or `Post-Process2`, … next available number) |
+
+**Why auto-naming:** Processes are often created **before** they are attached to a form; the default name helps the designer track intended placement.
+
+The designer **may rename** the process to **any** name — they **do not have to keep** the `Pre-` or `Post-` prefix in the label. **Pre vs Post role is not encoded in the name string** — it comes from the form’s `preProcess` / `process` linkage in project JSON and from **tree icons** (see table above):
+
+| Role | Icon (placement semantics) |
+|------|----------------------------|
+| Pre-process | Solid purple **gear** (top / top-associated child position) |
+| Post-process | **Form + gear** overlay (bottom / bottom-associated child position) |
+
+**Do not infer** Pre vs Post from the process **name** alone (e.g. `RetrieveAdminSetupVariables` has no `Pre-` prefix but is a Pre-process under `NavigationToPaymentByCheck`).
+
+| Name pattern | Example | Notes |
+|--------------|---------|-------|
+| Auto-name on attach | `Pre-Process1`, `Post-Process2` | Default when linking; designer may rename immediately |
+| `Pre-{FormName}` | `Pre-ParentCoaches`, `Pre-ShowAllRosters` | Common after rename or legacy projects |
+| Descriptive (no prefix) | `RetrieveAdminSetupVariables` | Pre-process under `NavigationToPaymentByCheck` — **gear** icon, not name, marks role |
+| `Post-{FormName}` | `Post-ParentCoaches`, `Post-NavigationToPaymentByCheck` | Common Post-process label |
 | Post only | `Post-DuplicateRegistrationCheck` | Under `DuplicateRegistrationCheck`; no Pre-process child |
 
 **Examples from July 2026 explorer screenshot:**
@@ -121,6 +140,12 @@ Documents  [-]
 **Browser gap:** `ProjectExplorer.tsx` initializes `expandedForms` as an **empty** `Set`, so per-form nodes start **collapsed** instead of expanded. See `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §4.
 
 **Image cross-ref:** `.cursor/projects/Users-DougC1-Projects-AI-Tawala/assets/Project_Explorer-16cbb1fb-21b3-4372-ae93-f067205db3de.png`.
+
+### Panel resize (legacy layout, July 2026)
+
+Dragging the **right edge** of the Project Explorer column resizes the Explorer; the **Items** / **Statements** middle column (see below) is docked to that edge and **moves and resizes with it**. Those palettes **cannot** be widened, moved, or expanded independently of the Explorer today.
+
+**Backlog:** Independent resize/move/expand of Items and Statements relative to the Explorer — `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` **§7**.
 
 ### MDI workspace (backlog context — not Phase 1)
 
@@ -583,7 +608,7 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process name labels; **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; labels `Pre: name` / `Post: name` (text prefix, no icons); ▼/▶ toggles; **forms start collapsed** (Q3 gap); F/P/D text toolbar only. **Polish gaps:** legacy icons, `[-]`/`[+]` chrome, default-expanded forms, dotted lines, toolbar icons 4–7, rename/reorder |
+| Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Gaps:** auto-name on attach when Connect Pre/Post UI exists; `[-]`/`[+]` chrome, dotted lines, toolbar icons 4–7, rename/reorder, default-expanded forms on first open |
 | Middle column | Items / Statements / empty | Form items palette only; always visible |
 | Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; drag source only, no drop targets |
 | Insert | Context-sensitive (3 menus) | Partial; no Process insert |
