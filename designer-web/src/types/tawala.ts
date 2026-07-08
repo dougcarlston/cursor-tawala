@@ -85,6 +85,11 @@ export interface McItem extends FormItemBase {
   question?: string;
   /** Stored field name for <<…>> references (exported as alternateLabel). */
   name?: string;
+  /**
+   * Where choices come from (legacy McqItem): `manual` = entered on the canvas (a/b/c…),
+   * `stored` = dynamic choices from project data (Configure Function). Absent = manual.
+   */
+  choiceSource?: "manual" | "stored";
 }
 
 export interface FieldItem extends FormItemBase {
@@ -210,6 +215,13 @@ export const TEXT_PLACEHOLDER = "[Replace this with text of your own.]";
  */
 export const FIB_PLACEHOLDER = "[Replace this with your question. Underscores create blanks.]";
 
+/**
+ * Legacy default MCQ question text (`Resources.McqItemDefaultRTF`). Inserted selected so the
+ * designer types over it immediately (see `McqCanvasRow` select-all).
+ */
+export const MCQ_PLACEHOLDER =
+  "[Replace this with your question. Use Enter key to add choices below.]";
+
 export function createDefaultItem(type: FormItemType, label: string): FormItem {
   switch (type) {
     case "heading":
@@ -228,11 +240,9 @@ export function createDefaultItem(type: FormItemType, label: string): FormItem {
         type,
         label,
         onlyone: true,
-        question: "[Replace with your question.]",
-        choices: [
-          { name: "a", text: "Choice 1" },
-          { name: "b", text: "Choice 2" },
-        ],
+        choiceSource: "manual",
+        question: MCQ_PLACEHOLDER,
+        choices: [{ name: "a", text: "" }],
       };
     case "field":
       return { type, label, fieldName: "FieldName" };

@@ -374,7 +374,8 @@ function renderItem(item, ctx, project) {
       return renderFib(item, ctx);
     case "mc": {
       const choices = renderMcChoices(item, ctx);
-      const q = item.question ?? "";
+      // MCQ question may carry canvas-inline HTML; render plain text in the legend.
+      const q = String(item.question ?? "").replace(/<[^>]+>/g, "");
       if (isRegistrationForm(ctx.formName) && (item.label === "Q7" || item.label === "Q8")) {
         return choices;
       }

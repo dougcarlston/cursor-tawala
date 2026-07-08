@@ -12,8 +12,13 @@ function fontXml(text, escText, { bold = false, italic = false } = {}) {
   return `<font face="Arial" size="200" color="000000">${inner}</font>`;
 }
 
+/** MCQ question may be canvas-inline HTML; export/runtime use plain text (formatting parity TBD). */
+function questionPlainText(question) {
+  return String(question ?? "").replace(/<[^>]+>/g, "");
+}
+
 function questionParagraph(question, escText) {
-  const q = String(question ?? "");
+  const q = questionPlainText(question);
   const italicMatch = q.match(/^(.*?)(\([^)]+\))\s*$/);
   if (italicMatch) {
     const main = italicMatch[1].trim();

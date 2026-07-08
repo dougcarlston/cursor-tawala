@@ -1,17 +1,9 @@
-import { FibItem, FormItem, TawalaBlank, TawalaChoice } from "@/types/tawala";
+import { FibItem, FormItem, TawalaBlank } from "@/types/tawala";
 import { FieldTextArea, FieldTextInput, NameTextInput } from "./FieldDropInputs";
 import {
   hasStructuredTextContent,
   StructuredTextProperties,
 } from "./StructuredTextProperties";
-
-function nextChoiceName(choices: TawalaChoice[]): string {
-  for (let i = 0; i < 26; i++) {
-    const name = String.fromCharCode(97 + i);
-    if (!choices.some((c) => c.name === name)) return name;
-  }
-  return `c${choices.length + 1}`;
-}
 
 function nextBlankName(blanks: TawalaBlank[]): string {
   for (let i = 0; i < 26; i++) {
@@ -31,7 +23,9 @@ export function FormItemProperties({ item, onChange }: Props) {
   // structured/function-table Text still edits in the panel.
   const textIsCanvasInline = item.type === "text" && !hasStructuredTextContent(item.content);
   const fibIsCanvasInline = item.type === "fib";
-  const labelIsCanvasInline = item.type === "heading" || textIsCanvasInline || fibIsCanvasInline;
+  const mcIsCanvasInline = item.type === "mc";
+  const labelIsCanvasInline =
+    item.type === "heading" || textIsCanvasInline || fibIsCanvasInline || mcIsCanvasInline;
 
   return (
     <div className="properties-panel properties-panel-compact">
@@ -79,64 +73,12 @@ export function FormItemProperties({ item, onChange }: Props) {
         <FibItemProperties item={item} onChange={onChange} />
       )}
 
-      {item.type === "mc" && (
-        <>
-          <label>
-            Question
-            <FieldTextArea
-              value={item.question ?? ""}
-              rows={2}
-              onValueChange={(v) => onChange({ question: v })}
-            />
-          </label>
-          <label className="property-checkbox">
-            <input
-              type="checkbox"
-              checked={item.onlyone !== false}
-              onChange={(e) => onChange({ onlyone: e.target.checked })}
-            />
-            Only one choice
-          </label>
-          {(item.choices ?? []).map((c, i) => (
-            <div key={c.name} className="mc-choice-row">
-              <label>
-                Choice {c.name}
-                <input
-                  value={c.text}
-                  onChange={(e) => {
-                    const choices = [...(item.choices ?? [])];
-                    choices[i] = { ...c, text: e.target.value };
-                    onChange({ choices });
-                  }}
-                />
-              </label>
-              <button
-                type="button"
-                className="mc-choice-remove"
-                title="Remove choice"
-                disabled={(item.choices ?? []).length <= 1}
-                onClick={() => {
-                  const choices = (item.choices ?? []).filter((_, j) => j !== i);
-                  onChange({ choices });
-                }}
-              >
-                −
-              </button>
-            </div>
-          ))}
-          <button
-            type="button"
-            className="mc-choice-add"
-            onClick={() => {
-              const choices = [...(item.choices ?? [])];
-              const name = nextChoiceName(choices);
-              choices.push({ name, text: `Choice ${name}` });
-              onChange({ choices });
-            }}
-          >
-            + Add choice
-          </button>
-        </>
+      {mcIsCanvasInline && (
+        <p className="hint">
+          Edit the question label in its badge, the question and choices on the canvas (press Enter
+          after a choice to add the next), and options in the property strip below (multi-select,
+          required, choice source). Bold/Italic/Underline use the Formatting Palette.
+        </p>
       )}
 
       {item.type === "field" && (

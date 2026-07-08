@@ -4,6 +4,7 @@ import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
 import { FibFieldPreview } from "./FibFieldPreview";
 import { FibCanvasRow } from "./FibCanvasRow";
+import { McqCanvasRow } from "./McqCanvasRow";
 import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
@@ -125,6 +126,14 @@ export function FormEditor({ formName }: Props) {
                   />
                 ) : item.type === "fib" ? (
                   <FibCanvasRow
+                    key={`${item.label}-${i}`}
+                    item={item}
+                    index={i}
+                    formName={formName}
+                    selected={selectedItemIndex === i}
+                  />
+                ) : item.type === "mc" ? (
+                  <McqCanvasRow
                     key={`${item.label}-${i}`}
                     item={item}
                     index={i}
