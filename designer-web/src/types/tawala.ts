@@ -9,14 +9,26 @@ export type FormItemType =
   | "break"
   | "skipInstructions";
 
+/**
+ * A blank's validation function (legacy `Blank.ValidationFunction`). `type` is the metadata id
+ * (see `FIB_VALIDATORS` in `lib/fibBlanks.ts`); `errorMessage` is required for all validators
+ * except Proper Name; `lowerLimit` / `upperLimit` apply to Integer only.
+ */
+export interface BlankValidation {
+  type: string;
+  errorMessage?: string;
+  lowerLimit?: string;
+  upperLimit?: string;
+}
+
 export interface TawalaBlank {
   name: string;
   length?: number;
   required?: boolean;
   /** Multi-line blank height in lines (legacy Blank.Height; default 1). */
   height?: number;
-  /** Validation preset id (legacy ValidationFunction type name). */
-  validationType?: string;
+  /** Validation function for this blank (legacy ValidationFunction). */
+  validation?: BlankValidation;
   /** Internal field name for Processes / Fields palette (legacy alternateLabel). */
   alternateLabel?: string;
   /** Label shown above the input on the live form (topLabels and similar). */

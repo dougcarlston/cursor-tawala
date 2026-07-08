@@ -1,20 +1,51 @@
 import { useEffect, useRef, useState } from "react";
-import { FibItem, FIB_PLACEHOLDER } from "@/types/tawala";
+import { BlankValidation, FibItem, FIB_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
   FIB_VALIDATION_OPTIONS,
   activeBlankIndex,
+  defaultValidation,
   htmlToPlainText,
+  isAlternateLabelUnique,
   selectionIsSingleBlank,
   selectionPlainOffset,
   syncBlanksFromPrompt,
+  validatorMeta,
 } from "@/lib/fibBlanks";
+import {
+  fieldToken,
+  hasFieldDrag,
+  readFieldDragName,
+  setActiveFieldTarget,
+} from "@/lib/fieldInsertion";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
   setActivePaletteEditor,
   setFormattingFocus,
 } from "@/lib/formattingPaletteContext";
+import { FibValidationDialog } from "./FibValidationDialog";
+
+/** Caret Range at a viewport point, across Chromium (`caretRangeFromPoint`) and Firefox. */
+function caretRangeAtPoint(x: number, y: number): Range | null {
+  const doc = document as Document & {
+    caretRangeFromPoint?: (x: number, y: number) => Range | null;
+    caretPositionFromPoint?: (
+      x: number,
+      y: number,
+    ) => { offsetNode: Node; offset: number } | null;
+  };
+  if (typeof doc.caretRangeFromPoint === "function") return doc.caretRangeFromPoint(x, y);
+  if (typeof doc.caretPositionFromPoint === "function") {
+    const pos = doc.caretPositionFromPoint(x, y);
+    if (!pos) return null;
+    const range = document.createRange();
+    range.setStart(pos.offsetNode, pos.offset);
+    range.collapse(true);
+    return range;
+  }
+  return null;
+}
 
 interface Props {
   item: FibItem;
@@ -31,13 +62,20 @@ interface Props {
 export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
   const updateFormItem = useProjectStore((s) => s.updateFormItem);
+  const project = useProjectStore((s) => s.project);
   const [editing, setEditing] = useState(selected);
   const [editingLabel, setEditingLabel] = useState(false);
   const [activeBlank, setActiveBlank] = useState(-1);
+  const [dragOver, setDragOver] = useState(false);
+  const [validationDialogOpen, setValidationDialogOpen] = useState(false);
+  const [altLabelError, setAltLabelError] = useState<string | null>(null);
   const editorRef = useRef<HTMLDivElement>(null);
   const labelInputRef = useRef<HTMLInputElement>(null);
+  const altLabelInputRef = useRef<HTMLInputElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
   const wasSelected = useRef(selected);
+  const altLabelDraftRef = useRef<string | null>(null);
+  const revertingAltLabelRef = useRef(false);
 
   const prompt = item.prompt ?? "";
   const blanks = item.blanks ?? [];
@@ -60,6 +98,11 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     if (!el) return;
     el.innerHTML = prompt;
     el.focus();
+    // Register with the palette immediately so B/I/U work on the first click, without
+    // waiting for a later focus event (fixes formatting being dead until the editor is
+    // re-focused). Mirrors the onFocus handler.
+    setActiveFieldTarget(insertFieldToken);
+    registerAsPaletteEditor();
     setFormattingFocus({ kind: "fib", cursorInTable: false });
     const sel = window.getSelection();
     if (!sel) return;
@@ -129,7 +172,10 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
       end > start
         ? selectionIsSingleBlank(plain, start, end)
         : activeBlankIndex(plain, start);
-    setActiveBlank(idx);
+    setActiveBlank((prev) => {
+      if (prev !== idx) setAltLabelError(null);
+      return idx;
+    });
   };
 
   const commit = () => {
@@ -159,10 +205,14 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   };
 
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
+    if (validationDialogOpen) return;
+    // A duplicate Alternate Label refocuses its input to keep the strip open; don't collapse.
+    if (revertingAltLabelRef.current) return;
     if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
     const next = e.relatedTarget as HTMLElement | null;
     if (next?.closest(".formatting-palette")) return;
     if (next?.closest(".fib-property-strip")) return;
+    if (next?.closest(".fib-validation-dialog")) return;
     clearFormattingFocus("fib");
     setEditing(false);
     setActiveBlank(-1);
@@ -175,48 +225,78 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     update({ blanks: next });
   };
 
+  const insertFieldToken = (name: string) => {
+    const el = editorRef.current;
+    if (!el) return;
+    el.focus();
+    restoreSelection();
+    document.execCommand("insertText", false, fieldToken(name));
+    commit();
+  };
+
+  /** Every other alternate-label / field name on this form (for uniqueness checks). */
+  const takenFieldNames = (blankIndex: number): Set<string> => {
+    const taken = new Set<string>();
+    const form = project.forms.find((f) => f.name === formName);
+    if (!form) return taken;
+    for (const it of form.items) {
+      if (it.type === "fib") {
+        (it.blanks ?? []).forEach((b, bi) => {
+          if (it === item && bi === blankIndex) return;
+          const nm = b.alternateLabel?.trim();
+          if (nm) taken.add(nm.toLowerCase());
+        });
+      } else if (it.type === "mc") {
+        const nm = (it.name ?? it.alternateLabel)?.trim();
+        if (nm) taken.add(nm.toLowerCase());
+      } else if (it.type === "field") {
+        const nm = (it.fieldName ?? it.name)?.trim();
+        if (nm) taken.add(nm.toLowerCase());
+      }
+    }
+    return taken;
+  };
+
+  /** Returns true when the label was accepted; false when it was a duplicate and reverted. */
+  const commitAltLabel = (blankIndex: number, raw: string): boolean => {
+    const blank = blanks[blankIndex];
+    if (!blank) return true;
+    const trimmed = raw.trim();
+    const previous = altLabelDraftRef.current ?? blank.alternateLabel ?? "";
+    if (!isAlternateLabelUnique(trimmed, takenFieldNames(blankIndex))) {
+      // Duplicate — revert to the value at focus time (legacy rejects duplicates on validate).
+      // The revert is done in the store so the controlled input visibly snaps back; the caller
+      // keeps the property strip open (refocus) so the designer can see it happen.
+      updateBlank(blankIndex, { alternateLabel: previous.trim() || undefined });
+      setAltLabelError(`"${trimmed}" is already used by another field — reverted.`);
+      return false;
+    }
+    altLabelDraftRef.current = null;
+    setAltLabelError(null);
+    updateBlank(blankIndex, { alternateLabel: trimmed || undefined });
+    return true;
+  };
+
+  const changeValidationType = (blankIndex: number, typeId: string) => {
+    if (!typeId) {
+      updateBlank(blankIndex, { validation: undefined });
+      return;
+    }
+    const validation = defaultValidation(typeId);
+    updateBlank(blankIndex, { validation });
+    // Legacy opens the Configure Function dialog when a validator with parameters is picked.
+    if (validatorMeta(typeId)?.hasParams) setValidationDialogOpen(true);
+  };
+
+  const saveValidation = (blankIndex: number, validation: BlankValidation) => {
+    updateBlank(blankIndex, { validation });
+    setValidationDialogOpen(false);
+  };
+
   const plainPrompt = htmlToPlainText(prompt);
   const isEmpty = plainPrompt.trim() === "";
   const currentBlank = activeBlank >= 0 ? blanks[activeBlank] : null;
   const stripEnabled = activeBlank >= 0 && !!currentBlank;
-
-  const renderedPrompt = () => {
-    if (isEmpty) {
-      return <span className="fib-rendered-placeholder">{FIB_PLACEHOLDER}</span>;
-    }
-    const parts: React.ReactNode[] = [];
-    const re = /_+/g;
-    let lastIndex = 0;
-    let blankIdx = 0;
-    let match: RegExpExecArray | null;
-    while ((match = re.exec(plainPrompt)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(
-          <span key={`t-${lastIndex}`}>{plainPrompt.slice(lastIndex, match.index)}</span>,
-        );
-      }
-      const blank = blanks[blankIdx];
-      const size = Math.min(Math.max(blank?.length ?? match[0].length, 5), 120);
-      parts.push(
-        <input
-          key={`b-${match.index}`}
-          type="text"
-          className="fib-canvas-blank"
-          size={size}
-          style={blank?.height && blank.height > 1 ? { height: `${blank.height * 1.4}em` } : undefined}
-          readOnly
-          tabIndex={-1}
-          aria-label={blank?.alternateLabel ?? blank?.name ?? `blank ${blankIdx + 1}`}
-        />,
-      );
-      blankIdx++;
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < plainPrompt.length) {
-      parts.push(<span key={`t-${lastIndex}`}>{plainPrompt.slice(lastIndex)}</span>);
-    }
-    return parts;
-  };
 
   return (
     <div
@@ -262,8 +342,9 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
         {editing ? (
           <>
             <div
+              key="fib-editor"
               ref={editorRef}
-              className="fib-rich-editor"
+              className={`fib-rich-editor${dragOver ? " field-drop-active" : ""}`}
               contentEditable
               suppressContentEditableWarning
               data-placeholder={FIB_PLACEHOLDER}
@@ -286,20 +367,67 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
                 if (el) syncActiveBlank(el);
               }}
               onFocus={() => {
+                setActiveFieldTarget(insertFieldToken);
                 registerAsPaletteEditor();
                 setFormattingFocus({ kind: "fib", cursorInTable: false });
                 const el = editorRef.current;
                 if (el) syncActiveBlank(el);
+              }}
+              onDragOver={(e) => {
+                if (!hasFieldDrag(e.dataTransfer)) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "copy";
+                if (!dragOver) setDragOver(true);
+              }}
+              onDragLeave={() => {
+                if (dragOver) setDragOver(false);
+              }}
+              onDrop={(e) => {
+                setDragOver(false);
+                const name = readFieldDragName(e.dataTransfer);
+                if (!name) return;
+                e.preventDefault();
+                const el = editorRef.current;
+                const range = caretRangeAtPoint(e.clientX, e.clientY);
+                const sel = window.getSelection();
+                if (el && range && sel && el.contains(range.commonAncestorContainer)) {
+                  sel.removeAllRanges();
+                  sel.addRange(range);
+                  savedRangeRef.current = range.cloneRange();
+                }
+                insertFieldToken(name);
               }}
             />
             <div className={`fib-property-strip${stripEnabled ? "" : " disabled"}`}>
               <label>
                 Alternate Label
                 <input
+                  ref={altLabelInputRef}
                   type="text"
+                  className={altLabelError ? "fib-alt-invalid" : undefined}
                   value={currentBlank?.alternateLabel ?? ""}
                   disabled={!stripEnabled}
-                  onChange={(e) => updateBlank(activeBlank, { alternateLabel: e.target.value })}
+                  onFocus={() => {
+                    altLabelDraftRef.current = currentBlank?.alternateLabel ?? "";
+                  }}
+                  onChange={(e) => {
+                    const v = e.target.value;
+                    updateBlank(activeBlank, { alternateLabel: v });
+                    // Live feedback so the designer sees the clash before leaving the field.
+                    const dup = !isAlternateLabelUnique(v, takenFieldNames(activeBlank));
+                    setAltLabelError(dup ? `"${v.trim()}" is already used by another field.` : null);
+                  }}
+                  onBlur={(e) => {
+                    if (!commitAltLabel(activeBlank, e.target.value)) {
+                      // Keep the strip open and refocus so the reversion is visible.
+                      revertingAltLabelRef.current = true;
+                      requestAnimationFrame(() => {
+                        altLabelInputRef.current?.focus();
+                        altLabelInputRef.current?.select();
+                        revertingAltLabelRef.current = false;
+                      });
+                    }
+                  }}
                 />
               </label>
               <label>
@@ -327,11 +455,9 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
               <label>
                 Validation
                 <select
-                  value={currentBlank?.validationType ?? ""}
+                  value={currentBlank?.validation?.type ?? ""}
                   disabled={!stripEnabled}
-                  onChange={(e) =>
-                    updateBlank(activeBlank, { validationType: e.target.value || undefined })
-                  }
+                  onChange={(e) => changeValidationType(activeBlank, e.target.value)}
                 >
                   {FIB_VALIDATION_OPTIONS.map((opt) => (
                     <option key={opt.value || "none"} value={opt.value}>
@@ -343,20 +469,38 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
               <button
                 type="button"
                 className="fib-validation-edit"
-                disabled={!stripEnabled || !currentBlank?.validationType}
-                title="Edit validation message"
-                onClick={() => {
-                  /* Validation editor popup — deferred (spec: screenshot pending). */
-                }}
+                disabled={
+                  !stripEnabled ||
+                  !currentBlank?.validation ||
+                  !validatorMeta(currentBlank.validation.type)?.hasParams
+                }
+                title="Edit validation function"
+                onClick={() => setValidationDialogOpen(true)}
               >
                 Edit…
               </button>
+              {altLabelError && (
+                <p className="fib-alt-error" role="alert">
+                  {altLabelError}
+                </p>
+              )}
             </div>
           </>
         ) : (
-          <div className="fib-rendered">{renderedPrompt()}</div>
+          <div
+            key="fib-rendered"
+            className={`fib-rendered${isEmpty ? " placeholder" : ""}`}
+            dangerouslySetInnerHTML={{ __html: isEmpty ? FIB_PLACEHOLDER : prompt }}
+          />
         )}
       </div>
+      {validationDialogOpen && currentBlank?.validation && (
+        <FibValidationDialog
+          validation={currentBlank.validation}
+          onCancel={() => setValidationDialogOpen(false)}
+          onSave={(v) => saveValidation(activeBlank, v)}
+        />
+      )}
     </div>
   );
 }

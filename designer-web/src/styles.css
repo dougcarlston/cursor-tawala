@@ -998,18 +998,8 @@ textarea {
   border: 1px solid transparent;
 }
 
-.fib-rendered-placeholder {
+.fib-rendered.placeholder {
   color: #999;
-}
-
-.fib-canvas-blank {
-  font: inherit;
-  border: 1px solid #888;
-  border-bottom: 2px solid #333;
-  padding: 1px 2px;
-  margin: 0 1px;
-  vertical-align: baseline;
-  background: #fff;
 }
 
 .fib-property-strip {
@@ -1049,6 +1039,18 @@ textarea {
   gap: 4px;
 }
 
+.fib-property-strip input.fib-alt-invalid {
+  border-color: #c0392b;
+  background: #fdecea;
+}
+
+.fib-alt-error {
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  font-size: 11px;
+  color: #c0392b;
+}
+
 .fib-validation-edit {
   font-size: 12px;
   padding: 2px 8px;
@@ -1057,6 +1059,87 @@ textarea {
 .fib-validation-edit:disabled {
   opacity: 0.5;
   cursor: default;
+}
+
+/* Configure Function dialog (FIB blank validator). */
+.fib-validation-dialog {
+  background: var(--panel);
+  border: 1px solid var(--border-dark);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+  width: min(620px, 94vw);
+  display: flex;
+  flex-direction: column;
+}
+
+.fib-validation-fx {
+  font-style: italic;
+  font-weight: bold;
+  margin-right: 6px;
+  color: #6a4bbc;
+}
+
+.fib-validation-body {
+  display: flex;
+  gap: 0;
+}
+
+.fib-validation-fields {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+}
+
+.fib-validation-fields label {
+  display: grid;
+  grid-template-columns: 92px 1fr;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.fib-validation-fields label > span {
+  text-align: right;
+  color: #a03030;
+}
+
+.fib-validation-fields input {
+  font-size: 12px;
+  padding: 3px 5px;
+  border: 1px solid #8aa0c8;
+}
+
+.fib-validation-help {
+  flex: 0 0 200px;
+  background: #fbfbe6;
+  border-left: 1px solid var(--border);
+  padding: 14px 14px;
+  font-size: 12px;
+}
+
+.fib-validation-help h3 {
+  margin: 0 0 6px;
+  font-size: 13px;
+}
+
+.fib-validation-help h4 {
+  margin: 12px 0 4px;
+  font-size: 12px;
+}
+
+.fib-validation-help p {
+  margin: 0 0 6px;
+  color: #444;
+}
+
+.fib-validation-help-note {
+  color: #2a5db0;
+  font-weight: 600;
+}
+
+.fib-validation-footer {
+  gap: 8px;
 }
 
 .preview-frame {

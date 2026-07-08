@@ -1,15 +1,95 @@
-import type { TawalaBlank } from "@/types/tawala";
+import type { BlankValidation, TawalaBlank } from "@/types/tawala";
+
+/**
+ * FIB blank validators (legacy `blank-validator` repository; defaults from the Java
+ * `component.properties`). `id` is our stored key; `xmlId` is the runtime element name;
+ * `hasLimits` marks the Integer validator's optional Lower/Upper limits. Proper Name has no
+ * parameters, so its `defaultMessage` is empty and the Edit dialog is not offered for it.
+ */
+export interface FibValidatorMeta {
+  id: string;
+  xmlId: string;
+  label: string;
+  defaultMessage: string;
+  hasLimits: boolean;
+  /** Whether the validator exposes editable parameters (drives the Edit… button + auto-open). */
+  hasParams: boolean;
+}
+
+export const FIB_VALIDATORS: FibValidatorMeta[] = [
+  {
+    id: "email",
+    xmlId: "email-validator",
+    label: "Email",
+    defaultMessage: "Please enter a valid email address.",
+    hasLimits: false,
+    hasParams: true,
+  },
+  {
+    id: "phone",
+    xmlId: "phone-number-validator",
+    label: "Phone Number",
+    defaultMessage: "Please enter a valid phone number including area code.",
+    hasLimits: false,
+    hasParams: true,
+  },
+  {
+    id: "integer",
+    xmlId: "integer-range-validator",
+    label: "Integer",
+    defaultMessage: "This number is not valid.",
+    hasLimits: true,
+    hasParams: true,
+  },
+  {
+    id: "usState",
+    xmlId: "us-state-validator",
+    label: "US State",
+    defaultMessage: "Please enter a valid two-character state abbreviation.",
+    hasLimits: false,
+    hasParams: true,
+  },
+  {
+    id: "zip",
+    xmlId: "zip-code-validator",
+    label: "ZIP Code",
+    defaultMessage: "Please enter a valid ZIP code.",
+    hasLimits: false,
+    hasParams: true,
+  },
+  {
+    id: "properName",
+    xmlId: "proper-validator",
+    label: "Proper Name",
+    defaultMessage: "",
+    hasLimits: false,
+    hasParams: false,
+  },
+  {
+    id: "dollar",
+    xmlId: "us-dollar-amount-validator",
+    label: "Dollar Amount",
+    defaultMessage: "Please enter a valid dollar amount.",
+    hasLimits: false,
+    hasParams: true,
+  },
+];
+
+export function validatorMeta(id: string | undefined): FibValidatorMeta | null {
+  if (!id) return null;
+  return FIB_VALIDATORS.find((v) => v.id === id) ?? null;
+}
+
+/** Build a fresh validation object for a newly-selected type, seeded with the default message. */
+export function defaultValidation(id: string): BlankValidation {
+  const meta = validatorMeta(id);
+  return { type: id, errorMessage: meta?.defaultMessage || undefined };
+}
 
 /** Validation types shown in the FIB property strip (legacy FibOptions dropdown). */
 export const FIB_VALIDATION_OPTIONS = [
   { value: "", label: "-- No Validation --" },
-  { value: "email", label: "Email" },
-  { value: "phone", label: "Phone Number" },
-  { value: "integer", label: "Integer" },
-  { value: "usState", label: "US State" },
-  { value: "zip", label: "ZIP Code" },
-  { value: "properName", label: "Proper Name" },
-  { value: "dollar", label: "Dollar Amount" },
+  ...FIB_VALIDATORS.map((v) => ({ value: v.id, label: v.label })),
 ] as const;
 
 export interface UnderscoreRun {
@@ -67,9 +147,20 @@ export function syncBlanksFromPrompt(
       alternateLabel: prev?.alternateLabel ?? defaultAlt,
       displayLabel: prev?.displayLabel,
       height: prev?.height ?? 1,
-      validationType: prev?.validationType,
+      validation: prev?.validation,
     };
   });
+}
+
+/**
+ * Alternate-label uniqueness across a form (legacy `ItemList.ValidAlternateLabel`). Empty is
+ * always allowed (falls back to the default letter name). `taken` is the set of every other
+ * field name on the form; comparison is case-insensitive to match the runtime field map.
+ */
+export function isAlternateLabelUnique(label: string, taken: Set<string>): boolean {
+  const trimmed = label.trim();
+  if (!trimmed) return true;
+  return !taken.has(trimmed.toLowerCase());
 }
 
 /**

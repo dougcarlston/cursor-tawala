@@ -20,12 +20,46 @@ function paragraph(inner, tabs = TAB_LEFT) {
   return `<paragraph indent="0" align="left">${tabs}${inner}</paragraph>`;
 }
 
-function blankXml(blank, letter, escAttr) {
+/** FIB validator metadata id → runtime element name (mirrors `lib/fibBlanks.ts` FIB_VALIDATORS). */
+const VALIDATOR_XML_ID = {
+  email: "email-validator",
+  phone: "phone-number-validator",
+  integer: "integer-range-validator",
+  usState: "us-state-validator",
+  zip: "zip-code-validator",
+  properName: "proper-validator",
+  dollar: "us-dollar-amount-validator",
+};
+
+/** `<validator>` block for a blank (legacy `Blank.ToXml`); null when no validation set. */
+function validatorXml(validation, escText) {
+  if (!validation?.type) return "";
+  const xmlId = VALIDATOR_XML_ID[validation.type];
+  if (!xmlId) return "";
+  let inner = "";
+  if (xmlId !== "proper-validator") {
+    const msg = validation.errorMessage ?? "";
+    inner += `<error-message><string value="${escText(msg)}"/>\n</error-message>`;
+  }
+  if (xmlId === "integer-range-validator") {
+    const lower = validation.lowerLimit?.trim();
+    const upper = validation.upperLimit?.trim();
+    inner += lower ? `<lower-limit><string value="${escText(lower)}"/></lower-limit>` : "<lower-limit></lower-limit>";
+    inner += upper ? `<upper-limit><string value="${escText(upper)}"/></upper-limit>` : "<upper-limit></upper-limit>";
+  }
+  return `<validator><${xmlId} version="1">${inner}</${xmlId}></validator>`;
+}
+
+function blankXml(blank, letter, escAttr, escText) {
   const alt = blank.alternateLabel ?? blank.name;
   const req = blank.required ? "true" : "false";
   const len = blank.length ?? 20;
-  const heightAttr = blank.height ? ` height="${blank.height}"` : "";
+  const heightAttr = blank.height && blank.height > 1 ? ` height="${blank.height}"` : "";
   const altAttr = alt && alt !== letter ? ` alternateLabel="${escAttr(alt)}"` : "";
+  const validator = escText ? validatorXml(blank.validation, escText) : "";
+  if (validator) {
+    return `<blank label="${escAttr(letter)}" length="${len}"${heightAttr} required="${req}"${altAttr}>${validator}</blank>`;
+  }
   return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${heightAttr}/>`;
 }
 
@@ -71,11 +105,11 @@ function dobRowsXml(row, letters, escAttr, escText) {
   let body = labelFont(label, escText, { bold: true });
   body += fontXml(trailing, escText, { italic: true });
   body += "<tab/>";
-  body += blankXml(fields[0].blank, letters.get(fields[0].blank), escAttr);
+  body += blankXml(fields[0].blank, letters.get(fields[0].blank), escAttr, escText);
   body += fontXml("/", escText);
-  body += blankXml(fields[1].blank, letters.get(fields[1].blank), escAttr);
+  body += blankXml(fields[1].blank, letters.get(fields[1].blank), escAttr, escText);
   body += fontXml("/", escText);
-  body += blankXml(fields[2].blank, letters.get(fields[2].blank), escAttr);
+  body += blankXml(fields[2].blank, letters.get(fields[2].blank), escAttr, escText);
 
   return [paragraph(body)];
 }
@@ -94,7 +128,7 @@ function leftAlignRowXml(row, letters, escAttr, escText) {
     }
   }
   for (const field of fields) {
-    body += blankXml(field.blank, letters.get(field.blank), escAttr);
+    body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
   }
   return paragraph(body);
 }
@@ -119,7 +153,7 @@ function defaultRowXml(row, letters, escAttr, escText) {
     let body = labelFont(labelText, escText, { bold: isBoldLabel(labelText) });
     for (const field of fields) {
       body += "<tab/>";
-      body += blankXml(field.blank, letters.get(field.blank), escAttr);
+      body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
     }
     parts.push(paragraph(body));
     return parts;
@@ -137,7 +171,7 @@ function defaultRowXml(row, letters, escAttr, escText) {
     }
     const lt = pending.trim();
     let body = labelFont(lt, escText, { bold: isBoldLabel(lt) }) + "<tab/>";
-    body += blankXml(seg.blank, letters.get(seg.blank), escAttr);
+    body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
     parts.push(paragraph(body));
     pending = "";
   }
@@ -163,7 +197,7 @@ function topLabelsFromBlanks(item, letters, escAttr, escText) {
       body += fontXml(shown, escText, { bold: true, italic: true });
     }
     body += fontXml("  ", escText);
-    body += blankXml(blank, letters.get(blank), escAttr);
+    body += blankXml(blank, letters.get(blank), escAttr, escText);
     parts.push(paragraph(body, TAB_TOPLABELS));
   }
   return parts;
@@ -181,7 +215,7 @@ function topLabelsRowsXml(rows, letters, escAttr, escText) {
         body += fontXml(label, escText, { bold: true, italic: true });
       }
       body += fontXml("  ", escText);
-      body += blankXml(field.blank, letters.get(field.blank), escAttr);
+      body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
       parts.push(paragraph(body, TAB_TOPLABELS));
     }
   }
@@ -193,7 +227,7 @@ function emptyPromptBlanksXml(blanks, escAttr, escText) {
   return blanks.map((blank, i) => {
     const letter = blankLetter(i);
     const pad = fontXml(" ".repeat(68), escText);
-    const body = `${pad}${blankXml(blank, letter, escAttr)}`;
+    const body = `${pad}${blankXml(blank, letter, escAttr, escText)}`;
     return paragraph(body, TAB_FREEFORM);
   });
 }
