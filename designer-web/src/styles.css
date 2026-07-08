@@ -1241,6 +1241,138 @@ textarea {
   font-style: italic;
 }
 
+/* Hidden field canvas row (legacy HiddenFieldView). */
+.hidden-field-canvas-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+}
+
+.hidden-field-canvas-row:hover {
+  background: #fafcff;
+}
+
+.hidden-field-canvas-row.selected {
+  border-color: var(--accent);
+  background: #f4f8ff;
+}
+
+.hidden-field-badge {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  font-style: italic;
+  background: #ececec;
+  border: 1px solid #cfcfcf;
+  color: #1a5c1a;
+}
+
+.hidden-field-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 2px;
+  padding: 2px 0;
+}
+
+.hidden-field-name-label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+}
+
+.hidden-field-name-input {
+  flex: 1;
+  min-width: 120px;
+  max-width: 320px;
+  box-sizing: border-box;
+  border: 1px solid #cfcfcf;
+  padding: 2px 6px;
+  font-size: 13px;
+}
+
+.hidden-field-name-input:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.hidden-field-name-input.hidden-field-invalid {
+  border-color: #c0392b;
+  background: #fdecea;
+}
+
+.hidden-field-error {
+  margin: 0;
+  font-size: 11px;
+  color: #c0392b;
+}
+
+/* Page break canvas row (legacy BreakItemView). */
+.break-canvas-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-height: 18px;
+}
+
+.break-canvas-row:hover {
+  background: #fafcff;
+}
+
+.break-canvas-row.selected {
+  border-color: var(--accent);
+  background: #f4f8ff;
+}
+
+.break-badge {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  font-style: italic;
+  background: #ececec;
+  border: 1px solid #cfcfcf;
+  color: #1a3a7a;
+}
+
+.break-hatch {
+  flex: 1;
+  min-height: 18px;
+  background: repeating-linear-gradient(
+    -45deg,
+    #d8d8d8,
+    #d8d8d8 2px,
+    #ececec 2px,
+    #ececec 4px
+  );
+  border: 1px solid #c0c0c0;
+}
+
+.break-hatch.preview-break {
+  height: 18px;
+  margin: 4px 0;
+}
+
 /* Configure Function dialog (FIB blank validator). */
 .fib-validation-dialog {
   background: var(--panel);

@@ -24,8 +24,15 @@ export function FormItemProperties({ item, onChange }: Props) {
   const textIsCanvasInline = item.type === "text" && !hasStructuredTextContent(item.content);
   const fibIsCanvasInline = item.type === "fib";
   const mcIsCanvasInline = item.type === "mc";
+  const fieldIsCanvasInline = item.type === "field";
+  const breakIsCanvasInline = item.type === "break";
   const labelIsCanvasInline =
-    item.type === "heading" || textIsCanvasInline || fibIsCanvasInline || mcIsCanvasInline;
+    item.type === "heading" ||
+    textIsCanvasInline ||
+    fibIsCanvasInline ||
+    mcIsCanvasInline ||
+    fieldIsCanvasInline ||
+    breakIsCanvasInline;
 
   return (
     <div className="properties-panel properties-panel-compact">
@@ -81,14 +88,19 @@ export function FormItemProperties({ item, onChange }: Props) {
         </p>
       )}
 
-      {item.type === "field" && (
-        <label>
-          Field name
-          <input
-            value={item.fieldName ?? ""}
-            onChange={(e) => onChange({ fieldName: e.target.value })}
-          />
-        </label>
+      {fieldIsCanvasInline && (
+        <p className="hint">
+          Edit the hidden field name on the canvas (<strong>Name:</strong>). The FIELD badge is
+          fixed. Values are set at runtime via process <strong>Set</strong> commands; the field is
+          not shown to respondents.
+        </p>
+      )}
+
+      {breakIsCanvasInline && (
+        <p className="hint">
+          Page breaks have no editable properties. The BREAK badge and hatched bar mark where a new
+          page begins at runtime.
+        </p>
       )}
 
       {item.type === "skipInstructions" && (

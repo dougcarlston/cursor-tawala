@@ -5,6 +5,8 @@ import { FormItem } from "@/types/tawala";
 import { FibFieldPreview } from "./FibFieldPreview";
 import { FibCanvasRow } from "./FibCanvasRow";
 import { McqCanvasRow } from "./McqCanvasRow";
+import { HiddenFieldCanvasRow } from "./HiddenFieldCanvasRow";
+import { BreakCanvasRow } from "./BreakCanvasRow";
 import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
@@ -140,6 +142,21 @@ export function FormEditor({ formName }: Props) {
                     formName={formName}
                     selected={selectedItemIndex === i}
                   />
+                ) : item.type === "field" ? (
+                  <HiddenFieldCanvasRow
+                    key={`field-${i}-${item.fieldName ?? item.name ?? ""}`}
+                    item={item}
+                    index={i}
+                    formName={formName}
+                    selected={selectedItemIndex === i}
+                  />
+                ) : item.type === "break" ? (
+                  <BreakCanvasRow
+                    key={`break-${i}`}
+                    item={item}
+                    index={i}
+                    selected={selectedItemIndex === i}
+                  />
                 ) : (
                   <div
                     key={`${item.label}-${i}`}
@@ -218,9 +235,13 @@ function CanvasItem({ item }: { item: Exclude<FormItem, { type: "heading" }> }) 
         </fieldset>
       );
     case "field":
-      return <input type="hidden" name={item.fieldName ?? item.label} />;
+      return (
+        <p className="hint" style={{ fontSize: 11, color: "#666" }}>
+          Hidden field: {item.fieldName ?? item.name ?? "(unnamed)"}
+        </p>
+      );
     case "break":
-      return <hr />;
+      return <div className="break-hatch preview-break" aria-hidden />;
     case "skipInstructions":
       return (
         <pre style={{ fontSize: 11, color: "#666" }}>

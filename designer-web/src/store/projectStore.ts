@@ -11,6 +11,7 @@ import {
   TawalaProcessCommand,
   RichContentBlock,
 } from "@/types/tawala";
+import { nextHiddenFieldName } from "@/lib/fieldNames";
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
 
@@ -555,8 +556,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!form) return;
     const prefix = type === "text" ? "T" : type === "heading" ? "H" : "Q";
     const labels = form.items.map((i) => i.label);
-    const label = nextLabel(prefix, labels);
-    const item = createDefaultItem(type, label);
+    const label =
+      type === "field"
+        ? "FIELD"
+        : type === "break"
+          ? "BREAK"
+          : type === "skipInstructions"
+            ? "SKIP"
+            : nextLabel(prefix, labels);
+    let item: FormItem = createDefaultItem(type, label);
+    if (type === "field") {
+      const fieldName = nextHiddenFieldName(project);
+      item = { ...item, type: "field", fieldName, name: fieldName };
+    }
     const forms = project.forms.map((f) =>
       f.name === selection.name ? { ...f, items: [...f.items, item] } : f,
     );
