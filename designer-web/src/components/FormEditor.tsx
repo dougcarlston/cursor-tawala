@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
@@ -7,9 +7,11 @@ import { FibCanvasRow } from "./FibCanvasRow";
 import { McqCanvasRow } from "./McqCanvasRow";
 import { HiddenFieldCanvasRow } from "./HiddenFieldCanvasRow";
 import { BreakCanvasRow } from "./BreakCanvasRow";
+import { SkipCanvasRow } from "./SkipCanvasRow";
 import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
+import { FormInsertionPoint } from "./FormInsertionPoint";
 
 interface Props {
   formName: string;
@@ -21,33 +23,56 @@ export function FormEditor({ formName }: Props) {
   const setEditorTab = useProjectStore((s) => s.setEditorTab);
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
+  const setInsertBeforeIndex = useProjectStore((s) => s.setInsertBeforeIndex);
+  const moveSelectedFormItem = useProjectStore((s) => s.moveSelectedFormItem);
   const deleteFormItem = useProjectStore((s) => s.deleteFormItem);
   const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
 
   const form = project.forms.find((f) => f.name === formName);
-  if (!form) {
-    return <div className="placeholder-editor">Form not found: {formName}</div>;
-  }
+  const itemCount = form?.items.length ?? 0;
+  const canMoveUp = selectedItemIndex !== null && selectedItemIndex > 0;
+  const canMoveDown = selectedItemIndex !== null && selectedItemIndex < itemCount - 1;
 
   useEffect(() => {
+    if (!form) return;
     const onKeyDown = (e: KeyboardEvent) => {
       if (editorTab !== "design") return;
-      if (selectedItemIndex === null) return;
       const target = e.target as HTMLElement | null;
       if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
-      if (e.key === "Delete" || e.key === "Backspace") {
-        e.preventDefault();
-        deleteSelectedFormItem();
+
+      if (selectedItemIndex !== null) {
+        if (e.altKey && e.key === "ArrowUp" && canMoveUp) {
+          e.preventDefault();
+          moveSelectedFormItem("up");
+          return;
+        }
+        if (e.altKey && e.key === "ArrowDown" && canMoveDown) {
+          e.preventDefault();
+          moveSelectedFormItem("down");
+          return;
+        }
+        if (e.key === "Delete" || e.key === "Backspace") {
+          e.preventDefault();
+          deleteSelectedFormItem();
+        }
       }
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [editorTab, selectedItemIndex, deleteSelectedFormItem]);
+  }, [
+    editorTab,
+    selectedItemIndex,
+    canMoveUp,
+    canMoveDown,
+    deleteSelectedFormItem,
+    moveSelectedFormItem,
+    form,
+  ]);
 
   useEffect(() => {
-    if (editorTab !== "preview") return;
+    if (!form || editorTab !== "preview") return;
     let cancelled = false;
     setPreviewError(null);
     void syncPreviewProject(project, formName)
@@ -62,7 +87,101 @@ export function FormEditor({ formName }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [editorTab, project, formName]);
+  }, [editorTab, project, formName, form]);
+
+  if (!form) {
+    return <div className="placeholder-editor">Form not found: {formName}</div>;
+  }
+
+  function renderFormItem(item: FormItem, i: number) {
+    if (item.type === "heading") {
+      return (
+        <HeadingCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    if (item.type === "text" && !Array.isArray(item.content)) {
+      return (
+        <TextCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    if (item.type === "fib") {
+      return (
+        <FibCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    if (item.type === "mc") {
+      return (
+        <McqCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    if (item.type === "field") {
+      return (
+        <HiddenFieldCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    if (item.type === "break") {
+      return <BreakCanvasRow item={item} index={i} selected={selectedItemIndex === i} />;
+    }
+    if (item.type === "skipInstructions") {
+      return (
+        <SkipCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    return (
+      <div
+        className={`form-item-block${selectedItemIndex === i ? " selected" : ""}`}
+        onClick={() => setSelectedItemIndex(i)}
+      >
+        <div className="form-item-label">
+          <span>
+            [{item.type}] {item.label}
+          </span>
+          <button
+            type="button"
+            className="item-delete"
+            title="Delete item"
+            onClick={(e) => {
+              e.stopPropagation();
+              deleteFormItem(formName, i);
+            }}
+          >
+            Delete
+          </button>
+        </div>
+        <CanvasItem item={item} />
+      </div>
+    );
+  }
 
   return (
     // The MDI window title bar (`Form - Name`) is the single window heading now,
@@ -84,6 +203,34 @@ export function FormEditor({ formName }: Props) {
         >
           Preview
         </button>
+        {editorTab === "design" && selectedItemIndex !== null ? (
+          <span className="form-item-move-toolbar" role="toolbar" aria-label="Move form item">
+            <button
+              type="button"
+              title="Move item up (Alt+↑)"
+              disabled={!canMoveUp}
+              onClick={() => moveSelectedFormItem("up")}
+            >
+              ↑
+            </button>
+            <button
+              type="button"
+              title="Move item down (Alt+↓)"
+              disabled={!canMoveDown}
+              onClick={() => moveSelectedFormItem("down")}
+            >
+              ↓
+            </button>
+            <button
+              type="button"
+              className="form-item-delete-btn"
+              title="Delete selected item (Del)"
+              onClick={() => deleteSelectedFormItem()}
+            >
+              ×
+            </button>
+          </span>
+        ) : null}
       </div>
 
       {editorTab === "design" ? (
@@ -95,94 +242,25 @@ export function FormEditor({ formName }: Props) {
           <div
             className="form-canvas"
             onClick={(e) => {
-              if (e.target === e.currentTarget) setSelectedItemIndex(null);
+              if (e.target === e.currentTarget) {
+                setSelectedItemIndex(null);
+                setInsertBeforeIndex(form.items.length);
+              }
             }}
           >
+            <FormInsertionPoint beforeIndex={0} formName={formName} />
             {form.items.length === 0 ? (
               <p className="hint form-canvas-hint">
-                Drag items from the palette on the left to create your form, or click a palette
-                button to insert.
+                Click a blue insertion arrow or select a position, then use the Items palette to
+                insert. Drag items from the palette on the left, or click a palette button.
               </p>
             ) : (
-              form.items.map((item, i) =>
-                // Heading is the first canvas-inline WYSIWYG item (spec:
-                // DESIGNER_FORM_ITEMS_HEADING.md): its own edit/collapse row with badge +
-                // on-canvas Heading Type, no debug label bar / Delete chrome / dashed wrapper.
-                item.type === "heading" ? (
-                  <HeadingCanvasRow
-                    key={`${item.label}-${i}`}
-                    item={item}
-                    index={i}
-                    formName={formName}
-                    selected={selectedItemIndex === i}
-                  />
-                ) : // Text with plain-string content is canvas-inline WYSIWYG (like Heading).
-                // Structured/function-table content (array) stays in the generic block.
-                item.type === "text" && !Array.isArray(item.content) ? (
-                  <TextCanvasRow
-                    key={`${item.label}-${i}`}
-                    item={item}
-                    index={i}
-                    formName={formName}
-                    selected={selectedItemIndex === i}
-                  />
-                ) : item.type === "fib" ? (
-                  <FibCanvasRow
-                    key={`${item.label}-${i}`}
-                    item={item}
-                    index={i}
-                    formName={formName}
-                    selected={selectedItemIndex === i}
-                  />
-                ) : item.type === "mc" ? (
-                  <McqCanvasRow
-                    key={`${item.label}-${i}`}
-                    item={item}
-                    index={i}
-                    formName={formName}
-                    selected={selectedItemIndex === i}
-                  />
-                ) : item.type === "field" ? (
-                  <HiddenFieldCanvasRow
-                    key={`field-${i}-${item.fieldName ?? item.name ?? ""}`}
-                    item={item}
-                    index={i}
-                    formName={formName}
-                    selected={selectedItemIndex === i}
-                  />
-                ) : item.type === "break" ? (
-                  <BreakCanvasRow
-                    key={`break-${i}`}
-                    item={item}
-                    index={i}
-                    selected={selectedItemIndex === i}
-                  />
-                ) : (
-                  <div
-                    key={`${item.label}-${i}`}
-                    className={`form-item-block${selectedItemIndex === i ? " selected" : ""}`}
-                    onClick={() => setSelectedItemIndex(i)}
-                  >
-                    <div className="form-item-label">
-                      <span>
-                        [{item.type}] {item.label}
-                      </span>
-                      <button
-                        type="button"
-                        className="item-delete"
-                        title="Delete item"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          deleteFormItem(formName, i);
-                        }}
-                      >
-                        Delete
-                      </button>
-                    </div>
-                    <CanvasItem item={item} />
-                  </div>
-                ),
-              )
+              form.items.map((item, i) => (
+                <Fragment key={`${item.label}-${i}`}>
+                  {renderFormItem(item, i)}
+                  <FormInsertionPoint beforeIndex={i + 1} formName={formName} />
+                </Fragment>
+              ))
             )}
           </div>
         </div>

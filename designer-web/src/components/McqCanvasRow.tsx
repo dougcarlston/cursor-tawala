@@ -5,6 +5,7 @@ import {
   fieldToken,
   hasFieldDrag,
   readFieldDragName,
+  retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
 import {
@@ -203,6 +204,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     const next = e.relatedTarget as HTMLElement | null;
     if (next?.closest(".formatting-palette")) return;
     if (next?.closest(".fib-property-strip")) return;
+    if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     pruneEmptyChoices();
     clearFormattingFocus("mcq");
     setEditing(false);

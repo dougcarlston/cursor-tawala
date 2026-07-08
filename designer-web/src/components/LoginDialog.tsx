@@ -18,9 +18,9 @@ export function LoginDialog() {
   };
 
   return (
-    <div className="modal-backdrop" onClick={() => setShow(false)}>
-      <div className="modal" onClick={(e) => e.stopPropagation()}>
-        <h2>Designer Login</h2>
+    <div className="modal-backdrop" role="presentation">
+      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="login-dialog-title">
+        <h2 id="login-dialog-title">Designer Login</h2>
         <p className="hint">
           Credentials for deploy (not DirtBowl participant login). Dev server accepts{" "}
           <code>dev/dev</code>.

@@ -88,6 +88,22 @@ function remapWindows(
   );
 }
 
+/** Default insertion index for a form: append at end (`items.length`). */
+function insertIndexForForm(project: TawalaProject, formName: string): number {
+  return project.forms.find((f) => f.name === formName)?.items.length ?? 0;
+}
+
+function insertIndexWhenSwitchingEntity(
+  project: TawalaProject,
+  kind: WindowKind,
+  name: string,
+  sameEntity: boolean,
+  prev: number,
+): number {
+  if (sameEntity) return prev;
+  return kind === "form" ? insertIndexForForm(project, name) : 0;
+}
+
 interface ProjectState {
   project: TawalaProject;
   dirty: boolean;
@@ -95,6 +111,8 @@ interface ProjectState {
   editorTab: EditorTab;
   statusMessage: string;
   selectedItemIndex: number | null;
+  /** Next Items palette insert lands at this index in the active form (0..items.length). */
+  insertBeforeIndex: number;
   credentials: DeployCredentials | null;
   lastDeploy: DeployResult | null;
   showLogin: boolean;
@@ -117,6 +135,8 @@ interface ProjectState {
   setEditorTab: (tab: EditorTab) => void;
   setStatus: (message: string) => void;
   setSelectedItemIndex: (index: number | null) => void;
+  setInsertBeforeIndex: (index: number) => void;
+  moveSelectedFormItem: (direction: "up" | "down") => void;
   setShowLogin: (show: boolean) => void;
   setShowDeployResult: (show: boolean) => void;
   setCredentials: (credentials: DeployCredentials) => void;
@@ -152,6 +172,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   editorTab: "design",
   statusMessage: "Ready",
   selectedItemIndex: null,
+  insertBeforeIndex: 0,
   credentials: loadCredentials(),
   lastDeploy: null,
   showLogin: false,
@@ -178,7 +199,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       // Preserve the selected form item when the entity is unchanged so re-focusing the
       // window you're editing does not clear the Inspector's field-drop target (Bug fix,
       // July 2026: "worked once then refused"). Switching to a different entity resets it.
-      const { selection, selectedItemIndex } = get();
+      const { selection, selectedItemIndex, insertBeforeIndex, project } = get();
       const sameEntity = selection.kind === kind && selection.name === name;
       set({
         openWindows: openWindows.map((w) =>
@@ -187,6 +208,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         activeWindowId: id,
         selection: { kind, name },
         selectedItemIndex: sameEntity ? selectedItemIndex : null,
+        insertBeforeIndex: insertIndexWhenSwitchingEntity(
+          project,
+          kind,
+          name,
+          sameEntity,
+          insertBeforeIndex,
+        ),
         ...tabPatch,
       });
       return;
@@ -205,13 +233,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: id,
       selection: { kind, name },
       selectedItemIndex: null,
+      insertBeforeIndex: kind === "form" ? insertIndexForForm(get().project, name) : 0,
       cascadeIndex: cascadeIndex + 1,
       ...tabPatch,
     });
   },
 
   closeWindow: (id) => {
-    const { openWindows, activeWindowId, selection, selectedItemIndex } = get();
+    const { openWindows, activeWindowId, selection, selectedItemIndex, insertBeforeIndex, project } =
+      get();
     const next = openWindows.filter((w) => w.id !== id);
     let nextActive = activeWindowId === id ? null : activeWindowId;
     if (nextActive === null && next.length > 0) {
@@ -232,6 +262,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: nextActive,
       selection: nextActiveWin ? { kind: nextActiveWin.kind, name: nextActiveWin.name } : selection,
       selectedItemIndex: sameEntity ? selectedItemIndex : null,
+      insertBeforeIndex: nextActiveWin
+        ? insertIndexWhenSwitchingEntity(
+            project,
+            nextActiveWin.kind,
+            nextActiveWin.name,
+            sameEntity,
+            insertBeforeIndex,
+          )
+        : 0,
       // Decision 1: reset the cascade once the canvas is empty so the next window
       // opens back at the origin instead of continuing to march down-right.
       ...(next.length === 0 ? { cascadeIndex: 0 } : {}),
@@ -239,7 +278,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   focusWindow: (id) => {
-    const { openWindows, selection, selectedItemIndex } = get();
+    const { openWindows, selection, selectedItemIndex, insertBeforeIndex, project } = get();
     const target = openWindows.find((w) => w.id === id);
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
@@ -253,11 +292,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: id,
       selection: { kind: target.kind, name: target.name },
       selectedItemIndex: sameEntity ? selectedItemIndex : null,
+      insertBeforeIndex: insertIndexWhenSwitchingEntity(
+        project,
+        target.kind,
+        target.name,
+        sameEntity,
+        insertBeforeIndex,
+      ),
     });
   },
 
   minimizeWindow: (id) => {
-    const { openWindows, activeWindowId, selection, selectedItemIndex } = get();
+    const { openWindows, activeWindowId, selection, selectedItemIndex, insertBeforeIndex, project } =
+      get();
     const next = openWindows.map((w) => (w.id === id ? { ...w, minimized: true } : w));
     let nextActive = activeWindowId;
     if (activeWindowId === id) {
@@ -277,11 +324,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: nextActive,
       selection: nextActiveWin ? { kind: nextActiveWin.kind, name: nextActiveWin.name } : selection,
       selectedItemIndex: sameEntity ? selectedItemIndex : null,
+      insertBeforeIndex: nextActiveWin
+        ? insertIndexWhenSwitchingEntity(
+            project,
+            nextActiveWin.kind,
+            nextActiveWin.name,
+            sameEntity,
+            insertBeforeIndex,
+          )
+        : 0,
     });
   },
 
   restoreWindow: (id) => {
-    const { openWindows, selection, selectedItemIndex } = get();
+    const { openWindows, selection, selectedItemIndex, insertBeforeIndex, project } = get();
     const target = openWindows.find((w) => w.id === id);
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
@@ -293,6 +349,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: id,
       selection: { kind: target.kind, name: target.name },
       selectedItemIndex: sameEntity ? selectedItemIndex : null,
+      insertBeforeIndex: insertIndexWhenSwitchingEntity(
+        project,
+        target.kind,
+        target.name,
+        sameEntity,
+        insertBeforeIndex,
+      ),
     });
   },
 
@@ -309,14 +372,65 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       dirty: false,
       statusMessage: `Opened ${project.name}`,
       selectedItemIndex: null,
+      insertBeforeIndex: 0,
       openWindows: [],
       activeWindowId: null,
       cascadeIndex: 0,
     }),
-  setSelection: (selection) => set({ selection, selectedItemIndex: null }),
+  setSelection: (selection) => {
+    const { project } = get();
+    set({
+      selection,
+      selectedItemIndex: null,
+      insertBeforeIndex:
+        selection.kind === "form" && selection.name
+          ? insertIndexForForm(project, selection.name)
+          : 0,
+    });
+  },
   setEditorTab: (editorTab) => set({ editorTab }),
   setStatus: (statusMessage) => set({ statusMessage }),
-  setSelectedItemIndex: (selectedItemIndex) => set({ selectedItemIndex }),
+  setSelectedItemIndex: (selectedItemIndex) => {
+    const { project, selection, insertBeforeIndex } = get();
+    let nextInsert = insertBeforeIndex;
+    if (selectedItemIndex !== null && selection.kind === "form" && selection.name) {
+      const form = project.forms.find((f) => f.name === selection.name);
+      if (form) nextInsert = Math.min(selectedItemIndex + 1, form.items.length);
+    }
+    set({ selectedItemIndex, insertBeforeIndex: nextInsert });
+  },
+  setInsertBeforeIndex: (index) => {
+    const { project, selection } = get();
+    if (selection.kind !== "form" || !selection.name) return;
+    const form = project.forms.find((f) => f.name === selection.name);
+    if (!form) return;
+    const clamped = Math.max(0, Math.min(index, form.items.length));
+    set({ insertBeforeIndex: clamped });
+  },
+  moveSelectedFormItem: (direction) => {
+    const { project, selection, selectedItemIndex } = get();
+    if (selection.kind !== "form" || !selection.name || selectedItemIndex === null) return;
+    const form = project.forms.find((f) => f.name === selection.name);
+    if (!form) return;
+    const delta = direction === "up" ? -1 : 1;
+    const target = selectedItemIndex + delta;
+    if (target < 0 || target >= form.items.length) return;
+    const items = [...form.items];
+    const [moved] = items.splice(selectedItemIndex, 1);
+    items.splice(target, 0, moved);
+    set({
+      project: {
+        ...project,
+        forms: project.forms.map((f) =>
+          f.name === selection.name ? { ...f, items } : f,
+        ),
+      },
+      dirty: true,
+      selectedItemIndex: target,
+      insertBeforeIndex: target + 1,
+      statusMessage: `Moved item ${direction}`,
+    });
+  },
   setShowLogin: (showLogin) => set({ showLogin }),
   setShowDeployResult: (showDeployResult) => set({ showDeployResult }),
   setCredentials: (credentials) => {
@@ -339,6 +453,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: empty ? { kind: "forms" } : { kind: "form", name: "Form 1" },
       statusMessage: empty ? "New empty project" : "New project",
       selectedItemIndex: null,
+      insertBeforeIndex: 0,
       openWindows: [],
       activeWindowId: null,
       cascadeIndex: 0,
@@ -547,10 +662,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     return true;
   },
 
-  selectForm: (name) => set({ selection: { kind: "form", name }, selectedItemIndex: null }),
+  selectForm: (name) =>
+    set({
+      selection: { kind: "form", name },
+      selectedItemIndex: null,
+      insertBeforeIndex: insertIndexForForm(get().project, name),
+    }),
 
   insertFormItem: (type) => {
-    const { project, selection } = get();
+    const { project, selection, insertBeforeIndex } = get();
     if (selection.kind !== "form" || !selection.name) return;
     const form = project.forms.find((f) => f.name === selection.name);
     if (!form) return;
@@ -569,13 +689,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const fieldName = nextHiddenFieldName(project);
       item = { ...item, type: "field", fieldName, name: fieldName };
     }
+    const insertAt = Math.max(0, Math.min(insertBeforeIndex, form.items.length));
+    const items = [...form.items];
+    items.splice(insertAt, 0, item);
     const forms = project.forms.map((f) =>
-      f.name === selection.name ? { ...f, items: [...f.items, item] } : f,
+      f.name === selection.name ? { ...f, items } : f,
     );
     set({
       project: { ...project, forms },
       dirty: true,
-      selectedItemIndex: form.items.length,
+      selectedItemIndex: insertAt,
+      insertBeforeIndex: insertAt + 1,
       statusMessage: `Inserted ${type} (${label})`,
     });
   },
@@ -602,22 +726,28 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   deleteFormItem: (formName, index) => {
-    const { project, selectedItemIndex, selection } = get();
+    const { project, selectedItemIndex, selection, insertBeforeIndex } = get();
+    const form = project.forms.find((f) => f.name === formName);
     const forms = project.forms.map((f) => {
       if (f.name !== formName) return f;
       return { ...f, items: f.items.filter((_, i) => i !== index) };
     });
     let nextSelected: number | null = selectedItemIndex;
-    if (selection.kind === "form" && selection.name === formName) {
+    let nextInsert = insertBeforeIndex;
+    if (selection.kind === "form" && selection.name === formName && form) {
       if (selectedItemIndex === index) nextSelected = null;
       else if (selectedItemIndex !== null && selectedItemIndex > index) {
         nextSelected = selectedItemIndex - 1;
       }
+      if (index < insertBeforeIndex) nextInsert = insertBeforeIndex - 1;
+      const newLength = form.items.length - 1;
+      nextInsert = Math.max(0, Math.min(nextInsert, newLength));
     }
     set({
       project: { ...project, forms },
       dirty: true,
       selectedItemIndex: nextSelected,
+      insertBeforeIndex: nextInsert,
       statusMessage: "Deleted item",
     });
   },

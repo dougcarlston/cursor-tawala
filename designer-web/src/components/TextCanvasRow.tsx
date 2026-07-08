@@ -5,8 +5,10 @@ import {
   fieldToken,
   hasFieldDrag,
   readFieldDragName,
+  retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -98,6 +100,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     if (!el) return;
     el.innerHTML = content;
     el.focus();
+    // Register with the palette immediately so B/I/U (and font/align) work on the first
+    // click — same timing fix as FibCanvasRow / McqCanvasRow. setFormattingFocus alone
+    // enables the buttons; without a PaletteEditorHandle they silently no-op.
+    setActiveFieldTarget(insertFieldToken);
+    registerAsPaletteEditor();
     setFormattingFocus({ kind: "text", cursorInTable: selectionCursorInTable(el) });
     const sel = window.getSelection();
     if (!sel) return;
@@ -119,17 +126,6 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     [],
   );
 
-  const registerAsPaletteEditor = () => {
-    const el = editorRef.current;
-    if (!el) return;
-    setActivePaletteEditor({
-      el,
-      commit,
-      saveSelection: rememberSelection,
-      restoreSelection,
-    });
-  };
-
   useEffect(() => {
     if (!editingLabel) return;
     const el = labelInputRef.current;
@@ -137,11 +133,6 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     el.focus();
     el.select();
   }, [editingLabel]);
-
-  const enterEditing = () => {
-    setSelectedItemIndex(index);
-    setEditing(true);
-  };
 
   const rememberSelection = () => {
     const el = editorRef.current;
@@ -164,6 +155,17 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     const el = editorRef.current;
     if (!el) return;
     update({ content: el.innerHTML });
+  };
+
+  const registerAsPaletteEditor = () => {
+    const el = editorRef.current;
+    if (!el) return;
+    setActivePaletteEditor({
+      el,
+      commit,
+      saveSelection: rememberSelection,
+      restoreSelection,
+    });
   };
 
   const syncPaletteFocus = () => {
@@ -193,6 +195,8 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // Keep the palette live while the user operates its dropdowns / color picker.
     const next = e.relatedTarget as HTMLElement | null;
     if (next?.closest(".formatting-palette")) return;
+    // Keep the editor mounted while dragging/double-clicking from the Fields panel.
+    if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("text");
     setEditing(false);
   };
@@ -205,11 +209,20 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       className={`text-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}`}
       onClick={(e) => {
         e.stopPropagation();
-        if (editing) setSelectedItemIndex(index);
-        else enterEditing();
+        setSelectedItemIndex(index);
+        const target = e.target as HTMLElement;
+        if (target.closest(".text-badge, .text-badge-input, .canvas-item-delete")) return;
+        if (target.closest(".text-canvas-main")) {
+          if (!editing) setEditing(true);
+          return;
+        }
+        // Border/chrome click: select without focusing the editor so Del deletes the row.
+        setEditing(false);
+        editorRef.current?.blur();
       }}
       onBlur={handleBlur}
     >
+      <FormItemDeleteButton formName={formName} index={index} visible={selected} />
       {editingLabel ? (
         <input
           ref={labelInputRef}
@@ -279,6 +292,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               const name = readFieldDragName(e.dataTransfer);
               if (!name) return;
               e.preventDefault();
+              e.stopPropagation();
               const el = editorRef.current;
               const range = caretRangeAtPoint(e.clientX, e.clientY);
               const sel = window.getSelection();
@@ -286,6 +300,9 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                 sel.removeAllRanges();
                 sel.addRange(range);
                 savedRangeRef.current = range.cloneRange();
+              } else if (el) {
+                el.focus();
+                restoreSelection();
               }
               insertFieldToken(name);
             }}

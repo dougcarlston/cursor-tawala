@@ -75,8 +75,14 @@ function valueToXml(value) {
     .join("");
 }
 
-function setValueToXml(value) {
+function setValueToXml(value, arithmeticAsText) {
   const body = valueToXml(value);
+  if (arithmeticAsText === true) {
+    return { body, attr: ' arithmeticAsText="true"' };
+  }
+  if (arithmeticAsText === false) {
+    return { body, attr: ' arithmeticAsText="false"' };
+  }
   const arithmetic =
     body.includes("<add>") || (body.match(/<string/g)?.length ?? 0) > 1;
   const attr = arithmetic ? ' arithmeticAsText="false"' : "";
@@ -203,7 +209,7 @@ function commandToXml(cmd, ctx = {}) {
     case "comment":
       return `<!-- ${xmlCommentText(cmd.text)} -->`;
     case "set": {
-      const { body, attr } = setValueToXml(cmd.value);
+      const { body, attr } = setValueToXml(cmd.value, cmd.arithmeticAsText);
       return `<set field="${escAttr(cmd.field)}"${attr}>${body}</set>`;
     }
     case "get": {

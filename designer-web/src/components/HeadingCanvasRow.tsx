@@ -5,8 +5,10 @@ import {
   fieldToken,
   hasFieldDrag,
   readFieldDragName,
+  retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import { clearFormattingFocus, setFormattingFocus } from "@/lib/formattingPaletteContext";
 
 interface Props {
@@ -211,11 +213,6 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     el.select();
   }, [editingLabel]);
 
-  const enterEditing = () => {
-    setSelectedItemIndex(index);
-    setEditing(true);
-  };
-
   const rememberSelection = () => {
     const el = editorRef.current;
     const sel = window.getSelection();
@@ -336,6 +333,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     // Keep editing while focus moves within the row (dropdown, label input, editor).
     if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+    if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("heading");
     setEditing(false);
   };
@@ -348,11 +346,19 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
       className={`heading-canvas-row ${editing ? "editing" : "collapsed"}${selected ? " selected" : ""}`}
       onClick={(e) => {
         e.stopPropagation();
-        if (editing) setSelectedItemIndex(index);
-        else enterEditing();
+        setSelectedItemIndex(index);
+        const target = e.target as HTMLElement;
+        if (target.closest(".heading-badge, .heading-badge-input, .canvas-item-delete")) return;
+        if (target.closest(".heading-canvas-main")) {
+          if (!editing) setEditing(true);
+          return;
+        }
+        setEditing(false);
+        editorRef.current?.blur();
       }}
       onBlur={handleBlur}
     >
+      <FormItemDeleteButton formName={formName} index={index} visible={selected} />
       {editingLabel ? (
         <input
           ref={labelInputRef}
@@ -416,6 +422,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
                 const name = readFieldDragName(e.dataTransfer);
                 if (!name) return;
                 e.preventDefault();
+                e.stopPropagation();
                 const el = editorRef.current;
                 const range = caretRangeAtPoint(e.clientX, e.clientY);
                 const sel = window.getSelection();
@@ -423,6 +430,9 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
                   sel.removeAllRanges();
                   sel.addRange(range);
                   savedRangeRef.current = range.cloneRange();
+                } else if (el) {
+                  el.focus();
+                  restoreSelection();
                 }
                 insertFieldToken(name);
               }}

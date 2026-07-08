@@ -16,6 +16,7 @@ import {
   fieldToken,
   hasFieldDrag,
   readFieldDragName,
+  retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
 import {
@@ -213,6 +214,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     if (next?.closest(".formatting-palette")) return;
     if (next?.closest(".fib-property-strip")) return;
     if (next?.closest(".fib-validation-dialog")) return;
+    if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("fib");
     setEditing(false);
     setActiveBlank(-1);

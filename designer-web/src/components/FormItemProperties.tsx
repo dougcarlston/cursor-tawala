@@ -26,13 +26,15 @@ export function FormItemProperties({ item, onChange }: Props) {
   const mcIsCanvasInline = item.type === "mc";
   const fieldIsCanvasInline = item.type === "field";
   const breakIsCanvasInline = item.type === "break";
+  const skipIsCanvasInline = item.type === "skipInstructions";
   const labelIsCanvasInline =
     item.type === "heading" ||
     textIsCanvasInline ||
     fibIsCanvasInline ||
     mcIsCanvasInline ||
     fieldIsCanvasInline ||
-    breakIsCanvasInline;
+    breakIsCanvasInline ||
+    skipIsCanvasInline;
 
   return (
     <div className="properties-panel properties-panel-compact">
@@ -103,22 +105,12 @@ export function FormItemProperties({ item, onChange }: Props) {
         </p>
       )}
 
-      {item.type === "skipInstructions" && (
-        <label>
-          Commands (JSON)
-          <textarea
-            rows={12}
-            className="code-area"
-            value={JSON.stringify(item.commands ?? [], null, 2)}
-            onChange={(e) => {
-              try {
-                onChange({ commands: JSON.parse(e.target.value) });
-              } catch {
-                /* ignore while typing */
-              }
-            }}
-          />
-        </label>
+      {skipIsCanvasInline && (
+        <p className="hint">
+          Edit skip logic on the canvas: click the blue <strong>Edit</strong> link to open the
+          Skip Instructions dialog. Use <strong>If</strong> and <strong>SkipTo</strong> statements
+          to control where respondents go when leaving the preceding item.
+        </p>
       )}
     </div>
   );

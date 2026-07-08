@@ -59,7 +59,7 @@ export function FormItemsPalette() {
             ? item.note
             : formInactive
               ? "Select a form in Project Explorer first"
-              : `Insert ${item.label}`;
+              : `Insert ${item.label} at the blue insertion arrow`;
           return (
             <button
               key={item.label}

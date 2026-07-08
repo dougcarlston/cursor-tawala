@@ -8,8 +8,11 @@ import {
   fieldToken,
   hasFieldDrag,
   insertTokenAtCaret,
+  isFormFieldReference,
+  isValidIfConditionField,
   readFieldDragName,
   setActiveFieldTarget,
+  type FieldTargetContext,
 } from "@/lib/fieldInsertion";
 
 /**
@@ -52,12 +55,34 @@ export function NameTextInput({
  * token at the caret (replacing any selection) and drives the caller's `onValueChange`;
  * on focus it registers itself as the double-click insertion target.
  */
-function useFieldDropTarget(onValueChange: (next: string) => void) {
+interface FieldDropOptions extends FieldTargetContext {}
+
+function useFieldDropTarget(
+  onValueChange: (next: string) => void,
+  options: FieldDropOptions = {},
+) {
   const [dragOver, setDragOver] = useState(false);
+  const insertValue = (name: string) => (options.bare ? name : fieldToken(name));
+  const acceptsField = (name: string) => {
+    if (options.formFieldsOnly && !isFormFieldReference(name)) return false;
+    if (
+      options.knownVariables &&
+      !isValidIfConditionField(name, options.knownVariables)
+    ) {
+      return false;
+    }
+    return true;
+  };
 
   const handlers = {
     onDragOver: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       if (!hasFieldDrag(e.dataTransfer)) return;
+      const name = readFieldDragName(e.dataTransfer);
+      if (name && !acceptsField(name)) {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "none";
+        return;
+      }
       e.preventDefault();
       e.dataTransfer.dropEffect = "copy";
       if (!dragOver) setDragOver(true);
@@ -68,13 +93,21 @@ function useFieldDropTarget(onValueChange: (next: string) => void) {
     onDrop: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setDragOver(false);
       const name = readFieldDragName(e.dataTransfer);
-      if (!name) return;
+      if (!name || !acceptsField(name)) return;
       e.preventDefault();
-      insertTokenAtCaret(e.currentTarget, fieldToken(name), onValueChange);
+      insertTokenAtCaret(e.currentTarget, insertValue(name), onValueChange);
     },
     onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       const el = e.currentTarget;
-      setActiveFieldTarget((name) => insertTokenAtCaret(el, fieldToken(name), onValueChange));
+      const context: FieldTargetContext = {
+        bare: options.bare,
+        formFieldsOnly: options.formFieldsOnly,
+        knownVariables: options.knownVariables,
+      };
+      setActiveFieldTarget((name) => {
+        if (!acceptsField(name)) return;
+        insertTokenAtCaret(el, insertValue(name), onValueChange);
+      }, context);
     },
   };
 
@@ -94,6 +127,32 @@ interface FieldTextInputProps
 /** `<input>` that accepts `<<field>>` drops and double-click inserts from the Fields panel. */
 export function FieldTextInput({ onValueChange, className, ...rest }: FieldTextInputProps) {
   const { dragOver, handlers } = useFieldDropTarget(onValueChange);
+  return (
+    <input
+      {...rest}
+      {...handlers}
+      className={mergeClass(className, dragOver)}
+      onChange={(e) => onValueChange(e.target.value)}
+    />
+  );
+}
+
+/** Process/skip If condition field box — inserts bare `Form:Field`, not `<<…>>`. */
+export function QualifiedFieldInput({
+  onValueChange,
+  className,
+  formFieldsOnly,
+  knownVariables,
+  ...rest
+}: FieldTextInputProps & {
+  formFieldsOnly?: boolean;
+  knownVariables?: ReadonlySet<string>;
+}) {
+  const { dragOver, handlers } = useFieldDropTarget(onValueChange, {
+    bare: true,
+    formFieldsOnly,
+    knownVariables,
+  });
   return (
     <input
       {...rest}

@@ -54,9 +54,9 @@ Transitions:
 
 | Property | UI on canvas | Storage / notes |
 |----------|--------------|-----------------|
-| **Label** | Orange (or light gray when collapsed) square, bold **`H1`**, **`H2`**, … | XML `label` attribute; `H` = Heading, digit = sequence among headings on the form |
-| **Content** | Inline rich-text field (editing) or styled heading text (collapsed) | RTF in legacy; plain/HTML in browser Designer until full RTF parity |
-| **Heading Type** | Label **Heading Type:** + dropdown **below** text — visible **only while editing** | XML `type` = `Main` or `Sub`; maps to theme heading styles (36pt Main in default RTF) |
+| **Label** | Orange (or light gray when collapsed) square, bold **`H1`**, **`H2`**, … — **click the badge to edit it inline** (browser Designer, July 2026) | XML `label` attribute; `H` = Heading, digit = sequence among headings on the form. Trimmed; empty rejected. **Not** editable from the Properties panel. |
+| **Content** | Inline rich-text field (editing) or styled heading text (collapsed) | RTF in legacy; browser Designer stores minimal inline markup with **per-run** size spans (`<span class="heading-size-main\|sub">`); bare text = Main |
+| **Heading Type** | Label **Heading Type:** + dropdown **below** text — visible **only while editing** | XML `type` = `Main` or `Sub`; maps to theme heading styles (36pt Main in default RTF). **Browser Designer, July 2026: applies to the highlighted selection only** (per-run), so one heading box can mix Main and Sub runs — not a whole-box level. |
 
 Default placeholder on insert: **`[Replace this with heading of your own.]`** (`Resources.HeadingItemDefaultRTF`).
 
@@ -170,7 +170,14 @@ Heading styling is controlled by **Heading Type** (Main/Sub) and theme/global he
 
 **Properties popup:** Not planned for Heading — canvas-inline is intentional. Permanent Inspector stays for other items until D-Form-items migration.
 
-**Deferred this pass:** Full rich-text WYSIWYG toolbar, RTF round-trip, per-character formatting in Heading text.
+**Deferred this pass:** Full rich-text WYSIWYG toolbar, RTF round-trip, per-character formatting (bold/italic/color) in Heading text.
+
+**Per-selection sizing + badge label (IMPLEMENTED, July 2026):** `HeadingCanvasRow` is a contenteditable inline editor.
+
+- **Heading Type applies to the highlighted selection only** (per-run), stored as inline `<span class="heading-size-main|sub">` markup in `content`; bare (unwrapped) text = Main. A heading box may mix Main and Sub runs. With no selection, choosing a size "pends" it for the next typed characters (standard rich-text behavior). Only these two size classes are kept — any pasted/other formatting is stripped on commit.
+- **Label is edited in the badge** (click → inline input; Enter/blur commits, Esc cancels; trimmed, empty rejected). Removed from the Properties panel.
+- **Migration:** legacy headings that stored a single whole-box `level` render the entire content at that size until re-edited; the first edit converts them to per-run markup and clears `level`.
+- **Export/runtime (`jsonToXml.mjs`, `runtime.mjs`):** the legacy single-`type` `<heading>` XML and the `<h2>/<h3>` runtime can't express per-run sizes, so heading content is reduced to plain text on export/render (size spans stripped). Per-run parity there is deferred.
 
 ---
 

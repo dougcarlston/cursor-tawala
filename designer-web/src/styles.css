@@ -543,6 +543,7 @@ textarea {
 
 .form-tabs {
   display: flex;
+  align-items: center;
   border-bottom: 1px solid var(--border);
   background: var(--toolbar-bg);
 }
@@ -616,6 +617,126 @@ textarea {
   margin: 2rem auto;
   text-align: center;
   color: var(--muted);
+}
+
+/* Legacy insertion-point arrow between form rows (`droparea.htc` Insert.png). */
+.form-insertion-point {
+  position: relative;
+  height: 6px;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.form-insertion-point:hover {
+  height: 14px;
+  background: #eef4ff;
+}
+
+.form-insertion-point.active {
+  height: 18px;
+  background: #e3edff;
+}
+
+.form-insertion-point-marker {
+  display: none;
+  position: absolute;
+  left: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #1a5fb4;
+  font-size: 13px;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.form-insertion-point-line {
+  display: none;
+  position: absolute;
+  left: 18px;
+  right: 0;
+  top: 50%;
+  height: 2px;
+  transform: translateY(-50%);
+  background: #1a5fb4;
+  pointer-events: none;
+}
+
+.form-insertion-point.active .form-insertion-point-marker,
+.form-insertion-point.active .form-insertion-point-line,
+.form-insertion-point:hover .form-insertion-point-marker,
+.form-insertion-point:hover .form-insertion-point-line {
+  display: block;
+}
+
+.form-item-move-toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  margin-left: auto;
+  padding-right: 8px;
+}
+
+.form-item-move-toolbar button {
+  min-width: 28px;
+  height: 24px;
+  padding: 0 6px;
+  font-size: 14px;
+  line-height: 1;
+  border: 1px solid #c8d4e8;
+  border-radius: 3px;
+  background: #f8fafc;
+  cursor: pointer;
+}
+
+.form-item-move-toolbar button:hover:not(:disabled) {
+  background: #e8f0fe;
+  border-color: var(--accent);
+}
+
+.form-item-move-toolbar button:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.form-item-move-toolbar .form-item-delete-btn {
+  color: #b42318;
+  border-color: #f0c4c0;
+  background: #fff5f5;
+  font-weight: bold;
+}
+
+.form-item-move-toolbar .form-item-delete-btn:hover {
+  background: #fee4e2;
+  border-color: #b42318;
+}
+
+.text-canvas-row,
+.heading-canvas-row {
+  position: relative;
+}
+
+.canvas-item-delete {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  z-index: 2;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 1px solid #f0c4c0;
+  border-radius: 3px;
+  background: #fff5f5;
+  color: #b42318;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.canvas-item-delete:hover {
+  background: #fee4e2;
+  border-color: #b42318;
 }
 
 .form-design-body {
@@ -1373,6 +1494,538 @@ textarea {
   margin: 4px 0;
 }
 
+/* Skip instructions canvas row (legacy SkipItemView). */
+.skip-canvas-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 2px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  min-height: 28px;
+}
+
+.skip-canvas-row:hover {
+  background: #fffaf5;
+}
+
+.skip-canvas-row.selected {
+  border-color: var(--accent);
+  background: #fff8f0;
+}
+
+.skip-badge {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  font-style: italic;
+  background: #ececec;
+  border: 1px solid #cfcfcf;
+  color: #8b0000;
+}
+
+.skip-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 8px;
+  background: navajowhite;
+  border: 1px solid #deb887;
+  font-size: 13px;
+}
+
+.skip-edit-link {
+  flex: 0 0 auto;
+  border: none;
+  background: transparent;
+  padding: 0;
+  color: #0000ee;
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.skip-edit-link:hover {
+  color: #551a8b;
+}
+
+.skip-summary {
+  color: #333;
+}
+
+/* Edit Skip Instructions dialog. */
+.skip-instructions-dialog {
+  background: var(--panel);
+  border: 1px solid var(--border-dark);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+  width: min(780px, 96vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.skip-instructions-dialog .modal-header {
+  padding: 6px 10px;
+}
+
+.skip-dialog-titlebar {
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.skip-dialog-titlebar h2 {
+  pointer-events: none;
+}
+
+.skip-instructions-dialog .modal-header h2 {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.skip-dialog-toolbar {
+  padding: 3px 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--toolbar-bg);
+}
+
+.skip-dialog-body {
+  display: flex;
+  flex: 1;
+  min-height: 320px;
+  overflow: hidden;
+}
+
+.skip-dialog-palette {
+  flex: 0 0 108px;
+  border-right: 1px solid var(--border);
+  padding: 6px 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: #f4f4f4;
+}
+
+.skip-dialog-palette-title {
+  font-size: 12px;
+  font-weight: bold;
+  color: #1a4a9c;
+  margin: 0 4px 6px;
+}
+
+.skip-dialog-palette button {
+  text-align: center;
+  font-size: 12px;
+  padding: 5px 4px;
+  width: 100%;
+}
+
+.skip-dialog-palette button.active {
+  background: #dce8ff;
+  border-color: #7aa7e0;
+  font-weight: bold;
+}
+
+.skip-dialog-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  background: #fff;
+}
+
+.skip-dialog-stub {
+  margin: 6px 8px 0;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #fff8e6;
+  border: 1px solid #e6d9a8;
+  color: #6a5a20;
+}
+
+.skip-statement-panel {
+  flex: 0 0 auto;
+  border-bottom: 1px solid var(--border);
+  background: #f8f8f8;
+}
+
+.skip-statement-panel-tab {
+  padding: 4px 10px;
+  font-size: 12px;
+  font-weight: bold;
+  background: #e8eef8;
+  border-bottom: 1px solid #b8c8e0;
+  color: #1a3a7a;
+}
+
+.skip-statement-panel-body {
+  padding: 8px 10px 10px;
+  font-size: 12px;
+}
+
+.skip-if-intro {
+  margin: 0 0 8px;
+  line-height: 1.5;
+}
+
+.skip-combinator {
+  font-size: 12px;
+}
+
+.skip-if-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.skip-if-field,
+.skip-if-value {
+  box-sizing: border-box;
+  border: 1px solid #9ccc9c;
+  background: #e8f5e9;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.skip-if-field {
+  flex: 1 1 140px;
+  min-width: 110px;
+}
+
+.skip-if-field:focus,
+.skip-if-value:focus {
+  outline: none;
+  border-color: #4caf50;
+  background: #f1fff1;
+}
+
+.skip-if-operator {
+  flex: 0 1 auto;
+  font-size: 12px;
+  max-width: 180px;
+}
+
+.skip-if-value {
+  flex: 1 1 90px;
+  min-width: 70px;
+}
+
+.skip-if-value-placeholder {
+  flex: 1 1 90px;
+  min-width: 70px;
+}
+
+.skip-if-row-btn {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.skip-if-else {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 8px 0 4px;
+}
+
+.skip-if-add-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.skip-add-btn {
+  font-weight: bold;
+  min-width: 64px;
+}
+
+.skip-add-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.skip-skipto-body {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.skip-skipto-body label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.skip-set-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skip-set-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.skip-set-field {
+  flex: 0 1 140px;
+  min-width: 100px;
+}
+
+.skip-set-to {
+  flex-shrink: 0;
+  font-size: 12px;
+}
+
+.skip-set-expression {
+  flex: 1 1 180px;
+  min-width: 120px;
+  background: #e8f5e9;
+}
+
+.skip-set-expression.field-drop-active {
+  background: #d4edd6;
+}
+
+.skip-set-arithmetic {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 11px;
+  line-height: 1.35;
+  margin: 0;
+}
+
+.skip-set-arithmetic.disabled {
+  opacity: 0.45;
+}
+
+.skip-set-add-row,
+.skip-comment-add-row {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 2px;
+}
+
+.skip-comment-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.skip-comment-input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.skip-script-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: auto;
+  padding: 8px 10px 10px;
+}
+
+.skip-empty-hint {
+  margin: 0 0 10px;
+  font-size: 12px;
+  color: #1a4a9c;
+  line-height: 1.45;
+}
+
+.skip-insert-path-hint {
+  margin: 0 0 8px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.skip-insert-path-hint code {
+  font-size: 11px;
+}
+
+.skip-script-area {
+  flex: 1;
+  min-height: 140px;
+  background: #fff;
+  border: 1px solid #d0d0d0;
+  padding: 6px 8px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skip-insertion-line {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  min-height: 14px;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+button.skip-insertion-line:hover {
+  background: #eef4ff;
+}
+
+button.skip-insertion-line.active:hover {
+  background: #e3edff;
+}
+
+.skip-insertion-arrow {
+  color: #1a4a9c;
+  font-size: 10px;
+  line-height: 1;
+  width: 14px;
+  flex-shrink: 0;
+}
+
+.skip-insertion-rule {
+  flex: 1;
+  height: 0;
+  border-top: 1px solid #7aa7e0;
+}
+
+.skip-insertion-line.active .skip-insertion-arrow {
+  color: #0040c0;
+  font-weight: bold;
+}
+
+.skip-insertion-line.active .skip-insertion-rule {
+  border-top-width: 2px;
+  border-top-color: #0040c0;
+}
+
+.skip-script-line {
+  display: flex;
+  align-items: baseline;
+  width: 100%;
+  margin: 0;
+  padding: 1px 0;
+  border: none;
+  background: transparent;
+  text-align: left;
+  font-family: Tahoma, "Segoe UI", sans-serif;
+  font-size: 12px;
+  line-height: 1.5;
+  color: #000;
+}
+
+button.skip-script-line {
+  cursor: pointer;
+}
+
+button.skip-script-line:hover {
+  background: #f0f6ff;
+}
+
+.skip-script-pad {
+  white-space: pre;
+  flex-shrink: 0;
+}
+
+.skip-script-comment span:last-child {
+  color: #1a4a9c;
+  font-style: italic;
+  text-decoration: underline;
+}
+
+.skip-block-paren {
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.skip-block-interior-row {
+  min-height: 16px;
+}
+
+.skip-block-interior {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 0;
+  min-height: 16px;
+  margin: 0;
+  padding: 0 4px;
+  border: none;
+  background: transparent;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.skip-block-interior:hover,
+.skip-block-interior.active {
+  background: #e8f0ff;
+  outline: 1px dashed #7aa7e0;
+}
+
+.skip-block-interior.active .skip-insertion-arrow {
+  color: #0040c0;
+  font-weight: bold;
+}
+
+.skip-block-interior.active .skip-insertion-rule {
+  border-top-width: 2px;
+  border-top-color: #0040c0;
+}
+
+.skip-block-close .skip-block-interior {
+  min-height: 14px;
+}
+
+.skip-otherwise-label {
+  border: none;
+  background: transparent;
+  padding: 0 2px;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.skip-otherwise-label:hover,
+.skip-otherwise-label.active {
+  background: #e8f0ff;
+  outline: 1px dashed #7aa7e0;
+}
+
+.skip-script-struct {
+  color: #333;
+}
+
+.skip-dialog-footer {
+  justify-content: center;
+  padding: 10px 12px;
+}
+
+.skip-dialog-footer button {
+  min-width: 80px;
+}
+
 /* Configure Function dialog (FIB blank validator). */
 .fib-validation-dialog {
   background: var(--panel);
@@ -1858,6 +2511,16 @@ textarea {
   color: var(--tree-hover-text);
 }
 
+.fields-leaf-disabled {
+  color: #999;
+  cursor: not-allowed;
+  opacity: 0.65;
+}
+
+.fields-leaf-disabled:hover {
+  background: transparent;
+}
+
 .fields-leaf:focus-visible {
   outline: 1px solid var(--accent);
   outline-offset: -1px;
@@ -1938,6 +2601,37 @@ textarea {
   height: 100%;
   color: var(--muted);
   font-size: 14px;
+}
+
+.error-boundary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  min-height: 100vh;
+  padding: 24px;
+  text-align: center;
+  color: var(--text, #222);
+  background: var(--bg, #f5f5f5);
+}
+
+.error-boundary h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.error-boundary p {
+  margin: 0;
+  max-width: 480px;
+  color: var(--muted, #666);
+  font-size: 14px;
+}
+
+.error-boundary button {
+  padding: 6px 16px;
+  font-size: 13px;
+  cursor: pointer;
 }
 
 /* --- MDI canvas window shell (backlog §2, Pass 1) -------------------------- */
@@ -2550,6 +3244,11 @@ textarea {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  pointer-events: none;
+}
+
+.modal-backdrop > .modal {
+  pointer-events: auto;
 }
 
 .modal {
@@ -2636,6 +3335,18 @@ textarea {
   align-items: center;
   justify-content: center;
   z-index: 1000;
+  /* Let pointer events reach the Fields panel during skip/process editing (legacy parity). */
+  pointer-events: none;
+}
+
+.modal-overlay .modal-dialog,
+.modal-overlay > .modal-dialog {
+  pointer-events: auto;
+}
+
+/* Skip dialog: dimmed overlay but Fields column remains interactive for drag-drop. */
+.skip-modal-overlay {
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .new-project-dialog {

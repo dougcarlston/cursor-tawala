@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useSyncExternalStore } from "react";
 import type { TawalaProject } from "@/types/tawala";
 import {
   collectProjectVariables,
@@ -7,8 +7,12 @@ import {
 } from "@/lib/projectModel";
 import {
   fieldToken,
+  fieldLeafAcceptedByActiveTarget,
+  getActiveFieldTargetContextSnapshot,
   insertFieldIntoActiveTarget,
+  setFieldDragActive,
   setFieldDragData,
+  subscribeActiveFieldTargetContext,
 } from "@/lib/fieldInsertion";
 
 interface FormBranch {
@@ -42,6 +46,11 @@ export function FieldsPalette({
   );
 
   const variables = useMemo(() => collectProjectVariables(project), [project]);
+  const activeFieldContext = useSyncExternalStore(
+    subscribeActiveFieldTargetContext,
+    getActiveFieldTargetContextSnapshot,
+  );
+  const variablesDisabled = activeFieldContext.formFieldsOnly === true;
 
   // Owner Q3: on project open every form folder AND Variables start collapsed so large
   // projects (DirtBowl) stay scannable. Collapse state is session-only (useState), never
@@ -130,6 +139,7 @@ export function FieldsPalette({
                     key={leafKey}
                     leaf={{ name, dragValue: name }}
                     selected={selectedKey === leafKey}
+                    disabled={variablesDisabled}
                     onSelect={() => setSelectedKey(leafKey)}
                   />
                 );
@@ -180,27 +190,37 @@ function BranchHeader({
 function FieldLeafRow({
   leaf,
   selected,
+  disabled,
   onSelect,
 }: {
   leaf: FieldLeaf;
   selected: boolean;
+  disabled?: boolean;
   onSelect: () => void;
 }) {
+  const canInsert = !disabled && fieldLeafAcceptedByActiveTarget(leaf.dragValue);
   return (
     <li>
       <span
-        className={`fields-leaf${selected ? " selected" : ""}`}
+        className={`fields-leaf${selected ? " selected" : ""}${disabled ? " fields-leaf-disabled" : ""}`}
         role="treeitem"
         aria-selected={selected}
-        tabIndex={0}
-        draggable
-        title={`Drag or double-click to insert ${fieldToken(leaf.dragValue)}`}
+        aria-disabled={disabled || undefined}
+        tabIndex={disabled ? -1 : 0}
+        draggable={!disabled}
+        title={
+          disabled
+            ? "Variables cannot be used in this field"
+            : `Drag or double-click to insert ${fieldToken(leaf.dragValue)}`
+        }
         onClick={onSelect}
         onDoubleClick={() => {
+          if (!canInsert) return;
           onSelect();
           insertFieldIntoActiveTarget(leaf.dragValue);
         }}
         onKeyDown={(e) => {
+          if (disabled) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             onSelect();
@@ -208,7 +228,15 @@ function FieldLeafRow({
           }
         }}
         onDragStart={(ev) => {
+          if (disabled) {
+            ev.preventDefault();
+            return;
+          }
+          setFieldDragActive(true);
           setFieldDragData(ev.dataTransfer, leaf.dragValue);
+        }}
+        onDragEnd={() => {
+          setFieldDragActive(false);
         }}
       >
         {leaf.name}

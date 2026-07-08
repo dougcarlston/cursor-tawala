@@ -8,9 +8,9 @@ export function DeployDialog() {
   if (!show || !lastDeploy || lastDeploy.status !== "success") return null;
 
   return (
-    <div className="modal-backdrop" onClick={() => setShow(false)}>
-      <div className="modal modal-wide" onClick={(e) => e.stopPropagation()}>
-        <h2>Project Deployed</h2>
+    <div className="modal-backdrop" role="presentation">
+      <div className="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="deploy-dialog-title">
+        <h2 id="deploy-dialog-title">Project Deployed</h2>
         <p>
           <strong>{lastDeploy.project}</strong>
           {lastDeploy.mode === "java" ? " → Java backend" : " → dev runtime"}

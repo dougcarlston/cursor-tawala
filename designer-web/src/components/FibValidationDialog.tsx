@@ -45,14 +45,6 @@ export function FibValidationDialog({ validation, onCancel, onSave }: Props) {
     el.select();
   }, []);
 
-  useEffect(() => {
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onCancel();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onCancel]);
-
   const save = () => {
     onSave({
       type: validation.type,
@@ -65,12 +57,12 @@ export function FibValidationDialog({ validation, onCancel, onSave }: Props) {
   const help = FIELD_HELP[focused];
 
   return (
-    <div className="modal-overlay" role="presentation" onClick={onCancel}>
+    <div className="modal-overlay" role="presentation">
       <div
         className="modal-dialog fib-validation-dialog"
         role="dialog"
         aria-labelledby="fib-validation-title"
-        onClick={(e) => e.stopPropagation()}
+        aria-modal="true"
       >
         <div className="modal-header">
           <h2 id="fib-validation-title">

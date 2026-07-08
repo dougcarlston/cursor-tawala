@@ -149,6 +149,16 @@ export function collectProjectVariables(project: TawalaProject): string[] {
   return [INVITEE_ID_VARIABLE, ...rest];
 }
 
+/** Merge project variables with any from an in-flight command tree (e.g. unsaved skip dialog). */
+export function collectKnownVariables(
+  project: TawalaProject,
+  extraCommands?: unknown,
+): Set<string> {
+  const vars = new Set(collectProjectVariables(project));
+  if (extraCommands) collectVariablesFromNode(extraCommands, vars);
+  return vars;
+}
+
 /** Processes linked to a form (Pre = preProcess, Post = process), filtered to ones that exist. */
 export function linkedProcessesForForm(
   form: TawalaForm,

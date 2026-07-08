@@ -68,7 +68,44 @@ export function insertTokenAtCaret(
 /** Insert a field token into the editor that currently owns insertion focus. */
 type ActiveInserter = (name: string) => void;
 
+/** Options for the focused drop/double-click target (If vs Set, bare vs token, etc.). */
+export type FieldTargetContext = {
+  /** Insert bare `Form:Field` (process If conditions) instead of `<<Form:Field>>`. */
+  bare?: boolean;
+  /** Reject Variables-folder leaves — only colon-qualified form fields (If condition field). */
+  formFieldsOnly?: boolean;
+  /** If set: accept form fields or these variables only — reject unknown plain names (If). */
+  knownVariables?: ReadonlySet<string>;
+};
+
 let activeInserter: ActiveInserter | null = null;
+let activeTargetContext: FieldTargetContext = {};
+const activeTargetListeners = new Set<() => void>();
+
+function notifyActiveTargetListeners(): void {
+  for (const listener of activeTargetListeners) listener();
+}
+
+/** True while a Fields-panel leaf drag is in flight (suppresses accidental modal dismiss). */
+let fieldDragActive = false;
+
+export function setFieldDragActive(active: boolean): void {
+  fieldDragActive = active;
+}
+
+export function isFieldDragActive(): boolean {
+  return fieldDragActive;
+}
+
+/**
+ * Canvas editors should stay mounted when focus moves to the Fields panel for a drag or
+ * double-click insert — otherwise blur collapses the contenteditable before drop fires.
+ */
+export function retainEditorFocusOnBlur(relatedTarget: EventTarget | null): boolean {
+  if (isFieldDragActive()) return true;
+  const el = relatedTarget as HTMLElement | null;
+  return Boolean(el?.closest?.(".fields-tree, .fields-palette"));
+}
 
 /**
  * Register (or clear) the editor target that a double-clicked field leaf should insert into.
@@ -76,13 +113,66 @@ let activeInserter: ActiveInserter | null = null;
  * editor focus". Not cleared on blur so clicking a tree leaf (which blurs the editor) still
  * targets the last-focused editor.
  */
-export function setActiveFieldTarget(inserter: ActiveInserter | null): void {
+export function setActiveFieldTarget(
+  inserter: ActiveInserter | null,
+  context: FieldTargetContext = {},
+): void {
   activeInserter = inserter;
+  activeTargetContext = inserter ? context : {};
+  notifyActiveTargetListeners();
+}
+
+/** Subscribe to active target context changes (Fields palette If-only filtering). */
+export function subscribeActiveFieldTargetContext(listener: () => void): () => void {
+  activeTargetListeners.add(listener);
+  return () => {
+    activeTargetListeners.delete(listener);
+  };
+}
+
+/** Snapshot for `useSyncExternalStore` — current active target context. */
+export function getActiveFieldTargetContextSnapshot(): Readonly<FieldTargetContext> {
+  return activeTargetContext;
+}
+
+/** Context for the editor input that last registered as the active field target. */
+export function getActiveFieldTargetContext(): Readonly<FieldTargetContext> {
+  return activeTargetContext;
+}
+
+/** True when the name is a form-field reference (`Form:Field`), not a plain variable. */
+export function isFormFieldReference(name: string): boolean {
+  return name.trim().includes(":");
+}
+
+/** If condition field: form field or existing project variable — not a new variable name. */
+export function isValidIfConditionField(
+  name: string,
+  knownVariables: ReadonlySet<string>,
+): boolean {
+  const trimmed = name.trim();
+  if (!trimmed) return false;
+  if (isFormFieldReference(trimmed)) return true;
+  return knownVariables.has(trimmed);
+}
+
+/** Whether a Fields-panel leaf may insert into the active target. */
+export function fieldLeafAcceptedByActiveTarget(name: string): boolean {
+  if (!activeInserter) return false;
+  if (activeTargetContext.formFieldsOnly && !isFormFieldReference(name)) return false;
+  if (
+    activeTargetContext.knownVariables &&
+    !isValidIfConditionField(name, activeTargetContext.knownVariables)
+  ) {
+    return false;
+  }
+  return true;
 }
 
 /** Fire the active editor's inserter (double-click). Returns false when nothing is focused. */
 export function insertFieldIntoActiveTarget(name: string): boolean {
   if (!activeInserter) return false;
+  if (!fieldLeafAcceptedByActiveTarget(name)) return false;
   activeInserter(name);
   return true;
 }
