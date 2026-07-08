@@ -5,11 +5,21 @@ import {
   readFieldDragName,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import {
+  clearActivePaletteEditor,
+  clearFormattingFocus,
+  selectionCursorInTable,
+  setActivePaletteEditor,
+  setFormattingFocus,
+  type FormattingFocusKind,
+} from "@/lib/formattingPaletteContext";
 
 interface Props {
   html: string;
   onChange: (html: string) => void;
   placeholder?: string;
+  /** Registers this surface with the shared Formatting Palette (row 2). */
+  formattingKind?: Extract<FormattingFocusKind, "text" | "document" | "fib" | "mcq">;
 }
 
 interface FormatState {
@@ -128,7 +138,7 @@ function stripFontSizeFormatting(root: ParentNode, removeAll = false) {
 }
 
 /** Simplified rich-text surface (replaces legacy IE WYSIWYG for text items). */
-export function RichTextEditor({ html, onChange, placeholder }: Props) {
+export function RichTextEditor({ html, onChange, placeholder, formattingKind }: Props) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const lastHtml = useRef(html);
   const savedRangeRef = useRef<Range | null>(null);
@@ -162,12 +172,52 @@ export function RichTextEditor({ html, onChange, placeholder }: Props) {
     if (selectionIsInside(selection, el) && selection?.rangeCount) {
       savedRangeRef.current = selection.getRangeAt(0).cloneRange();
       setFormatState(readFormatState());
+      syncPaletteFocus();
       return;
     }
 
     if (document.activeElement === el) {
       setFormatState(readFormatState());
+      syncPaletteFocus();
     }
+  };
+
+  const syncPaletteFocus = () => {
+    if (!formattingKind) return;
+    const el = surfaceRef.current;
+    if (!el || document.activeElement !== el) return;
+    setFormattingFocus({
+      kind: formattingKind,
+      cursorInTable: selectionCursorInTable(el),
+    });
+  };
+
+  useEffect(() => {
+    return () => {
+      if (formattingKind) clearFormattingFocus(formattingKind);
+      clearActivePaletteEditor(surfaceRef.current ?? undefined);
+    };
+  }, [formattingKind]);
+
+  const commitPalette = () => {
+    const el = surfaceRef.current;
+    if (!el) return;
+    stripFontSizeFormatting(el);
+    const next = el.innerHTML;
+    lastHtml.current = next;
+    onChange(next);
+    syncToolbarState();
+  };
+
+  const registerAsPaletteEditor = () => {
+    const el = surfaceRef.current;
+    if (!el || !formattingKind) return;
+    setActivePaletteEditor({
+      el,
+      commit: commitPalette,
+      saveSelection: rememberSelection,
+      restoreSelection,
+    });
   };
 
   const rememberSelection = () => {
@@ -391,7 +441,15 @@ export function RichTextEditor({ html, onChange, placeholder }: Props) {
         }}
         onFocus={() => {
           setActiveFieldTarget(insertFieldToken);
+          registerAsPaletteEditor();
           syncToolbarState();
+          syncPaletteFocus();
+        }}
+        onBlur={(e) => {
+          // Keep the palette live while the user operates its dropdowns / color picker.
+          const next = e.relatedTarget as HTMLElement | null;
+          if (next?.closest(".formatting-palette")) return;
+          if (formattingKind) clearFormattingFocus(formattingKind);
         }}
         onKeyUp={() => syncToolbarState()}
         onMouseDown={() => {

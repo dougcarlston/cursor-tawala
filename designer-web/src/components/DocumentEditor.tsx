@@ -48,7 +48,12 @@ export function DocumentEditor({ documentName }: Props) {
               <p className="hint">
                 Edit document body (mail-merge fields: use «FormName:Field» in text for now).
               </p>
-              <RichTextEditor html={simpleHtml} onChange={onSimpleEdit} placeholder="Document text…" />
+              <RichTextEditor
+                html={simpleHtml}
+                onChange={onSimpleEdit}
+                placeholder="Document text…"
+                formattingKind="document"
+              />
             </>
           ) : (
             <>

@@ -1,5 +1,4 @@
 import { FibItem, FormItem, TawalaBlank, TawalaChoice } from "@/types/tawala";
-import { RichTextEditor } from "./RichTextEditor";
 import { FieldTextArea, FieldTextInput, NameTextInput } from "./FieldDropInputs";
 import {
   hasStructuredTextContent,
@@ -28,12 +27,18 @@ interface Props {
 }
 
 export function FormItemProperties({ item, onChange }: Props) {
+  // Text with plain-string content is now canvas-inline WYSIWYG (like Heading); only
+  // structured/function-table Text still edits in the panel.
+  const textIsCanvasInline = item.type === "text" && !hasStructuredTextContent(item.content);
+  const fibIsCanvasInline = item.type === "fib";
+  const labelIsCanvasInline = item.type === "heading" || textIsCanvasInline || fibIsCanvasInline;
+
   return (
     <div className="properties-panel properties-panel-compact">
-      {/* Heading is fully canvas-inline: its label is edited in the badge, its text and
-          per-run Main/Sub sizing in the inline editor. None of it lives here — the canvas
-          row is the source of truth (owner, July 2026; DESIGNER_FORM_ITEMS_HEADING.md). */}
-      {item.type !== "heading" && (
+      {/* Heading and plain-text items are fully canvas-inline: label is edited in the badge,
+          body directly on the canvas. Neither lives here — the canvas row is the source of
+          truth (owner, July 2026; DESIGNER_FORM_ITEMS_HEADING.md / _TEXT_FIB_MCQ.md). */}
+      {!labelIsCanvasInline && (
         <label>
           Item label
           <FieldTextInput value={item.label} onValueChange={(v) => onChange({ label: v })} />
@@ -47,24 +52,30 @@ export function FormItemProperties({ item, onChange }: Props) {
         </p>
       )}
 
-      {item.type === "text" &&
-        (hasStructuredTextContent(item.content) ? (
-          <StructuredTextProperties
-            content={item.content}
-            onChange={(content) => onChange({ content })}
-          />
-        ) : (
-          <label>
-            Content
-            <RichTextEditor
-              html={typeof item.content === "string" ? item.content : ""}
-              onChange={(html) => onChange({ content: html })}
-              placeholder="Enter text…"
-            />
-          </label>
-        ))}
+      {textIsCanvasInline && (
+        <p className="hint">
+          Edit the text label in its badge and the body directly on the canvas. Formatting uses
+          the Formatting Palette above the canvas.
+        </p>
+      )}
 
-      {item.type === "fib" && (
+      {fibIsCanvasInline && (
+        <p className="hint">
+          Edit the question label in its badge, the prompt and blanks on the canvas, and per-blank
+          options in the property strip below the prompt. Bold/Italic/Underline use the Formatting
+          Palette; place the cursor in an underscore blank to edit Alternate Label, Height,
+          Required, and Validation.
+        </p>
+      )}
+
+      {item.type === "text" && hasStructuredTextContent(item.content) && (
+        <StructuredTextProperties
+          content={item.content}
+          onChange={(content) => onChange({ content })}
+        />
+      )}
+
+      {item.type === "fib" && !fibIsCanvasInline && (
         <FibItemProperties item={item} onChange={onChange} />
       )}
 

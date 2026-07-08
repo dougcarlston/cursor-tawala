@@ -70,11 +70,79 @@ textarea {
   background: var(--panel);
 }
 
+/* Legacy Items toolbox look-and-feel (owner, July 2026): blue header + tall
+   icon-over-label buttons. Icons are Unicode/CSS placeholders for now. */
+.items-palette-title {
+  padding: 4px 8px;
+  font-weight: 600;
+  text-align: center;
+  color: #fff;
+  background: linear-gradient(180deg, #6ea8e6 0%, #3f78c4 50%, #356bb4 100%);
+  border-bottom: 1px solid #2f5f9f;
+}
+
 .items-palette-body {
   flex: 1;
   min-height: 0;
   overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
   padding: 8px 6px;
+}
+
+.items-palette-button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  min-height: 58px;
+  padding: 8px 4px;
+  cursor: pointer;
+  border: 1px solid #b7cdea;
+  border-radius: 6px;
+  background: linear-gradient(180deg, #fbfdff 0%, #e8f1fc 55%, #d8e8f8 100%);
+  color: #1f3a5f;
+  text-align: center;
+}
+
+.items-palette-button:hover:not(:disabled) {
+  border-color: var(--accent);
+  background: linear-gradient(180deg, #ffffff 0%, #eaf3ff 55%, #d3e6fc 100%);
+  box-shadow: 0 1px 2px rgba(53, 107, 180, 0.25);
+}
+
+.items-palette-button:active:not(:disabled) {
+  background: linear-gradient(180deg, #d8e8f8 0%, #e8f1fc 100%);
+}
+
+.items-palette-button:disabled {
+  opacity: 0.45;
+  cursor: default;
+  color: #6b7683;
+}
+
+.items-palette-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1;
+  border: 1px solid #b7cdea;
+  border-radius: 4px;
+  background: #fff;
+  color: #2f5f9f;
+}
+
+.items-palette-label {
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.15;
 }
 
 .designer-items .form-insert-buttons button {
@@ -723,6 +791,274 @@ textarea {
   font-style: italic;
 }
 
+/* Text item — canvas-inline WYSIWYG (DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md Text section).
+   Mirrors the Heading row layout but with normal body type and no collapse/type row. */
+.text-canvas-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 2px;
+  border: 1px solid transparent;
+}
+
+.text-canvas-row.idle {
+  cursor: pointer;
+}
+
+.text-canvas-row.idle:hover {
+  background: #fafcff;
+}
+
+.text-canvas-row.selected {
+  border-color: var(--accent);
+  background: #f4f8ff;
+}
+
+.text-badge {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  background: #ececec;
+  border: 1px solid #cfcfcf;
+  color: #444;
+  cursor: text;
+}
+
+.text-badge.editing {
+  background: #e8992e;
+  border-color: #cf861f;
+  color: #fff;
+}
+
+.text-badge-input {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 32px;
+  box-sizing: border-box;
+  text-align: center;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid var(--accent);
+  padding: 2px 4px;
+}
+
+.text-badge-input:focus {
+  outline: none;
+}
+
+.text-canvas-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.text-rich-editor {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cfcfcf;
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 24px;
+}
+
+.text-rich-editor:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.text-rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+}
+
+.text-rich-editor.field-drop-active {
+  outline: 2px dashed var(--accent);
+  outline-offset: -1px;
+  background: #eef5ff;
+}
+
+.text-rendered {
+  padding: 4px 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid transparent;
+}
+
+.text-rendered.placeholder {
+  color: #999;
+}
+
+/* FIB item — canvas-inline WYSIWYG (DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md FIB section). */
+.fib-canvas-row {
+  display: flex;
+  align-items: stretch;
+  gap: 12px;
+  margin-bottom: 10px;
+  padding: 2px;
+  border: 1px solid transparent;
+}
+
+.fib-canvas-row.idle {
+  cursor: pointer;
+}
+
+.fib-canvas-row.idle:hover {
+  background: #fafcff;
+}
+
+.fib-canvas-row.selected {
+  border-color: var(--accent);
+  background: #f4f8ff;
+}
+
+.fib-badge {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 13px;
+  background: #ececec;
+  border: 1px solid #cfcfcf;
+  color: #444;
+  cursor: text;
+}
+
+.fib-badge.editing {
+  background: #e8992e;
+  border-color: #cf861f;
+  color: #fff;
+}
+
+.fib-badge-input {
+  flex: 0 0 auto;
+  width: 64px;
+  min-height: 32px;
+  box-sizing: border-box;
+  text-align: center;
+  font-weight: bold;
+  font-size: 13px;
+  border: 1px solid var(--accent);
+  padding: 2px 4px;
+}
+
+.fib-badge-input:focus {
+  outline: none;
+}
+
+.fib-canvas-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.fib-rich-editor {
+  width: 100%;
+  box-sizing: border-box;
+  border: 1px solid #cfcfcf;
+  padding: 4px 6px;
+  font-family: inherit;
+  font-size: 13px;
+  line-height: 1.4;
+  min-height: 24px;
+}
+
+.fib-rich-editor:focus {
+  outline: none;
+  border-color: var(--accent);
+}
+
+.fib-rich-editor:empty::before {
+  content: attr(data-placeholder);
+  color: #999;
+}
+
+.fib-rendered {
+  padding: 4px 6px;
+  font-size: 13px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border: 1px solid transparent;
+}
+
+.fib-rendered-placeholder {
+  color: #999;
+}
+
+.fib-canvas-blank {
+  font: inherit;
+  border: 1px solid #888;
+  border-bottom: 2px solid #333;
+  padding: 1px 2px;
+  margin: 0 1px;
+  vertical-align: baseline;
+  background: #fff;
+}
+
+.fib-property-strip {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 6px 8px;
+  font-size: 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+}
+
+.fib-property-strip.disabled {
+  opacity: 0.55;
+}
+
+.fib-property-strip label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap;
+}
+
+.fib-property-strip input[type="text"],
+.fib-property-strip input[type="number"],
+.fib-property-strip select {
+  font-size: 12px;
+  padding: 1px 4px;
+}
+
+.fib-property-strip input[type="number"] {
+  width: 3em;
+}
+
+.fib-prop-checkbox {
+  gap: 4px;
+}
+
+.fib-validation-edit {
+  font-size: 12px;
+  padding: 2px 8px;
+}
+
+.fib-validation-edit:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
 .preview-frame {
   flex: 1;
   padding: 16px;
@@ -851,6 +1187,158 @@ textarea {
   height: 20px;
   background: var(--border);
   margin: 0 4px;
+}
+
+/* Row 2 — shared Formatting Palette (Form Text + Document). */
+.formatting-palette {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2px;
+  padding: 2px 4px;
+  background: var(--toolbar-bg);
+  border-bottom: 1px solid var(--border);
+  min-height: 28px;
+}
+
+.formatting-palette button,
+.formatting-palette select {
+  min-width: 24px;
+  height: 24px;
+  border: 1px solid transparent;
+  background: transparent;
+  cursor: default;
+  padding: 0 6px;
+  font: inherit;
+  font-size: 12px;
+}
+
+.formatting-palette button:hover:not(:disabled),
+.formatting-palette select:hover:not(:disabled) {
+  border-color: var(--border);
+  background: #fff;
+}
+
+.formatting-palette button:disabled,
+.formatting-palette select:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.formatting-palette-select {
+  min-width: 108px;
+  max-width: 140px;
+  padding: 0 4px;
+}
+
+.formatting-palette-select-narrow {
+  min-width: 88px;
+  max-width: 100px;
+}
+
+.formatting-palette-sep {
+  width: 1px;
+  height: 20px;
+  background: var(--border);
+  margin: 0 4px;
+  flex: 0 0 1px;
+}
+
+.formatting-palette-split {
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+}
+
+/* Native color picker sits under the "A" split button; opened programmatically. */
+.formatting-palette-color-input {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  border: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.formatting-palette-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 200;
+  min-width: 150px;
+  background: var(--panel);
+  border: 1px solid var(--border-dark);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+  padding: 2px;
+}
+
+.formatting-palette-menu button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  height: 22px;
+  border: 1px solid transparent;
+  background: transparent;
+  text-align: left;
+  padding: 0 8px;
+  font-size: 12px;
+  cursor: default;
+}
+
+.formatting-palette-menu button:hover {
+  background: var(--tree-hover);
+  color: var(--tree-hover-text);
+}
+
+.formatting-palette-menu button.active {
+  font-weight: 600;
+}
+
+.formatting-palette-menu-glyph {
+  display: inline-block;
+  width: 20px;
+  text-align: center;
+}
+
+.formatting-palette button.active {
+  border-color: var(--border-dark);
+  background: #dceaff;
+}
+
+.formatting-palette-split > button:first-child {
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  padding-right: 4px;
+}
+
+.formatting-palette-split-arrow {
+  min-width: 14px !important;
+  padding: 0 2px !important;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-left: none !important;
+  font-size: 9px;
+  line-height: 1;
+}
+
+.formatting-palette-color-a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: #c00;
+  text-underline-offset: 2px;
+}
+
+.formatting-palette-underline {
+  text-decoration: underline;
+}
+
+.formatting-palette-icon {
+  font-family: inherit;
+  letter-spacing: -0.5px;
 }
 
 .properties-panel-compact .hint {

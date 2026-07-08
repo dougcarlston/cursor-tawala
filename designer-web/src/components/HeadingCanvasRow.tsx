@@ -7,6 +7,7 @@ import {
   readFieldDragName,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { clearFormattingFocus, setFormattingFocus } from "@/lib/formattingPaletteContext";
 
 interface Props {
   item: HeadingItem;
@@ -174,12 +175,16 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   // Seed the contenteditable when entering edit. Deps are [editing] only so our own typing
   // (which flows back into `content`) never re-writes the DOM and clobbers the caret.
   useEffect(() => {
-    if (!editing) return;
+    if (!editing) {
+      clearFormattingFocus("heading");
+      return;
+    }
     const el = editorRef.current;
     if (!el) return;
     const html = headingContentToHtml(item);
     el.innerHTML = html;
     el.focus();
+    setFormattingFocus({ kind: "heading", cursorInTable: false });
     const sel = window.getSelection();
     if (!sel) return;
     const range = document.createRange();
@@ -195,6 +200,8 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     savedRangeRef.current = range.cloneRange();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
+
+  useEffect(() => () => clearFormattingFocus("heading"), []);
 
   useEffect(() => {
     if (!editingLabel) return;
@@ -329,6 +336,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   const handleBlur = (e: React.FocusEvent<HTMLDivElement>) => {
     // Keep editing while focus moves within the row (dropdown, label input, editor).
     if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
+    clearFormattingFocus("heading");
     setEditing(false);
   };
 
@@ -390,7 +398,10 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onKeyUp={syncCurrentSize}
               onMouseUp={syncCurrentSize}
-              onFocus={() => setActiveFieldTarget(insertFieldToken)}
+              onFocus={() => {
+                setActiveFieldTarget(insertFieldToken);
+                setFormattingFocus({ kind: "heading", cursorInTable: false });
+              }}
               onDragOver={(e) => {
                 if (!hasFieldDrag(e.dataTransfer)) return;
                 e.preventDefault();

@@ -1,0 +1,364 @@
+import { useRef, useState, useSyncExternalStore } from "react";
+import { useProjectStore } from "@/store/projectStore";
+import type { WindowKind } from "@/store/projectStore";
+import {
+  getActivePaletteEditor,
+  getFormattingFocusState,
+  isPaletteControlEnabled,
+  subscribeFormattingFocus,
+  type PaletteControlId,
+} from "@/lib/formattingPaletteContext";
+import {
+  paletteAlign,
+  paletteBold,
+  paletteFontColor,
+  paletteFontFace,
+  paletteFontSize,
+  paletteIndent,
+  paletteItalic,
+  paletteOutdent,
+  paletteReset,
+  paletteUnderline,
+  readPaletteActiveState,
+  type PaletteActiveState,
+} from "@/lib/paletteCommands";
+
+/** Web-safe font list — `DESIGNER_DOCUMENT_EDITOR.md` § Font Face dropdown. */
+const FONT_FACES = [
+  "Default Font",
+  "Arial",
+  "Arial Black",
+  "Comic Sans MS",
+  "Courier New",
+  "Georgia",
+  "Impact",
+  "Tahoma",
+  "Times New Roman",
+  "Trebuchet MS",
+  "Verdana",
+] as const;
+
+/** Point sizes — `DESIGNER_DOCUMENT_EDITOR.md` § Font Point Size dropdown. */
+const FONT_SIZES = [
+  "Default Size",
+  "8",
+  "9",
+  "10",
+  "11",
+  "12",
+  "14",
+  "16",
+  "18",
+  "20",
+  "22",
+  "24",
+  "26",
+  "28",
+  "36",
+  "48",
+  "72",
+] as const;
+
+const ALIGN_OPTIONS: { value: PaletteActiveState["align"]; label: string; glyph: string }[] = [
+  { value: "left", label: "Align Left", glyph: "⯇≡" },
+  { value: "center", label: "Align Center", glyph: "≡" },
+  { value: "right", label: "Align Right", glyph: "≡⯈" },
+  { value: "justify", label: "Justify", glyph: "▤" },
+];
+
+interface Props {
+  /** Active MDI window kind — palette visible only for form / document. */
+  activeKind: WindowKind | null;
+}
+
+function PaletteButton({
+  id,
+  title,
+  label,
+  enabled,
+  active,
+  className,
+  onClick,
+}: {
+  id: PaletteControlId;
+  title: string;
+  label: React.ReactNode;
+  enabled: boolean;
+  active?: boolean;
+  className?: string;
+  onClick?: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      className={`${className ?? ""}${active ? " active" : ""}`}
+      title={title}
+      disabled={!enabled}
+      aria-pressed={active}
+      data-palette-control={id}
+      // Keep the editor's selection/focus alive so execCommand hits the right range.
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onClick}
+    >
+      {label}
+    </button>
+  );
+}
+
+function PaletteSep() {
+  return <span className="formatting-palette-sep" aria-hidden />;
+}
+
+/**
+ * Row 2 Formatting Palette — shared by Form Text items and Documents.
+ * Character/paragraph controls (font face/size, color, reset, B/I/U, indent, alignment) drive
+ * the active rich-text editor via `paletteCommands`. Table tools (#11–13) and **fx** (#14) are
+ * gated correctly but wired in their own later steps.
+ */
+export function FormattingPalette({ activeKind }: Props) {
+  const focus = useSyncExternalStore(
+    subscribeFormattingFocus,
+    getFormattingFocusState,
+    getFormattingFocusState,
+  );
+  const editorTab = useProjectStore((s) => s.editorTab);
+  const [alignMenuOpen, setAlignMenuOpen] = useState(false);
+  const colorInputRef = useRef<HTMLInputElement>(null);
+
+  if (activeKind !== "form" && activeKind !== "document") return null;
+
+  // Indent the palette so its controls line up with the left edge of the MDI canvas.
+  // Left columns (fixed widths + 1px right borders): Explorer (.designer-left 220px) and,
+  // only when a Form is active, the Items column (.designer-items 150px). Documents have no
+  // Items column, so the canvas starts right after Explorer.
+  const EXPLORER_WIDTH = 220 + 1;
+  const ITEMS_WIDTH = 150 + 1;
+  const canvasLeftOffset = activeKind === "form" ? EXPLORER_WIDTH + ITEMS_WIDTH : EXPLORER_WIDTH;
+
+  const designActive = activeKind === "document" || editorTab === "design";
+  const enabled = (id: PaletteControlId) => isPaletteControlEnabled(id, focus, designActive);
+
+  // Live B/I/U + alignment of the current selection (read while a rich region is focused).
+  const canFormat = enabled("bold");
+  const state = canFormat ? readPaletteActiveState() : null;
+
+  // Selects and the color picker take focus from the editor, so save its selection first.
+  const saveEditorSelection = () => getActivePaletteEditor()?.saveSelection();
+
+  const openColorPicker = () => {
+    saveEditorSelection();
+    colorInputRef.current?.click();
+  };
+
+  return (
+    <div
+      className="formatting-palette"
+      role="toolbar"
+      aria-label="Formatting palette"
+      title="Formatting palette (row 2)"
+      style={{ paddingLeft: canvasLeftOffset }}
+    >
+      <select
+        className="formatting-palette-select"
+        title="Font Face"
+        disabled={!enabled("fontFace")}
+        value="Default Font"
+        onMouseDown={saveEditorSelection}
+        onChange={(e) => {
+          paletteFontFace(e.target.value);
+          // Reset to the Default label so re-picking the same face on a new run still fires.
+          e.currentTarget.selectedIndex = 0;
+        }}
+      >
+        {FONT_FACES.map((face) => (
+          <option key={face} value={face}>
+            {face}
+          </option>
+        ))}
+      </select>
+
+      <select
+        className="formatting-palette-select formatting-palette-select-narrow"
+        title="Font Point Size"
+        disabled={!enabled("fontSize")}
+        value="Default Size"
+        onMouseDown={saveEditorSelection}
+        onChange={(e) => {
+          paletteFontSize(e.target.value);
+          e.currentTarget.selectedIndex = 0;
+        }}
+      >
+        {FONT_SIZES.map((size) => (
+          <option key={size} value={size}>
+            {size}
+          </option>
+        ))}
+      </select>
+
+      <span className="formatting-palette-split">
+        <PaletteButton
+          id="fontColor"
+          title="Font Color"
+          label={<span className="formatting-palette-color-a">A</span>}
+          enabled={enabled("fontColor")}
+          onClick={openColorPicker}
+        />
+        <button
+          type="button"
+          className="formatting-palette-split-arrow"
+          title="Font Color"
+          disabled={!enabled("fontColor")}
+          aria-label="Font color menu"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={openColorPicker}
+        >
+          ▾
+        </button>
+        <input
+          ref={colorInputRef}
+          type="color"
+          className="formatting-palette-color-input"
+          tabIndex={-1}
+          aria-hidden
+          onChange={(e) => paletteFontColor(e.target.value)}
+        />
+      </span>
+
+      <PaletteButton
+        id="reset"
+        title="Reset Formatting"
+        label="⌫"
+        enabled={enabled("reset")}
+        className="formatting-palette-icon"
+        onClick={paletteReset}
+      />
+
+      <PaletteSep />
+
+      <PaletteButton
+        id="bold"
+        title="Bold"
+        label={<strong>B</strong>}
+        enabled={enabled("bold")}
+        active={state?.bold}
+        onClick={paletteBold}
+      />
+      <PaletteButton
+        id="italic"
+        title="Italic"
+        label={<em>I</em>}
+        enabled={enabled("italic")}
+        active={state?.italic}
+        onClick={paletteItalic}
+      />
+      <PaletteButton
+        id="underline"
+        title="Underline"
+        label={<span className="formatting-palette-underline">U</span>}
+        enabled={enabled("underline")}
+        active={state?.underline}
+        onClick={paletteUnderline}
+      />
+
+      <PaletteSep />
+
+      <PaletteButton
+        id="outdent"
+        title="Outdent"
+        label="⇤"
+        enabled={enabled("outdent")}
+        onClick={paletteOutdent}
+      />
+      <PaletteButton
+        id="indent"
+        title="Indent"
+        label="⇥"
+        enabled={enabled("indent")}
+        onClick={paletteIndent}
+      />
+
+      <span className="formatting-palette-split">
+        <PaletteButton
+          id="alignment"
+          title="Paragraph Alignment"
+          label="≡"
+          enabled={enabled("alignment")}
+          active={state ? state.align !== "left" : false}
+          onClick={() => paletteAlign(state?.align === "left" ? "center" : "left")}
+        />
+        <button
+          type="button"
+          className="formatting-palette-split-arrow"
+          title="Paragraph Alignment"
+          disabled={!enabled("alignment")}
+          aria-label="Alignment menu"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => setAlignMenuOpen((o) => !o)}
+        >
+          ▾
+        </button>
+        {alignMenuOpen && enabled("alignment") && (
+          <div className="formatting-palette-menu" role="menu">
+            {ALIGN_OPTIONS.map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                role="menuitemradio"
+                aria-checked={state?.align === opt.value}
+                className={state?.align === opt.value ? "active" : undefined}
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  paletteAlign(opt.value);
+                  setAlignMenuOpen(false);
+                }}
+              >
+                <span className="formatting-palette-menu-glyph">{opt.glyph}</span> {opt.label}
+              </button>
+            ))}
+          </div>
+        )}
+      </span>
+
+      <PaletteSep />
+
+      <PaletteButton
+        id="insertTable"
+        title="Insert Table"
+        label="▦"
+        enabled={enabled("insertTable")}
+        className="formatting-palette-icon"
+      />
+      <PaletteButton
+        id="deleteTable"
+        title="Delete Table"
+        label="▦✕"
+        enabled={enabled("deleteTable")}
+        className="formatting-palette-icon"
+      />
+
+      <span className="formatting-palette-split">
+        <PaletteButton
+          id="tableRowCol"
+          title="Insert or Delete Row or Column"
+          label="▦+"
+          enabled={enabled("tableRowCol")}
+          className="formatting-palette-icon"
+        />
+        <button
+          type="button"
+          className="formatting-palette-split-arrow"
+          title="Insert or Delete Row or Column"
+          disabled={!enabled("tableRowCol")}
+          aria-label="Table row or column menu"
+          onMouseDown={(e) => e.preventDefault()}
+        >
+          ▾
+        </button>
+      </span>
+
+      <PaletteSep />
+
+      <PaletteButton id="fx" title="Insert or Edit a Function" label="fx" enabled={enabled("fx")} />
+    </div>
+  );
+}

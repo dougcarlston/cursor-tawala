@@ -3,8 +3,10 @@ import { useProjectStore } from "@/store/projectStore";
 import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
 import { FibFieldPreview } from "./FibFieldPreview";
+import { FibCanvasRow } from "./FibCanvasRow";
 import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
+import { TextCanvasRow } from "./TextCanvasRow";
 
 interface Props {
   formName: string;
@@ -105,6 +107,24 @@ export function FormEditor({ formName }: Props) {
                 // on-canvas Heading Type, no debug label bar / Delete chrome / dashed wrapper.
                 item.type === "heading" ? (
                   <HeadingCanvasRow
+                    key={`${item.label}-${i}`}
+                    item={item}
+                    index={i}
+                    formName={formName}
+                    selected={selectedItemIndex === i}
+                  />
+                ) : // Text with plain-string content is canvas-inline WYSIWYG (like Heading).
+                // Structured/function-table content (array) stays in the generic block.
+                item.type === "text" && !Array.isArray(item.content) ? (
+                  <TextCanvasRow
+                    key={`${item.label}-${i}`}
+                    item={item}
+                    index={i}
+                    formName={formName}
+                    selected={selectedItemIndex === i}
+                  />
+                ) : item.type === "fib" ? (
+                  <FibCanvasRow
                     key={`${item.label}-${i}`}
                     item={item}
                     index={i}

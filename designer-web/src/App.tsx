@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { MenuBar } from "./components/MenuBar";
 import { ToolBar } from "./components/ToolBar";
+import { FormattingPalette } from "./components/FormattingPalette";
 import { ProjectExplorer } from "./components/ProjectExplorer";
 import { FormItemsPalette } from "./components/FormItemsPalette";
 import { ProcessStatementsPalette } from "./components/ProcessStatementsPalette";
@@ -100,6 +101,7 @@ export default function App() {
         canDelete={canDelete}
       />
       <ToolBar onNewProject={() => setShowNewProject(true)} />
+      <FormattingPalette activeKind={activeKind} />
       <div className="designer-main">
         <aside className="designer-left">
           <ProjectExplorer />

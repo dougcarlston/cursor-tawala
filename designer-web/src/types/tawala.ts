@@ -13,6 +13,10 @@ export interface TawalaBlank {
   name: string;
   length?: number;
   required?: boolean;
+  /** Multi-line blank height in lines (legacy Blank.Height; default 1). */
+  height?: number;
+  /** Validation preset id (legacy ValidationFunction type name). */
+  validationType?: string;
   /** Internal field name for Processes / Fields palette (legacy alternateLabel). */
   alternateLabel?: string;
   /** Label shown above the input on the live form (topLabels and similar). */
@@ -182,18 +186,30 @@ export const FORM_ITEM_PALETTE: { label: string; type: FormItemType; tag: string
  */
 export const HEADING_PLACEHOLDER = "[Replace this with heading of your own.]";
 
+/**
+ * Legacy default text-item body (`Resources.TextItemDefaultRTF`). Inserted selected so the
+ * designer types over it immediately (see `TextCanvasRow` select-all), mirroring Heading.
+ */
+export const TEXT_PLACEHOLDER = "[Replace this with text of your own.]";
+
+/**
+ * Legacy default FIB prompt (`Resources.FibItemDefaultRTF`). Inserted selected so the designer
+ * can type over it immediately (see `FibCanvasRow` select-all).
+ */
+export const FIB_PLACEHOLDER = "[Replace this with your question. Underscores create blanks.]";
+
 export function createDefaultItem(type: FormItemType, label: string): FormItem {
   switch (type) {
     case "heading":
       return { type, label, level: "main", content: HEADING_PLACEHOLDER };
     case "text":
-      return { type, label, content: "" };
+      return { type, label, content: TEXT_PLACEHOLDER };
     case "fib":
       return {
         type,
         label,
-        prompt: "[Replace with your question. Underscores create blanks.]",
-        blanks: [{ name: "a", length: 20 }],
+        prompt: FIB_PLACEHOLDER,
+        blanks: [{ name: "a", length: 10, height: 1, alternateLabel: `${label}:a` }],
       };
     case "mc":
       return {
