@@ -142,6 +142,15 @@ function useFieldDropTarget(
         });
         return;
       }
+      // Drop without prior focus: place caret at end so token inserts predictably.
+      if (document.activeElement !== el) {
+        try {
+          el.focus();
+          el.setSelectionRange(el.value.length, el.value.length);
+        } catch {
+          /* element may have unmounted */
+        }
+      }
       insertTokenAtCaret(el, text, onValueChange);
     },
     onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {

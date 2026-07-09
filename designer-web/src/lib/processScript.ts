@@ -44,9 +44,19 @@ function formatProcessCommandText(cmd: TawalaProcessCommand): string {
       return formatSetLineText(String(cmd.field ?? "?"), cmd.value);
     case "show":
     case "showDocument":
+      if (cmd.url != null && String(cmd.url).length > 0) return `Show URL ${cmd.url}`;
       if (cmd.form) return `Show Form ${cmd.form}`;
-      if (cmd.document) return `Show Document ${cmd.document}`;
+      if (cmd.document) {
+        const reset = cmd.reset === true ? " and reset" : "";
+        return `Show${reset} Document ${cmd.document}`;
+      }
       return "Show";
+    case "edit": {
+      const form = cmd.form ?? "?";
+      const cond = cmd.condition as ConditionShape | undefined;
+      const where = cond ? ` where ${formatConditionClause(cond)}` : "";
+      return `Show stored record from ${form}${where}`;
+    }
     case "send":
       return `Send Document ${cmd.document ?? "?"} to ${cmd.to ?? "?"}`;
     case "append":

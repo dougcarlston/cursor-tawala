@@ -9,7 +9,7 @@ import {
 /**
  * Docked "Processes" palette — the legacy **Statements palette** shown in the same
  * left column as the Items palette when a **Process** window is active (owner Issue 1,
- * July 2026). **If** and **Set** open property panels in the process window (legacy:
+ * July 2026). **If**, **Set**, and **Show** open property panels in the process window (legacy:
  * palette selects statement type); other buttons insert a template at the insertion arrow.
  */
 export function ProcessStatementsPalette() {

@@ -3266,6 +3266,55 @@ button.skip-script-line:hover {
   font-weight: 600;
 }
 
+/* Full If/ForEach block — continuous shade when header is selected (legacy parity). */
+.skip-if-block-shade {
+  background: #e8f0ff;
+  border: 1px solid #8aa8d8;
+  border-radius: 2px;
+  margin: 3px 0;
+  padding: 1px 0 2px;
+}
+
+.skip-if-block-shade .skip-script-line-row:first-child,
+.skip-if-block-shade .skip-if-block-shade-header {
+  background: #7aa7e0;
+  border-radius: 1px 1px 0 0;
+}
+
+.skip-if-block-shade .skip-script-line-row:first-child .skip-script-line,
+.skip-if-block-shade .skip-if-block-shade-header {
+  background: transparent !important;
+  outline: none;
+}
+
+.skip-if-block-shade .skip-script-line-row.selected {
+  background: #c5d8f5;
+  outline: 1px solid #5a88c8;
+}
+
+.skip-if-block-shade .skip-script-line-row.selected .skip-script-line {
+  background: transparent;
+}
+
+/* Clickable insertion gaps between statements (inactive gaps are subtle). */
+.skip-insertion-line:not(.active) {
+  min-height: 6px;
+  opacity: 0.12;
+}
+
+.skip-insertion-line:not(.active):hover {
+  opacity: 1;
+  background: #f0f6ff;
+}
+
+.skip-insertion-line:not(.active) .skip-insertion-arrow {
+  visibility: hidden;
+}
+
+.skip-insertion-line:not(.active) .skip-insertion-rule {
+  border-top-color: #b8c8e0;
+}
+
 .process-editor {
   display: flex;
   flex-direction: column;
@@ -3344,6 +3393,126 @@ button.skip-script-line:hover {
   border-bottom: 1px solid #fff;
 }
 
+.show-statement-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0;
+  border-bottom: 1px solid var(--border);
+  background: #f0f0f0;
+}
+
+.show-statement-tabs button {
+  border: none;
+  background: transparent;
+  padding: 4px 12px;
+  font-size: 12px;
+  border-right: 1px solid var(--border);
+  cursor: default;
+}
+
+.show-statement-tabs button.active {
+  background: #fff;
+  font-weight: 600;
+  margin-bottom: -1px;
+  border-bottom: 1px solid #fff;
+}
+
+.show-statement-panel-body {
+  padding-top: 10px;
+}
+
+.show-tab-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.show-field-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.show-field-label select,
+.show-url-input {
+  max-width: 320px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.show-from-label {
+  text-transform: lowercase;
+}
+
+.show-reset-checkbox {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 4px 6px;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.show-reset-sublabel {
+  font-size: 11px;
+  color: #666;
+  font-style: italic;
+}
+
+.show-submit-fieldset {
+  margin: 0;
+  padding: 6px 8px;
+  border: 1px solid #ccc;
+  font-size: 12px;
+}
+
+.show-submit-fieldset legend {
+  padding: 0 4px;
+  font-size: 11px;
+}
+
+.show-submit-fieldset label {
+  display: block;
+  margin-top: 4px;
+}
+
+.show-where-group {
+  margin-top: 4px;
+}
+
+.show-where-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.show-where-intro {
+  margin-top: 0;
+}
+
+.show-url-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.show-url-input {
+  width: 100%;
+  max-width: 480px;
+  box-sizing: border-box;
+  border: 1px solid #aca899;
+  background: #fff;
+  padding: 2px 6px;
+}
+
+.show-url-input.field-drop-active {
+  border-color: var(--accent);
+  outline: 2px dashed var(--accent);
+  outline-offset: -1px;
+}
+
 .process-editor-body {
   display: flex;
   flex: 1;
@@ -3355,11 +3524,65 @@ button.skip-script-line:hover {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 2px 6px 6px;
+  padding: 2px 4px 4px;
 }
 
 .process-script-area {
   min-height: 48px;
+}
+
+/* Process script — single-spaced lines so long If blocks fit in the window. */
+.skip-script-area.process-script-area {
+  gap: 0;
+  padding: 2px 6px 4px;
+}
+
+.skip-script-area.process-script-area .skip-script-line {
+  line-height: 1.1;
+  padding: 0;
+  min-height: 0;
+}
+
+.skip-script-area.process-script-area .skip-script-line-row {
+  padding: 0;
+  gap: 1px;
+  min-height: 0;
+}
+
+.skip-script-area.process-script-area .skip-script-line-row .skip-script-line {
+  min-height: 0;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line {
+  min-height: 9px;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line:not(.active) {
+  min-height: 4px;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line:not(.active):hover {
+  min-height: 9px;
+}
+
+.skip-script-area.process-script-area .skip-block-interior-row {
+  min-height: 0;
+}
+
+.skip-script-area.process-script-area .skip-block-interior,
+.skip-script-area.process-script-area .skip-block-close .skip-block-interior {
+  min-height: 9px;
+}
+
+.skip-script-area.process-script-area .skip-if-block-shade {
+  margin: 0;
+  padding: 0;
+}
+
+.skip-script-area.process-script-area .skip-script-line-toolbar button {
+  height: 18px;
+  min-width: 20px;
+  font-size: 12px;
 }
 
 .process-json-panel {

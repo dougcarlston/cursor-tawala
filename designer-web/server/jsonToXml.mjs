@@ -244,6 +244,13 @@ function commandToXml(cmd, ctx = {}) {
           ? { document: cmd.document, reset: cmd.reset }
           : cmd,
       );
+    case "edit": {
+      const where = cmd.condition
+        ? `<conditions>${conditionToXml(cmd.condition)}</conditions>`
+        : "";
+      const submit = cmd.submit === "new" ? "new" : "modify";
+      return `<edit form="${escAttr(cmd.form)}" submit="${submit}">${where}</edit>`;
+    }
     case "send":
       return sendToXml(cmd, ctx);
     default:

@@ -1,27 +1,31 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { IfStatementBuilder } from "@/components/IfStatementBuilder";
 import { ProcessConnectionDialog } from "@/components/ProcessConnectionDialog";
 import { SetStatementBuilder } from "@/components/SetStatementBuilder";
+import { ShowStatementBuilder } from "@/components/ShowStatementBuilder";
 import { SkipScriptView } from "@/components/SkipScriptView";
-import { getCommandsAtInsertPath } from "@/lib/skipInsertPath";
+import { insertCommandAtPoint } from "@/lib/processInsert";
 import { formLinksForProcess, collectKnownVariables } from "@/lib/projectModel";
 import {
   buildProcessScriptLines,
   canMoveProcessCommandAtPath,
   deleteProcessCommandAtPath,
   getProcessCommandAtPath,
-  insertionPathAfterBlockInsert,
   moveProcessCommandAtPath,
   replaceProcessCommandAtPath,
 } from "@/lib/processScript";
-import { findInsertionLineIndex } from "@/lib/skipScript";
 import {
   EMPTY_IF_BUILDER,
   EMPTY_SET_BUILDER,
+  EMPTY_SHOW_BUILDER,
+  buildShowCommand,
   ifBuilderFromCommand,
+  rowsAreValid,
   setBuilderFromCommand,
+  showBuilderFromCommand,
   type IfBuilderState,
   type SetBuilderState,
+  type ShowBuilderState,
 } from "@/lib/statementBuilders";
 import { buildConditionFromRows } from "@/lib/skipSummary";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
@@ -30,6 +34,10 @@ import { TawalaProcessCommand } from "@/types/tawala";
 
 interface Props {
   processName: string;
+}
+
+function isShowCommandType(cmd: TawalaProcessCommand): boolean {
+  return cmd.cmd === "show" || cmd.cmd === "showDocument" || cmd.cmd === "edit";
 }
 
 function ProcessConnectionBanner({
@@ -75,15 +83,17 @@ export function ProcessEditor({ processName }: Props) {
   const project = useProjectStore((s) => s.project);
   const selection = useProjectStore((s) => s.selection);
   const processInsertPath = useProjectStore((s) => s.processInsertPath);
+  const processInsertIndex = useProjectStore((s) => s.processInsertIndex);
   const selectedProcessCommandPath = useProjectStore((s) => s.selectedProcessCommandPath);
   const processStatementPanel = useProjectStore((s) => s.processStatementPanel);
-  const setProcessInsertPath = useProjectStore((s) => s.setProcessInsertPath);
+  const setProcessInsertPoint = useProjectStore((s) => s.setProcessInsertPoint);
   const setSelectedProcessCommandPath = useProjectStore((s) => s.setSelectedProcessCommandPath);
   const moveSelectedProcessCommand = useProjectStore((s) => s.moveSelectedProcessCommand);
   const updateProcessCommands = useProjectStore((s) => s.updateProcessCommands);
   const proc = project.processes?.find((p) => p.name === processName);
   const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
   const [setBuilder, setSetBuilder] = useState<SetBuilderState>(EMPTY_SET_BUILDER);
+  const [showBuilder, setShowBuilder] = useState<ShowBuilderState>(EMPTY_SHOW_BUILDER);
   const [connectionDialogOpen, setConnectionDialogOpen] = useState(false);
   const scriptRef = useRef<HTMLDivElement>(null);
 
@@ -93,14 +103,26 @@ export function ProcessEditor({ processName }: Props) {
     () => collectKnownVariables(project, commands),
     [project, commands],
   );
-  const insertAfterIndex = useMemo(
-    () => findInsertionLineIndex(scriptLines, processInsertPath),
-    [scriptLines, processInsertPath],
-  );
+  const formNames = useMemo(() => project.forms.map((f) => f.name), [project.forms]);
   const formLinks = useMemo(
     () => formLinksForProcess(project, processName),
     [project, processName],
   );
+  const documentNames = useMemo(
+    () => (project.documents ?? []).map((d) => d.name),
+    [project.documents],
+  );
+
+  const insertAtArrow = (cmd: TawalaProcessCommand) => {
+    const result = insertCommandAtPoint(
+      commands,
+      processInsertPath,
+      processInsertIndex,
+      cmd,
+    );
+    updateProcessCommands(processName, result.commands);
+    setProcessInsertPoint(result.insertPath, result.insertIndex);
+  };
 
   const selectedCommand =
     selectedProcessCommandPath != null
@@ -116,14 +138,28 @@ export function ProcessEditor({ processName }: Props) {
     processStatementPanel === "set" &&
     selectedCommand?.cmd === "set" &&
     selectedProcessCommandPath != null;
+  const isShowCommand =
+    selectedCommand?.cmd === "show" ||
+    selectedCommand?.cmd === "showDocument" ||
+    selectedCommand?.cmd === "edit";
+  const isModifyShow =
+    processStatementPanel === "show" && isShowCommand && selectedProcessCommandPath != null;
   const hasPropertyPanel =
-    isActiveProcess && (processStatementPanel === "if" || processStatementPanel === "set");
+    isActiveProcess &&
+    (processStatementPanel === "if" ||
+      processStatementPanel === "set" ||
+      processStatementPanel === "show");
   const showPaletteHint =
     isActiveProcess && commands.length === 0 && processStatementPanel === "none";
 
   useEffect(() => {
     if (!isActiveProcess) return;
-    if (processStatementPanel === "if" || processStatementPanel === "set") return;
+    if (
+      processStatementPanel === "if" ||
+      processStatementPanel === "set" ||
+      processStatementPanel === "show"
+    )
+      return;
     setActiveFieldTarget(null);
   }, [isActiveProcess, processStatementPanel]);
 
@@ -132,8 +168,8 @@ export function ProcessEditor({ processName }: Props) {
     return () => setActiveFieldTarget(null);
   }, [isActiveProcess]);
 
-  // Palette owns which panel is open; script selection only loads Modify state when types match.
-  useEffect(() => {
+  // Load builder state synchronously when script selection changes (before Modify click).
+  useLayoutEffect(() => {
     if (!isActiveProcess || !selectedProcessCommandPath) return;
     const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
     if (!cmd) return;
@@ -141,6 +177,8 @@ export function ProcessEditor({ processName }: Props) {
       setIfBuilder(ifBuilderFromCommand(cmd));
     } else if (processStatementPanel === "set" && cmd.cmd === "set") {
       setSetBuilder(setBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "show" && isShowCommandType(cmd)) {
+      setShowBuilder(showBuilderFromCommand(cmd));
     }
   }, [selectedProcessCommandPath, commands, isActiveProcess, processStatementPanel]);
 
@@ -151,6 +189,9 @@ export function ProcessEditor({ processName }: Props) {
     }
     if (processStatementPanel === "set" && !selectedProcessCommandPath) {
       setSetBuilder(EMPTY_SET_BUILDER);
+    }
+    if (processStatementPanel === "show" && !selectedProcessCommandPath) {
+      setShowBuilder(EMPTY_SHOW_BUILDER);
     }
   }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess]);
 
@@ -179,19 +220,23 @@ export function ProcessEditor({ processName }: Props) {
   };
 
   const submitIf = () => {
+    if (!rowsAreValid(ifBuilder.rows, knownVariables)) return;
     const condition = buildConditionFromRows(ifBuilder.combinator, ifBuilder.rows);
-    if (isModifyIf && selectedProcessCommandPath) {
-      const existing = getProcessCommandAtPath(commands, selectedProcessCommandPath);
-      const updated: TawalaProcessCommand = {
-        cmd: "if",
-        condition,
-        then: (existing?.then as TawalaProcessCommand[] | undefined) ?? [],
-        ...(ifBuilder.hasElse
-          ? { else: (existing?.else as TawalaProcessCommand[] | undefined) ?? [] }
-          : {}),
-      };
-      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, updated));
-      return;
+    const modifyPath = selectedProcessCommandPath;
+    if (modifyPath) {
+      const existing = getProcessCommandAtPath(commands, modifyPath);
+      if (existing?.cmd === "if") {
+        const updated: TawalaProcessCommand = {
+          cmd: "if",
+          condition,
+          then: (existing.then as TawalaProcessCommand[] | undefined) ?? [],
+          ...(ifBuilder.hasElse
+            ? { else: (existing.else as TawalaProcessCommand[] | undefined) ?? [] }
+            : {}),
+        };
+        setCommands(replaceProcessCommandAtPath(commands, modifyPath, updated));
+        return;
+      }
     }
     const ifCmd: TawalaProcessCommand = {
       cmd: "if",
@@ -199,14 +244,7 @@ export function ProcessEditor({ processName }: Props) {
       then: [],
       ...(ifBuilder.hasElse ? { else: [] } : {}),
     };
-    const nextCommands = structuredClone(commands);
-    const target = getCommandsAtInsertPath(nextCommands, processInsertPath);
-    const insertedIndex = target.length;
-    target.push(ifCmd);
-    setCommands(nextCommands);
-    setProcessInsertPath(
-      insertionPathAfterBlockInsert(processInsertPath, insertedIndex, ifCmd),
-    );
+    insertAtArrow(ifCmd);
   };
 
   const submitSet = () => {
@@ -222,10 +260,16 @@ export function ProcessEditor({ processName }: Props) {
       setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
       return;
     }
-    const nextCommands = structuredClone(commands);
-    const target = getCommandsAtInsertPath(nextCommands, processInsertPath);
-    target.push(cmd);
-    setCommands(nextCommands);
+    insertAtArrow(cmd);
+  };
+
+  const submitShow = () => {
+    const cmd = buildShowCommand(showBuilder);
+    if (isModifyShow && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
   };
 
   const deleteCommandAtPath = (path: string) => {
@@ -283,6 +327,18 @@ export function ProcessEditor({ processName }: Props) {
                   knownVariables={knownVariables}
                 />
               )}
+              {processStatementPanel === "show" && (
+                <ShowStatementBuilder
+                  embedded
+                  state={showBuilder}
+                  onStateChange={setShowBuilder}
+                  submitLabel={isModifyShow ? "Modify" : "Add"}
+                  onSubmit={submitShow}
+                  documentNames={documentNames}
+                  formNames={formNames}
+                  knownVariables={knownVariables}
+                />
+              )}
             </div>
             <div className="process-statement-divider" aria-hidden />
           </>
@@ -292,11 +348,12 @@ export function ProcessEditor({ processName }: Props) {
             <SkipScriptView
               lines={scriptLines}
               insertPath={processInsertPath}
-              insertAfterIndex={commands.length === 0 ? -1 : insertAfterIndex}
-              onSelectInsertPath={setProcessInsertPath}
+              insertIndex={processInsertIndex}
+              onSelectInsertPoint={setProcessInsertPoint}
               selectedCommandPath={selectedProcessCommandPath}
               onSelectCommandPath={setSelectedProcessCommandPath}
               showLineControls
+              showAllInsertionGaps
               onMoveCommand={moveCommandAtPath}
               onDeleteCommand={deleteCommandAtPath}
               canMoveCommand={canMoveCommand}

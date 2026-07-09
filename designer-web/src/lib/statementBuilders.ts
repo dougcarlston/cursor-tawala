@@ -1,5 +1,6 @@
 import { isValidIfConditionField } from "@/lib/fieldInsertion";
-import { UNARY_SKIP_OPERATORS } from "@/lib/skipSummary";
+import { buildConditionFromRows, UNARY_SKIP_OPERATORS } from "@/lib/skipSummary";
+import type { TawalaProcessCommand } from "@/types/tawala";
 
 export type ConditionCombinator = "and" | "or";
 
@@ -111,4 +112,132 @@ export function setBuilderFromCommand(command: {
     value: command.value === undefined || command.value === null ? "" : String(command.value),
     arithmeticAsText: command.arithmeticAsText === true,
   };
+}
+
+export type ShowTab = "document" | "form" | "storedRecord" | "url";
+
+export interface ShowBuilderState {
+  tab: ShowTab;
+  document: string;
+  documentReset: boolean;
+  form: string;
+  recordForm: string;
+  recordSubmit: "modify" | "new";
+  recordCombinator: ConditionCombinator;
+  recordRows: ConditionRow[];
+  url: string;
+}
+
+export const EMPTY_SHOW_BUILDER: ShowBuilderState = {
+  tab: "document",
+  document: "",
+  documentReset: false,
+  form: "",
+  recordForm: "",
+  recordSubmit: "modify",
+  recordCombinator: "and",
+  recordRows: [{ ...EMPTY_CONDITION_ROW }],
+  url: "",
+};
+
+/** Stored Record Where is optional — empty rows are valid when `from` is set. */
+export function showStoredRecordIsValid(
+  recordForm: string,
+  rows: ConditionRow[],
+  knownVariables: ReadonlySet<string>,
+): boolean {
+  if (!recordForm.trim()) return false;
+  if (!rows.some((r) => r.field.trim())) return true;
+  return rowsAreValid(rows, knownVariables);
+}
+
+export function showBuilderIsValid(
+  state: ShowBuilderState,
+  knownVariables: ReadonlySet<string>,
+  documentNames: readonly string[],
+  formNames: readonly string[],
+): boolean {
+  switch (state.tab) {
+    case "document":
+      return state.document.trim().length > 0 && documentNames.includes(state.document);
+    case "form":
+      return state.form.trim().length > 0 && formNames.includes(state.form);
+    case "storedRecord":
+      return showStoredRecordIsValid(state.recordForm, state.recordRows, knownVariables);
+    case "url":
+      return state.url.trim().length > 0;
+    default:
+      return false;
+  }
+}
+
+export function showBuilderFromCommand(command: {
+  cmd?: unknown;
+  document?: unknown;
+  form?: unknown;
+  url?: unknown;
+  reset?: unknown;
+  submit?: unknown;
+  condition?: unknown;
+  [key: string]: unknown;
+}): ShowBuilderState {
+  const base = { ...EMPTY_SHOW_BUILDER };
+  if (command.cmd === "edit") {
+    const { combinator, rows } = parseConditionToRows(
+      command.condition as ConditionShape | undefined,
+    );
+    return {
+      ...base,
+      tab: "storedRecord",
+      recordForm: String(command.form ?? ""),
+      recordSubmit: command.submit === "new" ? "new" : "modify",
+      recordCombinator: combinator,
+      recordRows: rows,
+    };
+  }
+  if (command.cmd === "show" || command.cmd === "showDocument") {
+    if (command.url != null && String(command.url).length > 0) {
+      return { ...base, tab: "url", url: String(command.url) };
+    }
+    if (command.form != null && String(command.form).length > 0) {
+      return { ...base, tab: "form", form: String(command.form) };
+    }
+    if (command.document != null && String(command.document).length > 0) {
+      return {
+        ...base,
+        tab: "document",
+        document: String(command.document),
+        documentReset: command.reset === true,
+      };
+    }
+  }
+  return base;
+}
+
+/** Build a process command from the Show builder state (active tab). */
+export function buildShowCommand(state: ShowBuilderState): TawalaProcessCommand {
+  switch (state.tab) {
+    case "document": {
+      const cmd: TawalaProcessCommand = { cmd: "show", document: state.document };
+      if (state.documentReset) cmd.reset = true;
+      return cmd;
+    }
+    case "form":
+      return { cmd: "show", form: state.form };
+    case "storedRecord": {
+      const cmd: TawalaProcessCommand = {
+        cmd: "edit",
+        form: state.recordForm,
+        submit: state.recordSubmit,
+      };
+      if (state.recordRows.some((r) => r.field.trim())) {
+        cmd.condition = buildConditionFromRows(state.recordCombinator, state.recordRows);
+      }
+      return cmd;
+    }
+    case "url":
+      return { cmd: "show", url: state.url };
+    default:
+      return { cmd: "show" };
+  }
 }

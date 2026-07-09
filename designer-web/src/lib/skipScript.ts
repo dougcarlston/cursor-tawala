@@ -243,33 +243,134 @@ export function formatInsertPathLabel(insertPath: string): string {
   return `${branchLabel} of ${stmtLabel} #${topIndex + 1}`;
 }
 
-/** Line index after which the insertion arrow should appear. */
-export function findInsertionLineIndex(lines: ScriptLine[], insertPath: string): number {
+/** Line index after which the active insertion arrow should appear. */
+export function findInsertionLineIndex(
+  lines: ScriptLine[],
+  insertPath: string,
+  insertIndex = 0,
+): number {
   if (lines.length === 0) return -1;
 
-  if (insertPath === "root") {
-    for (let i = lines.length - 1; i >= 0; i--) {
-      if (lines[i].indent === 0) return i;
+  if (insertIndex <= 0) {
+    if (insertPath === "root") return -1;
+    for (let i = 0; i < lines.length; i++) {
+      if (lines[i].lineType === "block-open" && lines[i].insertZone === insertPath) {
+        return i;
+      }
     }
     return -1;
   }
 
-  let openIdx = -1;
-  let openIndent = -1;
+  const childLineIndices: number[] = [];
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
-    if (line.lineType === "block-open" && line.insertZone === insertPath) {
-      openIdx = i;
-      openIndent = line.indent;
+    if (!line.path) continue;
+    if (insertPath === "root") {
+      if (line.indent === 0 && /^root\/\d+$/.test(line.path)) {
+        childLineIndices.push(i);
+      }
+    } else {
+      const prefix = `${insertPath}/`;
+      if (line.path.startsWith(prefix)) {
+        const rest = line.path.slice(prefix.length);
+        if (/^\d+$/.test(rest)) childLineIndices.push(i);
+      }
+    }
+  }
+
+  if (insertIndex >= childLineIndices.length) {
+    if (childLineIndices.length === 0) {
+      for (let i = 0; i < lines.length; i++) {
+        if (lines[i].lineType === "block-open" && lines[i].insertZone === insertPath) {
+          return i;
+        }
+      }
+      return -1;
+    }
+    return childLineIndices[childLineIndices.length - 1];
+  }
+
+  return childLineIndices[insertIndex - 1];
+}
+
+/** Line span for an If/ForEach header's full block (header through closing `)`). */
+export function blockSpanForHeader(
+  lines: ScriptLine[],
+  headerPath: string,
+): { start: number; end: number } | null {
+  const start = lines.findIndex(
+    (l) =>
+      l.path === headerPath &&
+      (l.lineType === "if-header" || l.lineType === "foreach-header"),
+  );
+  if (start < 0) return null;
+  const baseIndent = lines[start].indent;
+  let end = start;
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.indent < baseIndent) break;
+    if (
+      line.indent === baseIndent &&
+      line.path != null &&
+      line.path !== headerPath &&
+      (line.lineType === "if-header" ||
+        line.lineType === "foreach-header" ||
+        line.lineType === "command" ||
+        line.lineType === "comment")
+    ) {
       break;
     }
-  }
-  if (openIdx < 0) return -1;
-
-  for (let i = openIdx + 1; i < lines.length; i++) {
-    if (lines[i].lineType === "block-close" && lines[i].indent === openIndent) {
-      return i - 1;
+    if (line.indent === baseIndent && line.lineType === "block-close") {
+      end = i;
     }
   }
-  return openIdx;
+  return { start, end };
+}
+
+/** Role of line `index` when a block header is the sole selection (legacy full-block highlight). */
+export function selectedBlockHighlightRole(
+  lines: ScriptLine[],
+  lineIndex: number,
+  selectedCommandPath: string | null,
+): "header" | "body" | null {
+  if (!selectedCommandPath) return null;
+  const headerLine = lines.find((l) => l.path === selectedCommandPath);
+  if (
+    !headerLine ||
+    (headerLine.lineType !== "if-header" && headerLine.lineType !== "foreach-header")
+  ) {
+    return null;
+  }
+  const span = blockSpanForHeader(lines, selectedCommandPath);
+  if (!span || lineIndex < span.start || lineIndex > span.end) return null;
+  return lineIndex === span.start ? "header" : "body";
+}
+
+/** True when `closeIndex` closes a non-empty block (insertion arrow already sits above `)`). */
+export function isNonemptyBlockClose(lines: ScriptLine[], closeIndex: number): boolean {
+  const closeLine = lines[closeIndex];
+  if (closeLine.lineType !== "block-close" || closeLine.closeZone == null) return false;
+  for (let j = closeIndex - 1; j >= 0; j--) {
+    const line = lines[j];
+    if (line.indent < closeLine.indent) return false;
+    if (
+      line.indent === closeLine.indent &&
+      line.lineType === "block-open" &&
+      line.insertZone === closeLine.closeZone
+    ) {
+      return !isEmptyBlock(lines, j);
+    }
+  }
+  return false;
+}
+
+export function isEmptyBlock(lines: ScriptLine[], openIndex: number): boolean {
+  const open = lines[openIndex];
+  const next = lines[openIndex + 1];
+  return (
+    open.lineType === "block-open" &&
+    next?.lineType === "block-close" &&
+    next.indent === open.indent &&
+    next.closeZone === open.insertZone
+  );
 }

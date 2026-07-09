@@ -47,3 +47,26 @@ export function parentInsertPath(commandPath: string): InsertPath {
   }
   return ROOT_INSERT_PATH;
 }
+
+/** Parent path and child index for a direct command path (`root/0/then/1` → then, 1). */
+export function parentPathAndChildIndex(commandPath: string): {
+  parentPath: InsertPath;
+  childIndex: number;
+} {
+  const parts = commandPath.split("/").filter((p) => p !== "root");
+  const childIndex = Number(parts[parts.length - 1]);
+  parts.pop();
+  const parentPath = parts.length ? (`root/${parts.join("/")}` as InsertPath) : ROOT_INSERT_PATH;
+  return { parentPath, childIndex };
+}
+
+/** True when `commandPath` is a direct child of `insertPath` (not nested deeper). */
+export function isDirectChildCommandPath(commandPath: string, insertPath: InsertPath): boolean {
+  if (insertPath === ROOT_INSERT_PATH) {
+    return /^root\/\d+$/.test(commandPath);
+  }
+  const prefix = `${insertPath}/`;
+  if (!commandPath.startsWith(prefix)) return false;
+  const rest = commandPath.slice(prefix.length);
+  return /^\d+$/.test(rest);
+}

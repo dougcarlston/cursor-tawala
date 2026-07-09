@@ -59,12 +59,22 @@ export const PROCESS_STATEMENT_PALETTE: ProcessStatementDef[] = [
 ];
 
 /** Statement types with a property panel in the process window (legacy: palette selects panel). */
-export type ProcessStatementPanel = "none" | "if" | "set";
+export type ProcessStatementPanel = "none" | "if" | "set" | "show";
 
-export const PROCESS_PANEL_LABELS = new Set(["If", "Set"]);
+export const PROCESS_PANEL_LABELS = new Set(["If", "Set", "Show"]);
 
 export function processPanelKeyForLabel(label: string): ProcessStatementPanel | null {
   const key = label.toLowerCase();
-  if (key === "if" || key === "set") return key;
+  if (key === "if" || key === "set" || key === "show") return key;
+  return null;
+}
+
+/** Map a process command to its statement property panel, if any. */
+export function processPanelKeyForCommand(
+  cmd: TawalaProcessCommand,
+): ProcessStatementPanel | null {
+  if (cmd.cmd === "if") return "if";
+  if (cmd.cmd === "set") return "set";
+  if (cmd.cmd === "show" || cmd.cmd === "showDocument" || cmd.cmd === "edit") return "show";
   return null;
 }
