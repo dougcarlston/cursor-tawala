@@ -79,7 +79,9 @@ export function paletteLeafInsertName(
   leafName: string,
   formName: string | undefined,
   _target: FieldTargetContext,
+  insertOverride?: string,
 ): string {
+  if (insertOverride?.trim()) return insertOverride.trim();
   return qualifyPaletteFieldName(leafName, formName);
 }
 
@@ -101,16 +103,21 @@ export function fieldInsertText(
   return target.bare ? qualifiedName : fieldToken(qualifiedName);
 }
 
+/** True for `RecordVar:Form:Field` references from ForEach / stored-record contexts. */
+export function isRecordQualifiedField(name: string): boolean {
+  const segments = name.trim().split(":");
+  return segments.length >= 3 && segments.every((s) => s.length > 0);
+}
+
 /** Whether `name` may insert into a target with the given options. */
 export function fieldAcceptedByTarget(
   name: string,
   target: FieldTargetContext,
 ): boolean {
   if (target.formFieldsOnly && !isFormFieldReference(name)) return false;
-  if (
-    target.knownVariables &&
-    !isValidIfConditionField(name, target.knownVariables)
-  ) {
+  const trimmed = name.trim();
+  if (target.knownVariables && !isValidIfConditionField(trimmed, target.knownVariables)) {
+    if (isRecordQualifiedField(trimmed)) return true;
     return false;
   }
   return true;

@@ -2525,6 +2525,15 @@ button.skip-script-line:hover {
   color: #c8a000;
 }
 
+.fields-record-header .fields-branch-name {
+  color: #1a5c3a;
+}
+
+.fields-record-leaf {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+}
+
 /* Dotted connector lines mimic the WinForms TreeView. */
 .fields-leaf-list {
   list-style: none;
@@ -3602,6 +3611,93 @@ button.skip-script-line:hover {
   padding: 2px 6px;
 }
 
+.foreach-statement-panel-body {
+  padding-top: 8px;
+}
+
+.foreach-record-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.foreach-in-label {
+  font-size: 12px;
+  text-transform: lowercase;
+  color: #333;
+}
+
+.foreach-record-input {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 10em;
+  max-width: 180px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.foreach-record-list-select {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 10em;
+  max-width: 220px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.delete-statement-panel-body {
+  padding-top: 8px;
+}
+
+.delete-header-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.delete-from-label {
+  font-size: 12px;
+  color: #333;
+}
+
+.delete-form-select {
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 10em;
+  max-width: 220px;
+  font-size: 12px;
+  padding: 2px 6px;
+}
+
+.delete-where-group {
+  margin-bottom: 4px;
+}
+
+.delete-where-label {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.delete-where-intro {
+  margin-bottom: 4px;
+}
+
+.process-comment-body {
+  padding-top: 8px;
+}
+
+.process-comment-input {
+  min-height: 4.5em;
+  resize: vertical;
+  font-family: Tahoma, "Segoe UI", sans-serif;
+  font-size: 12px;
+  padding: 4px 6px;
+}
+
 .get-statement-panel-body {
   padding-top: 8px;
 }
@@ -3737,54 +3833,89 @@ button.skip-script-line:hover {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 2px 4px 4px;
+  padding: 0 2px 2px;
 }
 
 .process-script-area {
   min-height: 48px;
 }
 
-/* Process script — single-spaced lines so long If blocks fit in the window. */
+/* Process script — tight single-spaced lines (legacy WinForms density). */
 .skip-script-area.process-script-area {
   gap: 0;
-  padding: 2px 6px 4px;
+  padding: 1px 4px 2px;
 }
 
 .skip-script-area.process-script-area .skip-script-line {
-  line-height: 1.1;
+  line-height: 1;
   padding: 0;
   min-height: 0;
+  font-size: 11px;
 }
 
 .skip-script-area.process-script-area .skip-script-line-row {
+  position: relative;
   padding: 0;
-  gap: 1px;
+  gap: 0;
   min-height: 0;
+  align-items: center;
 }
 
 .skip-script-area.process-script-area .skip-script-line-row .skip-script-line {
   min-height: 0;
+  padding-right: 72px;
+}
+
+.skip-script-area.process-script-area .skip-script-line-toolbar {
+  position: absolute;
+  right: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding-right: 0;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line {
-  min-height: 9px;
+  min-height: 0;
+  height: 2px;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line:not(.active) {
-  min-height: 4px;
+  min-height: 0;
+  height: 1px;
+  margin: 0;
+  opacity: 0.1;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line:not(.active):hover {
-  min-height: 9px;
+  min-height: 0;
+  height: 5px;
+  opacity: 1;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line.active {
+  min-height: 0;
+  height: 5px;
 }
 
 .skip-script-area.process-script-area .skip-block-interior-row {
   min-height: 0;
+  line-height: 1;
 }
 
 .skip-script-area.process-script-area .skip-block-interior,
 .skip-script-area.process-script-area .skip-block-close .skip-block-interior {
-  min-height: 9px;
+  min-height: 0;
+  height: 4px;
+  padding: 0 2px;
+}
+
+.skip-script-area.process-script-area .skip-block-open,
+.skip-script-area.process-script-area .skip-block-close,
+.skip-script-area.process-script-area .skip-script-struct,
+.skip-script-area.process-script-area .skip-script-otherwise {
+  line-height: 1;
+  padding: 0;
+  font-size: 11px;
 }
 
 .skip-script-area.process-script-area .skip-if-block-shade {
@@ -3793,9 +3924,10 @@ button.skip-script-line:hover {
 }
 
 .skip-script-area.process-script-area .skip-script-line-toolbar button {
-  height: 18px;
-  min-width: 20px;
-  font-size: 12px;
+  height: 16px;
+  min-width: 18px;
+  font-size: 11px;
+  padding: 0 3px;
 }
 
 .process-json-panel {

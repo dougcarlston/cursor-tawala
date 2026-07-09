@@ -237,6 +237,12 @@ function commandToXml(cmd, ctx = {}) {
       const body = (cmd.do ?? []).map((c) => commandToXml(c, ctx)).join("");
       return `<foreach record="${escAttr(cmd.recordName)}" recordList="${escAttr(cmd.recordList)}">${body}</foreach>`;
     }
+    case "delete": {
+      const where = cmd.where
+        ? `<conditions>${conditionToXml(cmd.where)}</conditions>`
+        : "";
+      return `<delete><form name="${escAttr(cmd.form)}"/>${where}</delete>`;
+    }
     case "show":
     case "showDocument":
       return showToXml(

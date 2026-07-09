@@ -1,5 +1,8 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { CommentStatementBuilder } from "@/components/CommentStatementBuilder";
+import { DeleteStatementBuilder } from "@/components/DeleteStatementBuilder";
 import { AppendStatementBuilder } from "@/components/AppendStatementBuilder";
+import { ForEachStatementBuilder } from "@/components/ForEachStatementBuilder";
 import { GetStatementBuilder } from "@/components/GetStatementBuilder";
 import { IfStatementBuilder } from "@/components/IfStatementBuilder";
 import { ProcessConnectionDialog } from "@/components/ProcessConnectionDialog";
@@ -19,6 +22,9 @@ import {
 } from "@/lib/processScript";
 import {
   EMPTY_APPEND_BUILDER,
+  EMPTY_COMMENT_BUILDER,
+  EMPTY_DELETE_BUILDER,
+  EMPTY_FOREACH_BUILDER,
   EMPTY_GET_BUILDER,
   EMPTY_IF_BUILDER,
   EMPTY_SEND_BUILDER,
@@ -27,9 +33,20 @@ import {
   appendBuilderFromCommand,
   appendBuilderHasDraft,
   buildAppendCommand,
+  buildCommentCommand,
+  buildDeleteCommand,
+  buildForEachCommand,
   buildGetCommand,
   buildSendCommand,
   buildShowCommand,
+  collectProcessRecordLists,
+  collectProcessRecordNames,
+  commentBuilderFromCommand,
+  commentBuilderHasDraft,
+  deleteBuilderFromCommand,
+  deleteBuilderHasDraft,
+  foreachBuilderFromCommand,
+  foreachBuilderHasDraft,
   getBuilderFromCommand,
   getBuilderHasDraft,
   ifBuilderFromCommand,
@@ -43,6 +60,9 @@ import {
   showBuilderFromCommand,
   showBuilderHasDraft,
   type AppendBuilderState,
+  type CommentBuilderState,
+  type DeleteBuilderState,
+  type ForEachBuilderState,
   type GetBuilderState,
   type IfBuilderState,
   type SendBuilderState,
@@ -119,6 +139,9 @@ export function ProcessEditor({ processName }: Props) {
   const [sendBuilder, setSendBuilder] = useState<SendBuilderState>(EMPTY_SEND_BUILDER);
   const [appendBuilder, setAppendBuilder] = useState<AppendBuilderState>(EMPTY_APPEND_BUILDER);
   const [getBuilder, setGetBuilder] = useState<GetBuilderState>(EMPTY_GET_BUILDER);
+  const [forEachBuilder, setForEachBuilder] = useState<ForEachBuilderState>(EMPTY_FOREACH_BUILDER);
+  const [deleteBuilder, setDeleteBuilder] = useState<DeleteBuilderState>(EMPTY_DELETE_BUILDER);
+  const [commentBuilder, setCommentBuilder] = useState<CommentBuilderState>(EMPTY_COMMENT_BUILDER);
   const [connectionDialogOpen, setConnectionDialogOpen] = useState(false);
   const scriptRef = useRef<HTMLDivElement>(null);
 
@@ -137,6 +160,8 @@ export function ProcessEditor({ processName }: Props) {
     () => (project.documents ?? []).map((d) => d.name),
     [project.documents],
   );
+  const processRecordLists = useMemo(() => collectProcessRecordLists(commands), [commands]);
+  const processRecordNames = useMemo(() => collectProcessRecordNames(commands), [commands]);
 
   const insertAtArrow = (cmd: TawalaProcessCommand) => {
     const result = insertCommandAtPoint(
@@ -181,6 +206,18 @@ export function ProcessEditor({ processName }: Props) {
     processStatementPanel === "get" &&
     selectedCommand?.cmd === "get" &&
     selectedProcessCommandPath != null;
+  const isModifyForEach =
+    processStatementPanel === "foreach" &&
+    selectedCommand?.cmd === "foreach" &&
+    selectedProcessCommandPath != null;
+  const isModifyDelete =
+    processStatementPanel === "delete" &&
+    selectedCommand?.cmd === "delete" &&
+    selectedProcessCommandPath != null;
+  const isModifyComment =
+    processStatementPanel === "comment" &&
+    selectedCommand?.cmd === "comment" &&
+    selectedProcessCommandPath != null;
   const hasPropertyPanel =
     isActiveProcess &&
     (processStatementPanel === "if" ||
@@ -188,7 +225,10 @@ export function ProcessEditor({ processName }: Props) {
       processStatementPanel === "show" ||
       processStatementPanel === "send" ||
       processStatementPanel === "append" ||
-      processStatementPanel === "get");
+      processStatementPanel === "get" ||
+      processStatementPanel === "foreach" ||
+      processStatementPanel === "delete" ||
+      processStatementPanel === "comment");
   const showPaletteHint =
     isActiveProcess && commands.length === 0 && processStatementPanel === "none";
 
@@ -200,7 +240,10 @@ export function ProcessEditor({ processName }: Props) {
       processStatementPanel === "show" ||
       processStatementPanel === "send" ||
       processStatementPanel === "append" ||
-      processStatementPanel === "get"
+      processStatementPanel === "get" ||
+      processStatementPanel === "foreach" ||
+      processStatementPanel === "delete" ||
+      processStatementPanel === "comment"
     )
       return;
     setActiveFieldTarget(null);
@@ -228,6 +271,12 @@ export function ProcessEditor({ processName }: Props) {
       setAppendBuilder(appendBuilderFromCommand(cmd));
     } else if (processStatementPanel === "get" && cmd.cmd === "get") {
       setGetBuilder(getBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "foreach" && cmd.cmd === "foreach") {
+      setForEachBuilder(foreachBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "delete" && cmd.cmd === "delete") {
+      setDeleteBuilder(deleteBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "comment" && cmd.cmd === "comment") {
+      setCommentBuilder(commentBuilderFromCommand(cmd));
     }
   }, [selectedProcessCommandPath, commands, isActiveProcess, processStatementPanel]);
 
@@ -254,6 +303,22 @@ export function ProcessEditor({ processName }: Props) {
           ? prev
           : { ...EMPTY_GET_BUILDER, recordList: nextRecordListName(commands) },
       );
+    }
+    if (processStatementPanel === "foreach" && !selectedProcessCommandPath) {
+      setForEachBuilder((prev) => {
+        if (foreachBuilderHasDraft(prev)) return prev;
+        const lists = collectProcessRecordLists(commands);
+        return {
+          ...EMPTY_FOREACH_BUILDER,
+          recordList: lists.length === 1 ? lists[0] : "",
+        };
+      });
+    }
+    if (processStatementPanel === "delete" && !selectedProcessCommandPath) {
+      setDeleteBuilder((prev) => (deleteBuilderHasDraft(prev) ? prev : EMPTY_DELETE_BUILDER));
+    }
+    if (processStatementPanel === "comment" && !selectedProcessCommandPath) {
+      setCommentBuilder((prev) => (commentBuilderHasDraft(prev) ? prev : EMPTY_COMMENT_BUILDER));
     }
   }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess, commands]);
 
@@ -361,6 +426,40 @@ export function ProcessEditor({ processName }: Props) {
     insertAtArrow(cmd);
   };
 
+  const submitForEach = () => {
+    const existing =
+      isModifyForEach && selectedProcessCommandPath
+        ? getProcessCommandAtPath(commands, selectedProcessCommandPath)
+        : null;
+    const cmd = buildForEachCommand(
+      forEachBuilder,
+      (existing?.do as TawalaProcessCommand[] | undefined) ?? [],
+    );
+    if (isModifyForEach && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
+  const submitDelete = () => {
+    const cmd = buildDeleteCommand(deleteBuilder);
+    if (isModifyDelete && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
+  const submitComment = () => {
+    const cmd = buildCommentCommand(commentBuilder);
+    if (isModifyComment && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
   const deleteCommandAtPath = (path: string) => {
     const next = deleteProcessCommandAtPath(commands, path);
     setCommands(next);
@@ -459,6 +558,37 @@ export function ProcessEditor({ processName }: Props) {
                   onSubmit={submitGet}
                   formNames={formNames}
                   knownVariables={knownVariables}
+                />
+              )}
+              {processStatementPanel === "foreach" && (
+                <ForEachStatementBuilder
+                  embedded
+                  state={forEachBuilder}
+                  onStateChange={setForEachBuilder}
+                  submitLabel={isModifyForEach ? "Modify" : "Add"}
+                  onSubmit={submitForEach}
+                  recordNames={processRecordNames}
+                  recordLists={processRecordLists}
+                />
+              )}
+              {processStatementPanel === "delete" && (
+                <DeleteStatementBuilder
+                  embedded
+                  state={deleteBuilder}
+                  onStateChange={setDeleteBuilder}
+                  submitLabel={isModifyDelete ? "Modify" : "Add"}
+                  onSubmit={submitDelete}
+                  formNames={formNames}
+                  knownVariables={knownVariables}
+                />
+              )}
+              {processStatementPanel === "comment" && (
+                <CommentStatementBuilder
+                  embedded
+                  state={commentBuilder}
+                  onStateChange={setCommentBuilder}
+                  submitLabel={isModifyComment ? "Modify" : "Add"}
+                  onSubmit={submitComment}
                 />
               )}
             </div>

@@ -564,6 +564,177 @@ export function buildGetCommand(state: GetBuilderState): TawalaProcessCommand {
   return cmd;
 }
 
+export interface ForEachBuilderState {
+  recordName: string;
+  recordList: string;
+}
+
+export const EMPTY_FOREACH_BUILDER: ForEachBuilderState = {
+  recordName: "",
+  recordList: "",
+};
+
+function walkProcessCommands(
+  nodes: TawalaProcessCommand[] | undefined,
+  visit: (cmd: TawalaProcessCommand) => void,
+): void {
+  if (!nodes) return;
+  for (const cmd of nodes) {
+    visit(cmd);
+    walkProcessCommands(cmd.then as TawalaProcessCommand[] | undefined, visit);
+    walkProcessCommands(cmd.else as TawalaProcessCommand[] | undefined, visit);
+    walkProcessCommands(cmd.do as TawalaProcessCommand[] | undefined, visit);
+  }
+}
+
+/** Record list names declared by Get statements in a process (`Process.RecordSets`). */
+export function collectProcessRecordLists(commands: TawalaProcessCommand[]): string[] {
+  const lists = new Set<string>();
+  walkProcessCommands(commands, (cmd) => {
+    if (cmd.cmd === "get" && cmd.recordList != null) {
+      const name = String(cmd.recordList).trim();
+      if (name) lists.add(name);
+    }
+  });
+  return [...lists].sort((a, b) => a.localeCompare(b));
+}
+
+/** Record loop variable names from ForEach statements in a process (`Process.Records`). */
+export function collectProcessRecordNames(commands: TawalaProcessCommand[]): string[] {
+  const names = new Set<string>();
+  walkProcessCommands(commands, (cmd) => {
+    if (cmd.cmd === "foreach" && cmd.recordName != null) {
+      const name = String(cmd.recordName).trim();
+      if (name) names.add(name);
+    }
+  });
+  return [...names].sort((a, b) => a.localeCompare(b));
+}
+
+/** Legacy `Process.ValidRecordVariableName` — non-empty and not a record-list name. */
+export function isValidRecordVariableName(
+  name: string,
+  recordLists: readonly string[],
+): boolean {
+  const trimmed = name.trim();
+  if (!trimmed) return false;
+  return !recordLists.includes(trimmed);
+}
+
+export function foreachBuilderIsValid(
+  state: ForEachBuilderState,
+  recordLists: readonly string[],
+): boolean {
+  if (!isValidRecordVariableName(state.recordName, recordLists)) return false;
+  const list = state.recordList.trim();
+  return list.length > 0 && recordLists.includes(list);
+}
+
+export function foreachBuilderHasDraft(state: ForEachBuilderState): boolean {
+  return state.recordName.trim() !== "" || state.recordList.trim() !== "";
+}
+
+export function foreachBuilderFromCommand(command: {
+  recordName?: unknown;
+  recordList?: unknown;
+  [key: string]: unknown;
+}): ForEachBuilderState {
+  return {
+    recordName: String(command.recordName ?? ""),
+    recordList: String(command.recordList ?? ""),
+  };
+}
+
+export function buildForEachCommand(
+  state: ForEachBuilderState,
+  existingDo?: TawalaProcessCommand[],
+): TawalaProcessCommand {
+  return {
+    cmd: "foreach",
+    recordName: state.recordName.trim(),
+    recordList: state.recordList.trim(),
+    do: existingDo ?? [],
+  };
+}
+
+export interface DeleteBuilderState {
+  sourceForm: string;
+  whereCombinator: ConditionCombinator;
+  whereRows: ConditionRow[];
+}
+
+export const EMPTY_DELETE_BUILDER: DeleteBuilderState = {
+  sourceForm: "",
+  whereCombinator: "and",
+  whereRows: [{ ...EMPTY_CONDITION_ROW }],
+};
+
+export function deleteBuilderIsValid(
+  state: DeleteBuilderState,
+  formNames: readonly string[],
+  knownVariables: ReadonlySet<string>,
+): boolean {
+  if (!state.sourceForm.trim() || !formNames.includes(state.sourceForm)) return false;
+  return getWhereIsValid(state.whereRows, knownVariables);
+}
+
+export function deleteBuilderHasDraft(state: DeleteBuilderState): boolean {
+  return state.sourceForm.trim() !== "" || conditionRowsHaveDraft(state.whereRows);
+}
+
+export function deleteBuilderFromCommand(command: {
+  form?: unknown;
+  where?: unknown;
+  [key: string]: unknown;
+}): DeleteBuilderState {
+  const { combinator, rows } = parseConditionToRows(
+    command.where as ConditionShape | undefined,
+  );
+  return {
+    sourceForm: String(command.form ?? ""),
+    whereCombinator: combinator,
+    whereRows: rows,
+  };
+}
+
+export function buildDeleteCommand(state: DeleteBuilderState): TawalaProcessCommand {
+  const cmd: TawalaProcessCommand = {
+    cmd: "delete",
+    form: state.sourceForm.trim(),
+  };
+  if (state.whereRows.some((r) => r.field.trim())) {
+    cmd.where = buildConditionFromRows(state.whereCombinator, state.whereRows);
+  }
+  return cmd;
+}
+
+export interface CommentBuilderState {
+  text: string;
+}
+
+export const EMPTY_COMMENT_BUILDER: CommentBuilderState = {
+  text: "",
+};
+
+export function commentBuilderIsValid(state: CommentBuilderState): boolean {
+  return state.text.trim().length > 0;
+}
+
+export function commentBuilderHasDraft(state: CommentBuilderState): boolean {
+  return state.text.trim().length > 0;
+}
+
+export function commentBuilderFromCommand(command: {
+  text?: unknown;
+  [key: string]: unknown;
+}): CommentBuilderState {
+  return { text: String(command.text ?? "") };
+}
+
+export function buildCommentCommand(state: CommentBuilderState): TawalaProcessCommand {
+  return { cmd: "comment", text: state.text.trim() };
+}
+
 /** Build a process command from the Show builder state (active tab). */
 export function buildShowCommand(state: ShowBuilderState): TawalaProcessCommand {
   switch (state.tab) {

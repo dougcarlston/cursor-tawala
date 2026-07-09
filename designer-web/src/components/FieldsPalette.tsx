@@ -1,12 +1,12 @@
 import { useMemo, useState, useSyncExternalStore } from "react";
-import type { TawalaProject } from "@/types/tawala";
+import type { TawalaProcessCommand, TawalaProject } from "@/types/tawala";
 import {
   collectProjectVariables,
   formFieldNames,
   type FieldLeaf,
 } from "@/lib/projectModel";
 import {
-  fieldToken,
+  fieldInsertText,
   fieldLeafAcceptedByActiveTarget,
   getActiveFieldTargetContextSnapshot,
   insertFieldIntoActiveTarget,
@@ -15,6 +15,12 @@ import {
   setFieldDragData,
   subscribeActiveFieldTargetContext,
 } from "@/lib/fieldInsertion";
+import {
+  recordBranchForConditionsForm,
+  recordBranchesAtInsertPath,
+  type RecordPaletteBranch,
+} from "@/lib/processRecordContext";
+import type { InsertPath } from "@/lib/skipInsertPath";
 
 interface FormBranch {
   name: string;
@@ -22,19 +28,27 @@ interface FormBranch {
   startPoint?: boolean;
 }
 
+export interface ProcessRecordPaletteContext {
+  commands: TawalaProcessCommand[];
+  insertPath: InsertPath;
+}
+
 /**
  * Right-hand Fields tree (legacy `FieldsPalette.cs` parity):
- * one branch per form (all forms, field-name leaves) plus a Variables branch.
- * Per-node `[-]`/`[+]` collapse keeps DirtBowl-scale lists usable; leaves are drag
- * sources and double-click inserters that drop `<<name>>` tokens into editors (Phase 2,
- * `fieldInsertion.ts`). Selection highlight tracks the active leaf.
+ * form branches, ForEach record branches (when insertion is inside a loop),
+ * Show Stored Record `Record:` branch, and Variables.
  */
 export function FieldsPalette({
   project,
   activeFormName,
+  processRecordContext = null,
+  conditionsRecordForm = null,
 }: {
   project: TawalaProject;
   activeFormName?: string;
+  processRecordContext?: ProcessRecordPaletteContext | null;
+  /** Show → Stored Record tab: single `Record:` branch for the selected form. */
+  conditionsRecordForm?: string | null;
 }) {
   const branches: FormBranch[] = useMemo(
     () =>
@@ -46,6 +60,19 @@ export function FieldsPalette({
     [project.forms],
   );
 
+  const recordBranches: RecordPaletteBranch[] = useMemo(() => {
+    if (conditionsRecordForm?.trim()) {
+      const branch = recordBranchForConditionsForm(conditionsRecordForm, project);
+      return branch ? [branch] : [];
+    }
+    if (!processRecordContext) return [];
+    return recordBranchesAtInsertPath(
+      processRecordContext.commands,
+      processRecordContext.insertPath,
+      project,
+    );
+  }, [conditionsRecordForm, processRecordContext, project]);
+
   const variables = useMemo(() => collectProjectVariables(project), [project]);
   const activeFieldContext = useSyncExternalStore(
     subscribeActiveFieldTargetContext,
@@ -53,12 +80,10 @@ export function FieldsPalette({
   );
   const variablesDisabled = activeFieldContext.formFieldsOnly === true;
 
-  // Owner Q3: on project open every form folder AND Variables start collapsed so large
-  // projects (DirtBowl) stay scannable. Collapse state is session-only (useState), never
-  // saved to the project file. Toggling in-session persists until the form set changes.
   const defaultCollapsed = () => {
     const initial = new Set<string>();
     for (const form of project.forms) initial.add(`form:${form.name}`);
+    for (const branch of recordBranches) initial.add(`record:${branch.recordName}`);
     initial.add("node:Variables");
     return initial;
   };
@@ -66,12 +91,12 @@ export function FieldsPalette({
   const [collapsed, setCollapsed] = useState<Set<string>>(defaultCollapsed);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  // Reset collapse defaults when the form set changes (e.g. a new project is loaded),
-  // so a freshly opened DirtBowl-scale project isn't rendered fully expanded.
   const formSignature = project.forms.map((f) => f.name).join("|");
-  const [prevSignature, setPrevSignature] = useState(formSignature);
-  if (formSignature !== prevSignature) {
-    setPrevSignature(formSignature);
+  const recordSignature = recordBranches.map((b) => b.recordName).join("|");
+  const treeSignature = `${formSignature}|${recordSignature}|${conditionsRecordForm ?? ""}|${processRecordContext?.insertPath ?? ""}`;
+  const [prevSignature, setPrevSignature] = useState(treeSignature);
+  if (treeSignature !== prevSignature) {
+    setPrevSignature(treeSignature);
     setCollapsed(defaultCollapsed());
     setSelectedKey(null);
   }
@@ -85,7 +110,7 @@ export function FieldsPalette({
       return next;
     });
 
-  if (project.forms.length === 0 && variables.length === 0) {
+  if (project.forms.length === 0 && variables.length === 0 && recordBranches.length === 0) {
     return <p className="hint fields-tree-empty">No forms or variables yet.</p>;
   }
 
@@ -113,6 +138,38 @@ export function FieldsPalette({
                       key={leafKey}
                       leaf={field}
                       formName={branch.name}
+                      selected={selectedKey === leafKey}
+                      onSelect={() => setSelectedKey(leafKey)}
+                    />
+                  );
+                })}
+              </ul>
+            ) : null}
+          </div>
+        );
+      })}
+
+      {recordBranches.map((branch) => {
+        const key = `record:${branch.recordName}`;
+        const open = isOpen(key);
+        return (
+          <div key={key} className="fields-branch fields-record-branch">
+            <BranchHeader
+              label={branch.recordName}
+              open={open}
+              hasChildren={branch.leaves.length > 0}
+              record
+              onToggle={() => toggle(key)}
+            />
+            {open && branch.leaves.length > 0 ? (
+              <ul className="fields-leaf-list">
+                {branch.leaves.map((leaf) => {
+                  const leafKey = `${key}::${leaf.name}`;
+                  return (
+                    <RecordFieldLeafRow
+                      key={leafKey}
+                      label={leaf.name}
+                      insertName={leaf.insertName}
                       selected={selectedKey === leafKey}
                       onSelect={() => setSelectedKey(leafKey)}
                     />
@@ -160,6 +217,7 @@ function BranchHeader({
   hasChildren,
   active,
   star,
+  record,
   onToggle,
 }: {
   label: string;
@@ -167,10 +225,13 @@ function BranchHeader({
   hasChildren: boolean;
   active?: boolean;
   star?: boolean;
+  record?: boolean;
   onToggle: () => void;
 }) {
   return (
-    <div className={`fields-branch-header${active ? " active" : ""}`}>
+    <div
+      className={`fields-branch-header${active ? " active" : ""}${record ? " fields-record-header" : ""}`}
+    >
       <button
         type="button"
         className="fields-tree-toggle"
@@ -208,6 +269,7 @@ function FieldLeafRow({
   );
   const insertName = paletteLeafInsertName(leaf.dragValue, formName, activeFieldContext);
   const canInsert = !disabled && fieldLeafAcceptedByActiveTarget(insertName);
+  const preview = fieldInsertText(insertName, activeFieldContext);
   return (
     <li>
       <span
@@ -220,7 +282,7 @@ function FieldLeafRow({
         title={
           disabled
             ? "Variables cannot be used in this field"
-            : `Drag or double-click to insert ${fieldToken(leaf.dragValue)}`
+            : `Drag or double-click to insert ${preview}`
         }
         onClick={onSelect}
         onDoubleClick={() => {
@@ -249,6 +311,59 @@ function FieldLeafRow({
         }}
       >
         {leaf.name}
+      </span>
+    </li>
+  );
+}
+
+function RecordFieldLeafRow({
+  label,
+  insertName,
+  selected,
+  onSelect,
+}: {
+  label: string;
+  insertName: string;
+  selected: boolean;
+  onSelect: () => void;
+}) {
+  const activeFieldContext = useSyncExternalStore(
+    subscribeActiveFieldTargetContext,
+    getActiveFieldTargetContextSnapshot,
+  );
+  const canInsert = fieldLeafAcceptedByActiveTarget(insertName);
+  const preview = fieldInsertText(insertName, activeFieldContext);
+  return (
+    <li>
+      <span
+        className={`fields-leaf fields-record-leaf${selected ? " selected" : ""}`}
+        role="treeitem"
+        aria-selected={selected}
+        tabIndex={0}
+        draggable
+        title={`Drag or double-click to insert ${preview}`}
+        onClick={onSelect}
+        onDoubleClick={() => {
+          if (!canInsert) return;
+          onSelect();
+          insertFieldIntoActiveTarget(insertName);
+        }}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            onSelect();
+            if (canInsert) insertFieldIntoActiveTarget(insertName);
+          }
+        }}
+        onDragStart={(ev) => {
+          setFieldDragActive(true);
+          setFieldDragData(ev.dataTransfer, insertName);
+        }}
+        onDragEnd={() => {
+          setFieldDragActive(false);
+        }}
+      >
+        {label}
       </span>
     </li>
   );

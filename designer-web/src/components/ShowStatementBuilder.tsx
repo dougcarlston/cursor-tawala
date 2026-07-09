@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { QualifiedFieldInput, FieldTextInput } from "@/components/FieldDropInputs";
+import { setFieldsPaletteConditionsForm } from "@/lib/fieldsPaletteContext";
 import type {
   ConditionCombinator,
   ConditionRow,
@@ -76,6 +78,16 @@ export function ShowStatementBuilder({
   const recordWhereValid =
     !state.recordRows.some((r) => r.field.trim()) ||
     rowsAreValid(state.recordRows, knownVariables);
+
+  useEffect(() => {
+    if (!embedded) return;
+    if (tab === "storedRecord" && state.recordForm.trim()) {
+      setFieldsPaletteConditionsForm(state.recordForm);
+      return () => setFieldsPaletteConditionsForm(null);
+    }
+    setFieldsPaletteConditionsForm(null);
+    return () => setFieldsPaletteConditionsForm(null);
+  }, [embedded, tab, state.recordForm]);
 
   return (
     <div

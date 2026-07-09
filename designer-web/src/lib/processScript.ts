@@ -86,8 +86,12 @@ function formatProcessCommandText(cmd: TawalaProcessCommand): string {
     }
     case "foreach":
       return `ForEach ${cmd.recordName ?? "?"} in ${cmd.recordList ?? "?"}`;
-    case "delete":
-      return `Delete from ${cmd.form ?? "?"}`;
+    case "delete": {
+      const form = cmd.form ?? "?";
+      const cond = cmd.where as ConditionShape | undefined;
+      const where = cond ? ` where ${formatConditionClause(cond)}` : "";
+      return `Delete records from ${form}${where}`;
+    }
     default:
       return String(cmd.cmd ?? "?");
   }

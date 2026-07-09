@@ -53,15 +53,35 @@ export const PROCESS_STATEMENT_PALETTE: ProcessStatementDef[] = [
     group: 4,
     template: { cmd: "foreach", recordName: "Rec", recordList: "Record List 1", do: [] },
   },
-  { label: "Delete", group: 4, template: { cmd: "delete", form: "Form 1", where: [] } },
+  { label: "Delete", group: 4, template: { cmd: "delete", form: "Form 1" } },
   { label: "Set", group: 5, template: { cmd: "set", field: "Completed", value: "Yes" } },
   { label: "Comment", group: 6, template: { cmd: "comment", text: "-- note" } },
 ];
 
 /** Statement types with a property panel in the process window (legacy: palette selects panel). */
-export type ProcessStatementPanel = "none" | "if" | "set" | "show" | "send" | "append" | "get";
+export type ProcessStatementPanel =
+  | "none"
+  | "if"
+  | "set"
+  | "show"
+  | "send"
+  | "append"
+  | "get"
+  | "foreach"
+  | "delete"
+  | "comment";
 
-export const PROCESS_PANEL_LABELS = new Set(["If", "Set", "Show", "Send", "Append", "Get"]);
+export const PROCESS_PANEL_LABELS = new Set([
+  "If",
+  "Set",
+  "Show",
+  "Send",
+  "Append",
+  "Get",
+  "ForEach",
+  "Delete",
+  "Comment",
+]);
 
 export function processPanelKeyForLabel(label: string): ProcessStatementPanel | null {
   const key = label.toLowerCase();
@@ -71,7 +91,10 @@ export function processPanelKeyForLabel(label: string): ProcessStatementPanel | 
     key === "show" ||
     key === "send" ||
     key === "append" ||
-    key === "get"
+    key === "get" ||
+    key === "foreach" ||
+    key === "delete" ||
+    key === "comment"
   ) {
     return key;
   }
@@ -88,5 +111,8 @@ export function processPanelKeyForCommand(
   if (cmd.cmd === "send") return "send";
   if (cmd.cmd === "append") return "append";
   if (cmd.cmd === "get") return "get";
+  if (cmd.cmd === "foreach") return "foreach";
+  if (cmd.cmd === "delete") return "delete";
+  if (cmd.cmd === "comment") return "comment";
   return null;
 }

@@ -1,8 +1,13 @@
+import { useMemo, useSyncExternalStore } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { FormItem, TawalaForm } from "@/types/tawala";
 import { FormItemProperties } from "./FormItemProperties";
 import { FormProperties } from "./FormProperties";
 import { FieldsPalette } from "./FieldsPalette";
+import {
+  getFieldsPaletteConditionsFormSnapshot,
+  subscribeFieldsPaletteConditionsForm,
+} from "@/lib/fieldsPaletteContext";
 
 /** Right sidebar — form / item properties + fields palette (legacy Designer). */
 export function InspectorPanel() {
@@ -15,10 +20,36 @@ export function InspectorPanel() {
   const updateForm = useProjectStore((s) => s.updateForm);
   const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
+  const processInsertPath = useProjectStore((s) => s.processInsertPath);
+
+  const conditionsRecordForm = useSyncExternalStore(
+    subscribeFieldsPaletteConditionsForm,
+    getFieldsPaletteConditionsFormSnapshot,
+  );
 
   const activeWindow = openWindows.find((w) => w.id === activeWindowId);
   const processWindowActive =
     selection.kind === "process" || activeWindow?.kind === "process";
+
+  const activeProcessName =
+    selection.kind === "process" && selection.name
+      ? selection.name
+      : activeWindow?.kind === "process"
+        ? activeWindow.name
+        : null;
+
+  const processRecordContext = useMemo(() => {
+    if (!processWindowActive || !activeProcessName || conditionsRecordForm) return null;
+    const proc = project.processes?.find((p) => p.name === activeProcessName);
+    if (!proc) return null;
+    return { commands: proc.commands ?? [], insertPath: processInsertPath };
+  }, [
+    processWindowActive,
+    activeProcessName,
+    conditionsRecordForm,
+    project.processes,
+    processInsertPath,
+  ]);
 
   const form =
     selection.kind === "form" && selection.name
@@ -81,7 +112,12 @@ export function InspectorPanel() {
       </div>
 
       <div className="panel-title inspector-fields-title">Fields</div>
-      <FieldsPalette project={project} activeFormName={form?.name} />
+      <FieldsPalette
+        project={project}
+        activeFormName={form?.name}
+        processRecordContext={processRecordContext}
+        conditionsRecordForm={conditionsRecordForm}
+      />
     </div>
   );
 }
