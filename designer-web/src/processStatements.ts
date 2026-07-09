@@ -59,13 +59,22 @@ export const PROCESS_STATEMENT_PALETTE: ProcessStatementDef[] = [
 ];
 
 /** Statement types with a property panel in the process window (legacy: palette selects panel). */
-export type ProcessStatementPanel = "none" | "if" | "set" | "show";
+export type ProcessStatementPanel = "none" | "if" | "set" | "show" | "send" | "append" | "get";
 
-export const PROCESS_PANEL_LABELS = new Set(["If", "Set", "Show"]);
+export const PROCESS_PANEL_LABELS = new Set(["If", "Set", "Show", "Send", "Append", "Get"]);
 
 export function processPanelKeyForLabel(label: string): ProcessStatementPanel | null {
   const key = label.toLowerCase();
-  if (key === "if" || key === "set" || key === "show") return key;
+  if (
+    key === "if" ||
+    key === "set" ||
+    key === "show" ||
+    key === "send" ||
+    key === "append" ||
+    key === "get"
+  ) {
+    return key;
+  }
   return null;
 }
 
@@ -76,5 +85,8 @@ export function processPanelKeyForCommand(
   if (cmd.cmd === "if") return "if";
   if (cmd.cmd === "set") return "set";
   if (cmd.cmd === "show" || cmd.cmd === "showDocument" || cmd.cmd === "edit") return "show";
+  if (cmd.cmd === "send") return "send";
+  if (cmd.cmd === "append") return "append";
+  if (cmd.cmd === "get") return "get";
   return null;
 }

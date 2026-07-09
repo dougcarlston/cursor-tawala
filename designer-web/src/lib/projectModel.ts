@@ -1,4 +1,4 @@
-import type { FormItem, TawalaForm, TawalaProcess, TawalaProject } from "@/types/tawala";
+import type { BlankValidation, FormItem, TawalaForm, TawalaProcess, TawalaProject } from "@/types/tawala";
 
 export interface FieldLeaf {
   /** Field reference name (the token used in <<…>> references). */
@@ -17,7 +17,7 @@ export interface LinkedProcess {
 const DEFAULT_BLANK_LETTER = /^[a-z]$/;
 
 /** Field name a FIB blank contributes, mirroring server fibToXml (alternateLabel ?? name). */
-function blankFieldName(item: FormItem, blankIndex: number): string | null {
+export function blankFieldName(item: FormItem, blankIndex: number): string | null {
   if (item.type !== "fib" || !item.blanks) return null;
   const blank = item.blanks[blankIndex];
   if (!blank) return null;
@@ -65,6 +65,31 @@ export function formFieldNames(form: TawalaForm): FieldLeaf[] {
     }
   }
   return leaves;
+}
+
+/** Resolve a `Form:Field` reference to its FIB blank validation, if any. */
+export function lookupFormFieldBlank(
+  project: TawalaProject,
+  qualifiedRef: string,
+): { validation?: BlankValidation } | null {
+  const colon = qualifiedRef.indexOf(":");
+  if (colon < 0) return null;
+  const formName = qualifiedRef.slice(0, colon);
+  const fieldName = qualifiedRef.slice(colon + 1).trim();
+  if (!fieldName) return null;
+  const form = project.forms.find((f) => f.name === formName);
+  if (!form) return null;
+
+  for (const item of form.items) {
+    if (item.type !== "fib" || !item.blanks) continue;
+    for (let i = 0; i < item.blanks.length; i++) {
+      const name = blankFieldName(item, i);
+      if (name && name.localeCompare(fieldName, undefined, { sensitivity: "accent" }) === 0) {
+        return { validation: item.blanks[i].validation };
+      }
+    }
+  }
+  return null;
 }
 
 function isPlainVariableName(value: unknown): value is string {

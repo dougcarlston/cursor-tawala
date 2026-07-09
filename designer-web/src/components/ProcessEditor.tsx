@@ -1,6 +1,9 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
+import { AppendStatementBuilder } from "@/components/AppendStatementBuilder";
+import { GetStatementBuilder } from "@/components/GetStatementBuilder";
 import { IfStatementBuilder } from "@/components/IfStatementBuilder";
 import { ProcessConnectionDialog } from "@/components/ProcessConnectionDialog";
+import { SendStatementBuilder } from "@/components/SendStatementBuilder";
 import { SetStatementBuilder } from "@/components/SetStatementBuilder";
 import { ShowStatementBuilder } from "@/components/ShowStatementBuilder";
 import { SkipScriptView } from "@/components/SkipScriptView";
@@ -15,15 +18,34 @@ import {
   replaceProcessCommandAtPath,
 } from "@/lib/processScript";
 import {
+  EMPTY_APPEND_BUILDER,
+  EMPTY_GET_BUILDER,
   EMPTY_IF_BUILDER,
+  EMPTY_SEND_BUILDER,
   EMPTY_SET_BUILDER,
   EMPTY_SHOW_BUILDER,
+  appendBuilderFromCommand,
+  appendBuilderHasDraft,
+  buildAppendCommand,
+  buildGetCommand,
+  buildSendCommand,
   buildShowCommand,
+  getBuilderFromCommand,
+  getBuilderHasDraft,
   ifBuilderFromCommand,
+  ifBuilderHasDraft,
+  nextRecordListName,
   rowsAreValid,
+  sendBuilderFromCommand,
+  sendBuilderHasDraft,
   setBuilderFromCommand,
+  setBuilderHasDraft,
   showBuilderFromCommand,
+  showBuilderHasDraft,
+  type AppendBuilderState,
+  type GetBuilderState,
   type IfBuilderState,
+  type SendBuilderState,
   type SetBuilderState,
   type ShowBuilderState,
 } from "@/lib/statementBuilders";
@@ -94,6 +116,9 @@ export function ProcessEditor({ processName }: Props) {
   const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
   const [setBuilder, setSetBuilder] = useState<SetBuilderState>(EMPTY_SET_BUILDER);
   const [showBuilder, setShowBuilder] = useState<ShowBuilderState>(EMPTY_SHOW_BUILDER);
+  const [sendBuilder, setSendBuilder] = useState<SendBuilderState>(EMPTY_SEND_BUILDER);
+  const [appendBuilder, setAppendBuilder] = useState<AppendBuilderState>(EMPTY_APPEND_BUILDER);
+  const [getBuilder, setGetBuilder] = useState<GetBuilderState>(EMPTY_GET_BUILDER);
   const [connectionDialogOpen, setConnectionDialogOpen] = useState(false);
   const scriptRef = useRef<HTMLDivElement>(null);
 
@@ -144,11 +169,26 @@ export function ProcessEditor({ processName }: Props) {
     selectedCommand?.cmd === "edit";
   const isModifyShow =
     processStatementPanel === "show" && isShowCommand && selectedProcessCommandPath != null;
+  const isModifySend =
+    processStatementPanel === "send" &&
+    selectedCommand?.cmd === "send" &&
+    selectedProcessCommandPath != null;
+  const isModifyAppend =
+    processStatementPanel === "append" &&
+    selectedCommand?.cmd === "append" &&
+    selectedProcessCommandPath != null;
+  const isModifyGet =
+    processStatementPanel === "get" &&
+    selectedCommand?.cmd === "get" &&
+    selectedProcessCommandPath != null;
   const hasPropertyPanel =
     isActiveProcess &&
     (processStatementPanel === "if" ||
       processStatementPanel === "set" ||
-      processStatementPanel === "show");
+      processStatementPanel === "show" ||
+      processStatementPanel === "send" ||
+      processStatementPanel === "append" ||
+      processStatementPanel === "get");
   const showPaletteHint =
     isActiveProcess && commands.length === 0 && processStatementPanel === "none";
 
@@ -157,7 +197,10 @@ export function ProcessEditor({ processName }: Props) {
     if (
       processStatementPanel === "if" ||
       processStatementPanel === "set" ||
-      processStatementPanel === "show"
+      processStatementPanel === "show" ||
+      processStatementPanel === "send" ||
+      processStatementPanel === "append" ||
+      processStatementPanel === "get"
     )
       return;
     setActiveFieldTarget(null);
@@ -179,21 +222,40 @@ export function ProcessEditor({ processName }: Props) {
       setSetBuilder(setBuilderFromCommand(cmd));
     } else if (processStatementPanel === "show" && isShowCommandType(cmd)) {
       setShowBuilder(showBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "send" && cmd.cmd === "send") {
+      setSendBuilder(sendBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "append" && cmd.cmd === "append") {
+      setAppendBuilder(appendBuilderFromCommand(cmd));
+    } else if (processStatementPanel === "get" && cmd.cmd === "get") {
+      setGetBuilder(getBuilderFromCommand(cmd));
     }
   }, [selectedProcessCommandPath, commands, isActiveProcess, processStatementPanel]);
 
   useEffect(() => {
     if (!isActiveProcess) return;
     if (processStatementPanel === "if" && !selectedProcessCommandPath) {
-      setIfBuilder(EMPTY_IF_BUILDER);
+      setIfBuilder((prev) => (ifBuilderHasDraft(prev) ? prev : EMPTY_IF_BUILDER));
     }
     if (processStatementPanel === "set" && !selectedProcessCommandPath) {
-      setSetBuilder(EMPTY_SET_BUILDER);
+      setSetBuilder((prev) => (setBuilderHasDraft(prev) ? prev : EMPTY_SET_BUILDER));
     }
     if (processStatementPanel === "show" && !selectedProcessCommandPath) {
-      setShowBuilder(EMPTY_SHOW_BUILDER);
+      setShowBuilder((prev) => (showBuilderHasDraft(prev) ? prev : EMPTY_SHOW_BUILDER));
     }
-  }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess]);
+    if (processStatementPanel === "send" && !selectedProcessCommandPath) {
+      setSendBuilder((prev) => (sendBuilderHasDraft(prev) ? prev : EMPTY_SEND_BUILDER));
+    }
+    if (processStatementPanel === "append" && !selectedProcessCommandPath) {
+      setAppendBuilder((prev) => (appendBuilderHasDraft(prev) ? prev : EMPTY_APPEND_BUILDER));
+    }
+    if (processStatementPanel === "get" && !selectedProcessCommandPath) {
+      setGetBuilder((prev) =>
+        getBuilderHasDraft(prev)
+          ? prev
+          : { ...EMPTY_GET_BUILDER, recordList: nextRecordListName(commands) },
+      );
+    }
+  }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess, commands]);
 
   useEffect(() => {
     if (!isActiveProcess) return;
@@ -272,6 +334,33 @@ export function ProcessEditor({ processName }: Props) {
     insertAtArrow(cmd);
   };
 
+  const submitSend = () => {
+    const cmd = buildSendCommand(sendBuilder, knownVariables, false);
+    if (isModifySend && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
+  const submitAppend = () => {
+    const cmd = buildAppendCommand(appendBuilder);
+    if (isModifyAppend && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
+  const submitGet = () => {
+    const cmd = buildGetCommand(getBuilder);
+    if (isModifyGet && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
   const deleteCommandAtPath = (path: string) => {
     const next = deleteProcessCommandAtPath(commands, path);
     setCommands(next);
@@ -335,6 +424,39 @@ export function ProcessEditor({ processName }: Props) {
                   submitLabel={isModifyShow ? "Modify" : "Add"}
                   onSubmit={submitShow}
                   documentNames={documentNames}
+                  formNames={formNames}
+                  knownVariables={knownVariables}
+                />
+              )}
+              {processStatementPanel === "send" && (
+                <SendStatementBuilder
+                  embedded
+                  state={sendBuilder}
+                  onStateChange={setSendBuilder}
+                  submitLabel={isModifySend ? "Modify" : "Add"}
+                  onSubmit={submitSend}
+                  project={project}
+                  documentNames={documentNames}
+                  knownVariables={knownVariables}
+                />
+              )}
+              {processStatementPanel === "append" && (
+                <AppendStatementBuilder
+                  embedded
+                  state={appendBuilder}
+                  onStateChange={setAppendBuilder}
+                  submitLabel={isModifyAppend ? "Modify" : "Add"}
+                  onSubmit={submitAppend}
+                  documentNames={documentNames}
+                />
+              )}
+              {processStatementPanel === "get" && (
+                <GetStatementBuilder
+                  embedded
+                  state={getBuilder}
+                  onStateChange={setGetBuilder}
+                  submitLabel={isModifyGet ? "Modify" : "Add"}
+                  onSubmit={submitGet}
                   formNames={formNames}
                   knownVariables={knownVariables}
                 />

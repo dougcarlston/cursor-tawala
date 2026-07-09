@@ -18,12 +18,18 @@ import {
   moveProcessCommandAtPath,
   getProcessCommandAtPath,
 } from "@/lib/processScript";
-import { insertCommandAtPoint, DEFAULT_PROCESS_INSERT } from "@/lib/processInsert";
+import { insertCommandAtPoint } from "@/lib/processInsert";
 import { ROOT_INSERT_PATH } from "@/lib/skipInsertPath";
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
 import type { ProcessStatementPanel } from "@/processStatements";
 import { processPanelKeyForCommand, processPanelKeyForLabel } from "@/processStatements";
+import {
+  remapProcessUiCache,
+  snapshotProcessUi,
+  transitionProcessUi,
+  type ProcessUiSnapshot,
+} from "@/lib/processUiState";
 
 // Legacy naming (TawalaDesigner Project.AddForm/AddProcess/AddDocument):
 // nodes are "Form 1", "Process 1", "Document 1" (base name + space + number),
@@ -114,33 +120,44 @@ function insertIndexWhenSwitchingEntity(
   return kind === "form" ? insertIndexForForm(project, name) : 0;
 }
 
-function processStateWhenSwitchingEntity(
-  kind: WindowKind,
-  sameEntity: boolean,
-  prevInsertPath: string,
-  prevInsertIndex: number,
-  prevSelectedPath: string | null,
-  prevPanel: ProcessStatementPanel,
-): {
+function pickProcessUi(state: {
   processInsertPath: string;
   processInsertIndex: number;
   selectedProcessCommandPath: string | null;
   processStatementPanel: ProcessStatementPanel;
-} {
-  if (sameEntity && kind === "process") {
-    return {
-      processInsertPath: prevInsertPath,
-      processInsertIndex: prevInsertIndex,
-      selectedProcessCommandPath: prevSelectedPath,
-      processStatementPanel: prevPanel,
-    };
+}): ProcessUiSnapshot {
+  return snapshotProcessUi({
+    processInsertPath: state.processInsertPath,
+    processInsertIndex: state.processInsertIndex,
+    selectedProcessCommandPath: state.selectedProcessCommandPath,
+    processStatementPanel: state.processStatementPanel,
+  });
+}
+
+function selectionWindowTarget(selection: Selection): { kind: WindowKind; name: string } {
+  if (selection.kind === "form" || selection.kind === "process" || selection.kind === "document") {
+    return { kind: selection.kind, name: selection.name ?? "" };
   }
-  return {
-    processInsertPath: DEFAULT_PROCESS_INSERT.path,
-    processInsertIndex: DEFAULT_PROCESS_INSERT.index,
-    selectedProcessCommandPath: null,
-    processStatementPanel: "none",
-  };
+  return { kind: "form", name: "" };
+}
+
+function applyProcessWindowTransition(
+  from: Selection,
+  toKind: WindowKind,
+  toName: string,
+  sameEntity: boolean,
+  processUiByName: Record<string, ProcessUiSnapshot>,
+  current: ProcessUiSnapshot,
+): { processUiByName: Record<string, ProcessUiSnapshot> } & ProcessUiSnapshot {
+  const { cache, ui } = transitionProcessUi(
+    from,
+    toKind,
+    toName,
+    sameEntity,
+    current,
+    processUiByName,
+  );
+  return { processUiByName: cache, ...ui };
 }
 
 interface ProjectState {
@@ -152,6 +169,8 @@ interface ProjectState {
   selectedItemIndex: number | null;
   /** Next Items palette insert lands at this index in the active form (0..items.length). */
   insertBeforeIndex: number;
+  /** Per-process statement panel + insertion state (survives MDI focus changes). */
+  processUiByName: Record<string, ProcessUiSnapshot>;
   /** Process script insertion path for the active process (`root` or `root/0/then`, …). */
   processInsertPath: string;
   /** Index within the insertion path's command array (0 = top of that branch). */
@@ -235,6 +254,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   insertBeforeIndex: 0,
   processInsertPath: ROOT_INSERT_PATH,
   processInsertIndex: 0,
+  processUiByName: {},
   selectedProcessCommandPath: null,
   processStatementPanel: "none",
   credentials: loadCredentials(),
@@ -263,29 +283,29 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       // Preserve the selected form item when the entity is unchanged so re-focusing the
       // window you're editing does not clear the Inspector's field-drop target (Bug fix,
       // July 2026: "worked once then refused"). Switching to a different entity resets it.
-      const { selection, selectedItemIndex, insertBeforeIndex, processInsertPath, processInsertIndex, selectedProcessCommandPath, processStatementPanel, project } = get();
-      const sameEntity = selection.kind === kind && selection.name === name;
+      const s = get();
+      const sameEntity = s.selection.kind === kind && s.selection.name === name;
       set({
         openWindows: openWindows.map((w) =>
           w.id === id ? { ...w, z: topZ, minimized: false } : w,
         ),
         activeWindowId: id,
         selection: { kind, name },
-        selectedItemIndex: sameEntity ? selectedItemIndex : null,
+        selectedItemIndex: sameEntity ? s.selectedItemIndex : null,
         insertBeforeIndex: insertIndexWhenSwitchingEntity(
-          project,
+          s.project,
           kind,
           name,
           sameEntity,
-          insertBeforeIndex,
+          s.insertBeforeIndex,
         ),
-        ...processStateWhenSwitchingEntity(
+        ...applyProcessWindowTransition(
+          s.selection,
           kind,
+          name,
           sameEntity,
-          processInsertPath,
-          processInsertIndex,
-          selectedProcessCommandPath,
-          processStatementPanel,
+          s.processUiByName,
+          pickProcessUi(s),
         ),
         ...tabPatch,
       });
@@ -300,46 +320,43 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       z: topZ,
       minimized: false,
     };
+    const s = get();
     set({
       openWindows: [...openWindows, win],
       activeWindowId: id,
       selection: { kind, name },
       selectedItemIndex: null,
-      insertBeforeIndex: kind === "form" ? insertIndexForForm(get().project, name) : 0,
-      ...processStateWhenSwitchingEntity(kind, false, ROOT_INSERT_PATH, 0, null, "none"),
+      insertBeforeIndex: kind === "form" ? insertIndexForForm(s.project, name) : 0,
+      ...applyProcessWindowTransition(
+        s.selection,
+        kind,
+        name,
+        false,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
       cascadeIndex: cascadeIndex + 1,
       ...tabPatch,
     });
   },
 
   closeWindow: (id) => {
-    const {
-      openWindows,
-      activeWindowId,
-      selection,
-      selectedItemIndex,
-      insertBeforeIndex,
-      processInsertPath,
-      processInsertIndex,
-      selectedProcessCommandPath,
-      processStatementPanel,
-      project,
-    } = get();
+    const s = get();
+    const { openWindows, activeWindowId, selection, selectedItemIndex, insertBeforeIndex, project } =
+      s;
     const next = openWindows.filter((w) => w.id !== id);
     let nextActive = activeWindowId === id ? null : activeWindowId;
     if (nextActive === null && next.length > 0) {
-      // Fall back to the top-most remaining window.
       nextActive = next.reduce((top, w) => (w.z > top.z ? w : top), next[0]).id;
     }
-    // Bug fix (owner Issue 2, July 2026): keep `selection` — which drives the docked
-    // palette (Items/Processes) and every insert target — in sync with the window that
-    // becomes active. Previously close/minimize moved `activeWindowId` to a fallback
-    // window WITHOUT updating `selection`, so closing a Process/Document that fell back
-    // to a Form window left the Items palette greyed even though a Form was active.
     const nextActiveWin = nextActive ? next.find((w) => w.id === nextActive) ?? null : null;
     const sameEntity =
-      !nextActiveWin ||
-      (selection.kind === nextActiveWin.kind && selection.name === nextActiveWin.name);
+      !!nextActiveWin &&
+      selection.kind === nextActiveWin.kind &&
+      selection.name === nextActiveWin.name;
+    const toTarget = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWindowTarget(selection);
     set({
       openWindows: next,
       activeWindowId: nextActive,
@@ -354,39 +371,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             insertBeforeIndex,
           )
         : 0,
-      ...(nextActiveWin
-        ? processStateWhenSwitchingEntity(
-            nextActiveWin.kind,
-            sameEntity,
-            processInsertPath,
-            processInsertIndex,
-            selectedProcessCommandPath,
-            processStatementPanel,
-          )
-        : {
-            processInsertPath: ROOT_INSERT_PATH,
-            processInsertIndex: 0,
-            selectedProcessCommandPath: null,
-            processStatementPanel: "none" as ProcessStatementPanel,
-          }),
-      // Decision 1: reset the cascade once the canvas is empty so the next window
-      // opens back at the origin instead of continuing to march down-right.
+      ...applyProcessWindowTransition(
+        selection,
+        toTarget.kind,
+        toTarget.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
       ...(next.length === 0 ? { cascadeIndex: 0 } : {}),
     });
   },
 
   focusWindow: (id) => {
+    const s = get();
     const {
       openWindows,
       selection,
       selectedItemIndex,
       insertBeforeIndex,
-      processInsertPath,
-      processInsertIndex,
-      selectedProcessCommandPath,
-      processStatementPanel,
       project,
-    } = get();
+    } = s;
     const target = openWindows.find((w) => w.id === id);
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
@@ -407,30 +412,27 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         sameEntity,
         insertBeforeIndex,
       ),
-      ...processStateWhenSwitchingEntity(
+      ...applyProcessWindowTransition(
+        selection,
         target.kind,
+        target.name,
         sameEntity,
-        processInsertPath,
-        processInsertIndex,
-        selectedProcessCommandPath,
-        processStatementPanel,
+        s.processUiByName,
+        pickProcessUi(s),
       ),
     });
   },
 
   minimizeWindow: (id) => {
+    const s = get();
     const {
       openWindows,
       activeWindowId,
       selection,
       selectedItemIndex,
       insertBeforeIndex,
-      processInsertPath,
-      processInsertIndex,
-      selectedProcessCommandPath,
-      processStatementPanel,
       project,
-    } = get();
+    } = s;
     const next = openWindows.map((w) => (w.id === id ? { ...w, minimized: true } : w));
     let nextActive = activeWindowId;
     if (activeWindowId === id) {
@@ -443,8 +445,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     // window that becomes active when the current one is minimized (owner Issue 2).
     const nextActiveWin = nextActive ? next.find((w) => w.id === nextActive) ?? null : null;
     const sameEntity =
-      !nextActiveWin ||
-      (selection.kind === nextActiveWin.kind && selection.name === nextActiveWin.name);
+      !!nextActiveWin &&
+      selection.kind === nextActiveWin.kind &&
+      selection.name === nextActiveWin.name;
+    const toTarget = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWindowTarget(selection);
     set({
       openWindows: next,
       activeWindowId: nextActive,
@@ -459,36 +465,26 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             insertBeforeIndex,
           )
         : 0,
-      ...(nextActiveWin
-        ? processStateWhenSwitchingEntity(
-            nextActiveWin.kind,
-            sameEntity,
-            processInsertPath,
-            processInsertIndex,
-            selectedProcessCommandPath,
-            processStatementPanel,
-          )
-        : {
-            processInsertPath: ROOT_INSERT_PATH,
-            processInsertIndex: 0,
-            selectedProcessCommandPath: null,
-            processStatementPanel: "none" as ProcessStatementPanel,
-          }),
+      ...applyProcessWindowTransition(
+        selection,
+        toTarget.kind,
+        toTarget.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
     });
   },
 
   restoreWindow: (id) => {
+    const s = get();
     const {
       openWindows,
       selection,
       selectedItemIndex,
       insertBeforeIndex,
-      processInsertPath,
-      processInsertIndex,
-      selectedProcessCommandPath,
-      processStatementPanel,
       project,
-    } = get();
+    } = s;
     const target = openWindows.find((w) => w.id === id);
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
@@ -507,13 +503,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         sameEntity,
         insertBeforeIndex,
       ),
-      ...processStateWhenSwitchingEntity(
+      ...applyProcessWindowTransition(
+        selection,
         target.kind,
+        target.name,
         sameEntity,
-        processInsertPath,
-        processInsertIndex,
-        selectedProcessCommandPath,
-        processStatementPanel,
+        s.processUiByName,
+        pickProcessUi(s),
       ),
     });
   },
@@ -534,6 +530,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       insertBeforeIndex: 0,
       processInsertPath: ROOT_INSERT_PATH,
       processInsertIndex: 0,
+      processUiByName: {},
       selectedProcessCommandPath: null,
       processStatementPanel: "none",
       openWindows: [],
@@ -541,32 +538,25 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       cascadeIndex: 0,
     }),
   setSelection: (selection) => {
-    const { project, processInsertPath, processInsertIndex, selectedProcessCommandPath, processStatementPanel } =
-      get();
+    const s = get();
     const sameEntity =
-      get().selection.kind === selection.kind && get().selection.name === selection.name;
+      s.selection.kind === selection.kind && s.selection.name === selection.name;
+    const toTarget = selectionWindowTarget(selection);
     set({
       selection,
       selectedItemIndex: null,
       insertBeforeIndex:
         selection.kind === "form" && selection.name
-          ? insertIndexForForm(project, selection.name)
+          ? insertIndexForForm(s.project, selection.name)
           : 0,
-      ...(selection.kind === "process"
-        ? processStateWhenSwitchingEntity(
-            "process",
-            sameEntity,
-            processInsertPath,
-            processInsertIndex,
-            selectedProcessCommandPath,
-            processStatementPanel,
-          )
-        : {
-            processInsertPath: ROOT_INSERT_PATH,
-            processInsertIndex: 0,
-            selectedProcessCommandPath: null,
-            processStatementPanel: "none" as ProcessStatementPanel,
-          }),
+      ...applyProcessWindowTransition(
+        s.selection,
+        toTarget.kind,
+        toTarget.name,
+        sameEntity && toTarget.kind === "process",
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
     });
   },
   setEditorTab: (editorTab) => set({ editorTab }),
@@ -755,6 +745,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       insertBeforeIndex: 0,
       processInsertPath: ROOT_INSERT_PATH,
       processInsertIndex: 0,
+      processUiByName: {},
       selectedProcessCommandPath: null,
       processStatementPanel: "none",
       openWindows: [],
@@ -905,7 +896,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   renameProcess: (oldName, newName) => {
-    const { project, selection, openWindows, activeWindowId } = get();
+    const { project, selection, openWindows, activeWindowId, processUiByName } = get();
     const processes = project.processes ?? [];
     const trimmed = newName.trim();
     if (!trimmed) return false;
@@ -933,6 +924,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: selectionMoved ? { kind: "process", name: trimmed } : selection,
       statusMessage: `Renamed process to ${trimmed}`,
       openWindows: remapWindows(openWindows, "process", oldName, trimmed),
+      processUiByName: remapProcessUiCache(processUiByName, oldName, trimmed),
       activeWindowId:
         activeWindowId === oldWinId ? windowId("process", trimmed) : activeWindowId,
     });
@@ -1122,6 +1114,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       insertBeforeIndex: 0,
       processInsertPath: ROOT_INSERT_PATH,
       processInsertIndex: 0,
+      processUiByName: {},
       selectedProcessCommandPath: null,
       processStatementPanel: "none",
       openWindows: [],

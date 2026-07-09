@@ -36,6 +36,17 @@ function formatConditionClause(cond: ConditionShape): string {
   return `${field} ${opLabel} ${JSON.stringify(value)}`;
 }
 
+function formatSendRecipient(to: unknown): string {
+  if (to == null) return "?";
+  if (typeof to === "string") return to;
+  if (typeof to === "object" && !Array.isArray(to)) {
+    const addr = to as { fieldRef?: string; literal?: string };
+    if (addr.fieldRef) return addr.fieldRef;
+    if (addr.literal != null) return String(addr.literal);
+  }
+  return "?";
+}
+
 function formatProcessCommandText(cmd: TawalaProcessCommand): string {
   switch (cmd.cmd) {
     case "comment":
@@ -57,13 +68,21 @@ function formatProcessCommandText(cmd: TawalaProcessCommand): string {
       const where = cond ? ` where ${formatConditionClause(cond)}` : "";
       return `Show stored record from ${form}${where}`;
     }
-    case "send":
-      return `Send Document ${cmd.document ?? "?"} to ${cmd.to ?? "?"}`;
+    case "send": {
+      const body = cmd.body as { document?: string; reset?: boolean } | undefined;
+      const doc = body?.document ?? String(cmd.document ?? "?");
+      const to = formatSendRecipient(cmd.to);
+      const reset =
+        body?.reset === true || cmd.reset === true ? " and reset Document" : "";
+      return `Send Document ${doc} to ${to}${reset}`;
+    }
     case "append":
       return `Append ${cmd.appendage ?? "?"} to ${cmd.document ?? "?"}`;
     case "get": {
       const forms = (cmd.sourceForms as string[] | undefined) ?? [];
-      return `Get ${cmd.recordList ?? "?"} from ${forms.length ? forms.join(", ") : "?"}`;
+      const cond = cmd.where as ConditionShape | undefined;
+      const where = cond ? ` where ${formatConditionClause(cond)}` : "";
+      return `Get ${cmd.recordList ?? "?"} from ${forms.length ? forms.join(", ") : "?"}${where}`;
     }
     case "foreach":
       return `ForEach ${cmd.recordName ?? "?"} in ${cmd.recordList ?? "?"}`;
