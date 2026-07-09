@@ -13,6 +13,8 @@
  */
 
 export const FIELD_DRAG_MIME = "application/x-tawala-field";
+/** Form branch name when a field leaf is dragged from under a form folder (not Variables). */
+export const FIELD_DRAG_FORM_MIME = "application/x-tawala-field-form";
 
 /** Legacy `<<FieldReference>>` token wrapping a field/variable name. */
 export function fieldToken(name: string): string {
@@ -20,8 +22,15 @@ export function fieldToken(name: string): string {
 }
 
 /** Populate a drag DataTransfer for a field/variable leaf. */
-export function setFieldDragData(dataTransfer: DataTransfer, name: string): void {
+export function setFieldDragData(
+  dataTransfer: DataTransfer,
+  name: string,
+  formName?: string,
+): void {
   dataTransfer.setData(FIELD_DRAG_MIME, name);
+  if (formName) {
+    dataTransfer.setData(FIELD_DRAG_FORM_MIME, formName);
+  }
   dataTransfer.setData("text/plain", fieldToken(name));
   dataTransfer.effectAllowed = "copy";
 }
@@ -40,6 +49,88 @@ export function readFieldDragName(dataTransfer: DataTransfer | null): string | n
   const text = dataTransfer.getData("text/plain");
   const match = text.match(/^<<(.+)>>$/);
   return match ? match[1] : null;
+}
+
+/** Form folder name carried on a Fields-tree drag, when present. */
+export function readFieldDragFormName(dataTransfer: DataTransfer | null): string | null {
+  if (!dataTransfer) return null;
+  const form = dataTransfer.getData(FIELD_DRAG_FORM_MIME);
+  return form || null;
+}
+
+/** True when drag carries form-branch context (types-only check for `dragover`). */
+export function hasFieldDragFormContext(dataTransfer: DataTransfer | null): boolean {
+  if (!dataTransfer) return false;
+  return Array.from(dataTransfer.types).includes(FIELD_DRAG_FORM_MIME);
+}
+
+/**
+ * Legacy `Form:Field` for process/skip If conditions — qualify bare leaves from a form branch.
+ * Variables and already-qualified names pass through unchanged.
+ */
+export function qualifyPaletteFieldName(name: string, formName?: string | null): string {
+  const trimmed = name.trim();
+  if (!trimmed || trimmed.includes(":") || !formName) return trimmed;
+  return `${formName}:${trimmed}`;
+}
+
+/** Resolve a palette leaf for the active editor target (double-click insert). */
+export function paletteLeafInsertName(
+  leafName: string,
+  formName: string | undefined,
+  _target: FieldTargetContext,
+): string {
+  return qualifyPaletteFieldName(leafName, formName);
+}
+
+/** Resolve a dragged field for a drop target (qualifies bare form leaves when needed). */
+export function readFieldDragNameForTarget(
+  dataTransfer: DataTransfer | null,
+  _target: FieldTargetContext,
+): string | null {
+  const name = readFieldDragName(dataTransfer);
+  if (!name) return null;
+  return qualifyPaletteFieldName(name, readFieldDragFormName(dataTransfer));
+}
+
+/** Text to insert after a drop or double-click — bare `Form:Field` or `<<Form:Field>>`. */
+export function fieldInsertText(
+  qualifiedName: string,
+  target: FieldTargetContext,
+): string {
+  return target.bare ? qualifiedName : fieldToken(qualifiedName);
+}
+
+/** Whether `name` may insert into a target with the given options. */
+export function fieldAcceptedByTarget(
+  name: string,
+  target: FieldTargetContext,
+): boolean {
+  if (target.formFieldsOnly && !isFormFieldReference(name)) return false;
+  if (
+    target.knownVariables &&
+    !isValidIfConditionField(name, target.knownVariables)
+  ) {
+    return false;
+  }
+  return true;
+}
+
+/**
+ * Whether an in-flight field drag may drop on a target. During `dragover`, bare field names
+ * and form MIME may be present while `getData` is still unreadable — accept those optimistically.
+ */
+export function fieldDragAcceptedByTarget(
+  dataTransfer: DataTransfer,
+  target: FieldTargetContext,
+): boolean {
+  const name = readFieldDragName(dataTransfer);
+  if (!name) return true;
+  const resolved = qualifyPaletteFieldName(name, readFieldDragFormName(dataTransfer));
+  if (fieldAcceptedByTarget(resolved, target)) return true;
+  // During `dragover`, form MIME may be present while bare names are still unreadable.
+  if (!name.includes(":") && hasFieldDragFormContext(dataTransfer)) return true;
+  return false;
 }
 
 /** Insert `<<token>>` into an input/textarea at the caret, replacing any selection. */
@@ -159,14 +250,7 @@ export function isValidIfConditionField(
 /** Whether a Fields-panel leaf may insert into the active target. */
 export function fieldLeafAcceptedByActiveTarget(name: string): boolean {
   if (!activeInserter) return false;
-  if (activeTargetContext.formFieldsOnly && !isFormFieldReference(name)) return false;
-  if (
-    activeTargetContext.knownVariables &&
-    !isValidIfConditionField(name, activeTargetContext.knownVariables)
-  ) {
-    return false;
-  }
-  return true;
+  return fieldAcceptedByTarget(name, activeTargetContext);
 }
 
 /** Fire the active editor's inserter (double-click). Returns false when nothing is focused. */

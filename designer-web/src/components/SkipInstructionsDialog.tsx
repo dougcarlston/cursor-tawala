@@ -1,18 +1,22 @@
 import { useMemo, useRef, useState } from "react";
 import type { FormItem, SkipCommand, TawalaForm, TawalaProject } from "@/types/tawala";
-import { FieldTextInput, QualifiedFieldInput } from "@/components/FieldDropInputs";
+import { IfStatementBuilder } from "@/components/IfStatementBuilder";
+import { SetStatementBuilder } from "@/components/SetStatementBuilder";
+import { FieldTextInput } from "@/components/FieldDropInputs";
 import { SkipScriptView } from "@/components/SkipScriptView";
 import { useDraggableDialog } from "@/hooks/useDraggableDialog";
 import { buildScriptLines, findInsertionLineIndex, formatInsertPathLabel } from "@/lib/skipScript";
 import { getCommandsAtInsertPath } from "@/lib/skipInsertPath";
-import { isValidIfConditionField, setActiveFieldTarget } from "@/lib/fieldInsertion";
+import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { collectKnownVariables } from "@/lib/projectModel";
 import {
-  SKIP_OPERATORS,
-  SKIP_OPERATOR_LABELS,
-  UNARY_SKIP_OPERATORS,
-  buildConditionFromRows,
-} from "@/lib/skipSummary";
+  EMPTY_IF_BUILDER,
+  EMPTY_SET_BUILDER,
+  setBuilderIsValid,
+  type IfBuilderState,
+  type SetBuilderState,
+} from "@/lib/statementBuilders";
+import { buildConditionFromRows } from "@/lib/skipSummary";
 
 interface Props {
   projectName: string;
@@ -20,14 +24,6 @@ interface Props {
   form: TawalaForm;
   commands: SkipCommand[];
   onSave: (commands: SkipCommand[]) => void;
-}
-
-type Combinator = "and" | "or";
-
-interface ConditionRow {
-  field: string;
-  op: string;
-  value: string;
 }
 
 const SKIP_STATEMENT_BUTTONS = [
@@ -56,18 +52,6 @@ function skipDestinations(items: FormItem[]): { value: string; label: string }[]
   return dests;
 }
 
-function rowsAreValid(rows: ConditionRow[], knownVariables: ReadonlySet<string>): boolean {
-  return rows.every((r) => {
-    if (!isValidIfConditionField(r.field, knownVariables)) return false;
-    if (UNARY_SKIP_OPERATORS.has(r.op)) return true;
-    return r.value.trim().length > 0;
-  });
-}
-
-function expressionHasArithmetic(value: string): boolean {
-  return /[+\-*/]/.test(value);
-}
-
 /**
  * Edit Skip Instructions — mini process editor (legacy SkipInstructionsDialog).
  * Layout from owner screenshots (July 2026): Statements palette, If builder, script + insertion arrow.
@@ -84,16 +68,9 @@ export function SkipInstructionsDialog({
   );
   const [insertPath, setInsertPath] = useState("root");
   const [panel, setPanel] = useState<PanelMode>("none");
-
-  const [combinator, setCombinator] = useState<Combinator>("and");
-  const [conditionRows, setConditionRows] = useState<ConditionRow[]>([
-    { field: "", op: "isBlank", value: "" },
-  ]);
-  const [hasElse, setHasElse] = useState(false);
+  const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
+  const [setBuilder, setSetBuilder] = useState<SetBuilderState>(EMPTY_SET_BUILDER);
   const [skipToDest, setSkipToDest] = useState("__EndOfForm__");
-  const [setField, setSetField] = useState("");
-  const [setValue, setSetValue] = useState("");
-  const [setArithmeticAsText, setSetArithmeticAsText] = useState(false);
   const [commentText, setCommentText] = useState("");
 
   const scriptRef = useRef<HTMLDivElement>(null);
@@ -110,11 +87,7 @@ export function SkipInstructionsDialog({
     [scriptLines, insertPath],
   );
   const isEmpty = commands.length === 0;
-  const canAddIf = rowsAreValid(conditionRows, knownVariables);
-  const canAddSet = setField.trim().length > 0 && setValue.trim().length > 0;
   const canAddComment = commentText.trim().length > 0;
-  const setArithmeticEnabled = expressionHasArithmetic(setValue);
-
   const insertPathLabel = formatInsertPathLabel(insertPath);
 
   const appendToTarget = (cmd: SkipCommand) => {
@@ -127,20 +100,18 @@ export function SkipInstructionsDialog({
     });
   };
 
-  /** Collapse upper builder when the same Statements palette button is clicked again. */
   const closeBuilderPanel = () => {
     setPanel("none");
     setActiveFieldTarget(null);
   };
 
   const addIfBlock = () => {
-    if (!canAddIf) return;
-    const condition = buildConditionFromRows(combinator, conditionRows);
+    const condition = buildConditionFromRows(ifBuilder.combinator, ifBuilder.rows);
     const ifCmd: SkipCommand = {
       cmd: "if",
       condition,
       then: [],
-      ...(hasElse ? { else: [] } : {}),
+      ...(ifBuilder.hasElse ? { else: [] } : {}),
     };
     const nextCommands = structuredClone(commands);
     const target = getCommandsAtInsertPath(nextCommands, insertPath);
@@ -152,18 +123,14 @@ export function SkipInstructionsDialog({
     setInsertPath(thenPath);
   };
 
-  const addSkipTo = () => {
-    appendToTarget({ cmd: "skip", to: skipToDest });
-  };
-
   const addSet = () => {
-    if (!canAddSet) return;
+    if (!setBuilderIsValid(setBuilder)) return;
     const cmd: SkipCommand = {
       cmd: "set",
-      field: setField.trim(),
-      value: setValue,
+      field: setBuilder.field.trim(),
+      value: setBuilder.value,
     };
-    if (setArithmeticAsText) {
+    if (setBuilder.arithmeticAsText) {
       cmd.arithmeticAsText = true;
     }
     appendToTarget(cmd);
@@ -180,25 +147,11 @@ export function SkipInstructionsDialog({
       return;
     }
     setPanel(mode);
+    if (mode === "if") setIfBuilder(EMPTY_IF_BUILDER);
+    if (mode === "set") setSetBuilder(EMPTY_SET_BUILDER);
     if (mode === "skipTo" && destinations.length) {
       setSkipToDest(destinations[0].value);
     }
-  };
-
-  const updateRow = (index: number, patch: Partial<ConditionRow>) => {
-    setConditionRows((rows) => rows.map((r, i) => (i === index ? { ...r, ...patch } : r)));
-  };
-
-  const addRowAfter = (index: number) => {
-    setConditionRows((rows) => {
-      const next = [...rows];
-      next.splice(index + 1, 0, { field: "", op: "isBlank", value: "" });
-      return next;
-    });
-  };
-
-  const removeRow = (index: number) => {
-    setConditionRows((rows) => (rows.length <= 1 ? rows : rows.filter((_, j) => j !== index)));
   };
 
   return (
@@ -245,98 +198,13 @@ export function SkipInstructionsDialog({
 
           <div className="skip-dialog-main">
             {panel === "if" && (
-              <div className="skip-statement-panel skip-if-builder">
-                <div className="skip-statement-panel-tab">If</div>
-                <div className="skip-statement-panel-body">
-                  <p className="skip-if-intro">
-                    If{" "}
-                    {conditionRows.length > 1 ? (
-                      <>
-                        <select
-                          value={combinator}
-                          onChange={(e) => setCombinator(e.target.value as Combinator)}
-                          aria-label="Condition combinator"
-                          className="skip-combinator"
-                        >
-                          <option value="and">ALL</option>
-                          <option value="or">ANY</option>
-                        </select>{" "}
-                        of the following conditions are true, execute the first set of commands:
-                      </>
-                    ) : (
-                      <>the following condition is true, execute the first set of commands:</>
-                    )}
-                  </p>
-                  {conditionRows.map((row, i) => (
-                    <div key={i} className="skip-if-row">
-                      <QualifiedFieldInput
-                        className="skip-if-field"
-                        placeholder="Form:Field"
-                        knownVariables={knownVariables}
-                        value={row.field}
-                        onValueChange={(v) => updateRow(i, { field: v })}
-                      />
-                      <select
-                        value={row.op}
-                        onChange={(e) => updateRow(i, { op: e.target.value })}
-                        aria-label="Operator"
-                        className="skip-if-operator"
-                      >
-                        {SKIP_OPERATORS.map((op) => (
-                          <option key={op} value={op}>
-                            {SKIP_OPERATOR_LABELS[op]}
-                          </option>
-                        ))}
-                      </select>
-                      {!UNARY_SKIP_OPERATORS.has(row.op) ? (
-                        <FieldTextInput
-                          className="skip-if-value"
-                          placeholder="Value"
-                          value={row.value}
-                          onValueChange={(v) => updateRow(i, { value: v })}
-                        />
-                      ) : (
-                        <span className="skip-if-value-placeholder" aria-hidden />
-                      )}
-                      <button
-                        type="button"
-                        className="skip-if-row-btn"
-                        title="Add condition row"
-                        onClick={() => addRowAfter(i)}
-                      >
-                        +
-                      </button>
-                      <button
-                        type="button"
-                        className="skip-if-row-btn"
-                        title="Remove condition row"
-                        disabled={conditionRows.length <= 1}
-                        onClick={() => removeRow(i)}
-                      >
-                        −
-                      </button>
-                    </div>
-                  ))}
-                  <label className="skip-if-else">
-                    <input
-                      type="checkbox"
-                      checked={hasElse}
-                      onChange={(e) => setHasElse(e.target.checked)}
-                    />
-                    Otherwise execute second set of commands
-                  </label>
-                  <div className="skip-if-add-row">
-                    <button
-                      type="button"
-                      className="skip-add-btn"
-                      disabled={!canAddIf}
-                      onClick={addIfBlock}
-                    >
-                      Add ↓
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <IfStatementBuilder
+                knownVariables={knownVariables}
+                state={ifBuilder}
+                onStateChange={setIfBuilder}
+                submitLabel="Add ↓"
+                onSubmit={addIfBlock}
+              />
             )}
 
             {panel === "skipTo" && (
@@ -356,7 +224,11 @@ export function SkipInstructionsDialog({
                       ))}
                     </select>
                   </label>
-                  <button type="button" className="skip-add-btn" onClick={addSkipTo}>
+                  <button
+                    type="button"
+                    className="skip-add-btn"
+                    onClick={() => appendToTarget({ cmd: "skip", to: skipToDest })}
+                  >
                     Add ↓
                   </button>
                 </div>
@@ -364,50 +236,13 @@ export function SkipInstructionsDialog({
             )}
 
             {panel === "set" && (
-              <div className="skip-statement-panel skip-set-builder">
-                <div className="skip-statement-panel-tab">Set</div>
-                <div className="skip-statement-panel-body skip-set-body">
-                  <div className="skip-set-row">
-                    <QualifiedFieldInput
-                      className="skip-set-field"
-                      placeholder="Form:Field or Variable Name"
-                      value={setField}
-                      onValueChange={setSetField}
-                    />
-                    <span className="skip-set-to">to</span>
-                    <FieldTextInput
-                      className="skip-set-expression"
-                      placeholder="Value or expression"
-                      value={setValue}
-                      onValueChange={(v) => {
-                        setSetValue(v);
-                        if (!expressionHasArithmetic(v)) setSetArithmeticAsText(false);
-                      }}
-                    />
-                  </div>
-                  <label
-                    className={`skip-set-arithmetic${setArithmeticEnabled ? "" : " disabled"}`}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={setArithmeticAsText}
-                      disabled={!setArithmeticEnabled}
-                      onChange={(e) => setSetArithmeticAsText(e.target.checked)}
-                    />
-                    Treat arithmetic expression as text (do not interpret +, -, * or / as math)
-                  </label>
-                  <div className="skip-set-add-row">
-                    <button
-                      type="button"
-                      className="skip-add-btn"
-                      disabled={!canAddSet}
-                      onClick={addSet}
-                    >
-                      Add ↓
-                    </button>
-                  </div>
-                </div>
-              </div>
+              <SetStatementBuilder
+                state={setBuilder}
+                onStateChange={setSetBuilder}
+                submitLabel="Add ↓"
+                onSubmit={addSet}
+                knownVariables={knownVariables}
+              />
             )}
 
             {panel === "comment" && (

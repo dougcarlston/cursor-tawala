@@ -174,3 +174,37 @@ export function linkedProcessesForForm(
   }
   return links;
 }
+
+export interface ProcessFormLink {
+  formName: string;
+  role: "Pre" | "Post";
+}
+
+/** Forms that reference a process as Pre- or Post-process. */
+export function formLinksForProcess(
+  project: TawalaProject,
+  processName: string,
+): ProcessFormLink[] {
+  const links: ProcessFormLink[] = [];
+  for (const form of project.forms) {
+    if (form.preProcess === processName) {
+      links.push({ formName: form.name, role: "Pre" });
+    }
+    if (form.process === processName) {
+      links.push({ formName: form.name, role: "Post" });
+    }
+  }
+  return links;
+}
+
+/** Legacy auto-name when attaching a new linked process (`Pre-Process1`, `Post-Process2`, …). */
+export function nextLinkedProcessName(
+  role: "Pre" | "Post",
+  processes: TawalaProcess[] | undefined,
+): string {
+  const prefix = role === "Pre" ? "Pre-Process" : "Post-Process";
+  const names = new Set((processes ?? []).map((p) => p.name));
+  let n = 1;
+  while (names.has(`${prefix}${n}`)) n++;
+  return `${prefix}${n}`;
+}

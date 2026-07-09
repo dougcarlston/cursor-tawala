@@ -8,11 +8,17 @@ import { FieldsPalette } from "./FieldsPalette";
 export function InspectorPanel() {
   const project = useProjectStore((s) => s.project);
   const selection = useProjectStore((s) => s.selection);
+  const activeWindowId = useProjectStore((s) => s.activeWindowId);
+  const openWindows = useProjectStore((s) => s.openWindows);
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const updateFormItem = useProjectStore((s) => s.updateFormItem);
   const updateForm = useProjectStore((s) => s.updateForm);
   const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
+
+  const activeWindow = openWindows.find((w) => w.id === activeWindowId);
+  const processWindowActive =
+    selection.kind === "process" || activeWindow?.kind === "process";
 
   const form =
     selection.kind === "form" && selection.name
@@ -21,8 +27,6 @@ export function InspectorPanel() {
 
   const selectedItem =
     form && selectedItemIndex !== null ? form.items[selectedItemIndex] : undefined;
-
-  const processNames = (project.processes ?? []).map((p) => p.name);
 
   const patchItem = (patch: Partial<FormItem>) => {
     if (!form || selectedItemIndex === null || !selectedItem) return;
@@ -38,7 +42,12 @@ export function InspectorPanel() {
     <div className="inspector-panel">
       <div className="panel-title">Properties</div>
       <div className="inspector-properties">
-        {selectedItem ? (
+        {processWindowActive ? (
+          <p className="hint inspector-process-placeholder">
+            Properties for statements appear in the Process window. Use the yellow connection
+            banner there to attach or detach this process as Pre- or Post-process to a form.
+          </p>
+        ) : selectedItem ? (
           <>
             <div className="inspector-item-header">
               <span>
@@ -56,7 +65,7 @@ export function InspectorPanel() {
             <FormItemProperties item={selectedItem} onChange={patchItem} />
           </>
         ) : form ? (
-          <FormProperties form={form} processNames={processNames} onChange={patchForm} />
+          <FormProperties form={form} onChange={patchForm} />
         ) : (
           <p className="hint">Select a form in Project Explorer.</p>
         )}

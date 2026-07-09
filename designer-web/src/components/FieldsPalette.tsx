@@ -10,6 +10,7 @@ import {
   fieldLeafAcceptedByActiveTarget,
   getActiveFieldTargetContextSnapshot,
   insertFieldIntoActiveTarget,
+  paletteLeafInsertName,
   setFieldDragActive,
   setFieldDragData,
   subscribeActiveFieldTargetContext,
@@ -111,6 +112,7 @@ export function FieldsPalette({
                     <FieldLeafRow
                       key={leafKey}
                       leaf={field}
+                      formName={branch.name}
                       selected={selectedKey === leafKey}
                       onSelect={() => setSelectedKey(leafKey)}
                     />
@@ -189,16 +191,23 @@ function BranchHeader({
 
 function FieldLeafRow({
   leaf,
+  formName,
   selected,
   disabled,
   onSelect,
 }: {
   leaf: FieldLeaf;
+  formName?: string;
   selected: boolean;
   disabled?: boolean;
   onSelect: () => void;
 }) {
-  const canInsert = !disabled && fieldLeafAcceptedByActiveTarget(leaf.dragValue);
+  const activeFieldContext = useSyncExternalStore(
+    subscribeActiveFieldTargetContext,
+    getActiveFieldTargetContextSnapshot,
+  );
+  const insertName = paletteLeafInsertName(leaf.dragValue, formName, activeFieldContext);
+  const canInsert = !disabled && fieldLeafAcceptedByActiveTarget(insertName);
   return (
     <li>
       <span
@@ -217,14 +226,14 @@ function FieldLeafRow({
         onDoubleClick={() => {
           if (!canInsert) return;
           onSelect();
-          insertFieldIntoActiveTarget(leaf.dragValue);
+          insertFieldIntoActiveTarget(insertName);
         }}
         onKeyDown={(e) => {
           if (disabled) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
             onSelect();
-            insertFieldIntoActiveTarget(leaf.dragValue);
+            if (canInsert) insertFieldIntoActiveTarget(insertName);
           }
         }}
         onDragStart={(ev) => {
@@ -233,7 +242,7 @@ function FieldLeafRow({
             return;
           }
           setFieldDragActive(true);
-          setFieldDragData(ev.dataTransfer, leaf.dragValue);
+          setFieldDragData(ev.dataTransfer, leaf.dragValue, formName);
         }}
         onDragEnd={() => {
           setFieldDragActive(false);

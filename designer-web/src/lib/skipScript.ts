@@ -3,12 +3,14 @@ import { SKIP_OPERATOR_LABELS, UNARY_SKIP_OPERATORS, skipDestinationLabel } from
 
 export type ScriptLineType =
   | "if-header"
+  | "foreach-header"
   | "block-open"
   | "block-close"
   | "otherwise"
   | "set"
   | "skip"
-  | "comment";
+  | "comment"
+  | "command";
 
 export interface ScriptLine {
   /** Command path (`root/0/then/1`) or null for structural lines. */
@@ -231,12 +233,14 @@ export function replaceCommandAtPath(
 /** Human-readable label for an insertion zone path (`root/0/else`). */
 export function formatInsertPathLabel(insertPath: string): string {
   if (insertPath === "root") return "top level";
-  const m = /^root\/(.+)\/(then|else)$/.exec(insertPath);
+  const m = /^root\/(.+)\/(then|else|do)$/.exec(insertPath);
   if (!m) return insertPath;
-  const branchLabel = m[2] === "then" ? "then branch" : "else branch";
-  const topIfIndex = Number(m[1].split("/")[0]);
-  if (Number.isNaN(topIfIndex)) return branchLabel;
-  return `${branchLabel} of If #${topIfIndex + 1}`;
+  const branchLabel =
+    m[2] === "then" ? "then branch" : m[2] === "else" ? "else branch" : "ForEach body";
+  const topIndex = Number(m[1].split("/")[0]);
+  if (Number.isNaN(topIndex)) return branchLabel;
+  const stmtLabel = m[2] === "do" ? "ForEach" : "If";
+  return `${branchLabel} of ${stmtLabel} #${topIndex + 1}`;
 }
 
 /** Line index after which the insertion arrow should appear. */

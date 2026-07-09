@@ -5,12 +5,13 @@ import {
   type TextareaHTMLAttributes,
 } from "react";
 import {
-  fieldToken,
+  fieldDragAcceptedByTarget,
+  fieldAcceptedByTarget,
+  fieldInsertText,
   hasFieldDrag,
   insertTokenAtCaret,
-  isFormFieldReference,
-  isValidIfConditionField,
   readFieldDragName,
+  readFieldDragNameForTarget,
   setActiveFieldTarget,
   type FieldTargetContext,
 } from "@/lib/fieldInsertion";
@@ -57,57 +58,94 @@ export function NameTextInput({
  */
 interface FieldDropOptions extends FieldTargetContext {}
 
+function targetContext(options: FieldDropOptions): FieldTargetContext {
+  return {
+    bare: options.bare,
+    formFieldsOnly: options.formFieldsOnly,
+    knownVariables: options.knownVariables,
+  };
+}
+
 function useFieldDropTarget(
   onValueChange: (next: string) => void,
   options: FieldDropOptions = {},
 ) {
   const [dragOver, setDragOver] = useState(false);
-  const insertValue = (name: string) => (options.bare ? name : fieldToken(name));
-  const acceptsField = (name: string) => {
-    if (options.formFieldsOnly && !isFormFieldReference(name)) return false;
-    if (
-      options.knownVariables &&
-      !isValidIfConditionField(name, options.knownVariables)
-    ) {
+  const context = targetContext(options);
+
+  const registerActiveTarget = (el: HTMLInputElement | HTMLTextAreaElement) => {
+    setActiveFieldTarget((qualifiedName) => {
+      if (!fieldAcceptedByTarget(qualifiedName, context)) return;
+      const text = fieldInsertText(qualifiedName, context);
+      if (options.bare) {
+        onValueChange(text);
+        requestAnimationFrame(() => {
+          try {
+            el.focus();
+            el.setSelectionRange(text.length, text.length);
+          } catch {
+            /* element may have unmounted */
+          }
+        });
+        return;
+      }
+      insertTokenAtCaret(el, text, onValueChange);
+    }, context);
+  };
+
+  const acceptFieldDrag = (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    if (!hasFieldDrag(e.dataTransfer)) return false;
+    if (!fieldDragAcceptedByTarget(e.dataTransfer, context)) {
+      e.preventDefault();
+      e.dataTransfer.dropEffect = "none";
       return false;
     }
+    e.preventDefault();
+    e.dataTransfer.dropEffect = "copy";
+    registerActiveTarget(e.currentTarget);
+    if (!dragOver) setDragOver(true);
     return true;
   };
 
   const handlers = {
-    onDragOver: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      if (!hasFieldDrag(e.dataTransfer)) return;
-      const name = readFieldDragName(e.dataTransfer);
-      if (name && !acceptsField(name)) {
-        e.preventDefault();
-        e.dataTransfer.dropEffect = "none";
-        return;
-      }
-      e.preventDefault();
-      e.dataTransfer.dropEffect = "copy";
-      if (!dragOver) setDragOver(true);
+    onDragEnter: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      acceptFieldDrag(e);
     },
-    onDragLeave: () => {
+    onDragOver: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      acceptFieldDrag(e);
+    },
+    onDragLeave: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+      const related = e.relatedTarget as Node | null;
+      if (related && e.currentTarget.contains(related)) return;
       if (dragOver) setDragOver(false);
     },
     onDrop: (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       setDragOver(false);
-      const name = readFieldDragName(e.dataTransfer);
-      if (!name || !acceptsField(name)) return;
+      if (!hasFieldDrag(e.dataTransfer)) return;
+      const qualifiedName = readFieldDragNameForTarget(e.dataTransfer, context);
+      if (!qualifiedName || !fieldAcceptedByTarget(qualifiedName, context)) {
+        e.preventDefault();
+        return;
+      }
       e.preventDefault();
-      insertTokenAtCaret(e.currentTarget, insertValue(name), onValueChange);
+      const el = e.currentTarget;
+      const text = fieldInsertText(qualifiedName, context);
+      if (options.bare) {
+        onValueChange(text);
+        requestAnimationFrame(() => {
+          try {
+            el.focus();
+            el.setSelectionRange(text.length, text.length);
+          } catch {
+            /* element may have unmounted */
+          }
+        });
+        return;
+      }
+      insertTokenAtCaret(el, text, onValueChange);
     },
     onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const el = e.currentTarget;
-      const context: FieldTargetContext = {
-        bare: options.bare,
-        formFieldsOnly: options.formFieldsOnly,
-        knownVariables: options.knownVariables,
-      };
-      setActiveFieldTarget((name) => {
-        if (!acceptsField(name)) return;
-        insertTokenAtCaret(el, insertValue(name), onValueChange);
-      }, context);
+      registerActiveTarget(e.currentTarget);
     },
   };
 

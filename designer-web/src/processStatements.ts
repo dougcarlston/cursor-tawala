@@ -57,3 +57,14 @@ export const PROCESS_STATEMENT_PALETTE: ProcessStatementDef[] = [
   { label: "Set", group: 5, template: { cmd: "set", field: "Completed", value: "Yes" } },
   { label: "Comment", group: 6, template: { cmd: "comment", text: "-- note" } },
 ];
+
+/** Statement types with a property panel in the process window (legacy: palette selects panel). */
+export type ProcessStatementPanel = "none" | "if" | "set";
+
+export const PROCESS_PANEL_LABELS = new Set(["If", "Set"]);
+
+export function processPanelKeyForLabel(label: string): ProcessStatementPanel | null {
+  const key = label.toLowerCase();
+  if (key === "if" || key === "set") return key;
+  return null;
+}

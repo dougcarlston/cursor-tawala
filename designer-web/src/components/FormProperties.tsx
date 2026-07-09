@@ -2,12 +2,11 @@ import { TawalaForm } from "@/types/tawala";
 
 interface Props {
   form: TawalaForm;
-  processNames: string[];
   onChange: (patch: Partial<TawalaForm>) => void;
 }
 
-/** Form-level settings — start point, pre/post process (legacy Designer). */
-export function FormProperties({ form, processNames, onChange }: Props) {
+/** Form-level settings — start point (legacy Designer). Pre/Post-process linking lives on the Process window banner. */
+export function FormProperties({ form, onChange }: Props) {
   return (
     <div className="properties-panel form-properties-panel">
       <p className="form-properties-heading">
@@ -21,39 +20,6 @@ export function FormProperties({ form, processNames, onChange }: Props) {
         />
         Starting Point
       </label>
-      <label>
-        Post-process
-        <select
-          value={form.process ?? ""}
-          onChange={(e) => onChange({ process: e.target.value || undefined })}
-        >
-          <option value="">(none)</option>
-          {processNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p className="hint">Runs after the user submits this form.</p>
-      <label>
-        Pre-process
-        <select
-          value={form.preProcess ?? ""}
-          onChange={(e) => onChange({ preProcess: e.target.value || undefined })}
-        >
-          <option value="">(none)</option>
-          {processNames.map((name) => (
-            <option key={name} value={name}>
-              {name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <p className="hint">Runs when the form loads, before display.</p>
-      {processNames.length === 0 ? (
-        <p className="hint">Add a process in Project Explorer (P) to attach it here.</p>
-      ) : null}
     </div>
   );
 }

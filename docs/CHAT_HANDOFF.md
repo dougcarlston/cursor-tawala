@@ -4,6 +4,14 @@
 
 Use this file when starting or resuming a Cursor chat. Copy the **5-line opener** for the track you are working on, paste it as your first message, and rename the chat to match the suggested title.
 
+**Skinny track handoffs (July 2026):** For focused Designer sessions with less context, use one of these instead of reading the full file below:
+
+| Handoff | Use when |
+|---------|----------|
+| [`CHAT_HANDOFF_FORMS.md`](CHAT_HANDOFF_FORMS.md) | Forms canvas WYSIWYG, FIB/MCQ, remaining form items, palette table/fx |
+| [`CHAT_HANDOFF_PROCESSES.md`](CHAT_HANDOFF_PROCESSES.md) | Process editor, statements palette, Form↔Process links, insertion arrow |
+| [`CHAT_HANDOFF_INTEGRATED.md`](CHAT_HANDOFF_INTEGRATED.md) | Documents editor, shared Formatting Palette, cross-Form/Process/Document shell |
+
 Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CURSOR_CHAT_GUIDE.md`](CURSOR_CHAT_GUIDE.md).
 
 ---

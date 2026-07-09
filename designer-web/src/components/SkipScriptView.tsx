@@ -29,6 +29,85 @@ interface Props {
   insertPath: string;
   insertAfterIndex: number;
   onSelectInsertPath: (path: string) => void;
+  /** When set, command lines highlight and report their path for property editing. */
+  selectedCommandPath?: string | null;
+  onSelectCommandPath?: (path: string) => void;
+  /** Process editor: inline ↑ ↓ × on each command line (selected or hover). */
+  showLineControls?: boolean;
+  onMoveCommand?: (path: string, direction: "up" | "down") => void;
+  onDeleteCommand?: (path: string) => void;
+  canMoveCommand?: (path: string, direction: "up" | "down") => boolean;
+}
+
+function ScriptCommandLineRow({
+  line,
+  pad,
+  selected,
+  lineClassName,
+  onSelect,
+  showLineControls,
+  onMoveCommand,
+  onDeleteCommand,
+  canMoveCommand,
+}: {
+  line: ScriptLine;
+  pad: string;
+  selected: boolean;
+  lineClassName: string;
+  onSelect: () => void;
+  showLineControls?: boolean;
+  onMoveCommand?: (path: string, direction: "up" | "down") => void;
+  onDeleteCommand?: (path: string) => void;
+  canMoveCommand?: (path: string, direction: "up" | "down") => boolean;
+}) {
+  const path = line.path!;
+  const lineButton = (
+    <button
+      type="button"
+      className={`${lineClassName}${selected ? " selected" : ""}`}
+      onMouseDown={(e) => e.preventDefault()}
+      onClick={onSelect}
+    >
+      <span className="skip-script-pad">{pad}</span>
+      <span>{line.text}</span>
+    </button>
+  );
+
+  if (!showLineControls) {
+    return lineButton;
+  }
+
+  return (
+    <div className={`skip-script-line-row${selected ? " selected" : ""}`}>
+      {lineButton}
+      <span className="skip-script-line-toolbar" role="toolbar" aria-label="Statement actions">
+        <button
+          type="button"
+          title="Move up (Alt+↑)"
+          disabled={!canMoveCommand?.(path, "up")}
+          onClick={() => onMoveCommand?.(path, "up")}
+        >
+          ↑
+        </button>
+        <button
+          type="button"
+          title="Move down (Alt+↓)"
+          disabled={!canMoveCommand?.(path, "down")}
+          onClick={() => onMoveCommand?.(path, "down")}
+        >
+          ↓
+        </button>
+        <button
+          type="button"
+          className="skip-script-line-delete"
+          title="Delete statement"
+          onClick={() => onDeleteCommand?.(path)}
+        >
+          ×
+        </button>
+      </span>
+    </div>
+  );
 }
 
 function isEmptyBlock(lines: ScriptLine[], openIndex: number): boolean {
@@ -78,6 +157,12 @@ export function SkipScriptView({
   insertPath,
   insertAfterIndex,
   onSelectInsertPath,
+  selectedCommandPath = null,
+  onSelectCommandPath,
+  showLineControls = false,
+  onMoveCommand,
+  onDeleteCommand,
+  canMoveCommand,
 }: Props) {
   if (lines.length === 0) {
     return (
@@ -168,28 +253,46 @@ export function SkipScriptView({
         </div>,
       );
     } else if (line.lineType === "comment") {
+      const selected = line.path != null && line.path === selectedCommandPath;
       elements.push(
-        <button
+        <ScriptCommandLineRow
           key={`line-${i}`}
-          type="button"
-          className="skip-script-line skip-script-comment"
-          onClick={() => onSelectInsertPath(insertPathForCommandLine(line))}
-        >
-          <span className="skip-script-pad">{pad}</span>
-          <span>{line.text}</span>
-        </button>,
+          line={line}
+          pad={pad}
+          selected={selected}
+          lineClassName="skip-script-line skip-script-comment"
+          showLineControls={showLineControls}
+          onMoveCommand={onMoveCommand}
+          onDeleteCommand={onDeleteCommand}
+          canMoveCommand={canMoveCommand}
+          onSelect={() => {
+            if (line.path && onSelectCommandPath) onSelectCommandPath(line.path);
+            onSelectInsertPath(insertPathForCommandLine(line));
+          }}
+        />,
       );
     } else if (line.path) {
+      const selected = line.path === selectedCommandPath;
+      const headerClass =
+        line.lineType === "if-header" || line.lineType === "foreach-header"
+          ? " skip-script-header"
+          : "";
       elements.push(
-        <button
+        <ScriptCommandLineRow
           key={`line-${i}`}
-          type="button"
-          className="skip-script-line skip-script-command"
-          onClick={() => onSelectInsertPath(insertPathForCommandLine(line))}
-        >
-          <span className="skip-script-pad">{pad}</span>
-          <span>{line.text}</span>
-        </button>,
+          line={line}
+          pad={pad}
+          selected={selected}
+          lineClassName={`skip-script-line skip-script-command${headerClass}`}
+          showLineControls={showLineControls}
+          onMoveCommand={onMoveCommand}
+          onDeleteCommand={onDeleteCommand}
+          canMoveCommand={canMoveCommand}
+          onSelect={() => {
+            if (onSelectCommandPath) onSelectCommandPath(line.path!);
+            onSelectInsertPath(insertPathForCommandLine(line));
+          }}
+        />,
       );
     } else {
       elements.push(
@@ -234,5 +337,6 @@ export function SkipScriptView({
 function insertPathForCommandLine(line: ScriptLine): string {
   if (!line.path) return "root";
   if (line.lineType === "if-header") return `${line.path}/then`;
+  if (line.lineType === "foreach-header") return `${line.path}/do`;
   return parentInsertPath(line.path);
 }
