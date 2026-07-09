@@ -13,6 +13,12 @@ import {
   setFormattingFocus,
   type FormattingFocusKind,
 } from "@/lib/formattingPaletteContext";
+import { TableHandlesOverlay } from "./TableHandlesOverlay";
+import {
+  focusDocumentDropTarget,
+  placeDocumentTextAtPoint,
+  resolveDocumentFieldDropTarget,
+} from "@/lib/documentCanvas";
 
 interface Props {
   html: string;
@@ -22,32 +28,8 @@ interface Props {
   formattingKind?: Extract<FormattingFocusKind, "text" | "document" | "fib" | "mcq">;
 }
 
-interface FormatState {
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-  fontSize: string;
-}
-
 const DEFAULT_FONT_SIZE_VALUE = "default";
 const LEGACY_DEFAULT_FONT_SIZE = "3";
-
-const DEFAULT_FORMAT_STATE: FormatState = {
-  bold: false,
-  italic: false,
-  underline: false,
-  fontSize: DEFAULT_FONT_SIZE_VALUE,
-};
-
-const FONT_SIZE_OPTIONS = [
-  { value: DEFAULT_FONT_SIZE_VALUE, label: "Default / Normal" },
-  { value: "1", label: "1 - Tiny" },
-  { value: "2", label: "2 - Small" },
-  { value: "4", label: "4 - Medium" },
-  { value: "5", label: "5 - Large" },
-  { value: "6", label: "6 - X-Large" },
-  { value: "7", label: "7 - XX-Large" },
-];
 
 function mapPixelsToFontSize(value: number) {
   if (value <= 10) return "1";
@@ -61,10 +43,10 @@ function mapPixelsToFontSize(value: number) {
 
 function normalizeFontSizeValue(value: unknown) {
   const raw = String(value ?? "").trim();
-  if (!raw) return DEFAULT_FORMAT_STATE.fontSize;
+  if (!raw) return DEFAULT_FONT_SIZE_VALUE;
 
   if (/^[1-7]$/.test(raw)) {
-    return raw === LEGACY_DEFAULT_FONT_SIZE ? DEFAULT_FORMAT_STATE.fontSize : raw;
+    return raw === LEGACY_DEFAULT_FONT_SIZE ? DEFAULT_FONT_SIZE_VALUE : raw;
   }
 
   const pxMatch = raw.match(/^(\d+(?:\.\d+)?)px$/i);
@@ -73,7 +55,7 @@ function normalizeFontSizeValue(value: unknown) {
   const ptMatch = raw.match(/^(\d+(?:\.\d+)?)pt$/i);
   if (ptMatch) return normalizeFontSizeValue(mapPixelsToFontSize(Number(ptMatch[1]) * (4 / 3)));
 
-  return DEFAULT_FORMAT_STATE.fontSize;
+  return DEFAULT_FONT_SIZE_VALUE;
 }
 
 /** Caret Range at a viewport point, across Chromium (`caretRangeFromPoint`) and Firefox. */
@@ -110,10 +92,10 @@ function unwrapElement(el: Element) {
   parent.removeChild(el);
 }
 
-function stripFontSizeFormatting(root: ParentNode, removeAll = false) {
+function stripFontSizeFormatting(root: ParentNode) {
   root.querySelectorAll("font[size]").forEach((node) => {
     const size = node.getAttribute("size");
-    if (!removeAll && normalizeFontSizeValue(size) !== DEFAULT_FONT_SIZE_VALUE) return;
+    if (normalizeFontSizeValue(size) !== DEFAULT_FONT_SIZE_VALUE) return;
 
     node.removeAttribute("size");
     if (!node.getAttributeNames().length) {
@@ -123,9 +105,7 @@ function stripFontSizeFormatting(root: ParentNode, removeAll = false) {
 
   root.querySelectorAll<HTMLElement>("[style]").forEach((node) => {
     if (!node.style.fontSize) return;
-    if (!removeAll && normalizeFontSizeValue(node.style.fontSize) !== DEFAULT_FONT_SIZE_VALUE) {
-      return;
-    }
+    if (normalizeFontSizeValue(node.style.fontSize) !== DEFAULT_FONT_SIZE_VALUE) return;
 
     node.style.removeProperty("font-size");
     if (!node.getAttribute("style")) {
@@ -137,49 +117,20 @@ function stripFontSizeFormatting(root: ParentNode, removeAll = false) {
   });
 }
 
-/** Simplified rich-text surface (replaces legacy IE WYSIWYG for text items). */
+/**
+ * Rich-text surface for Document body and Properties-panel text. Formatting is driven by the
+ * shared Formatting Palette (row 2) when `formattingKind` is set — no embedded mini-toolbar.
+ */
 export function RichTextEditor({ html, onChange, placeholder, formattingKind }: Props) {
   const surfaceRef = useRef<HTMLDivElement>(null);
   const lastHtml = useRef(html);
   const savedRangeRef = useRef<Range | null>(null);
-  const [formatState, setFormatState] = useState(DEFAULT_FORMAT_STATE);
   const [fieldDragOver, setFieldDragOver] = useState(false);
 
   const selectionIsInside = (selection: Selection | null, el: HTMLDivElement) => {
     if (!selection) return false;
     const { anchorNode, focusNode } = selection;
     return !!anchorNode && !!focusNode && el.contains(anchorNode) && el.contains(focusNode);
-  };
-
-  const readFormatState = (): FormatState => {
-    try {
-      return {
-        bold: document.queryCommandState("bold"),
-        italic: document.queryCommandState("italic"),
-        underline: document.queryCommandState("underline"),
-        fontSize: normalizeFontSizeValue(document.queryCommandValue("fontSize")),
-      };
-    } catch {
-      return DEFAULT_FORMAT_STATE;
-    }
-  };
-
-  const syncToolbarState = () => {
-    const el = surfaceRef.current;
-    if (!el) return;
-
-    const selection = document.getSelection();
-    if (selectionIsInside(selection, el) && selection?.rangeCount) {
-      savedRangeRef.current = selection.getRangeAt(0).cloneRange();
-      setFormatState(readFormatState());
-      syncPaletteFocus();
-      return;
-    }
-
-    if (document.activeElement === el) {
-      setFormatState(readFormatState());
-      syncPaletteFocus();
-    }
   };
 
   const syncPaletteFocus = () => {
@@ -189,34 +140,6 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     setFormattingFocus({
       kind: formattingKind,
       cursorInTable: selectionCursorInTable(el),
-    });
-  };
-
-  useEffect(() => {
-    return () => {
-      if (formattingKind) clearFormattingFocus(formattingKind);
-      clearActivePaletteEditor(surfaceRef.current ?? undefined);
-    };
-  }, [formattingKind]);
-
-  const commitPalette = () => {
-    const el = surfaceRef.current;
-    if (!el) return;
-    stripFontSizeFormatting(el);
-    const next = el.innerHTML;
-    lastHtml.current = next;
-    onChange(next);
-    syncToolbarState();
-  };
-
-  const registerAsPaletteEditor = () => {
-    const el = surfaceRef.current;
-    if (!el || !formattingKind) return;
-    setActivePaletteEditor({
-      el,
-      commit: commitPalette,
-      saveSelection: rememberSelection,
-      restoreSelection,
     });
   };
 
@@ -235,6 +158,34 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (!el.contains(savedRange.commonAncestorContainer)) return;
     selection.removeAllRanges();
     selection.addRange(savedRange);
+  };
+
+  useEffect(() => {
+    return () => {
+      if (formattingKind) clearFormattingFocus(formattingKind);
+      clearActivePaletteEditor(surfaceRef.current ?? undefined);
+    };
+  }, [formattingKind]);
+
+  const commitPalette = () => {
+    const el = surfaceRef.current;
+    if (!el) return;
+    stripFontSizeFormatting(el);
+    const next = el.innerHTML;
+    lastHtml.current = next;
+    onChange(next);
+    syncPaletteFocus();
+  };
+
+  const registerAsPaletteEditor = () => {
+    const el = surfaceRef.current;
+    if (!el || !formattingKind) return;
+    setActivePaletteEditor({
+      el,
+      commit: commitPalette,
+      saveSelection: rememberSelection,
+      restoreSelection,
+    });
   };
 
   useEffect(() => {
@@ -258,68 +209,18 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
   useEffect(() => {
     const handleSelectionChange = () => {
-      syncToolbarState();
+      const el = surfaceRef.current;
+      if (!el) return;
+      const selection = document.getSelection();
+      if (selectionIsInside(selection, el) && selection?.rangeCount) {
+        savedRangeRef.current = selection.getRangeAt(0).cloneRange();
+        syncPaletteFocus();
+      }
     };
 
     document.addEventListener("selectionchange", handleSelectionChange);
     return () => document.removeEventListener("selectionchange", handleSelectionChange);
-  }, []);
-
-  const exec = (cmd: string, value?: string) => {
-    const el = surfaceRef.current;
-    if (!el) return;
-    el.focus();
-    restoreSelection();
-
-    if (cmd === "fontSize" && value === DEFAULT_FONT_SIZE_VALUE) {
-      const selection = document.getSelection();
-      if (selectionIsInside(selection, el) && selection?.rangeCount) {
-        let range = selection.getRangeAt(0);
-
-        if (range.collapsed) {
-          const marker = document.createElement("span");
-          marker.dataset.richEditorCaretMarker = "true";
-          marker.textContent = "\u200b";
-          range.insertNode(marker);
-          range = document.createRange();
-          range.selectNodeContents(marker);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
-
-        const fragment = range.extractContents();
-        const lastInsertedNode = fragment.lastChild;
-        stripFontSizeFormatting(fragment, true);
-        range.insertNode(fragment);
-
-        const nextRange = document.createRange();
-        const liveMarker = el.querySelector('span[data-rich-editor-caret-marker="true"]');
-        if (liveMarker) {
-          nextRange.setStartAfter(liveMarker);
-          nextRange.collapse(true);
-          liveMarker.remove();
-        } else if (lastInsertedNode) {
-          nextRange.selectNodeContents(lastInsertedNode);
-          nextRange.collapse(false);
-        } else {
-          nextRange.setStart(range.endContainer, range.endOffset);
-          nextRange.collapse(true);
-        }
-
-        selection.removeAllRanges();
-        selection.addRange(nextRange);
-        savedRangeRef.current = nextRange.cloneRange();
-      }
-    } else {
-      document.execCommand(cmd, false, value);
-    }
-
-    stripFontSizeFormatting(el);
-    const next = el.innerHTML;
-    lastHtml.current = next;
-    onChange(next);
-    syncToolbarState();
-  };
+  }, [formattingKind]);
 
   /** Insert a `<<field>>` token at the current (or restored) caret. */
   const insertFieldToken = (name: string) => {
@@ -332,7 +233,34 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const nextHtml = el.innerHTML;
     lastHtml.current = nextHtml;
     onChange(nextHtml);
-    syncToolbarState();
+    syncPaletteFocus();
+  };
+
+  const commitFromSurface = (target: HTMLDivElement) => {
+    stripFontSizeFormatting(target);
+    const next = target.innerHTML;
+    lastHtml.current = next;
+    onChange(next);
+    syncPaletteFocus();
+  };
+
+  const handleDocumentCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (formattingKind !== "document") return;
+    if (e.button !== 0) return;
+    const el = surfaceRef.current;
+    if (!el) return;
+    const target = e.target as HTMLElement;
+    if (target.closest(".table-handles-overlay")) return;
+
+    el.focus();
+    const placed = placeDocumentTextAtPoint(el, e.clientX, e.clientY);
+    if (placed) {
+      e.preventDefault();
+      savedRangeRef.current = null;
+      registerAsPaletteEditor();
+      syncPaletteFocus();
+      commitFromSurface(el);
+    }
   };
 
   const handleFieldDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -340,15 +268,26 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const name = readFieldDragName(e.dataTransfer);
     if (!name) return;
     e.preventDefault();
+    e.stopPropagation();
     const el = surfaceRef.current;
-    if (el) {
-      const range = caretRangeAtPoint(e.clientX, e.clientY);
-      const selection = document.getSelection();
-      if (range && selection && el.contains(range.commonAncestorContainer)) {
-        selection.removeAllRanges();
-        selection.addRange(range);
-        savedRangeRef.current = range.cloneRange();
-      }
+    if (!el) return;
+
+    if (formattingKind === "document") {
+      el.focus();
+      const target = resolveDocumentFieldDropTarget(el, e.clientX, e.clientY);
+      const range = focusDocumentDropTarget(target, e.clientX, e.clientY);
+      if (range) savedRangeRef.current = range.cloneRange();
+      document.execCommand("insertText", false, fieldToken(name));
+      commitFromSurface(el);
+      return;
+    }
+
+    const range = caretRangeAtPoint(e.clientX, e.clientY);
+    const selection = window.getSelection();
+    if (range && selection && el.contains(range.commonAncestorContainer)) {
+      selection.removeAllRanges();
+      selection.addRange(range);
+      savedRangeRef.current = range.cloneRange();
     }
     insertFieldToken(name);
   };
@@ -359,104 +298,52 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="rich-toolbar">
-        <button
-          type="button"
-          title="Bold"
-          className={formatState.bold ? "active" : undefined}
-          aria-pressed={formatState.bold}
-          onMouseDown={(e) => {
-            rememberSelection();
+      <div className="rich-surface-wrap">
+        <div
+          ref={surfaceRef}
+          className={`rich-surface${fieldDragOver ? " field-drop-active" : ""}`}
+          contentEditable
+          suppressContentEditableWarning
+          data-placeholder={placeholder}
+          onDragOver={(e) => {
+            if (!hasFieldDrag(e.dataTransfer)) return;
             e.preventDefault();
+            e.dataTransfer.dropEffect = "copy";
+            if (!fieldDragOver) setFieldDragOver(true);
           }}
-          onClick={() => exec("bold")}
-        >
-          B
-        </button>
-        <button
-          type="button"
-          title="Italic"
-          className={formatState.italic ? "active" : undefined}
-          aria-pressed={formatState.italic}
-          onMouseDown={(e) => {
+          onDragLeave={() => {
+            if (fieldDragOver) setFieldDragOver(false);
+          }}
+          onDrop={handleFieldDrop}
+          onInput={(e) => commitFromSurface(e.target as HTMLDivElement)}
+          onFocus={() => {
+            setActiveFieldTarget(insertFieldToken);
+            registerAsPaletteEditor();
+            syncPaletteFocus();
+          }}
+          onBlur={(e) => {
+            const next = e.relatedTarget as HTMLElement | null;
+            if (next?.closest(".formatting-palette")) return;
+            if (next?.closest(".table-handles-overlay")) return;
+            if (formattingKind) clearFormattingFocus(formattingKind);
+          }}
+          onKeyUp={() => {
             rememberSelection();
-            e.preventDefault();
+            syncPaletteFocus();
           }}
-          onClick={() => exec("italic")}
-        >
-          I
-        </button>
-        <button
-          type="button"
-          title="Underline"
-          className={formatState.underline ? "active" : undefined}
-          aria-pressed={formatState.underline}
           onMouseDown={(e) => {
+            savedRangeRef.current = null;
+            handleDocumentCanvasMouseDown(e);
+          }}
+          onMouseUp={() => {
             rememberSelection();
-            e.preventDefault();
+            syncPaletteFocus();
           }}
-          onClick={() => exec("underline")}
-        >
-          U
-        </button>
-        <select
-          value={formatState.fontSize}
-          onMouseDown={() => rememberSelection()}
-          onChange={(e) => {
-            exec("fontSize", e.target.value);
-            e.currentTarget.blur();
-          }}
-          title="Font size"
-        >
-          {FONT_SIZE_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
+        />
+        {(formattingKind === "document" || formattingKind === "text") && (
+          <TableHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
+        )}
       </div>
-      <div
-        ref={surfaceRef}
-        className={`rich-surface${fieldDragOver ? " field-drop-active" : ""}`}
-        contentEditable
-        suppressContentEditableWarning
-        data-placeholder={placeholder}
-        onDragOver={(e) => {
-          if (!hasFieldDrag(e.dataTransfer)) return;
-          e.preventDefault();
-          e.dataTransfer.dropEffect = "copy";
-          if (!fieldDragOver) setFieldDragOver(true);
-        }}
-        onDragLeave={() => {
-          if (fieldDragOver) setFieldDragOver(false);
-        }}
-        onDrop={handleFieldDrop}
-        onInput={(e) => {
-          const target = e.target as HTMLDivElement;
-          stripFontSizeFormatting(target);
-          const next = target.innerHTML;
-          lastHtml.current = next;
-          onChange(next);
-          syncToolbarState();
-        }}
-        onFocus={() => {
-          setActiveFieldTarget(insertFieldToken);
-          registerAsPaletteEditor();
-          syncToolbarState();
-          syncPaletteFocus();
-        }}
-        onBlur={(e) => {
-          // Keep the palette live while the user operates its dropdowns / color picker.
-          const next = e.relatedTarget as HTMLElement | null;
-          if (next?.closest(".formatting-palette")) return;
-          if (formattingKind) clearFormattingFocus(formattingKind);
-        }}
-        onKeyUp={() => syncToolbarState()}
-        onMouseDown={() => {
-          savedRangeRef.current = null;
-        }}
-        onMouseUp={() => syncToolbarState()}
-      />
     </div>
   );
 }

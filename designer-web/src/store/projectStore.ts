@@ -796,7 +796,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({
       project: {
         ...project,
-        documents: [...documents, { name, content: [{ type: "paragraph", align: "left", nodes: [] }] }],
+        documents: [...documents, { name, content: "" }],
       },
       dirty: true,
       selection: { kind: "document", name },

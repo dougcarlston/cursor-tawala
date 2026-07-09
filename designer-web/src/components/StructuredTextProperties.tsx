@@ -324,6 +324,7 @@ export function StructuredTextProperties({ content, onChange }: Props) {
             html={contentToEditorHtml(content)}
             onChange={(html) => onChange(htmlToStructuredContent(html, table))}
             placeholder="Enter text…"
+            formattingKind="text"
           />
         </label>
         {columns.map((col, i) => (

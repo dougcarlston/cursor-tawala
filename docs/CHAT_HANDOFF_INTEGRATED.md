@@ -44,24 +44,44 @@ cd ~/Projects/AI-Tawala/designer-web && npm run dev
 | Docked palette **context swap**: Items (Form) ↔ Statements (Process) ↔ **none** (Document) | **Done** |
 | **Formatting Palette** row 2 — visible for Form + Document MDI; indented to canvas left edge | **Done** |
 | Palette focus context (`heading` / `text` / `document` / `none`) + enable rules | **Done** |
-| Palette commands: B/I/U, font, color, reset, indent, alignment | **Done** on Form Text canvas + Document `RichTextEditor` |
+| Palette commands: B/I/U, font, color, reset, indent, alignment | **Done** on Form Text canvas + Document |
 | Form **Text** canvas-inline (`TextCanvasRow`) drives palette | **Done** |
 | Form **Heading** greys entire palette | **Done** |
+| **Lift `RichTextEditor` mini-toolbar** — row 2 is sole format UI | **Done** (July 2026) |
+| **Document editor** — single full-bleed WYSIWYG canvas (no Preview split) | **Done** (July 2026) |
+| Document HTML persistence (tables/formatting survive save) | **Done** (July 2026) |
+| Palette **table tools** (#11–13): insert dialog, delete, row/column submenu | **Done** (July 2026) |
+| **Table handles overlay** — move, resize, column/row dividers, float L/block/R | **Done** (July 2026) |
+| Document **click-to-place text** + **field drop at coordinates** | **Done** (July 2026; polish ongoing) |
+| Palette **font/size reflect cursor** (dropdown labels sync to selection) | **Done** (July 2026; not perfect) |
 
 ### Not done — integration gaps
 
 | Priority | Item | Notes |
 |----------|------|-------|
-| **High** | **Document editor** full parity — RTF body, tables, functions | `DocumentEditor.tsx` is MVP (simple HTML / JSON fallback) |
-| **High** | **Lift `RichTextEditor` mini-toolbar** — palette is sole format UI | Embedded B/I/U/size strip still in `RichTextEditor.tsx` |
-| **High** | Wire palette **table tools** (#11–13) for Text + Document | Shell enabled; commands not implemented |
-| **High** | Wire palette **fx** + Insert Function for Text + Document | Shell enabled; picker not implemented |
-| Medium | **Default Font / Default Size** clear behavior on palette dropdowns | Spec: grey reset until mixed formatting |
-| Medium | Palette **font face/size reflect cursor** (sync dropdown labels to selection) | Legacy idle-handler behavior |
-| Medium | Document **Fields drag** into body (partial — RichTextEditor accepts drops when focused) | Full Document MDI parity in spec |
+| **High** | **fx** + Insert Function for Text + Document (#14) | Shell enabled; picker not implemented |
+| **High** | Document **RTF/export parity** — rich structure in deploy XML | HTML WYSIWYG today; `jsonToXml` still paragraph-limited |
+| Medium | **Default Font / Default Size** grey reset on fresh doc | Spec: reset greyed until mixed formatting |
+| Medium | **Drag-to-reposition** placed text/field blocks | Tables have ✥ handle; `doc-placed-text` blocks do not |
+| Medium | Field tokens as non-overlapping inline widgets | Plain `<<name>>` text today; can stack/overlap |
+| Medium | Palette font/size sync edge cases | Stable snapshot added; mixed-format runs may still show Default |
 | Medium | Space **above Project Explorer** for future row-1 icon/tools palette | Owner note: left indent reserves this |
 | Deferred | Per-window Design/Preview + selected item state (MDI Pass 2) | Global store today |
 | Deferred | Windows menu, layout persistence | MDI Pass 2 |
+
+### Session summary — July 9, 2026 (Documents + palette integration)
+
+**Removed** embedded `RichTextEditor` mini-toolbar; Formatting Palette (row 2) is the only format UI for Document + Properties rich text.
+
+**Document window:** Replaced split editor/Preview with one white WYSIWYG canvas; content stored as HTML string (tables/formatting persist).
+
+**Tables:** Legacy Insert Table dialog (width inches, rows, columns); palette delete table + row/column submenu; `TableHandlesOverlay` for move (relative offset), edge/corner resize, column/row dividers, float left/block/right.
+
+**Free placement:** Click empty canvas → absolutely positioned text block; field drops use viewport coordinates (not caret sniffing near floats).
+
+**Palette polish:** Table row/column menu visibility CSS fix; font face/size dropdowns sync to caret (cached snapshot for `useSyncExternalStore`); hooks-order and infinite-loop fixes.
+
+**New files:** `InsertTableDialog.tsx`, `TableHandlesOverlay.tsx`, `lib/tableLayout.ts`, `lib/documentCanvas.ts`.
 
 ### Sibling tracks (do not duplicate here)
 
@@ -76,12 +96,11 @@ Use **this** handoff when the task touches **Documents** or **shared palette** b
 
 ## What's next (recommended order)
 
-1. **Remove `RichTextEditor` embedded toolbar** — Document body (and any remaining Properties rich surfaces) use palette only.
-2. **Document editor WYSIWYG** — single contentEditable body matching legacy Document MDI; register `formattingKind="document"`.
-3. **Table insert/delete/row-column** on palette — shared `paletteCommands` for Text + Document.
-4. **fx / Insert Function** — shared picker wired to palette button #14.
-5. Palette state sync (font/size at caret, reset greyed on fresh doc).
-6. Optional: row-1 tools palette shell above Explorer (legacy icon bar) — coordinate with palette indent math in `FormattingPalette.tsx`.
+1. **fx / Insert Function** — shared picker wired to palette button #14.
+2. Document field tokens — styled/non-editable spans; drag-to-reposition `doc-placed-text` blocks.
+3. Palette reset greyed on fresh doc; font/size edge cases (mixed runs).
+4. `jsonToXml` / deploy path for document HTML tables and placed blocks.
+5. Optional: row-1 tools palette shell above Explorer (legacy icon bar).
 
 ---
 
@@ -90,7 +109,8 @@ Use **this** handoff when the task touches **Documents** or **shared palette** b
 | Area | Path |
 |------|------|
 | Formatting Palette | `FormattingPalette.tsx`, `lib/formattingPaletteContext.ts`, `lib/paletteCommands.ts` |
-| Document editor | `DocumentEditor.tsx`, `RichTextEditor.tsx` |
+| Document editor | `DocumentEditor.tsx`, `RichTextEditor.tsx`, `lib/documentCanvas.ts` |
+| Tables | `InsertTableDialog.tsx`, `TableHandlesOverlay.tsx`, `lib/tableLayout.ts` |
 | Form Text (palette consumer) | `TextCanvasRow.tsx` |
 | App shell / palette visibility | `App.tsx` |
 | MDI | `components/mdi/CanvasWindow.tsx` |
@@ -127,7 +147,8 @@ Use **this** handoff when the task touches **Documents** or **shared palette** b
 - [ ] Focus Document body → palette live; B/I/U/font apply.
 - [ ] Focus Form Text on canvas → same palette controls work.
 - [ ] Focus Heading → palette greyed.
-- [ ] `RichTextEditor` surfaces have no duplicate mini-toolbar (after lift task).
+- [ ] `RichTextEditor` surfaces have no duplicate mini-toolbar.
+- [ ] Insert Table dialog → table move/resize handles; field drop at click point.
 - [ ] `npm run build` in `designer-web/` → clean.
 
-*Last updated: July 2026 — palette + Text canvas done; Document full parity is primary gap.*
+*Last updated: July 9, 2026 — Document WYSIWYG canvas, tables, placement, palette table tools + font sync.*

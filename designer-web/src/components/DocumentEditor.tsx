@@ -15,89 +15,31 @@ export function DocumentEditor({ documentName }: Props) {
     return <div className="placeholder-editor">Document not found</div>;
   }
 
-  const isSimpleString = typeof doc.content === "string";
-  const firstParagraph =
-    !isSimpleString && Array.isArray(doc.content)
-      ? doc.content.find((b) => b.type === "paragraph")
-      : undefined;
-
-  const simpleHtml = firstParagraph
-    ? nodesToHtml(firstParagraph.nodes ?? [])
-    : typeof doc.content === "string"
-      ? doc.content
-      : "";
-
-  const onSimpleEdit = (html: string) => {
-    const block: RichContentBlock = {
-      type: "paragraph",
-      align: "left",
-      nodes: [{ type: "text", text: stripTags(html) }],
-    };
-    updateDocumentContent(documentName, [block]);
-  };
+  const html = documentContentToHtml(doc.content);
 
   return (
-    <div className="form-editor document-editor">
-      <div className="panel-title" style={{ borderBottom: "1px solid #aca899" }}>
-        Document: {doc.name}
-      </div>
-      <div className="document-layout">
-        <div className="document-edit">
-          {isSimpleString || (Array.isArray(doc.content) && doc.content.length <= 3) ? (
-            <>
-              <p className="hint">
-                Edit document body (mail-merge fields: use «FormName:Field» in text for now).
-              </p>
-              <RichTextEditor
-                html={simpleHtml}
-                onChange={onSimpleEdit}
-                placeholder="Document text…"
-                formattingKind="document"
-              />
-            </>
-          ) : (
-            <>
-              <p className="hint">
-                This document has rich structure (tables, fonts). Edit as JSON or simplify in a
-                future pass.
-              </p>
-              <textarea
-                className="code-area"
-                rows={20}
-                value={JSON.stringify(doc.content, null, 2)}
-                onChange={(e) => {
-                  try {
-                    updateDocumentContent(documentName, JSON.parse(e.target.value));
-                  } catch {
-                    /* ignore */
-                  }
-                }}
-              />
-            </>
-          )}
-        </div>
-        <div className="document-preview">
-          <div className="panel-title">Preview</div>
-          <div
-            className="preview-frame"
-            dangerouslySetInnerHTML={{
-              __html: isSimpleString
-                ? `<p>${doc.content}</p>`
-                : Array.isArray(doc.content)
-                  ? blocksToHtml(doc.content)
-                  : "",
-            }}
-          />
-        </div>
-      </div>
+    <div className="document-editor">
+      <RichTextEditor
+        html={html}
+        onChange={(nextHtml) => updateDocumentContent(documentName, nextHtml)}
+        formattingKind="document"
+      />
     </div>
   );
 }
 
-function stripTags(html: string) {
-  const d = document.createElement("div");
-  d.innerHTML = html;
-  return d.textContent ?? "";
+/** Load project document content into the WYSIWYG surface (HTML string preferred). */
+function documentContentToHtml(content: string | RichContentBlock[] | undefined): string {
+  if (content == null) return "";
+  if (typeof content === "string") return content;
+  if (
+    content.length === 1 &&
+    content[0]?.type === "paragraph" &&
+    !(content[0].nodes?.length ?? 0)
+  ) {
+    return "";
+  }
+  return blocksToHtml(content);
 }
 
 function nodesToHtml(nodes: { type: string; text?: string; nodes?: unknown[] }[]): string {
@@ -105,6 +47,12 @@ function nodesToHtml(nodes: { type: string; text?: string; nodes?: unknown[] }[]
     .map((n) => {
       if (n.type === "text") return n.text ?? "";
       if (n.type === "bold") return `<strong>${nodesToHtml((n.nodes as typeof nodes) ?? [])}</strong>`;
+      if (n.type === "italic") return `<em>${nodesToHtml((n.nodes as typeof nodes) ?? [])}</em>`;
+      if (n.type === "underline") return `<u>${nodesToHtml((n.nodes as typeof nodes) ?? [])}</u>`;
+      if (n.type === "field") {
+        const name = (n as { name?: string; field?: string }).name ?? (n as { field?: string }).field;
+        return name ? `&lt;&lt;${name}&gt;&gt;` : "";
+      }
       return "";
     })
     .join("");
@@ -113,9 +61,17 @@ function nodesToHtml(nodes: { type: string; text?: string; nodes?: unknown[] }[]
 function blocksToHtml(blocks: RichContentBlock[]): string {
   return blocks
     .map((b) => {
-      if (b.type === "paragraph") return `<p>${nodesToHtml(b.nodes ?? [])}</p>`;
+      if (b.type === "paragraph") {
+        const align =
+          b.align && b.align !== "left" ? ` style="text-align:${escapeAttr(b.align)}"` : "";
+        return `<p${align}>${nodesToHtml(b.nodes ?? [])}</p>`;
+      }
       if (b.type === "text") return b.text ?? "";
       return "";
     })
     .join("");
+}
+
+function escapeAttr(value: string): string {
+  return value.replace(/"/g, "&quot;");
 }

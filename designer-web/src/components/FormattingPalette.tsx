@@ -8,18 +8,28 @@ import {
   subscribeFormattingFocus,
   type PaletteControlId,
 } from "@/lib/formattingPaletteContext";
+import { InsertTableDialog } from "./InsertTableDialog";
 import {
   paletteAlign,
   paletteBold,
+  paletteDeleteColumn,
+  paletteDeleteRow,
+  paletteDeleteTable,
   paletteFontColor,
   paletteFontFace,
   paletteFontSize,
   paletteIndent,
+  paletteInsertColumnAfter,
+  paletteInsertColumnBefore,
+  paletteInsertRowAfter,
+  paletteInsertRowBefore,
+  paletteInsertTable,
   paletteItalic,
   paletteOutdent,
   paletteReset,
   paletteUnderline,
-  readPaletteActiveState,
+  getPaletteActiveStateSnapshot,
+  subscribePaletteActiveState,
   type PaletteActiveState,
 } from "@/lib/paletteCommands";
 
@@ -123,9 +133,24 @@ export function FormattingPalette({ activeKind }: Props) {
   );
   const editorTab = useProjectStore((s) => s.editorTab);
   const [alignMenuOpen, setAlignMenuOpen] = useState(false);
+  const [tableMenuOpen, setTableMenuOpen] = useState(false);
+  const [insertTableOpen, setInsertTableOpen] = useState(false);
   const colorInputRef = useRef<HTMLInputElement>(null);
 
-  if (activeKind !== "form" && activeKind !== "document") return null;
+  const paletteVisible = activeKind === "form" || activeKind === "document";
+  const designActive = activeKind === "document" || editorTab === "design";
+  const enabled = (id: PaletteControlId) =>
+    paletteVisible ? isPaletteControlEnabled(id, focus, designActive) : false;
+
+  // Live B/I/U, alignment, font face/size at caret (updates on selectionchange).
+  const canFormat = enabled("bold");
+  const state = useSyncExternalStore(
+    subscribePaletteActiveState,
+    () => getPaletteActiveStateSnapshot(canFormat),
+    () => null,
+  );
+
+  if (!paletteVisible) return null;
 
   // Indent the palette so its controls line up with the left edge of the MDI canvas.
   // Left columns (fixed widths + 1px right borders): Explorer (.designer-left 220px) and,
@@ -135,13 +160,6 @@ export function FormattingPalette({ activeKind }: Props) {
   const ITEMS_WIDTH = 150 + 1;
   const canvasLeftOffset = activeKind === "form" ? EXPLORER_WIDTH + ITEMS_WIDTH : EXPLORER_WIDTH;
 
-  const designActive = activeKind === "document" || editorTab === "design";
-  const enabled = (id: PaletteControlId) => isPaletteControlEnabled(id, focus, designActive);
-
-  // Live B/I/U + alignment of the current selection (read while a rich region is focused).
-  const canFormat = enabled("bold");
-  const state = canFormat ? readPaletteActiveState() : null;
-
   // Selects and the color picker take focus from the editor, so save its selection first.
   const saveEditorSelection = () => getActivePaletteEditor()?.saveSelection();
 
@@ -150,7 +168,13 @@ export function FormattingPalette({ activeKind }: Props) {
     colorInputRef.current?.click();
   };
 
+  const openInsertTableDialog = () => {
+    saveEditorSelection();
+    setInsertTableOpen(true);
+  };
+
   return (
+    <>
     <div
       className="formatting-palette"
       role="toolbar"
@@ -162,13 +186,9 @@ export function FormattingPalette({ activeKind }: Props) {
         className="formatting-palette-select"
         title="Font Face"
         disabled={!enabled("fontFace")}
-        value="Default Font"
+        value={state?.fontFace ?? "Default Font"}
         onMouseDown={saveEditorSelection}
-        onChange={(e) => {
-          paletteFontFace(e.target.value);
-          // Reset to the Default label so re-picking the same face on a new run still fires.
-          e.currentTarget.selectedIndex = 0;
-        }}
+        onChange={(e) => paletteFontFace(e.target.value)}
       >
         {FONT_FACES.map((face) => (
           <option key={face} value={face}>
@@ -181,12 +201,9 @@ export function FormattingPalette({ activeKind }: Props) {
         className="formatting-palette-select formatting-palette-select-narrow"
         title="Font Point Size"
         disabled={!enabled("fontSize")}
-        value="Default Size"
+        value={state?.fontSize ?? "Default Size"}
         onMouseDown={saveEditorSelection}
-        onChange={(e) => {
-          paletteFontSize(e.target.value);
-          e.currentTarget.selectedIndex = 0;
-        }}
+        onChange={(e) => paletteFontSize(e.target.value)}
       >
         {FONT_SIZES.map((size) => (
           <option key={size} value={size}>
@@ -293,7 +310,10 @@ export function FormattingPalette({ activeKind }: Props) {
           disabled={!enabled("alignment")}
           aria-label="Alignment menu"
           onMouseDown={(e) => e.preventDefault()}
-          onClick={() => setAlignMenuOpen((o) => !o)}
+          onClick={() => {
+            setTableMenuOpen(false);
+            setAlignMenuOpen((o) => !o);
+          }}
         >
           ▾
         </button>
@@ -327,6 +347,7 @@ export function FormattingPalette({ activeKind }: Props) {
         label="▦"
         enabled={enabled("insertTable")}
         className="formatting-palette-icon"
+        onClick={openInsertTableDialog}
       />
       <PaletteButton
         id="deleteTable"
@@ -334,6 +355,7 @@ export function FormattingPalette({ activeKind }: Props) {
         label="▦✕"
         enabled={enabled("deleteTable")}
         className="formatting-palette-icon"
+        onClick={paletteDeleteTable}
       />
 
       <span className="formatting-palette-split">
@@ -351,14 +373,73 @@ export function FormattingPalette({ activeKind }: Props) {
           disabled={!enabled("tableRowCol")}
           aria-label="Table row or column menu"
           onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            setAlignMenuOpen(false);
+            setTableMenuOpen((o) => !o);
+          }}
         >
           ▾
         </button>
+        {tableMenuOpen && enabled("tableRowCol") && (
+          <div className="formatting-palette-menu" role="menu">
+            {(
+              [
+                ["Insert Column Before", paletteInsertColumnBefore],
+                ["Insert Column After", paletteInsertColumnAfter],
+                ["Insert Row Before", paletteInsertRowBefore],
+                ["Insert Row After", paletteInsertRowAfter],
+              ] as const
+            ).map(([label, action]) => (
+              <button
+                key={label}
+                type="button"
+                role="menuitem"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  action();
+                  setTableMenuOpen(false);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+            <span className="formatting-palette-menu-sep" aria-hidden />
+            {(
+              [
+                ["Delete Column", paletteDeleteColumn],
+                ["Delete Row", paletteDeleteRow],
+              ] as const
+            ).map(([label, action]) => (
+              <button
+                key={label}
+                type="button"
+                role="menuitem"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  action();
+                  setTableMenuOpen(false);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
       </span>
 
       <PaletteSep />
 
       <PaletteButton id="fx" title="Insert or Edit a Function" label="fx" enabled={enabled("fx")} />
     </div>
+    {insertTableOpen && (
+      <InsertTableDialog
+        onCancel={() => setInsertTableOpen(false)}
+        onInsert={(options) => {
+          setInsertTableOpen(false);
+          paletteInsertTable(options);
+        }}
+      />
+    )}
+    </>
   );
 }

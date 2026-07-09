@@ -2362,34 +2362,47 @@ button.skip-script-line:hover {
   top: 100%;
   left: 0;
   z-index: 200;
-  min-width: 150px;
+  min-width: 180px;
   background: var(--panel);
   border: 1px solid var(--border-dark);
   box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
   padding: 2px;
 }
 
-.formatting-palette-menu button {
+/* Menu items live inside `.formatting-palette` — override toolbar button rules (height,
+   min-width, hover) so labels stay visible; generic palette hover was white-on-white. */
+.formatting-palette .formatting-palette-menu button {
   display: flex;
   align-items: center;
   gap: 8px;
   width: 100%;
+  min-width: 0;
   height: 22px;
   border: 1px solid transparent;
   background: transparent;
+  color: var(--text);
   text-align: left;
   padding: 0 8px;
   font-size: 12px;
   cursor: default;
+  white-space: nowrap;
 }
 
-.formatting-palette-menu button:hover {
+.formatting-palette .formatting-palette-menu button:hover:not(:disabled) {
   background: var(--tree-hover);
   color: var(--tree-hover-text);
+  border-color: transparent;
 }
 
-.formatting-palette-menu button.active {
+.formatting-palette .formatting-palette-menu button.active {
   font-weight: 600;
+}
+
+.formatting-palette-menu-sep {
+  display: block;
+  height: 1px;
+  margin: 4px 0;
+  background: var(--border);
 }
 
 .formatting-palette-menu-glyph {
@@ -2792,6 +2805,11 @@ button.skip-script-line:hover {
   height: 100%;
 }
 
+.mdi-body .document-editor {
+  height: 100%;
+  min-height: 0;
+}
+
 /* Resize handles: thin edges + 12px corner squares. */
 .mdi-resize {
   position: absolute;
@@ -3138,32 +3156,16 @@ button.skip-script-line:hover {
   background: #fff;
 }
 
-.rich-toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 2px;
-  padding: 4px;
-  border-bottom: 1px solid var(--border);
-  background: #f5f5f5;
+.rich-surface-wrap {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
 }
 
-.rich-toolbar button,
-.rich-toolbar select {
-  height: 24px;
-  border: 1px solid var(--border);
-  background: #fff;
-  padding: 0 6px;
-}
-
-.rich-toolbar button.active {
-  border-color: var(--accent);
-  background: #e8f0fe;
-  font-weight: 600;
-}
-
-.rich-toolbar select {
-  min-width: 136px;
+.text-rich-wrap {
+  position: relative;
+  width: 100%;
 }
 
 .rich-surface {
@@ -4100,8 +4102,189 @@ button.skip-script-line:hover {
   padding: 8px 0;
 }
 
-.process-layout,
-.document-layout {
+/* Document MDI — single full-bleed WYSIWYG canvas (legacy `MDIDocumentView`). */
+.document-editor {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0;
+  background: #fff;
+}
+
+.document-editor .rich-editor {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: none;
+  background: #fff;
+}
+
+.document-editor .rich-surface-wrap {
+  flex: 1;
+  min-height: 0;
+}
+
+.document-editor .rich-surface {
+  position: relative;
+  flex: 1;
+  min-height: 100%;
+  padding: 10px 12px;
+  outline: none;
+  line-height: 1.4;
+  font-size: 12px;
+}
+
+.document-editor .rich-surface .doc-placed-text {
+  position: absolute;
+  margin: 0;
+  min-width: 2em;
+  min-height: 1.2em;
+}
+
+.document-editor .rich-surface::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+.document-editor .rich-surface table.user {
+  border-collapse: collapse;
+}
+
+.document-editor .rich-surface table.user td,
+.document-editor .rich-surface table.user th {
+  border: 1px solid #000;
+  min-width: 1.5em;
+  min-height: 1.2em;
+  padding: 1px 4px;
+  vertical-align: top;
+}
+
+/* `table.user` selection chrome — move, resize, float (legacy IE resize parity). */
+.table-handles-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 5;
+  box-sizing: border-box;
+}
+
+.table-handles-frame {
+  position: absolute;
+  inset: 0;
+  border: 1px dashed #3f7fd6;
+  pointer-events: none;
+}
+
+.table-handle {
+  position: absolute;
+  pointer-events: auto;
+  border: 1px solid #3f7fd6;
+  background: #fff;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  font-size: 11px;
+  color: #2f63b5;
+  box-sizing: border-box;
+}
+
+.table-handle-move {
+  top: -3px;
+  left: -3px;
+  width: 14px;
+  height: 14px;
+  cursor: grab;
+  z-index: 2;
+  font-size: 10px;
+  line-height: 12px;
+}
+
+.table-handle-move:active {
+  cursor: grabbing;
+}
+
+.table-float-toggle {
+  position: absolute;
+  top: -22px;
+  right: 0;
+  pointer-events: auto;
+  display: flex;
+  gap: 1px;
+}
+
+.table-handle-e {
+  right: -5px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 8px;
+  height: 22px;
+  cursor: ew-resize;
+}
+
+.table-handle-s {
+  bottom: -5px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 8px;
+  cursor: ns-resize;
+}
+
+.table-handle-se {
+  right: -5px;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  cursor: nwse-resize;
+}
+
+.table-handle-col {
+  top: 0;
+  width: 6px;
+  height: 100%;
+  transform: translateX(-50%);
+  cursor: col-resize;
+  background: rgba(63, 127, 214, 0.15);
+  border-color: transparent;
+}
+
+.table-handle-row {
+  left: 0;
+  height: 6px;
+  width: 100%;
+  transform: translateY(-50%);
+  cursor: row-resize;
+  background: rgba(63, 127, 214, 0.15);
+  border-color: transparent;
+}
+
+.table-float-toggle {
+  position: absolute;
+  top: -22px;
+  right: 0;
+  pointer-events: auto;
+  display: flex;
+  gap: 1px;
+}
+
+.table-float-toggle button {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid #3f7fd6;
+  background: #fff;
+  font-size: 11px;
+  line-height: 1;
+  cursor: default;
+}
+
+.table-float-toggle button.active {
+  background: #dceaff;
+  font-weight: 600;
+}
+
+.process-layout {
   display: flex;
   flex: 1;
   min-height: 0;
@@ -4196,26 +4379,54 @@ button.skip-script-line:hover {
   background: #fff;
 }
 
-.process-detail,
-.document-edit,
-.document-preview {
+.process-detail {
   flex: 1;
   padding: 8px;
   overflow: auto;
 }
 
-.document-layout {
-  flex-direction: column;
+.insert-table-backdrop {
+  pointer-events: auto;
 }
 
-@media (min-width: 900px) {
-  .document-layout {
-    flex-direction: row;
-  }
-  .document-preview {
-    width: 45%;
-    border-left: 1px solid var(--border);
-  }
+.insert-table-dialog {
+  min-width: 420px;
+  padding: 14px 18px 12px;
+}
+
+.insert-table-dialog h2 {
+  margin: 0 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.insert-table-fields {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.insert-table-field {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.insert-table-field input {
+  width: 52px;
+  margin: 0;
+  padding: 2px 4px;
+  text-align: right;
+  font-size: 12px;
+}
+
+.insert-table-dialog .modal-actions {
+  justify-content: center;
+  margin-top: 18px;
 }
 
 .modal-backdrop {

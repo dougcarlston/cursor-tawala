@@ -9,6 +9,7 @@ import {
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
 import { FormItemDeleteButton } from "./FormItemDeleteButton";
+import { TableHandlesOverlay } from "./TableHandlesOverlay";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -195,6 +196,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // Keep the palette live while the user operates its dropdowns / color picker.
     const next = e.relatedTarget as HTMLElement | null;
     if (next?.closest(".formatting-palette")) return;
+    if (next?.closest(".table-handles-overlay")) return;
     // Keep the editor mounted while dragging/double-clicking from the Fields panel.
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("text");
@@ -255,58 +257,61 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       )}
       <div className="text-canvas-main">
         {editing ? (
-          <div
-            ref={editorRef}
-            className={`text-rich-editor${dragOver ? " field-drop-active" : ""}`}
-            contentEditable
-            suppressContentEditableWarning
-            data-placeholder={TEXT_PLACEHOLDER}
-            onInput={() => {
-              commit();
-              syncPaletteFocus();
-            }}
-            onKeyUp={() => {
-              rememberSelection();
-              syncPaletteFocus();
-            }}
-            onMouseUp={() => {
-              rememberSelection();
-              syncPaletteFocus();
-            }}
-            onFocus={() => {
-              setActiveFieldTarget(insertFieldToken);
-              registerAsPaletteEditor();
-              syncPaletteFocus();
-            }}
-            onDragOver={(e) => {
-              if (!hasFieldDrag(e.dataTransfer)) return;
-              e.preventDefault();
-              e.dataTransfer.dropEffect = "copy";
-              if (!dragOver) setDragOver(true);
-            }}
-            onDragLeave={() => {
-              if (dragOver) setDragOver(false);
-            }}
-            onDrop={(e) => {
-              setDragOver(false);
-              const name = readFieldDragName(e.dataTransfer);
-              if (!name) return;
-              e.preventDefault();
-              e.stopPropagation();
-              const el = editorRef.current;
-              const range = caretRangeAtPoint(e.clientX, e.clientY);
-              const sel = window.getSelection();
-              if (el && range && sel && el.contains(range.commonAncestorContainer)) {
-                sel.removeAllRanges();
-                sel.addRange(range);
-                savedRangeRef.current = range.cloneRange();
-              } else if (el) {
-                el.focus();
-                restoreSelection();
-              }
-              insertFieldToken(name);
-            }}
-          />
+          <div className="text-rich-wrap">
+            <div
+              ref={editorRef}
+              className={`text-rich-editor${dragOver ? " field-drop-active" : ""}`}
+              contentEditable
+              suppressContentEditableWarning
+              data-placeholder={TEXT_PLACEHOLDER}
+              onInput={() => {
+                commit();
+                syncPaletteFocus();
+              }}
+              onKeyUp={() => {
+                rememberSelection();
+                syncPaletteFocus();
+              }}
+              onMouseUp={() => {
+                rememberSelection();
+                syncPaletteFocus();
+              }}
+              onFocus={() => {
+                setActiveFieldTarget(insertFieldToken);
+                registerAsPaletteEditor();
+                syncPaletteFocus();
+              }}
+              onDragOver={(e) => {
+                if (!hasFieldDrag(e.dataTransfer)) return;
+                e.preventDefault();
+                e.dataTransfer.dropEffect = "copy";
+                if (!dragOver) setDragOver(true);
+              }}
+              onDragLeave={() => {
+                if (dragOver) setDragOver(false);
+              }}
+              onDrop={(e) => {
+                setDragOver(false);
+                const name = readFieldDragName(e.dataTransfer);
+                if (!name) return;
+                e.preventDefault();
+                e.stopPropagation();
+                const el = editorRef.current;
+                const range = caretRangeAtPoint(e.clientX, e.clientY);
+                const sel = window.getSelection();
+                if (el && range && sel && el.contains(range.commonAncestorContainer)) {
+                  sel.removeAllRanges();
+                  sel.addRange(range);
+                  savedRangeRef.current = range.cloneRange();
+                } else if (el) {
+                  el.focus();
+                  restoreSelection();
+                }
+                insertFieldToken(name);
+              }}
+            />
+            <TableHandlesOverlay editorRef={editorRef} onCommit={commit} />
+          </div>
         ) : (
           <div
             className={`text-rendered${isEmpty ? " placeholder" : ""}`}
