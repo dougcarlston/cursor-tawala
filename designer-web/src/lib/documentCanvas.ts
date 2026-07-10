@@ -1,8 +1,18 @@
 /** Click-to-place text on the Document canvas (free-positioned blocks). */
 
-import { formatPt, pxToPt } from "./tableLayout";
+import {
+  DEFAULT_PALETTE_FONT_FACE,
+  DEFAULT_PALETTE_FONT_SIZE_PT,
+} from "./paletteDefaults";
+import {
+  getTypingFormat,
+  type TypingFormat,
+} from "./paletteTypingFormat";
+import { formatPt, getAbsolutePositionPt, pxToPt } from "./tableLayout";
 
 const PLACED_TEXT_CLASS = "doc-placed-text";
+const COLUMN_TOLERANCE_PT = 1.5;
+const LINE_TOLERANCE_PT = 2;
 
 export { PLACED_TEXT_CLASS };
 
@@ -94,13 +104,67 @@ export function shouldPlaceDocumentText(
   return false;
 }
 
-/** Insert an absolutely positioned paragraph at the click point. */
-export function insertPlacedTextBlock(
-  editor: HTMLElement,
-  clientX: number,
-  clientY: number,
-): HTMLParagraphElement {
-  const { left, top } = clientPointToEditorPt(editor, clientX, clientY);
+function meaningfulText(text: string | null | undefined): boolean {
+  return (text ?? "").replace(/\u00a0|\u200b/g, "").trim().length > 0;
+}
+
+function findPlacedTextBlock(node: Node | null, editor: HTMLElement): HTMLElement | null {
+  let current: Node | null = node;
+  if (current?.nodeType === Node.TEXT_NODE) current = current.parentNode;
+  while (current && current !== editor) {
+    if (current instanceof HTMLTableCellElement) return null;
+    if (current instanceof HTMLElement && current.classList.contains(PLACED_TEXT_CLASS)) {
+      return current;
+    }
+    current = current.parentNode;
+  }
+  return null;
+}
+
+/** Placed-text line containing the caret, if any. */
+export function findPlacedTextBlockAtCaret(editor: HTMLElement): HTMLElement | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return null;
+  return findPlacedTextBlock(sel.getRangeAt(0).startContainer, editor);
+}
+
+/** Apply palette typing attributes to a document line block (inherited by typed characters). */
+export function applyTypingFormatToPlacedBlock(block: HTMLElement, typing: TypingFormat): void {
+  if (typing.fontSize === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
+    block.style.removeProperty("font-size");
+  } else {
+    block.style.fontSize = `${typing.fontSize}pt`;
+  }
+  if (typing.fontFace === DEFAULT_PALETTE_FONT_FACE) {
+    block.style.removeProperty("font-family");
+  } else {
+    block.style.fontFamily = typing.fontFace;
+  }
+}
+
+/** One line step for typewriter Return — matches document `line-height: 1.4`. */
+export function placedBlockLineHeightPt(block: HTMLElement): number {
+  const style = getComputedStyle(block);
+  const fontSizePx = Number.parseFloat(style.fontSize);
+  if (!Number.isFinite(fontSizePx)) return 12 * 1.4;
+  const lineHeight = style.lineHeight;
+  if (lineHeight === "normal") return pxToPt(fontSizePx * 1.4);
+  if (lineHeight.endsWith("px")) return pxToPt(Number.parseFloat(lineHeight));
+  const factor = Number.parseFloat(lineHeight);
+  return pxToPt(fontSizePx * (Number.isFinite(factor) ? factor : 1.4));
+}
+
+function copyTypographicStyles(from: HTMLElement, to: HTMLElement): void {
+  const style = getComputedStyle(from);
+  to.style.fontFamily = style.fontFamily;
+  to.style.fontSize = style.fontSize;
+  to.style.fontWeight = style.fontWeight;
+  to.style.fontStyle = style.fontStyle;
+  to.style.color = style.color;
+  to.style.textDecoration = style.textDecoration;
+}
+
+function createPlacedTextBlockAt(left: number, top: number): HTMLParagraphElement {
   const p = document.createElement("p");
   p.className = PLACED_TEXT_CLASS;
   p.style.position = "absolute";
@@ -108,6 +172,79 @@ export function insertPlacedTextBlock(
   p.style.top = formatPt(Math.max(0, top));
   p.style.margin = "0";
   p.style.minWidth = "2em";
+  return p;
+}
+
+/** Remove any existing line in this column at `top` (typewriter overwrite). */
+function removePlacedBlocksAtLine(
+  editor: HTMLElement,
+  left: number,
+  top: number,
+  except?: HTMLElement,
+): void {
+  editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).forEach((node) => {
+    if (!(node instanceof HTMLElement) || node === except) return;
+    const pos = getAbsolutePositionPt(node);
+    if (Math.abs(pos.left - left) > COLUMN_TOLERANCE_PT) return;
+    if (Math.abs(pos.top - top) <= LINE_TOLERANCE_PT) node.remove();
+  });
+}
+
+/**
+ * Legacy typewriter Return inside a `.doc-placed-text` block: new line at the same `left`,
+ * one line height lower; overwrites any existing line already at that position.
+ */
+export function documentEnterInPlacedText(editor: HTMLElement): boolean {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  if (!editor.contains(range.commonAncestorContainer)) return false;
+
+  const block = findPlacedTextBlock(range.startContainer, editor);
+  if (!block) return false;
+
+  if (!range.collapsed) {
+    range.deleteContents();
+    range.collapse(true);
+  }
+
+  const { left, top } = getAbsolutePositionPt(block);
+  const lineHeight = placedBlockLineHeightPt(block);
+  const nextTop = top + lineHeight;
+
+  const tailRange = document.createRange();
+  tailRange.selectNodeContents(block);
+  tailRange.setStart(range.startContainer, range.startOffset);
+  const tail = tailRange.collapsed ? null : tailRange.extractContents();
+
+  if (!meaningfulText(block.textContent)) {
+    block.innerHTML = "<br>";
+  }
+
+  removePlacedBlocksAtLine(editor, left, nextTop, block);
+
+  const newBlock = createPlacedTextBlockAt(left, nextTop);
+  copyTypographicStyles(block, newBlock);
+  if (tail && meaningfulText(tail.textContent)) {
+    newBlock.appendChild(tail);
+  } else {
+    newBlock.innerHTML = "<br>";
+  }
+
+  editor.appendChild(newBlock);
+  focusPlacedBlock(newBlock);
+  return true;
+}
+
+/** Insert an absolutely positioned paragraph at the click point. */
+export function insertPlacedTextBlock(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+): HTMLParagraphElement {
+  const { left, top } = clientPointToEditorPt(editor, clientX, clientY);
+  const p = createPlacedTextBlockAt(left, top);
+  applyTypingFormatToPlacedBlock(p, getTypingFormat(editor));
   p.innerHTML = "<br>";
   editor.appendChild(p);
   return p;

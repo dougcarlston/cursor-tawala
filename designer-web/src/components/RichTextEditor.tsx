@@ -1,24 +1,30 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  fieldToken,
   hasFieldDrag,
   readFieldDragName,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { insertFieldTokenAtSelection, normalizeFieldTokenSpans } from "@/lib/fieldTokens";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
   selectionCursorInTable,
+  selectionHasResettableFormatting,
   setActivePaletteEditor,
   setFormattingFocus,
   type FormattingFocusKind,
 } from "@/lib/formattingPaletteContext";
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
+import { PlacedTextHandlesOverlay } from "./PlacedTextHandlesOverlay";
 import {
   focusDocumentDropTarget,
+  focusPlacedBlock,
+  documentEnterInPlacedText,
   placeDocumentTextAtPoint,
   resolveDocumentFieldDropTarget,
 } from "@/lib/documentCanvas";
+import { requestFunctionPicker } from "@/lib/functionPicker";
+import { FUNCTION_TOKEN_CLASS, tokenRefFromElement } from "@/lib/functionTokens";
 
 interface Props {
   html: string;
@@ -126,6 +132,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   const lastHtml = useRef(html);
   const savedRangeRef = useRef<Range | null>(null);
   const [fieldDragOver, setFieldDragOver] = useState(false);
+  /** Document canvas: distinguish click (place/focus block) from drag (text selection). */
+  const documentPointerRef = useRef<{ x: number; y: number; dragged: boolean } | null>(null);
 
   const selectionIsInside = (selection: Selection | null, el: HTMLDivElement) => {
     if (!selection) return false;
@@ -140,6 +148,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     setFormattingFocus({
       kind: formattingKind,
       cursorInTable: selectionCursorInTable(el),
+      hasResettableFormatting: selectionHasResettableFormatting(el),
     });
   };
 
@@ -203,9 +212,16 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const el = surfaceRef.current;
     if (el && !el.innerHTML && html) {
       el.innerHTML = html;
+      normalizeFieldTokenSpans(el);
       lastHtml.current = html;
     }
   }, []);
+
+  useEffect(() => {
+    const el = surfaceRef.current;
+    if (!el || !html) return;
+    normalizeFieldTokenSpans(el);
+  }, [html]);
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -222,13 +238,13 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     return () => document.removeEventListener("selectionchange", handleSelectionChange);
   }, [formattingKind]);
 
-  /** Insert a `<<field>>` token at the current (or restored) caret. */
+  /** Insert a field token span at the current (or restored) caret. */
   const insertFieldToken = (name: string) => {
     const el = surfaceRef.current;
     if (!el) return;
     el.focus();
     restoreSelection();
-    document.execCommand("insertText", false, fieldToken(name));
+    insertFieldTokenAtSelection(name);
     stripFontSizeFormatting(el);
     const nextHtml = el.innerHTML;
     lastHtml.current = nextHtml;
@@ -238,24 +254,21 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
   const commitFromSurface = (target: HTMLDivElement) => {
     stripFontSizeFormatting(target);
+    normalizeFieldTokenSpans(target);
     const next = target.innerHTML;
     lastHtml.current = next;
     onChange(next);
     syncPaletteFocus();
   };
 
-  const handleDocumentCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (formattingKind !== "document") return;
-    if (e.button !== 0) return;
+  const handleDocumentCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = surfaceRef.current;
     if (!el) return;
     const target = e.target as HTMLElement;
     if (target.closest(".table-handles-overlay")) return;
 
-    el.focus();
     const placed = placeDocumentTextAtPoint(el, e.clientX, e.clientY);
     if (placed) {
-      e.preventDefault();
       savedRangeRef.current = null;
       registerAsPaletteEditor();
       syncPaletteFocus();
@@ -277,7 +290,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       const target = resolveDocumentFieldDropTarget(el, e.clientX, e.clientY);
       const range = focusDocumentDropTarget(target, e.clientX, e.clientY);
       if (range) savedRangeRef.current = range.cloneRange();
-      document.execCommand("insertText", false, fieldToken(name));
+      insertFieldTokenAtSelection(name);
       commitFromSurface(el);
       return;
     }
@@ -331,17 +344,87 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             rememberSelection();
             syncPaletteFocus();
           }}
-          onMouseDown={(e) => {
-            savedRangeRef.current = null;
-            handleDocumentCanvasMouseDown(e);
+          onKeyDown={(e) => {
+            if (formattingKind !== "document") return;
+            if (e.key !== "Enter" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+            const el = surfaceRef.current;
+            if (!el) return;
+            if (documentEnterInPlacedText(el)) {
+              e.preventDefault();
+              commitFromSurface(el);
+            }
           }}
-          onMouseUp={() => {
+          onMouseDown={(e) => {
+            if (formattingKind === "document") {
+              if (e.button !== 0) return;
+              const target = e.target as HTMLElement;
+              if (target.closest(".table-handles-overlay")) return;
+              documentPointerRef.current = {
+                x: e.clientX,
+                y: e.clientY,
+                dragged: false,
+              };
+              surfaceRef.current?.focus();
+              return;
+            }
+            savedRangeRef.current = null;
+          }}
+          onMouseMove={(e) => {
+            const pointer = documentPointerRef.current;
+            if (!pointer || pointer.dragged) return;
+            if (
+              Math.abs(e.clientX - pointer.x) > 3 ||
+              Math.abs(e.clientY - pointer.y) > 3
+            ) {
+              pointer.dragged = true;
+            }
+          }}
+          onMouseUp={(e) => {
             rememberSelection();
             syncPaletteFocus();
+            if (formattingKind !== "document") return;
+            const pointer = documentPointerRef.current;
+            documentPointerRef.current = null;
+            if (!pointer || pointer.dragged || e.button !== 0) return;
+            handleDocumentCanvasClick(e);
+          }}
+          onDoubleClick={(e) => {
+            if (formattingKind === "document") {
+              const placed = (e.target as HTMLElement).closest(".doc-placed-text");
+              if (placed instanceof HTMLElement) {
+                e.preventDefault();
+                focusPlacedBlock(placed);
+                registerAsPaletteEditor();
+                syncPaletteFocus();
+                return;
+              }
+            }
+            if (!formattingKind || (formattingKind !== "text" && formattingKind !== "document")) {
+              return;
+            }
+            const token = (e.target as HTMLElement).closest(`.${FUNCTION_TOKEN_CLASS}`);
+            if (!(token instanceof HTMLSpanElement)) return;
+            e.preventDefault();
+            e.stopPropagation();
+            const ref = tokenRefFromElement(token);
+            const handle = surfaceRef.current;
+            if (handle) {
+              const range = document.createRange();
+              range.selectNodeContents(token);
+              const sel = window.getSelection();
+              sel?.removeAllRanges();
+              sel?.addRange(range);
+              savedRangeRef.current = range.cloneRange();
+              registerAsPaletteEditor();
+            }
+            requestFunctionPicker({ mode: "edit", existing: ref });
           }}
         />
         {(formattingKind === "document" || formattingKind === "text") && (
           <TableHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
+        )}
+        {formattingKind === "document" && (
+          <PlacedTextHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
         )}
       </div>
     </div>

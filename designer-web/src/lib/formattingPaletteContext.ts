@@ -12,6 +12,8 @@ export interface FormattingFocusState {
   kind: FormattingFocusKind;
   /** True when the caret sits inside a `<table>` in the active editor. */
   cursorInTable: boolean;
+  /** True when the active editor has non-default formatting (reset button). */
+  hasResettableFormatting: boolean;
 }
 
 export type PaletteControlId =
@@ -30,7 +32,71 @@ export type PaletteControlId =
   | "tableRowCol"
   | "fx";
 
-const DEFAULT_STATE: FormattingFocusState = { kind: "none", cursorInTable: false };
+const DEFAULT_STATE: FormattingFocusState = {
+  kind: "none",
+  cursorInTable: false,
+  hasResettableFormatting: false,
+};
+
+function nodeHasCharacterFormatting(node: Node): boolean {
+  if (!(node instanceof HTMLElement)) return false;
+  if (node.classList.contains("field-token") || node.classList.contains("function-token")) {
+    return false;
+  }
+  const tag = node.tagName;
+  if (tag === "B" || tag === "STRONG" || tag === "I" || tag === "EM" || tag === "U" || tag === "FONT") {
+    return true;
+  }
+  if (tag === "SPAN" && node.hasAttribute("style")) {
+    const style = node.style;
+    return !!(
+      style.fontWeight ||
+      style.fontStyle ||
+      style.textDecoration ||
+      style.color ||
+      style.fontFamily ||
+      style.fontSize ||
+      style.backgroundColor
+    );
+  }
+  return false;
+}
+
+function fragmentHasCharacterFormatting(root: ParentNode): boolean {
+  if (root instanceof HTMLElement && nodeHasCharacterFormatting(root)) return true;
+  for (const el of root.querySelectorAll("b, strong, i, em, u, font, span[style]")) {
+    if (el instanceof HTMLElement && nodeHasCharacterFormatting(el)) return true;
+  }
+  return false;
+}
+
+/** True when the caret/selection carries character formatting reset can clear. */
+export function selectionHasResettableFormatting(root: HTMLElement | null): boolean {
+  if (!root) return false;
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  if (!root.contains(range.commonAncestorContainer)) return false;
+
+  if (!range.collapsed) {
+    return fragmentHasCharacterFormatting(range.cloneContents());
+  }
+
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  while (node && node !== root) {
+    if (nodeHasCharacterFormatting(node)) return true;
+    node = node.parentNode;
+  }
+  return false;
+}
+
+/** True when the active editor contains formatting reset can clear (legacy: greyed on fresh doc). */
+export function editorHasResettableFormatting(root: HTMLElement | null): boolean {
+  if (!root) return false;
+  if (!root.innerHTML.replace(/\u00a0|\u200b/g, "").trim()) return false;
+  return selectionHasResettableFormatting(root) || !!root.querySelector("table.user, .doc-placed-text");
+}
 
 let focusState: FormattingFocusState = { ...DEFAULT_STATE };
 const listeners = new Set<() => void>();
@@ -117,6 +183,7 @@ export function isPaletteControlEnabled(
   control: PaletteControlId,
   state: FormattingFocusState,
   designTabActive: boolean,
+  projectFormCount = 0,
 ): boolean {
   if (!designTabActive) return false;
 
@@ -135,8 +202,15 @@ export function isPaletteControlEnabled(
     return kind === "text" || kind === "document";
   }
 
+  if (control === "reset") {
+    // TODO: Reset formatting regressed with document typing-format work — re-enable when fixed.
+    return false;
+  }
+
   if (control === "fx") {
-    return kind === "text" || kind === "document";
+    if (kind === "text") return true;
+    if (kind === "document") return projectFormCount >= 1;
+    return false;
   }
 
   return kind === "text" || kind === "document";

@@ -9,7 +9,15 @@ import {
   type PaletteControlId,
 } from "@/lib/formattingPaletteContext";
 import { InsertTableDialog } from "./InsertTableDialog";
+import { openFunctionPickerFromEditor } from "@/lib/functionPicker";
 import {
+  DEFAULT_PALETTE_FONT_FACE,
+  DEFAULT_PALETTE_FONT_SIZE_PT,
+  defaultFontFaceLabel,
+  defaultFontSizeLabel,
+} from "@/lib/paletteDefaults";
+import {
+  FONT_SIZE_PT,
   paletteAlign,
   paletteBold,
   paletteDeleteColumn,
@@ -35,8 +43,7 @@ import {
 
 /** Web-safe font list — `DESIGNER_DOCUMENT_EDITOR.md` § Font Face dropdown. */
 const FONT_FACES = [
-  "Default Font",
-  "Arial",
+  DEFAULT_PALETTE_FONT_FACE,
   "Arial Black",
   "Comic Sans MS",
   "Courier New",
@@ -48,26 +55,8 @@ const FONT_FACES = [
   "Verdana",
 ] as const;
 
-/** Point sizes — `DESIGNER_DOCUMENT_EDITOR.md` § Font Point Size dropdown. */
-const FONT_SIZES = [
-  "Default Size",
-  "8",
-  "9",
-  "10",
-  "11",
-  "12",
-  "14",
-  "16",
-  "18",
-  "20",
-  "22",
-  "24",
-  "26",
-  "28",
-  "36",
-  "48",
-  "72",
-] as const;
+/** Point sizes — legacy default 12 pt Arial, listed in numeric order. */
+const FONT_SIZES = FONT_SIZE_PT.map(String);
 
 const ALIGN_OPTIONS: { value: PaletteActiveState["align"]; label: string; glyph: string }[] = [
   { value: "left", label: "Align Left", glyph: "⯇≡" },
@@ -132,6 +121,7 @@ export function FormattingPalette({ activeKind }: Props) {
     getFormattingFocusState,
   );
   const editorTab = useProjectStore((s) => s.editorTab);
+  const formCount = useProjectStore((s) => s.project.forms.length);
   const [alignMenuOpen, setAlignMenuOpen] = useState(false);
   const [tableMenuOpen, setTableMenuOpen] = useState(false);
   const [insertTableOpen, setInsertTableOpen] = useState(false);
@@ -140,7 +130,7 @@ export function FormattingPalette({ activeKind }: Props) {
   const paletteVisible = activeKind === "form" || activeKind === "document";
   const designActive = activeKind === "document" || editorTab === "design";
   const enabled = (id: PaletteControlId) =>
-    paletteVisible ? isPaletteControlEnabled(id, focus, designActive) : false;
+    paletteVisible ? isPaletteControlEnabled(id, focus, designActive, formCount) : false;
 
   // Live B/I/U, alignment, font face/size at caret (updates on selectionchange).
   const canFormat = enabled("bold");
@@ -186,13 +176,13 @@ export function FormattingPalette({ activeKind }: Props) {
         className="formatting-palette-select"
         title="Font Face"
         disabled={!enabled("fontFace")}
-        value={state?.fontFace ?? "Default Font"}
+        value={state?.fontFace ?? DEFAULT_PALETTE_FONT_FACE}
         onMouseDown={saveEditorSelection}
         onChange={(e) => paletteFontFace(e.target.value)}
       >
         {FONT_FACES.map((face) => (
           <option key={face} value={face}>
-            {face}
+            {defaultFontFaceLabel(face)}
           </option>
         ))}
       </select>
@@ -201,13 +191,13 @@ export function FormattingPalette({ activeKind }: Props) {
         className="formatting-palette-select formatting-palette-select-narrow"
         title="Font Point Size"
         disabled={!enabled("fontSize")}
-        value={state?.fontSize ?? "Default Size"}
+        value={state?.fontSize ?? String(DEFAULT_PALETTE_FONT_SIZE_PT)}
         onMouseDown={saveEditorSelection}
         onChange={(e) => paletteFontSize(e.target.value)}
       >
         {FONT_SIZES.map((size) => (
           <option key={size} value={size}>
-            {size}
+            {defaultFontSizeLabel(size)}
           </option>
         ))}
       </select>
@@ -429,7 +419,16 @@ export function FormattingPalette({ activeKind }: Props) {
 
       <PaletteSep />
 
-      <PaletteButton id="fx" title="Insert or Edit a Function" label="fx" enabled={enabled("fx")} />
+      <PaletteButton
+        id="fx"
+        title="Insert or Edit a Function"
+        label="fx"
+        enabled={enabled("fx")}
+        onClick={() => {
+          saveEditorSelection();
+          openFunctionPickerFromEditor();
+        }}
+      />
     </div>
     {insertTableOpen && (
       <InsertTableDialog

@@ -3172,6 +3172,8 @@ button.skip-script-line:hover {
   min-height: 120px;
   padding: 8px;
   outline: none;
+  font-family: Arial, sans-serif;
+  font-size: 12pt;
 }
 
 .rich-surface:empty::before {
@@ -4132,7 +4134,8 @@ button.skip-script-line:hover {
   padding: 10px 12px;
   outline: none;
   line-height: 1.4;
-  font-size: 12px;
+  font-family: Arial, sans-serif;
+  font-size: 12pt;
 }
 
 .document-editor .rich-surface .doc-placed-text {
@@ -4140,6 +4143,7 @@ button.skip-script-line:hover {
   margin: 0;
   min-width: 2em;
   min-height: 1.2em;
+  white-space: nowrap;
 }
 
 .document-editor .rich-surface::after {
@@ -4427,6 +4431,190 @@ button.skip-script-line:hover {
 .insert-table-dialog .modal-actions {
   justify-content: center;
   margin-top: 18px;
+}
+
+/* Insert Function dialog — legacy `InsertFunctionDialog` */
+.insert-function-backdrop {
+  pointer-events: auto;
+}
+
+.insert-function-dialog {
+  min-width: 520px;
+  max-width: min(640px, 92vw);
+  padding: 14px 18px 12px;
+  background: var(--panel);
+  border: 1px solid var(--border-dark);
+  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+.insert-function-dialog h2 {
+  margin: 0 0 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.insert-function-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.insert-function-category {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+
+.insert-function-category select {
+  min-width: 180px;
+  font-size: 12px;
+}
+
+.insert-function-list-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.insert-function-list-label {
+  font-size: 12px;
+}
+
+.insert-function-list {
+  height: 160px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  background: #fff;
+}
+
+.insert-function-item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  border: none;
+  border-bottom: 1px solid #eee;
+  background: transparent;
+  padding: 4px 8px;
+  font-size: 12px;
+  cursor: default;
+}
+
+.insert-function-item:hover,
+.insert-function-item.selected {
+  background: #316ac5;
+  color: #fff;
+}
+
+.insert-function-description {
+  min-height: 72px;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background: #fafafa;
+  font-size: 12px;
+}
+
+.insert-function-description strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.insert-function-description p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.insert-function-dialog .modal-actions {
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.configure-function-dialog .configure-function-fields select,
+.configure-function-dialog .configure-function-fields input {
+  width: 100%;
+  font-size: 12px;
+}
+
+.configure-function-collection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0;
+  border-top: 1px solid var(--border);
+}
+
+.configure-function-column {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 6px 8px;
+  background: #f8f8f8;
+  border: 1px solid var(--border);
+}
+
+.configure-function-empty {
+  margin: 0;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.function-conditions-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 8px 0;
+  padding: 8px;
+  border: 1px solid var(--border);
+  background: #fafafa;
+}
+
+.function-conditions-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.function-conditions-where,
+.function-conditions-where-tail {
+  font-weight: 600;
+}
+
+.function-conditions-combinator {
+  font-size: 12px;
+}
+
+.function-conditions-param-name {
+  margin: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.function-conditions-row {
+  margin: 0;
+}
+
+.field-token {
+  cursor: default;
+  vertical-align: baseline;
+  user-select: none;
+}
+
+.function-token {
+  cursor: pointer;
+}
+
+.placed-text-handles-overlay .placed-text-handle-label {
+  position: absolute;
+  font-size: 9px;
+  color: #555;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 0 3px;
+  border: 1px solid #ccc;
+  pointer-events: none;
+  white-space: nowrap;
 }
 
 .modal-backdrop {

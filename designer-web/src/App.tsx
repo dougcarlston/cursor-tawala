@@ -11,6 +11,7 @@ import { CanvasWindowManager } from "./components/mdi/CanvasWindowManager";
 import { StatusBar } from "./components/StatusBar";
 import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
+import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import type { TemplateEntry } from "@/templates/catalog";
 
@@ -141,6 +142,7 @@ export default function App() {
         onClose={() => setShowNewProject(false)}
         onSelect={(t) => void onPickTemplate(t)}
       />
+      <FunctionPickerHost />
     </div>
   );
 }

@@ -16,6 +16,7 @@ import {
   selectionCursorInTable,
   setActivePaletteEditor,
   setFormattingFocus,
+  selectionHasResettableFormatting,
 } from "@/lib/formattingPaletteContext";
 
 interface Props {
@@ -106,7 +107,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // enables the buttons; without a PaletteEditorHandle they silently no-op.
     setActiveFieldTarget(insertFieldToken);
     registerAsPaletteEditor();
-    setFormattingFocus({ kind: "text", cursorInTable: selectionCursorInTable(el) });
+    setFormattingFocus({
+      kind: "text",
+      cursorInTable: selectionCursorInTable(el),
+      hasResettableFormatting: selectionHasResettableFormatting(el),
+    });
     const sel = window.getSelection();
     if (!sel) return;
     const range = document.createRange();
@@ -172,7 +177,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   const syncPaletteFocus = () => {
     const el = editorRef.current;
     if (!el || document.activeElement !== el) return;
-    setFormattingFocus({ kind: "text", cursorInTable: selectionCursorInTable(el) });
+    setFormattingFocus({
+      kind: "text",
+      cursorInTable: selectionCursorInTable(el),
+      hasResettableFormatting: selectionHasResettableFormatting(el),
+    });
   };
 
   const insertFieldToken = (name: string) => {

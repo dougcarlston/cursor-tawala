@@ -4,6 +4,7 @@ import { fibToXml } from "./fibToXml.mjs";
 import { registrationFibToXml } from "./registrationFibToXml.mjs";
 import { registrationTextToXml } from "./registrationTextToXml.mjs";
 import { mcToXml } from "./mcToXml.mjs";
+import { documentHtmlToXml } from "./documentHtmlToXml.mjs";
 
 const TAB_MC = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
@@ -397,7 +398,7 @@ export function projectToXml(project) {
     .map((d) => {
       const body =
         typeof d.content === "string"
-          ? `<paragraph indent="0" align="left">${escText(d.content)}</paragraph>`
+          ? documentHtmlToXml(d.content, escAttr, escText)
           : richContentToXml(d.content);
       return `<document name="${escAttr(d.name)}"><xmlData>${body}</xmlData></document>`;
     })

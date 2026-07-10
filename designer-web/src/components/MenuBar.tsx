@@ -1,6 +1,11 @@
-import { useState, useEffect, useRef, ReactNode } from "react";
+import { useState, useEffect, useRef, ReactNode, useSyncExternalStore } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { FORM_ITEM_PALETTE } from "@/types/tawala";
+import {
+  getFormattingFocusState,
+  subscribeFormattingFocus,
+} from "@/lib/formattingPaletteContext";
+import { openFunctionPickerFromEditor } from "@/lib/functionPicker";
 
 interface Props {
   onNewProject: () => void;
@@ -15,7 +20,23 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, canDelete }:
   const setStatus = useProjectStore((s) => s.setStatus);
   const insertFormItem = useProjectStore((s) => s.insertFormItem);
   const selection = useProjectStore((s) => s.selection);
+  const editorTab = useProjectStore((s) => s.editorTab);
+  const openWindows = useProjectStore((s) => s.openWindows);
+  const activeWindowId = useProjectStore((s) => s.activeWindowId);
+  const formCount = useProjectStore((s) => s.project.forms.length);
   const canInsert = selection.kind === "form" && Boolean(selection.name);
+  const focus = useSyncExternalStore(
+    subscribeFormattingFocus,
+    getFormattingFocusState,
+    getFormattingFocusState,
+  );
+  const activeWindow = openWindows.find((w) => w.id === activeWindowId) ?? null;
+  const activeKind = activeWindow?.kind ?? null;
+  const designActive = activeKind === "document" || editorTab === "design";
+  const canInsertFunction =
+    designActive &&
+    (focus.kind === "text" ||
+      (focus.kind === "document" && formCount >= 1));
 
   const saveJson = () => {
     const blob = new Blob([exportJson()], { type: "application/json" });
@@ -57,6 +78,10 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, canDelete }:
             {label}
           </button>
         ))}
+        <div className="menu-separator" />
+        <button type="button" disabled={!canInsertFunction} onClick={openFunctionPickerFromEditor}>
+          Function…
+        </button>
       </MenuDrop>
       <MenuDrop label="Edit">
         <button type="button" disabled>

@@ -14,10 +14,28 @@ import {
   getActivePaletteEditor,
   getFormattingFocusState,
   selectionCursorInTable,
+  selectionHasResettableFormatting,
   setFormattingFocus,
   type PaletteEditorHandle,
 } from "./formattingPaletteContext";
-import { parseCssPt, pxToPt } from "./tableLayout";
+import { parseCssPt } from "./tableLayout";
+import {
+  DEFAULT_PALETTE_FONT_FACE,
+  DEFAULT_PALETTE_FONT_SIZE_PT,
+} from "./paletteDefaults";
+import {
+  applyTypingFormatToPlacedBlock,
+  findPlacedTextBlockAtCaret,
+  PLACED_TEXT_CLASS,
+} from "./documentCanvas";
+import {
+  blockContainer,
+  defaultTypingFormat,
+  getTypingFormat,
+  isBlankTypingContext,
+  resetTypingFormat,
+  setTypingFormat,
+} from "./paletteTypingFormat";
 
 export interface PaletteActiveState {
   bold: boolean;
@@ -41,7 +59,7 @@ const WEB_SAFE_FACES = [
   "Verdana",
 ] as const;
 
-const FONT_SIZE_PT = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72] as const;
+export const FONT_SIZE_PT = [8, 9, 10, 11, 12, 14, 16, 18, 20, 22, 24, 26, 28, 36, 48, 72] as const;
 
 const LEGACY_SIZE_TO_PT: Record<string, number> = {
   "1": 8,
@@ -94,6 +112,72 @@ export function subscribePaletteActiveState(listener: () => void): () => void {
   };
 }
 
+function currentRangeInEditor(root: HTMLElement): Range | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return null;
+  const range = sel.getRangeAt(0);
+  if (!root.contains(range.commonAncestorContainer)) return null;
+  return range;
+}
+
+/** Visit inline formatting nodes at the caret or within the current selection only. */
+function forEachInlineNodeInSelection(
+  root: HTMLElement,
+  visit: (el: HTMLElement) => void,
+): void {
+  const range = currentRangeInEditor(root);
+  if (!range) return;
+
+  const seen = new Set<HTMLElement>();
+  const addAncestors = (node: Node | null) => {
+    let el: Node | null = node;
+    if (el?.nodeType === Node.TEXT_NODE) el = el.parentNode;
+    while (el && el instanceof HTMLElement && el !== root) {
+      if (!seen.has(el)) {
+        seen.add(el);
+        visit(el);
+      }
+      el = el.parentNode;
+    }
+  };
+
+  if (range.collapsed) {
+    addAncestors(range.startContainer);
+    return;
+  }
+
+  addAncestors(range.startContainer);
+  addAncestors(range.endContainer);
+  root.querySelectorAll("font, span[style]").forEach((node) => {
+    if (!(node instanceof HTMLElement) || seen.has(node)) return;
+    if (!range.intersectsNode(node)) return;
+    seen.add(node);
+    visit(node);
+  });
+}
+
+function rewriteLegacyFontSizeMarkers(root: HTMLElement, sizePt: string): void {
+  const range = currentRangeInEditor(root);
+  if (!range) return;
+
+  const rewrite = (node: HTMLElement) => {
+    if (node.tagName !== "FONT" || node.getAttribute("size") !== "7") return;
+    node.removeAttribute("size");
+    node.style.fontSize = `${sizePt}pt`;
+  };
+
+  if (range.collapsed) {
+    forEachInlineNodeInSelection(root, rewrite);
+    return;
+  }
+
+  root.querySelectorAll('font[size="7"]').forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    if (!range.intersectsNode(node)) return;
+    rewrite(node);
+  });
+}
+
 export function emitPaletteActiveState(): void {
   cachedPaletteActiveState = null;
   paletteActiveListeners.forEach((cb) => cb());
@@ -101,43 +185,18 @@ export function emitPaletteActiveState(): void {
 
 function matchFontFace(raw: string): string {
   const first = raw.replace(/['"]/g, "").split(",")[0]?.trim().toLowerCase() ?? "";
-  if (!first) return "Default Font";
+  if (!first) return DEFAULT_PALETTE_FONT_FACE;
+  if (first.includes("segoe")) return DEFAULT_PALETTE_FONT_FACE;
   for (const face of WEB_SAFE_FACES) {
     if (face.toLowerCase() === first) return face;
   }
-  return "Default Font";
+  return DEFAULT_PALETTE_FONT_FACE;
 }
 
-function readSelectionFontSizePt(): number {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return 0;
-  let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
-  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-  const handle = getActivePaletteEditor();
-  if (!(node instanceof HTMLElement) || !handle?.el.contains(node)) return 0;
-
-  let el: HTMLElement | null = node;
-  while (el && el !== handle.el) {
-    if (el.style.fontSize) return parseCssPt(el.style.fontSize);
-    el = el.parentElement;
+function snapFontSizePt(pt: number): string {
+  if (pt <= 0 || Math.abs(pt - DEFAULT_PALETTE_FONT_SIZE_PT) <= 1.5) {
+    return String(DEFAULT_PALETTE_FONT_SIZE_PT);
   }
-
-  try {
-    const legacy = document.queryCommandValue("fontSize");
-    if (legacy && legacy !== "3" && LEGACY_SIZE_TO_PT[legacy]) {
-      return LEGACY_SIZE_TO_PT[legacy];
-    }
-  } catch {
-    /* ignore */
-  }
-
-  const px = Number.parseFloat(getComputedStyle(node).fontSize);
-  return Number.isFinite(px) ? pxToPt(px) : 0;
-}
-
-function readFontSizeLabel(): string {
-  const pt = readSelectionFontSizePt();
-  if (pt <= 0) return "Default Size";
   let best: number = FONT_SIZE_PT[0];
   let bestDiff = Infinity;
   for (const size of FONT_SIZE_PT) {
@@ -147,25 +206,150 @@ function readFontSizeLabel(): string {
       best = size;
     }
   }
-  return bestDiff <= 1.5 ? String(best) : "Default Size";
+  return bestDiff <= 1.5 ? String(best) : String(DEFAULT_PALETTE_FONT_SIZE_PT);
+}
+
+/** Inline font-size on ancestors between the caret and its block — not inherited block CSS. */
+function readExplicitFontSizePt(editor: HTMLElement): number {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return 0;
+  const range = sel.getRangeAt(0);
+  const block = blockContainer(range.startContainer, editor);
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  while (node && node instanceof HTMLElement && node !== block) {
+    if (node.style.fontSize) return parseCssPt(node.style.fontSize);
+    if (node.tagName === "FONT") {
+      const legacy = node.getAttribute("size");
+      if (legacy && legacy !== "3" && LEGACY_SIZE_TO_PT[legacy]) {
+        return LEGACY_SIZE_TO_PT[legacy];
+      }
+    }
+    node = node.parentNode;
+  }
+  if (block.classList.contains(PLACED_TEXT_CLASS) && block.style.fontSize) {
+    return parseCssPt(block.style.fontSize);
+  }
+  return 0;
+}
+
+function readExplicitFontFace(editor: HTMLElement): string | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return null;
+  const range = sel.getRangeAt(0);
+  const block = blockContainer(range.startContainer, editor);
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  while (node && node instanceof HTMLElement && node !== block) {
+    if (node.style.fontFamily) return matchFontFace(node.style.fontFamily);
+    if (node.tagName === "FONT" && node.getAttribute("face")) {
+      return matchFontFace(node.getAttribute("face")!);
+    }
+    node = node.parentNode;
+  }
+  if (block.classList.contains(PLACED_TEXT_CLASS) && block.style.fontFamily) {
+    return matchFontFace(block.style.fontFamily);
+  }
+  return null;
+}
+
+function readFontSizeLabel(): string {
+  const handle = getActivePaletteEditor();
+  if (!handle) return String(DEFAULT_PALETTE_FONT_SIZE_PT);
+
+  if (isBlankTypingContext(handle.el)) {
+    return getTypingFormat(handle.el).fontSize;
+  }
+
+  if (selectionHasMixedFontSize()) return String(DEFAULT_PALETTE_FONT_SIZE_PT);
+
+  const pt = readExplicitFontSizePt(handle.el);
+  if (pt > 0) {
+    return snapFontSizePt(pt);
+  }
+
+  return String(DEFAULT_PALETTE_FONT_SIZE_PT);
 }
 
 function readFontFaceLabel(): string {
-  try {
-    const raw = document.queryCommandValue("fontName");
-    if (raw) return matchFontFace(String(raw));
-  } catch {
-    /* ignore */
+  const handle = getActivePaletteEditor();
+  if (!handle) return DEFAULT_PALETTE_FONT_FACE;
+
+  if (isBlankTypingContext(handle.el)) {
+    return getTypingFormat(handle.el).fontFace;
   }
+
+  if (selectionHasMixedFontFace()) return DEFAULT_PALETTE_FONT_FACE;
+
+  const face = readExplicitFontFace(handle.el);
+  if (face) return face;
+
+  return DEFAULT_PALETTE_FONT_FACE;
+}
+
+function selectionHasMixedFontFace(): boolean {
+  const handle = getActivePaletteEditor();
   const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return "Default Font";
-  let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
-  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-  if (node instanceof HTMLElement) {
-    const family = getComputedStyle(node).fontFamily;
-    if (family) return matchFontFace(family);
+  if (!handle || !sel || sel.rangeCount === 0 || sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  if (!handle.el.contains(range.commonAncestorContainer)) return false;
+  const faces = new Set<string>();
+  walkRangeTextNodes(range, (node) => {
+    if (!(node.parentElement && handle.el.contains(node.parentElement))) return;
+    const face = matchFontFace(getComputedStyle(node.parentElement!).fontFamily);
+    faces.add(face);
+  });
+  return faces.size > 1;
+}
+
+function selectionHasMixedFontSize(): boolean {
+  const handle = getActivePaletteEditor();
+  const sel = window.getSelection();
+  if (!handle || !sel || sel.rangeCount === 0 || sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  if (!handle.el.contains(range.commonAncestorContainer)) return false;
+  const sizes = new Set<string>();
+  walkRangeTextNodes(range, (node) => {
+    if (!(node.parentElement && handle.el.contains(node.parentElement))) return;
+    sizes.add(readFontSizeLabelFromNode(node, handle.el));
+  });
+  return sizes.size > 1;
+}
+
+function readFontSizeLabelFromNode(node: Node, editor: HTMLElement): string {
+  const block = blockContainer(node, editor);
+  let el: Node | null = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+  while (el && el instanceof HTMLElement && el !== block) {
+    if (el.style.fontSize) {
+      const pt = parseCssPt(el.style.fontSize);
+      if (pt > 0) return snapFontSizePt(pt);
+    }
+    if (el.tagName === "FONT") {
+      const legacy = el.getAttribute("size");
+      if (legacy && legacy !== "3" && LEGACY_SIZE_TO_PT[legacy]) {
+        return snapFontSizePt(LEGACY_SIZE_TO_PT[legacy]);
+      }
+    }
+    el = el.parentElement;
   }
-  return "Default Font";
+  if (block.classList.contains(PLACED_TEXT_CLASS) && block.style.fontSize) {
+    return snapFontSizePt(parseCssPt(block.style.fontSize));
+  }
+  return String(DEFAULT_PALETTE_FONT_SIZE_PT);
+}
+
+function walkRangeTextNodes(range: Range, visit: (node: Text) => void): void {
+  const root = range.commonAncestorContainer;
+  const walker = document.createTreeWalker(
+    root.nodeType === Node.ELEMENT_NODE ? root : root.parentNode ?? root,
+    NodeFilter.SHOW_TEXT,
+  );
+  let node: Text | null;
+  while ((node = walker.nextNode() as Text | null)) {
+    if (!range.intersectsNode(node)) continue;
+    if (!node.textContent?.replace(/\u00a0|\u200b/g, "").length) continue;
+    visit(node);
+  }
 }
 
 const ALIGN_COMMAND: Record<PaletteActiveState["align"], string> = {
@@ -181,12 +365,13 @@ function selectionInside(el: HTMLElement): boolean {
   return el.contains(sel.getRangeAt(0).commonAncestorContainer);
 }
 
-function refreshCursorInTable(handle: PaletteEditorHandle): void {
+function refreshPaletteFocus(handle: PaletteEditorHandle): void {
   const state = getFormattingFocusState();
   if (state.kind === "none" || state.kind === "heading") return;
   setFormattingFocus({
     kind: state.kind,
     cursorInTable: selectionCursorInTable(handle.el),
+    hasResettableFormatting: selectionHasResettableFormatting(handle.el),
   });
 }
 
@@ -203,7 +388,7 @@ function withEditor(fn: (handle: PaletteEditorHandle) => void, styleWithCss = tr
   }
   fn(handle);
   handle.commit();
-  refreshCursorInTable(handle);
+  refreshPaletteFocus(handle);
   emitPaletteActiveState();
 }
 
@@ -331,19 +516,132 @@ function exec(command: string, value?: string, styleWithCss = true): void {
 }
 
 export function paletteBold(): void {
-  exec("bold");
+  withEditor((handle) => {
+    document.execCommand("bold");
+    try {
+      setTypingFormat(handle.el, { bold: document.queryCommandState("bold") });
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 export function paletteItalic(): void {
-  exec("italic");
+  withEditor((handle) => {
+    document.execCommand("italic");
+    try {
+      setTypingFormat(handle.el, { italic: document.queryCommandState("italic") });
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 export function paletteUnderline(): void {
-  exec("underline");
+  withEditor((handle) => {
+    document.execCommand("underline");
+    try {
+      setTypingFormat(handle.el, { underline: document.queryCommandState("underline") });
+    } catch {
+      /* ignore */
+    }
+  });
 }
 
 export function paletteReset(): void {
-  exec("removeFormat");
+  withEditor((handle) => {
+    stripFormattingInEditor(handle.el);
+    resetTypingFormat(handle.el);
+  });
+}
+
+function isProtectedInlineToken(el: HTMLElement): boolean {
+  return el.classList.contains("field-token") || el.classList.contains("function-token");
+}
+
+function unwrapElement(el: Element): void {
+  const parent = el.parentNode;
+  if (!parent) return;
+  while (el.firstChild) parent.insertBefore(el.firstChild, el);
+  parent.removeChild(el);
+}
+
+function stripInlineStyle(span: HTMLElement): void {
+  span.style.removeProperty("font-weight");
+  span.style.removeProperty("font-style");
+  span.style.removeProperty("text-decoration");
+  span.style.removeProperty("color");
+  span.style.removeProperty("font-family");
+  span.style.removeProperty("font-size");
+  span.style.removeProperty("background-color");
+  if (!span.getAttribute("style")?.trim()) {
+    unwrapElement(span);
+  }
+}
+
+/** Remove character formatting without `removeFormat` (which can block later palette commands). */
+function stripFormattingInEditor(root: HTMLElement): void {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+  const range = sel.getRangeAt(0);
+  if (!root.contains(range.commonAncestorContainer)) return;
+
+  if (!range.collapsed) {
+    const extracted = range.extractContents();
+    stripFormattingFragment(extracted);
+    range.insertNode(extracted);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    return;
+  }
+
+  for (let pass = 0; pass < 32; pass++) {
+    if (!stripOneFormatLayerAtCaret(root, range)) break;
+    if (!sel.rangeCount) break;
+  }
+}
+
+function stripOneFormatLayerAtCaret(root: HTMLElement, range: Range): boolean {
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  while (node && node !== root) {
+    if (!(node instanceof HTMLElement)) {
+      node = node.parentNode;
+      continue;
+    }
+    if (isProtectedInlineToken(node)) return false;
+    const tag = node.tagName;
+    if (tag === "B" || tag === "STRONG" || tag === "I" || tag === "EM" || tag === "U" || tag === "FONT") {
+      unwrapElement(node);
+      return true;
+    }
+    if (tag === "SPAN" && node.hasAttribute("style")) {
+      stripInlineStyle(node);
+      return true;
+    }
+    node = node.parentNode;
+  }
+  return false;
+}
+
+function stripFormattingFragment(root: ParentNode): void {
+  for (let pass = 0; pass < 8; pass++) {
+    let changed = false;
+    root.querySelectorAll("b, strong, i, em, u, font").forEach((node) => {
+      if (node instanceof HTMLElement && !isProtectedInlineToken(node)) {
+        unwrapElement(node);
+        changed = true;
+      }
+    });
+    root.querySelectorAll("span[style]").forEach((node) => {
+      if (node instanceof HTMLElement && !isProtectedInlineToken(node)) {
+        const before = node.getAttribute("style");
+        stripInlineStyle(node);
+        if (before !== node.getAttribute("style")) changed = true;
+      }
+    });
+    if (!changed) break;
+  }
 }
 
 export function paletteIndent(): void {
@@ -363,10 +661,30 @@ export function paletteFontColor(color: string): void {
 }
 
 export function paletteFontFace(face: string): void {
-  // "Default Font" clearing is deferred (would need to strip inherited font runs); applying a
-  // named face is the common case. Choosing Default is a no-op for now.
-  if (face === "Default Font") return;
-  exec("fontName", face);
+  withEditor((handle) => {
+    setTypingFormat(handle.el, { fontFace: face });
+    const placed = findPlacedTextBlockAtCaret(handle.el);
+    if (placed && isBlankTypingContext(handle.el)) {
+      applyTypingFormatToPlacedBlock(placed, getTypingFormat(handle.el));
+      return;
+    }
+    if (face === DEFAULT_PALETTE_FONT_FACE) {
+      forEachInlineNodeInSelection(handle.el, (node) => {
+        if (isProtectedInlineToken(node)) return;
+        if (node.style.fontFamily) {
+          node.style.removeProperty("font-family");
+          if (!node.getAttribute("style")?.trim() && node.tagName === "SPAN") {
+            unwrapElement(node);
+          }
+        }
+        if (node.tagName === "FONT" && node.hasAttribute("face")) {
+          unwrapElement(node);
+        }
+      });
+      return;
+    }
+    document.execCommand("fontName", false, face);
+  });
 }
 
 /**
@@ -374,13 +692,30 @@ export function paletteFontFace(face: string): void {
  * `<font size="7">` marker (styleWithCSS off) and rewrite it to an explicit `font-size` in pt.
  */
 export function paletteFontSize(size: string): void {
-  if (size === "Default Size") return;
   withEditor((handle) => {
+    setTypingFormat(handle.el, { fontSize: size });
+    const placed = findPlacedTextBlockAtCaret(handle.el);
+    if (placed && isBlankTypingContext(handle.el)) {
+      applyTypingFormatToPlacedBlock(placed, getTypingFormat(handle.el));
+      return;
+    }
+    if (size === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
+      forEachInlineNodeInSelection(handle.el, (node) => {
+        if (isProtectedInlineToken(node)) return;
+        if (node.style.fontSize) {
+          node.style.removeProperty("font-size");
+          if (!node.getAttribute("style")?.trim() && node.tagName === "SPAN") {
+            unwrapElement(node);
+          }
+        }
+        if (node.tagName === "FONT" && node.hasAttribute("size")) {
+          unwrapElement(node);
+        }
+      });
+      return;
+    }
     document.execCommand("fontSize", false, "7");
-    handle.el.querySelectorAll('font[size="7"]').forEach((node) => {
-      node.removeAttribute("size");
-      (node as HTMLElement).style.fontSize = `${size}pt`;
-    });
+    rewriteLegacyFontSizeMarkers(handle.el, size);
   }, false);
 }
 
@@ -492,6 +827,10 @@ export function paletteDeleteRow(): void {
 
 /** Current B/I/U + alignment of the selection, for the palette's pressed/active styling. */
 export function readPaletteActiveState(): PaletteActiveState {
+  const handle = getActivePaletteEditor();
+  const blank = handle ? isBlankTypingContext(handle.el) : false;
+  const typing = handle ? getTypingFormat(handle.el) : defaultTypingFormat();
+
   const query = (command: string): boolean => {
     try {
       return document.queryCommandState(command);
@@ -504,9 +843,9 @@ export function readPaletteActiveState(): PaletteActiveState {
   else if (query("justifyRight")) align = "right";
   else if (query("justifyFull")) align = "justify";
   return {
-    bold: query("bold"),
-    italic: query("italic"),
-    underline: query("underline"),
+    bold: blank ? typing.bold : query("bold"),
+    italic: blank ? typing.italic : query("italic"),
+    underline: blank ? typing.underline : query("underline"),
     align,
     fontFace: readFontFaceLabel(),
     fontSize: readFontSizeLabel(),

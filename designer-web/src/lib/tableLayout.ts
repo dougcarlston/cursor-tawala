@@ -68,6 +68,22 @@ export function setTableRowHeights(table: HTMLTableElement, heights: number[]): 
   });
 }
 
+/** Read absolute offset for positioned elements (`.doc-placed-text`, etc.). */
+export function getAbsolutePositionPt(el: HTMLElement): { left: number; top: number } {
+  return {
+    left: parseCssPt(el.style.left),
+    top: parseCssPt(el.style.top),
+  };
+}
+
+/** Set absolute position in pt (Document free-placement blocks). */
+export function setAbsolutePositionPt(el: HTMLElement, left: number, top: number): void {
+  el.style.position = "absolute";
+  el.style.left = formatPt(left);
+  el.style.top = formatPt(top);
+  el.style.margin = "0";
+}
+
 /** Read table offset used for drag positioning (relative `left`/`top`, pt). */
 export function getTablePositionPt(table: HTMLTableElement): { left: number; top: number } {
   if (table.style.position === "relative" || table.style.left || table.style.top) {
