@@ -14,6 +14,9 @@ const PLACED_TEXT_CLASS = "doc-placed-text";
 const LINE_TOLERANCE_PT = 2;
 /** Extra inset inside the editor content box (~10px). Editor padding already provides chrome inset. */
 const DOC_LINE_MARGIN_PT = pxToPt(10);
+/** Half-inch indent step (legacy paragraph indent feel). */
+export const DOC_INDENT_STEP_PT = 36;
+const MAX_DOC_INDENT_LEVEL = 16;
 
 export { PLACED_TEXT_CLASS };
 
@@ -186,28 +189,69 @@ export function getDocumentContentMetrics(editor: HTMLElement): {
 
 /**
  * Single-line Document alignment relative to left/right margins (not shrink-wrapped text-align alone).
- * Text wraps within the margin box; height growth packs lines below.
+ * Text wraps within the margin box; height growth packs lines below. Preserves indent level.
  */
 export function alignPlacedTextBlock(
   editor: HTMLElement,
   block: HTMLElement,
   align: DocumentAlign,
 ): void {
+  block.style.textAlign = align;
+  block.dataset.docAlign = align;
+  applyPlacedIndentLayout(editor, block);
+  reflowPlacedLinesBelow(editor, block);
+}
+
+/** Indent level stored on a placed line (`0` = at left margin). */
+export function readPlacedIndentLevel(block: HTMLElement): number {
+  const raw = Number(block.dataset.docIndent ?? "");
+  if (Number.isFinite(raw) && raw >= 0) return Math.min(MAX_DOC_INDENT_LEVEL, Math.floor(raw));
+  return 0;
+}
+
+/**
+ * Nudge a placed line’s left edge by one indent step (clamped to the left margin).
+ * Width always runs to the right margin so wrap-on-type still applies.
+ */
+export function adjustPlacedTextIndent(
+  editor: HTMLElement,
+  block: HTMLElement,
+  delta: 1 | -1,
+): void {
+  const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
+  const rightEdge = contentWidthPt - marginPt;
+  const { left, top } = getAbsolutePositionPt(block);
+
+  let level = readPlacedIndentLevel(block);
+  if (block.dataset.docIndent == null || block.dataset.docIndent === "") {
+    level = Math.max(0, Math.round((left - marginPt) / DOC_INDENT_STEP_PT));
+  }
+  level = Math.max(0, Math.min(MAX_DOC_INDENT_LEVEL, level + delta));
+  block.dataset.docIndent = String(level);
+
+  const nextLeft = Math.max(marginPt, Math.min(rightEdge - 24, marginPt + level * DOC_INDENT_STEP_PT));
+  block.style.position = "absolute";
+  block.style.top = formatPt(top);
+  block.style.left = formatPt(nextLeft);
+  ensurePlacedBlockWrapWidth(editor, block);
+  reflowPlacedLinesBelow(editor, block);
+}
+
+/** Apply left/width from indent level (+ optional align) between document margins. */
+function applyPlacedIndentLayout(editor: HTMLElement, block: HTMLElement): void {
   const { top } = getAbsolutePositionPt(block);
   const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
-  const lineWidth = Math.max(1, contentWidthPt - marginPt * 2);
+  const level = readPlacedIndentLevel(block);
+  const left = marginPt + level * DOC_INDENT_STEP_PT;
+  const rightEdge = contentWidthPt - marginPt;
+  const width = Math.max(1, rightEdge - left);
 
   block.style.position = "absolute";
   block.style.top = formatPt(top);
-  block.style.left = formatPt(marginPt);
-  block.style.width = formatPt(lineWidth);
+  block.style.left = formatPt(left);
+  block.style.width = formatPt(width);
   block.style.right = "auto";
-  block.style.textAlign = align;
-  block.dataset.docAlign = align;
   applyPlacedBlockWrapStyles(block);
-
-  // Absolute lines don't flow in normal layout — clear overlap after height changes.
-  reflowPlacedLinesBelow(editor, block);
 }
 
 /**
@@ -215,6 +259,11 @@ export function alignPlacedTextBlock(
  * Typing past the right edge soft-wraps within the block; callers should reflow below.
  */
 export function ensurePlacedBlockWrapWidth(editor: HTMLElement, block: HTMLElement): void {
+  // Aligned / indented lines stay on the margin+indent grid.
+  if (block.dataset.docAlign || (block.dataset.docIndent != null && block.dataset.docIndent !== "")) {
+    applyPlacedIndentLayout(editor, block);
+    return;
+  }
   const { left } = getAbsolutePositionPt(block);
   const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
   const rightEdge = contentWidthPt - marginPt;

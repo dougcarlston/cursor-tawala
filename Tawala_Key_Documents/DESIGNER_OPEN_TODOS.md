@@ -12,6 +12,7 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 - **fx / Insert Function not fully implemented** — picker popup works (smoke July 10); many functions lack full configure UI and/or real XML export. (Source: Document palette & typewriter; smoke item 14)
 - **Field-token drag polish** — optional leftover; not confirmed broken. (Source: Document palette & typewriter)
 - **Default Font / Default Size greyed rules** — legacy: Reset greyed on fresh doc until mixed formatting; Reset is currently always greyed (see bugs). Remaining label/enable polish if needed after Reset is fixed or removed. (Source: Document WYSIWYG & palette)
+- **Indent / Outdent** — **verified July 10:** Document placed lines shift by 36 pt steps from the left margin (width still to right margin); Form paragraphs use `margin-left`.
 
 ### Document line model / reflow (epic — owner Jul 10)
 

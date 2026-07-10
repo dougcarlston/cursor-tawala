@@ -18,7 +18,7 @@ import {
   setFormattingFocus,
   type PaletteEditorHandle,
 } from "./formattingPaletteContext";
-import { parseCssPt } from "./tableLayout";
+import { formatPt, parseCssPt } from "./tableLayout";
 import {
   DEFAULT_PALETTE_FONT_FACE,
   DEFAULT_PALETTE_FONT_SIZE_PT,
@@ -27,7 +27,9 @@ import {
 import {
   applyTypingFormatToPlacedBlock,
   applyTypingFormatToToken,
+  adjustPlacedTextIndent,
   alignPlacedTextBlock,
+  DOC_INDENT_STEP_PT,
   findPlacedTextBlockAtCaret,
   listPlacedBlocksInSelection,
   PLACED_TEXT_CLASS,
@@ -565,12 +567,6 @@ export function paletteInsertTable(options: InsertTableOptions): void {
   });
 }
 
-function exec(command: string, value?: string, styleWithCss = true): void {
-  withEditor(() => {
-    document.execCommand(command, false, value);
-  }, styleWithCss);
-}
-
 export function paletteBold(): void {
   withEditor((handle) => {
     document.execCommand("bold");
@@ -701,11 +697,42 @@ function stripFormattingFragment(root: ParentNode): void {
 }
 
 export function paletteIndent(): void {
-  exec("indent");
+  withEditor((handle) => {
+    if (indentSelection(handle.el, 1)) return;
+    document.execCommand("indent");
+  });
 }
 
 export function paletteOutdent(): void {
-  exec("outdent");
+  withEditor((handle) => {
+    if (indentSelection(handle.el, -1)) return;
+    document.execCommand("outdent");
+  });
+}
+
+/** Document placed lines or Form paragraph margin — returns true when handled. */
+function indentSelection(editor: HTMLElement, delta: 1 | -1): boolean {
+  const blocks = listPlacedBlocksInSelection(editor);
+  if (blocks.length > 0) {
+    for (const block of blocks) {
+      adjustPlacedTextIndent(editor, block, delta);
+    }
+    reflowAllPlacedLines(editor);
+    return true;
+  }
+
+  const block = blockContainer(
+    window.getSelection()?.getRangeAt(0)?.startContainer ?? editor,
+    editor,
+  );
+  if (block === editor || block.classList.contains(PLACED_TEXT_CLASS)) return false;
+  if (block instanceof HTMLTableCellElement) return false;
+
+  const current = parseCssPt(block.style.marginLeft);
+  const next = Math.max(0, current + delta * DOC_INDENT_STEP_PT);
+  if (next <= 0) block.style.removeProperty("margin-left");
+  else block.style.marginLeft = formatPt(next);
+  return true;
 }
 
 export function paletteAlign(dir: PaletteActiveState["align"]): void {
