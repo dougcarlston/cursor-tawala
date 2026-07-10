@@ -7,13 +7,45 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ---
 
+## Smoke test July 10 (`b48656b`) — pass summary
+
+| # | Area | Result |
+|---|------|--------|
+| 1–4 | Shell / MDI / palettes | Pass |
+| 5–6 | Form insert/edit, field drag | Pass |
+| 7 | Skip dialog | Pass (solid) |
+| 8 | Process If/Set/Show | Pass |
+| 9 | Send/Get panels | Layout OK; email validation incomplete; mail backend unimplemented → **TODOs** |
+| 10–12 | Document typewriter Enter, font stick, blank click | Pass |
+| 13 | Drag-select highlight | **Fail** — see Document below |
+| 14 | fx popup | Opens; catalog/config not fully implemented → **TODOs** |
+| 15 | Reset | Intentionally greyed; may **remove** if unfixable |
+| 16 | Save / reload | Pass |
+| 17 | `npm run build` | Optional — see owner note |
+
+---
+
 ## Active / deferred bugs
 
 ### Palette
 
-- **Reset Formatting broken** — Document and Form rich text. Control is **always greyed** on purpose until fixed. **Real bug; deferred.**
+- **Reset Formatting broken** — Document and Form rich text. Always greyed on purpose (was breaking other features). **Deferred;** owner may **delete the control** if we cannot fix it cleanly.
 
-- **Font/size dropdown on mixed-format runs** — may still show Default Font/Size when the selection mixes faces/sizes. **Unconfirmed — verify once** in the app; demote to TODO or drop if OK.
+- **Font/size dropdown on mixed-format runs** — may still show Default Font/Size when the selection mixes faces/sizes. Single-run caret sync and Document typing persistence verified OK July 10 (after hard refresh; earlier “regression” was a stale tab).
+
+### Document canvas & palette (smoke test July 10)
+
+Owner could not fully test overnight (hooks-order / “too many hooks” error); retested on tip `b48656b` after hard refresh. Font face/size for plain typing OK; remaining Document issues:
+
+- **Multiline / drag-select highlighting buggy** — cannot reliably highlight across multiple Document lines (separate `.doc-placed-text` blocks). Confirmed again on smoke item 13. **Open.**
+
+- **Fields and variables do not adopt current font face/size** — inserted field/variable tokens ignore the Document typing format (or surrounding line style). **Open.**
+
+- **Font Color selector doesn’t work properly** — palette color control. **Open.**
+
+- **Alignment tools don’t work yet** — paragraph alignment on Document. **Open.**
+
+- **Can still overwrite existing text without deleting it** — typewriter/line placement: new typing or new lines can draw over existing text instead of replacing/clearing it first. Partial Enter-overwrite was added; gap remains. **Open.**
 
 ### Form canvas (UX backlog)
 
@@ -23,7 +55,7 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ### Skip Instructions (parked — fix when Skip is reopened)
 
-- **Skip dialog re-open does not restore insertion point.** **Real bug; parked with Skip.**
+- **Skip dialog re-open does not restore insertion point.** **Real bug; parked with Skip.** (Smoke: Skip dialog itself felt solid July 10.)
 
 - **Skip modal overlay quirks** (positioning / full-screen dim). Soft / polish; Close-only dismiss is intentional. **Parked with Skip.**
 

@@ -9,8 +9,9 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 ## Document editor & export
 
 - **Document HTML → XML export incomplete** — only some function types emit real XML; others become comments. Tables/placed text improved in `documentHtmlToXml.mjs` but export is still partial. (Sources: Document palette & typewriter; Document WYSIWYG & palette)
+- **fx / Insert Function not fully implemented** — picker popup works (smoke July 10); many functions lack full configure UI and/or real XML export. (Source: Document palette & typewriter; smoke item 14)
 - **Field-token drag polish** — optional leftover; not confirmed broken. (Source: Document palette & typewriter)
-- **Default Font / Default Size greyed rules** — legacy: Reset greyed on fresh doc until mixed formatting; Reset is currently always greyed (see bugs). Remaining label/enable polish if needed after Reset is fixed. (Source: Document WYSIWYG & palette)
+- **Default Font / Default Size greyed rules** — legacy: Reset greyed on fresh doc until mixed formatting; Reset is currently always greyed (see bugs). Remaining label/enable polish if needed after Reset is fixed or removed. (Source: Document WYSIWYG & palette)
 
 ## Form items & Fields
 
@@ -34,7 +35,7 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 ## Process editor
 
 - **Edit → Connect / Disconnect Pre/Post-Process** menu actions missing — yellow banner + connection dialog work; menu parity does not. **Deferred.** (Sources: Designer MDI and Heading; Process editor If/Set)
-- **Send does nothing at runtime** (`runtimeEngine.mjs` no-op; no Resend/SES). Designer UI done; mail API out of scope. **Deferred.** (Source: Process statement panels)
+- **Send does nothing at runtime** (`runtimeEngine.mjs` no-op; no Resend/SES). Designer panel layout OK (smoke July 10); **email validation incomplete**; mail API out of scope. **Deferred.** (Source: Process statement panels)
 - **Get `where` filter not applied in browser preview.** Designer Where UI works; runtime filter not wired. **Deferred.** (Source: Process statement panels)
 - **Append / Show document merge not in browser preview.** Designer panels work; runtime merge not in this track. **Deferred.** (Source: Process statement panels)
 - **Fields palette: no Record List / RecordSet branch after Get** (legacy when Get selected). ForEach record branches landed; Get RecordSet left as polish. **Deferred.** (Source: Process statement panels)
