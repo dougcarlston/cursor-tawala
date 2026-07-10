@@ -22,6 +22,8 @@ import {
   documentEnterInPlacedText,
   handlePlacedTextArrowKey,
   placeDocumentTextAtPoint,
+  PLACED_TEXT_CLASS,
+  reflowPlacedLinesBelow,
   resolveDocumentFieldDropTarget,
 } from "@/lib/documentCanvas";
 import { requestFunctionPicker } from "@/lib/functionPicker";
@@ -292,6 +294,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       const range = focusDocumentDropTarget(target, e.clientX, e.clientY);
       if (range) savedRangeRef.current = range.cloneRange();
       insertFieldTokenAtSelection(name);
+      if (target.classList.contains(PLACED_TEXT_CLASS)) {
+        reflowPlacedLinesBelow(el, target);
+      }
       commitFromSurface(el);
       return;
     }

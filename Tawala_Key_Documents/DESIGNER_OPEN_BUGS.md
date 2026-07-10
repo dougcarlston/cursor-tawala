@@ -41,7 +41,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Fields and variables font face/size** — **Face/size match verified July 10** after fix. Placement still broken (below).
 
-- **Field token drop/placement on Document** — cannot drop a field onto an existing comparison line; cannot move a token after drop; changing font size can overwrite nearby text; tokens have no awareness of other content on the page. **Open** (smoke verify #1 follow-up). Overlaps overwrite-without-delete / drag polish.
+- **Field token drop/placement on Document** — **Snap-to-line verified July 10:** drop joins the nearest line; mid-line drop, typing after token, and joint highlight/reformat with text all work. Move-after-drop and size-overwrite still open if needed.
 
 - **Font Color selector** — **Verified July 10:** highlight recolors only the selection; **A** applies current color; **▾** chooses a new color; icon swatch tracks color; new typing keeps the color. Field tokens still need snap-to-line / same-block placement before color reliably reaches them.
 

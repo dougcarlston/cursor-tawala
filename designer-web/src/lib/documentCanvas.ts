@@ -377,6 +377,7 @@ export function focusPlacedBlock(block: HTMLElement): Range | null {
 /**
  * Drop target for a field on the Document canvas — always uses viewport coordinates,
  * not `caretRangeFromPoint` (which snaps beside floats/tables to the wrong corner).
+ * Prefers an existing placed line under/near the drop (snap-to-line).
  */
 export function resolveDocumentFieldDropTarget(
   editor: HTMLElement,
@@ -386,21 +387,27 @@ export function resolveDocumentFieldDropTarget(
   const hit = document.elementFromPoint(clientX, clientY);
   if (hit instanceof HTMLElement) {
     if (hit.closest(".table-handles-overlay")) {
-      return insertPlacedTextBlock(editor, clientX, clientY);
-    }
-    const cell = hit.closest("td, th");
-    if (cell instanceof HTMLTableCellElement && editor.contains(cell)) {
-      return cell;
-    }
-    const placed = hit.closest(`.${PLACED_TEXT_CLASS}`);
-    if (placed instanceof HTMLElement && editor.contains(placed)) {
-      return placed;
+      // Fall through to snap / new line below.
+    } else {
+      const cell = hit.closest("td, th");
+      if (cell instanceof HTMLTableCellElement && editor.contains(cell)) {
+        return cell;
+      }
+      const placed = hit.closest(`.${PLACED_TEXT_CLASS}`);
+      if (placed instanceof HTMLElement && editor.contains(placed)) {
+        return placed;
+      }
     }
   }
+
+  // Snap into the nearest line on this row even if the drop missed the glyphs.
+  const near = findPlacedTextBlockNearPoint(editor, clientX, clientY, { bandScale: 1.75 });
+  if (near) return near;
+
   return insertPlacedTextBlock(editor, clientX, clientY);
 }
 
-/** Put the caret inside a table cell at the drop point, or at the start of a placed block. */
+/** Put the caret inside a table cell at the drop point, or in a placed line at that X. */
 export function focusDocumentDropTarget(
   target: HTMLElement,
   clientX: number,
@@ -423,6 +430,9 @@ export function focusDocumentDropTarget(
       return fallback;
     }
     return null;
+  }
+  if (target.classList.contains(PLACED_TEXT_CLASS)) {
+    return focusPlacedBlockAtClientPoint(target, clientX, clientY);
   }
   return focusPlacedBlock(target);
 }
@@ -463,8 +473,10 @@ export function findPlacedTextBlockNearPoint(
   editor: HTMLElement,
   clientX: number,
   clientY: number,
+  options?: { bandScale?: number },
 ): HTMLElement | null {
   const { top } = clientPointToEditorPt(editor, clientX, clientY);
+  const bandScale = options?.bandScale ?? 1;
   let best: HTMLElement | null = null;
   let bestDist = Infinity;
 
@@ -474,7 +486,7 @@ export function findPlacedTextBlockNearPoint(
     const lineH = placedBlockLineHeightPt(node);
     const mid = pos.top + lineH / 2;
     const dist = Math.abs(top - mid);
-    const band = Math.max(lineH, LINE_TOLERANCE_PT * 4) / 2 + LINE_TOLERANCE_PT;
+    const band = (Math.max(lineH, LINE_TOLERANCE_PT * 4) / 2 + LINE_TOLERANCE_PT) * bandScale;
     if (dist <= band && dist < bestDist) {
       bestDist = dist;
       best = node;
@@ -483,7 +495,7 @@ export function findPlacedTextBlockNearPoint(
   return best;
 }
 
-function focusPlacedBlockAtClientPoint(
+export function focusPlacedBlockAtClientPoint(
   block: HTMLElement,
   clientX: number,
   clientY: number,
@@ -496,7 +508,7 @@ function focusPlacedBlockAtClientPoint(
     sel.addRange(range);
     return range;
   }
-  // Click was on the line’s empty width (past the glyphs) — put caret at end.
+  // Click/drop was on the line’s empty width (past the glyphs) — put caret at end.
   return focusPlacedBlockEnd(block);
 }
 
