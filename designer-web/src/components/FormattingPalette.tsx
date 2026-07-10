@@ -13,6 +13,7 @@ import { openFunctionPickerFromEditor } from "@/lib/functionPicker";
 import {
   DEFAULT_PALETTE_FONT_FACE,
   DEFAULT_PALETTE_FONT_SIZE_PT,
+  MIXED_PALETTE_VALUE,
   defaultFontFaceLabel,
   defaultFontSizeLabel,
 } from "@/lib/paletteDefaults";
@@ -185,8 +186,14 @@ export function FormattingPalette({ activeKind }: Props) {
         disabled={!enabled("fontFace")}
         value={state?.fontFace ?? DEFAULT_PALETTE_FONT_FACE}
         onMouseDown={saveEditorSelection}
-        onChange={(e) => paletteFontFace(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value === MIXED_PALETTE_VALUE) return;
+          paletteFontFace(e.target.value);
+        }}
       >
+        {state?.fontFace === MIXED_PALETTE_VALUE && (
+          <option value={MIXED_PALETTE_VALUE}>Mixed</option>
+        )}
         {FONT_FACES.map((face) => (
           <option key={face} value={face}>
             {defaultFontFaceLabel(face)}
@@ -200,8 +207,14 @@ export function FormattingPalette({ activeKind }: Props) {
         disabled={!enabled("fontSize")}
         value={state?.fontSize ?? String(DEFAULT_PALETTE_FONT_SIZE_PT)}
         onMouseDown={saveEditorSelection}
-        onChange={(e) => paletteFontSize(e.target.value)}
+        onChange={(e) => {
+          if (e.target.value === MIXED_PALETTE_VALUE) return;
+          paletteFontSize(e.target.value);
+        }}
       >
+        {state?.fontSize === MIXED_PALETTE_VALUE && (
+          <option value={MIXED_PALETTE_VALUE}>Mixed</option>
+        )}
         {FONT_SIZES.map((size) => (
           <option key={size} value={size}>
             {defaultFontSizeLabel(size)}

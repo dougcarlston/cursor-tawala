@@ -15,6 +15,11 @@
 export const FIELD_DRAG_MIME = "application/x-tawala-field";
 /** Form branch name when a field leaf is dragged from under a form folder (not Variables). */
 export const FIELD_DRAG_FORM_MIME = "application/x-tawala-field-form";
+/** In-editor drag of an existing field token (move, not copy from Fields palette). */
+export const FIELD_TOKEN_MOVE_MIME = "application/x-tawala-field-token-move";
+
+/** Token currently being relocated via HTML5 drag (cleared on drop / dragend). */
+let movingFieldToken: HTMLElement | null = null;
 
 /** Legacy `<<FieldReference>>` token wrapping a field/variable name. */
 export function fieldToken(name: string): string {
@@ -33,6 +38,38 @@ export function setFieldDragData(
   }
   dataTransfer.setData("text/plain", fieldToken(name));
   dataTransfer.effectAllowed = "copy";
+}
+
+/** Start relocating an existing field token already in the editor. */
+export function beginFieldTokenMove(token: HTMLElement, dataTransfer: DataTransfer, name: string): void {
+  movingFieldToken = token;
+  dataTransfer.setData(FIELD_DRAG_MIME, name);
+  dataTransfer.setData(FIELD_TOKEN_MOVE_MIME, "1");
+  dataTransfer.setData("text/plain", fieldToken(name));
+  dataTransfer.effectAllowed = "move";
+  try {
+    dataTransfer.setDragImage(token, Math.min(12, token.offsetWidth / 2), Math.min(8, token.offsetHeight / 2));
+  } catch {
+    /* some browsers reject setDragImage on detached/odd nodes */
+  }
+}
+
+/** True when the in-flight drag is relocating an editor token (not a Fields-palette copy). */
+export function isFieldTokenMoveDrag(dataTransfer: DataTransfer | null): boolean {
+  if (movingFieldToken) return true;
+  if (!dataTransfer) return false;
+  return Array.from(dataTransfer.types).includes(FIELD_TOKEN_MOVE_MIME);
+}
+
+/** Consume and clear the token being moved; null if this was a palette copy drop. */
+export function takeMovingFieldToken(): HTMLElement | null {
+  const token = movingFieldToken;
+  movingFieldToken = null;
+  return token;
+}
+
+export function clearMovingFieldToken(): void {
+  movingFieldToken = null;
 }
 
 /** True when an in-flight drag carries a Tawala field (checked during `dragover`). */

@@ -11,7 +11,6 @@ import {
 import { formatPt, getAbsolutePositionPt, pxToPt } from "./tableLayout";
 
 const PLACED_TEXT_CLASS = "doc-placed-text";
-const COLUMN_TOLERANCE_PT = 1.5;
 const LINE_TOLERANCE_PT = 2;
 /** Extra inset inside the editor content box (~10px). Editor padding already provides chrome inset. */
 const DOC_LINE_MARGIN_PT = pxToPt(10);
@@ -223,8 +222,15 @@ export function alignPlacedTextBlock(
 }
 
 /**
- * Push following placed lines down so they clear `block`'s current box (wrap/justify).
- * Does not pull lines back up when `block` shrinks — full reflow epic later.
+ * Pack following placed lines under `block`: push down to clear overlap, or pull up
+ * to close the gap when `block`'s box shrinks.
+ *
+ * Height is the rendered line box (tallest glyph/token on the line), not the last
+ * palette action:
+ * - Enlarging a single word/character can grow the box and push lines below down.
+ * - Lines below move back up only when the box actually shrinks — i.e. every
+ *   enlarged run on that line has been shrunk (or never enlarged). Shrinking one
+ *   word while another stays large must not pull up.
  */
 export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement): void {
   const blocks = listPlacedBlocksSorted(editor);
@@ -233,20 +239,24 @@ export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement):
 
   const gapPt = 2;
   const pos = getAbsolutePositionPt(block);
-  let nextTop = pos.top + Math.max(placedBlockLineHeightPt(block), pxToPt(block.getBoundingClientRect().height)) + gapPt;
+  let nextTop = pos.top + placedBlockLayoutHeightPt(block) + gapPt;
 
   for (let i = idx + 1; i < blocks.length; i++) {
     const below = blocks[i];
     const belowPos = getAbsolutePositionPt(below);
-    if (belowPos.top < nextTop - 0.5) {
+    if (Math.abs(belowPos.top - nextTop) > 0.5) {
       below.style.top = formatPt(nextTop);
     }
-    const topNow = getAbsolutePositionPt(below).top;
-    nextTop =
-      topNow +
-      Math.max(placedBlockLineHeightPt(below), pxToPt(below.getBoundingClientRect().height)) +
-      gapPt;
+    nextTop = nextTop + placedBlockLayoutHeightPt(below) + gapPt;
   }
+}
+
+/** Rendered height of a placed line for packing (tallest content on the line). */
+function placedBlockLayoutHeightPt(block: HTMLElement): number {
+  const measured = pxToPt(block.getBoundingClientRect().height);
+  // Prefer the painted box so mixed inline sizes pack correctly; fall back for empty lines.
+  if (measured >= 1) return measured;
+  return placedBlockLineHeightPt(block);
 }
 
 export function readPlacedTextAlign(block: HTMLElement): DocumentAlign {
@@ -288,24 +298,32 @@ function createPlacedTextBlockAt(left: number, top: number): HTMLParagraphElemen
   return p;
 }
 
-/** Remove any existing line in this column at `top` (typewriter overwrite). */
-function removePlacedBlocksAtLine(
+/**
+ * Shift every placed line at or below `fromTopPt` down by `deltaPt`.
+ * Used so Return / growth pushes existing text instead of stacking over it.
+ */
+export function pushPlacedLinesFrom(
   editor: HTMLElement,
-  left: number,
-  top: number,
-  except?: HTMLElement,
+  fromTopPt: number,
+  deltaPt: number,
+  except?: HTMLElement | HTMLElement[],
 ): void {
-  editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).forEach((node) => {
-    if (!(node instanceof HTMLElement) || node === except) return;
+  if (deltaPt <= 0) return;
+  const skip = new Set(
+    (Array.isArray(except) ? except : except ? [except] : []).filter(Boolean),
+  );
+  listPlacedBlocksSorted(editor).forEach((node) => {
+    if (skip.has(node)) return;
     const pos = getAbsolutePositionPt(node);
-    if (Math.abs(pos.left - left) > COLUMN_TOLERANCE_PT) return;
-    if (Math.abs(pos.top - top) <= LINE_TOLERANCE_PT) node.remove();
+    if (pos.top >= fromTopPt - LINE_TOLERANCE_PT) {
+      node.style.top = formatPt(pos.top + deltaPt);
+    }
   });
 }
 
 /**
- * Legacy typewriter Return inside a `.doc-placed-text` block: new line at the same `left`,
- * one line height lower; overwrites any existing line already at that position.
+ * Typewriter Return inside a `.doc-placed-text` block: new line at the same `left`,
+ * one line height lower; existing lines at/below that spot are pushed down (not deleted).
  */
 export function documentEnterInPlacedText(editor: HTMLElement): boolean {
   const sel = window.getSelection();
@@ -334,8 +352,6 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
     block.innerHTML = "<br>";
   }
 
-  removePlacedBlocksAtLine(editor, left, nextTop, block);
-
   const newBlock = createPlacedTextBlockAt(left, nextTop);
   copyTypographicStyles(block, newBlock);
   if (tail && meaningfulText(tail.textContent)) {
@@ -344,7 +360,10 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
     newBlock.innerHTML = "<br>";
   }
 
+  // Make room first so the new line does not land on top of existing text.
+  pushPlacedLinesFrom(editor, nextTop, lineHeight, block);
   editor.appendChild(newBlock);
+  reflowPlacedLinesBelow(editor, newBlock);
   focusPlacedBlock(newBlock);
   return true;
 }

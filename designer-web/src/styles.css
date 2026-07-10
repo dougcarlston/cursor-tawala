@@ -4618,6 +4618,14 @@ button.skip-script-line:hover {
   -webkit-user-select: text;
 }
 
+.rich-surface .field-token {
+  cursor: grab;
+}
+
+.rich-surface .field-token:active {
+  cursor: grabbing;
+}
+
 .function-token {
   cursor: pointer;
 }

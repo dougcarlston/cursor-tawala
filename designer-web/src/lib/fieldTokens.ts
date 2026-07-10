@@ -21,16 +21,36 @@ export function createFieldTokenElement(name: string): HTMLSpanElement {
   span.setAttribute("contenteditable", "false");
   span.setAttribute(FIELD_NAME_ATTR, name);
   span.setAttribute("title", name);
+  span.draggable = true;
   span.textContent = fieldToken(name);
   return span;
 }
 
-/** Insert a field token span at the current selection, replacing any selected content. */
-export function insertFieldTokenAtSelection(name: string): void {
+function placeTokenAtSelection(span: HTMLElement): void {
   const sel = window.getSelection();
   if (!sel || !sel.rangeCount) return;
   const range = sel.getRangeAt(0);
-  if (!range.collapsed) range.deleteContents();
+  // Dropping onto the token itself (or a selection that includes it) is a no-op.
+  if (span.contains(range.commonAncestorContainer)) return;
+  if (!range.collapsed) {
+    const probe = range.cloneRange();
+    try {
+      if (probe.intersectsNode(span)) return;
+    } catch {
+      /* intersectsNode can throw on detached nodes */
+    }
+    range.deleteContents();
+  }
+  range.insertNode(span);
+  const after = document.createRange();
+  after.setStartAfter(span);
+  after.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(after);
+}
+
+/** Insert a field token span at the current selection, replacing any selected content. */
+export function insertFieldTokenAtSelection(name: string): void {
   const span = createFieldTokenElement(name);
 
   const handle = getActivePaletteEditor();
@@ -43,12 +63,19 @@ export function insertFieldTokenAtSelection(name: string): void {
     applyTypingFormatToToken(span, typing);
   }
 
-  range.insertNode(span);
-  const after = document.createRange();
-  after.setStartAfter(span);
-  after.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(after);
+  placeTokenAtSelection(span);
+}
+
+/** Relocate an existing field token to the current selection (preserves styles). */
+export function moveFieldTokenToSelection(token: HTMLElement): void {
+  placeTokenAtSelection(token);
+}
+
+/** Ensure loaded / upgraded tokens are draggable for in-editor move. */
+export function ensureFieldTokensDraggable(root: ParentNode): void {
+  root.querySelectorAll(`.${FIELD_TOKEN_CLASS}`).forEach((node) => {
+    if (node instanceof HTMLElement) node.draggable = true;
+  });
 }
 
 const PLAIN_FIELD_RE = /<<([^<>]+)>>/g;

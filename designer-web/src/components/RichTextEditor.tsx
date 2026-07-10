@@ -1,10 +1,21 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  beginFieldTokenMove,
+  clearMovingFieldToken,
   hasFieldDrag,
+  isFieldTokenMoveDrag,
   readFieldDragName,
   setActiveFieldTarget,
+  takeMovingFieldToken,
 } from "@/lib/fieldInsertion";
-import { insertFieldTokenAtSelection, normalizeFieldTokenSpans } from "@/lib/fieldTokens";
+import {
+  ensureFieldTokensDraggable,
+  insertFieldTokenAtSelection,
+  moveFieldTokenToSelection,
+  normalizeFieldTokenSpans,
+  readFieldNameFromToken,
+  FIELD_TOKEN_CLASS,
+} from "@/lib/fieldTokens";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -213,18 +224,20 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
   useEffect(() => {
     const el = surfaceRef.current;
-    if (el && !el.innerHTML && html) {
-      el.innerHTML = html;
-      normalizeFieldTokenSpans(el);
-      lastHtml.current = html;
-    }
-  }, []);
+    if (!el || !html) return;
+    normalizeFieldTokenSpans(el);
+    ensureFieldTokensDraggable(el);
+  }, [html]);
 
   useEffect(() => {
     const el = surfaceRef.current;
-    if (!el || !html) return;
-    normalizeFieldTokenSpans(el);
-  }, [html]);
+    if (el && !el.innerHTML && html) {
+      el.innerHTML = html;
+      normalizeFieldTokenSpans(el);
+      ensureFieldTokensDraggable(el);
+      lastHtml.current = html;
+    }
+  }, []);
 
   useEffect(() => {
     const handleSelectionChange = () => {
@@ -258,6 +271,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   const commitFromSurface = (target: HTMLDivElement) => {
     stripFontSizeFormatting(target);
     normalizeFieldTokenSpans(target);
+    ensureFieldTokensDraggable(target);
     const next = target.innerHTML;
     lastHtml.current = next;
     onChange(next);
@@ -269,6 +283,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (!el) return;
     const target = e.target as HTMLElement;
     if (target.closest(".table-handles-overlay")) return;
+    if (target.closest(`.${FIELD_TOKEN_CLASS}`)) return;
 
     const placed = placeDocumentTextAtPoint(el, e.clientX, e.clientY);
     if (placed) {
@@ -281,8 +296,11 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
   const handleFieldDrop = (e: React.DragEvent<HTMLDivElement>) => {
     setFieldDragOver(false);
-    const name = readFieldDragName(e.dataTransfer);
-    if (!name) return;
+    const moving = takeMovingFieldToken();
+    const name = moving
+      ? readFieldNameFromToken(moving) ?? readFieldDragName(e.dataTransfer)
+      : readFieldDragName(e.dataTransfer);
+    if (!name && !moving) return;
     e.preventDefault();
     e.stopPropagation();
     const el = surfaceRef.current;
@@ -293,7 +311,11 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       const target = resolveDocumentFieldDropTarget(el, e.clientX, e.clientY);
       const range = focusDocumentDropTarget(target, e.clientX, e.clientY);
       if (range) savedRangeRef.current = range.cloneRange();
-      insertFieldTokenAtSelection(name);
+      if (moving) {
+        moveFieldTokenToSelection(moving);
+      } else if (name) {
+        insertFieldTokenAtSelection(name);
+      }
       if (target.classList.contains(PLACED_TEXT_CLASS)) {
         reflowPlacedLinesBelow(el, target);
       }
@@ -308,7 +330,12 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       selection.addRange(range);
       savedRangeRef.current = range.cloneRange();
     }
-    insertFieldToken(name);
+    if (moving) {
+      moveFieldTokenToSelection(moving);
+      commitFromSurface(el);
+    } else if (name) {
+      insertFieldToken(name);
+    }
   };
 
   return (
@@ -324,10 +351,24 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
           contentEditable
           suppressContentEditableWarning
           data-placeholder={placeholder}
+          onDragStart={(e) => {
+            const token = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);
+            if (!(token instanceof HTMLElement) || !surfaceRef.current?.contains(token)) return;
+            const name = readFieldNameFromToken(token);
+            if (!name) {
+              e.preventDefault();
+              return;
+            }
+            beginFieldTokenMove(token, e.dataTransfer, name);
+            if (documentPointerRef.current) documentPointerRef.current.dragged = true;
+          }}
+          onDragEnd={() => {
+            clearMovingFieldToken();
+          }}
           onDragOver={(e) => {
             if (!hasFieldDrag(e.dataTransfer)) return;
             e.preventDefault();
-            e.dataTransfer.dropEffect = "copy";
+            e.dataTransfer.dropEffect = isFieldTokenMoveDrag(e.dataTransfer) ? "move" : "copy";
             if (!fieldDragOver) setFieldDragOver(true);
           }}
           onDragLeave={() => {

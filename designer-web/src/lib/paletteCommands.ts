@@ -22,6 +22,7 @@ import { parseCssPt } from "./tableLayout";
 import {
   DEFAULT_PALETTE_FONT_FACE,
   DEFAULT_PALETTE_FONT_SIZE_PT,
+  MIXED_PALETTE_VALUE,
 } from "./paletteDefaults";
 import {
   applyTypingFormatToPlacedBlock,
@@ -30,6 +31,7 @@ import {
   findPlacedTextBlockAtCaret,
   PLACED_TEXT_CLASS,
   readPlacedTextAlign,
+  reflowPlacedLinesBelow,
 } from "./documentCanvas";
 import {
   blockContainer,
@@ -162,6 +164,55 @@ function forEachInlineNodeInSelection(
   });
 }
 
+/** Strip explicit point sizes from the selection and unwrap empty FONT/SPAN wrappers. */
+function clearExplicitFontSizeInSelection(root: HTMLElement): void {
+  const range = currentRangeInEditor(root);
+  if (!range) return;
+
+  const clearNode = (node: HTMLElement) => {
+    if (isProtectedInlineToken(node)) return;
+    if (node.style.fontSize) {
+      node.style.removeProperty("font-size");
+      if (!node.getAttribute("style")?.trim()) {
+        node.removeAttribute("style");
+      }
+    }
+    if (node.tagName === "FONT") {
+      node.removeAttribute("size");
+      const keep =
+        node.getAttribute("face") ||
+        node.getAttribute("color") ||
+        node.getAttribute("style")?.trim();
+      if (!keep) unwrapElement(node);
+      return;
+    }
+    if (
+      node.tagName === "SPAN" &&
+      !node.className &&
+      !node.getAttribute("style")?.trim() &&
+      node.attributes.length === 0
+    ) {
+      unwrapElement(node);
+    }
+  };
+
+  forEachInlineNodeInSelection(root, clearNode);
+
+  // Catch size wrappers that aren't ancestors of the range endpoints.
+  if (!range.collapsed) {
+    root.querySelectorAll("font, span[style], [style*='font-size']").forEach((node) => {
+      if (!(node instanceof HTMLElement)) return;
+      if (isProtectedInlineToken(node)) return;
+      try {
+        if (!range.intersectsNode(node)) return;
+      } catch {
+        return;
+      }
+      clearNode(node);
+    });
+  }
+}
+
 function rewriteLegacyFontSizeMarkers(root: HTMLElement, sizePt: string): void {
   const range = currentRangeInEditor(root);
   if (!range) return;
@@ -267,7 +318,8 @@ function readFontSizeLabel(): string {
     return getTypingFormat(handle.el).fontSize;
   }
 
-  if (selectionHasMixedFontSize()) return String(DEFAULT_PALETTE_FONT_SIZE_PT);
+  // Mixed highlight must not report as default — that blocks re-selecting default in the UI.
+  if (selectionHasMixedFontSize()) return MIXED_PALETTE_VALUE;
 
   const pt = readExplicitFontSizePt(handle.el);
   if (pt > 0) {
@@ -285,7 +337,7 @@ function readFontFaceLabel(): string {
     return getTypingFormat(handle.el).fontFace;
   }
 
-  if (selectionHasMixedFontFace()) return DEFAULT_PALETTE_FONT_FACE;
+  if (selectionHasMixedFontFace()) return MIXED_PALETTE_VALUE;
 
   const face = readExplicitFontFace(handle.el);
   if (face) return face;
@@ -675,14 +727,6 @@ function styleTokensInSelection(root: HTMLElement, typing: ReturnType<typeof get
     }
   };
 
-  // All tokens on the current Document line (siblings of the caret/selection).
-  const placed = findPlacedTextBlockAtCaret(root);
-  if (placed) {
-    placed.querySelectorAll(".field-token, .function-token").forEach((node) => {
-      if (node instanceof HTMLElement) styleOne(node);
-    });
-  }
-
   if (range.collapsed) {
     let node: Node | null = range.startContainer;
     if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
@@ -695,7 +739,11 @@ function styleTokensInSelection(root: HTMLElement, typing: ReturnType<typeof get
 
   root.querySelectorAll(".field-token, .function-token").forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
-    if (!range.intersectsNode(node)) return;
+    try {
+      if (!range.intersectsNode(node)) return;
+    } catch {
+      return;
+    }
     styleOne(node);
   });
 }
@@ -772,8 +820,9 @@ export function paletteFontColor(color: string): void {
     }
 
     // Collapsed caret: set typing color for the next characters / inserts.
+    // Only paint the Document line block when it is still blank.
     const placed = findPlacedTextBlockAtCaret(handle.el);
-    if (placed) {
+    if (placed && isBlankTypingContext(handle.el)) {
       placed.style.color = hex;
     }
     document.execCommand("foreColor", false, hex);
@@ -796,18 +845,30 @@ export function paletteFontFace(face: string): void {
         if (isProtectedInlineToken(node)) return;
         if (node.style.fontFamily) {
           node.style.removeProperty("font-family");
-          if (!node.getAttribute("style")?.trim() && node.tagName === "SPAN") {
-            unwrapElement(node);
+          if (!node.getAttribute("style")?.trim()) {
+            node.removeAttribute("style");
           }
         }
-        if (node.tagName === "FONT" && node.hasAttribute("face")) {
+        if (node.tagName === "FONT") {
+          node.removeAttribute("face");
+          const keep =
+            node.getAttribute("size") ||
+            node.getAttribute("color") ||
+            node.getAttribute("style")?.trim();
+          if (!keep) unwrapElement(node);
+          return;
+        }
+        if (
+          node.tagName === "SPAN" &&
+          !node.className &&
+          !node.getAttribute("style")?.trim() &&
+          node.attributes.length === 0
+        ) {
           unwrapElement(node);
         }
       });
-      if (placed) placed.style.removeProperty("font-family");
       return;
     }
-    if (placed) placed.style.fontFamily = face;
     document.execCommand("fontName", false, face);
   });
 }
@@ -815,6 +876,8 @@ export function paletteFontFace(face: string): void {
 /**
  * Apply a point size. `execCommand("fontSize")` only takes the legacy 1–7 scale, so we emit a
  * `<font size="7">` marker (styleWithCSS off) and rewrite it to an explicit `font-size` in pt.
+ * Non-blank Document lines: size applies only to the selection (or next typed chars), not the
+ * whole `.doc-placed-text` block.
  */
 export function paletteFontSize(size: string): void {
   withEditor((handle) => {
@@ -824,28 +887,18 @@ export function paletteFontSize(size: string): void {
     if (placed && isBlankTypingContext(handle.el)) {
       applyTypingFormatToPlacedBlock(placed, typing);
       styleTokensInSelection(handle.el, typing);
+      reflowPlacedLinesBelow(handle.el, placed);
       return;
     }
     styleTokensInSelection(handle.el, typing);
     if (size === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
-      forEachInlineNodeInSelection(handle.el, (node) => {
-        if (isProtectedInlineToken(node)) return;
-        if (node.style.fontSize) {
-          node.style.removeProperty("font-size");
-          if (!node.getAttribute("style")?.trim() && node.tagName === "SPAN") {
-            unwrapElement(node);
-          }
-        }
-        if (node.tagName === "FONT" && node.hasAttribute("size")) {
-          unwrapElement(node);
-        }
-      });
-      if (placed) placed.style.removeProperty("font-size");
+      clearExplicitFontSizeInSelection(handle.el);
+      if (placed) reflowPlacedLinesBelow(handle.el, placed);
       return;
     }
-    if (placed) placed.style.fontSize = `${size}pt`;
     document.execCommand("fontSize", false, "7");
     rewriteLegacyFontSizeMarkers(handle.el, size);
+    if (placed) reflowPlacedLinesBelow(handle.el, placed);
   }, false);
 }
 

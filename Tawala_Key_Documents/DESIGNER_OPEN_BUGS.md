@@ -41,15 +41,17 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Fields and variables font face/size** — **Face/size match verified July 10** after fix. Placement still broken (below).
 
-- **Field token drop/placement on Document** — **Snap-to-line verified July 10:** drop joins the nearest line; mid-line drop, typing after token, and joint highlight/reformat with text all work. Move-after-drop and size-overwrite still open if needed.
+- **Field token drop/placement on Document** — **Snap-to-line + move-after-drop verified July 10:** drop joins the nearest line; drag relocates an existing token; mid-line drop, typing after token, and joint highlight/reformat with text all work.
 
-- **Font Color selector** — **Verified July 10:** highlight recolors only the selection; **A** applies current color; **▾** chooses a new color; icon swatch tracks color; new typing keeps the color. Field tokens still need snap-to-line / same-block placement before color reliably reaches them.
+- **Font Color selector** — **Verified July 10:** highlight recolors only the selection; **A** applies current color; **▾** chooses a new color; icon swatch tracks color; new typing keeps the color.
 
 - **Alignment tools** — **Verified July 10:** single-line left/center/right to margins; justify wraps at content width, pushes following lines down, last line left-aligned. Multi-line align deferred until highlight/line-model work.
 
-- **Can still overwrite existing text without deleting it** — typewriter/line placement: new typing or new lines can draw over existing text instead of replacing/clearing it first. Partial Enter-overwrite was added; gap remains. **Open.**
+- **Font size / line packing** — **Verified July 10:** selection-only size; one enlarged word can push lines down; pull-up only when the line box shrinks; reset to default works (mixed highlight shows Mixed, not false default).
 
-- **Arrow keys leave Document line / spawn nearby lines** — navigating with arrows (or clicking past end of text) often creates a new placed block instead of moving within the line. **Fix landed (uncommitted):** confine arrows/Home/End in placed lines; Up/Down move between lines; click on same row snaps into existing line. **Verify.**
+- **Can still overwrite existing text without deleting it** — typewriter Return now **pushes** lines below instead of deleting/stacking (**verified July 10**). Other overlap cases may remain.
+
+- **Arrow keys leave Document line / spawn nearby lines** — **Verified July 10:** confine arrows/Home/End in placed lines; Up/Down move between lines; click on same row snaps into existing line.
 
 ### Form canvas (UX backlog)
 
