@@ -19,7 +19,7 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 | 10–12 | Document typewriter Enter, font stick, blank click | Pass |
 | 13 | Drag-select highlight | **Pass** (cross-block + multi-line align, July 10 tip) |
 | 14 | fx popup | Opens; catalog/config not fully implemented → **TODOs** |
-| 15 | Reset | Intentionally greyed; may **remove** if unfixable |
+| 15 | Reset | **Removed** from palette July 10 |
 | 16 | Save / reload | Pass |
 | 17 | `npm run build` | Optional — see owner note |
 
@@ -29,7 +29,7 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ### Palette
 
-- **Reset Formatting broken** — Document and Form rich text. Always greyed on purpose (was breaking other features). **Deferred;** owner may **delete the control** if we cannot fix it cleanly.
+- **Reset Formatting broken** — **Removed July 10** (control deleted from Formatting Palette; was always greyed and unreliable).
 
 - **Font/size dropdown on mixed-format runs** — may still show Default Font/Size when the selection mixes faces/sizes. Single-run caret sync and Document typing persistence verified OK July 10 (after hard refresh; earlier “regression” was a stale tab).
 

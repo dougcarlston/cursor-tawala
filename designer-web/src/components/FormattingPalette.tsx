@@ -35,7 +35,6 @@ import {
   paletteInsertTable,
   paletteItalic,
   paletteOutdent,
-  paletteReset,
   paletteUnderline,
   getPaletteActiveStateSnapshot,
   subscribePaletteActiveState,
@@ -111,7 +110,7 @@ function PaletteSep() {
 
 /**
  * Row 2 Formatting Palette — shared by Form Text items and Documents.
- * Character/paragraph controls (font face/size, color, reset, B/I/U, indent, alignment) drive
+ * Character/paragraph controls (font face/size, color, B/I/U, indent, alignment) drive
  * the active rich-text editor via `paletteCommands`. Table tools (#11–13) and **fx** (#14) are
  * gated correctly but wired in their own later steps.
  */
@@ -262,15 +261,6 @@ export function FormattingPalette({ activeKind }: Props) {
           }}
         />
       </span>
-
-      <PaletteButton
-        id="reset"
-        title="Reset Formatting"
-        label="⌫"
-        enabled={enabled("reset")}
-        className="formatting-palette-icon"
-        onClick={paletteReset}
-      />
 
       <PaletteSep />
 

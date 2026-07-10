@@ -42,7 +42,6 @@ import {
   defaultTypingFormat,
   getTypingFormat,
   isBlankTypingContext,
-  resetTypingFormat,
   setTypingFormat,
 } from "./paletteTypingFormat";
 
@@ -600,13 +599,6 @@ export function paletteUnderline(): void {
   });
 }
 
-export function paletteReset(): void {
-  withEditor((handle) => {
-    stripFormattingInEditor(handle.el);
-    resetTypingFormat(handle.el);
-  });
-}
-
 function isProtectedInlineToken(el: HTMLElement): boolean {
   return el.classList.contains("field-token") || el.classList.contains("function-token");
 }
@@ -616,84 +608,6 @@ function unwrapElement(el: Element): void {
   if (!parent) return;
   while (el.firstChild) parent.insertBefore(el.firstChild, el);
   parent.removeChild(el);
-}
-
-function stripInlineStyle(span: HTMLElement): void {
-  span.style.removeProperty("font-weight");
-  span.style.removeProperty("font-style");
-  span.style.removeProperty("text-decoration");
-  span.style.removeProperty("color");
-  span.style.removeProperty("font-family");
-  span.style.removeProperty("font-size");
-  span.style.removeProperty("background-color");
-  if (!span.getAttribute("style")?.trim()) {
-    unwrapElement(span);
-  }
-}
-
-/** Remove character formatting without `removeFormat` (which can block later palette commands). */
-function stripFormattingInEditor(root: HTMLElement): void {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return;
-  const range = sel.getRangeAt(0);
-  if (!root.contains(range.commonAncestorContainer)) return;
-
-  if (!range.collapsed) {
-    const extracted = range.extractContents();
-    stripFormattingFragment(extracted);
-    range.insertNode(extracted);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    return;
-  }
-
-  for (let pass = 0; pass < 32; pass++) {
-    if (!stripOneFormatLayerAtCaret(root, range)) break;
-    if (!sel.rangeCount) break;
-  }
-}
-
-function stripOneFormatLayerAtCaret(root: HTMLElement, range: Range): boolean {
-  let node: Node | null = range.startContainer;
-  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-  while (node && node !== root) {
-    if (!(node instanceof HTMLElement)) {
-      node = node.parentNode;
-      continue;
-    }
-    if (isProtectedInlineToken(node)) return false;
-    const tag = node.tagName;
-    if (tag === "B" || tag === "STRONG" || tag === "I" || tag === "EM" || tag === "U" || tag === "FONT") {
-      unwrapElement(node);
-      return true;
-    }
-    if (tag === "SPAN" && node.hasAttribute("style")) {
-      stripInlineStyle(node);
-      return true;
-    }
-    node = node.parentNode;
-  }
-  return false;
-}
-
-function stripFormattingFragment(root: ParentNode): void {
-  for (let pass = 0; pass < 8; pass++) {
-    let changed = false;
-    root.querySelectorAll("b, strong, i, em, u, font").forEach((node) => {
-      if (node instanceof HTMLElement && !isProtectedInlineToken(node)) {
-        unwrapElement(node);
-        changed = true;
-      }
-    });
-    root.querySelectorAll("span[style]").forEach((node) => {
-      if (node instanceof HTMLElement && !isProtectedInlineToken(node)) {
-        const before = node.getAttribute("style");
-        stripInlineStyle(node);
-        if (before !== node.getAttribute("style")) changed = true;
-      }
-    });
-    if (!changed) break;
-  }
 }
 
 export function paletteIndent(): void {

@@ -20,7 +20,6 @@ export type PaletteControlId =
   | "fontFace"
   | "fontSize"
   | "fontColor"
-  | "reset"
   | "bold"
   | "italic"
   | "underline"
@@ -200,11 +199,6 @@ export function isPaletteControlEnabled(
 
   if (control === "insertTable") {
     return kind === "text" || kind === "document";
-  }
-
-  if (control === "reset") {
-    // TODO: Reset formatting regressed with document typing-format work — re-enable when fixed.
-    return false;
   }
 
   if (control === "fx") {
