@@ -29,6 +29,7 @@ import { TableHandlesOverlay } from "./TableHandlesOverlay";
 import { PlacedTextHandlesOverlay } from "./PlacedTextHandlesOverlay";
 import {
   ensurePlacedBlockWrapWidth,
+  extendDocumentSelectionToPoint,
   findPlacedTextBlockAtCaret,
   focusDocumentDropTarget,
   focusPlacedBlock,
@@ -36,6 +37,7 @@ import {
   handlePlacedTextArrowKey,
   placeDocumentTextAtPoint,
   PLACED_TEXT_CLASS,
+  reflowAllPlacedLines,
   reflowPlacedLinesBelow,
   resolveDocumentFieldDropTarget,
 } from "@/lib/documentCanvas";
@@ -150,6 +152,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   const [fieldDragOver, setFieldDragOver] = useState(false);
   /** Document canvas: distinguish click (place/focus block) from drag (text selection). */
   const documentPointerRef = useRef<{ x: number; y: number; dragged: boolean } | null>(null);
+  /** Anchor range for cross-block Document drag-select. */
+  const selectAnchorRef = useRef<Range | null>(null);
+  const commitFromSurfaceRef = useRef<(target: HTMLDivElement) => void>(() => {});
 
   const selectionIsInside = (selection: Selection | null, el: HTMLDivElement) => {
     if (!selection) return false;
@@ -279,6 +284,75 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     onChange(next);
     syncPaletteFocus();
   };
+  commitFromSurfaceRef.current = commitFromSurface;
+
+  useEffect(() => {
+    if (formattingKind !== "document") return;
+    const el = surfaceRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+
+    let lastWidth = el.clientWidth;
+    let settleTimer: number | undefined;
+    const observer = new ResizeObserver(() => {
+      const width = el.clientWidth;
+      if (Math.abs(width - lastWidth) < 1) return;
+      lastWidth = width;
+      reflowAllPlacedLines(el);
+      window.clearTimeout(settleTimer);
+      settleTimer = window.setTimeout(() => {
+        commitFromSurfaceRef.current(el);
+      }, 120);
+    });
+    observer.observe(el);
+    return () => {
+      observer.disconnect();
+      window.clearTimeout(settleTimer);
+    };
+  }, [formattingKind]);
+
+  useEffect(() => {
+    if (formattingKind !== "document") return;
+
+    const onMove = (e: MouseEvent) => {
+      const pointer = documentPointerRef.current;
+      const el = surfaceRef.current;
+      if (!pointer || !el) return;
+      if (!pointer.dragged) {
+        if (Math.abs(e.clientX - pointer.x) <= 3 && Math.abs(e.clientY - pointer.y) <= 3) {
+          return;
+        }
+        pointer.dragged = true;
+      }
+      if (!selectAnchorRef.current) {
+        const sel = window.getSelection();
+        if (sel?.rangeCount) selectAnchorRef.current = sel.getRangeAt(0).cloneRange();
+      }
+      const anchor = selectAnchorRef.current;
+      if (!anchor) return;
+      if (extendDocumentSelectionToPoint(el, anchor, e.clientX, e.clientY)) {
+        e.preventDefault();
+        const selection = document.getSelection();
+        if (selection?.rangeCount) {
+          savedRangeRef.current = selection.getRangeAt(0).cloneRange();
+        }
+      }
+    };
+
+    const onUp = () => {
+      selectAnchorRef.current = null;
+      // pointer cleared by surface onMouseUp; keep as safety if mouseup is outside
+      if (documentPointerRef.current?.dragged) {
+        documentPointerRef.current = null;
+      }
+    };
+
+    window.addEventListener("mousemove", onMove);
+    window.addEventListener("mouseup", onUp);
+    return () => {
+      window.removeEventListener("mousemove", onMove);
+      window.removeEventListener("mouseup", onUp);
+    };
+  }, [formattingKind]);
 
   const handleDocumentCanvasClick = (e: React.MouseEvent<HTMLDivElement>) => {
     const el = surfaceRef.current;
@@ -441,24 +515,50 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 y: e.clientY,
                 dragged: false,
               };
-              surfaceRef.current?.focus();
+              const el = surfaceRef.current;
+              el?.focus();
+              const anchor = caretRangeAtPoint(e.clientX, e.clientY);
+              if (anchor && el && (anchor.commonAncestorContainer === el || el.contains(anchor.commonAncestorContainer))) {
+                selectAnchorRef.current = anchor.cloneRange();
+              } else {
+                selectAnchorRef.current = null;
+              }
               return;
             }
             savedRangeRef.current = null;
           }}
           onMouseMove={(e) => {
             const pointer = documentPointerRef.current;
-            if (!pointer || pointer.dragged) return;
-            if (
-              Math.abs(e.clientX - pointer.x) > 3 ||
-              Math.abs(e.clientY - pointer.y) > 3
-            ) {
+            if (!pointer) return;
+            if (!pointer.dragged) {
+              if (
+                Math.abs(e.clientX - pointer.x) <= 3 &&
+                Math.abs(e.clientY - pointer.y) <= 3
+              ) {
+                return;
+              }
               pointer.dragged = true;
+            }
+            if (formattingKind !== "document") return;
+            const el = surfaceRef.current;
+            if (!el) return;
+            if (!selectAnchorRef.current) {
+              const sel = window.getSelection();
+              if (sel?.rangeCount) {
+                selectAnchorRef.current = sel.getRangeAt(0).cloneRange();
+              }
+            }
+            const anchor = selectAnchorRef.current;
+            if (!anchor) return;
+            if (extendDocumentSelectionToPoint(el, anchor, e.clientX, e.clientY)) {
+              e.preventDefault();
+              rememberSelection();
             }
           }}
           onMouseUp={(e) => {
             rememberSelection();
             syncPaletteFocus();
+            selectAnchorRef.current = null;
             if (formattingKind !== "document") return;
             const pointer = documentPointerRef.current;
             documentPointerRef.current = null;

@@ -261,6 +261,95 @@ export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement):
   }
 }
 
+/**
+ * Re-apply wrap widths for every placed line and pack the stack (window / MDI resize).
+ */
+export function reflowAllPlacedLines(editor: HTMLElement): void {
+  const blocks = listPlacedBlocksSorted(editor);
+  if (!blocks.length) return;
+  for (const block of blocks) {
+    ensurePlacedBlockWrapWidth(editor, block);
+  }
+  reflowPlacedLinesBelow(editor, blocks[0]);
+}
+
+/** Placed lines that intersect the current selection (visual multi-line highlight). */
+export function listPlacedBlocksInSelection(editor: HTMLElement): HTMLElement[] {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) {
+    const one = findPlacedTextBlockAtCaret(editor);
+    return one ? [one] : [];
+  }
+  const range = sel.getRangeAt(0);
+  const root = range.commonAncestorContainer;
+  if (root !== editor && !editor.contains(root)) {
+    const one = findPlacedTextBlockAtCaret(editor);
+    return one ? [one] : [];
+  }
+  const hit = listPlacedBlocksSorted(editor).filter((block) => {
+    try {
+      return range.intersectsNode(block);
+    } catch {
+      return false;
+    }
+  });
+  if (hit.length) return hit;
+  const one = findPlacedTextBlockAtCaret(editor);
+  return one ? [one] : [];
+}
+
+/**
+ * Extend a Document selection from an anchor range to the caret under (clientX, clientY),
+ * including across separate `.doc-placed-text` blocks.
+ */
+export function extendDocumentSelectionToPoint(
+  editor: HTMLElement,
+  anchor: Range,
+  clientX: number,
+  clientY: number,
+): boolean {
+  const anchorRoot = anchor.commonAncestorContainer;
+  if (anchorRoot !== editor && !editor.contains(anchorRoot)) {
+    return false;
+  }
+
+  let focusRange = caretRangeAtPoint(clientX, clientY);
+  if (!focusRange || (focusRange.commonAncestorContainer !== editor && !editor.contains(focusRange.commonAncestorContainer))) {
+    const near = findPlacedTextBlockNearPoint(editor, clientX, clientY, { bandScale: 2 });
+    if (near) {
+      focusRange = focusPlacedBlockAtClientPoint(near, clientX, clientY);
+    }
+  }
+  if (
+    !focusRange ||
+    (focusRange.commonAncestorContainer !== editor &&
+      !editor.contains(focusRange.commonAncestorContainer))
+  ) {
+    return false;
+  }
+
+  const sel = window.getSelection();
+  if (!sel) return false;
+
+  try {
+    const next = document.createRange();
+    const anchorIsBefore =
+      anchor.compareBoundaryPoints(Range.START_TO_START, focusRange) <= 0;
+    if (anchorIsBefore) {
+      next.setStart(anchor.startContainer, anchor.startOffset);
+      next.setEnd(focusRange.startContainer, focusRange.startOffset);
+    } else {
+      next.setStart(focusRange.startContainer, focusRange.startOffset);
+      next.setEnd(anchor.startContainer, anchor.startOffset);
+    }
+    sel.removeAllRanges();
+    sel.addRange(next);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /** Rendered height of a placed line for packing (tallest content on the line). */
 function placedBlockLayoutHeightPt(block: HTMLElement): number {
   const measured = pxToPt(block.getBoundingClientRect().height);

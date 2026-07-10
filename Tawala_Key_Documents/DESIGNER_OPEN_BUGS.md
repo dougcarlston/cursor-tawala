@@ -17,7 +17,7 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 | 8 | Process If/Set/Show | Pass |
 | 9 | Send/Get panels | Layout OK; email validation incomplete; mail backend unimplemented → **TODOs** |
 | 10–12 | Document typewriter Enter, font stick, blank click | Pass |
-| 13 | Drag-select highlight | **Fail** — see Document below |
+| 13 | Drag-select highlight | **Pass** (cross-block + multi-line align, July 10 tip) |
 | 14 | fx popup | Opens; catalog/config not fully implemented → **TODOs** |
 | 15 | Reset | Intentionally greyed; may **remove** if unfixable |
 | 16 | Save / reload | Pass |
@@ -37,7 +37,7 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 Owner could not fully test overnight (hooks-order / “too many hooks” error); retested on tip `b48656b` after hard refresh. Font face/size for plain typing OK; remaining Document issues:
 
-- **Multiline / drag-select highlighting buggy** — cannot reliably highlight across multiple Document lines (separate `.doc-placed-text` blocks). Confirmed again on smoke item 13. **Open.**
+- **Multiline / drag-select highlighting buggy** — **Verified July 10:** cross-block drag-select works; multi-line align applies to all intersecting placed lines.
 
 - **Fields and variables font face/size** — **Face/size match verified July 10** after fix. Placement still broken (below).
 
@@ -45,13 +45,13 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Font Color selector** — **Verified July 10:** highlight recolors only the selection; **A** applies current color; **▾** chooses a new color; icon swatch tracks color; new typing keeps the color.
 
-- **Alignment tools** — **Verified July 10:** single-line left/center/right to margins; justify wraps at content width, pushes following lines down, last line left-aligned. Multi-line align deferred until highlight/line-model work.
+- **Alignment tools** — **Verified July 10:** single- and multi-line left/center/right/justify to margins; justify wraps at content width; last line left-aligned.
 
 - **Font size / line packing** — **Verified July 10:** selection-only size; one enlarged word can push lines down; pull-up only when the line box shrinks; reset to default works (mixed highlight shows Mixed, not false default).
 
 - **Can still overwrite existing text without deleting it** — typewriter Return now **pushes** lines below instead of deleting/stacking (**verified July 10**). Other overlap cases may remain.
 
-- **Arrow keys leave Document line / spawn nearby lines** — **Verified July 10:** confine arrows/Home/End in placed lines; Up/Down move between lines; click on same row snaps into existing line.
+- **Arrow keys leave Document line / spawn nearby lines** — **Verified July 10:** confine arrows/Home/End in placed lines; Up/Down move between lines (including within soft-wrapped blocks); click on same row snaps into existing line.
 
 ### Form canvas (UX backlog)
 

@@ -29,8 +29,10 @@ import {
   applyTypingFormatToToken,
   alignPlacedTextBlock,
   findPlacedTextBlockAtCaret,
+  listPlacedBlocksInSelection,
   PLACED_TEXT_CLASS,
   readPlacedTextAlign,
+  reflowAllPlacedLines,
   reflowPlacedLinesBelow,
 } from "./documentCanvas";
 import {
@@ -708,9 +710,12 @@ export function paletteOutdent(): void {
 
 export function paletteAlign(dir: PaletteActiveState["align"]): void {
   withEditor((handle) => {
-    const placed = findPlacedTextBlockAtCaret(handle.el);
-    if (placed) {
-      alignPlacedTextBlock(handle.el, placed, dir);
+    const blocks = listPlacedBlocksInSelection(handle.el);
+    if (blocks.length > 0) {
+      for (const block of blocks) {
+        alignPlacedTextBlock(handle.el, block, dir);
+      }
+      reflowAllPlacedLines(handle.el);
       return;
     }
     document.execCommand(ALIGN_COMMAND[dir]);
