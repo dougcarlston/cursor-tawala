@@ -26,8 +26,10 @@ import {
 import {
   applyTypingFormatToPlacedBlock,
   applyTypingFormatToToken,
+  alignPlacedTextBlock,
   findPlacedTextBlockAtCaret,
   PLACED_TEXT_CLASS,
+  readPlacedTextAlign,
 } from "./documentCanvas";
 import {
   blockContainer,
@@ -656,7 +658,7 @@ export function paletteAlign(dir: PaletteActiveState["align"]): void {
   withEditor((handle) => {
     const placed = findPlacedTextBlockAtCaret(handle.el);
     if (placed) {
-      placed.style.textAlign = dir;
+      alignPlacedTextBlock(handle.el, placed, dir);
       return;
     }
     document.execCommand(ALIGN_COMMAND[dir]);
@@ -967,7 +969,10 @@ export function readPaletteActiveState(): PaletteActiveState {
     }
   };
   let align: PaletteActiveState["align"] = "left";
-  if (query("justifyCenter")) align = "center";
+  const placed = handle ? findPlacedTextBlockAtCaret(handle.el) : null;
+  if (placed) {
+    align = readPlacedTextAlign(placed);
+  } else if (query("justifyCenter")) align = "center";
   else if (query("justifyRight")) align = "right";
   else if (query("justifyFull")) align = "justify";
   return {

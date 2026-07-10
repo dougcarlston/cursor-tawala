@@ -13,6 +13,8 @@ import { formatPt, getAbsolutePositionPt, pxToPt } from "./tableLayout";
 const PLACED_TEXT_CLASS = "doc-placed-text";
 const COLUMN_TOLERANCE_PT = 1.5;
 const LINE_TOLERANCE_PT = 2;
+/** Extra inset inside the editor content box (~10px). Editor padding already provides chrome inset. */
+const DOC_LINE_MARGIN_PT = pxToPt(10);
 
 export { PLACED_TEXT_CLASS };
 
@@ -164,6 +166,93 @@ export function applyTypingFormatToToken(el: HTMLElement, typing: TypingFormat):
   } else {
     el.style.removeProperty("color");
   }
+}
+
+export type DocumentAlign = "left" | "center" | "right" | "justify";
+
+/** Content box metrics for Document line alignment (pt, content-relative like placed `left`). */
+export function getDocumentContentMetrics(editor: HTMLElement): {
+  marginPt: number;
+  contentWidthPt: number;
+} {
+  const style = getComputedStyle(editor);
+  const padL = Number.parseFloat(style.paddingLeft) || 0;
+  const padR = Number.parseFloat(style.paddingRight) || 0;
+  const innerPx = Math.max(1, editor.clientWidth - padL - padR);
+  return {
+    marginPt: DOC_LINE_MARGIN_PT,
+    contentWidthPt: Math.max(DOC_LINE_MARGIN_PT * 2 + 1, pxToPt(innerPx)),
+  };
+}
+
+/**
+ * Single-line Document alignment relative to left/right margins (not shrink-wrapped text-align alone).
+ * Multi-line / full reflow deferred — see DESIGNER_OPEN_TODOS.md.
+ */
+export function alignPlacedTextBlock(
+  editor: HTMLElement,
+  block: HTMLElement,
+  align: DocumentAlign,
+): void {
+  const { top } = getAbsolutePositionPt(block);
+  const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
+  const lineWidth = Math.max(1, contentWidthPt - marginPt * 2);
+
+  block.style.position = "absolute";
+  block.style.top = formatPt(top);
+  block.style.left = formatPt(marginPt);
+  block.style.width = formatPt(lineWidth);
+  block.style.right = "auto";
+  block.style.textAlign = align;
+  block.dataset.docAlign = align;
+
+  if (align === "justify") {
+    // Fill the margin width; wrap within the block, then push lines below down.
+    // Do not set text-align-last: justify — that stretches the short final line unnaturally.
+    block.style.whiteSpace = "normal";
+    block.style.overflowWrap = "break-word";
+    block.style.removeProperty("text-align-last");
+  } else {
+    block.style.whiteSpace = "nowrap";
+    block.style.removeProperty("overflow-wrap");
+    block.style.removeProperty("text-align-last");
+  }
+
+  // Absolute lines don't flow in normal layout — clear overlap after height changes.
+  reflowPlacedLinesBelow(editor, block);
+}
+
+/**
+ * Push following placed lines down so they clear `block`'s current box (wrap/justify).
+ * Does not pull lines back up when `block` shrinks — full reflow epic later.
+ */
+export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement): void {
+  const blocks = listPlacedBlocksSorted(editor);
+  const idx = blocks.indexOf(block);
+  if (idx < 0) return;
+
+  const gapPt = 2;
+  const pos = getAbsolutePositionPt(block);
+  let nextTop = pos.top + Math.max(placedBlockLineHeightPt(block), pxToPt(block.getBoundingClientRect().height)) + gapPt;
+
+  for (let i = idx + 1; i < blocks.length; i++) {
+    const below = blocks[i];
+    const belowPos = getAbsolutePositionPt(below);
+    if (belowPos.top < nextTop - 0.5) {
+      below.style.top = formatPt(nextTop);
+    }
+    const topNow = getAbsolutePositionPt(below).top;
+    nextTop =
+      topNow +
+      Math.max(placedBlockLineHeightPt(below), pxToPt(below.getBoundingClientRect().height)) +
+      gapPt;
+  }
+}
+
+export function readPlacedTextAlign(block: HTMLElement): DocumentAlign {
+  const raw = block.dataset.docAlign || block.style.textAlign || "left";
+  if (raw === "center" || raw === "right" || raw === "justify") return raw;
+  return "left";
 }
 
 /** One line step for typewriter Return — matches document `line-height: 1.4`. */
@@ -347,6 +436,13 @@ export function placeDocumentTextAtPoint(
   clientX: number,
   clientY: number,
 ): boolean {
+  // Prefer an existing line on this row (click past the end of text, empty margin, etc.).
+  const near = findPlacedTextBlockNearPoint(editor, clientX, clientY);
+  if (near) {
+    focusPlacedBlockAtClientPoint(near, clientX, clientY);
+    return false;
+  }
+
   const range = caretRangeAtPoint(clientX, clientY);
   if (!shouldPlaceDocumentText(editor, clientX, clientY, range)) {
     if (range && editor.contains(range.commonAncestorContainer)) {
@@ -360,4 +456,124 @@ export function placeDocumentTextAtPoint(
   const block = insertPlacedTextBlock(editor, clientX, clientY);
   focusPlacedBlock(block);
   return true;
+}
+
+/** Find a placed line whose vertical band contains the point (for snap / click-to-continue). */
+export function findPlacedTextBlockNearPoint(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+): HTMLElement | null {
+  const { top } = clientPointToEditorPt(editor, clientX, clientY);
+  let best: HTMLElement | null = null;
+  let bestDist = Infinity;
+
+  editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    const pos = getAbsolutePositionPt(node);
+    const lineH = placedBlockLineHeightPt(node);
+    const mid = pos.top + lineH / 2;
+    const dist = Math.abs(top - mid);
+    const band = Math.max(lineH, LINE_TOLERANCE_PT * 4) / 2 + LINE_TOLERANCE_PT;
+    if (dist <= band && dist < bestDist) {
+      bestDist = dist;
+      best = node;
+    }
+  });
+  return best;
+}
+
+function focusPlacedBlockAtClientPoint(
+  block: HTMLElement,
+  clientX: number,
+  clientY: number,
+): Range | null {
+  const sel = window.getSelection();
+  if (!sel) return null;
+  const range = caretRangeAtPoint(clientX, clientY);
+  if (range && block.contains(range.commonAncestorContainer)) {
+    sel.removeAllRanges();
+    sel.addRange(range);
+    return range;
+  }
+  // Click was on the line’s empty width (past the glyphs) — put caret at end.
+  return focusPlacedBlockEnd(block);
+}
+
+export function focusPlacedBlockEnd(block: HTMLElement): Range | null {
+  const sel = window.getSelection();
+  if (!sel) return null;
+  const range = document.createRange();
+  range.selectNodeContents(block);
+  range.collapse(false);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  return range;
+}
+
+function rangeAtEdgeOfBlock(block: HTMLElement, edge: "start" | "end"): boolean {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) return false;
+  const caret = sel.getRangeAt(0);
+  if (!block.contains(caret.commonAncestorContainer)) return false;
+  const probe = document.createRange();
+  probe.selectNodeContents(block);
+  if (edge === "start") {
+    probe.setEnd(caret.startContainer, caret.startOffset);
+  } else {
+    probe.setStart(caret.endContainer, caret.endOffset);
+  }
+  return !probe.toString().replace(/\u00a0|\u200b/g, "").length;
+}
+
+function listPlacedBlocksSorted(editor: HTMLElement): HTMLElement[] {
+  return Array.from(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`)).filter(
+    (n): n is HTMLElement => n instanceof HTMLElement,
+  ).sort((a, b) => getAbsolutePositionPt(a).top - getAbsolutePositionPt(b).top);
+}
+
+/**
+ * Keep arrow / Home / End navigation inside Document placed lines (and move Up/Down between lines).
+ * Returns true when the event was handled (caller should preventDefault).
+ */
+export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): boolean {
+  const placed = findPlacedTextBlockAtCaret(editor);
+  if (!placed) return false;
+
+  if (key === "ArrowRight") {
+    if (rangeAtEdgeOfBlock(placed, "end")) {
+      focusPlacedBlockEnd(placed);
+      return true;
+    }
+    return false;
+  }
+  if (key === "End") {
+    focusPlacedBlockEnd(placed);
+    return true;
+  }
+  if (key === "ArrowLeft") {
+    if (rangeAtEdgeOfBlock(placed, "start")) {
+      focusPlacedBlock(placed);
+      return true;
+    }
+    return false;
+  }
+  if (key === "Home") {
+    focusPlacedBlock(placed);
+    return true;
+  }
+  if (key === "ArrowUp" || key === "ArrowDown") {
+    const blocks = listPlacedBlocksSorted(editor);
+    const idx = blocks.indexOf(placed);
+    if (idx < 0) return true;
+    const next =
+      key === "ArrowUp"
+        ? blocks[Math.max(0, idx - 1)]
+        : blocks[Math.min(blocks.length - 1, idx + 1)];
+    if (next && next !== placed) {
+      focusPlacedBlockEnd(next);
+    }
+    return true;
+  }
+  return false;
 }

@@ -20,6 +20,7 @@ import {
   focusDocumentDropTarget,
   focusPlacedBlock,
   documentEnterInPlacedText,
+  handlePlacedTextArrowKey,
   placeDocumentTextAtPoint,
   resolveDocumentFieldDropTarget,
 } from "@/lib/documentCanvas";
@@ -346,9 +347,26 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
           }}
           onKeyDown={(e) => {
             if (formattingKind !== "document") return;
-            if (e.key !== "Enter" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
             const el = surfaceRef.current;
             if (!el) return;
+
+            if (
+              e.key === "ArrowLeft" ||
+              e.key === "ArrowRight" ||
+              e.key === "ArrowUp" ||
+              e.key === "ArrowDown" ||
+              e.key === "Home" ||
+              e.key === "End"
+            ) {
+              if (handlePlacedTextArrowKey(el, e.key)) {
+                e.preventDefault();
+                rememberSelection();
+                syncPaletteFocus();
+              }
+              return;
+            }
+
+            if (e.key !== "Enter" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
             if (documentEnterInPlacedText(el)) {
               e.preventDefault();
               commitFromSurface(el);

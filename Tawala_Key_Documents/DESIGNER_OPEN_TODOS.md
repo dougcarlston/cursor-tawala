@@ -13,6 +13,20 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 - **Field-token drag polish** — optional leftover; not confirmed broken. (Source: Document palette & typewriter)
 - **Default Font / Default Size greyed rules** — legacy: Reset greyed on fresh doc until mixed formatting; Reset is currently always greyed (see bugs). Remaining label/enable polish if needed after Reset is fixed or removed. (Source: Document WYSIWYG & palette)
 
+### Document line model / reflow (epic — owner Jul 10)
+
+**Not** legacy parity: vintage Designer used a hard-coded ~7″ text box with horizontal scroll. Owner prefers **margin-based reflow** so SportsDashboards (and similar) can target mobile/tablet by constraining overall form/window size instead of hand-rebuilding every layout.
+
+Planned pieces (after single-line margin align):
+
+- Invisible **line slots** (height from font size) between left/right margins  
+- **Field snap-to-line** on drop so tokens join that line’s content  
+- **Wrap on type** at right margin; push following lines down/aside  
+- **Wrap on resize** when the MDI/window narrows  
+- **Multi-line highlight** then **multi-line align**  
+
+Single-line left/center/right/justify to margins shipped first (small step).
+
 ## Form items & Fields
 
 - **Move Up / Move Down** for form items, process statements, and document blocks — insertion-point arrows exist; reorder commands do not. **Deferred** (Process-editing blocker). (Source: Designer Sign-up DirtBowl)

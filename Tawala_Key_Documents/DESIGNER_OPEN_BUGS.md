@@ -45,9 +45,11 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Font Color selector** — **Verified July 10:** highlight recolors only the selection; **A** applies current color; **▾** chooses a new color; icon swatch tracks color; new typing keeps the color. Field tokens still need snap-to-line / same-block placement before color reliably reaches them.
 
-- **Alignment tools don’t work yet** — paragraph alignment on Document. **Fix landed (uncommitted):** `text-align` on `.doc-placed-text` at caret. **Verify.**
+- **Alignment tools** — **Verified July 10:** single-line left/center/right to margins; justify wraps at content width, pushes following lines down, last line left-aligned. Multi-line align deferred until highlight/line-model work.
 
 - **Can still overwrite existing text without deleting it** — typewriter/line placement: new typing or new lines can draw over existing text instead of replacing/clearing it first. Partial Enter-overwrite was added; gap remains. **Open.**
+
+- **Arrow keys leave Document line / spawn nearby lines** — navigating with arrows (or clicking past end of text) often creates a new placed block instead of moving within the line. **Fix landed (uncommitted):** confine arrows/Home/End in placed lines; Up/Down move between lines; click on same row snaps into existing line. **Verify.**
 
 ### Form canvas (UX backlog)
 
