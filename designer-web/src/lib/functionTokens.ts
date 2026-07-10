@@ -11,6 +11,12 @@ import {
   type FunctionDef,
 } from "./functionCatalog";
 import { formatFunctionConditionsDisplay, parseFunctionConditions } from "./functionConditions";
+import {
+  applyTypingFormatToPlacedBlock,
+  applyTypingFormatToToken,
+  findPlacedTextBlockAtCaret,
+} from "./documentCanvas";
+import { getTypingFormat, isBlankTypingContext } from "./paletteTypingFormat";
 
 export const FUNCTION_TOKEN_CLASS = "function-token";
 export const FUNCTION_TOKEN_ATTR = "data-function-id";
@@ -152,7 +158,7 @@ export function tokenRefFromElement(el: HTMLSpanElement): FunctionTokenRef {
 
 /** Insert or replace a function token at the saved editor selection. */
 export function insertFunctionTokenAtSelection(
-  _root: HTMLElement,
+  root: HTMLElement,
   def: FunctionDef,
   config: FunctionConfig,
   replace?: FunctionTokenRef | null,
@@ -161,6 +167,12 @@ export function insertFunctionTokenAtSelection(
   if (!sel) return;
 
   const span = createFunctionTokenElement(def, config, replace?.instanceId || undefined);
+  const typing = getTypingFormat(root);
+  const placed = findPlacedTextBlockAtCaret(root);
+  if (placed && isBlankTypingContext(root)) {
+    applyTypingFormatToPlacedBlock(placed, typing);
+  }
+  applyTypingFormatToToken(span, typing);
 
   if (replace) {
     replace.element.replaceWith(span);

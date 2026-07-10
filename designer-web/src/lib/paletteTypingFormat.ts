@@ -15,6 +15,8 @@ export interface TypingFormat {
   bold: boolean;
   italic: boolean;
   underline: boolean;
+  /** Hex color e.g. `#000000`; omit/undefined = default (inherit). */
+  color?: string;
 }
 
 export function defaultTypingFormat(): TypingFormat {
@@ -24,6 +26,7 @@ export function defaultTypingFormat(): TypingFormat {
     bold: false,
     italic: false,
     underline: false,
+    color: undefined,
   };
 }
 

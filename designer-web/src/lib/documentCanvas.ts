@@ -140,6 +140,30 @@ export function applyTypingFormatToPlacedBlock(block: HTMLElement, typing: Typin
   } else {
     block.style.fontFamily = typing.fontFace;
   }
+  if (typing.color) {
+    block.style.color = typing.color;
+  } else {
+    block.style.removeProperty("color");
+  }
+}
+
+/** Apply face/size/color to a field or function token (overrides badge CSS). */
+export function applyTypingFormatToToken(el: HTMLElement, typing: TypingFormat): void {
+  if (typing.fontSize === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
+    el.style.removeProperty("font-size");
+  } else {
+    el.style.fontSize = `${typing.fontSize}pt`;
+  }
+  if (typing.fontFace === DEFAULT_PALETTE_FONT_FACE) {
+    el.style.removeProperty("font-family");
+  } else {
+    el.style.fontFamily = typing.fontFace;
+  }
+  if (typing.color) {
+    el.style.color = typing.color;
+  } else {
+    el.style.removeProperty("color");
+  }
 }
 
 /** One line step for typewriter Return — matches document `line-height: 1.4`. */

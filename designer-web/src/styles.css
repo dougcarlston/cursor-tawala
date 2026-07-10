@@ -2240,6 +2240,14 @@ button.skip-script-line:hover {
   white-space: nowrap;
 }
 
+/* Document / rich-text: tokens follow the line's typing format (not the badge mono 10px). */
+.rich-surface .function-table-token {
+  font-family: inherit;
+  font-size: inherit;
+  color: inherit;
+  line-height: inherit;
+}
+
 .function-table-inline {
   vertical-align: baseline;
   user-select: none;
@@ -2435,7 +2443,8 @@ button.skip-script-line:hover {
 .formatting-palette-color-a {
   font-weight: 700;
   text-decoration: underline;
-  text-decoration-color: #c00;
+  text-decoration-color: #000000;
+  text-decoration-thickness: 3px;
   text-underline-offset: 2px;
 }
 
@@ -4600,6 +4609,13 @@ button.skip-script-line:hover {
   cursor: default;
   vertical-align: baseline;
   user-select: none;
+}
+
+/* Allow Document/Form rich-text drag-select to include field tokens in a highlight. */
+.rich-surface .field-token,
+.rich-surface .function-token {
+  user-select: text;
+  -webkit-user-select: text;
 }
 
 .function-token {

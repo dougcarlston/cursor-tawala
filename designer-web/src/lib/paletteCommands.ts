@@ -25,6 +25,7 @@ import {
 } from "./paletteDefaults";
 import {
   applyTypingFormatToPlacedBlock,
+  applyTypingFormatToToken,
   findPlacedTextBlockAtCaret,
   PLACED_TEXT_CLASS,
 } from "./documentCanvas";
@@ -44,6 +45,8 @@ export interface PaletteActiveState {
   align: "left" | "center" | "right" | "justify";
   fontFace: string;
   fontSize: string;
+  /** Current / typing font color as `#rrggbb`. */
+  color: string;
 }
 
 const WEB_SAFE_FACES = [
@@ -81,7 +84,8 @@ function paletteStatesEqual(a: PaletteActiveState, b: PaletteActiveState): boole
     a.underline === b.underline &&
     a.align === b.align &&
     a.fontFace === b.fontFace &&
-    a.fontSize === b.fontSize
+    a.fontSize === b.fontSize &&
+    a.color === b.color
   );
 }
 
@@ -359,12 +363,6 @@ const ALIGN_COMMAND: Record<PaletteActiveState["align"], string> = {
   justify: "justifyFull",
 };
 
-function selectionInside(el: HTMLElement): boolean {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return false;
-  return el.contains(sel.getRangeAt(0).commonAncestorContainer);
-}
-
 function refreshPaletteFocus(handle: PaletteEditorHandle): void {
   const state = getFormattingFocusState();
   if (state.kind === "none" || state.kind === "heading") return;
@@ -375,12 +373,14 @@ function refreshPaletteFocus(handle: PaletteEditorHandle): void {
   });
 }
 
-/** Focus the active editor, make sure a selection lives inside it, then run `fn` and commit. */
+/** Focus the active editor, restore any palette-saved selection, then run `fn` and commit. */
 function withEditor(fn: (handle: PaletteEditorHandle) => void, styleWithCss = true): void {
   const handle = getActivePaletteEditor();
   if (!handle) return;
   handle.el.focus();
-  if (!selectionInside(handle.el)) handle.restoreSelection();
+  // Always restore after focus: dropdowns/color picker leave a collapsed caret on focus,
+  // which would otherwise skip restore and drop a text highlight.
+  handle.restoreSelection();
   try {
     document.execCommand("styleWithCSS", false, String(styleWithCss));
   } catch {
@@ -653,21 +653,142 @@ export function paletteOutdent(): void {
 }
 
 export function paletteAlign(dir: PaletteActiveState["align"]): void {
-  exec(ALIGN_COMMAND[dir]);
+  withEditor((handle) => {
+    const placed = findPlacedTextBlockAtCaret(handle.el);
+    if (placed) {
+      placed.style.textAlign = dir;
+      return;
+    }
+    document.execCommand(ALIGN_COMMAND[dir]);
+  });
+}
+
+function styleTokensInSelection(root: HTMLElement, typing: ReturnType<typeof getTypingFormat>): void {
+  const range = currentRangeInEditor(root);
+  if (!range) return;
+
+  const styleOne = (el: HTMLElement) => {
+    if (el.classList.contains("field-token") || el.classList.contains("function-token")) {
+      applyTypingFormatToToken(el, typing);
+    }
+  };
+
+  // All tokens on the current Document line (siblings of the caret/selection).
+  const placed = findPlacedTextBlockAtCaret(root);
+  if (placed) {
+    placed.querySelectorAll(".field-token, .function-token").forEach((node) => {
+      if (node instanceof HTMLElement) styleOne(node);
+    });
+  }
+
+  if (range.collapsed) {
+    let node: Node | null = range.startContainer;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    while (node && node !== root) {
+      if (node instanceof HTMLElement) styleOne(node);
+      node = node.parentNode;
+    }
+    return;
+  }
+
+  root.querySelectorAll(".field-token, .function-token").forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    if (!range.intersectsNode(node)) return;
+    styleOne(node);
+  });
+}
+
+function rgbToHex(raw: string): string | null {
+  const m = raw.trim().match(/^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+  if (!m) {
+    if (/^#[0-9a-f]{6}$/i.test(raw.trim())) return raw.trim().toLowerCase();
+    if (/^#[0-9a-f]{3}$/i.test(raw.trim())) {
+      const h = raw.trim().slice(1);
+      return `#${h[0]}${h[0]}${h[1]}${h[1]}${h[2]}${h[2]}`.toLowerCase();
+    }
+    return null;
+  }
+  const hex = (n: string) => Number(n).toString(16).padStart(2, "0");
+  return `#${hex(m[1])}${hex(m[2])}${hex(m[3])}`;
+}
+
+function readFontColorLabel(): string {
+  const handle = getActivePaletteEditor();
+  if (!handle) return "#000000";
+  const typing = getTypingFormat(handle.el);
+  if (typing.color) {
+    return rgbToHex(typing.color) ?? typing.color;
+  }
+
+  try {
+    const raw = String(document.queryCommandValue("foreColor") || "");
+    const hex = rgbToHex(raw);
+    if (hex && hex !== "#000000") return hex;
+  } catch {
+    /* ignore */
+  }
+
+  const sel = window.getSelection();
+  if (sel && sel.rangeCount > 0 && handle.el.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+    let node: Node | null = sel.getRangeAt(0).startContainer;
+    if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+    if (node instanceof HTMLElement) {
+      const hex = rgbToHex(getComputedStyle(node).color);
+      if (hex) return hex;
+    }
+  }
+  return "#000000";
 }
 
 export function paletteFontColor(color: string): void {
-  exec("foreColor", color);
+  withEditor((handle) => {
+    const hex = rgbToHex(color) ?? color;
+    setTypingFormat(handle.el, { color: hex });
+
+    const sel = window.getSelection();
+    const range =
+      sel && sel.rangeCount > 0 && handle.el.contains(sel.getRangeAt(0).commonAncestorContainer)
+        ? sel.getRangeAt(0)
+        : null;
+    const hasHighlight = !!(range && !range.collapsed);
+
+    if (hasHighlight && range) {
+      // Recolor only the highlight — do not set the whole Document line's color.
+      document.execCommand("foreColor", false, hex);
+
+      // Tokens are contenteditable=false; paint any that intersect the highlight.
+      handle.el.querySelectorAll(".field-token, .function-token").forEach((node) => {
+        if (!(node instanceof HTMLElement)) return;
+        try {
+          if (!range.intersectsNode(node)) return;
+        } catch {
+          return;
+        }
+        node.style.setProperty("color", hex);
+      });
+      return;
+    }
+
+    // Collapsed caret: set typing color for the next characters / inserts.
+    const placed = findPlacedTextBlockAtCaret(handle.el);
+    if (placed) {
+      placed.style.color = hex;
+    }
+    document.execCommand("foreColor", false, hex);
+  });
 }
 
 export function paletteFontFace(face: string): void {
   withEditor((handle) => {
     setTypingFormat(handle.el, { fontFace: face });
+    const typing = getTypingFormat(handle.el);
     const placed = findPlacedTextBlockAtCaret(handle.el);
     if (placed && isBlankTypingContext(handle.el)) {
-      applyTypingFormatToPlacedBlock(placed, getTypingFormat(handle.el));
+      applyTypingFormatToPlacedBlock(placed, typing);
+      styleTokensInSelection(handle.el, typing);
       return;
     }
+    styleTokensInSelection(handle.el, typing);
     if (face === DEFAULT_PALETTE_FONT_FACE) {
       forEachInlineNodeInSelection(handle.el, (node) => {
         if (isProtectedInlineToken(node)) return;
@@ -681,8 +802,10 @@ export function paletteFontFace(face: string): void {
           unwrapElement(node);
         }
       });
+      if (placed) placed.style.removeProperty("font-family");
       return;
     }
+    if (placed) placed.style.fontFamily = face;
     document.execCommand("fontName", false, face);
   });
 }
@@ -694,11 +817,14 @@ export function paletteFontFace(face: string): void {
 export function paletteFontSize(size: string): void {
   withEditor((handle) => {
     setTypingFormat(handle.el, { fontSize: size });
+    const typing = getTypingFormat(handle.el);
     const placed = findPlacedTextBlockAtCaret(handle.el);
     if (placed && isBlankTypingContext(handle.el)) {
-      applyTypingFormatToPlacedBlock(placed, getTypingFormat(handle.el));
+      applyTypingFormatToPlacedBlock(placed, typing);
+      styleTokensInSelection(handle.el, typing);
       return;
     }
+    styleTokensInSelection(handle.el, typing);
     if (size === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
       forEachInlineNodeInSelection(handle.el, (node) => {
         if (isProtectedInlineToken(node)) return;
@@ -712,8 +838,10 @@ export function paletteFontSize(size: string): void {
           unwrapElement(node);
         }
       });
+      if (placed) placed.style.removeProperty("font-size");
       return;
     }
+    if (placed) placed.style.fontSize = `${size}pt`;
     document.execCommand("fontSize", false, "7");
     rewriteLegacyFontSizeMarkers(handle.el, size);
   }, false);
@@ -849,5 +977,6 @@ export function readPaletteActiveState(): PaletteActiveState {
     align,
     fontFace: readFontFaceLabel(),
     fontSize: readFontSizeLabel(),
+    color: readFontColorLabel(),
   };
 }

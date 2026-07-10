@@ -153,6 +153,13 @@ export function FormattingPalette({ activeKind }: Props) {
   // Selects and the color picker take focus from the editor, so save its selection first.
   const saveEditorSelection = () => getActivePaletteEditor()?.saveSelection();
 
+  /** Legacy: main Font Color button applies the current color to the selection. */
+  const applyCurrentFontColor = () => {
+    saveEditorSelection();
+    paletteFontColor(state?.color ?? "#000000");
+  };
+
+  /** Arrow / Choose Color — opens the native picker (onChange applies the new color). */
   const openColorPicker = () => {
     saveEditorSelection();
     colorInputRef.current?.click();
@@ -206,16 +213,23 @@ export function FormattingPalette({ activeKind }: Props) {
         <PaletteButton
           id="fontColor"
           title="Font Color"
-          label={<span className="formatting-palette-color-a">A</span>}
+          label={
+            <span
+              className="formatting-palette-color-a"
+              style={{ textDecorationColor: state?.color ?? "#000000" }}
+            >
+              A
+            </span>
+          }
           enabled={enabled("fontColor")}
-          onClick={openColorPicker}
+          onClick={applyCurrentFontColor}
         />
         <button
           type="button"
           className="formatting-palette-split-arrow"
-          title="Font Color"
+          title="Choose Color"
           disabled={!enabled("fontColor")}
-          aria-label="Font color menu"
+          aria-label="Choose font color"
           onMouseDown={(e) => e.preventDefault()}
           onClick={openColorPicker}
         >
@@ -227,7 +241,12 @@ export function FormattingPalette({ activeKind }: Props) {
           className="formatting-palette-color-input"
           tabIndex={-1}
           aria-hidden
-          onChange={(e) => paletteFontColor(e.target.value)}
+          value={state?.color ?? "#000000"}
+          onChange={(e) => {
+            // Do not saveSelection here — focus is on the color input, so a save would
+            // overwrite the highlight captured when the picker was opened.
+            paletteFontColor(e.target.value);
+          }}
         />
       </span>
 

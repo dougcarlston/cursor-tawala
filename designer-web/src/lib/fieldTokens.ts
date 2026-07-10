@@ -4,6 +4,13 @@
  */
 
 import { fieldToken } from "./fieldInsertion";
+import {
+  applyTypingFormatToPlacedBlock,
+  applyTypingFormatToToken,
+  findPlacedTextBlockAtCaret,
+} from "./documentCanvas";
+import { getActivePaletteEditor } from "./formattingPaletteContext";
+import { getTypingFormat, isBlankTypingContext } from "./paletteTypingFormat";
 
 export const FIELD_TOKEN_CLASS = "field-token";
 export const FIELD_NAME_ATTR = "data-field-name";
@@ -25,6 +32,17 @@ export function insertFieldTokenAtSelection(name: string): void {
   const range = sel.getRangeAt(0);
   if (!range.collapsed) range.deleteContents();
   const span = createFieldTokenElement(name);
+
+  const handle = getActivePaletteEditor();
+  if (handle) {
+    const typing = getTypingFormat(handle.el);
+    const placed = findPlacedTextBlockAtCaret(handle.el);
+    if (placed && isBlankTypingContext(handle.el)) {
+      applyTypingFormatToPlacedBlock(placed, typing);
+    }
+    applyTypingFormatToToken(span, typing);
+  }
+
   range.insertNode(span);
   const after = document.createRange();
   after.setStartAfter(span);

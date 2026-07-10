@@ -39,11 +39,13 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Multiline / drag-select highlighting buggy** — cannot reliably highlight across multiple Document lines (separate `.doc-placed-text` blocks). Confirmed again on smoke item 13. **Open.**
 
-- **Fields and variables do not adopt current font face/size** — inserted field/variable tokens ignore the Document typing format (or surrounding line style). **Open.**
+- **Fields and variables font face/size** — **Face/size match verified July 10** after fix. Placement still broken (below).
 
-- **Font Color selector doesn’t work properly** — palette color control. **Open.**
+- **Field token drop/placement on Document** — cannot drop a field onto an existing comparison line; cannot move a token after drop; changing font size can overwrite nearby text; tokens have no awareness of other content on the page. **Open** (smoke verify #1 follow-up). Overlaps overwrite-without-delete / drag polish.
 
-- **Alignment tools don’t work yet** — paragraph alignment on Document. **Open.**
+- **Font Color selector** — **Verified July 10:** highlight recolors only the selection; **A** applies current color; **▾** chooses a new color; icon swatch tracks color; new typing keeps the color. Field tokens still need snap-to-line / same-block placement before color reliably reaches them.
+
+- **Alignment tools don’t work yet** — paragraph alignment on Document. **Fix landed (uncommitted):** `text-align` on `.doc-placed-text` at caret. **Verify.**
 
 - **Can still overwrite existing text without deleting it** — typewriter/line placement: new typing or new lines can draw over existing text instead of replacing/clearing it first. Partial Enter-overwrite was added; gap remains. **Open.**
 
