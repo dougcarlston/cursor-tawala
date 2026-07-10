@@ -19,6 +19,7 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 - **Heading per-run Main/Sub size spans stripped** on export/runtime (legacy single-`type` heading can’t express mixed sizes). **Deferred.** (Source: Designer MDI and Heading)
 - **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)
 - **Per-item Properties popups** not migrated — permanent Properties panel still used for non-canvas-inline items. **Deferred.** (Source: Designer MDI and Heading)
+- **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — moved from bugs list July 10 review. (Source: Designer Sign-up DirtBowl)
 - **File Uploader always greyed / not insertable** — visual parity only; not implemented. **Deferred.** (Sources: Designer Forms foundation; Forms canvas & Skip)
 - **Items palette icons** are Unicode/CSS placeholders, not legacy assets. **Deferred.** (Source: Designer Forms foundation)
 - **MCQ dynamic choice source** (“from stored data” + Configure Function). **Deferred.** (Source: Forms canvas & Skip)
