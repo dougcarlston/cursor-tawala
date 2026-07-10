@@ -186,7 +186,7 @@ export function getDocumentContentMetrics(editor: HTMLElement): {
 
 /**
  * Single-line Document alignment relative to left/right margins (not shrink-wrapped text-align alone).
- * Multi-line / full reflow deferred — see DESIGNER_OPEN_TODOS.md.
+ * Text wraps within the margin box; height growth packs lines below.
  */
 export function alignPlacedTextBlock(
   editor: HTMLElement,
@@ -204,21 +204,31 @@ export function alignPlacedTextBlock(
   block.style.right = "auto";
   block.style.textAlign = align;
   block.dataset.docAlign = align;
-
-  if (align === "justify") {
-    // Fill the margin width; wrap within the block, then push lines below down.
-    // Do not set text-align-last: justify — that stretches the short final line unnaturally.
-    block.style.whiteSpace = "normal";
-    block.style.overflowWrap = "break-word";
-    block.style.removeProperty("text-align-last");
-  } else {
-    block.style.whiteSpace = "nowrap";
-    block.style.removeProperty("overflow-wrap");
-    block.style.removeProperty("text-align-last");
-  }
+  applyPlacedBlockWrapStyles(block);
 
   // Absolute lines don't flow in normal layout — clear overlap after height changes.
   reflowPlacedLinesBelow(editor, block);
+}
+
+/**
+ * Constrain a placed line from its current `left` to the right margin and enable wrapping.
+ * Typing past the right edge soft-wraps within the block; callers should reflow below.
+ */
+export function ensurePlacedBlockWrapWidth(editor: HTMLElement, block: HTMLElement): void {
+  const { left } = getAbsolutePositionPt(block);
+  const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
+  const rightEdge = contentWidthPt - marginPt;
+  const width = Math.max(1, rightEdge - Math.min(left, rightEdge - 1));
+  block.style.width = formatPt(width);
+  block.style.right = "auto";
+  applyPlacedBlockWrapStyles(block);
+}
+
+function applyPlacedBlockWrapStyles(block: HTMLElement): void {
+  block.style.whiteSpace = "normal";
+  block.style.overflowWrap = "break-word";
+  block.style.wordBreak = "normal";
+  block.dataset.docWrap = "1";
 }
 
 /**
@@ -322,8 +332,8 @@ export function pushPlacedLinesFrom(
 }
 
 /**
- * Typewriter Return inside a `.doc-placed-text` block: new line at the same `left`,
- * one line height lower; existing lines at/below that spot are pushed down (not deleted).
+ * Typewriter Return inside a `.doc-placed-text` block: split at the caret into a new
+ * placed block below; existing lines at/below that spot are pushed down (not deleted).
  */
 export function documentEnterInPlacedText(editor: HTMLElement): boolean {
   const sel = window.getSelection();
@@ -339,9 +349,7 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
     range.collapse(true);
   }
 
-  const { left, top } = getAbsolutePositionPt(block);
-  const lineHeight = placedBlockLineHeightPt(block);
-  const nextTop = top + lineHeight;
+  const { left } = getAbsolutePositionPt(block);
 
   const tailRange = document.createRange();
   tailRange.selectNodeContents(block);
@@ -352,18 +360,29 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
     block.innerHTML = "<br>";
   }
 
+  ensurePlacedBlockWrapWidth(editor, block);
+  const gapPt = 2;
+  const nextTop =
+    getAbsolutePositionPt(block).top + placedBlockLayoutHeightPt(block) + gapPt;
+  const step = placedBlockLineHeightPt(block);
+
   const newBlock = createPlacedTextBlockAt(left, nextTop);
   copyTypographicStyles(block, newBlock);
+  if (block.dataset.docAlign) {
+    newBlock.dataset.docAlign = block.dataset.docAlign;
+    newBlock.style.textAlign = block.style.textAlign;
+  }
   if (tail && meaningfulText(tail.textContent)) {
     newBlock.appendChild(tail);
   } else {
     newBlock.innerHTML = "<br>";
   }
+  ensurePlacedBlockWrapWidth(editor, newBlock);
 
   // Make room first so the new line does not land on top of existing text.
-  pushPlacedLinesFrom(editor, nextTop, lineHeight, block);
+  pushPlacedLinesFrom(editor, nextTop, step, block);
   editor.appendChild(newBlock);
-  reflowPlacedLinesBelow(editor, newBlock);
+  reflowPlacedLinesBelow(editor, block);
   focusPlacedBlock(newBlock);
   return true;
 }
@@ -379,6 +398,7 @@ export function insertPlacedTextBlock(
   applyTypingFormatToPlacedBlock(p, getTypingFormat(editor));
   p.innerHTML = "<br>";
   editor.appendChild(p);
+  ensurePlacedBlockWrapWidth(editor, p);
   return p;
 }
 
@@ -468,7 +488,9 @@ export function placeDocumentTextAtPoint(
   // Prefer an existing line on this row (click past the end of text, empty margin, etc.).
   const near = findPlacedTextBlockNearPoint(editor, clientX, clientY);
   if (near) {
+    ensurePlacedBlockWrapWidth(editor, near);
     focusPlacedBlockAtClientPoint(near, clientX, clientY);
+    reflowPlacedLinesBelow(editor, near);
     return false;
   }
 
@@ -502,7 +524,7 @@ export function findPlacedTextBlockNearPoint(
   editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
     const pos = getAbsolutePositionPt(node);
-    const lineH = placedBlockLineHeightPt(node);
+    const lineH = placedBlockLayoutHeightPt(node);
     const mid = pos.top + lineH / 2;
     const dist = Math.abs(top - mid);
     const band = (Math.max(lineH, LINE_TOLERANCE_PT * 4) / 2 + LINE_TOLERANCE_PT) * bandScale;
@@ -557,6 +579,37 @@ function rangeAtEdgeOfBlock(block: HTMLElement, edge: "start" | "end"): boolean 
   return !probe.toString().replace(/\u00a0|\u200b/g, "").length;
 }
 
+/** True when the caret sits on the first/last wrapped visual line of a placed block. */
+function caretOnVisualLineEdge(block: HTMLElement, edge: "first" | "last"): boolean {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !sel.isCollapsed) return true;
+  const caretRange = sel.getRangeAt(0);
+  if (!block.contains(caretRange.commonAncestorContainer)) return true;
+
+  const contentRange = document.createRange();
+  contentRange.selectNodeContents(block);
+  const lineRects = Array.from(contentRange.getClientRects()).filter((r) => r.height > 0);
+  if (lineRects.length <= 1) return true;
+
+  const tops = [...new Set(lineRects.map((r) => Math.round(r.top)))].sort((a, b) => a - b);
+  const firstTop = tops[0];
+  const lastTop = tops[tops.length - 1];
+
+  let caretTop: number | null = null;
+  const caretRects = caretRange.getClientRects();
+  if (caretRects.length > 0) {
+    caretTop = caretRects[0].top;
+  } else {
+    const br = caretRange.getBoundingClientRect();
+    if (br.height > 0 || br.width > 0) caretTop = br.top;
+  }
+  if (caretTop == null) return true;
+
+  const tol = 4;
+  if (edge === "first") return caretTop <= firstTop + tol;
+  return caretTop >= lastTop - tol;
+}
+
 function listPlacedBlocksSorted(editor: HTMLElement): HTMLElement[] {
   return Array.from(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`)).filter(
     (n): n is HTMLElement => n instanceof HTMLElement,
@@ -565,6 +618,7 @@ function listPlacedBlocksSorted(editor: HTMLElement): HTMLElement[] {
 
 /**
  * Keep arrow / Home / End navigation inside Document placed lines (and move Up/Down between lines).
+ * Within a soft-wrapped block, Up/Down move between visual lines until the first/last line.
  * Returns true when the event was handled (caller should preventDefault).
  */
 export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): boolean {
@@ -594,6 +648,10 @@ export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): bool
     return true;
   }
   if (key === "ArrowUp" || key === "ArrowDown") {
+    // Soft-wrapped block: let the browser move within visual lines first.
+    if (key === "ArrowUp" && !caretOnVisualLineEdge(placed, "first")) return false;
+    if (key === "ArrowDown" && !caretOnVisualLineEdge(placed, "last")) return false;
+
     const blocks = listPlacedBlocksSorted(editor);
     const idx = blocks.indexOf(placed);
     if (idx < 0) return true;

@@ -22,11 +22,11 @@ Planned pieces (after single-line margin align):
 - Invisible **line slots** (height from font size) between left/right margins  
 - **Field snap-to-line** on drop so tokens join that line’s content — **done July 10**  
 - **Move field token** after drop — **done July 10**  
-- **Wrap on type** at right margin; push following lines down/aside — **next**  
+- **Wrap on type** at right margin; push following lines down/aside — **verified July 10**  
 - **Wrap on resize** when the MDI/window narrows  
 - **Multi-line highlight** then **multi-line align**  
 
-Single-line left/center/right/justify to margins shipped first; selection-only size + grow/shrink packing also landed July 10.
+Single-line left/center/right/justify to margins shipped first; selection-only size + grow/shrink packing also landed July 10. Wrap-on-type soft-wraps within the margin box (from line `left` to right margin) and packs lines below when height changes.
 
 ## Form items & Fields
 

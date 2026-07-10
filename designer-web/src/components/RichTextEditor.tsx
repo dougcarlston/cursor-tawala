@@ -28,6 +28,8 @@ import {
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
 import { PlacedTextHandlesOverlay } from "./PlacedTextHandlesOverlay";
 import {
+  ensurePlacedBlockWrapWidth,
+  findPlacedTextBlockAtCaret,
   focusDocumentDropTarget,
   focusPlacedBlock,
   documentEnterInPlacedText,
@@ -317,6 +319,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
         insertFieldTokenAtSelection(name);
       }
       if (target.classList.contains(PLACED_TEXT_CLASS)) {
+        ensurePlacedBlockWrapWidth(el, target);
         reflowPlacedLinesBelow(el, target);
       }
       commitFromSurface(el);
@@ -375,7 +378,17 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             if (fieldDragOver) setFieldDragOver(false);
           }}
           onDrop={handleFieldDrop}
-          onInput={(e) => commitFromSurface(e.target as HTMLDivElement)}
+          onInput={(e) => {
+            const target = e.target as HTMLDivElement;
+            if (formattingKind === "document") {
+              const placed = findPlacedTextBlockAtCaret(target);
+              if (placed) {
+                ensurePlacedBlockWrapWidth(target, placed);
+                reflowPlacedLinesBelow(target, placed);
+              }
+            }
+            commitFromSurface(target);
+          }}
           onFocus={() => {
             setActiveFieldTarget(insertFieldToken);
             registerAsPaletteEditor();
