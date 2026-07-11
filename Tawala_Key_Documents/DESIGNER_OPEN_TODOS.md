@@ -20,7 +20,7 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 
 Planned pieces (after single-line margin align):
 
-- Invisible **line slots** (height from font size) between left/right margins  
+- Invisible **line slots** (height from font size) between left/right margins — **not built as a grid**; empty husks after delete were pruned July 10. Snap uses real `.doc-placed-text` lines. 
 - **Field snap-to-line** on drop so tokens join that line’s content — **done July 10**  
 - **Move field token** after drop — **done July 10**  
 - **Wrap on type** at right margin; push following lines down/aside — **verified July 10**  
@@ -36,7 +36,7 @@ Single-line left/center/right/justify to margins shipped first; selection-only s
 - **Heading per-run Main/Sub size spans stripped** on export/runtime (legacy single-`type` heading can’t express mixed sizes). **Deferred.** (Source: Designer MDI and Heading)
 - **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)
 - **Per-item Properties popups** not migrated — permanent Properties panel still used for non-canvas-inline items. **Deferred.** (Source: Designer MDI and Heading)
-- **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — moved from bugs list July 10 review. (Source: Designer Sign-up DirtBowl)
+- **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — **superseded July 10:** right-column Properties panel removed; Fields owns the column. Per-item Properties popups remain a separate deferred item.
 - **File Uploader always greyed / not insertable** — visual parity only; not implemented. **Deferred.** (Sources: Designer Forms foundation; Forms canvas & Skip)
 - **Items palette icons** are Unicode/CSS placeholders, not legacy assets. **Deferred.** (Source: Designer Forms foundation)
 - **MCQ dynamic choice source** (“from stored data” + Configure Function). **Deferred.** (Source: Forms canvas & Skip)
