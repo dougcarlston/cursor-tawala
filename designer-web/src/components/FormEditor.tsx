@@ -12,6 +12,7 @@ import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
 import { FormInsertionPoint } from "./FormInsertionPoint";
+import { hasFormItemDrag, readFormItemDrag } from "@/lib/designerDrag";
 
 interface Props {
   formName: string;
@@ -24,11 +25,15 @@ export function FormEditor({ formName }: Props) {
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
   const setInsertBeforeIndex = useProjectStore((s) => s.setInsertBeforeIndex);
+  const openWindow = useProjectStore((s) => s.openWindow);
+  const insertFormItem = useProjectStore((s) => s.insertFormItem);
   const moveSelectedFormItem = useProjectStore((s) => s.moveSelectedFormItem);
   const deleteFormItem = useProjectStore((s) => s.deleteFormItem);
   const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
+  /** Nearest insertion gap while dragging a Form Item over this canvas. */
+  const [dragHoverBeforeIndex, setDragHoverBeforeIndex] = useState<number | null>(null);
 
   const form = project.forms.find((f) => f.name === formName);
   const itemCount = form?.items.length ?? 0;
@@ -240,15 +245,52 @@ export function FormEditor({ formName }: Props) {
         // so the window body is just the canvas.
         <div className="form-design-body">
           <div
-            className="form-canvas"
+            className={`form-canvas${dragHoverBeforeIndex !== null ? " form-canvas-item-drag" : ""}`}
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setSelectedItemIndex(null);
                 setInsertBeforeIndex(form.items.length);
               }
             }}
+            onDragOver={(e) => {
+              if (!hasFormItemDrag(e.dataTransfer)) return;
+              e.preventDefault();
+              e.stopPropagation();
+              e.dataTransfer.dropEffect = "copy";
+              const beforeIndex = nearestInsertBeforeIndex(e.currentTarget, e.clientY, form.items.length);
+              if (beforeIndex !== dragHoverBeforeIndex) setDragHoverBeforeIndex(beforeIndex);
+            }}
+            onDragLeave={(e) => {
+              if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+                setDragHoverBeforeIndex(null);
+              }
+            }}
+            onDropCapture={() => {
+              setDragHoverBeforeIndex(null);
+            }}
+            onDrop={(e) => {
+              const type = readFormItemDrag(e.dataTransfer);
+              if (!type) return;
+              e.preventDefault();
+              e.stopPropagation();
+              // Child insertion-point may have already inserted; still stop bubble so the
+              // MDI window does not append at end.
+              if ((e.target as HTMLElement).closest(".form-insertion-point")) return;
+              const beforeIndex = nearestInsertBeforeIndex(
+                e.currentTarget,
+                e.clientY,
+                form.items.length,
+              );
+              openWindow("form", formName);
+              insertFormItem(type, { formName, beforeIndex });
+            }}
           >
-            <FormInsertionPoint beforeIndex={0} formName={formName} />
+            <FormInsertionPoint
+              beforeIndex={0}
+              formName={formName}
+              dropHighlight={dragHoverBeforeIndex === 0}
+              suppressActive={dragHoverBeforeIndex !== null}
+            />
             {form.items.length === 0 ? (
               <p className="hint form-canvas-hint">
                 Click a blue insertion arrow or select a position, then use the Items palette to
@@ -258,7 +300,12 @@ export function FormEditor({ formName }: Props) {
               form.items.map((item, i) => (
                 <Fragment key={`${item.label}-${i}`}>
                   {renderFormItem(item, i)}
-                  <FormInsertionPoint beforeIndex={i + 1} formName={formName} />
+                  <FormInsertionPoint
+                    beforeIndex={i + 1}
+                    formName={formName}
+                    dropHighlight={dragHoverBeforeIndex === i + 1}
+                    suppressActive={dragHoverBeforeIndex !== null}
+                  />
                 </Fragment>
               ))
             )}
@@ -277,6 +324,29 @@ export function FormEditor({ formName }: Props) {
       )}
     </div>
   );
+}
+
+/** Pick the insertion gap whose vertical midpoint is closest to `clientY`. */
+function nearestInsertBeforeIndex(
+  canvas: HTMLElement,
+  clientY: number,
+  fallback: number,
+): number {
+  const points = Array.from(canvas.querySelectorAll<HTMLElement>("[data-insert-before]"));
+  if (!points.length) return fallback;
+  let best = points[0];
+  let bestDist = Infinity;
+  for (const el of points) {
+    const rect = el.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    const dist = Math.abs(clientY - mid);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = el;
+    }
+  }
+  const raw = Number(best.dataset.insertBefore);
+  return Number.isFinite(raw) ? raw : fallback;
 }
 
 // Headings render via `HeadingCanvasRow` (canvas WYSIWYG). CanvasItem handles the

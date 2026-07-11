@@ -5,20 +5,19 @@ import {
   PROCESS_STATEMENT_PALETTE,
   processPanelKeyForLabel,
 } from "@/processStatements";
+import { setProcessStatementDrag } from "@/lib/designerDrag";
 
 /**
  * Docked "Processes" palette — the legacy **Statements palette** shown in the same
  * left column as the Items palette when a **Process** window is active (owner Issue 1,
- * July 2026). **If**, **Set**, **Show**, **Send**, **Append**, **Get**, **ForEach**, **Delete**, and **Comment** open property panels in the process
- * window (legacy: palette selects statement type); other buttons insert a template at the
- * insertion arrow.
+ * July 2026). Click opens configure panels / inserts; drag onto a Process window does the same.
  */
 export function ProcessStatementsPalette() {
   const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
   const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
   const processStatementPanel = useProjectStore((s) => s.processStatementPanel);
   const selection = useProjectStore((s) => s.selection);
-  const disabled = selection.kind !== "process" || !selection.name;
+  const processInactive = selection.kind !== "process" || !selection.name;
 
   return (
     <>
@@ -36,15 +35,19 @@ export function ProcessStatementsPalette() {
                 <button
                   type="button"
                   className={active ? "active" : ""}
-                  disabled={disabled}
                   title={
-                    disabled
-                      ? "Select a process first"
+                    processInactive
+                      ? `Drag onto a Process window to configure ${def.label}`
                       : PROCESS_PANEL_LABELS.has(def.label)
-                        ? `Configure ${def.label} statement`
+                        ? `Configure ${def.label} statement (or drag onto a Process window)`
                         : `Insert ${def.label} statement`
                   }
+                  draggable
+                  onDragStart={(e) => {
+                    setProcessStatementDrag(e.dataTransfer, def.label);
+                  }}
                   onClick={() => {
+                    if (processInactive) return;
                     if (PROCESS_PANEL_LABELS.has(def.label)) {
                       toggleProcessStatementPanel(def.label);
                     } else {

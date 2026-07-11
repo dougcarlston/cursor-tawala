@@ -3,6 +3,7 @@ import { useProjectStore } from "@/store/projectStore";
 import type { Selection } from "@/types/tawala";
 import { linkedProcessesForForm } from "@/lib/projectModel";
 import { fieldDropRejectHandlers } from "./FieldDropInputs";
+import { setExplorerEntityDrag } from "@/lib/designerDrag";
 
 /** Category of a renamable tree leaf. */
 type RenameKind = "form" | "process" | "document";
@@ -189,6 +190,8 @@ export function ProjectExplorer() {
                           selected={isSelected({ kind: "form", name: form.name })}
                           onSelect={() => openWindow("form", form.name)}
                           leaf={links.length === 0}
+                          dragKind="form"
+                          dragName={form.name}
                           editing={editing?.key === formKey}
                           onBeginRename={() =>
                             setEditing({ key: formKey, kind: "form", name: form.name })
@@ -216,6 +219,8 @@ export function ProjectExplorer() {
                                     selected={isSelected({ kind: "process", name: link.name })}
                                     onSelect={() => openWindow("process", link.name)}
                                     leaf
+                                    dragKind="process"
+                                    dragName={link.name}
                                     editing={editing?.key === linkKey}
                                     onBeginRename={() =>
                                       setEditing({
@@ -271,6 +276,8 @@ export function ProjectExplorer() {
                           selected={isSelected({ kind: "process", name: proc.name })}
                           onSelect={() => openWindow("process", proc.name)}
                           leaf
+                          dragKind="process"
+                          dragName={proc.name}
                           editing={editing?.key === procKey}
                           onBeginRename={() =>
                             setEditing({ key: procKey, kind: "process", name: proc.name })
@@ -311,6 +318,8 @@ export function ProjectExplorer() {
                           selected={isSelected({ kind: "document", name: doc.name })}
                           onSelect={() => openWindow("document", doc.name)}
                           leaf
+                          dragKind="document"
+                          dragName={doc.name}
                           editing={editing?.key === docKey}
                           onBeginRename={() =>
                             setEditing({ key: docKey, kind: "document", name: doc.name })
@@ -373,6 +382,8 @@ function TreeNode({
   editing,
   onBeginRename,
   onRenameSubmit,
+  dragKind,
+  dragName,
 }: {
   label: string;
   expanded: boolean;
@@ -384,10 +395,14 @@ function TreeNode({
   editing?: boolean;
   onBeginRename?: () => void;
   onRenameSubmit?: (next: string | null) => void;
+  /** When set with dragName, the row can be dragged onto the MDI canvas to open a window. */
+  dragKind?: "form" | "process" | "document";
+  dragName?: string;
 }) {
   const renamable = !!onBeginRename;
   const holdTimer = useRef<number | null>(null);
   const pressOrigin = useRef<{ x: number; y: number } | null>(null);
+  const canDrag = !!dragKind && !!dragName && !editing;
 
   const clearHold = () => {
     if (holdTimer.current !== null) {
@@ -419,6 +434,15 @@ function TreeNode({
   return (
     <div
       className={`tree-node${selected ? " selected" : ""}`}
+      draggable={canDrag}
+      onDragStart={(e) => {
+        if (!canDrag || !dragKind || !dragName) {
+          e.preventDefault();
+          return;
+        }
+        clearHold();
+        setExplorerEntityDrag(e.dataTransfer, dragKind, dragName);
+      }}
       onClick={editing ? undefined : onSelect}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}

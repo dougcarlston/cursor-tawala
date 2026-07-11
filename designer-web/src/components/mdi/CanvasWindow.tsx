@@ -1,8 +1,20 @@
-import { useRef, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import { useProjectStore, type DesignerWindow, type WindowKind } from "@/store/projectStore";
 import { FormEditor } from "../FormEditor";
 import { ProcessEditor } from "../ProcessEditor";
 import { DocumentEditor } from "../DocumentEditor";
+import {
+  hasExplorerEntityDrag,
+  hasFormItemDrag,
+  hasProcessStatementDrag,
+  readExplorerEntityDrag,
+  readFormItemDrag,
+  readProcessStatementDrag,
+} from "@/lib/designerDrag";
+import {
+  PROCESS_PANEL_LABELS,
+  PROCESS_STATEMENT_PALETTE,
+} from "@/processStatements";
 
 /** Minimum interactive size so a window never collapses past its chrome. */
 const MIN_W = 320;
@@ -26,8 +38,7 @@ interface Props {
 /**
  * A single MDI child window on the designer canvas (backlog §2, Pass 1). Draggable
  * by its title bar, resizable from all edges/corners, click-to-front, with
- * minimize / close controls. The body embeds the real single-pane editor for the
- * window's entity (form / process / document).
+ * minimize / close controls. Accepts Items/Statements drops when kind matches.
  */
 export function CanvasWindow({ win, active }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
@@ -35,6 +46,12 @@ export function CanvasWindow({ win, active }: Props) {
   const closeWindow = useProjectStore((s) => s.closeWindow);
   const minimizeWindow = useProjectStore((s) => s.minimizeWindow);
   const setWindowBounds = useProjectStore((s) => s.setWindowBounds);
+  const openWindow = useProjectStore((s) => s.openWindow);
+  const insertFormItem = useProjectStore((s) => s.insertFormItem);
+  const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
+  const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
+  const project = useProjectStore((s) => s.project);
+  const [paletteDropOver, setPaletteDropOver] = useState(false);
 
   const parentEl = () => frameRef.current?.parentElement ?? null;
 
@@ -88,10 +105,76 @@ export function CanvasWindow({ win, active }: Props) {
   return (
     <div
       ref={frameRef}
-      className={`mdi-window${active ? " active" : ""}`}
+      className={`mdi-window${active ? " active" : ""}${paletteDropOver ? " mdi-window-drop-active" : ""}`}
       style={{ left: win.x, top: win.y, width: win.w, height: win.h, zIndex: win.z }}
       onPointerDown={() => {
         if (!active) focusWindow(win.id);
+      }}
+      onDragOver={(e) => {
+        if (hasExplorerEntityDrag(e.dataTransfer)) {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+          return;
+        }
+        if (win.kind === "form" && hasFormItemDrag(e.dataTransfer)) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = "copy";
+          if (!paletteDropOver) setPaletteDropOver(true);
+          return;
+        }
+        if (win.kind === "process" && hasProcessStatementDrag(e.dataTransfer)) {
+          e.preventDefault();
+          e.stopPropagation();
+          e.dataTransfer.dropEffect = "copy";
+          if (!paletteDropOver) setPaletteDropOver(true);
+        }
+      }}
+      onDragLeave={(e) => {
+        if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+          setPaletteDropOver(false);
+        }
+      }}
+      onDrop={(e) => {
+        setPaletteDropOver(false);
+        const entity = readExplorerEntityDrag(e.dataTransfer);
+        if (entity) {
+          e.preventDefault();
+          e.stopPropagation();
+          openWindow(entity.kind, entity.name);
+          return;
+        }
+        if (win.kind === "form") {
+          const itemType = readFormItemDrag(e.dataTransfer);
+          if (itemType) {
+            // Form canvas / insertion points own positioned drops. Only append when
+            // the drop lands on window chrome (title bar, borders, etc.).
+            if ((e.target as HTMLElement).closest(".form-canvas")) return;
+            e.preventDefault();
+            e.stopPropagation();
+            openWindow("form", win.name);
+            const form = project.forms.find((f) => f.name === win.name);
+            insertFormItem(itemType, {
+              formName: win.name,
+              beforeIndex: form?.items.length ?? 0,
+            });
+            return;
+          }
+        }
+        if (win.kind === "process") {
+          const label = readProcessStatementDrag(e.dataTransfer);
+          if (label) {
+            e.preventDefault();
+            e.stopPropagation();
+            openWindow("process", win.name);
+            if (PROCESS_PANEL_LABELS.has(label)) {
+              toggleProcessStatementPanel(label);
+            } else {
+              const def = PROCESS_STATEMENT_PALETTE.find((d) => d.label === label);
+              if (def) insertProcessCommand(def.template);
+            }
+          }
+        }
       }}
       role="dialog"
       aria-label={`${KIND_LABEL[win.kind]} - ${win.name}`}

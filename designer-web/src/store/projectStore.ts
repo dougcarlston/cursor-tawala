@@ -230,7 +230,10 @@ interface ProjectState {
   renameForm: (oldName: string, newName: string) => boolean;
   renameProcess: (oldName: string, newName: string) => boolean;
   renameDocument: (oldName: string, newName: string) => boolean;
-  insertFormItem: (type: FormItemType) => void;
+  insertFormItem: (
+    type: FormItemType,
+    options?: { formName?: string; beforeIndex?: number },
+  ) => void;
   updateFormItem: (formName: string, index: number, item: FormItem) => void;
   updateForm: (formName: string, patch: Partial<TawalaForm>) => void;
   deleteFormItem: (formName: string, index: number) => void;
@@ -964,10 +967,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       insertBeforeIndex: insertIndexForForm(get().project, name),
     }),
 
-  insertFormItem: (type) => {
-    const { project, selection, insertBeforeIndex } = get();
-    if (selection.kind !== "form" || !selection.name) return;
-    const form = project.forms.find((f) => f.name === selection.name);
+  insertFormItem: (type, options) => {
+    const s = get();
+    const formName = options?.formName ?? (s.selection.kind === "form" ? s.selection.name : null);
+    if (!formName) return;
+    const form = s.project.forms.find((f) => f.name === formName);
     if (!form) return;
     const prefix = type === "text" ? "T" : type === "heading" ? "H" : "Q";
     const labels = form.items.map((i) => i.label);
@@ -981,18 +985,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             : nextLabel(prefix, labels);
     let item: FormItem = createDefaultItem(type, label);
     if (type === "field") {
-      const fieldName = nextHiddenFieldName(project);
+      const fieldName = nextHiddenFieldName(s.project);
       item = { ...item, type: "field", fieldName, name: fieldName };
     }
-    const insertAt = Math.max(0, Math.min(insertBeforeIndex, form.items.length));
+    const preferred =
+      options?.beforeIndex !== undefined ? options.beforeIndex : s.insertBeforeIndex;
+    const insertAt = Math.max(0, Math.min(preferred, form.items.length));
     const items = [...form.items];
     items.splice(insertAt, 0, item);
-    const forms = project.forms.map((f) =>
-      f.name === selection.name ? { ...f, items } : f,
-    );
+    const forms = s.project.forms.map((f) => (f.name === formName ? { ...f, items } : f));
     set({
-      project: { ...project, forms },
+      project: { ...s.project, forms },
       dirty: true,
+      selection: { kind: "form", name: formName },
       selectedItemIndex: insertAt,
       insertBeforeIndex: insertAt + 1,
       statusMessage: `Inserted ${type} (${label})`,

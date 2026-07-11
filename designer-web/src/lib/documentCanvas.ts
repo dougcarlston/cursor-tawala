@@ -8,6 +8,8 @@ import {
   getTypingFormat,
   type TypingFormat,
 } from "./paletteTypingFormat";
+import { FIELD_TOKEN_CLASS } from "./fieldTokens";
+import { FUNCTION_TOKEN_CLASS } from "./functionTokens";
 import { formatPt, getAbsolutePositionPt, pxToPt } from "./tableLayout";
 
 const PLACED_TEXT_CLASS = "doc-placed-text";
@@ -110,6 +112,66 @@ export function shouldPlaceDocumentText(
 
 function meaningfulText(text: string | null | undefined): boolean {
   return (text ?? "").replace(/\u00a0|\u200b/g, "").trim().length > 0;
+}
+
+/** True when a placed line has no glyphs and no field/function tokens. */
+export function isPlacedTextBlockEmpty(block: HTMLElement): boolean {
+  if (block.querySelector(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`)) return false;
+  return !meaningfulText(block.textContent);
+}
+
+/**
+ * After select-all + Delete (or backspace-to-empty), remove husk `.doc-placed-text`
+ * lines so they do not remain as invisible snap/pack slots. Intentional blank lines
+ * from Return are left alone until the user deletes them.
+ */
+export function pruneEmptyPlacedTextBlocks(editor: HTMLElement): boolean {
+  const all = listPlacedBlocksSorted(editor);
+  const empties = all.filter(isPlacedTextBlockEmpty);
+  if (!empties.length) return false;
+
+  const emptySet = new Set(empties);
+  const sel = window.getSelection();
+  const caretBlock =
+    sel?.rangeCount && sel.anchorNode && editor.contains(sel.anchorNode)
+      ? findPlacedTextBlock(sel.anchorNode, editor)
+      : null;
+
+  let focusAfter: HTMLElement | null =
+    caretBlock && !emptySet.has(caretBlock) ? caretBlock : null;
+  if (!focusAfter) {
+    for (let i = 0; i < all.length && !focusAfter; i++) {
+      if (!emptySet.has(all[i])) continue;
+      for (let j = i - 1; j >= 0; j--) {
+        if (!emptySet.has(all[j])) {
+          focusAfter = all[j];
+          break;
+        }
+      }
+      if (focusAfter) break;
+      for (let j = i + 1; j < all.length; j++) {
+        if (!emptySet.has(all[j])) {
+          focusAfter = all[j];
+          break;
+        }
+      }
+    }
+  }
+
+  for (const empty of empties) {
+    empty.remove();
+  }
+
+  if (listPlacedBlocksSorted(editor).length) {
+    reflowAllPlacedLines(editor);
+  }
+
+  if (focusAfter && editor.contains(focusAfter)) {
+    focusPlacedBlockEnd(focusAfter);
+  } else if (sel) {
+    sel.removeAllRanges();
+  }
+  return true;
 }
 
 function findPlacedTextBlock(node: Node | null, editor: HTMLElement): HTMLElement | null {

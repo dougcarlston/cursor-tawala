@@ -40,6 +40,7 @@ import {
   reflowAllPlacedLines,
   reflowPlacedLinesBelow,
   resolveDocumentFieldDropTarget,
+  pruneEmptyPlacedTextBlocks,
 } from "@/lib/documentCanvas";
 import { requestFunctionPicker } from "@/lib/functionPicker";
 import { FUNCTION_TOKEN_CLASS, tokenRefFromElement } from "@/lib/functionTokens";
@@ -455,6 +456,11 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
           onInput={(e) => {
             const target = e.target as HTMLDivElement;
             if (formattingKind === "document") {
+              const ie = e.nativeEvent as InputEvent;
+              const deleted = typeof ie.inputType === "string" && ie.inputType.startsWith("delete");
+              if (deleted) {
+                pruneEmptyPlacedTextBlocks(target);
+              }
               const placed = findPlacedTextBlockAtCaret(target);
               if (placed) {
                 ensurePlacedBlockWrapWidth(target, placed);

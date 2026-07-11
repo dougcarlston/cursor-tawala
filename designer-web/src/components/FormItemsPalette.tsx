@@ -1,5 +1,6 @@
 import { useProjectStore } from "@/store/projectStore";
 import { FormItemType } from "@/types/tawala";
+import { setFormItemDrag } from "@/lib/designerDrag";
 
 /**
  * Docked "Items" palette — the legacy toolbox column between Project Explorer and the MDI
@@ -10,11 +11,7 @@ import { FormItemType } from "@/types/tawala";
  * File Uploader is shown for visual parity with legacy but is **always disabled** — it was
  * never implemented in the browser Designer (see specs).
  *
- * Owner Issue 1 (July 2026): the docked column CONTEXT-SWAPS by active window kind (App.tsx)
- * — this Items palette renders only while a Form window is active, a Processes/Statements
- * palette replaces it for a Process, and nothing shows for a Document. Because it only mounts
- * for an active form, its insert buttons are enabled (store `selection` tracks the active
- * window, so `insertFormItem` targets that form); the guard remains as a safety net.
+ * Click inserts at the blue arrow; drag onto a Form window inserts into that form.
  */
 
 interface PaletteItem {
@@ -54,20 +51,30 @@ export function FormItemsPalette() {
       <div className="items-palette-title">Items</div>
       <div className="items-palette-body">
         {ITEMS.map((item) => {
-          const disabled = item.alwaysDisabled || formInactive;
           const title = item.alwaysDisabled
             ? item.note
             : formInactive
-              ? "Select a form in Project Explorer first"
-              : `Insert ${item.label} at the blue insertion arrow`;
+              ? "Open a Form window (or drag this item onto one)"
+              : `Insert ${item.label} at the blue insertion arrow (or drag onto a Form window)`;
           return (
             <button
               key={item.label}
               type="button"
               className="items-palette-button"
-              disabled={disabled}
+              disabled={!!item.alwaysDisabled}
               title={title}
-              onClick={() => item.type && insertFormItem(item.type)}
+              draggable={!!item.type && !item.alwaysDisabled}
+              onDragStart={(e) => {
+                if (!item.type || item.alwaysDisabled) {
+                  e.preventDefault();
+                  return;
+                }
+                setFormItemDrag(e.dataTransfer, item.type);
+              }}
+              onClick={() => {
+                if (!item.type || formInactive) return;
+                insertFormItem(item.type);
+              }}
             >
               <span className="items-palette-icon" aria-hidden>
                 {item.glyph}
