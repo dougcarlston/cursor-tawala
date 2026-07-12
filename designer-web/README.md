@@ -39,6 +39,8 @@ Open those links to exercise the dev runtime HTML forms.
 
 DirtBowl is no longer on **File** menu — use **Open Project…** with `public/samples/dirtbowl_definition_v3.json`, or deploy via `node scripts/deploy-dirtbowl-java.mjs` from the repo root. It will move to the website **Library** as an advanced sample.
 
+**SignupSheets sample:** `public/samples/signup-sheets.json` (converted from legacy XML via `scripts/convert-signupsheets-xml-to-json.mjs`; see `public/samples/legacy/SignupSheets_CONVERSION_GAPS.md`).
+
 ## Proxy to Java backend (build-1700)
 
 When Tomcat is running the legacy webapp:
@@ -76,7 +78,7 @@ Deploy converts JSON → XML (`server/jsonToXml.mjs`) and POSTs to `/client` lik
 
 Deploy to **8080** with `TAWALA_JAVA_URL=http://localhost:8080 npm run dev:api` (or `scripts/dev-java.sh`). Survey/report function tables export via `jsonToXml.mjs` (`choiceTallyTable`, `itemizationTable`, `questionCorrelationTable`).
 
-**Not in browser Designer yet:** Sign-up Sheet w Email (blocked on mail backlog), full Potluck process/doc chain, `.tawala` import.
+**Not in browser Designer yet:** Sign-up Sheet w Email (blocked on mail backlog), full Potluck process/doc chain, general `.tawala` import (SignupSheets one-off converter only — see above).
 
 ### Phase 3 notes
 

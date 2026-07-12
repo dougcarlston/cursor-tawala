@@ -604,11 +604,9 @@ export function defaultFunctionConfig(def: FunctionDef): FunctionConfig {
   const config: FunctionConfig = {};
   for (const param of def.parameters) {
     if (param.type === "column-collection") {
-      config.numberOfColumns = 2;
-      config.column = [
-        { header: "", contents: "" },
-        { header: "", contents: "" },
-      ];
+      // Legacy Configure starts with a single Column 1 group; + adds more.
+      config.numberOfColumns = 1;
+      config.column = [{ header: "", contents: "" }];
     } else if (param.type === "tawala-conditions") {
       config.conditionsRows = [{ field: "", op: "equals", value: "" }];
       config.conditionsCombinator = "and";

@@ -60,12 +60,39 @@ Single-line left/center/right/justify to margins shipped first; selection-only s
 
 - **MDI Pass 2** — no Windows menu; Design/Preview and selected item still global across form windows; no layout persistence; no maximize/tile/snap. **Deferred.** (Sources: Designer MDI and Heading; Document WYSIWYG & palette)
 - **Panel docking** — Items/Statements cannot be resized or moved independently of Project Explorer. **Deferred.** (Source: Designer MDI and Heading)
-- **Row-1 tools palette shell** above Project Explorer — left indent reserves space; legacy icon bar not built. **Deferred.** (Source: Document WYSIWYG & palette)
+- **Main icon toolbar (“frequently used”)** — legacy `mainToolStrip` below the menu bar, above Project Explorer, left of the Formatting Palette. **Done Jul 12** (`MainIconToolbar` + `shellCommands.ts`; shared with File/Edit/Project menus). Spec: `DESIGNER_MENU_SPEC.md`. Remaining: full home-page control audit (Owner review queue #2).
 - **Processes palette, Project Explorer chrome, canvas item windows** not restyled to legacy look-and-feel. **Deferred** (Items palette only was Choice A). (Source: Designer Forms foundation)
 
 ## Architectural / DirtBowl (not Designer UI bugs)
 
 - **DirtBowl Preview vs Deploy data/seed mismatch** (local Preview defaults vs Java persisted admin/division data). **Deferred** as architectural distinction. (Source: Designer Sign-up DirtBowl)
+
+---
+
+## Owner review queue (July 12, 2026)
+
+Tasks the owner set (or agreed to schedule) that we have **not** fully walked through yet today. Keep on this list until reviewed and either done, deferred, or gated.
+
+| # | Task | Notes / sequencing |
+|---|------|-------------------|
+| 1 | **Wire Main icon toolbar** (“frequently used” strip) | **Done Jul 12** — `MainIconToolbar` shares handlers with File/Edit via `shellCommands.ts`. |
+| 2 | **Home-page control audit — menus, tabs, and toolbars** | Draft canvas delivered Jul 12. **Insert menu context-sensitivity fixed Jul 12** (Form / Process / Document; Image→From the Web → DISPLAY IMAGE Configure). Remaining audit items still open. |
+| 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. |
+| 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | Priority for SignupSheets-class apps; still **Deferred** in Form items until scheduled. |
+| 5 | **HTML→XML export for functions we already Configure** | At least itemization + question-correlation (and peers used by templates); Document/Form export still partial. |
+| 6 | **Move Up / Down** for form items (process statements if cheap) | Everyday authoring; insertion points exist; reorder commands **Deferred**. |
+| 7 | **Continue template review** | Get Together in progress (Report correlation now canvas-editable); then similar simple templates. SignupSheets→8080 Deploy still consciously deferred. |
+| 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. |
+
+---
+
+## After Designer is basically finished (gated)
+
+Owner (July 12, 2026): park these until the browser Designer is considered **basically finished**. **Do not start any of these without prior discussion with the owner.**
+
+1. **Big smoke test on three different browsers** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on three browsers; capture browser-specific defects. *(Also listed in Owner review queue #3.)*
+2. **Conform Look and Feel** of the Designer shell and its windows to the legacy Designer application **without breaking** underlying behavior already shipped (layout, chrome, typography/colors — visual parity pass only after functional freeze). *(Also listed in Owner review queue #3.)*
+3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit.
 
 ---
 

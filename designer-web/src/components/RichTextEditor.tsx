@@ -42,8 +42,13 @@ import {
   resolveDocumentFieldDropTarget,
   pruneEmptyPlacedTextBlocks,
 } from "@/lib/documentCanvas";
-import { requestFunctionPicker } from "@/lib/functionPicker";
-import { FUNCTION_TOKEN_CLASS, tokenRefFromElement } from "@/lib/functionTokens";
+import { openFunctionTokenForEdit } from "@/lib/functionPicker";
+import { FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
+import {
+  ITEMIZATION_TOKEN_DATA_ATTR,
+  openStructuredFunctionTokenForEdit,
+  STRUCTURED_NODE_DATA_ATTR,
+} from "@/lib/structuredItemizationEdit";
 
 interface Props {
   html: string;
@@ -361,6 +366,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const target = e.target as HTMLElement;
     if (target.closest(".table-handles-overlay")) return;
     if (target.closest(`.${FIELD_TOKEN_CLASS}`)) return;
+    if (target.closest(`.${FUNCTION_TOKEN_CLASS}`)) return;
+    if (target.closest(`[${STRUCTURED_NODE_DATA_ATTR}]`)) return;
+    if (target.closest(`[${ITEMIZATION_TOKEN_DATA_ATTR}]`)) return;
 
     const placed = placeDocumentTextAtPoint(el, e.clientX, e.clientY);
     if (placed) {
@@ -369,6 +377,28 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       syncPaletteFocus();
       commitFromSurface(el);
     }
+  };
+
+  const tryOpenFunctionToken = (target: EventTarget | null): boolean => {
+    const el = surfaceRef.current;
+    if (!el || !(target instanceof Element)) return false;
+    if (formattingKind !== "text" && formattingKind !== "document") return false;
+
+    const structured = target.closest(`[${STRUCTURED_NODE_DATA_ATTR}]`);
+    if (structured instanceof HTMLElement) {
+      registerAsPaletteEditor();
+      return openStructuredFunctionTokenForEdit(structured, () => {
+        rememberSelection();
+        commitFromSurface(el);
+      });
+    }
+
+    const token = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
+    if (!(token instanceof HTMLElement)) return false;
+    registerAsPaletteEditor();
+    return openFunctionTokenForEdit(token, el, () => {
+      rememberSelection();
+    });
   };
 
   const handleFieldDrop = (e: React.DragEvent<HTMLDivElement>) => {
@@ -565,13 +595,24 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             rememberSelection();
             syncPaletteFocus();
             selectAnchorRef.current = null;
-            if (formattingKind !== "document") return;
             const pointer = documentPointerRef.current;
             documentPointerRef.current = null;
-            if (!pointer || pointer.dragged || e.button !== 0) return;
+            if (pointer?.dragged || e.button !== 0) return;
+            if (tryOpenFunctionToken(e.target)) {
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+            }
+            if (formattingKind !== "document") return;
             handleDocumentCanvasClick(e);
           }}
           onDoubleClick={(e) => {
+            // Function tokens first — they live inside `.doc-placed-text` on Documents.
+            if (tryOpenFunctionToken(e.target)) {
+              e.preventDefault();
+              e.stopPropagation();
+              return;
+            }
             if (formattingKind === "document") {
               const placed = (e.target as HTMLElement).closest(".doc-placed-text");
               if (placed instanceof HTMLElement) {
@@ -579,28 +620,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 focusPlacedBlock(placed);
                 registerAsPaletteEditor();
                 syncPaletteFocus();
-                return;
               }
             }
-            if (!formattingKind || (formattingKind !== "text" && formattingKind !== "document")) {
-              return;
-            }
-            const token = (e.target as HTMLElement).closest(`.${FUNCTION_TOKEN_CLASS}`);
-            if (!(token instanceof HTMLSpanElement)) return;
-            e.preventDefault();
-            e.stopPropagation();
-            const ref = tokenRefFromElement(token);
-            const handle = surfaceRef.current;
-            if (handle) {
-              const range = document.createRange();
-              range.selectNodeContents(token);
-              const sel = window.getSelection();
-              sel?.removeAllRanges();
-              sel?.addRange(range);
-              savedRangeRef.current = range.cloneRange();
-              registerAsPaletteEditor();
-            }
-            requestFunctionPicker({ mode: "edit", existing: ref });
           }}
         />
         {(formattingKind === "document" || formattingKind === "text") && (

@@ -18,6 +18,8 @@ import {
   setFormattingFocus,
   selectionHasResettableFormatting,
 } from "@/lib/formattingPaletteContext";
+import { openFunctionTokenForEdit } from "@/lib/functionPicker";
+import { FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
 
 interface Props {
   item: TextItem;
@@ -78,6 +80,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   const labelInputRef = useRef<HTMLInputElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
   const wasSelected = useRef(selected);
+  const pendingFunctionEditRef = useRef<{
+    instanceId: string | null;
+    functionId: string | null;
+    config: string | null;
+  } | null>(null);
 
   const content = typeof item.content === "string" ? item.content : "";
 
@@ -121,6 +128,21 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editing]);
+
+  // After the editor mounts HTML, open Configure for a function token clicked while idle.
+  useEffect(() => {
+    if (!editing) return;
+    const pending = pendingFunctionEditRef.current;
+    if (!pending) return;
+    pendingFunctionEditRef.current = null;
+    const el = editorRef.current;
+    if (!el) return;
+    const token = findPendingFunctionToken(el, pending);
+    if (!token) return;
+    registerAsPaletteEditor();
+    openFunctionTokenForEdit(token, el, rememberSelection);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
@@ -223,6 +245,23 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
         setSelectedItemIndex(index);
         const target = e.target as HTMLElement;
         if (target.closest(".text-badge, .text-badge-input, .canvas-item-delete")) return;
+
+        const token = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
+        if (token instanceof HTMLElement) {
+          if (editing && editorRef.current) {
+            registerAsPaletteEditor();
+            openFunctionTokenForEdit(token, editorRef.current, rememberSelection);
+            return;
+          }
+          pendingFunctionEditRef.current = {
+            instanceId: token.getAttribute("data-function-instance"),
+            functionId: token.getAttribute("data-function-id"),
+            config: token.getAttribute("data-function-config"),
+          };
+          setEditing(true);
+          return;
+        }
+
         if (target.closest(".text-canvas-main")) {
           if (!editing) setEditing(true);
           return;
@@ -330,4 +369,25 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       </div>
     </div>
   );
+}
+
+function findPendingFunctionToken(
+  editor: HTMLElement,
+  pending: { instanceId: string | null; functionId: string | null; config: string | null },
+): HTMLElement | null {
+  if (pending.instanceId) {
+    const byInstance = editor.querySelector(
+      `.${FUNCTION_TOKEN_CLASS}[data-function-instance="${CSS.escape(pending.instanceId)}"]`,
+    );
+    if (byInstance instanceof HTMLElement) return byInstance;
+  }
+  if (!pending.functionId) return null;
+  const tokens = editor.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`);
+  for (const node of tokens) {
+    if (!(node instanceof HTMLElement)) continue;
+    if (node.getAttribute("data-function-id") !== pending.functionId) continue;
+    if (pending.config && node.getAttribute("data-function-config") !== pending.config) continue;
+    return node;
+  }
+  return null;
 }

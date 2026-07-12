@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { FieldTextInput } from "./FieldDropInputs";
 import { FunctionConditionsEditor } from "./FunctionConditionsEditor";
@@ -25,6 +25,19 @@ interface Props {
 
 type FieldKey = string;
 
+const MAX_COLUMNS = 12;
+
+function normalizeColumns(config: FunctionConfig): ColumnConfig[] {
+  const cols = (config.column as ColumnConfig[] | undefined) ?? [];
+  const n = Math.max(1, Number(config.numberOfColumns ?? cols.length) || cols.length || 1);
+  const next = cols.slice(0, n).map((c) => ({
+    header: c?.header ?? "",
+    contents: c?.contents ?? "",
+  }));
+  while (next.length < n) next.push({ header: "", contents: "" });
+  return next;
+}
+
 /** Legacy `ConfigureFunctionDialog` — parameter fields + yellow help pane. */
 export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }: Props) {
   const forms = useProjectStore((s) => s.project.forms);
@@ -33,13 +46,23 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
     ...initialConfig,
   }));
   const [focused, setFocused] = useState<FieldKey>(def.parameters[0]?.id ?? "summary");
+  const [selectedColumn, setSelectedColumn] = useState(0);
 
+  const hasColumnCollection = def.parameters.some((p) => p.type === "column-collection");
+  const columns = useMemo(() => normalizeColumns(config), [config]);
   const canSave = useMemo(() => configMeetsRequirements(def, config), [def, config]);
 
   useEffect(() => {
     setConfig({ ...defaultFunctionConfig(def), ...initialConfig });
     setFocused(def.parameters[0]?.id ?? "summary");
+    setSelectedColumn(0);
   }, [def, initialConfig]);
+
+  useEffect(() => {
+    if (selectedColumn >= columns.length) {
+      setSelectedColumn(Math.max(0, columns.length - 1));
+    }
+  }, [columns.length, selectedColumn]);
 
   const help = focusedHelp(def, focused, config);
 
@@ -47,12 +70,41 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
     setConfig((prev) => ({ ...prev, [id]: value }));
   };
 
-  const patchColumns = (count: number, cols: ColumnConfig[]) => {
-    setConfig((prev) => ({ ...prev, numberOfColumns: count, column: cols }));
+  const patchColumns = (cols: ColumnConfig[], selectIndex?: number) => {
+    const next = cols.slice(0, MAX_COLUMNS);
+    setConfig((prev) => ({
+      ...prev,
+      numberOfColumns: next.length,
+      column: next,
+    }));
+    if (selectIndex !== undefined) setSelectedColumn(selectIndex);
   };
 
   const patchConditions = (state: FunctionConditionsState) => {
     setConfig((prev) => ({ ...prev, ...functionConditionsToConfig(state) }) as FunctionConfig);
+  };
+
+  const addColumn = () => {
+    if (columns.length >= MAX_COLUMNS) return;
+    const insertAt = Math.min(selectedColumn + 1, columns.length);
+    const next = [...columns];
+    next.splice(insertAt, 0, { header: "", contents: "" });
+    patchColumns(next, insertAt);
+    setFocused(`column-${insertAt}-contents`);
+  };
+
+  const removeColumn = () => {
+    if (columns.length <= 1) return;
+    const next = columns.filter((_, i) => i !== selectedColumn);
+    patchColumns(next, Math.min(selectedColumn, next.length - 1));
+  };
+
+  const moveColumn = (dir: -1 | 1) => {
+    const j = selectedColumn + dir;
+    if (j < 0 || j >= columns.length) return;
+    const next = [...columns];
+    [next[selectedColumn], next[j]] = [next[j], next[selectedColumn]];
+    patchColumns(next, j);
   };
 
   return (
@@ -83,9 +135,12 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
                 key={param.id}
                 param={param}
                 config={config}
+                columns={columns}
+                selectedColumn={selectedColumn}
                 forms={forms.map((f) => f.name)}
                 focused={focused}
                 onFocus={setFocused}
+                onSelectColumn={setSelectedColumn}
                 onPatch={patch}
                 onPatchColumns={patchColumns}
                 onPatchConditions={patchConditions}
@@ -100,13 +155,43 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
             {help.compound && <p className="fib-validation-help-note">A compound expression</p>}
           </aside>
         </div>
-        <div className="modal-footer fib-validation-footer">
-          <button type="button" onClick={() => onSave(config)} disabled={!canSave}>
-            OK
-          </button>
-          <button type="button" onClick={onCancel}>
-            Cancel
-          </button>
+        <div className="modal-footer fib-validation-footer configure-function-footer">
+          {hasColumnCollection && (
+            <div className="configure-function-column-toolbar" role="toolbar" aria-label="Columns">
+              <ToolbarIconButton tip="Add Column" onClick={addColumn} disabled={columns.length >= MAX_COLUMNS}>
+                <PlusIcon />
+              </ToolbarIconButton>
+              <ToolbarIconButton
+                tip="Remove Column"
+                onClick={removeColumn}
+                disabled={columns.length <= 1}
+              >
+                <MinusIcon />
+              </ToolbarIconButton>
+              <ToolbarIconButton
+                tip="Move Column Up"
+                onClick={() => moveColumn(-1)}
+                disabled={selectedColumn <= 0}
+              >
+                <MoveUpIcon />
+              </ToolbarIconButton>
+              <ToolbarIconButton
+                tip="Move Column Down"
+                onClick={() => moveColumn(1)}
+                disabled={selectedColumn >= columns.length - 1}
+              >
+                <MoveDownIcon />
+              </ToolbarIconButton>
+            </div>
+          )}
+          <div className="configure-function-footer-actions">
+            <button type="button" onClick={() => onSave(config)} disabled={!canSave}>
+              OK
+            </button>
+            <button type="button" onClick={onCancel}>
+              Cancel
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -116,19 +201,25 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
 function ParamField({
   param,
   config,
+  columns,
+  selectedColumn,
   forms,
   onFocus,
+  onSelectColumn,
   onPatch,
   onPatchColumns,
   onPatchConditions,
 }: {
   param: FunctionParamDef;
   config: FunctionConfig;
+  columns: ColumnConfig[];
+  selectedColumn: number;
   forms: string[];
   focused: string;
   onFocus: (id: string) => void;
+  onSelectColumn: (index: number) => void;
   onPatch: (id: string, value: string) => void;
-  onPatchColumns: (count: number, cols: ColumnConfig[]) => void;
+  onPatchColumns: (cols: ColumnConfig[], selectIndex?: number) => void;
   onPatchConditions: (state: FunctionConditionsState) => void;
 }) {
   if (param.type === "tawala-conditions") {
@@ -143,54 +234,59 @@ function ParamField({
   }
 
   if (param.type === "column-collection") {
-    const count = Number(config.numberOfColumns ?? 2);
-    const cols = (config.column as ColumnConfig[] | undefined) ?? [];
     return (
       <div className="configure-function-collection">
-        <label>
-          <span>Number of columns:</span>
-          <input
-            type="number"
-            min={1}
-            max={12}
-            value={count}
-            onFocus={() => onFocus("numberOfColumns")}
-            onChange={(e) => {
-              const n = Math.max(1, Math.min(12, Number(e.target.value) || 1));
-              const next = [...cols];
-              while (next.length < n) next.push({ header: "", contents: "" });
-              onPatchColumns(n, next.slice(0, n));
-            }}
-          />
-        </label>
-        {Array.from({ length: count }, (_, i) => (
-          <div key={i} className="configure-function-column">
+        {columns.map((col, i) => (
+          <div
+            key={i}
+            className={
+              i === selectedColumn
+                ? "configure-function-column selected"
+                : "configure-function-column"
+            }
+            onMouseDown={() => onSelectColumn(i)}
+          >
+            <div className="configure-function-column-title">Column {i + 1}</div>
             <label>
-              <span>Column {i + 1} Heading:</span>
+              <span>Heading:</span>
               <FieldTextInput
-                value={cols[i]?.header ?? ""}
-                onFocus={() => onFocus(`column-${i}-header`)}
+                value={col.header ?? ""}
+                onFocus={() => {
+                  onSelectColumn(i);
+                  onFocus(`column-${i}-header`);
+                }}
                 onValueChange={(v) => {
-                  const next = [...cols];
-                  while (next.length <= i) next.push({ header: "", contents: "" });
+                  const next = [...columns];
                   next[i] = { ...next[i], header: v };
-                  onPatchColumns(count, next);
+                  onPatchColumns(next, i);
                 }}
               />
             </label>
             <label>
-              <span>Column {i + 1} Field:</span>
+              <span>Contents:</span>
               <FieldTextInput
-                value={cols[i]?.contents ?? ""}
-                onFocus={() => onFocus(`column-${i}-contents`)}
+                value={col.contents ?? ""}
+                onFocus={() => {
+                  onSelectColumn(i);
+                  onFocus(`column-${i}-contents`);
+                }}
                 onValueChange={(v) => {
-                  const next = [...cols];
-                  while (next.length <= i) next.push({ header: "", contents: "" });
+                  const next = [...columns];
                   next[i] = { ...next[i], contents: v };
-                  onPatchColumns(count, next);
+                  onPatchColumns(next, i);
                 }}
               />
             </label>
+            <button
+              type="button"
+              className="configure-function-column-always"
+              onClick={() => {
+                onSelectColumn(i);
+                onFocus(`column-${i}-always`);
+              }}
+            >
+              + Column is always displayed
+            </button>
           </div>
         ))}
       </div>
@@ -282,14 +378,17 @@ function focusedHelp(
         compound: true,
       };
     }
+    if (field === "always") {
+      return {
+        title: "Column is always displayed",
+        body: "When set, this column is always shown. Click again to add a display condition.",
+      };
+    }
     return {
-      title: `Column ${idx + 1} Field`,
+      title: `Column ${idx + 1} Contents`,
       body: "The Field to display in this column. Drag from the Fields palette or type a qualified name.",
       compound: true,
     };
-  }
-  if (focused === "numberOfColumns") {
-    return { title: "Number of columns", body: "How many columns the table should have." };
   }
 
   const param = def.parameters.find((p) => p.id === focused);
@@ -307,4 +406,61 @@ function focusedHelp(
   }
 
   return { title: def.name, body: def.description };
+}
+
+function ToolbarIconButton({
+  tip,
+  disabled,
+  onClick,
+  children,
+}: {
+  tip: string;
+  disabled?: boolean;
+  onClick: () => void;
+  children: ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      className="configure-function-tool-btn"
+      title={tip}
+      aria-label={tip}
+      disabled={disabled}
+      onClick={onClick}
+    >
+      {children}
+    </button>
+  );
+}
+
+function PlusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <path d="M8 3v10M3 8h10" stroke="#2e7d32" strokeWidth="2" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MinusIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <path d="M3 8h10" stroke="#2e7d32" strokeWidth="2" fill="none" strokeLinecap="round" />
+    </svg>
+  );
+}
+
+function MoveUpIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <path d="M8 3 L13 10 H3 Z" fill="#666" />
+    </svg>
+  );
+}
+
+function MoveDownIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <path d="M8 13 L13 6 H3 Z" fill="#666" />
+    </svg>
+  );
 }

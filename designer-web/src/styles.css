@@ -51,18 +51,33 @@ textarea {
 
 .designer-left {
   width: 220px;
-  min-width: 180px;
+  min-width: 56px;
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border);
+  border-right: none;
   background: var(--panel);
+  overflow: hidden;
 }
 
-/* Docked "Items" palette between Project Explorer and the MDI canvas (owner
-   decision D-Items-palette-placement, July 2026 — legacy toolbox column). */
+/* Grey vertical resize bar on Project Explorer's right edge (pairs with Fields splitter). */
+.designer-left-splitter {
+  flex: 0 0 4px;
+  cursor: ew-resize;
+  background: linear-gradient(90deg, var(--border) 0%, #d8d8d8 50%, var(--border) 100%);
+  border-right: 1px solid var(--border-dark);
+  z-index: 2;
+}
+
+.designer-left-splitter:hover {
+  background: var(--border-dark);
+}
+
+/* Docked "Items" / "Processes" palette between Project Explorer and the MDI canvas
+   (owner decision D-Items-palette-placement, July 2026 — legacy toolbox column). */
 .designer-items {
-  width: 150px;
-  min-width: 130px;
+  width: 76px;
+  min-width: 72px;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
@@ -73,12 +88,13 @@ textarea {
 /* Legacy Items toolbox look-and-feel (owner, July 2026): blue header + tall
    icon-over-label buttons. Icons are Unicode/CSS placeholders for now. */
 .items-palette-title {
-  padding: 4px 8px;
+  padding: 4px 4px;
   font-weight: 600;
   text-align: center;
   color: #fff;
   background: linear-gradient(180deg, #6ea8e6 0%, #3f78c4 50%, #356bb4 100%);
   border-bottom: 1px solid #2f5f9f;
+  font-size: 11px;
 }
 
 .items-palette-body {
@@ -88,7 +104,7 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 8px 6px;
+  padding: 6px 4px;
 }
 
 .items-palette-button {
@@ -99,7 +115,7 @@ textarea {
   gap: 4px;
   width: 100%;
   min-height: 58px;
-  padding: 8px 4px;
+  padding: 6px 2px;
   cursor: pointer;
   border: 1px solid #b7cdea;
   border-radius: 6px;
@@ -140,19 +156,37 @@ textarea {
 }
 
 .items-palette-label {
-  font-size: 11px;
+  font-size: 10px;
   font-weight: 600;
   line-height: 1.15;
+  /* Wrap at spaces only — never hyphenate or split mid-word. */
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
+}
+
+.designer-items .form-insert-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }
 
 .designer-items .form-insert-buttons button {
   border: 1px solid var(--border);
   background: #fff;
-  padding: 6px 8px;
+  padding: 6px 2px;
   cursor: pointer;
-  text-align: left;
-  font-size: 11px;
-  white-space: nowrap;
+  text-align: center;
+  font-size: 10px;
+  font-weight: 600;
+  line-height: 1.15;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: none;
+  -webkit-hyphens: none;
 }
 
 .designer-items .form-insert-buttons button:hover:not(:disabled) {
@@ -175,6 +209,12 @@ textarea {
    Get/ForEach/Delete | Set | Comment) in the docked "Processes" palette. */
 .designer-items .palette-group-gap {
   height: 6px;
+}
+
+.designer-items .panel-title {
+  font-size: 11px;
+  padding: 4px 4px;
+  text-align: center;
 }
 
 .designer-center {
@@ -263,9 +303,45 @@ textarea {
   padding: 4px 24px 4px 8px;
 }
 
-.menu-dropdown button:hover {
+.menu-dropdown button:hover:not(:disabled) {
   background: var(--tree-hover);
   color: var(--tree-hover-text);
+}
+
+.menu-dropdown button:disabled {
+  color: #999;
+}
+
+.menu-submenu {
+  position: relative;
+}
+
+.menu-submenu-trigger {
+  display: flex !important;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.menu-submenu-arrow {
+  margin-left: 12px;
+  font-size: 10px;
+  opacity: 0.7;
+}
+
+.menu-submenu-dropdown {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  min-width: 220px;
+  background: var(--panel);
+  border: 1px solid var(--border-dark);
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+  z-index: 110;
+}
+
+.menu-submenu.disabled .menu-submenu-trigger {
+  color: #999;
 }
 
 .menu-separator {
@@ -295,6 +371,68 @@ textarea {
 .toolbar button:hover {
   border-color: var(--border);
   background: #fff;
+}
+
+/* Menu + frequently-used icons + Formatting Palette on one chrome band. */
+.designer-chrome-row {
+  display: flex;
+  align-items: stretch;
+  background: var(--toolbar-bg);
+  border-bottom: 1px solid var(--border);
+  min-height: 28px;
+}
+
+.main-icon-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  padding: 2px 4px;
+  box-sizing: border-box;
+  border-right: 1px solid var(--border);
+  overflow: hidden;
+}
+
+.main-icon-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  cursor: default;
+}
+
+.main-icon-tool-btn:hover:not(:disabled) {
+  border-color: #a8c7f0;
+  background: #eaf2fd;
+}
+
+.main-icon-tool-btn:active:not(:disabled) {
+  background: #d6e6fb;
+}
+
+.main-icon-tool-btn:disabled {
+  opacity: 0.4;
+}
+
+.main-icon-tool-btn svg {
+  display: block;
+}
+
+.main-icon-toolbar-sep {
+  width: 1px;
+  height: 18px;
+  margin: 0 3px;
+  background: var(--border-dark, #c0c0c0);
+}
+
+.designer-chrome-row .formatting-palette {
+  flex: 1 1 auto;
+  min-width: 0;
+  border-bottom: none;
 }
 
 .explorer-toolbar {
@@ -2112,8 +2250,10 @@ button.skip-script-line:hover {
   border: 1px solid var(--border-dark);
   box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
   width: min(620px, 94vw);
+  max-height: min(90vh, 900px);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .fib-validation-fx {
@@ -2126,6 +2266,9 @@ button.skip-script-line:hover {
 .fib-validation-body {
   display: flex;
   gap: 0;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .fib-validation-fields {
@@ -2134,6 +2277,8 @@ button.skip-script-line:hover {
   flex-direction: column;
   gap: 10px;
   padding: 14px 16px;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .fib-validation-fields label {
@@ -2161,6 +2306,8 @@ button.skip-script-line:hover {
   border-left: 1px solid var(--border);
   padding: 14px 14px;
   font-size: 12px;
+  overflow-y: auto;
+  min-height: 0;
 }
 
 .fib-validation-help h3 {
@@ -2184,6 +2331,7 @@ button.skip-script-line:hover {
 }
 
 .fib-validation-footer {
+  flex-shrink: 0;
   gap: 8px;
 }
 
@@ -4606,7 +4754,7 @@ button.skip-script-line:hover {
 .configure-function-collection {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 10px;
   padding: 8px 0;
   border-top: 1px solid var(--border);
 }
@@ -4615,9 +4763,78 @@ button.skip-script-line:hover {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  padding: 6px 8px;
+  padding: 8px 10px;
   background: #f8f8f8;
   border: 1px solid var(--border);
+  cursor: default;
+}
+
+.configure-function-column.selected {
+  border-color: #6a9bd8;
+  box-shadow: inset 0 0 0 1px #6a9bd8;
+  background: #f3f7fc;
+}
+
+.configure-function-column-title {
+  font-size: 12px;
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.configure-function-column-always {
+  align-self: flex-start;
+  margin-top: 2px;
+  padding: 0;
+  border: none;
+  background: none;
+  color: #1a5fb4;
+  font-size: 12px;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.configure-function-column-always:hover {
+  text-decoration: underline;
+}
+
+.configure-function-footer {
+  flex-shrink: 0;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.configure-function-column-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.configure-function-tool-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid transparent;
+  background: transparent;
+}
+
+.configure-function-tool-btn:hover:not(:disabled) {
+  border-color: var(--border);
+  background: #eee;
+}
+
+.configure-function-tool-btn:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.configure-function-footer-actions {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
 }
 
 .configure-function-empty {
@@ -4686,6 +4903,21 @@ button.skip-script-line:hover {
 
 .function-token {
   cursor: pointer;
+}
+
+.function-table-editable {
+  cursor: pointer;
+  border: none;
+  background: inherit;
+  font: inherit;
+  color: inherit;
+  text-align: inherit;
+  padding: 0;
+}
+
+.function-table-editable:hover {
+  outline: 1px dashed #4a7ab5;
+  outline-offset: 2px;
 }
 
 .placed-text-handles-overlay .placed-text-handle-label {
@@ -4829,6 +5061,7 @@ button.skip-script-line:hover {
   padding: 10px 12px;
   border-bottom: 1px solid var(--border);
   background: linear-gradient(180deg, #fafafa 0%, #e8e8e8 100%);
+  flex-shrink: 0;
 }
 
 .modal-header h2 {
@@ -4917,6 +5150,7 @@ button.skip-script-line:hover {
   border-top: 1px solid var(--border);
   display: flex;
   justify-content: flex-end;
+  flex-shrink: 0;
 }
 
 .modal-footer button {

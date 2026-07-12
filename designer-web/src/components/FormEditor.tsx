@@ -11,6 +11,7 @@ import { SkipCanvasRow } from "./SkipCanvasRow";
 import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
+import { StructuredTextCanvasRow } from "./StructuredTextCanvasRow";
 import { FormInsertionPoint } from "./FormInsertionPoint";
 import { hasFormItemDrag, readFormItemDrag } from "@/lib/designerDrag";
 
@@ -112,6 +113,16 @@ export function FormEditor({ formName }: Props) {
     if (item.type === "text" && !Array.isArray(item.content)) {
       return (
         <TextCanvasRow
+          item={item}
+          index={i}
+          formName={formName}
+          selected={selectedItemIndex === i}
+        />
+      );
+    }
+    if (item.type === "text" && Array.isArray(item.content)) {
+      return (
+        <StructuredTextCanvasRow
           item={item}
           index={i}
           formName={formName}

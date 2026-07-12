@@ -68,6 +68,11 @@ const ALIGN_OPTIONS: { value: PaletteActiveState["align"]; label: string; glyph:
 interface Props {
   /** Active MDI window kind — palette visible only for form / document. */
   activeKind: WindowKind | null;
+  /**
+   * When true, the main icon toolbar already occupies the PE (+ Items) zone on the same
+   * chrome row, so this palette starts at the canvas edge with no left padding.
+   */
+  flushLeft?: boolean;
 }
 
 function PaletteButton({
@@ -114,7 +119,7 @@ function PaletteSep() {
  * the active rich-text editor via `paletteCommands`. Table tools (#11–13) and **fx** (#14) are
  * gated correctly but wired in their own later steps.
  */
-export function FormattingPalette({ activeKind }: Props) {
+export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
   const focus = useSyncExternalStore(
     subscribeFormattingFocus,
     getFormattingFocusState,
@@ -142,13 +147,13 @@ export function FormattingPalette({ activeKind }: Props) {
 
   if (!paletteVisible) return null;
 
-  // Indent the palette so its controls line up with the left edge of the MDI canvas.
-  // Left columns (fixed widths + 1px right borders): Explorer (.designer-left 220px) and,
-  // only when a Form is active, the Items column (.designer-items 150px). Documents have no
-  // Items column, so the canvas starts right after Explorer.
+  // Indent the palette so its controls line up with the left edge of the MDI canvas,
+  // unless the main icon toolbar already fills that zone on the same chrome row.
+  // Left columns: Explorer (.designer-left) + splitter; when Form/Process active, Items (~76px).
   const EXPLORER_WIDTH = 220 + 1;
-  const ITEMS_WIDTH = 150 + 1;
-  const canvasLeftOffset = activeKind === "form" ? EXPLORER_WIDTH + ITEMS_WIDTH : EXPLORER_WIDTH;
+  const ITEMS_WIDTH = 76 + 1;
+  const canvasLeftOffset =
+    flushLeft ? 0 : activeKind === "form" ? EXPLORER_WIDTH + ITEMS_WIDTH : EXPLORER_WIDTH;
 
   // Selects and the color picker take focus from the editor, so save its selection first.
   const saveEditorSelection = () => getActivePaletteEditor()?.saveSelection();

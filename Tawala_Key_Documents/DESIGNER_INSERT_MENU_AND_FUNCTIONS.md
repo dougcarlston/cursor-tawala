@@ -233,7 +233,7 @@ Screenshot: [`assets/Function_-_Categorizer.png`](assets/Function_-_Categorizer.
 
 ### Browser gaps
 
-Catalog params present. No Document HTML→XML emission yet (would become a comment). Column UI same limitations as Multiple Question List (no “always displayed” link / reorder toolbar polish).
+Catalog params present. No Document HTML→XML emission yet (would become a comment). Column UI matches Multiple Question List (+/−/↑/↓ toolbar); per-column “always displayed” condition editor still deferred.
 
 ---
 
@@ -380,7 +380,7 @@ Owner (July 10): browser Configure is **functionally the same** for the core par
 |------|--------|----------------|
 | Print / Excel export dropdowns | Yes | Yes (`show-print-control`, `show-export-control`) |
 | Excel Template | Shown (**Default**) | **Missing** |
-| Columns | Bordered “Column 1” with Heading / Contents / “always displayed” link; +/−/↑/↓ toolbar | “Number of columns” + Heading/Field rows; **no** per-column display-condition link; **no** column reorder toolbar |
+| Columns | Bordered “Column 1” with Heading / Contents / “always displayed” link; +/−/↑/↓ toolbar | Bordered Column *n* groups; footer **+** / **−** / ↑ / ↓ (add / remove / reorder). “Always displayed” link present (display-condition editor still deferred) |
 | Conditions | “Show only fields from records where” | Present (`FunctionConditionsEditor`) |
 | OK greyed until valid | Yes | Yes |
 | Yellow help + REQUIRED | Yes (with duplicate label bug) | Help pane present; REQUIRED styling may differ |
@@ -446,7 +446,7 @@ Screenshot: [`assets/Function_-_Question_Correlation_Table.png`](assets/Function
 
 ### Browser gaps
 
-Catalog + Configure present. Document HTML→XML: **not** emitted yet (comment).
+Catalog + Configure present. Form Text with embedded `questionCorrelationTable` (e.g. Get Together **Report**) supports canvas rich-edit around the token and click-to-Configure (same path as Multiple Question List). Document HTML→XML: **not** emitted yet (comment).
 
 ---
 

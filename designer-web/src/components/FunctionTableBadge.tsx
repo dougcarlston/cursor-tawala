@@ -1,16 +1,45 @@
 import { CSSProperties, Fragment, ReactNode } from "react";
 import { RichContentBlock, RichTextNode } from "@/types/tawala";
+import {
+  defaultFunctionConfig,
+  getFunctionDef,
+  type ColumnConfig,
+  type FunctionConfig,
+} from "@/lib/functionCatalog";
+import { requestFunctionPicker } from "@/lib/functionPicker";
+
+interface ItemizationColumn {
+  header: string;
+  field: string;
+}
 
 interface ItemizationNode extends RichTextNode {
-  columns?: { header: string }[];
+  type: "itemizationTable";
+  form?: string;
+  version?: number;
+  columns?: ItemizationColumn[];
 }
 
 const ITEMIZATION_TOKEN_LABEL = "MULTIPLE QUESTION LIST";
+const CORRELATION_TOKEN_LABEL = "QUESTION CORRELATION TABLE";
+const ITEMIZATION_FUNCTION_ID = "itemization-table";
+const CORRELATION_FUNCTION_ID = "question-correlation-table";
 
-function findItemizationTable(content: RichContentBlock[]): ItemizationNode | null {
+interface QuestionCorrelationNode extends RichTextNode {
+  type: "questionCorrelationTable";
+  form?: string;
+  questionField?: string;
+  displayField?: string;
+  preferredField?: string;
+}
+
+function findEditableFunctionTable(
+  content: RichContentBlock[],
+): ItemizationNode | QuestionCorrelationNode | null {
   for (const block of content) {
     for (const node of block.nodes ?? []) {
       if (node.type === "itemizationTable") return node as ItemizationNode;
+      if (node.type === "questionCorrelationTable") return node as QuestionCorrelationNode;
     }
   }
   return null;
@@ -28,12 +57,120 @@ function isFunctionNode(node: RichTextNode) {
   );
 }
 
-function renderFunctionBlock(node: RichTextNode, key: string, style?: CSSProperties) {
+function itemizationToConfig(node: ItemizationNode): FunctionConfig {
+  const def = getFunctionDef(ITEMIZATION_FUNCTION_ID);
+  const cols = node.columns ?? [];
+  const base = def ? defaultFunctionConfig(def) : {};
+  return {
+    ...base,
+    "show-print-control": "false",
+    "show-export-control": "false",
+    numberOfColumns: Math.max(1, cols.length),
+    column: cols.map((c) => ({ header: c.header ?? "", contents: c.field ?? "" })),
+    "form-name": node.form ?? "",
+    conditionsRows: [{ field: "", op: "equals", value: "" }],
+    conditionsCombinator: "and",
+  };
+}
+
+function correlationToConfig(node: QuestionCorrelationNode): FunctionConfig {
+  const def = getFunctionDef(CORRELATION_FUNCTION_ID);
+  const base = def ? defaultFunctionConfig(def) : {};
+  return {
+    ...base,
+    "question-field-name": node.questionField ?? "",
+    "display-field-name": node.displayField ?? "",
+    "preferred-choice-field-name": node.preferredField ?? "",
+    conditionsRows: [{ field: "", op: "equals", value: "" }],
+    conditionsCombinator: "and",
+  };
+}
+
+function patchCorrelationFromConfig(
+  content: RichContentBlock[],
+  config: FunctionConfig,
+): RichContentBlock[] {
+  return content.map((block) => ({
+    ...block,
+    nodes: (block.nodes ?? []).map((node) => {
+      if (node.type !== "questionCorrelationTable") return node;
+      const prev = node as QuestionCorrelationNode;
+      const preferred = String(config["preferred-choice-field-name"] ?? "").trim();
+      return {
+        ...prev,
+        questionField: String(config["question-field-name"] ?? "").trim(),
+        displayField: String(config["display-field-name"] ?? "").trim(),
+        preferredField: preferred || undefined,
+      };
+    }),
+  }));
+}
+
+function patchItemizationFromConfig(
+  content: RichContentBlock[],
+  config: FunctionConfig,
+): RichContentBlock[] {
+  const cols = (config.column as ColumnConfig[] | undefined) ?? [];
+  const n = Number(config.numberOfColumns ?? cols.length) || cols.length;
+  const form = String(config["form-name"] ?? "").trim();
+  const nextColumns: ItemizationColumn[] = cols.slice(0, n).map((c) => ({
+    header: c.header ?? "",
+    field: c.contents ?? "",
+  }));
+
+  return content.map((block) => ({
+    ...block,
+    nodes: (block.nodes ?? []).map((node) => {
+      if (node.type !== "itemizationTable") return node;
+      const prev = node as ItemizationNode;
+      return {
+        ...prev,
+        form: form || prev.form,
+        columns: nextColumns,
+      };
+    }),
+  }));
+}
+
+function renderFunctionBlock(
+  node: RichTextNode,
+  key: string,
+  style: CSSProperties | undefined,
+  onActivate: () => void,
+) {
   if (node.type === "itemizationTable") {
     return (
-      <div key={key} className="function-table-badge function-table-standalone" style={style}>
+      <button
+        key={key}
+        type="button"
+        className="function-table-badge function-table-standalone function-table-editable"
+        style={style}
+        title="Click to edit MULTIPLE QUESTION LIST"
+        onClick={(e) => {
+          e.stopPropagation();
+          onActivate();
+        }}
+      >
         <span className="function-table-label function-table-token">{ITEMIZATION_TOKEN_LABEL}</span>
-      </div>
+      </button>
+    );
+  }
+
+  if (node.type === "questionCorrelationTable") {
+    return (
+      <button
+        key={key}
+        type="button"
+        className="function-table-badge function-table-standalone function-table-editable"
+        style={style}
+        title="Click to edit QUESTION CORRELATION TABLE"
+        onClick={(e) => {
+          e.stopPropagation();
+          onActivate();
+        }}
+      >
+        <span className="function-table-label function-table-token">{CORRELATION_TOKEN_LABEL}</span>
+      </button>
     );
   }
 
@@ -44,18 +181,18 @@ function renderFunctionBlock(node: RichTextNode, key: string, style?: CSSPropert
   );
 }
 
-function renderInlineNodes(nodes: RichTextNode[] = []): ReactNode[] {
+function renderInlineNodes(nodes: RichTextNode[] = [], onActivate: () => void): ReactNode[] {
   return nodes.map((node, index) => {
     const key = `${node.type}-${index}`;
     switch (node.type) {
       case "text":
         return <Fragment key={key}>{node.text ?? ""}</Fragment>;
       case "bold":
-        return <strong key={key}>{renderInlineNodes(node.nodes ?? [])}</strong>;
+        return <strong key={key}>{renderInlineNodes(node.nodes ?? [], onActivate)}</strong>;
       case "italic":
-        return <em key={key}>{renderInlineNodes(node.nodes ?? [])}</em>;
+        return <em key={key}>{renderInlineNodes(node.nodes ?? [], onActivate)}</em>;
       case "underline":
-        return <u key={key}>{renderInlineNodes(node.nodes ?? [])}</u>;
+        return <u key={key}>{renderInlineNodes(node.nodes ?? [], onActivate)}</u>;
       case "font": {
         const style: CSSProperties = {};
         if (node.face) style.fontFamily = node.face;
@@ -63,26 +200,92 @@ function renderInlineNodes(nodes: RichTextNode[] = []): ReactNode[] {
         if (node.color) style.color = `#${String(node.color).replace(/^#/, "")}`;
         return (
           <span key={key} style={style}>
-            {renderInlineNodes(node.nodes ?? [])}
+            {renderInlineNodes(node.nodes ?? [], onActivate)}
           </span>
         );
       }
       case "itemizationTable":
         return (
-          <span key={key} className="function-table-inline function-table-token">
+          <button
+            key={key}
+            type="button"
+            className="function-table-inline function-table-token function-table-editable"
+            title="Click to edit MULTIPLE QUESTION LIST"
+            onClick={(e) => {
+              e.stopPropagation();
+              onActivate();
+            }}
+          >
             {ITEMIZATION_TOKEN_LABEL}
-          </span>
+          </button>
+        );
+      case "questionCorrelationTable":
+        return (
+          <button
+            key={key}
+            type="button"
+            className="function-table-inline function-table-token function-table-editable"
+            title="Click to edit QUESTION CORRELATION TABLE"
+            onClick={(e) => {
+              e.stopPropagation();
+              onActivate();
+            }}
+          >
+            {CORRELATION_TOKEN_LABEL}
+          </button>
         );
       default:
-        return <Fragment key={key}>{renderInlineNodes(node.nodes ?? [])}</Fragment>;
+        return <Fragment key={key}>{renderInlineNodes(node.nodes ?? [], onActivate)}</Fragment>;
     }
   });
 }
 
+interface Props {
+  content: RichContentBlock[];
+  onChange?: (content: RichContentBlock[]) => void;
+}
+
 /** Design-canvas badge for embedded function tables (legacy Designer naming). */
-export function FunctionTableBadge({ content }: { content: RichContentBlock[] }) {
-  const table = findItemizationTable(content);
-  if (table?.type !== "itemizationTable") {
+export function FunctionTableBadge({ content, onChange }: Props) {
+  const table = findEditableFunctionTable(content);
+
+  const openFunctionEditor = () => {
+    if (!table || !onChange) return;
+    if (table.type === "itemizationTable") {
+      const def = getFunctionDef(ITEMIZATION_FUNCTION_ID);
+      if (!def) return;
+      requestFunctionPicker({
+        mode: "edit",
+        existing: {
+          element: document.createElement("span"),
+          functionId: ITEMIZATION_FUNCTION_ID,
+          config: itemizationToConfig(table),
+          instanceId: 0,
+        },
+        commitConfig: (_def, config) => {
+          onChange(patchItemizationFromConfig(content, config));
+        },
+      });
+      return;
+    }
+
+    const def = getFunctionDef(CORRELATION_FUNCTION_ID);
+    if (!def) return;
+    requestFunctionPicker({
+      mode: "edit",
+      existing: {
+        element: document.createElement("span"),
+        functionId: CORRELATION_FUNCTION_ID,
+        config: correlationToConfig(table),
+        instanceId: 0,
+      },
+      commitConfig: (_def, config) => {
+        onChange(patchCorrelationFromConfig(content, config));
+      },
+    });
+  };
+
+  if (!table || (table.type !== "itemizationTable" && table.type !== "questionCorrelationTable")) {
     return <div className="function-table-badge">Function table</div>;
   }
 
@@ -105,7 +308,7 @@ export function FunctionTableBadge({ content }: { content: RichContentBlock[] })
                   className="text-block structured-text-preview"
                   style={style}
                 >
-                  {renderInlineNodes(inlineNodes)}
+                  {renderInlineNodes(inlineNodes, openFunctionEditor)}
                 </p>,
               );
               inlineNodes = [];
@@ -115,7 +318,14 @@ export function FunctionTableBadge({ content }: { content: RichContentBlock[] })
             for (const node of nodes) {
               if (isFunctionNode(node)) {
                 flushInlineNodes();
-                pieces.push(renderFunctionBlock(node, `${blockIndex}-fn-${segmentIndex}`, style));
+                pieces.push(
+                  renderFunctionBlock(
+                    node,
+                    `${blockIndex}-fn-${segmentIndex}`,
+                    style,
+                    openFunctionEditor,
+                  ),
+                );
                 segmentIndex += 1;
               } else {
                 inlineNodes.push(node);
@@ -128,7 +338,7 @@ export function FunctionTableBadge({ content }: { content: RichContentBlock[] })
 
           return (
             <p key={blockIndex} className="text-block structured-text-preview" style={style}>
-              {renderInlineNodes(nodes)}
+              {renderInlineNodes(nodes, openFunctionEditor)}
             </p>
           );
         }

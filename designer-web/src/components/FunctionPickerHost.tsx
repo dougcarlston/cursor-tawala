@@ -50,6 +50,17 @@ export function FunctionPickerHost() {
       }
     }
 
+    if (request.configureFunctionId) {
+      const def = getFunctionDef(request.configureFunctionId);
+      if (def) {
+        setEditRef(null);
+        setSelectedDef(def);
+        setInitialConfig(undefined);
+        setStep("configure");
+        return;
+      }
+    }
+
     setEditRef(request.existing ?? null);
     setSelectedDef(null);
     setInitialConfig(undefined);
@@ -59,6 +70,12 @@ export function FunctionPickerHost() {
   const close = () => clearFunctionPickerRequest();
 
   const commitToken = (def: FunctionDef, config: FunctionConfig) => {
+    const commitConfig = request?.commitConfig;
+    if (commitConfig) {
+      commitConfig(def, config);
+      close();
+      return;
+    }
     const handle = getActivePaletteEditor();
     if (!handle) {
       close();

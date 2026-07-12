@@ -1,15 +1,16 @@
 import { RichContentBlock, RichTextNode } from "@/types/tawala";
 import { RichTextEditor } from "./RichTextEditor";
+import {
+  STRUCTURED_NODE_DATA_ATTR as STRUCTURED_NODE_ATTR,
+  encodeStructuredNode,
+  type ItemizationNode,
+  type QuestionCorrelationNode,
+  type StructuredFunctionNode,
+} from "@/lib/structuredItemizationEdit";
 
 interface ItemizationColumn {
   header: string;
   field: string;
-}
-
-interface ItemizationNode extends RichTextNode {
-  type: "itemizationTable";
-  form?: string;
-  columns?: ItemizationColumn[];
 }
 
 interface Props {
@@ -17,29 +18,33 @@ interface Props {
   onChange: (content: RichContentBlock[]) => void;
 }
 
-interface ItemizationLocation {
+interface StructuredLocation {
   block: RichContentBlock;
   blockIndex: number;
-  node: ItemizationNode;
+  node: StructuredFunctionNode;
   nodeIndex: number;
 }
 
-const STRUCTURED_NODE_ATTR = "data-tawala-structured-node";
 const EDITOR_CARET_SLOT_ATTR = "data-tawala-caret-slot";
 const ITEMIZATION_TOKEN_LABEL = "{ MULTIPLE QUESTION LIST }";
+const CORRELATION_TOKEN_LABEL = "{ QUESTION CORRELATION TABLE }";
 const EDITOR_CARET_GUARD = "\u200b";
 
-function findItemizationTable(content: RichContentBlock[]): ItemizationLocation | null {
+function isEditableStructuredType(type: string): type is StructuredFunctionNode["type"] {
+  return type === "itemizationTable" || type === "questionCorrelationTable";
+}
+
+function findEditableStructuredFunction(content: RichContentBlock[]): StructuredLocation | null {
   for (let blockIndex = 0; blockIndex < content.length; blockIndex += 1) {
     const block = content[blockIndex];
     const nodes = block.nodes ?? [];
     for (let nodeIndex = 0; nodeIndex < nodes.length; nodeIndex += 1) {
       const node = nodes[nodeIndex];
-      if (node.type === "itemizationTable") {
+      if (isEditableStructuredType(node.type)) {
         return {
           block,
           blockIndex,
-          node: node as ItemizationNode,
+          node: node as StructuredFunctionNode,
           nodeIndex,
         };
       }
@@ -60,11 +65,7 @@ function escAttr(text: string) {
   return escHtml(text).replace(/'/g, "&#39;");
 }
 
-function encodeStructuredNode(node: RichTextNode) {
-  return encodeURIComponent(JSON.stringify(node));
-}
-
-function decodeStructuredNode(value: string | null): RichTextNode | null {
+function decodeStructuredNodeAttr(value: string | null): RichTextNode | null {
   if (!value) return null;
   try {
     return JSON.parse(decodeURIComponent(value)) as RichTextNode;
@@ -140,6 +141,10 @@ function wrapInlineNodes(
   return wrapped;
 }
 
+function structuredTokenHtml(node: StructuredFunctionNode, label: string, title: string): string {
+  return `${editorCaretSlotHtml()}<span contenteditable="false" class="function-table-inline function-table-token" ${STRUCTURED_NODE_ATTR}="${escAttr(encodeStructuredNode(node))}" title="${escAttr(title)}">${escHtml(label)}</span>${editorCaretSlotHtml()}`;
+}
+
 function richNodesToEditorHtml(nodes: RichTextNode[] = []): string {
   return nodes
     .map((node) => {
@@ -165,8 +170,16 @@ function richNodesToEditorHtml(nodes: RichTextNode[] = []): string {
           const styleAttr = style.length ? ` style="${escAttr(style.join(";"))}"` : "";
           return `<span data-tawala-font-node="true"${faceAttr}${sizeAttr}${colorAttr}${styleAttr}>${richNodesToEditorHtml(node.nodes ?? [])}</span>`;
         }
-        case "itemizationTable":
-          return `${editorCaretSlotHtml()}<span contenteditable="false" class="function-table-inline function-table-token" data-itemization-token="true" data-itemization-form="${escAttr((node as ItemizationNode).form ?? "")}" ${STRUCTURED_NODE_ATTR}="${escAttr(encodeStructuredNode(node))}" title="MULTIPLE QUESTION LIST">${escHtml(ITEMIZATION_TOKEN_LABEL)}</span>${editorCaretSlotHtml()}`;
+        case "itemizationTable": {
+          const n = node as ItemizationNode;
+          return `${editorCaretSlotHtml()}<span contenteditable="false" class="function-table-inline function-table-token" data-itemization-token="true" data-itemization-form="${escAttr(n.form ?? "")}" ${STRUCTURED_NODE_ATTR}="${escAttr(encodeStructuredNode(n))}" title="MULTIPLE QUESTION LIST">${escHtml(ITEMIZATION_TOKEN_LABEL)}</span>${editorCaretSlotHtml()}`;
+        }
+        case "questionCorrelationTable":
+          return structuredTokenHtml(
+            node as QuestionCorrelationNode,
+            CORRELATION_TOKEN_LABEL,
+            "QUESTION CORRELATION TABLE",
+          );
         default:
           return richNodesToEditorHtml(node.nodes ?? []);
       }
@@ -191,6 +204,23 @@ function contentToEditorHtml(content: RichContentBlock[]): string {
   return html || "<p></p>";
 }
 
+export function structuredContentToEditorHtml(content: RichContentBlock[]): string {
+  return contentToEditorHtml(content);
+}
+
+/** First editable structured function node in Form Text content, if any. */
+export function findStructuredItemizationTable(
+  content: RichContentBlock[],
+): StructuredFunctionNode | null {
+  return findEditableStructuredFunction(content)?.node ?? null;
+}
+
+export function findEditableStructuredFunctionNode(
+  content: RichContentBlock[],
+): StructuredFunctionNode | null {
+  return findEditableStructuredFunction(content)?.node ?? null;
+}
+
 function parseInlineNodesFromDom(parent: ParentNode): RichTextNode[] {
   const nodes: RichTextNode[] = [];
   parent.childNodes.forEach((child) => {
@@ -208,7 +238,7 @@ function parseInlineNode(node: Node): RichTextNode[] {
   if (node.nodeType !== Node.ELEMENT_NODE) return [];
 
   const el = node as HTMLElement;
-  const restoredNode = decodeStructuredNode(el.getAttribute(STRUCTURED_NODE_ATTR));
+  const restoredNode = decodeStructuredNodeAttr(el.getAttribute(STRUCTURED_NODE_ATTR));
   if (restoredNode) return [restoredNode];
 
   const children = parseInlineNodesFromDom(el);
@@ -246,14 +276,17 @@ function parseInlineNode(node: Node): RichTextNode[] {
   }
 }
 
-function hasItemizationTable(blocks: RichContentBlock[]): boolean {
+function hasEditableStructuredFunction(blocks: RichContentBlock[]): boolean {
   const visit = (nodes: RichTextNode[] = []): boolean =>
-    nodes.some((node) => node.type === "itemizationTable" || visit(node.nodes ?? []));
+    nodes.some((node) => isEditableStructuredType(node.type) || visit(node.nodes ?? []));
 
   return blocks.some((block) => visit(block.nodes ?? []));
 }
 
-function htmlToStructuredContent(html: string, fallbackTable: ItemizationNode): RichContentBlock[] {
+function htmlToStructuredContent(
+  html: string,
+  fallbackTable: StructuredFunctionNode,
+): RichContentBlock[] {
   const container = document.createElement("div");
   container.innerHTML = html;
 
@@ -297,16 +330,23 @@ function htmlToStructuredContent(html: string, fallbackTable: ItemizationNode): 
 
   flushLooseNodes();
 
-  if (!hasItemizationTable(blocks)) {
+  if (!hasEditableStructuredFunction(blocks)) {
     blocks.push({ type: "paragraph", nodes: [fallbackTable] });
   }
 
   return blocks.length ? blocks : [{ type: "paragraph", nodes: [fallbackTable] }];
 }
 
+export function editorHtmlToStructuredContent(
+  html: string,
+  fallbackTable: StructuredFunctionNode,
+): RichContentBlock[] {
+  return htmlToStructuredContent(html, fallbackTable);
+}
+
 /** Properties for text items that embed function tables (not plain rich text). */
 export function StructuredTextProperties({ content, onChange }: Props) {
-  const location = findItemizationTable(content);
+  const location = findEditableStructuredFunction(content);
   const table = location?.node;
 
   if (table?.type === "itemizationTable") {
@@ -315,8 +355,7 @@ export function StructuredTextProperties({ content, onChange }: Props) {
       <div className="structured-text-props">
         <p className="hint">
           This normal text item includes the legacy <strong>MULTIPLE QUESTION LIST</strong> function.
-          Edit the text in one box as usual; type before the boxed token or press Enter before it
-          to add intro text above the table. The token stays tied to the table definition below.
+          Edit the text on the canvas; click the boxed token to Configure the table.
         </p>
         <label>
           Content
@@ -328,7 +367,7 @@ export function StructuredTextProperties({ content, onChange }: Props) {
           />
         </label>
         {columns.map((col, i) => (
-          <label key={col.field}>
+          <label key={`${col.field}-${i}`}>
             Column {i + 1} header
             <input
               value={col.header}
@@ -342,6 +381,27 @@ export function StructuredTextProperties({ content, onChange }: Props) {
             <span className="hint">Field: {col.field}</span>
           </label>
         ))}
+      </div>
+    );
+  }
+
+  if (table?.type === "questionCorrelationTable") {
+    return (
+      <div className="structured-text-props">
+        <p className="hint">
+          This normal text item includes the legacy <strong>QUESTION CORRELATION TABLE</strong>{" "}
+          function. Edit surrounding text on the canvas; click the boxed token to Configure the
+          table fields.
+        </p>
+        <label>
+          Content
+          <RichTextEditor
+            html={contentToEditorHtml(content)}
+            onChange={(html) => onChange(htmlToStructuredContent(html, table))}
+            placeholder="Enter text…"
+            formattingKind="text"
+          />
+        </label>
       </div>
     );
   }
@@ -361,7 +421,9 @@ export function hasStructuredTextContent(
 }
 
 export function itemizationPreviewLabel(content: RichContentBlock[]): string | null {
-  const node = findItemizationTable(content)?.node;
-  if (!node?.columns?.length) return "MULTIPLE QUESTION LIST";
+  const node = findEditableStructuredFunction(content)?.node;
+  if (!node) return null;
+  if (node.type === "questionCorrelationTable") return "QUESTION CORRELATION TABLE";
+  if (!node.columns?.length) return "MULTIPLE QUESTION LIST";
   return `MULTIPLE QUESTION LIST (${node.columns.map((c) => c.header).join(", ")})`;
 }
