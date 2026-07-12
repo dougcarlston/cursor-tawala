@@ -1205,7 +1205,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     try {
       const result = await apiDeploy(project, credentials);
       if (result.status === "failure") {
-        set({ statusMessage: `Deploy failed: ${result.error}` });
+        set({
+          lastDeploy: { ...result, project: project.name },
+          showDeployResult: true,
+          statusMessage: `Deploy failed: ${result.error}`,
+        });
         return;
       }
       set({

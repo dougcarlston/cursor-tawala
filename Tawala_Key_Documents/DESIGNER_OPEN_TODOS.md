@@ -84,7 +84,7 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
 | 9 | **Wire the rest of the functions** | Owner Jul 12: complete Configure / insert / canvas-edit / HTML→XML for remaining catalog functions (beyond MQL + question-correlation). Includes specialty menus, Invitation/Hyperlink where tied to functions, and structured tokens still stubbed. |
-| 10 | **Get Deploy working** | Owner Jul 12: reliable local Deploy (dev API and/or 8080 Java) for sample projects — not www.tawala.com. Unblocks second template review pass; includes export fidelity enough that Deployed apps run without server error on simple templates first, then SignupSheets-class. |
+| 10 | **Get Deploy working** | **In progress Jul 12** — local 8080 path preferred (`npm run dev` forwards when Tomcat up). Itemization v2 header export fixed (was breaking SignupSheets). Failure dialog now shows. Still: remaining function export gaps, email Send, theme `mvsc` polish. |
 
 **Sequencing note (owner Jul 12):** Finish **#9 (functions)** and **#10 (Deploy)**, then **re-review sample projects** (#7 second pass).
 

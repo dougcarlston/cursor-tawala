@@ -37,6 +37,28 @@ function headingPlainText(content) {
     .replace(/&amp;/g, "&");
 }
 
+/** JSON `{ field, op, value }` → legacy `<displayConditions>` (inside form items). */
+function displayConditionsXml(cond) {
+  if (!cond?.field) return "";
+  const field = escAttr(cond.field);
+  const op = cond.op ?? "equals";
+  if (op === "isBlank" || op === "isNotBlank") {
+    return `<displayConditions><${op} field="${field}"/></displayConditions>`;
+  }
+  return (
+    `<displayConditions>` +
+    `<${op} field="${field}"><string value="${escText(cond.value ?? "")}"/></${op}>` +
+    `</displayConditions>`
+  );
+}
+
+function withDisplayConditions(itemXml, item) {
+  const dc = displayConditionsXml(item.displayCondition ?? item.displayConditions);
+  if (!dc) return itemXml;
+  // Insert before the item's closing tag (fib/mc/text/…).
+  return itemXml.replace(/<\/([a-zA-Z0-9_-]+)>\s*$/, `${dc}</$1>`);
+}
+
 function fontXml(text, { bold = false, italic = false, size = 200 } = {}) {
   let inner = escText(text);
   if (italic) inner = `<i>${inner}</i>`;
@@ -318,13 +340,25 @@ function richNodesToXml(nodes) {
         case "choiceTallyTable":
           return `<choice-tally-table version="1"><field>${escAttr(n.field)}</field><conditions><form name="${escAttr(n.form)}"/></conditions></choice-tally-table>`;
         case "itemizationTable": {
+          // Java rejects version="2" tables whose <header> is plain text; use expression
+          // form like legacy Designer (`<string value="…"/>`). Always emit v2.
           const cols = (n.columns ?? [])
-            .map(
-              (col) =>
-                `<column><header>${escText(col.header)}</header><contents><field name="${escAttr(col.field)}"/></contents></column>`,
-            )
+            .map((col) => {
+              const heading = escText(col.header ?? "");
+              return (
+                `<column><header><string value="${heading}"/></header>` +
+                `<contents><field name="${escAttr(col.field)}"/></contents></column>`
+              );
+            })
             .join("");
-          return `<itemization-table version="${n.version ?? 1}"><number-of-columns>${(n.columns ?? []).length}</number-of-columns>${cols}<conditions><form name="${escAttr(n.form)}"/></conditions></itemization-table>`;
+          const nCols = (n.columns ?? []).length;
+          return (
+            `<itemization-table version="2">` +
+            `<show-print-control>false</show-print-control>` +
+            `<number-of-columns>${nCols}</number-of-columns>${cols}` +
+            `<conditions><form name="${escAttr(n.form)}"/></conditions>` +
+            `</itemization-table>`
+          );
         }
         case "questionCorrelationTable":
           return `<question-correlation-table version="1"><question-field-name>${escAttr(n.questionField)}</question-field-name><display-field-name>${escAttr(n.displayField)}</display-field-name><preferred-choice-field-name>${escAttr(n.preferredField)}</preferred-choice-field-name><conditions><form name="${escAttr(n.form)}"/></conditions></question-correlation-table>`;
@@ -353,12 +387,12 @@ function itemToXml(item, formName = "") {
     case "fib": {
       if (formName === "Registration") {
         const regFib = registrationFibToXml(item, escAttr, escText);
-        if (regFib) return regFib;
+        if (regFib) return withDisplayConditions(regFib, item);
       }
-      return fibToXml(item, escAttr, escText);
+      return withDisplayConditions(fibToXml(item, escAttr, escText), item);
     }
     case "mc":
-      return mcToXml(item, escAttr, escText);
+      return withDisplayConditions(mcToXml(item, escAttr, escText), item);
     case "field":
       return `<field name="${escAttr(item.name ?? item.fieldName)}"/>`;
     case "break":

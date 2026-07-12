@@ -26,6 +26,7 @@ Project theme styles loaded per `themePath` in `.tawala` XML.
 | `greentea/` | Potluck |
 | `style2/` | Simple Survey |
 | `baseball/` | Sign-up Sheet (stub CSS until full theme transfer) |
+| `mvsc/` | SignupSheets sample (`themePath=mvsc`) — local stub so Send/confirmation render does not 404 |
 | `dirtbowl2/` | DirtBowl registration |
 
 `default.css` copied from owner legacy **Project Themes Test** bundle. Theme-specific `project.css` + `images/` under `greentea/` and `style2/` from the same source.

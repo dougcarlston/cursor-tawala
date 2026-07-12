@@ -66,13 +66,13 @@ Concrete gaps vs editing / round-tripping this project in `designer-web`:
 
 6. **Document itemization tables** — Same lossy HTML path as above; DirtBowl-style rich `content` arrays survive Open Project but not a full Document editor round-trip.
 
-7. **Theme `mvsc`** — Project/form `themePath: "mvsc"`. Preview/deploy may fall back or look wrong without that theme under local CSS (`docker/tomcat/css/…`).
+7. **Theme `mvsc`** — Project/form `themePath: "mvsc"`. **Jul 12:** local stub added at `docker/tomcat/css/project/mvsc/project.css` (also copied into running Tomcat) so Deploy/Send no longer 404s missing CSS. Full visual parity still deferred. Confirmation **Send** still needs local SMTP if Email is collected (known mail backlog).
 
 8. **Send / email** — Post-SignupSheet and Post-AlreadySignedUp `send` commands convert cleanly; browser Designer + local runtime still do not fully author or deliver confirmation mail (known backlog; README “Sign-up Sheet w Email”).
 
 9. **Multiple start points** — Administrator, SignUp, and ShowSignups are all `startPoint: true` (legacy multi-entry). Explorer can toggle start point per form; confirm UX matches owner expectation for multi-entry projects.
 
-10. **Export fidelity** — `server/jsonToXml.mjs` is best-effort. Expect gaps on: displayConditions, dynamic MCQ `where`, itemization filters/column conditions, invitation auth, rich heading field tokens, and `paddingBottom`. Use the generated JSON for Designer inspection; do not assume lossless deploy round-trip to Java without spot-checking XML.
+10. **Export fidelity** — `server/jsonToXml.mjs` is best-effort. **Fixed Jul 12:** itemization-table v2 column headers now emit `<string value="…"/>` (plain-text headers caused Java `/client` to return the public Error HTML page). Remaining gaps: displayConditions, dynamic MCQ `where`, itemization filters/column conditions, invitation auth, rich heading field tokens, and `paddingBottom`. Use the generated JSON for Designer inspection; spot-check XML on Deploy for advanced filters.
 
 ---
 

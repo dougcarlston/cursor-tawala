@@ -1,0 +1,33 @@
+/* MVSC theme — local stub so SignupSheets (themePath=mvsc) can render / Send confirmation.
+   Full legacy MVSC assets not in repo; style2-compatible shell until transferred. */
+
+body {
+	background-color: #888888;
+}
+
+#tawalaProjectContainer {
+    border: 14px double #ddcccc;
+    padding: 8px 8px 8px 16px;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+}
+
+#form .mcRadio, #form .mcCheckbox {
+    clear: both;
+    margin: 0px;
+    background-color: transparent;
+}
+
+#form .submitButton input {
+    font-weight: bold;
+    text-transform: capitalize;
+}

@@ -180,14 +180,17 @@ function functionTokenToXml(attrs, escAttr, escText) {
       const n = Number(config.numberOfColumns ?? cols.length) || cols.length;
       const colXml = cols
         .slice(0, n)
-        .map(
-          (col) =>
-            `<column><header>${escText(col.header ?? "")}</header>` +
-            `<contents><field name="${escAttr(col.contents ?? "")}"/></contents></column>`,
-        )
+        .map((col) => {
+          const heading = escText(col.header ?? "");
+          return (
+            `<column><header><string value="${heading}"/></header>` +
+            `<contents><field name="${escAttr(col.contents ?? "")}"/></contents></column>`
+          );
+        })
         .join("");
       return (
         `<itemization-table version="2">` +
+        `<show-print-control>false</show-print-control>` +
         `<number-of-columns>${n}</number-of-columns>${colXml}` +
         conditionsXml(config, escAttr) +
         `</itemization-table>`

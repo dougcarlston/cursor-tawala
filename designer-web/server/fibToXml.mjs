@@ -1,4 +1,4 @@
-import { parseFibPrompt, fibUsesLeftLabels, fibRowFields } from "./fibPrompt.mjs";
+import { parseFibPrompt, fibUsesLeftLabels, fibUsesRightAlignLabels, fibRowFields } from "./fibPrompt.mjs";
 
 const TAB_LEFT =
   '<tabPositions><tabStop position="4031"/><tabStop position="6192"/></tabPositions>';
@@ -14,6 +14,20 @@ function fontXml(text, escText, { bold = false, italic = false, size = 200 } = {
   if (italic) inner = `<i>${inner}</i>`;
   if (bold) inner = `<b>${inner}</b>`;
   return `<font face="Arial" size="${size}" color="000000">${inner}</font>`;
+}
+
+/** Prompt like `<<Custom>>:` → field token + trailing punctuation (SignupSheets Q10). */
+function promptRunXml(text, escAttr, escText) {
+  const m = String(text).trim().match(/^<<([^<>]+)>>(.*)$/);
+  if (!m) {
+    const t = text.trim();
+    return fontXml(t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `, escText);
+  }
+  const field = `<font face="Arial" size="200" color="000000"><field name="${escAttr(m[1].trim())}"/></font>`;
+  const rest = m[2].trim();
+  if (!rest) return field;
+  const trailing = rest.startsWith(":") ? `: ` : `${rest} `;
+  return field + fontXml(trailing, escText);
 }
 
 function paragraph(inner, tabs = TAB_LEFT) {
@@ -133,6 +147,32 @@ function leftAlignRowXml(row, letters, escAttr, escText) {
   return paragraph(body);
 }
 
+/**
+ * rightAlignLabelsJustified (SignupSheets): same no-tab rule as leftAlign, but legacy
+ * uses a single 2880 twip tab stop (not the DirtBowl dual stops).
+ */
+function rightAlignRowXml(row, letters, escAttr, escText) {
+  const fields = row.segments.filter((s) => s.type === "blank");
+  const texts = row.segments.filter((s) => s.type === "text");
+  let body = "";
+  if (texts[0]?.text) {
+    // Legacy SignupSheets Name/Parent/Email are not bold; keep prompt text as-is.
+    body += promptRunXml(texts[0].text, escAttr, escText);
+  }
+  for (let i = 1; i < texts.length; i++) {
+    const t = texts[i].text.trim();
+    if (t.startsWith("(")) {
+      body += fontXml(t, escText, { italic: true });
+    } else {
+      body += fontXml(t, escText);
+    }
+  }
+  for (const field of fields) {
+    body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
+  }
+  return paragraph(body, TAB_TOPLABELS);
+}
+
 /** Default/freeform: tabbed paragraphs for multi-field rows. */
 function defaultRowXml(row, letters, escAttr, escText) {
   if (isDobRow(row)) {
@@ -207,15 +247,30 @@ function topLabelsFromBlanks(item, letters, escAttr, escText) {
 function topLabelsRowsXml(rows, letters, escAttr, escText) {
   const parts = [];
   for (const row of rows) {
-    for (const field of fibRowFields(row.segments)) {
-      let body = "";
-      const hint = field.hint?.trim();
+    let body = "";
+    let emittedBlank = false;
+    for (const seg of row.segments) {
+      if (seg.type === "text") {
+        const t = seg.text.trim();
+        if (!t) continue;
+        // Parenthetical notes in the prompt render italic (legacy SignupSheets Max field).
+        if (t.startsWith("(")) {
+          body += fontXml(t.endsWith(":") ? `${t} ` : t, escText, { italic: true });
+        } else {
+          body += fontXml(t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `, escText);
+        }
+        continue;
+      }
+      const hint = seg.hint?.trim();
       if (hint) {
         const label = hint.startsWith("[") ? hint : `[${hint}]`;
         body += fontXml(label, escText, { bold: true, italic: true });
+        body += fontXml("  ", escText);
       }
-      body += fontXml("  ", escText);
-      body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
+      body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
+      emittedBlank = true;
+    }
+    if (emittedBlank || body) {
       parts.push(paragraph(body, TAB_TOPLABELS));
     }
   }
@@ -254,8 +309,11 @@ export function fibToXml(item, escAttr, escText) {
     parts = emptyPromptBlanksXml(blanks, escAttr, escText);
   } else {
     const rows = parseFibPrompt(prompt, blanks);
+    const right = fibUsesRightAlignLabels(style);
     for (const row of rows) {
-      if (left) {
+      if (right) {
+        parts.push(rightAlignRowXml(row, letters, escAttr, escText));
+      } else if (left) {
         parts.push(leftAlignRowXml(row, letters, escAttr, escText));
       } else {
         parts.push(...defaultRowXml(row, letters, escAttr, escText));

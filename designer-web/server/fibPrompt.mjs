@@ -93,3 +93,8 @@ export function fibUsesLeftLabels(style) {
     style === "alignedLabels"
   );
 }
+
+/** Legacy SignupSheets-style labels: label + blank in one paragraph, no &lt;tab/&gt; (Java drops labels if a tab separates them). */
+export function fibUsesRightAlignLabels(style) {
+  return style === "rightAlignLabels" || style === "rightAlignLabelsJustified";
+}

@@ -5,17 +5,27 @@ export function DeployDialog() {
   const setShow = useProjectStore((s) => s.setShowDeployResult);
   const lastDeploy = useProjectStore((s) => s.lastDeploy);
 
-  if (!show || !lastDeploy || lastDeploy.status !== "success") return null;
+  if (!show || !lastDeploy) return null;
+
+  const failed = lastDeploy.status === "failure";
 
   return (
     <div className="modal-backdrop" role="presentation">
       <div className="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="deploy-dialog-title">
-        <h2 id="deploy-dialog-title">Project Deployed</h2>
+        <h2 id="deploy-dialog-title">{failed ? "Deploy Failed" : "Project Deployed"}</h2>
         <p>
-          <strong>{lastDeploy.project}</strong>
-          {lastDeploy.mode === "java" ? " → Java backend" : " → dev runtime"}
+          <strong>{lastDeploy.project ?? "Project"}</strong>
+          {lastDeploy.mode === "java"
+            ? " → Java backend (:8080)"
+            : lastDeploy.mode === "dev"
+              ? " → dev runtime"
+              : null}
         </p>
-        {lastDeploy.startpoints && lastDeploy.startpoints.length > 0 ? (
+        {failed ? (
+          <p className="hint" role="alert">
+            {lastDeploy.error ?? "Unknown deploy error."}
+          </p>
+        ) : lastDeploy.startpoints && lastDeploy.startpoints.length > 0 ? (
           <>
             <p className="hint">
               Only forms marked <strong>Starting Point</strong> in form Properties are listed

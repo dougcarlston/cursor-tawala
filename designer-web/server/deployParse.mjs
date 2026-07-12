@@ -49,8 +49,22 @@ export function parseStartpointsForProject(xmlText, projectName) {
 }
 
 export function parseDeployFailure(xmlText) {
+  if (!xmlText) return null;
   const m = xmlText.match(/<error id="([^"]+)" message="([^"]*)"/);
-  return m ? `${m[1]}: ${m[2]}` : null;
+  if (m) return `${m[1]}: ${m[2]}`;
+  // Java sometimes returns the public Error HTML page instead of <response status="failure">
+  // when project XML is rejected during upload (e.g. invalid function table markup).
+  if (/<h1[^>]*>\s*Error\s*<\/h1>/i.test(xmlText) || /We are very sorry!/i.test(xmlText)) {
+    return (
+      "Java rejected the uploaded project XML (server Error page). " +
+      "Common causes: invalid function tables (itemization headers must be expression form), " +
+      "or unsupported export markup. Check the browser Designer export / server logs."
+    );
+  }
+  if (/<!DOCTYPE\s+html/i.test(xmlText) && !/status="success"/i.test(xmlText)) {
+    return "Java /client returned HTML instead of a deploy response — upload likely failed.";
+  }
+  return null;
 }
 
 export function uniqueIdFromStartpoints(startpoints) {
