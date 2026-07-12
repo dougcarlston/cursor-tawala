@@ -1,4 +1,5 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import type { FormItem, SkipCommand, TawalaForm, TawalaProject } from "@/types/tawala";
 import { IfStatementBuilder } from "@/components/IfStatementBuilder";
 import { SetStatementBuilder } from "@/components/SetStatementBuilder";
@@ -10,19 +11,37 @@ import { getCommandsAtInsertPath } from "@/lib/skipInsertPath";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { collectKnownVariables } from "@/lib/projectModel";
 import {
+  clearSkipDialogSession,
+  readSkipDialogSession,
+  writeSkipDialogSession,
+} from "@/lib/skipDialogSession";
+import {
+  EMPTY_CONDITION_ROW,
   EMPTY_IF_BUILDER,
   EMPTY_SET_BUILDER,
+  ifBuilderHasDraft,
+  setBuilderHasDraft,
   setBuilderIsValid,
   type IfBuilderState,
   type SetBuilderState,
 } from "@/lib/statementBuilders";
 import { buildConditionFromRows } from "@/lib/skipSummary";
 
+function freshIfBuilder(): IfBuilderState {
+  return { ...EMPTY_IF_BUILDER, rows: [{ ...EMPTY_CONDITION_ROW }] };
+}
+
+function freshSetBuilder(): SetBuilderState {
+  return { ...EMPTY_SET_BUILDER };
+}
+
 interface Props {
   projectName: string;
   project: TawalaProject;
   form: TawalaForm;
   commands: SkipCommand[];
+  /** Stable key for draft survival across accidental remounts (formName::index). */
+  sessionKey: string;
   onSave: (commands: SkipCommand[]) => void;
 }
 
@@ -61,21 +80,60 @@ export function SkipInstructionsDialog({
   project,
   form,
   commands: initialCommands,
+  sessionKey,
   onSave,
 }: Props) {
-  const [commands, setCommands] = useState<SkipCommand[]>(() =>
-    structuredClone(Array.isArray(initialCommands) ? initialCommands : []),
+  const restored = readSkipDialogSession(sessionKey);
+  const [commands, setCommands] = useState<SkipCommand[]>(
+    () =>
+      restored?.commands ??
+      structuredClone(Array.isArray(initialCommands) ? initialCommands : []),
   );
-  const [insertPath, setInsertPath] = useState("root");
-  const [panel, setPanel] = useState<PanelMode>("none");
-  const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
-  const [setBuilder, setSetBuilder] = useState<SetBuilderState>(EMPTY_SET_BUILDER);
-  const [skipToDest, setSkipToDest] = useState("__EndOfForm__");
-  const [commentText, setCommentText] = useState("");
+  const [insertPath, setInsertPath] = useState(restored?.insertPath ?? "root");
+  const [panel, setPanel] = useState<PanelMode>(restored?.panel ?? "none");
+  const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(
+    () => restored?.ifBuilder ?? freshIfBuilder(),
+  );
+  const [setBuilder, setSetBuilder] = useState<SetBuilderState>(
+    () => restored?.setBuilder ?? freshSetBuilder(),
+  );
+  const [skipToDest, setSkipToDest] = useState(restored?.skipToDest ?? "__EndOfForm__");
+  const [commentText, setCommentText] = useState(restored?.commentText ?? "");
 
   const scriptRef = useRef<HTMLDivElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   const destinations = skipDestinations(form.items);
-  const { offset, titleBarProps } = useDraggableDialog({ x: -160, y: -30 });
+  const { offset, titleBarProps } = useDraggableDialog(
+    { x: -160, y: -30 },
+    { dialogRef },
+  );
+
+  // Persist mid-edit draft so a remount (e.g. form canvas re-key) does not wipe If/Set.
+  useEffect(() => {
+    writeSkipDialogSession(sessionKey, {
+      commands,
+      insertPath,
+      panel,
+      ifBuilder,
+      setBuilder,
+      skipToDest,
+      commentText,
+    });
+  }, [
+    sessionKey,
+    commands,
+    insertPath,
+    panel,
+    ifBuilder,
+    setBuilder,
+    skipToDest,
+    commentText,
+  ]);
+
+  const finish = (nextCommands: SkipCommand[]) => {
+    clearSkipDialogSession(sessionKey);
+    onSave(nextCommands);
+  };
 
   const scriptLines = useMemo(() => buildScriptLines(commands), [commands]);
   const knownVariables = useMemo(
@@ -147,16 +205,25 @@ export function SkipInstructionsDialog({
       return;
     }
     setPanel(mode);
-    if (mode === "if") setIfBuilder(EMPTY_IF_BUILDER);
-    if (mode === "set") setSetBuilder(EMPTY_SET_BUILDER);
+    // Match Process IF/Set: keep in-progress drafts when re-opening the same panel
+    // (clicking away must not wipe a complex If before Add ↓).
+    if (mode === "if") {
+      setIfBuilder((prev) => (ifBuilderHasDraft(prev) ? prev : freshIfBuilder()));
+    }
+    if (mode === "set") {
+      setSetBuilder((prev) => (setBuilderHasDraft(prev) ? prev : freshSetBuilder()));
+    }
     if (mode === "skipTo" && destinations.length) {
       setSkipToDest(destinations[0].value);
     }
   };
 
-  return (
+  // Portal to document.body so the dialog is not clipped by MDI overflow / PE stacking
+  // (Process IF is embedded in ProcessEditor, so it never hit this).
+  return createPortal(
     <div className="modal-overlay skip-modal-overlay" role="presentation">
       <div
+        ref={dialogRef}
         className="modal-dialog skip-instructions-dialog"
         role="dialog"
         aria-labelledby="skip-instructions-title"
@@ -292,12 +359,13 @@ export function SkipInstructionsDialog({
         </div>
 
         <div className="modal-footer skip-dialog-footer">
-          <button type="button" onClick={() => onSave(commands)}>
+          <button type="button" onClick={() => finish(commands)}>
             Close
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 

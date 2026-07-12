@@ -89,10 +89,11 @@ export function StructuredTextCanvasRow({ item, index, formName, selected }: Pro
       ) : (
         <div
           className="text-badge editing"
-          title="Click to edit text label"
+          title={selected ? "Click to edit text label" : "Click to select"}
           onClick={(e) => {
             e.stopPropagation();
-            setEditingLabel(true);
+            setSelectedItemIndex(index);
+            if (selected) setEditingLabel(true);
           }}
         >
           {item.label}

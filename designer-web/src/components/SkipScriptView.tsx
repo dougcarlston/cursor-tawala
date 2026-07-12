@@ -11,10 +11,28 @@ import type { ReactNode } from "react";
 function SkipInsertionLine({
   active = false,
   onClick,
+  hitOnly = false,
+  insertPath,
+  insertIndex,
 }: {
   active?: boolean;
   onClick?: () => void;
+  /** Zero-height hit target for drag insert (no permanent caret bar). */
+  hitOnly?: boolean;
+  insertPath?: string;
+  insertIndex?: number;
 }) {
+  if (hitOnly) {
+    return (
+      <div
+        className={`process-insert-hit${active ? " active" : ""}`}
+        data-process-insert-path={insertPath}
+        data-process-insert-index={insertIndex}
+        role="presentation"
+        onClick={onClick}
+      />
+    );
+  }
   return (
     <button
       type="button"
@@ -41,9 +59,18 @@ interface Props {
   onSelectCommandPath?: (path: string) => void;
   showLineControls?: boolean;
   showAllInsertionGaps?: boolean;
+  /**
+   * Process drag-insert mode: emit zero-height insert hit targets (no permanent bars).
+   * Highlight via highlightInsertPath/Index while dragging.
+   */
+  insertHitTargets?: boolean;
+  highlightInsertPath?: string | null;
+  highlightInsertIndex?: number | null;
   onMoveCommand?: (path: string, direction: "up" | "down") => void;
   onDeleteCommand?: (path: string) => void;
   canMoveCommand?: (path: string, direction: "up" | "down") => boolean;
+  /** When set, the selected command row can start a reorder drag. */
+  onReorderDragStart?: (path: string, dataTransfer: DataTransfer) => void;
 }
 
 interface RenderCtx {
@@ -51,6 +78,9 @@ interface RenderCtx {
   insertPath: string;
   insertIndex: number;
   indexedMode: boolean;
+  hitTargets: boolean;
+  highlightInsertPath: string | null;
+  highlightInsertIndex: number | null;
   resolvedInsertAfterIndex: number;
   selectedCommandPath: string | null;
   ifBlockSpan: { start: number; end: number } | null;
@@ -62,6 +92,7 @@ interface RenderCtx {
   onMoveCommand?: (path: string, direction: "up" | "down") => void;
   onDeleteCommand?: (path: string) => void;
   canMoveCommand?: (path: string, direction: "up" | "down") => boolean;
+  onReorderDragStart?: (path: string, dataTransfer: DataTransfer) => void;
 }
 
 function ScriptCommandLineRow({
@@ -74,6 +105,7 @@ function ScriptCommandLineRow({
   onMoveCommand,
   onDeleteCommand,
   canMoveCommand,
+  onReorderDragStart,
 }: {
   line: ScriptLine;
   pad: string;
@@ -84,13 +116,17 @@ function ScriptCommandLineRow({
   onMoveCommand?: (path: string, direction: "up" | "down") => void;
   onDeleteCommand?: (path: string) => void;
   canMoveCommand?: (path: string, direction: "up" | "down") => boolean;
+  onReorderDragStart?: (path: string, dataTransfer: DataTransfer) => void;
 }) {
   const path = line.path!;
   const lineButton = (
     <button
       type="button"
       className={`${lineClassName}${selected ? " selected" : ""}`}
-      onMouseDown={(e) => e.preventDefault()}
+      onMouseDown={(e) => {
+        // Allow HTML5 reorder drag when selected; otherwise keep focus from jumping.
+        if (!(selected && onReorderDragStart)) e.preventDefault();
+      }}
       onClick={onSelect}
     >
       <span className="skip-script-pad">{pad}</span>
@@ -103,7 +139,22 @@ function ScriptCommandLineRow({
   }
 
   return (
-    <div className={`skip-script-line-row${selected ? " selected" : ""}`}>
+    <div
+      className={`skip-script-line-row${selected ? " selected" : ""}`}
+      draggable={selected && !!onReorderDragStart}
+      onDragStart={(e) => {
+        if (!selected || !onReorderDragStart) {
+          e.preventDefault();
+          return;
+        }
+        const target = e.target as HTMLElement;
+        if (target.closest("button.skip-script-line-delete, .skip-script-line-toolbar button")) {
+          e.preventDefault();
+          return;
+        }
+        onReorderDragStart(path, e.dataTransfer);
+      }}
+    >
       {lineButton}
       <span className="skip-script-line-toolbar" role="toolbar" aria-label="Statement actions">
         <button
@@ -163,10 +214,20 @@ function SkipBlockInterior({
 }
 
 function emitGap(ctx: RenderCtx, path: string, index: number, key: string): ReactNode {
-  if (!ctx.indexedMode) return null;
-  const active = ctx.insertPath === path && ctx.insertIndex === index;
+  if (!ctx.indexedMode && !ctx.hitTargets) return null;
+  const storedActive = ctx.insertPath === path && ctx.insertIndex === index;
+  const dragActive =
+    ctx.highlightInsertPath === path && ctx.highlightInsertIndex === index;
+  const active = ctx.hitTargets ? dragActive : storedActive;
   return (
-    <SkipInsertionLine key={key} active={active} onClick={() => ctx.selectPoint(path, index)} />
+    <SkipInsertionLine
+      key={key}
+      active={active}
+      hitOnly={ctx.hitTargets}
+      insertPath={path}
+      insertIndex={index}
+      onClick={() => ctx.selectPoint(path, index)}
+    />
   );
 }
 
@@ -276,6 +337,7 @@ function renderLineAt(ctx: RenderCtx, i: number): { nodes: ReactNode[]; nextInde
         onMoveCommand={ctx.onMoveCommand}
         onDeleteCommand={ctx.onDeleteCommand}
         canMoveCommand={ctx.canMoveCommand}
+        onReorderDragStart={ctx.onReorderDragStart}
         onSelect={() => ctx.onSelectCommandPath?.(line.path!)}
       />,
     );
@@ -304,6 +366,7 @@ function renderLineAt(ctx: RenderCtx, i: number): { nodes: ReactNode[]; nextInde
         onMoveCommand={ctx.onMoveCommand}
         onDeleteCommand={ctx.onDeleteCommand}
         canMoveCommand={ctx.canMoveCommand}
+        onReorderDragStart={ctx.onReorderDragStart}
         onSelect={() => ctx.onSelectCommandPath?.(line.path!)}
       />,
     );
@@ -357,11 +420,16 @@ export function SkipScriptView({
   onSelectCommandPath,
   showLineControls = false,
   showAllInsertionGaps = false,
+  insertHitTargets = false,
+  highlightInsertPath = null,
+  highlightInsertIndex = null,
   onMoveCommand,
   onDeleteCommand,
   canMoveCommand,
+  onReorderDragStart,
 }: Props) {
   const indexedMode = showAllInsertionGaps && onSelectInsertPoint != null;
+  const hitTargets = insertHitTargets && onSelectInsertPoint != null;
   const resolvedInsertAfterIndex =
     legacyInsertAfterIndex ??
     findInsertionLineIndex(lines, insertPath, insertIndex);
@@ -382,6 +450,9 @@ export function SkipScriptView({
     insertPath,
     insertIndex,
     indexedMode,
+    hitTargets,
+    highlightInsertPath,
+    highlightInsertIndex,
     resolvedInsertAfterIndex,
     selectedCommandPath,
     ifBlockSpan,
@@ -392,22 +463,35 @@ export function SkipScriptView({
     onMoveCommand,
     onDeleteCommand,
     canMoveCommand,
+    onReorderDragStart,
   };
 
   if (lines.length === 0) {
     return (
       <div className="skip-script-area">
-        <SkipInsertionLine
-          active={insertPath === "root" && insertIndex === 0}
-          onClick={() => selectPoint("root", 0)}
-        />
+        {hitTargets ? (
+          <SkipInsertionLine
+            hitOnly
+            active={
+              highlightInsertPath === "root" && (highlightInsertIndex ?? 0) === 0
+            }
+            insertPath="root"
+            insertIndex={0}
+            onClick={() => selectPoint("root", 0)}
+          />
+        ) : (
+          <SkipInsertionLine
+            active={insertPath === "root" && insertIndex === 0}
+            onClick={() => selectPoint("root", 0)}
+          />
+        )}
       </div>
     );
   }
 
   const elements: ReactNode[] = [];
 
-  if (indexedMode) {
+  if (indexedMode || hitTargets) {
     const rootGap = emitGap(ctx, "root", 0, "gap-root-0");
     if (rootGap) elements.push(rootGap);
   }

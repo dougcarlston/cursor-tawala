@@ -11,7 +11,18 @@ import { SetStatementBuilder } from "@/components/SetStatementBuilder";
 import { ShowStatementBuilder } from "@/components/ShowStatementBuilder";
 import { SkipScriptView } from "@/components/SkipScriptView";
 import { insertCommandAtPoint } from "@/lib/processInsert";
+import {
+  hasProcessStatementDrag,
+  hasProcessStatementReorderDrag,
+  readProcessStatementDrag,
+  readProcessStatementReorderDrag,
+  setProcessStatementReorderDrag,
+} from "@/lib/designerDrag";
 import { formLinksForProcess, collectKnownVariables } from "@/lib/projectModel";
+import {
+  PROCESS_PANEL_LABELS,
+  PROCESS_STATEMENT_PALETTE,
+} from "@/processStatements";
 import {
   buildProcessScriptLines,
   canMoveProcessCommandAtPath,
@@ -131,6 +142,9 @@ export function ProcessEditor({ processName }: Props) {
   const setProcessInsertPoint = useProjectStore((s) => s.setProcessInsertPoint);
   const setSelectedProcessCommandPath = useProjectStore((s) => s.setSelectedProcessCommandPath);
   const moveSelectedProcessCommand = useProjectStore((s) => s.moveSelectedProcessCommand);
+  const moveProcessCommandBefore = useProjectStore((s) => s.moveProcessCommandBefore);
+  const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
+  const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
   const updateProcessCommands = useProjectStore((s) => s.updateProcessCommands);
   const proc = project.processes?.find((p) => p.name === processName);
   const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
@@ -143,6 +157,9 @@ export function ProcessEditor({ processName }: Props) {
   const [deleteBuilder, setDeleteBuilder] = useState<DeleteBuilderState>(EMPTY_DELETE_BUILDER);
   const [commentBuilder, setCommentBuilder] = useState<CommentBuilderState>(EMPTY_COMMENT_BUILDER);
   const [connectionDialogOpen, setConnectionDialogOpen] = useState(false);
+  const [dragInsertPath, setDragInsertPath] = useState<string | null>(null);
+  const [dragInsertIndex, setDragInsertIndex] = useState<number | null>(null);
+  const [dragCaretTop, setDragCaretTop] = useState<number | null>(null);
   const scriptRef = useRef<HTMLDivElement>(null);
 
   const commands = proc?.commands ?? [];
@@ -595,7 +612,85 @@ export function ProcessEditor({ processName }: Props) {
             <div className="process-statement-divider" aria-hidden />
           </>
         )}
-        <div className="process-script-scroll" ref={scriptRef}>
+        <div
+          className={`process-script-scroll${dragInsertPath != null ? " process-script-dragging" : ""}`}
+          ref={scriptRef}
+          onDragOver={(e) => {
+            const isPalette = hasProcessStatementDrag(e.dataTransfer);
+            const isReorder = hasProcessStatementReorderDrag(e.dataTransfer);
+            if (!isPalette && !isReorder) return;
+            e.preventDefault();
+            e.stopPropagation();
+            e.dataTransfer.dropEffect = isReorder ? "move" : "copy";
+            const scroll = scriptRef.current;
+            if (!scroll) return;
+            autoScrollProcessScript(scroll, e.clientY);
+            const hit = nearestProcessInsertHit(scroll, e.clientY);
+            if (!hit) return;
+            setDragInsertPath(hit.path);
+            setDragInsertIndex(hit.index);
+            setDragCaretTop(hit.caretTop);
+          }}
+          onDragLeave={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node)) {
+              setDragInsertPath(null);
+              setDragInsertIndex(null);
+              setDragCaretTop(null);
+            }
+          }}
+          onDrop={(e) => {
+            const hit =
+              dragInsertPath != null && dragInsertIndex != null
+                ? { path: dragInsertPath, index: dragInsertIndex }
+                : nearestProcessInsertHit(e.currentTarget, e.clientY);
+            setDragInsertPath(null);
+            setDragInsertIndex(null);
+            setDragCaretTop(null);
+            if (!hit) return;
+
+            const fromPath = readProcessStatementReorderDrag(e.dataTransfer);
+            if (fromPath) {
+              e.preventDefault();
+              e.stopPropagation();
+              moveProcessCommandBefore(fromPath, hit.path, hit.index);
+              return;
+            }
+
+            const label = readProcessStatementDrag(e.dataTransfer);
+            if (!label) return;
+            e.preventDefault();
+            e.stopPropagation();
+            if (PROCESS_PANEL_LABELS.has(label)) {
+              setProcessInsertPoint(hit.path, hit.index);
+              toggleProcessStatementPanel(label);
+              return;
+            }
+            const def = PROCESS_STATEMENT_PALETTE.find((d) => d.label === label);
+            if (def) {
+              insertProcessCommand(def.template, { path: hit.path, index: hit.index });
+            }
+          }}
+          onDragEnd={() => {
+            setDragInsertPath(null);
+            setDragInsertIndex(null);
+            setDragCaretTop(null);
+          }}
+        >
+          {dragInsertPath != null && dragCaretTop != null ? (
+            <div
+              className="form-canvas-insert-caret process-script-insert-caret"
+              style={{ top: dragCaretTop }}
+              aria-hidden
+            >
+              <img
+                className="form-canvas-insert-caret-marker"
+                src="/designer/Insert.png"
+                width={16}
+                height={13}
+                alt=""
+              />
+            </div>
+          ) : null}
           <div className="skip-script-area process-script-area">
             <SkipScriptView
               lines={scriptLines}
@@ -605,10 +700,13 @@ export function ProcessEditor({ processName }: Props) {
               selectedCommandPath={selectedProcessCommandPath}
               onSelectCommandPath={setSelectedProcessCommandPath}
               showLineControls
-              showAllInsertionGaps
+              insertHitTargets
+              highlightInsertPath={dragInsertPath}
+              highlightInsertIndex={dragInsertIndex}
               onMoveCommand={moveCommandAtPath}
               onDeleteCommand={deleteCommandAtPath}
               canMoveCommand={canMoveCommand}
+              onReorderDragStart={(path, dt) => setProcessStatementReorderDrag(dt, path)}
             />
           </div>
         </div>
@@ -621,4 +719,46 @@ export function ProcessEditor({ processName }: Props) {
       )}
     </div>
   );
+}
+
+function nearestProcessInsertHit(
+  scrollEl: HTMLElement,
+  clientY: number,
+): { path: string; index: number; caretTop: number } | null {
+  const hits = Array.from(
+    scrollEl.querySelectorAll<HTMLElement>("[data-process-insert-path]"),
+  );
+  if (!hits.length) return null;
+  let best = hits[0];
+  let bestDist = Infinity;
+  for (const el of hits) {
+    const rect = el.getBoundingClientRect();
+    const mid = rect.top + rect.height / 2;
+    const dist = Math.abs(clientY - mid);
+    if (dist < bestDist) {
+      bestDist = dist;
+      best = el;
+    }
+  }
+  const path = best.dataset.processInsertPath;
+  const index = Number(best.dataset.processInsertIndex);
+  if (!path || !Number.isFinite(index)) return null;
+  // Position caret relative to the scroll container's content box.
+  const scrollRect = scrollEl.getBoundingClientRect();
+  const caretTop = best.getBoundingClientRect().top - scrollRect.top + scrollEl.scrollTop;
+  return { path, index, caretTop };
+}
+
+function autoScrollProcessScript(scrollEl: HTMLElement, clientY: number): void {
+  const rect = scrollEl.getBoundingClientRect();
+  const edge = 36;
+  const step = 18;
+  if (clientY < rect.top + edge) {
+    scrollEl.scrollTop = Math.max(0, scrollEl.scrollTop - step);
+  } else if (clientY > rect.bottom - edge) {
+    scrollEl.scrollTop = Math.min(
+      scrollEl.scrollHeight - scrollEl.clientHeight,
+      scrollEl.scrollTop + step,
+    );
+  }
 }

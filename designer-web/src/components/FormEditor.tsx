@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
@@ -12,13 +12,23 @@ import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
 import { StructuredTextCanvasRow } from "./StructuredTextCanvasRow";
-import { FormInsertionPoint } from "./FormInsertionPoint";
-import { hasFormItemDrag, readFormItemDrag } from "@/lib/designerDrag";
+import {
+  hasFormItemDrag,
+  hasFormItemReorderDrag,
+  readFormItemDrag,
+  readFormItemReorderDrag,
+  setFormItemReorderDrag,
+} from "@/lib/designerDrag";
 
 interface Props {
   formName: string;
 }
 
+/**
+ * Form design canvas — legacy insert/move:
+ * compact item list (no permanent insert bars); floating caret only while dragging
+ * a palette item or reordering a selected row; edge auto-scroll during drag.
+ */
 export function FormEditor({ formName }: Props) {
   const project = useProjectStore((s) => s.project);
   const editorTab = useProjectStore((s) => s.editorTab);
@@ -29,17 +39,22 @@ export function FormEditor({ formName }: Props) {
   const openWindow = useProjectStore((s) => s.openWindow);
   const insertFormItem = useProjectStore((s) => s.insertFormItem);
   const moveSelectedFormItem = useProjectStore((s) => s.moveSelectedFormItem);
+  const moveFormItemBefore = useProjectStore((s) => s.moveFormItemBefore);
   const deleteFormItem = useProjectStore((s) => s.deleteFormItem);
   const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
-  /** Nearest insertion gap while dragging a Form Item over this canvas. */
-  const [dragHoverBeforeIndex, setDragHoverBeforeIndex] = useState<number | null>(null);
+  /** Live insert-before index while dragging (palette or reorder). */
+  const [dragBeforeIndex, setDragBeforeIndex] = useState<number | null>(null);
+  const [dragCaretTop, setDragCaretTop] = useState<number | null>(null);
+  const [reorderFromIndex, setReorderFromIndex] = useState<number | null>(null);
+  const canvasRef = useRef<HTMLDivElement>(null);
 
   const form = project.forms.find((f) => f.name === formName);
   const itemCount = form?.items.length ?? 0;
   const canMoveUp = selectedItemIndex !== null && selectedItemIndex > 0;
   const canMoveDown = selectedItemIndex !== null && selectedItemIndex < itemCount - 1;
+  const dragActive = dragBeforeIndex !== null;
 
   useEffect(() => {
     if (!form) return;
@@ -98,6 +113,22 @@ export function FormEditor({ formName }: Props) {
   if (!form) {
     return <div className="placeholder-editor">Form not found: {formName}</div>;
   }
+
+  const clearDragUi = () => {
+    setDragBeforeIndex(null);
+    setDragCaretTop(null);
+    setReorderFromIndex(null);
+  };
+
+  const updateDragCaret = (clientY: number) => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    autoScrollFormCanvas(canvas, clientY);
+    const beforeIndex = nearestInsertBeforeIndex(canvas, clientY, form.items.length);
+    const top = caretOffsetTop(canvas, beforeIndex, form.items.length);
+    setDragBeforeIndex(beforeIndex);
+    setDragCaretTop(top);
+  };
 
   function renderFormItem(item: FormItem, i: number) {
     if (item.type === "heading") {
@@ -200,9 +231,6 @@ export function FormEditor({ formName }: Props) {
   }
 
   return (
-    // The MDI window title bar (`Form - Name`) is the single window heading now,
-    // so the editor body starts straight at the Design/Preview tabs — no duplicate
-    // inner title (owner Decision 3, July 2026).
     <div className="form-editor">
       <div className="form-tabs">
         <button
@@ -250,13 +278,10 @@ export function FormEditor({ formName }: Props) {
       </div>
 
       {editorTab === "design" ? (
-        // The Items palette used to live inside each form window (a left strip).
-        // Owner decision D-Items-palette-placement (July 2026): it now docks beside
-        // Project Explorer (see App.tsx `.designer-items`), matching legacy layout,
-        // so the window body is just the canvas.
         <div className="form-design-body">
           <div
-            className={`form-canvas${dragHoverBeforeIndex !== null ? " form-canvas-item-drag" : ""}`}
+            ref={canvasRef}
+            className={`form-canvas${dragActive ? " form-canvas-item-drag" : ""}`}
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setSelectedItemIndex(null);
@@ -264,60 +289,90 @@ export function FormEditor({ formName }: Props) {
               }
             }}
             onDragOver={(e) => {
-              if (!hasFormItemDrag(e.dataTransfer)) return;
+              const isPalette = hasFormItemDrag(e.dataTransfer);
+              const isReorder = hasFormItemReorderDrag(e.dataTransfer);
+              if (!isPalette && !isReorder) return;
               e.preventDefault();
               e.stopPropagation();
-              e.dataTransfer.dropEffect = "copy";
-              const beforeIndex = nearestInsertBeforeIndex(e.currentTarget, e.clientY, form.items.length);
-              if (beforeIndex !== dragHoverBeforeIndex) setDragHoverBeforeIndex(beforeIndex);
+              e.dataTransfer.dropEffect = isReorder ? "move" : "copy";
+              updateDragCaret(e.clientY);
             }}
             onDragLeave={(e) => {
               if (!e.currentTarget.contains(e.relatedTarget as Node)) {
-                setDragHoverBeforeIndex(null);
+                clearDragUi();
               }
             }}
-            onDropCapture={() => {
-              setDragHoverBeforeIndex(null);
-            }}
             onDrop={(e) => {
+              const beforeIndex =
+                dragBeforeIndex ??
+                nearestInsertBeforeIndex(e.currentTarget, e.clientY, form.items.length);
+              const reorderFrom = readFormItemReorderDrag(e.dataTransfer);
               const type = readFormItemDrag(e.dataTransfer);
+              clearDragUi();
+              if (reorderFrom != null) {
+                e.preventDefault();
+                e.stopPropagation();
+                openWindow("form", formName);
+                moveFormItemBefore(formName, reorderFrom, beforeIndex);
+                return;
+              }
               if (!type) return;
               e.preventDefault();
               e.stopPropagation();
-              // Child insertion-point may have already inserted; still stop bubble so the
-              // MDI window does not append at end.
-              if ((e.target as HTMLElement).closest(".form-insertion-point")) return;
-              const beforeIndex = nearestInsertBeforeIndex(
-                e.currentTarget,
-                e.clientY,
-                form.items.length,
-              );
               openWindow("form", formName);
               insertFormItem(type, { formName, beforeIndex });
             }}
+            onDragEnd={clearDragUi}
           >
-            <FormInsertionPoint
-              beforeIndex={0}
-              formName={formName}
-              dropHighlight={dragHoverBeforeIndex === 0}
-              suppressActive={dragHoverBeforeIndex !== null}
-            />
+            {dragActive && dragCaretTop != null ? (
+              <div
+                className="form-canvas-insert-caret"
+                style={{ top: dragCaretTop }}
+                aria-hidden
+              >
+                <img
+                  className="form-canvas-insert-caret-marker"
+                  src="/designer/Insert.png"
+                  width={16}
+                  height={13}
+                  alt=""
+                />
+              </div>
+            ) : null}
+
             {form.items.length === 0 ? (
               <p className="hint form-canvas-hint">
-                Click a blue insertion arrow or select a position, then use the Items palette to
-                insert. Drag items from the palette on the left, or click a palette button.
+                Drag an item from the Items palette into this window, or click a palette button to
+                insert. Drag selected items up or down to reorder.
               </p>
             ) : (
               form.items.map((item, i) => (
-                <Fragment key={`${item.label}-${i}`}>
+                <div
+                  key={`${item.label}-${i}`}
+                  className={`form-item-slot${selectedItemIndex === i ? " selected-slot" : ""}${reorderFromIndex === i ? " dragging" : ""}`}
+                  data-form-item-index={i}
+                  draggable={selectedItemIndex === i}
+                  onDragStart={(e) => {
+                    const target = e.target as HTMLElement;
+                    if (
+                      target.closest(
+                        "input, textarea, select, button, a, [contenteditable='true']",
+                      )
+                    ) {
+                      e.preventDefault();
+                      return;
+                    }
+                    if (selectedItemIndex !== i) {
+                      e.preventDefault();
+                      return;
+                    }
+                    setReorderFromIndex(i);
+                    setFormItemReorderDrag(e.dataTransfer, i);
+                  }}
+                  onDragEnd={clearDragUi}
+                >
                   {renderFormItem(item, i)}
-                  <FormInsertionPoint
-                    beforeIndex={i + 1}
-                    formName={formName}
-                    dropHighlight={dragHoverBeforeIndex === i + 1}
-                    suppressActive={dragHoverBeforeIndex !== null}
-                  />
-                </Fragment>
+                </div>
               ))
             )}
           </div>
@@ -337,31 +392,51 @@ export function FormEditor({ formName }: Props) {
   );
 }
 
-/** Pick the insertion gap whose vertical midpoint is closest to `clientY`. */
+/** Insert before the first item whose vertical midpoint is below `clientY`. */
 function nearestInsertBeforeIndex(
   canvas: HTMLElement,
   clientY: number,
-  fallback: number,
+  itemCount: number,
 ): number {
-  const points = Array.from(canvas.querySelectorAll<HTMLElement>("[data-insert-before]"));
-  if (!points.length) return fallback;
-  let best = points[0];
-  let bestDist = Infinity;
-  for (const el of points) {
+  const slots = Array.from(canvas.querySelectorAll<HTMLElement>("[data-form-item-index]"));
+  if (!slots.length) return 0;
+  for (const el of slots) {
     const rect = el.getBoundingClientRect();
     const mid = rect.top + rect.height / 2;
-    const dist = Math.abs(clientY - mid);
-    if (dist < bestDist) {
-      bestDist = dist;
-      best = el;
+    if (clientY < mid) {
+      const raw = Number(el.dataset.formItemIndex);
+      return Number.isFinite(raw) ? raw : 0;
     }
   }
-  const raw = Number(best.dataset.insertBefore);
-  return Number.isFinite(raw) ? raw : fallback;
+  return itemCount;
 }
 
-// Headings render via `HeadingCanvasRow` (canvas WYSIWYG). CanvasItem handles the
-// remaining item types inside the generic `.form-item-block` wrapper.
+/** Caret Y inside the scrollable canvas — just below the insertion boundary. */
+function caretOffsetTop(canvas: HTMLElement, beforeIndex: number, itemCount: number): number {
+  const slots = Array.from(canvas.querySelectorAll<HTMLElement>("[data-form-item-index]"));
+  if (!slots.length) return canvas.scrollTop + 8;
+  if (beforeIndex <= 0) {
+    return slots[0].offsetTop;
+  }
+  if (beforeIndex >= itemCount) {
+    const last = slots[slots.length - 1];
+    return last.offsetTop + last.offsetHeight;
+  }
+  return slots[beforeIndex].offsetTop;
+}
+
+/** Scroll form canvas when the pointer nears the top/bottom edge (legacy long-form feel). */
+function autoScrollFormCanvas(canvas: HTMLElement, clientY: number): void {
+  const rect = canvas.getBoundingClientRect();
+  const edge = 36;
+  const step = 18;
+  if (clientY < rect.top + edge) {
+    canvas.scrollTop = Math.max(0, canvas.scrollTop - step);
+  } else if (clientY > rect.bottom - edge) {
+    canvas.scrollTop = Math.min(canvas.scrollHeight - canvas.clientHeight, canvas.scrollTop + step);
+  }
+}
+
 function CanvasItem({ item }: { item: Exclude<FormItem, { type: "heading" }> }) {
   switch (item.type) {
     case "text":

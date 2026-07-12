@@ -11,7 +11,8 @@ import { setFormItemDrag } from "@/lib/designerDrag";
  * File Uploader is shown for visual parity with legacy but is **always disabled** — it was
  * never implemented in the browser Designer (see specs).
  *
- * Click inserts at the blue arrow; drag onto a Form window inserts into that form.
+ * Click inserts at the current selection (before the selected item, or at end);
+ * drag onto a Form window shows a live caret at the drop point.
  */
 
 interface PaletteItem {
@@ -55,7 +56,7 @@ export function FormItemsPalette() {
             ? item.note
             : formInactive
               ? "Open a Form window (or drag this item onto one)"
-              : `Insert ${item.label} at the blue insertion arrow (or drag onto a Form window)`;
+              : `Insert ${item.label} (click uses selection; or drag onto a Form window)`;
           return (
             <button
               key={item.label}

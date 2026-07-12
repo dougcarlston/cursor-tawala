@@ -5,7 +5,7 @@ import {
   type ScriptLine,
 } from "@/lib/skipScript";
 import { SKIP_OPERATOR_LABELS, UNARY_SKIP_OPERATORS } from "@/lib/skipSummary";
-import { parentInsertPath } from "@/lib/skipInsertPath";
+import { getCommandsAtInsertPath, parentInsertPath } from "@/lib/skipInsertPath";
 
 interface ConditionShape {
   op?: string;
@@ -340,6 +340,42 @@ export function moveProcessCommandAtPath(
   const parts = path.split("/");
   parts[parts.length - 1] = String(target);
   return { commands: next, newPath: parts.join("/") };
+}
+
+/**
+ * Move a statement to `destParentPath` at `destIndex` (0 = first in that branch).
+ * Forbids dropping a block into its own then/else/do subtree.
+ */
+export function moveProcessCommandBefore(
+  commands: TawalaProcessCommand[],
+  fromPath: string,
+  destParentPath: string,
+  destIndex: number,
+): { commands: TawalaProcessCommand[]; newPath: string } | null {
+  if (
+    destParentPath === fromPath ||
+    destParentPath.startsWith(`${fromPath}/`)
+  ) {
+    return null;
+  }
+  const next = structuredClone(commands);
+  const fromLoc = locateProcessCommand(next, fromPath);
+  if (!fromLoc) return null;
+  const fromParent = fromLoc.parent;
+  const fromIndex = fromLoc.index;
+  const [moved] = fromParent.splice(fromIndex, 1);
+
+  const destArr = getCommandsAtInsertPath(next, destParentPath) as TawalaProcessCommand[];
+
+  let idx = destIndex;
+  // After removal, same-parent targets after fromIndex shift left.
+  if (fromParent === destArr && fromIndex < idx) idx -= 1;
+  idx = Math.max(0, Math.min(idx, destArr.length));
+  destArr.splice(idx, 0, moved);
+
+  const newPath =
+    destParentPath === "root" ? `root/${idx}` : `${destParentPath}/${idx}`;
+  return { commands: next, newPath };
 }
 
 export function deleteProcessCommandAtPath(

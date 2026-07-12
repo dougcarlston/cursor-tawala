@@ -68,6 +68,28 @@ export function readFormItemDrag(dataTransfer: DataTransfer | null): FormItemTyp
   return type ? (type as FormItemType) : null;
 }
 
+/** Reorder an existing form canvas row (legacy label-cell drag). */
+export const FORM_ITEM_REORDER_MIME = "application/x-tawala-form-item-reorder";
+
+export function setFormItemReorderDrag(dataTransfer: DataTransfer, fromIndex: number): void {
+  dataTransfer.setData(FORM_ITEM_REORDER_MIME, String(fromIndex));
+  dataTransfer.setData("text/plain", `reorder:${fromIndex}`);
+  dataTransfer.effectAllowed = "move";
+}
+
+export function hasFormItemReorderDrag(dataTransfer: DataTransfer | null): boolean {
+  if (!dataTransfer) return false;
+  return Array.from(dataTransfer.types).includes(FORM_ITEM_REORDER_MIME);
+}
+
+export function readFormItemReorderDrag(dataTransfer: DataTransfer | null): number | null {
+  if (!dataTransfer) return null;
+  const raw = dataTransfer.getData(FORM_ITEM_REORDER_MIME);
+  if (raw === "") return null;
+  const index = Number(raw);
+  return Number.isInteger(index) && index >= 0 ? index : null;
+}
+
 export function setProcessStatementDrag(dataTransfer: DataTransfer, label: string): void {
   dataTransfer.setData(PROCESS_STATEMENT_MIME, label);
   dataTransfer.setData("text/plain", label);
@@ -83,4 +105,24 @@ export function readProcessStatementDrag(dataTransfer: DataTransfer | null): str
   if (!dataTransfer) return null;
   const label = dataTransfer.getData(PROCESS_STATEMENT_MIME);
   return label || null;
+}
+
+/** Reorder an existing process statement (payload = command path, e.g. root/0/then/1). */
+export const PROCESS_STATEMENT_REORDER_MIME = "application/x-tawala-process-statement-reorder";
+
+export function setProcessStatementReorderDrag(dataTransfer: DataTransfer, fromPath: string): void {
+  dataTransfer.setData(PROCESS_STATEMENT_REORDER_MIME, fromPath);
+  dataTransfer.setData("text/plain", `reorder:${fromPath}`);
+  dataTransfer.effectAllowed = "move";
+}
+
+export function hasProcessStatementReorderDrag(dataTransfer: DataTransfer | null): boolean {
+  if (!dataTransfer) return false;
+  return Array.from(dataTransfer.types).includes(PROCESS_STATEMENT_REORDER_MIME);
+}
+
+export function readProcessStatementReorderDrag(dataTransfer: DataTransfer | null): string | null {
+  if (!dataTransfer) return null;
+  const path = dataTransfer.getData(PROCESS_STATEMENT_REORDER_MIME);
+  return path || null;
 }

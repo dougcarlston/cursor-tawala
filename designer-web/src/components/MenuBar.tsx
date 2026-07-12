@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useRef, ReactNode, useSyncExternalStore } from "react";
+import { Fragment, useState, useEffect, useRef, ReactNode, useSyncExternalStore, type MouseEvent as ReactMouseEvent } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { FORM_ITEM_PALETTE } from "@/types/tawala";
 import {
@@ -317,6 +317,24 @@ function MenuDrop({ label, children }: { label: string; children: ReactNode }) {
     return () => document.removeEventListener("mousedown", close);
   }, []);
 
+  // Native file/open dialogs steal focus without a document mousedown, so the File
+  // menu would otherwise stay open after Open Project… (and similar) returns.
+  useEffect(() => {
+    if (!open) return;
+    const closeOnFocus = () => setOpen(false);
+    window.addEventListener("focus", closeOnFocus);
+    return () => window.removeEventListener("focus", closeOnFocus);
+  }, [open]);
+
+  const closeAfterMenuAction = (e: ReactMouseEvent) => {
+    const target = e.target as HTMLElement | null;
+    if (!target) return;
+    // Submenu triggers only open a fly-out; keep the parent menu open.
+    if (target.closest(".menu-submenu-trigger")) return;
+    const btn = target.closest("button");
+    if (btn && !btn.disabled) setOpen(false);
+  };
+
   return (
     <div className={`menu-item${open ? " open" : ""}`} ref={ref}>
       <button
@@ -327,7 +345,9 @@ function MenuDrop({ label, children }: { label: string; children: ReactNode }) {
       >
         {label}
       </button>
-      <div className="menu-dropdown">{children}</div>
+      <div className="menu-dropdown" onClick={closeAfterMenuAction}>
+        {children}
+      </div>
     </div>
   );
 }

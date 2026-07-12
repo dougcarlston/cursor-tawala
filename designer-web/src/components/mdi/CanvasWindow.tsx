@@ -164,6 +164,9 @@ export function CanvasWindow({ win, active }: Props) {
         if (win.kind === "process") {
           const label = readProcessStatementDrag(e.dataTransfer);
           if (label) {
+            // Script area owns position-aware drops (caret). Chrome-only drops insert
+            // at the stored insertion point.
+            if ((e.target as HTMLElement).closest(".process-script-scroll")) return;
             e.preventDefault();
             e.stopPropagation();
             openWindow("process", win.name);

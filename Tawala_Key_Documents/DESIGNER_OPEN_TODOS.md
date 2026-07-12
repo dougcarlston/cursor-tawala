@@ -31,7 +31,7 @@ Single-line left/center/right/justify to margins shipped first; selection-only s
 
 ## Form items & Fields
 
-- **Move Up / Move Down** for form items, process statements, and document blocks — insertion-point arrows exist; reorder commands do not. **Deferred** (Process-editing blocker). (Source: Designer Sign-up DirtBowl)
+- **Move Up / Move Down** for form items and process statements — **Done Jul 12** (↑/↓ + Alt+arrows + select-then-drag reorder; compact lists, caret only while dragging). Document blocks still open.
 - **FIB hint-text styling** (smaller italic secondary font for parentheticals). **Deferred** → `docs/DESIGNER_BACKLOG_FORMS_FIBS.md`. (Source: Designer Sign-up DirtBowl)
 - **Heading per-run Main/Sub size spans stripped** on export/runtime (legacy single-`type` heading can’t express mixed sizes). **Deferred.** (Source: Designer MDI and Heading)
 - **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)
@@ -71,7 +71,7 @@ Single-line left/center/right/justify to margins shipped first; selection-only s
 
 ## Owner review queue (July 12, 2026)
 
-Tasks the owner set (or agreed to schedule) that we have **not** fully walked through yet today. Keep on this list until reviewed and either done, deferred, or gated.
+Tasks the owner set (or agreed to schedule). Keep on this list until reviewed and either done, deferred, or gated.
 
 | # | Task | Notes / sequencing |
 |---|------|-------------------|
@@ -79,10 +79,14 @@ Tasks the owner set (or agreed to schedule) that we have **not** fully walked th
 | 2 | **Home-page control audit — menus, tabs, and toolbars** | Draft canvas delivered Jul 12. **Insert menu context-sensitivity fixed Jul 12** (Form / Process / Document; Image→From the Web → DISPLAY IMAGE Configure). Remaining audit items still open. |
 | 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. |
 | 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | Priority for SignupSheets-class apps; still **Deferred** in Form items until scheduled. |
-| 5 | **HTML→XML export for functions we already Configure** | At least itemization + question-correlation (and peers used by templates); Document/Form export still partial. |
-| 6 | **Move Up / Down** for form items (process statements if cheap) | Everyday authoring; insertion points exist; reorder commands **Deferred**. |
-| 7 | **Continue template review** | Get Together in progress (Report correlation now canvas-editable); then similar simple templates. SignupSheets→8080 Deploy still consciously deferred. |
-| 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. |
+| 5 | **HTML→XML export for functions we already Configure** | At least itemization + question-correlation (and peers used by templates); Document/Form export still partial. Fold into #9 when scheduling. |
+| 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder; permanent insert bars removed. |
+| 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
+| 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
+| 9 | **Wire the rest of the functions** | Owner Jul 12: complete Configure / insert / canvas-edit / HTML→XML for remaining catalog functions (beyond MQL + question-correlation). Includes specialty menus, Invitation/Hyperlink where tied to functions, and structured tokens still stubbed. |
+| 10 | **Get Deploy working** | Owner Jul 12: reliable local Deploy (dev API and/or 8080 Java) for sample projects — not www.tawala.com. Unblocks second template review pass; includes export fidelity enough that Deployed apps run without server error on simple templates first, then SignupSheets-class. |
+
+**Sequencing note (owner Jul 12):** Finish **#9 (functions)** and **#10 (Deploy)**, then **re-review sample projects** (#7 second pass).
 
 ---
 

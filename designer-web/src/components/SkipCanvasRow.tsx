@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { SkipInstructionsItem } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import { skipCanvasSummary } from "@/lib/skipSummary";
+import { skipDialogSessionKey } from "@/lib/skipDialogSession";
 import { SkipInstructionsDialog } from "./SkipInstructionsDialog";
 
 interface Props {
@@ -22,6 +23,7 @@ export function SkipCanvasRow({ item, index, formName, selected }: Props) {
 
   const form = project.forms.find((f) => f.name === formName);
   const summary = skipCanvasSummary(item.commands);
+  const sessionKey = skipDialogSessionKey(formName, index);
 
   const saveCommands = (commands: SkipInstructionsItem["commands"]) => {
     updateFormItem(formName, index, { ...item, commands });
@@ -56,7 +58,7 @@ export function SkipCanvasRow({ item, index, formName, selected }: Props) {
       </div>
       {dialogOpen && form ? (
         <SkipInstructionsDialog
-          key={`skip-dialog-${formName}-${index}`}
+          sessionKey={sessionKey}
           projectName={project.name}
           project={project}
           form={form}

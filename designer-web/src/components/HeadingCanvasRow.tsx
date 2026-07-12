@@ -148,8 +148,9 @@ function serializeHeading(root: HTMLElement): string {
  *  - **collapsed** — gray badge + rendered heading (read-only, mixed sizes preserved); no
  *    dropdown / editor chrome. Entered when focus leaves the row.
  *
- * The **label** (`H1`, `H2`, …) is edited directly in the badge (click → input), not in the
- * Properties panel. Label, text, and per-run size all live on the canvas (owner, July 2026).
+ * The **label** (`H1`, `H2`, …) is edited in the badge: first click selects the item,
+ * second click opens the name input. Label, text, and per-run size all live on the canvas
+ * (owner, July 2026) — not the Fields / Properties panel.
  */
 export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
@@ -380,10 +381,11 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
       ) : (
         <div
           className={`heading-badge${editing ? " editing" : ""}`}
-          title="Click to edit heading label"
+          title={selected ? "Click to edit heading label" : "Click to select"}
           onClick={(e) => {
             e.stopPropagation();
-            setEditingLabel(true);
+            setSelectedItemIndex(index);
+            if (selected) setEditingLabel(true);
           }}
         >
           {item.label}

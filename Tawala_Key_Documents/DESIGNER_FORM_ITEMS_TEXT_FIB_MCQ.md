@@ -9,7 +9,8 @@
 
 | Element | Meaning |
 |---------|---------|
-| **H1**, **T1**, **Q1**, **Q2** | Auto-assigned **design labels** (orange bar when selected) |
+| **H1**, **T1**, **Q1**, **Q2** | Auto-assigned **design labels** (orange bar when selected). Legacy often used **Qn** for both FIB and MCQ. |
+| **Browser defaults (Jul 12, 2026)** | New inserts use **FIB1**, **FIB2**, … and **MCQ1**, **MCQ2**, … so the form item list distinguishes question types. Heading/Text stay **H**/**T**. |
 | **Custom left label** | User can rename (e.g. Q1 row still shows **Surveyee** logic via alternate label; MCQ bar renamed **Angel Question**) |
 | **Fields panel** | Lists **data field names** (alternate labels / MCQ names), not always the design label |
 | **Black highlight** | Inline text selected for editing |
@@ -325,6 +326,7 @@ Example (SportsDashboards template in test fixtures):
 | MCQ multi-select / required | Yes | Partial in JSON |
 | Dynamic MCQ + Configure Function | Yes | `dynamic` choices in JSON only |
 | Rename item label on canvas | Yes | Uses `item.label` only |
+| Default design labels for FIB / MCQ | Often **Qn** for both | **FIB**n / **MCQ**n on insert (`insertFormItem`) so lists distinguish types |
 
 ---
 

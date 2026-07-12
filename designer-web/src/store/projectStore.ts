@@ -16,10 +16,11 @@ import { nextHiddenFieldName } from "@/lib/fieldNames";
 import { nextLinkedProcessName } from "@/lib/projectModel";
 import {
   moveProcessCommandAtPath,
+  moveProcessCommandBefore,
   getProcessCommandAtPath,
 } from "@/lib/processScript";
 import { insertCommandAtPoint } from "@/lib/processInsert";
-import { ROOT_INSERT_PATH } from "@/lib/skipInsertPath";
+import { parentPathAndChildIndex, ROOT_INSERT_PATH } from "@/lib/skipInsertPath";
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
 import type { ProcessStatementPanel } from "@/processStatements";
@@ -33,8 +34,9 @@ import {
 
 // Legacy naming (TawalaDesigner Project.AddForm/AddProcess/AddDocument):
 // nodes are "Form 1", "Process 1", "Document 1" (base name + space + number),
-// while form-item labels are "Q1"/"T1"/"H1" (no space). Pass `separator` to
-// pick the right convention.
+// while form-item labels are "H1"/"T1"/"FIB1"/"MCQ1" (no space). Pass `separator` to
+// pick the right convention. (Browser: FIB/MCQ prefixes distinguish question types in lists;
+// legacy often used Qn for both.)
 function nextLabel(prefix: string, existing: string[], separator = ""): string {
   let n = 1;
   while (existing.includes(`${prefix}${separator}${n}`)) n++;
@@ -203,12 +205,19 @@ interface ProjectState {
   setSelectedItemIndex: (index: number | null) => void;
   setInsertBeforeIndex: (index: number) => void;
   moveSelectedFormItem: (direction: "up" | "down") => void;
+  /** Move item at `fromIndex` so it lands at `beforeIndex` (0 = top). */
+  moveFormItemBefore: (formName: string, fromIndex: number, beforeIndex: number) => void;
   setProcessInsertPath: (path: string) => void;
   setProcessInsertPoint: (path: string, index: number) => void;
   setSelectedProcessCommandPath: (path: string | null) => void;
   setProcessStatementPanel: (panel: ProcessStatementPanel) => void;
   toggleProcessStatementPanel: (label: string) => void;
   moveSelectedProcessCommand: (direction: "up" | "down") => void;
+  moveProcessCommandBefore: (
+    fromPath: string,
+    destParentPath: string,
+    destIndex: number,
+  ) => void;
   createLinkedProcessForForm: (formName: string, role: "Pre" | "Post") => void;
   linkProcessToForm: (processName: string, formName: string, role: "Pre" | "Post") => void;
   unlinkProcessFromForm: (
@@ -238,7 +247,10 @@ interface ProjectState {
   updateForm: (formName: string, patch: Partial<TawalaForm>) => void;
   deleteFormItem: (formName: string, index: number) => void;
   deleteSelectedFormItem: () => void;
-  insertProcessCommand: (command: TawalaProcessCommand) => void;
+  insertProcessCommand: (
+    command: TawalaProcessCommand,
+    options?: { path?: string; index?: number },
+  ) => void;
   updateProcessCommands: (processName: string, commands: TawalaProcessCommand[]) => void;
   updateDocumentContent: (documentName: string, content: string | RichContentBlock[]) => void;
   selectForm: (name: string) => void;
@@ -568,8 +580,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { project, selection, insertBeforeIndex } = get();
     let nextInsert = insertBeforeIndex;
     if (selectedItemIndex !== null && selection.kind === "form" && selection.name) {
+      // Legacy formcontainer.htc: InsertionPoint = selected row index (insert before it).
       const form = project.forms.find((f) => f.name === selection.name);
-      if (form) nextInsert = Math.min(selectedItemIndex + 1, form.items.length);
+      if (form) nextInsert = Math.min(selectedItemIndex, form.items.length);
     }
     set({ selectedItemIndex, insertBeforeIndex: nextInsert });
   },
@@ -582,27 +595,41 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     set({ insertBeforeIndex: clamped });
   },
   moveSelectedFormItem: (direction) => {
-    const { project, selection, selectedItemIndex } = get();
+    const { selection, selectedItemIndex, project } = get();
     if (selection.kind !== "form" || !selection.name || selectedItemIndex === null) return;
     const form = project.forms.find((f) => f.name === selection.name);
     if (!form) return;
-    const delta = direction === "up" ? -1 : 1;
-    const target = selectedItemIndex + delta;
-    if (target < 0 || target >= form.items.length) return;
+    if (direction === "up") {
+      if (selectedItemIndex <= 0) return;
+      get().moveFormItemBefore(selection.name, selectedItemIndex, selectedItemIndex - 1);
+    } else {
+      if (selectedItemIndex >= form.items.length - 1) return;
+      get().moveFormItemBefore(selection.name, selectedItemIndex, selectedItemIndex + 2);
+    }
+  },
+  moveFormItemBefore: (formName, fromIndex, beforeIndex) => {
+    const { project } = get();
+    const form = project.forms.find((f) => f.name === formName);
+    if (!form) return;
+    const count = form.items.length;
+    if (fromIndex < 0 || fromIndex >= count) return;
+    let to = Math.max(0, Math.min(beforeIndex, count));
+    // After removing `fromIndex`, targets after it shift left by one.
+    if (fromIndex < to) to -= 1;
+    if (to === fromIndex) return;
     const items = [...form.items];
-    const [moved] = items.splice(selectedItemIndex, 1);
-    items.splice(target, 0, moved);
+    const [moved] = items.splice(fromIndex, 1);
+    items.splice(to, 0, moved);
     set({
       project: {
         ...project,
-        forms: project.forms.map((f) =>
-          f.name === selection.name ? { ...f, items } : f,
-        ),
+        forms: project.forms.map((f) => (f.name === formName ? { ...f, items } : f)),
       },
       dirty: true,
-      selectedItemIndex: target,
-      insertBeforeIndex: target + 1,
-      statusMessage: `Moved item ${direction}`,
+      selection: { kind: "form", name: formName },
+      selectedItemIndex: to,
+      insertBeforeIndex: to,
+      statusMessage: `Moved item`,
     });
   },
   setProcessInsertPath: (path) => {
@@ -632,7 +659,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         nextPanel = panelForCmd;
       }
     }
-    set({ selectedProcessCommandPath: path, processStatementPanel: nextPanel });
+    set({
+      selectedProcessCommandPath: path,
+      processStatementPanel: nextPanel,
+      // Next palette insert lands after the selected statement (script-editor feel).
+      processInsertPath: parentPathAndChildIndex(path).parentPath,
+      processInsertIndex: parentPathAndChildIndex(path).childIndex + 1,
+    });
   },
   setProcessStatementPanel: (panel) => {
     const { selection } = get();
@@ -666,11 +699,39 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const processes = (project.processes ?? []).map((p) =>
       p.name === selection.name ? { ...p, commands: moved.commands } : p,
     );
+    const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
     set({
       project: { ...project, processes },
       dirty: true,
       selectedProcessCommandPath: moved.newPath,
+      processInsertPath: parentPath,
+      processInsertIndex: childIndex + 1,
       statusMessage: `Moved statement ${direction}`,
+    });
+  },
+  moveProcessCommandBefore: (fromPath, destParentPath, destIndex) => {
+    const { project, selection } = get();
+    if (selection.kind !== "process" || !selection.name) return;
+    const proc = project.processes?.find((p) => p.name === selection.name);
+    if (!proc) return;
+    const moved = moveProcessCommandBefore(
+      proc.commands ?? [],
+      fromPath,
+      destParentPath,
+      destIndex,
+    );
+    if (!moved) return;
+    const processes = (project.processes ?? []).map((p) =>
+      p.name === selection.name ? { ...p, commands: moved.commands } : p,
+    );
+    const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
+    set({
+      project: { ...project, processes },
+      dirty: true,
+      selectedProcessCommandPath: moved.newPath,
+      processInsertPath: parentPath,
+      processInsertIndex: childIndex + 1,
+      statusMessage: "Moved statement",
     });
   },
   createLinkedProcessForForm: (formName, role) => {
@@ -973,7 +1034,16 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!formName) return;
     const form = s.project.forms.find((f) => f.name === formName);
     if (!form) return;
-    const prefix = type === "text" ? "T" : type === "heading" ? "H" : "Q";
+    const prefix =
+      type === "text"
+        ? "T"
+        : type === "heading"
+          ? "H"
+          : type === "fib"
+            ? "FIB"
+            : type === "mc"
+              ? "MCQ"
+              : "Q";
     const labels = form.items.map((i) => i.label);
     const label =
       type === "field"
@@ -1062,18 +1132,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   // `insertFormItem` but targets the active PROCESS window. `selection` tracks the
   // active window (see focusWindow/openWindow/closeWindow), so the palette always
   // appends the statement to the process the designer is looking at.
-  insertProcessCommand: (command) => {
+  insertProcessCommand: (command, options) => {
     const { project, selection, processInsertPath, processInsertIndex } = get();
     if (selection.kind !== "process" || !selection.name) return;
     const processes = project.processes ?? [];
     const proc = processes.find((p) => p.name === selection.name);
     if (!proc) return;
-    const inserted = insertCommandAtPoint(
-      proc.commands ?? [],
-      processInsertPath,
-      processInsertIndex,
-      command,
-    );
+    const path = options?.path ?? processInsertPath;
+    const index = options?.index ?? processInsertIndex;
+    const inserted = insertCommandAtPoint(proc.commands ?? [], path, index, command);
     const nextProcesses = processes.map((p) =>
       p.name === selection.name ? { ...p, commands: inserted.commands } : p,
     );

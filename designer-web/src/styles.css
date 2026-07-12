@@ -260,6 +260,9 @@ textarea {
   background: var(--menu-bg);
   border-bottom: 1px solid var(--border);
   padding: 0 2px;
+  /* Above the icon/formatting chrome so File/Insert menus are not covered. */
+  position: relative;
+  z-index: 400;
 }
 
 .menu-item {
@@ -380,6 +383,10 @@ textarea {
   background: var(--toolbar-bg);
   border-bottom: 1px solid var(--border);
   min-height: 28px;
+  /* Keep tooltips above the main workspace (PE / canvas). */
+  position: relative;
+  z-index: 300;
+  overflow: visible;
 }
 
 .main-icon-toolbar {
@@ -389,7 +396,8 @@ textarea {
   padding: 2px 4px;
   box-sizing: border-box;
   border-right: 1px solid var(--border);
-  overflow: hidden;
+  /* Must stay visible — overflow:hidden clipped explorer-tip tooltips below the icons. */
+  overflow: visible;
 }
 
 .main-icon-tool-btn {
@@ -441,6 +449,9 @@ textarea {
   gap: 1px;
   padding: 2px;
   border-bottom: 1px solid var(--border);
+  /* Paint tip::after above the tree (later sibling would otherwise cover it). */
+  position: relative;
+  z-index: 20;
 }
 
 .explorer-toolbar button {
@@ -504,7 +515,7 @@ textarea {
   top: calc(100% + 5px);
   left: 50%;
   transform: translateX(-50%);
-  z-index: 50;
+  z-index: 4000;
   white-space: nowrap;
   padding: 3px 7px;
   border-radius: 3px;
@@ -752,8 +763,10 @@ textarea {
   flex: 1;
   min-width: 0;
   overflow: auto;
-  padding: 16px 24px;
+  /* Left gutter for the floating insert caret during drag. */
+  padding: 8px 16px 8px 28px;
   background: #fff;
+  position: relative;
 }
 
 .form-canvas-hint {
@@ -763,88 +776,43 @@ textarea {
   color: var(--muted);
 }
 
-/* Legacy insertion-point arrow between form rows (`droparea.htc` Insert.png). */
-.form-insertion-point {
-  position: relative;
-  height: 10px;
-  margin: 0;
-  cursor: pointer;
-  border-radius: 2px;
-  /* Enlarge the hit target without permanently eating canvas space. */
-  z-index: 1;
+/* Ephemeral insert caret — legacy Insert.png, left of items, only while dragging. */
+.form-canvas-insert-caret {
+  position: absolute;
+  left: 6px;
+  height: 0;
+  z-index: 5;
+  pointer-events: none;
 }
 
-.form-insertion-point::before {
-  content: "";
+.form-canvas-insert-caret-marker {
   position: absolute;
   left: 0;
-  right: 0;
-  top: -8px;
-  bottom: -8px;
-}
-
-.form-canvas-item-drag .form-insertion-point {
-  height: 14px;
-}
-
-.form-insertion-point:hover {
-  height: 14px;
-  background: #eef4ff;
-}
-
-.form-insertion-point.drop-target {
-  height: 22px;
-  background: #d6e6ff;
-  outline: 1px dashed #4a7ab5;
-}
-
-.form-insertion-point.active {
-  height: 18px;
-  background: #e3edff;
-}
-
-.form-insertion-point-marker {
-  display: none;
-  position: absolute;
-  left: 2px;
-  top: 50%;
+  top: 0;
   transform: translateY(-50%);
-  color: #1a5fb4;
-  font-size: 13px;
-  line-height: 1;
-  pointer-events: none;
-}
-
-.form-insertion-point-line {
-  display: none;
-  position: absolute;
-  left: 18px;
-  right: 0;
-  top: 50%;
-  height: 2px;
-  transform: translateY(-50%);
-  background: #1a5fb4;
-  pointer-events: none;
-}
-
-.form-insertion-point.active .form-insertion-point-marker,
-.form-insertion-point.active .form-insertion-point-line,
-.form-insertion-point.drop-target .form-insertion-point-marker,
-.form-insertion-point.drop-target .form-insertion-point-line,
-.form-insertion-point:hover .form-insertion-point-marker,
-.form-insertion-point:hover .form-insertion-point-line {
   display: block;
+  image-rendering: pixelated;
 }
 
-/* While dragging a Form Item, only the live drop gap may show a blue line. */
-.form-canvas-item-drag .form-insertion-point:not(.drop-target) .form-insertion-point-marker,
-.form-canvas-item-drag .form-insertion-point:not(.drop-target) .form-insertion-point-line {
-  display: none;
+.form-item-slot {
+  position: relative;
+  border-bottom: 1px solid #c8c8c8;
 }
 
-.form-canvas-item-drag .form-insertion-point:not(.drop-target):hover {
-  height: 14px;
-  background: transparent;
+.form-item-slot:last-child {
+  border-bottom: none;
+}
+
+.form-item-slot.selected-slot {
+  cursor: grab;
+}
+
+.form-item-slot.dragging {
+  opacity: 0.45;
+}
+
+.form-item-slot.selected-slot:active {
+  cursor: grabbing;
 }
 
 .form-item-move-toolbar {
@@ -950,7 +918,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
 }
@@ -964,9 +932,23 @@ textarea {
 }
 
 .heading-canvas-row.selected {
-  border-color: var(--accent);
-  background: #f4f8ff;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
+/* Legacy selected label cell — orange (formcontainer.htc selectedColor). */
+.heading-canvas-row.selected .heading-badge,
+.text-canvas-row.selected .text-badge,
+.fib-canvas-row.selected .fib-badge,
+.mcq-canvas-row.selected .mcq-badge,
+.hidden-field-canvas-row.selected .hidden-field-badge,
+.break-canvas-row.selected .break-badge,
+.skip-canvas-row.selected .skip-badge {
+  background: #f4b84c;
+  border-color: #d9a33c;
+  color: #222;
+}
+
 
 .heading-badge {
   flex: 0 0 auto;
@@ -1096,7 +1078,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
 }
@@ -1110,8 +1092,9 @@ textarea {
 }
 
 .text-canvas-row.selected {
-  border-color: var(--accent);
-  background: #f4f8ff;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
 
 .text-badge {
@@ -1204,7 +1187,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
 }
@@ -1218,8 +1201,9 @@ textarea {
 }
 
 .fib-canvas-row.selected {
-  border-color: var(--accent);
-  background: #f4f8ff;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
 
 .fib-badge {
@@ -1365,7 +1349,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
 }
@@ -1379,8 +1363,9 @@ textarea {
 }
 
 .mcq-canvas-row.selected {
-  border-color: var(--accent);
-  background: #f4f8ff;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
 
 .mcq-badge {
@@ -1545,7 +1530,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
   cursor: pointer;
@@ -1556,8 +1541,9 @@ textarea {
 }
 
 .hidden-field-canvas-row.selected {
-  border-color: var(--accent);
-  background: #f4f8ff;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
 
 .hidden-field-badge {
@@ -1602,6 +1588,24 @@ textarea {
   font-size: 13px;
 }
 
+.hidden-field-name-display {
+  flex: 1;
+  min-width: 120px;
+  max-width: 320px;
+  box-sizing: border-box;
+  border: 1px solid #cfcfcf;
+  padding: 2px 6px;
+  font-size: 13px;
+  text-align: left;
+  background: #fff;
+  color: inherit;
+  cursor: text;
+}
+
+.hidden-field-name-display:hover {
+  border-color: #b0b0b0;
+}
+
 .hidden-field-name-input:focus {
   outline: none;
   border-color: var(--accent);
@@ -1623,7 +1627,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
   cursor: pointer;
@@ -1635,8 +1639,9 @@ textarea {
 }
 
 .break-canvas-row.selected {
-  border-color: var(--accent);
-  background: #f4f8ff;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
 
 .break-badge {
@@ -1677,7 +1682,7 @@ textarea {
   display: flex;
   align-items: stretch;
   gap: 12px;
-  margin-bottom: 10px;
+  margin-bottom: 2px;
   padding: 2px;
   border: 1px solid transparent;
   cursor: pointer;
@@ -1689,8 +1694,9 @@ textarea {
 }
 
 .skip-canvas-row.selected {
-  border-color: var(--accent);
-  background: #fff8f0;
+  border: 1px dashed #333;
+  outline: none;
+  background: transparent;
 }
 
 .skip-badge {
@@ -4051,7 +4057,29 @@ button.skip-script-line:hover {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0 2px 2px;
+  padding: 0 2px 2px 20px;
+  position: relative;
+}
+
+.process-script-insert-caret {
+  left: 2px;
+  right: 8px;
+}
+
+/* Zero-height insert slots for drag hit-testing (no permanent caret bars). */
+.process-insert-hit {
+  position: relative;
+  height: 0;
+  z-index: 1;
+}
+
+.process-insert-hit::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -8px;
+  bottom: -8px;
 }
 
 .process-script-area {
@@ -4077,6 +4105,14 @@ button.skip-script-line:hover {
   gap: 0;
   min-height: 0;
   align-items: center;
+}
+
+.skip-script-area.process-script-area .skip-script-line-row.selected {
+  cursor: grab;
+}
+
+.skip-script-area.process-script-area .skip-script-line-row.selected:active {
+  cursor: grabbing;
 }
 
 .skip-script-area.process-script-area .skip-script-line-row .skip-script-line {
@@ -4555,7 +4591,7 @@ button.skip-script-line:hover {
   position: absolute;
   top: calc(100% + 4px);
   left: 0;
-  z-index: 50;
+  z-index: 4000;
   white-space: nowrap;
   padding: 3px 7px;
   border-radius: 3px;
@@ -5039,9 +5075,11 @@ button.skip-script-line:hover {
   pointer-events: auto;
 }
 
-/* Skip dialog: dimmed overlay but Fields column remains interactive for drag-drop. */
+/* Skip dialog: portaled to body; dimmed overlay but Fields column stays interactive. */
 .skip-modal-overlay {
   background: rgba(0, 0, 0, 0.2);
+  /* Above PE / Items / Fields chrome so drag no longer bisects under the explorer edge. */
+  z-index: 2000;
 }
 
 .new-project-dialog {

@@ -274,10 +274,11 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
       ) : (
         <div
           className={`mcq-badge${editing ? " editing" : ""}`}
-          title="Click to edit question label"
+          title={selected ? "Click to edit question label" : "Click to select"}
           onClick={(e) => {
             e.stopPropagation();
-            setEditingLabel(true);
+            setSelectedItemIndex(index);
+            if (selected) setEditingLabel(true);
           }}
         >
           {item.label}

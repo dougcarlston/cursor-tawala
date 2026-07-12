@@ -66,7 +66,7 @@ function htmlToPlainText(html: string): string {
  * "Click-to-activate": clicking the box when focus was elsewhere makes the inline editor live,
  * registering `text` focus so the Formatting Palette lights up (Heading greys it).
  *
- * The label (`T1`, `T2`, …) is edited directly in the badge (click → input), like Heading.
+ * The label (`T1`, `T2`, …) is edited in the badge: first click selects, second click edits.
  * Array/structured `content` (function tables) does NOT reach this row — the generic canvas
  * block handles it — so `content` here is always the plain-string body.
  */
@@ -294,10 +294,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       ) : (
         <div
           className={`text-badge${editing ? " editing" : ""}`}
-          title="Click to edit text label"
+          title={selected ? "Click to edit text label" : "Click to select"}
           onClick={(e) => {
             e.stopPropagation();
-            setEditingLabel(true);
+            setSelectedItemIndex(index);
+            if (selected) setEditingLabel(true);
           }}
         >
           {item.label}
