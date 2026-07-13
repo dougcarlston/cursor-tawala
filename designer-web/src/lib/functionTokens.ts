@@ -60,13 +60,33 @@ export function buildFunctionDisplayString(def: FunctionDef, config: FunctionCon
       continue;
     }
 
+    if (param.hidden) continue;
+
     const raw = config[param.id];
     if (raw === undefined || String(raw).trim() === "") continue;
-    parts.push(String(raw).trim());
+    parts.push(truncateDisplayParam(String(raw).trim()));
   }
 
   if (parts.length === 0) return `<<${def.name}>>`;
   return `<<${def.name}(${parts.join(", ")})>>`;
+}
+
+/** Keep long URLs / expressions from blowing the token chrome out of the editor box. */
+function truncateDisplayParam(value: string, max = 36): string {
+  if (value.length <= max) return value;
+  // Prefer keeping a filename tail for URLs.
+  try {
+    if (/^https?:\/\//i.test(value)) {
+      const u = new URL(value);
+      const base = u.pathname.split("/").filter(Boolean).pop() ?? value;
+      const label = decodeURIComponent(base);
+      if (label.length <= max) return label;
+      return `${label.slice(0, max - 1)}…`;
+    }
+  } catch {
+    /* not a URL */
+  }
+  return `${value.slice(0, max - 1)}…`;
 }
 
 export function serializeFunctionConfig(config: FunctionConfig): string {
@@ -99,6 +119,38 @@ export function createFunctionTokenElement(
   span.setAttribute("title", def.name);
   span.textContent = display;
   return span;
+}
+
+/** Invisible caret landing so clicks/typing work next to contenteditable=false tokens. */
+const CARET_ZWSP = "\u200B";
+
+function isCaretLandingNode(node: Node | null): boolean {
+  if (!node) return false;
+  if (node.nodeType === Node.TEXT_NODE) return true;
+  return node.nodeName === "BR";
+}
+
+/**
+ * Ensure editable text (or `<br>`) immediately before/after a non-editable token so the
+ * caret can land when the Text item otherwise only contains the function box.
+ */
+export function ensureTokenCaretLanding(span: HTMLElement): void {
+  const parent = span.parentNode;
+  if (!parent) return;
+
+  if (!isCaretLandingNode(span.previousSibling)) {
+    parent.insertBefore(document.createTextNode(CARET_ZWSP), span);
+  }
+  if (!isCaretLandingNode(span.nextSibling)) {
+    parent.insertBefore(document.createTextNode(CARET_ZWSP), span.nextSibling);
+  }
+}
+
+/** Walk an editor and add caret landings around every function token. */
+export function ensureFunctionTokenCaretGaps(root: HTMLElement): void {
+  root.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`).forEach((node) => {
+    if (node instanceof HTMLElement) ensureTokenCaretLanding(node);
+  });
 }
 
 export interface FunctionTokenRef {
@@ -176,21 +228,37 @@ export function insertFunctionTokenAtSelection(
 
   if (replace) {
     replace.element.replaceWith(span);
+    ensureTokenCaretLanding(span);
     const range = document.createRange();
-    range.setStartAfter(span);
+    const after = span.nextSibling;
+    if (after?.nodeType === Node.TEXT_NODE) {
+      range.setStart(after, Math.min(1, after.textContent?.length ?? 0));
+    } else {
+      range.setStartAfter(span);
+    }
     range.collapse(true);
     sel.removeAllRanges();
     sel.addRange(range);
     return;
   }
 
-  if (!sel.rangeCount) return;
-  const range = sel.getRangeAt(0);
+  let range: Range | null = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
+  if (!range || !root.contains(range.commonAncestorContainer)) {
+    range = document.createRange();
+    range.selectNodeContents(root);
+    range.collapse(false);
+  }
   if (!range.collapsed) range.deleteContents();
   range.insertNode(span);
+  ensureTokenCaretLanding(span);
 
   const after = document.createRange();
-  after.setStartAfter(span);
+  const landing = span.nextSibling;
+  if (landing?.nodeType === Node.TEXT_NODE) {
+    after.setStart(landing, Math.min(1, landing.textContent?.length ?? 0));
+  } else {
+    after.setStartAfter(span);
+  }
   after.collapse(true);
   sel.removeAllRanges();
   sel.addRange(after);

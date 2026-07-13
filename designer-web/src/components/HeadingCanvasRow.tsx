@@ -41,16 +41,28 @@ function isRichHeadingContent(content: string): boolean {
 }
 
 /**
+ * True when content is already persisted HTML (size spans and/or `<br>` from serialize).
+ * Must not escape these or idle/design view shows literal `<br>` characters.
+ */
+function isStoredHeadingHtml(content: string): boolean {
+  return (
+    isRichHeadingContent(content) ||
+    /<br\s*\/?>/i.test(content) ||
+    /<\/?span\b/i.test(content)
+  );
+}
+
+/**
  * Migrate any HeadingItem to editor HTML with per-run size spans.
- *  - New format: content already holds `heading-size-*` spans → used as-is.
- *  - Legacy format: plain text; the whole box adopts the old `level` (Sub → one Sub run,
+ *  - Stored HTML (size spans, `<br>`, etc.) → used as-is so breaks render as HTML.
+ *  - Legacy plain text → escaped; the whole box adopts the old `level` (Sub → one Sub run,
  *    otherwise bare Main text). This keeps existing single-size headings intact.
  */
 function headingContentToHtml(item: HeadingItem): string {
   const content = item.content ?? "";
-  if (isRichHeadingContent(content)) return content;
+  if (!content) return "";
+  if (isStoredHeadingHtml(content)) return content;
   const esc = escapeHtml(content);
-  if (!esc) return "";
   return item.level === "sub" ? `<span class="${SIZE_CLASS.sub}">${esc}</span>` : esc;
 }
 
@@ -336,6 +348,8 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("heading");
+    // Keep expanded while selected so form-item reorder drag does not collapse mid-drag.
+    if (selected) return;
     setEditing(false);
   };
 

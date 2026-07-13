@@ -14,6 +14,7 @@ import { DeployDialog } from "./components/DeployDialog";
 import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import type { TemplateEntry } from "@/templates/catalog";
+import { clearProjectFileHandle, openProjectFromDisk } from "@/lib/shellCommands";
 
 const ITEMS_COLUMN_WIDTH = 76 + 1; // .designer-items + border
 const SPLITTER_WIDTH = 4;
@@ -71,6 +72,8 @@ export default function App() {
   const onOpenFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Hidden <input> open cannot keep a writable handle — next Save will ask where to put it.
+    clearProjectFileHandle();
     const reader = new FileReader();
     reader.onload = () => {
       try {
@@ -83,8 +86,14 @@ export default function App() {
     e.target.value = "";
   };
 
+  const onOpen = async () => {
+    const opened = await openProjectFromDisk();
+    if (!opened) fileRef.current?.click();
+  };
+
   const onPickTemplate = async (template: TemplateEntry) => {
     setShowNewProject(false);
+    clearProjectFileHandle();
     try {
       if (template.id === "empty") {
         useProjectStore.getState().newProject({ empty: true });
@@ -110,7 +119,7 @@ export default function App() {
 
   const shell = {
     onNewProject: () => setShowNewProject(true),
-    onOpen: () => fileRef.current?.click(),
+    onOpen: () => void onOpen(),
     onDeploy: () => void deploy(),
     onDelete: () => deleteSelectedFormItem(),
   };

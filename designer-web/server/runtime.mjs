@@ -8,6 +8,7 @@ import {
   runProcessByName,
   visibleItems,
 } from "./runtimeEngine.mjs";
+import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { renderDocumentsPage } from "./documentRenderer.mjs";
 import { fibRowFields, fibRowLabel, fibUsesLeftLabels, parseFibPrompt } from "./fibPrompt.mjs";
 import { getThemeCss, themeBodyClass } from "./themes/index.mjs";
@@ -166,15 +167,12 @@ function enhancePlainText(content, ctx, item) {
 }
 
 function containsRichTextHtml(content) {
-  return RICH_TEXT_HTML_TAG_RE.test(content);
+  return RICH_TEXT_HTML_TAG_RE.test(content) || looksLikeRichHtml(content);
 }
 
 function enhanceRichTextHtml(content, ctx) {
   const html = applyLegacyTextSubstitutions(content, ctx);
-  const replaceTemplate = (_match, ref) => esc(getFieldValue(ctx, String(ref).trim()));
-  return html
-    .replace(/&lt;&lt;([\s\S]+?)&gt;&gt;/g, replaceTemplate)
-    .replace(/<<([^>]+)>>/g, replaceTemplate);
+  return enhanceRichHtmlShared(html, (ref) => getFieldValue(ctx, ref));
 }
 
 function parseRecordField(field) {
@@ -409,6 +407,32 @@ table.component tbody tr:hover { background-color: #e8e8e8; }
 table.component td { padding-left: 1em; padding-right: 1em; line-height: 1.5em; border: 1px solid #dddddd; }
 `;
 
+/** Form Preview stand-in for DISPLAY IMAGE — sized box, image name centered (not live URL fetch). */
+const DISPLAY_IMAGE_PREVIEW_CSS = `
+.preview-display-image {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  vertical-align: middle;
+  margin: 4px 0;
+  max-width: 100%;
+  border: 1px dashed #888;
+  background: #f0f0f0;
+  color: #444;
+  font-size: 12px;
+  font-family: Arial, sans-serif;
+  text-align: center;
+  overflow: hidden;
+}
+.preview-display-image-label {
+  padding: 4px 8px;
+  word-break: break-word;
+  max-width: 100%;
+  line-height: 1.2;
+}
+`;
+
 function pageShell(title, body, banner, themePath) {
   const theme = themePath || "default";
   const bodyClass = themeBodyClass(theme);
@@ -424,6 +448,7 @@ function pageShell(title, body, banner, themePath) {
   <title>${esc(title)}</title>
   <style>
     ${COMPONENT_TABLE_CSS}
+    ${DISPLAY_IMAGE_PREVIEW_CSS}
     ${!isThemed ? `body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; }
     h1 { font-size: 1.25rem; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
     .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }
@@ -575,6 +600,7 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
     if (nav.type === "documents") {
       return renderDocumentsPage(project, nav.documents, session, baseUrl, uniqueId, {
         fromForm: formName,
+        thenForm: nav.thenForm || null,
       });
     }
     return renderSubmitAck(project, form, session, baseUrl, uniqueId, {

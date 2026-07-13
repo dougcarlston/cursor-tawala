@@ -1,0 +1,51 @@
+---
+description: Prevent Designer parity regressions — smoke checks, tests, scoped UX fixes, stale comments
+alwaysApply: true
+---
+
+# Regression prevention (Designer parity)
+
+Long-fixed behaviors have returned when adjacent “parity” edits silently dropped them. Follow these six rules.
+
+## 1. Must-not-break smoke checklist
+
+Before finishing Form/Document canvas or runtime work, run the smoke steps in the relevant `Tawala_Key_Documents/DESIGNER_*.md` (e.g. FIB underscores in `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`). If no checklist exists for the area you touched, add 2–4 bullets there in the same change.
+
+## 2. Prefer a small regression test for dual pipelines
+
+Where Design and Preview/Deploy parse the same concept differently (FIB underscores, Document snap-to-line, field tokens), add or extend a focused unit test for **each path you touch**. Prefer protecting **Design** contracts first. Preview/Deploy tests live beside server/runtime code and must not force Design to share Preview’s representation. Do not lock in broken behavior — assert the documented contract. Run `npm test` in `designer-web/` when those files change.
+
+## 3. One canvas row type at a time
+
+Do not copy edit/selection/blur/drag behavior from MCQ → FIB → Text → Heading in one change. Fix **one** `*CanvasRow` first; only propagate after checking that type’s **edit vs idle** contract (e.g. FIB idle = underscore → blank boxes; editing = raw underscores).
+
+## 4. Render-strategy changes are high risk
+
+Replacing a React/DOM blank renderer with `innerHTML` / `dangerouslySetInnerHTML`, or collapsing edit/idle into one path, requires an explicit note in the change: what idle (or Preview) **used** to show, and confirmation it still does. Never delete a visible authoring affordance solely to fix contenteditable quirks without restoring equivalent UX.
+
+## 5. Update or delete stale claims
+
+If you remove behavior, update the code comment and the `DESIGNER_*.md` gap/smoke section in the same change. Comments like “underscores become blank inputs when idle” after that code is gone are forbidden — they cause the next agent to assume the feature works.
+
+## 6. End-of-task parity gate
+
+Before closing a Designer implementation task:
+
+1. Re-read the matching `DESIGNER_*.md` section / gap table for the item you touched.
+2. Run that section’s smoke steps (or the new checklist you added).
+3. Run related unit tests when present (`cd designer-web && npm test`).
+
+### Concrete failure patterns to avoid
+
+```text
+❌ BAD — “keep editing while selected” applied to all form rows after an MCQ drag bug
+   → FIB never reaches idle → underscore→textbox path invisible / deleted later unnoticed
+
+✅ GOOD — fix McqCanvasRow only; verify FibCanvasRow still exits editing so idle blanks render
+
+❌ BAD — Preview/runtime fix rewrites Design canvas HTML, blank widgets, or edit/idle mode
+   so “Preview and Design look the same”
+
+✅ GOOD — Preview parse/render stays in server Preview (or Deploy XML); Design canvas keeps
+   its own idle/edit behavior from DESIGNER_*.md
+```

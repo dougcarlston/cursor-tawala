@@ -169,11 +169,26 @@ function mergeClass(base: string | undefined, dragOver: boolean): string | undef
 interface FieldTextInputProps
   extends Omit<InputHTMLAttributes<HTMLInputElement>, "onChange"> {
   onValueChange: (next: string) => void;
+  /** When true, insert bare `Form:Field` instead of `<<Form:Field>>` (MCQ / blank params). */
+  bare?: boolean;
+  formFieldsOnly?: boolean;
+  knownVariables?: ReadonlySet<string>;
 }
 
 /** `<input>` that accepts `<<field>>` drops and double-click inserts from the Fields panel. */
-export function FieldTextInput({ onValueChange, className, ...rest }: FieldTextInputProps) {
-  const { dragOver, handlers } = useFieldDropTarget(onValueChange);
+export function FieldTextInput({
+  onValueChange,
+  className,
+  bare,
+  formFieldsOnly,
+  knownVariables,
+  ...rest
+}: FieldTextInputProps) {
+  const { dragOver, handlers } = useFieldDropTarget(onValueChange, {
+    bare,
+    formFieldsOnly,
+    knownVariables,
+  });
   return (
     <input
       {...rest}

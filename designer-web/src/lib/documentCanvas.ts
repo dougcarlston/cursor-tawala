@@ -624,24 +624,24 @@ export function resolveDocumentFieldDropTarget(
   clientY: number,
 ): HTMLElement {
   const hit = document.elementFromPoint(clientX, clientY);
-  if (hit instanceof HTMLElement) {
-    if (hit.closest(".table-handles-overlay")) {
-      // Fall through to snap / new line below.
-    } else {
-      const cell = hit.closest("td, th");
-      if (cell instanceof HTMLTableCellElement && editor.contains(cell)) {
-        return cell;
-      }
-      const placed = hit.closest(`.${PLACED_TEXT_CLASS}`);
-      if (placed instanceof HTMLElement && editor.contains(placed)) {
-        return placed;
-      }
+  if (hit instanceof HTMLElement && !hit.closest(".table-handles-overlay")) {
+    const cell = hit.closest("td, th");
+    if (cell instanceof HTMLTableCellElement && editor.contains(cell)) {
+      return cell;
     }
   }
 
-  // Snap into the nearest line on this row even if the drop missed the glyphs.
-  const near = findPlacedTextBlockNearPoint(editor, clientX, clientY, { bandScale: 1.75 });
+  // Snap to the nearest line first (generous band) so near-miss drops join the
+  // line instead of spawning an orphan block one row above/beside the text.
+  const near = findPlacedTextBlockNearPoint(editor, clientX, clientY, { bandScale: 2.5 });
   if (near) return near;
+
+  if (hit instanceof HTMLElement && !hit.closest(".table-handles-overlay")) {
+    const placed = hit.closest(`.${PLACED_TEXT_CLASS}`);
+    if (placed instanceof HTMLElement && editor.contains(placed)) {
+      return placed;
+    }
+  }
 
   return insertPlacedTextBlock(editor, clientX, clientY);
 }
@@ -709,27 +709,42 @@ export function placeDocumentTextAtPoint(
   return true;
 }
 
-/** Find a placed line whose vertical band contains the point (for snap / click-to-continue). */
+/**
+ * Find a placed line under/near a viewport point (snap-to-line / click-to-continue).
+ *
+ * Uses painted `getBoundingClientRect` bands — not `style.top` midpoints — so soft-wrapped
+ * tall blocks and near-miss drops above/below glyphs still join the correct line.
+ */
 export function findPlacedTextBlockNearPoint(
   editor: HTMLElement,
   clientX: number,
   clientY: number,
   options?: { bandScale?: number },
 ): HTMLElement | null {
-  const { top } = clientPointToEditorPt(editor, clientX, clientY);
   const bandScale = options?.bandScale ?? 1;
   let best: HTMLElement | null = null;
   let bestDist = Infinity;
 
   editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
-    const pos = getAbsolutePositionPt(node);
-    const lineH = placedBlockLayoutHeightPt(node);
-    const mid = pos.top + lineH / 2;
-    const dist = Math.abs(top - mid);
-    const band = (Math.max(lineH, LINE_TOLERANCE_PT * 4) / 2 + LINE_TOLERANCE_PT) * bandScale;
-    if (dist <= band && dist < bestDist) {
-      bestDist = dist;
+    const rect = node.getBoundingClientRect();
+    if (rect.width <= 0 && rect.height <= 0) return;
+
+    // Inside the painted box (including wrap width / soft-wrap height) is a perfect hit.
+    let distPx: number;
+    if (clientY >= rect.top && clientY <= rect.bottom) {
+      distPx = 0;
+    } else if (clientY < rect.top) {
+      distPx = rect.top - clientY;
+    } else {
+      distPx = clientY - rect.bottom;
+    }
+
+    const lineH = Math.max(rect.height, 16);
+    // Slack above/below glyphs so a drop slightly off the baseline still joins the line.
+    const slackPx = (Math.max(lineH * 0.55, 12) + 6) * bandScale;
+    if (distPx <= slackPx && distPx < bestDist) {
+      bestDist = distPx;
       best = node;
     }
   });

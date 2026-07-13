@@ -70,7 +70,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           Open Project…
         </button>
         <div className="menu-separator" />
-        <button type="button" onClick={saveProjectToDownload}>
+        <button type="button" onClick={() => void saveProjectToDownload()}>
           Save
         </button>
         <div className="menu-separator" />

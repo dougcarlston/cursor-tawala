@@ -77,9 +77,17 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
   const update = (patch: Partial<McItem>) =>
     updateFormItem(formName, index, { ...item, ...patch });
 
+  // Expand when selected; collapse only when selection leaves (not on blur).
+  // Blur alone must not shrink the row — HTML5 reorder drag blurs contentEditable
+  // first, and collapsing mid-drag moves the hit box out from under the cursor.
   useEffect(() => {
     if (selected && !wasSelected.current) setEditing(true);
+    if (!selected && wasSelected.current) {
+      pruneEmptyChoices();
+      setEditing(false);
+    }
     wasSelected.current = selected;
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only react to selection edges
   }, [selected]);
 
   useEffect(() => {
@@ -205,8 +213,10 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     if (next?.closest(".formatting-palette")) return;
     if (next?.closest(".fib-property-strip")) return;
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
-    pruneEmptyChoices();
     clearFormattingFocus("mcq");
+    // Keep the expanded property strip while selected so reorder drag stays over the row.
+    if (selected) return;
+    pruneEmptyChoices();
     setEditing(false);
   };
 

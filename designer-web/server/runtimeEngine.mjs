@@ -159,13 +159,25 @@ export function runCommand(cmd, ctx) {
       return null;
     case "showDocument": {
       ctx._nav = ctx._nav ?? { showForm: null, documents: [] };
-      ctx._nav.documents.push(cmd.document);
+      if (cmd.document) ctx._nav.documents.push(cmd.document);
       return null;
     }
     case "show": {
       ctx._nav = ctx._nav ?? { showForm: null, documents: [] };
-      ctx._nav.showForm = cmd.form;
-      return "__PROCESS_DONE__";
+      // Builder stores Show Document as `{ cmd: "show", document }` (not showDocument).
+      if (cmd.document) {
+        ctx._nav.documents.push(cmd.document);
+        return null;
+      }
+      if (cmd.url) {
+        ctx._nav.url = cmd.url;
+        return "__PROCESS_DONE__";
+      }
+      if (cmd.form) {
+        ctx._nav.showForm = cmd.form;
+        return "__PROCESS_DONE__";
+      }
+      return null;
     }
     default:
       return null;
@@ -184,12 +196,19 @@ export function runCommands(commands, ctx) {
 export function runProcessByName(project, processName, ctx) {
   const proc = project.processes?.find((p) => p.name === processName);
   if (!proc) return { type: "none" };
-  ctx._nav = { showForm: null, documents: [] };
+  ctx._nav = { showForm: null, documents: [], url: null };
   runCommands(proc.commands, ctx);
-  if (ctx._nav.showForm) return { type: "form", form: ctx._nav.showForm };
+  // Legacy ProcessCommandList accumulates Show Document HTML, then may Show Form.
+  // Prefer documents when both are present — otherwise Form loops hide the Document.
   if (ctx._nav.documents.length) {
-    return { type: "documents", documents: [...ctx._nav.documents] };
+    return {
+      type: "documents",
+      documents: [...ctx._nav.documents],
+      thenForm: ctx._nav.showForm || null,
+    };
   }
+  if (ctx._nav.showForm) return { type: "form", form: ctx._nav.showForm };
+  if (ctx._nav.url) return { type: "url", url: ctx._nav.url };
   return { type: "none" };
 }
 

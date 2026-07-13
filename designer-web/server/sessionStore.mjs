@@ -45,7 +45,7 @@ export function resetSession(uniqueId, project) {
 }
 
 function seedDefaultRecords(project, session) {
-  if (project.name !== "DirtBowl") return;
+  if (!project || project.name !== "DirtBowl") return;
 
   if (!session.records.AdminSetup?.length) {
     session.records.AdminSetup = [

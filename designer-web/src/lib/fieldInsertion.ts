@@ -239,7 +239,25 @@ export function isFieldDragActive(): boolean {
 export function retainEditorFocusOnBlur(relatedTarget: EventTarget | null): boolean {
   if (isFieldDragActive()) return true;
   const el = relatedTarget as HTMLElement | null;
-  return Boolean(el?.closest?.(".fields-tree, .fields-palette"));
+  if (!el?.closest) return false;
+  // Fields panel, main menu (Insert → Function/Image), and Configure/Insert Function dialogs
+  // must not collapse the Form Text / Document editor mid-insert.
+  return Boolean(
+    el.closest(
+      [
+        ".fields-tree",
+        ".fields-palette",
+        ".menu-bar",
+        ".menu-drop",
+        ".menu-submenu",
+        ".modal-overlay",
+        ".modal-backdrop",
+        ".configure-function-dialog",
+        ".insert-function-dialog",
+        ".fib-validation-dialog",
+      ].join(", "),
+    ),
+  );
 }
 
 /**

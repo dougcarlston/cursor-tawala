@@ -28,6 +28,8 @@ export interface FunctionParamDef {
   name: string;
   description: string;
   required: boolean;
+  /** When true, omitted from Configure UI (still in catalog for export / round-trip). */
+  hidden?: boolean;
   choices?: FunctionParamChoice[];
   defaultValue?: string;
 }
@@ -136,34 +138,38 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "display-image",
     name: "DISPLAY IMAGE",
     description:
-      'Displays an image via URL — from a File Uploader field or any valid http:// / https:// image URL.',
+      "Shows an image from an http:// or https:// URL. To use an uploaded file, put a File Uploader on a form and drop that field here (File Uploader is greyed in this Designer until implemented — same gap as the Jan 2011 legacy build).",
     parameters: [
       {
         id: "source",
         type: "expression",
         name: "Image Source",
-        description: "Field, variable, or literal URL for the image. REQUIRED.",
+        description:
+          "Paste a full image URL (http:// or https://), or drop a field that holds a URL. Desktop file paths and drag-dropping image files are not supported here.",
         required: true,
       },
       {
         id: "width",
         type: "expression",
-        name: "Display width",
-        description: "Width in pixels. Leave blank for original width.",
+        name: "Display width (pixels)",
+        description:
+          "Optional width in whole pixels (e.g. 320 or 640 — not inches). Leave blank for the image’s natural size. Prefer setting width only so height scales and aspect ratio is preserved.",
         required: false,
       },
       {
         id: "height",
         type: "expression",
-        name: "Display height",
-        description: "Height in pixels. Leave blank for original height.",
+        name: "Display height (pixels)",
+        description:
+          "Optional. Leave blank so height scales from width (recommended). Hidden in Configure — set width only to avoid distorting the image.",
         required: false,
+        hidden: true,
       },
       {
         id: "alt_title",
         type: "expression",
         name: "Alternative name",
-        description: "Hover text in browsers.",
+        description: "Hover / accessibility text in browsers.",
         required: false,
       },
     ],
@@ -638,6 +644,15 @@ export function configMeetsRequirements(def: FunctionDef, config: FunctionConfig
     }
     const val = config[param.id];
     if (val === undefined || String(val).trim() === "") return false;
+  }
+  // Optional pixel fields (DISPLAY IMAGE width/height): blank or <<field>> or positive integer.
+  for (const id of ["width", "height"] as const) {
+    if (!(id in config) && !def.parameters.some((p) => p.id === id)) continue;
+    if (!def.parameters.some((p) => p.id === id)) continue;
+    const raw = String(config[id] ?? "").trim();
+    if (!raw) continue;
+    if (/^<<[^<>]+>>$/.test(raw)) continue;
+    if (!/^\d+$/.test(raw) || Number(raw) < 1 || Number(raw) > 8000) return false;
   }
   return true;
 }

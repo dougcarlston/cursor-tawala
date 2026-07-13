@@ -3,7 +3,7 @@
  * or by clicking an existing function token.
  */
 
-import { getActivePaletteEditor } from "./formattingPaletteContext";
+import { getActivePaletteEditor, type PaletteEditorHandle } from "./formattingPaletteContext";
 import { getFunctionDef, type FunctionConfig, type FunctionDef } from "./functionCatalog";
 import {
   findFunctionTokenAtSelection,
@@ -11,12 +11,18 @@ import {
   tokenRefFromElement,
   type FunctionTokenRef,
 } from "./functionTokens";
+import { useProjectStore } from "@/store/projectStore";
 
 export type FunctionPickerMode = "insert" | "edit";
 
 export interface FunctionPickerRequest {
   mode: FunctionPickerMode;
   existing?: FunctionTokenRef | null;
+  /**
+   * Snapshot of the Form Text / Document editor at open time. Required because opening
+   * the menu can blur the canvas; OK must still insert into this handle.
+   */
+  editor?: PaletteEditorHandle | null;
   /**
    * When set (e.g. structured Form Text function tables), Configure saves through this
    * instead of inserting/replacing a DOM token in the active palette editor.
@@ -61,12 +67,18 @@ export function clearFunctionPickerRequest(): void {
 /** Open the picker from palette **fx** or Insert → Function…. */
 export function openFunctionPickerFromEditor(): void {
   const handle = getActivePaletteEditor();
-  if (!handle) return;
+  if (!handle) {
+    useProjectStore
+      .getState()
+      .setStatus("Click inside a Form Text or Document first, then Insert → Function…");
+    return;
+  }
   handle.saveSelection();
   const existing = findFunctionTokenAtSelection(handle.el);
   requestFunctionPicker({
     mode: existing ? "edit" : "insert",
     existing,
+    editor: handle,
   });
 }
 
@@ -75,11 +87,17 @@ export function openFunctionPickerFromEditor(): void {
  */
 export function openDisplayImageConfigureFromEditor(): void {
   const handle = getActivePaletteEditor();
-  if (!handle) return;
+  if (!handle) {
+    useProjectStore
+      .getState()
+      .setStatus("Click inside a Form Text or Document first, then Insert → Image…");
+    return;
+  }
   handle.saveSelection();
   requestFunctionPicker({
     mode: "insert",
     configureFunctionId: "display-image",
+    editor: handle,
   });
 }
 
@@ -106,6 +124,25 @@ export function openFunctionTokenForEdit(
   sel?.removeAllRanges();
   sel?.addRange(range);
   saveSelection?.();
-  requestFunctionPicker({ mode: "edit", existing: ref });
+
+  const active = getActivePaletteEditor();
+  const editorHandle: PaletteEditorHandle =
+    active && active.el === editor
+      ? active
+      : {
+          el: editor,
+          commit: () => {},
+          saveSelection: saveSelection ?? (() => {}),
+          restoreSelection: () => {
+            const s = window.getSelection();
+            if (!s) return;
+            const r = document.createRange();
+            r.selectNode(token);
+            s.removeAllRanges();
+            s.addRange(r);
+          },
+        };
+
+  requestFunctionPicker({ mode: "edit", existing: ref, editor: editorHandle });
   return true;
 }

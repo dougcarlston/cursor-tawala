@@ -13,29 +13,37 @@ import {
 import { getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
-const HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
+let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
 let JAVA_URL = process.env.TAWALA_JAVA_URL || "";
 const DEV_USERS = { dev: "dev", designer: "designer" };
 
 async function resolveJavaBackend() {
   if (process.env.TAWALA_DEV_ONLY === "1") {
     JAVA_URL = "";
-    return;
-  }
-  if (!JAVA_URL) JAVA_URL = "http://localhost:8080";
-  try {
-    const res = await fetch(`${JAVA_URL.replace(/\/$/, "")}/login`, {
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-    console.log(`  Java backend OK at ${JAVA_URL} — deploy will use Tomcat`);
-  } catch (e) {
-    if (process.env.TAWALA_JAVA_URL) {
-      console.error(`  ERROR: TAWALA_JAVA_URL=${JAVA_URL} not reachable (${e.message})`);
-    } else {
-      console.log(`  Java not reachable at ${JAVA_URL} (${e.message}) — deploy uses dev runtime :5173`);
+  } else {
+    if (!JAVA_URL) JAVA_URL = "http://localhost:8080";
+    try {
+      const res = await fetch(`${JAVA_URL.replace(/\/$/, "")}/login`, {
+        signal: AbortSignal.timeout(5000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      console.log(`  Java backend OK at ${JAVA_URL} — deploy will use Tomcat`);
+    } catch (e) {
+      // Always fall back to the Node runtime when Tomcat is down. start-dev.sh sets
+      // TAWALA_JAVA_URL by default, so treating that as "must use Java" left Deploy
+      // and live URLs broken whenever :8080 was offline.
+      console.log(
+        `  Java not reachable at ${JAVA_URL} (${e.message}) — deploy uses Node runtime on :5173/:3001`,
+      );
       JAVA_URL = "";
     }
+  }
+
+  // Form action URLs must hit the Designer proxy (:5173), not Tomcat, when we are
+  // on the Node runtime. A stale TAWALA_DEV_HOST=…:8080 made Submit open a dead page.
+  if (!JAVA_URL && /:8080(?:\/|$)/.test(HOST)) {
+    HOST = "http://localhost:5173";
+    console.log(`  Corrected form URL base to ${HOST} (Node runtime)`);
   }
 }
 

@@ -246,17 +246,19 @@ Owner screenshot July 10, 2026. Owner: **simple**. Also reachable from **Image �
 | Field | Required | Help (focused on Image Source) |
 |-------|----------|--------------------------------|
 | **Image Source** | **REQUIRED** | Field, variable or literal URL. File Uploader or `http://` / `https://`. Link: *A compound expression*. (Repository XML name: **Image URL** / id `source`.) |
-| **Display width** | Optional | Pixels; blank = original width |
-| **Display height** | Optional | Pixels; blank = original height |
+| **Display width** | Optional | **Whole pixels** (not inches). Blank = natural width. Prefer width alone so height scales. |
+| **Display height** | Optional (hidden in browser Configure Jul 13) | Legacy still supports it; UI hides it so width-only scaling stays simple. |
 | **Alternative name** | Optional | Hover text in browsers |
 
 No column toolbar. **OK** greyed until Image Source filled.
+
+**Owner Jul 13:** Design canvas shows a `<<DISPLAY IMAGE(...)>>` token only. **Form Preview** shows a dashed placeholder box sized to width (and height if set; else banner height 80px) with the **image name** centered (Alternative name, else URL filename / field name — not the full URL). **Deploy** (Java) renders the real `<img>`. File Uploader (form item) is the path for user-uploaded images; greyed in browser Designer and missing on the Jan 2011 reference build. Owner: drag-in images are rare (headers); prefer editing graphics outside Designer, then paste a URL.
 
 Screenshot: [`assets/Function_-_Display_Image.png`](assets/Function_-_Display_Image.png)
 
 ### Browser gaps
 
-Configure fields match. Document HTML→XML: **not** emitted as real XML yet (comment).
+Configure fields match (Display height hidden — width-only so Deploy keeps aspect ratio). Document **and Form Text** HTML→XML: **emits** `<display-image>` (Jul 13). Empty Document canvas husks are omitted from Deploy XML (Jul 13) so they don’t stack as blank lines. Design mode is token-only. Form Preview: sized name-centered placeholder box (Jul 13; Design/Preview only — not Deploy). Deploy: live image.
 
 ---
 
@@ -275,7 +277,9 @@ Screenshot: [`assets/Function_-_Display_MCQ_Responses.png`](assets/Function_-_Di
 
 ### Browser gaps
 
-Catalog + Configure present. Document HTML→XML: **not** emitted yet (comment).
+Catalog + Configure present. Document **and Form Text** HTML→XML: **emits** `<display-mcq-label>` (Jul 13). Runtime shows labels only after that MCQ has answers in the submission (typically a later page or Document after Submit — blank on the unanswered form).
+
+Tables-category MCQ functions (RESPONSE TOTALS, RESPONSE BAR GRAPH, QUESTION CORRELATION TABLE, etc.): HTML→XML **emits** real elements (Jul 13); conditions infer `<form name>` from the Question field when no separate form param.
 
 ---
 
@@ -604,7 +608,7 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Function picker + Configure | Full repository | Picker + Configure shell; per-function depth varies (see MULTIPLE QUESTION LIST above) |
 | Image from PC / upload URL | Yes | No |
 | Insert Field (document) | Yes | Fields palette / tokens partial |
-| Document HTML → XML for functions | Full set | Partial — comments for most ids; `itemization-table` / `sum` / `record-count` / `project-email-count` emit real XML |
+| Document HTML → XML for functions | Full set | Partial — `display-image`, `display-mcq-label`, Tables MCQ functions, `itemization-table`, `sum`, `record-count`, `project-email-count` emit real XML (Jul 13) |
 
 ---
 

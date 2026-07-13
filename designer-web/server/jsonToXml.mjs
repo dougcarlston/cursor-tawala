@@ -140,6 +140,11 @@ function textContentToXml(content, style) {
     if (!content) {
       return `<paragraph indent="0" align="left">${TAB_MC}</paragraph>`;
     }
+    // Canvas Text items store WYSIWYG HTML (field/function tokens). Escape-as-text
+    // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
+    if (/<[a-z][\s\S]*>/i.test(content)) {
+      return documentHtmlToXml(content, escAttr, escText);
+    }
     const italic = style === "instructional";
     return `<paragraph indent="0" align="left">${TAB_MC}${fontXml(content, { italic })}</paragraph>`;
   }

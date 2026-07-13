@@ -12,6 +12,7 @@ import {
   insertFunctionTokenAtSelection,
   type FunctionTokenRef,
 } from "@/lib/functionTokens";
+import { useProjectStore } from "@/store/projectStore";
 
 type Step = "pick" | "configure";
 
@@ -70,20 +71,26 @@ export function FunctionPickerHost() {
   const close = () => clearFunctionPickerRequest();
 
   const commitToken = (def: FunctionDef, config: FunctionConfig) => {
+    // Width-only DISPLAY IMAGE: drop any leftover height so Deploy preserves aspect ratio.
+    const nextConfig =
+      def.id === "display-image" ? { ...config, height: "" } : config;
     const commitConfig = request?.commitConfig;
     if (commitConfig) {
-      commitConfig(def, config);
+      commitConfig(def, nextConfig);
       close();
       return;
     }
-    const handle = getActivePaletteEditor();
+    const handle = request?.editor ?? getActivePaletteEditor();
     if (!handle) {
+      useProjectStore
+        .getState()
+        .setStatus("Could not insert function — click inside Form Text or Document and try again");
       close();
       return;
     }
     handle.el.focus();
     handle.restoreSelection();
-    insertFunctionTokenAtSelection(handle.el, def, config, editRef);
+    insertFunctionTokenAtSelection(handle.el, def, nextConfig, editRef);
     handle.commit();
     close();
   };

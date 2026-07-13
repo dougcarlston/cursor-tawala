@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { BlankValidation, FibItem, FIB_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
@@ -84,8 +84,12 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const update = (patch: Partial<FibItem>) =>
     updateFormItem(formName, index, { ...item, ...patch });
 
+  // Expand when selected; collapse only when selection leaves (not on blur).
+  // Blur alone must not shrink the row — HTML5 reorder drag blurs contentEditable
+  // first, and collapsing mid-drag moves the hit box out from under the cursor.
   useEffect(() => {
     if (selected && !wasSelected.current) setEditing(true);
+    if (!selected && wasSelected.current) setEditing(false);
     wasSelected.current = selected;
   }, [selected]);
 
@@ -216,6 +220,8 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     if (next?.closest(".fib-validation-dialog")) return;
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("fib");
+    // Keep the expanded property strip while selected so reorder drag stays over the row.
+    if (selected) return;
     setEditing(false);
     setActiveBlank(-1);
   };
@@ -299,6 +305,45 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const isEmpty = plainPrompt.trim() === "";
   const currentBlank = activeBlank >= 0 ? blanks[activeBlank] : null;
   const stripEnabled = activeBlank >= 0 && !!currentBlank;
+
+  /** Idle Design canvas: underscore runs → read-only blank inputs (not literal `_`). */
+  const renderedPrompt = () => {
+    if (isEmpty) {
+      return <span className="fib-rendered-placeholder">{FIB_PLACEHOLDER}</span>;
+    }
+    const parts: ReactNode[] = [];
+    const re = /_+/g;
+    let lastIndex = 0;
+    let blankIdx = 0;
+    let match: RegExpExecArray | null;
+    while ((match = re.exec(plainPrompt)) !== null) {
+      if (match.index > lastIndex) {
+        parts.push(
+          <span key={`t-${lastIndex}`}>{plainPrompt.slice(lastIndex, match.index)}</span>,
+        );
+      }
+      const blank = blanks[blankIdx];
+      const size = Math.min(Math.max(blank?.length ?? match[0].length, 5), 120);
+      parts.push(
+        <input
+          key={`b-${match.index}`}
+          type="text"
+          className="fib-canvas-blank"
+          size={size}
+          style={blank?.height && blank.height > 1 ? { height: `${blank.height * 1.4}em` } : undefined}
+          readOnly
+          tabIndex={-1}
+          aria-label={blank?.alternateLabel ?? blank?.name ?? `blank ${blankIdx + 1}`}
+        />,
+      );
+      blankIdx++;
+      lastIndex = match.index + match[0].length;
+    }
+    if (lastIndex < plainPrompt.length) {
+      parts.push(<span key={`t-${lastIndex}`}>{plainPrompt.slice(lastIndex)}</span>);
+    }
+    return parts;
+  };
 
   return (
     <div
@@ -490,11 +535,9 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
             </div>
           </>
         ) : (
-          <div
-            key="fib-rendered"
-            className={`fib-rendered${isEmpty ? " placeholder" : ""}`}
-            dangerouslySetInnerHTML={{ __html: isEmpty ? FIB_PLACEHOLDER : prompt }}
-          />
+          <div key="fib-rendered" className={`fib-rendered${isEmpty ? " placeholder" : ""}`}>
+            {renderedPrompt()}
+          </div>
         )}
       </div>
       {validationDialogOpen && currentBlank?.validation && (

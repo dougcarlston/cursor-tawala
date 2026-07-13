@@ -19,7 +19,7 @@ import {
   selectionHasResettableFormatting,
 } from "@/lib/formattingPaletteContext";
 import { openFunctionTokenForEdit } from "@/lib/functionPicker";
-import { FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
+import { ensureFunctionTokenCaretGaps, FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
 
 interface Props {
   item: TextItem;
@@ -53,7 +53,7 @@ function caretRangeAtPoint(x: number, y: number): Range | null {
 function htmlToPlainText(html: string): string {
   const tmp = document.createElement("div");
   tmp.innerHTML = html;
-  return tmp.textContent ?? "";
+  return (tmp.textContent ?? "").replace(/\u200B/g, "");
 }
 
 /**
@@ -95,6 +95,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   // Heading, losing selection does NOT collapse — blur (below) exits editing but the body stays.
   useEffect(() => {
     if (selected && !wasSelected.current) setEditing(true);
+    if (!selected && wasSelected.current) setEditing(false);
     wasSelected.current = selected;
   }, [selected]);
 
@@ -108,6 +109,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     const el = editorRef.current;
     if (!el) return;
     el.innerHTML = content;
+    ensureFunctionTokenCaretGaps(el);
     el.focus();
     // Register with the palette immediately so B/I/U (and font/align) work on the first
     // click — same timing fix as FibCanvasRow / McqCanvasRow. setFormattingFocus alone
@@ -231,6 +233,8 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // Keep the editor mounted while dragging/double-clicking from the Fields panel.
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("text");
+    // Keep expanded while selected so form-item reorder drag does not collapse mid-drag.
+    if (selected) return;
     setEditing(false);
   };
 
@@ -324,6 +328,29 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               onMouseUp={() => {
                 rememberSelection();
                 syncPaletteFocus();
+              }}
+              onMouseDown={(e) => {
+                // Clicking empty padding below a lone function token: force caret after it.
+                if (e.target !== e.currentTarget) return;
+                const el = editorRef.current;
+                if (!el) return;
+                const tokens = el.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`);
+                const last = tokens[tokens.length - 1];
+                if (!(last instanceof HTMLElement)) return;
+                ensureFunctionTokenCaretGaps(el);
+                const landing = last.nextSibling;
+                const range = document.createRange();
+                if (landing?.nodeType === Node.TEXT_NODE) {
+                  range.setStart(landing, landing.textContent?.length ?? 0);
+                } else {
+                  range.setStartAfter(last);
+                }
+                range.collapse(true);
+                const sel = window.getSelection();
+                if (!sel) return;
+                sel.removeAllRanges();
+                sel.addRange(range);
+                savedRangeRef.current = range.cloneRange();
               }}
               onFocus={() => {
                 setActiveFieldTarget(insertFieldToken);

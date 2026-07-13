@@ -34,6 +34,7 @@ function stripTags(html) {
   return String(html ?? "")
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<[^>]+>/g, "")
+    .replace(/\u200B/g, "")
     .replace(/&nbsp;/gi, " ")
     .replace(/&lt;/g, "<")
     .replace(/&gt;/g, ">")
@@ -78,18 +79,37 @@ function inlineHtmlToXml(html, escAttr, escText) {
   let out = "";
   let rest = html;
   while (rest.length) {
-    const open = extractOpenTag(rest);
-    if (!open) {
-      out += escText(stripTags(rest));
+    // Leading plain text / ZWSP before the next tag (common after function insert).
+    const tagIdx = rest.search(/<[a-z][a-z0-9]*\b/i);
+    if (tagIdx < 0) {
+      const plain = stripTags(rest);
+      if (plain) out += escText(plain);
       break;
     }
-    const before = rest.slice(0, rest.indexOf(open.full));
-    if (before) out += escText(stripTags(before));
+    if (tagIdx > 0) {
+      const plain = stripTags(rest.slice(0, tagIdx));
+      if (plain) out += escText(plain);
+      rest = rest.slice(tagIdx);
+    }
+
+    const open = extractOpenTag(rest);
+    if (!open) {
+      const plain = stripTags(rest);
+      if (plain) out += escText(plain);
+      break;
+    }
 
     const closeRe = new RegExp(`</${open.name}>`, "i");
     const closeIdx = rest.search(closeRe);
     if (closeIdx < 0) {
-      out += escText(stripTags(rest));
+      // Self-closing / void tags (e.g. <br>) — no inner content.
+      if (/^(br|hr|img|sp)$/i.test(open.name)) {
+        if (open.name.toLowerCase() === "br") out += "\n";
+        rest = rest.slice(open.full.length);
+        continue;
+      }
+      const plain = stripTags(rest);
+      if (plain) out += escText(plain);
       break;
     }
     const closeLen = rest.slice(closeIdx).match(closeRe)[0].length;
@@ -106,7 +126,8 @@ function inlineHtmlToXml(html, escAttr, escText) {
         continue;
       }
       if (classes.includes("function-token")) {
-        out += functionTokenToXml(open.attrs, escAttr, escText);
+        // Legacy wraps display components in <font> inside paragraphs.
+        out += `<font>${functionTokenToXml(open.attrs, escAttr, escText)}</font>`;
         continue;
       }
       const style = parseStyleAttr(open.attrs);
@@ -151,12 +172,24 @@ function functionTokenToXml(attrs, escAttr, escText) {
   if (configM?.[1]) {
     try {
       config = JSON.parse(
-        configM[1].replace(/&quot;/g, '"').replace(/&amp;/g, "&"),
+        configM[1]
+          .replace(/&quot;/g, '"')
+          .replace(/&#39;/g, "'")
+          .replace(/&apos;/g, "'")
+          .replace(/&lt;/g, "<")
+          .replace(/&gt;/g, ">")
+          .replace(/&amp;/g, "&"),
       );
     } catch {
       config = {};
     }
   }
+
+  const bareField = (raw) => {
+    let s = String(raw ?? "").trim();
+    if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+    return s;
+  };
 
   switch (id) {
     case "record-count":
@@ -175,6 +208,102 @@ function functionTokenToXml(attrs, escAttr, escText) {
       );
     case "project-email-count":
       return `<project-email-count version="1"/>`;
+    case "display-image": {
+      const source = String(config.source ?? "").trim();
+      const width = String(config.width ?? "").trim();
+      // Height stays hidden in Configure; always export blank so runtime preserves aspect ratio.
+      const alt = String(config.alt_title ?? "").trim();
+      const expr = (raw) => {
+        const s = String(raw ?? "").trim();
+        if (s.startsWith("<<") && s.endsWith(">>")) {
+          return `<string field="${escAttr(s.slice(2, -2))}"/>`;
+        }
+        return `<string value="${escAttr(s)}"/>`;
+      };
+      return (
+        `<display-image version="1">` +
+        `<source>${expr(source)}</source>` +
+        `<width>${expr(width)}</width>` +
+        `<height><string value=""/></height>` +
+        `<alt_title>${expr(alt)}</alt_title>` +
+        `</display-image>`
+      );
+    }
+    case "display-mcq-label": {
+      const fieldName = bareField(config["field-name"]);
+      const display = String(config.display ?? "label_only").trim() || "label_only";
+      return (
+        `<display-mcq-label version="1">` +
+        `<field-name>${escText(fieldName)}</field-name>` +
+        `<display>${escText(display)}</display>` +
+        `</display-mcq-label>`
+      );
+    }
+    case "choice-tally-table": {
+      return (
+        `<choice-tally-table version="1">` +
+        `<field>${escText(bareField(config.field))}</field>` +
+        conditionsXml(config, escAttr) +
+        `</choice-tally-table>`
+      );
+    }
+    case "response-totals-table": {
+      const layout = String(config["layout-type"] ?? "vertical").trim() || "vertical";
+      return (
+        `<response-totals-table version="1">` +
+        `<layout-type>${escText(layout)}</layout-type>` +
+        `<field>${escText(bareField(config.field))}</field>` +
+        conditionsXml(config, escAttr) +
+        `</response-totals-table>`
+      );
+    }
+    case "question-correlation-table": {
+      return (
+        `<question-correlation-table version="1">` +
+        `<question-field-name>${escText(bareField(config["question-field-name"]))}</question-field-name>` +
+        `<display-field-name>${escText(bareField(config["display-field-name"]))}</display-field-name>` +
+        `<preferred-choice-field-name>${escText(bareField(config["preferred-choice-field-name"]))}</preferred-choice-field-name>` +
+        conditionsXml(config, escAttr) +
+        `</question-correlation-table>`
+      );
+    }
+    case "popular-choice-display": {
+      return (
+        `<popular-choice-display version="1">` +
+        `<rank>${escText(config.rank ?? "1")}</rank>` +
+        `<popular-choice-field-name>${escText(bareField(config["popular-choice-field-name"]))}</popular-choice-field-name>` +
+        conditionsXml(config, escAttr) +
+        `</popular-choice-display>`
+      );
+    }
+    case "popular-choice-count": {
+      return (
+        `<popular-choice-count version="1">` +
+        `<rank>${escText(config.rank ?? "1")}</rank>` +
+        `<popular-choice-field-name>${escText(bareField(config["popular-choice-field-name"]))}</popular-choice-field-name>` +
+        conditionsXml(config, escAttr) +
+        `</popular-choice-count>`
+      );
+    }
+    case "popular-choice-correlation-table": {
+      return (
+        `<popular-choice-correlation-table version="1">` +
+        `<rank>${escText(config.rank ?? "1")}</rank>` +
+        `<choice-available-field-name>${escText(bareField(config["choice-available-field-name"]))}</choice-available-field-name>` +
+        `<choice-preferred-field-name>${escText(bareField(config["choice-preferred-field-name"]))}</choice-preferred-field-name>` +
+        `<popular-choice-display-field-name>${escText(bareField(config["popular-choice-display-field-name"]))}</popular-choice-display-field-name>` +
+        conditionsXml(config, escAttr) +
+        `</popular-choice-correlation-table>`
+      );
+    }
+    case "simple-list": {
+      return (
+        `<simple-list version="1">` +
+        `<simple-list-field>${escText(bareField(config["simple-list-field"]))}</simple-list-field>` +
+        conditionsXml(config, escAttr) +
+        `</simple-list>`
+      );
+    }
     case "itemization-table": {
       const cols = config.column ?? [];
       const n = Number(config.numberOfColumns ?? cols.length) || cols.length;
@@ -201,8 +330,45 @@ function functionTokenToXml(attrs, escAttr, escText) {
   }
 }
 
+function formFromFieldRef(raw) {
+  let s = String(raw ?? "").trim();
+  if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  const parts = s.split(":").filter(Boolean);
+  if (parts.length >= 3 && /^record$/i.test(parts[0])) return parts[1];
+  if (parts.length >= 2) return parts[0];
+  return "";
+}
+
+/** Prefer explicit form-name; else infer from MCQ/blank field refs (Tables functions). */
+function inferFormName(config) {
+  const explicit = String(config["form-name"] ?? "").trim();
+  if (explicit) return explicit;
+  const candidates = [
+    config.field,
+    config["field-name"],
+    config["question-field-name"],
+    config["display-field-name"],
+    config["popular-choice-field-name"],
+    config["choice-available-field-name"],
+    config["choice-preferred-field-name"],
+    config["popular-choice-display-field-name"],
+    config["simple-list-field"],
+  ];
+  for (const c of candidates) {
+    const form = formFromFieldRef(c);
+    if (form) return form;
+  }
+  if (Array.isArray(config.conditionsRows)) {
+    for (const row of config.conditionsRows) {
+      const form = formFromFieldRef(row?.field);
+      if (form) return form;
+    }
+  }
+  return "";
+}
+
 function conditionsXml(config, escAttr, escText) {
-  const form = config["form-name"];
+  const form = inferFormName(config);
   const rows = config.conditionsRows;
   const formTag = form ? `<form name="${escAttr(form)}"/>` : "";
   if (Array.isArray(rows)) {
@@ -213,10 +379,11 @@ function conditionsXml(config, escAttr, escText) {
     const inner = filled
       .map((row) => {
         const op = row.op ?? "equals";
-        if (op === "isBlank" || op === "isNotBlank") {
-          return `<${op} field="${escAttr(row.field.trim())}"/>`;
+        const field = String(row.field).trim().replace(/^<<|>>$/g, "");
+        if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
+          return `<${op} field="${escAttr(field)}"/>`;
         }
-        return `<${op} field="${escAttr(row.field.trim())}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+        return `<${op} field="${escAttr(field)}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
       })
       .join("");
     return `<conditions>${formTag}${inner ? `<conditions>${inner}</conditions>` : ""}</conditions>`;
@@ -280,13 +447,23 @@ function blockHtmlToXml(blockHtml, escAttr, escText) {
     if (classes.includes("doc-placed-text") || style.position === "absolute") {
       const left = ptToTwips(style.left ?? "0");
       const top = ptToTwips(style.top ?? "0");
+      // Drop empty canvas husks — they become blank gaps on Deploy (Java ignores absolute top
+      // and lays paragraphs out in flow, so leftover empty lines stack vertically).
+      const meaningful = String(body ?? "")
+        .replace(/<sp\s*\/>/gi, "")
+        .replace(/\s+/g, "")
+        .trim();
+      if (!meaningful) return "";
       return (
         `<paragraph indent="0" align="${escAttr(align)}">` +
         `<division indent="0" align="${escAttr(align)}" left="${left}" top="${top}">` +
-        `<font>${body || "<sp/>"}</font></division></paragraph>`
+        `<font>${body}</font></division></paragraph>`
       );
     }
 
+    if (!String(body ?? "").replace(/<sp\s*\/>/gi, "").replace(/\s+/g, "").trim()) {
+      return "";
+    }
     return `<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`;
   }
 

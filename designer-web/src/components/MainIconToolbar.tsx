@@ -23,7 +23,13 @@ export interface MainIconToolbarProps {
  * Legacy main icon toolbar (`mainToolStrip`) — frequently-used actions below the menu bar,
  * above Project Explorer, to the left of the Formatting Palette.
  * Spec: DESIGNER_MENU_SPEC.md → “Main icon toolbar”.
+ *
+ * `zoneWidth` lines the strip up with PE (+ Items when Form/Process is active). It must never
+ * be narrower than the icons themselves — otherwise Undo/Redo spill over the Formatting
+ * Palette (Document focus has no Items column, so the zone is easy to undersize).
  */
+const MAIN_ICON_CONTENT_MIN_PX = 304;
+
 export function MainIconToolbar({
   onNewProject,
   onOpen,
@@ -42,7 +48,7 @@ export function MainIconToolbar({
   const editActive = shellEditContextActive();
   const canDeploy = canDeployProject();
   const canDelete = canDeleteSelection();
-  const width = Math.max(zoneWidth, 200);
+  const width = Math.max(zoneWidth, MAIN_ICON_CONTENT_MIN_PX, 200);
 
   const edit = (cmd: ShellEditCommand) => () => {
     runShellEditCommand(cmd);
@@ -61,7 +67,7 @@ export function MainIconToolbar({
       <ToolIcon tip="Open Project" onClick={onOpen}>
         <OpenProjectIcon />
       </ToolIcon>
-      <ToolIcon tip="Save Project" onClick={saveProjectToDownload}>
+      <ToolIcon tip="Save Project" onClick={() => void saveProjectToDownload()}>
         <SaveIcon />
       </ToolIcon>
       <ToolIcon tip="Deploy Project" onClick={onDeploy} disabled={!canDeploy}>

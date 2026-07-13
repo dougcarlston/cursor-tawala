@@ -19,6 +19,16 @@ This repo has three parallel tracks. Do not merge them in one change unless the 
 - **Source of truth**: `Tawala_Key_Documents/DESIGNER_*.md` + `TawalaDesigner/` C# code.
 - **Preview/deploy**: Local 5173/3001 and optionally 8080 — never www.tawala.com by default.
 
+### Design canvas vs Preview (priority)
+
+Within browser Designer work, priority order is:
+
+1. **Design canvas** (Form / Process / Document authoring UI) — primary product surface.
+2. **Deploy** — may share runtime/XML helpers with Preview when the owner is shipping end-user forms.
+3. **Preview** — convenience check only; lowest priority among the three.
+
+**Isolation:** Nothing implemented for Preview may spill into Design canvas, Form/Document row components, store/models, menus/toolbars, or shared client libs — except when the owner explicitly asks, or when the change is narrowly Deploy-oriented and Preview only reuses the same export/runtime path. Do not refactor Design to match Preview rendering. Do not “unify” Design idle/edit UX with Preview HTML. If Preview needs a parse/render quirk, keep it in `designer-web/server/` Preview/runtime paths (and Deploy XML if needed), not in `src/components/*CanvasRow*` or Design-only libs.
+
 ## 3. Registration / DirtBowl runtime parity (8080)
 
 - **Goal**: End-user forms on Tomcat match expected layout and behavior (e.g. DirtBowl Registration).
@@ -28,8 +38,9 @@ This repo has three parallel tracks. Do not merge them in one change unless the 
 ## Default priorities when unclear
 
 1. Owner is documenting UI → update specs, do not refactor code.
-2. Owner asks to implement a Designer feature → `designer-web/` + cite spec section.
+2. Owner asks to implement a Designer feature → **Design canvas first** in `designer-web/` + cite spec section; Preview only if needed for a Deploy check.
 3. Owner asks about Registration look/feel on 8080 → runtime XML/CSS/deploy, not palette UX.
+4. Owner asks about Preview bugs → fix Preview/runtime only; do not change Design canvas to accommodate Preview.
 
 ## Commits and PRs
 

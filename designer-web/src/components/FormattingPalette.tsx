@@ -1,4 +1,4 @@
-import { useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import type { WindowKind } from "@/store/projectStore";
 import {
@@ -130,6 +130,9 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
   const [alignMenuOpen, setAlignMenuOpen] = useState(false);
   const [tableMenuOpen, setTableMenuOpen] = useState(false);
   const [insertTableOpen, setInsertTableOpen] = useState(false);
+  /** Sticky face/size so the boxes update as soon as chosen — before typing rewrites the DOM. */
+  const [pendingFace, setPendingFace] = useState<string | null>(null);
+  const [pendingSize, setPendingSize] = useState<string | null>(null);
   const colorInputRef = useRef<HTMLInputElement>(null);
 
   const paletteVisible = activeKind === "form" || activeKind === "document";
@@ -144,6 +147,35 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
     () => getPaletteActiveStateSnapshot(canFormat),
     () => null,
   );
+
+  useEffect(() => {
+    if (pendingFace == null || !state) return;
+    if (state.fontFace === pendingFace) {
+      setPendingFace(null);
+      return;
+    }
+    // Caret moved onto text with a different explicit face — drop the sticky choice.
+    if (
+      state.fontFace !== MIXED_PALETTE_VALUE &&
+      state.fontFace !== DEFAULT_PALETTE_FONT_FACE
+    ) {
+      setPendingFace(null);
+    }
+  }, [state, pendingFace]);
+
+  useEffect(() => {
+    if (pendingSize == null || !state) return;
+    if (state.fontSize === pendingSize) {
+      setPendingSize(null);
+      return;
+    }
+    if (
+      state.fontSize !== MIXED_PALETTE_VALUE &&
+      state.fontSize !== String(DEFAULT_PALETTE_FONT_SIZE_PT)
+    ) {
+      setPendingSize(null);
+    }
+  }, [state, pendingSize]);
 
   if (!paletteVisible) return null;
 
@@ -188,14 +220,16 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
         className="formatting-palette-select"
         title="Font Face"
         disabled={!enabled("fontFace")}
-        value={state?.fontFace ?? DEFAULT_PALETTE_FONT_FACE}
+        value={pendingFace ?? state?.fontFace ?? DEFAULT_PALETTE_FONT_FACE}
         onMouseDown={saveEditorSelection}
         onChange={(e) => {
           if (e.target.value === MIXED_PALETTE_VALUE) return;
-          paletteFontFace(e.target.value);
+          const face = e.target.value;
+          setPendingFace(face);
+          paletteFontFace(face);
         }}
       >
-        {state?.fontFace === MIXED_PALETTE_VALUE && (
+        {(pendingFace ?? state?.fontFace) === MIXED_PALETTE_VALUE && (
           <option value={MIXED_PALETTE_VALUE}>Mixed</option>
         )}
         {FONT_FACES.map((face) => (
@@ -209,14 +243,16 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
         className="formatting-palette-select formatting-palette-select-narrow"
         title="Font Point Size"
         disabled={!enabled("fontSize")}
-        value={state?.fontSize ?? String(DEFAULT_PALETTE_FONT_SIZE_PT)}
+        value={pendingSize ?? state?.fontSize ?? String(DEFAULT_PALETTE_FONT_SIZE_PT)}
         onMouseDown={saveEditorSelection}
         onChange={(e) => {
           if (e.target.value === MIXED_PALETTE_VALUE) return;
-          paletteFontSize(e.target.value);
+          const size = e.target.value;
+          setPendingSize(size);
+          paletteFontSize(size);
         }}
       >
-        {state?.fontSize === MIXED_PALETTE_VALUE && (
+        {(pendingSize ?? state?.fontSize) === MIXED_PALETTE_VALUE && (
           <option value={MIXED_PALETTE_VALUE}>Mixed</option>
         )}
         {FONT_SIZES.map((size) => (

@@ -17,8 +17,14 @@ done
 if [ "${TAWALA_DEV_ONLY:-}" = "1" ]; then
   echo "TAWALA_DEV_ONLY=1 — deploy uses dev runtime on :5173"
   unset TAWALA_JAVA_URL
+  export TAWALA_DEV_HOST="${TAWALA_DEV_HOST:-http://localhost:5173}"
+  # Never keep a stale Tomcat base for form actions in local-only mode.
+  case "${TAWALA_DEV_HOST}" in
+    *:8080|*:8080/*) export TAWALA_DEV_HOST=http://localhost:5173 ;;
+  esac
 else
   export TAWALA_JAVA_URL="${TAWALA_JAVA_URL:-http://localhost:8080}"
+  export TAWALA_DEV_HOST="${TAWALA_DEV_HOST:-http://localhost:5173}"
   echo "Deploy target: $TAWALA_JAVA_URL"
 fi
 

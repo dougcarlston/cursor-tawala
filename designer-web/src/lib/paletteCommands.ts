@@ -317,10 +317,6 @@ function readFontSizeLabel(): string {
   const handle = getActivePaletteEditor();
   if (!handle) return String(DEFAULT_PALETTE_FONT_SIZE_PT);
 
-  if (isBlankTypingContext(handle.el)) {
-    return getTypingFormat(handle.el).fontSize;
-  }
-
   // Mixed highlight must not report as default — that blocks re-selecting default in the UI.
   if (selectionHasMixedFontSize()) return MIXED_PALETTE_VALUE;
 
@@ -329,23 +325,23 @@ function readFontSizeLabel(): string {
     return snapFontSizePt(pt);
   }
 
-  return String(DEFAULT_PALETTE_FONT_SIZE_PT);
+  // Blank line / collapsed caret after a palette change: show typing attrs, not "default".
+  return getTypingFormat(handle.el).fontSize;
 }
 
 function readFontFaceLabel(): string {
   const handle = getActivePaletteEditor();
   if (!handle) return DEFAULT_PALETTE_FONT_FACE;
 
-  if (isBlankTypingContext(handle.el)) {
-    return getTypingFormat(handle.el).fontFace;
-  }
-
   if (selectionHasMixedFontFace()) return MIXED_PALETTE_VALUE;
 
   const face = readExplicitFontFace(handle.el);
   if (face) return face;
 
-  return DEFAULT_PALETTE_FONT_FACE;
+  // No wrapping face on the caret (collapsed selection, empty line, or fontName did not
+  // wrap existing glyphs yet). Prefer the typing format set by the palette so the
+  // Font Face box shows the face the designer just chose.
+  return getTypingFormat(handle.el).fontFace;
 }
 
 function selectionHasMixedFontFace(): boolean {
@@ -445,6 +441,8 @@ function withEditor(fn: (handle: PaletteEditorHandle) => void, styleWithCss = tr
   }
   fn(handle);
   handle.commit();
+  // Keep the post-command range for the next palette click (dropdowns steal focus).
+  handle.saveSelection();
   refreshPaletteFocus(handle);
   emitPaletteActiveState();
 }

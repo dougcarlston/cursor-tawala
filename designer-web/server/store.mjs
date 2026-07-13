@@ -54,13 +54,18 @@ export function listProjects(userId) {
 
 export function getProjectByUniqueId(uniqueId) {
   ensureDir();
+  // Never scan session/cache dirs — session files use the same `{uniqueId}.json`
+  // name (e.g. `preview-designer.json`) and would be mistaken for projects.
+  // That made Form Preview Submit crash with TypeError on `project.name`.
+  const skipDirs = new Set(["sessions"]);
   for (const user of fs.readdirSync(DATA_DIR)) {
+    if (skipDirs.has(user)) continue;
     const dir = path.join(DATA_DIR, user);
     if (!fs.statSync(dir).isDirectory()) continue;
     const file = path.join(dir, `${uniqueId}.json`);
-    if (fs.existsSync(file)) {
-      return JSON.parse(fs.readFileSync(file, "utf8"));
-    }
+    if (!fs.existsSync(file)) continue;
+    const data = JSON.parse(fs.readFileSync(file, "utf8"));
+    if (data && typeof data === "object" && data.project) return data;
   }
   return null;
 }
@@ -77,5 +82,12 @@ export function putPreview(userId, project) {
   const dir = userDir(userId);
   const previewPath = path.join(dir, `_preview_${project.name.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
   fs.writeFileSync(previewPath, JSON.stringify({ userId, project }, null, 2));
+  // Form Preview embeds uniqueId `preview-{userId}` in the form action (/p/…).
+  // Keep a real project file under that id so Submit resolves (sessions/ is not a project).
+  const runtimeId = `preview-${userId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+  fs.writeFileSync(
+    path.join(dir, `${runtimeId}.json`),
+    JSON.stringify({ userId, project, uniqueId: runtimeId }, null, 2),
+  );
   return previewPath;
 }

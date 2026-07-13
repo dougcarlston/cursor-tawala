@@ -508,6 +508,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             const next = e.relatedTarget as HTMLElement | null;
             if (next?.closest(".formatting-palette")) return;
             if (next?.closest(".table-handles-overlay")) return;
+            if (next?.closest(".menu-bar, .menu-drop, .modal-overlay, .modal-backdrop, .configure-function-dialog, .insert-function-dialog")) {
+              return;
+            }
             if (formattingKind) clearFormattingFocus(formattingKind);
           }}
           onKeyUp={() => {

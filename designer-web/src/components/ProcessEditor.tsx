@@ -337,6 +337,11 @@ export function ProcessEditor({ processName }: Props) {
     if (processStatementPanel === "comment" && !selectedProcessCommandPath) {
       setCommentBuilder((prev) => (commentBuilderHasDraft(prev) ? prev : EMPTY_COMMENT_BUILDER));
     }
+    // Closing the Show panel drops multi-tab leftovers (Form/URL/etc.) so the next Add
+    // can't accidentally commit a Visit to Form 1 the designer never meant.
+    if (processStatementPanel === "none") {
+      setShowBuilder(EMPTY_SHOW_BUILDER);
+    }
   }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess, commands]);
 
   useEffect(() => {
@@ -411,9 +416,12 @@ export function ProcessEditor({ processName }: Props) {
     const cmd = buildShowCommand(showBuilder);
     if (isModifyShow && selectedProcessCommandPath) {
       setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      // Clear multi-tab draft so a Form selection can't linger and Add a second Show.
+      setShowBuilder(EMPTY_SHOW_BUILDER);
       return;
     }
     insertAtArrow(cmd);
+    setShowBuilder(EMPTY_SHOW_BUILDER);
   };
 
   const submitSend = () => {

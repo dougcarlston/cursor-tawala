@@ -36,4 +36,5 @@ Start browser Designer: `cd designer-web && npm run dev`.
 
 - **Legacy Designer** = C# desktop app; owner documents it from screenshots on an old PC (Jan 2011 build in places).
 - **Browser Designer** = `designer-web/`; goal is parity with legacy, not a new product design.
+- **Design canvas ≫ Preview** — authoring UI is the product; Preview is a secondary check. Preview/runtime changes must not spill into Design components (Deploy may share server export paths). See `tawala-work-scopes.mdc`.
 - **8080 runtime** = truth for end-user Registration HTML/CSS until browser Designer can express layouts natively.

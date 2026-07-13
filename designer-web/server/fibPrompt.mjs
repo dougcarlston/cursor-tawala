@@ -3,6 +3,7 @@
  * - `//` = new row
  * - `[hint]` = italic hint above next blank(s)
  * - `/` = label segment then blank (repeated)
+ * - `_+` = Designer underscore blanks (must become inputs, not visible underscores)
  */
 
 export function parseFibPrompt(prompt, blanks) {
@@ -16,6 +17,44 @@ export function parseFibPrompt(prompt, blanks) {
     parsed.push(row);
   }
   return parsed;
+}
+
+/** Plain text for underscore matching (rich Design prompts may carry light HTML). */
+function plainForUnderscores(rowStr) {
+  return String(rowStr ?? "")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/p>/gi, "\n")
+    .replace(/<[^>]+>/g, "")
+    .replace(/\u00a0/g, " ");
+}
+
+/**
+ * Split a freeform row on underscore runs into text + blank segments.
+ * Underscore characters themselves are never kept as visible text.
+ */
+export function segmentsFromUnderscorePrompt(rowStr, blanks, startIdx = 0) {
+  const plain = plainForUnderscores(rowStr);
+  const segments = [];
+  let bi = startIdx;
+  const re = /_+/g;
+  let last = 0;
+  let match;
+  while ((match = re.exec(plain)) !== null) {
+    if (match.index > last) {
+      const text = plain.slice(last, match.index);
+      if (text) segments.push({ type: "text", text });
+    }
+    if (bi < blanks.length) {
+      segments.push({ type: "blank", blank: blanks[bi], hint: null });
+      bi++;
+    }
+    last = match.index + match[0].length;
+  }
+  if (last < plain.length) {
+    const text = plain.slice(last);
+    if (text) segments.push({ type: "text", text });
+  }
+  return { segments, nextIdx: bi };
 }
 
 function parseFibRow(rowStr, blanks, bi) {
@@ -52,6 +91,22 @@ function parseFibRow(rowStr, blanks, bi) {
       }
     }
     return { segments, nextIdx: bi };
+  }
+
+  // Designer WYSIWYG: "Name ________" → "Name " + blank input (not underscores + box).
+  if (/_+/.test(plainForUnderscores(s))) {
+    const fromUnderscores = segmentsFromUnderscorePrompt(s, blanks, bi);
+    if (hints.length > 0) {
+      for (const seg of fromUnderscores.segments) {
+        if (seg.type === "blank" && seg.hint == null) {
+          seg.hint = hints.shift() ?? null;
+        }
+      }
+    }
+    if (trailing) {
+      fromUnderscores.segments.push({ type: "text", text: trailing });
+    }
+    return fromUnderscores;
   }
 
   if (s) segments.push({ type: "text", text: s });

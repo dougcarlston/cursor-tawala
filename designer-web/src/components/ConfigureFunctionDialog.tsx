@@ -130,7 +130,9 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
                 This function has no parameters. Click OK to insert it.
               </p>
             )}
-            {def.parameters.map((param) => (
+            {def.parameters
+              .filter((param) => !param.hidden)
+              .map((param) => (
               <ParamField
                 key={param.id}
                 param={param}
@@ -338,6 +340,12 @@ function ParamField({
     param.type === "tawala-mcq" ||
     param.type === "tawala-contents-field";
 
+  // MCQ / blank field params expect bare Form:Field in legacy XML (not <<…>> tokens).
+  const bareFieldRef =
+    param.type === "tawala-mcq" ||
+    param.type === "tawala-blank" ||
+    param.type === "tawala-contents-field";
+
   return (
     <label>
       <span>
@@ -349,6 +357,7 @@ function ParamField({
           value={String(config[param.id] ?? "")}
           onFocus={() => onFocus(param.id)}
           onValueChange={(v) => onPatch(param.id, v)}
+          bare={bareFieldRef}
         />
       ) : (
         <input
