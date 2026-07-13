@@ -60,7 +60,7 @@ Concrete gaps vs editing / round-tripping this project in `designer-web`:
 
 3. **Dynamic MCQ “Configure Function” deferred** — five stored choice lists (filters on SignUp Q1, Administrator Q4, ShowSignups Q3, etc.). Canvas supports `choiceSource: "stored"` but the configure dialog is stubbed (`McqCanvasRow.tsx`). Filters on `where` are not editable.
 
-4. **Itemization column display-conditions & table `where`** — ViewSheet / PlayerData columns gate Parent/Email/… and filter by sheet/player. Form Text badges edit header/field/form (`FunctionTableBadge.tsx`, `structuredItemizationEdit.ts`) but not per-column conditions or record filters. `jsonToXml.mjs` itemization export omits column display-conditions and nested `<conditions>` filters.
+4. **Itemization column display-conditions & table `where`** — ViewSheet / PlayerData columns gate Parent/Email/… and filter by sheet/player. Form Text badges edit header/field/form (`FunctionTableBadge.tsx`, `structuredItemizationEdit.ts`) but not per-column conditions or record filters in the UI. **Jul 13:** `jsonToXml.mjs` now emits nested `<conditions>` filters and column `<display-conditions>` (fixes “name appears in every sheet” on Deploy). UI editing of those filters still deferred.
 
 5. **Document invitations** — ViewHeader / PlayerHeader / ViewSignupReturn use `<invitation>`. Nodes are stored; Document WYSIWYG (`DocumentEditor.tsx` → `blocksToHtml`) drops invitation / itemization / font wrappers when loading rich blocks into HTML, so re-saving from the editor can lose them. Prefer leaving these docs as structured JSON until invitation insert lands.
 

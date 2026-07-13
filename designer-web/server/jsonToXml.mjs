@@ -47,8 +47,77 @@ function displayConditionsXml(cond) {
   }
   return (
     `<displayConditions>` +
-    `<${op} field="${field}"><string value="${escText(cond.value ?? "")}"/></${op}>` +
+    `<${op} field="${field}">${conditionValueXml(cond.value)}</${op}>` +
     `</displayConditions>`
+  );
+}
+
+/** Column-level conditions use hyphenated tag in legacy itemization XML. */
+function columnDisplayConditionsXml(cond) {
+  if (!cond?.field) return "";
+  const field = escAttr(cond.field);
+  const op = cond.op ?? "equals";
+  if (op === "isBlank" || op === "isNotBlank") {
+    return `<display-conditions><${op} field="${field}"/></display-conditions>`;
+  }
+  return (
+    `<display-conditions>` +
+    `<${op} field="${field}">${conditionValueXml(cond.value)}</${op}>` +
+    `</display-conditions>`
+  );
+}
+
+function itemizationHeaderXml(header) {
+  const h = String(header ?? "");
+  const m = h.trim().match(/^<<([^<>]+)>>$/);
+  if (m) {
+    return `<header><field name="${escAttr(m[1].trim())}"/></header>`;
+  }
+  return `<header><string value="${escText(h)}"/></header>`;
+}
+
+/**
+ * Record-list table used on Form Text and Documents.
+ * Legacy shape: forms + optional nested &lt;conditions&gt; filter (e.g. SheetChosen).
+ */
+function itemizationTableToXml(n) {
+  const cols = (n.columns ?? [])
+    .map((col) => {
+      return (
+        `<column>${itemizationHeaderXml(col.header)}` +
+        `<contents><field name="${escAttr(col.field)}"/></contents>` +
+        `${columnDisplayConditionsXml(col.displayCondition ?? col.displayConditions)}` +
+        `</column>`
+      );
+    })
+    .join("");
+
+  const formNames = new Set();
+  if (Array.isArray(n.forms)) {
+    for (const f of n.forms) if (f) formNames.add(f);
+  } else if (n.form) {
+    formNames.add(n.form);
+  }
+  // Column DCs often reference Setup:… — include that form like legacy PlayerData.
+  for (const col of n.columns ?? []) {
+    const dc = col.displayCondition ?? col.displayConditions;
+    const f = dc?.field;
+    if (typeof f === "string" && f.includes(":")) {
+      formNames.add(f.split(":")[0]);
+    }
+  }
+
+  const formTags = [...formNames]
+    .map((name) => `<form name="${escAttr(name)}"/>`)
+    .join("");
+  const filter = n.where ? `<conditions>${conditionToXml(n.where)}</conditions>` : "";
+  const nCols = (n.columns ?? []).length;
+  return (
+    `<itemization-table version="2">` +
+    `<show-print-control>false</show-print-control>` +
+    `<number-of-columns>${nCols}</number-of-columns>${cols}` +
+    `<conditions>${formTags}${filter}</conditions>` +
+    `</itemization-table>`
   );
 }
 
@@ -339,27 +408,8 @@ function richNodesToXml(nodes) {
         }
         case "choiceTallyTable":
           return `<choice-tally-table version="1"><field>${escAttr(n.field)}</field><conditions><form name="${escAttr(n.form)}"/></conditions></choice-tally-table>`;
-        case "itemizationTable": {
-          // Java rejects version="2" tables whose <header> is plain text; use expression
-          // form like legacy Designer (`<string value="…"/>`). Always emit v2.
-          const cols = (n.columns ?? [])
-            .map((col) => {
-              const heading = escText(col.header ?? "");
-              return (
-                `<column><header><string value="${heading}"/></header>` +
-                `<contents><field name="${escAttr(col.field)}"/></contents></column>`
-              );
-            })
-            .join("");
-          const nCols = (n.columns ?? []).length;
-          return (
-            `<itemization-table version="2">` +
-            `<show-print-control>false</show-print-control>` +
-            `<number-of-columns>${nCols}</number-of-columns>${cols}` +
-            `<conditions><form name="${escAttr(n.form)}"/></conditions>` +
-            `</itemization-table>`
-          );
-        }
+        case "itemizationTable":
+          return itemizationTableToXml(n);
         case "questionCorrelationTable":
           return `<question-correlation-table version="1"><question-field-name>${escAttr(n.questionField)}</question-field-name><display-field-name>${escAttr(n.displayField)}</display-field-name><preferred-choice-field-name>${escAttr(n.preferredField)}</preferred-choice-field-name><conditions><form name="${escAttr(n.form)}"/></conditions></question-correlation-table>`;
         default:
