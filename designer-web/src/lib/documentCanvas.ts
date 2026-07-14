@@ -530,17 +530,109 @@ export function getDocumentContentMetrics(editor: HTMLElement): {
   };
 }
 
+/** True when a placed line uses Center / Right / Justify (dataset or style). */
+export function placedBlockHasExplicitAlign(block: HTMLElement): boolean {
+  return readPlacedTextAlign(block) !== "left";
+}
+
+/**
+ * Keep `data-doc-align` in sync with `style.text-align` so remount / wrap-width
+ * restore Center/Right/Justify to the full margin box (not a shrink-wrapped left strip).
+ */
+export function normalizePlacedTextAlign(block: HTMLElement): DocumentAlign {
+  const align = readPlacedTextAlign(block);
+  if (align === "left") {
+    if (block.style.textAlign && block.style.textAlign !== "left") {
+      block.style.textAlign = "left";
+    }
+    if (block.dataset.docAlign) delete block.dataset.docAlign;
+  } else {
+    block.style.textAlign = align;
+    block.dataset.docAlign = align;
+  }
+  return align;
+}
+
+/**
+ * Leading whitespace that makes Align Left look indented. Indent via palette uses
+ * `margin-left` / `data-doc-indent` — never strip those; only text characters.
+ */
+const LEADING_ALIGN_WS = /^[ \t\u00a0\u200b]+/;
+
+/**
+ * Remove leading spaces/tabs/nbsp/ZWSP from the start of each soft line in a block
+ * so Align Left sits flush at the left edge (intentional Indent margin stays).
+ */
+export function stripLeadingWhitespaceForLeftAlign(block: HTMLElement): void {
+  stripLeadingAlignWhitespaceFrom(block.firstChild, block);
+  for (const br of Array.from(block.querySelectorAll("br"))) {
+    stripLeadingAlignWhitespaceFrom(br.nextSibling, block);
+  }
+}
+
+/** Next node after `node` still under `boundary` (climbs out of empty wrappers). */
+function nextSiblingWithin(node: Node, boundary: Node): Node | null {
+  let cur: Node | null = node;
+  while (cur && cur !== boundary) {
+    if (cur.nextSibling) return cur.nextSibling;
+    cur = cur.parentNode;
+  }
+  return null;
+}
+
+/** Walk from `start` (line head) until real content; strip LEADING_ALIGN_WS text nodes. */
+function stripLeadingAlignWhitespaceFrom(start: Node | null, boundary: HTMLElement): void {
+  let node: Node | null = start;
+  while (node && boundary.contains(node)) {
+    if (node instanceof HTMLElement) {
+      if (node.tagName === "BR") return;
+      if (
+        node.classList.contains(FIELD_TOKEN_CLASS) ||
+        node.classList.contains(FUNCTION_TOKEN_CLASS)
+      ) {
+        return;
+      }
+      if (node.firstChild) {
+        node = node.firstChild;
+        continue;
+      }
+      node = nextSiblingWithin(node, boundary);
+      continue;
+    }
+    if (node.nodeType === Node.TEXT_NODE) {
+      const text = node as Text;
+      const cleaned = text.data.replace(LEADING_ALIGN_WS, "");
+      if (cleaned.length === 0) {
+        const next = nextSiblingWithin(text, boundary);
+        text.remove();
+        node = next;
+        continue;
+      }
+      if (cleaned !== text.data) text.data = cleaned;
+      return;
+    }
+    node = nextSiblingWithin(node, boundary);
+  }
+}
+
 /**
  * Single-line Document alignment relative to left/right margins (not shrink-wrapped text-align alone).
  * Text wraps within the margin box; height growth packs lines below. Preserves indent level.
+ * Align Left also strips leading whitespace characters so the visual edge matches Left.
  */
 export function alignPlacedTextBlock(
   editor: HTMLElement,
   block: HTMLElement,
   align: DocumentAlign,
 ): void {
-  block.style.textAlign = align;
-  block.dataset.docAlign = align;
+  if (align === "left") {
+    stripLeadingWhitespaceForLeftAlign(block);
+    block.style.textAlign = "left";
+    delete block.dataset.docAlign;
+  } else {
+    block.style.textAlign = align;
+    block.dataset.docAlign = align;
+  }
   applyPlacedIndentLayout(editor, block);
   reflowPlacedLinesBelow(editor, block);
 }
@@ -636,8 +728,11 @@ function clipPlacedBlockWrapBeforeTables(editor: HTMLElement, block: HTMLElement
  * Centering does not leave a full-width invisible hit box across the table and its right.
  */
 export function ensurePlacedBlockWrapWidth(editor: HTMLElement, block: HTMLElement): void {
-  // Aligned / indented lines stay on the margin+indent grid (held Centering batch).
-  if (block.dataset.docAlign || (block.dataset.docIndent != null && block.dataset.docIndent !== "")) {
+  // Center/Right/Justify need the margin box for text-align to read as page alignment;
+  // style-only text-align (after remount without dataset) must take the same path.
+  normalizePlacedTextAlign(block);
+  const indented = block.dataset.docIndent != null && block.dataset.docIndent !== "";
+  if (placedBlockHasExplicitAlign(block) || indented) {
     applyPlacedIndentLayout(editor, block);
     clipPlacedBlockWrapBeforeTables(editor, block);
     applyPlacedBlockWrapStyles(block);
@@ -746,17 +841,44 @@ export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement):
 
 /**
  * Re-apply wrap widths for every placed line and resolve overlaps (window / MDI resize).
- * Tables keep owner X/Y when they do not collide with prose in the same column.
+ * Clamps left edges that overflow a narrower content box so text/fields/tables do not
+ * keep absolute anchors off-canvas. Tables keep owner X/Y when they do not collide with
+ * prose in the same column (no forced pack-under; intentional gaps / beside layout stay).
  */
 export function reflowAllPlacedLines(editor: HTMLElement): void {
+  normalizeDocumentUserTables(editor);
+  const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
+  const rightEdge = contentWidthPt - marginPt;
   const blocks = listDocumentLayoutItemsSorted(editor);
   if (!blocks.length) return;
   for (const block of blocks) {
+    const pos = getAbsolutePositionPt(block);
+    if (pos.left > rightEdge - 24) {
+      block.style.left = formatPt(Math.max(marginPt, rightEdge - 24));
+    } else if (
+      pos.left < marginPt - 0.5 &&
+      block.classList.contains(PLACED_TEXT_CLASS) &&
+      !placedBlockHasExplicitAlign(block) &&
+      (block.dataset.docIndent == null || block.dataset.docIndent === "")
+    ) {
+      // Free-placed lines that drifted left of the margin snap back on shrink.
+      block.style.left = formatPt(marginPt);
+    }
     if (block.classList.contains(PLACED_TEXT_CLASS)) {
       ensurePlacedBlockWrapWidth(editor, block);
     }
   }
+  // Force layout once after width changes, then collision-pack (no pull-up).
+  void editor.offsetHeight;
   resolveDocumentLayoutCollisions(editor);
+}
+
+/**
+ * Document window / browser resize entry point — same packing as `reflowAllPlacedLines`.
+ * Prefer this name from ResizeObserver / window `resize` hooks.
+ */
+export function reflowDocumentLayout(editor: HTMLElement): void {
+  reflowAllPlacedLines(editor);
 }
 
 /**
@@ -1058,7 +1180,22 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
   if (!block) return false;
 
   // Capture before extractContents moves the caret / empties the tail.
-  const typing = typingFormatForInsert(editor);
+  // Sticky Face/Size wins on Return (palette choice / syncTypingFormatFromCaret).
+  // Caret probe alone can mis-report host defaults (e.g. Times) and wipe Trebuchet 20.
+  const sticky = getTypingFormat(editor);
+  const fromCaret = typingFormatForInsert(editor);
+  const typing: TypingFormat = {
+    fontFace:
+      sticky.fontFace !== DEFAULT_PALETTE_FONT_FACE ? sticky.fontFace : fromCaret.fontFace,
+    fontSize:
+      sticky.fontSize !== String(DEFAULT_PALETTE_FONT_SIZE_PT)
+        ? sticky.fontSize
+        : fromCaret.fontSize,
+    bold: fromCaret.bold,
+    italic: fromCaret.italic,
+    underline: fromCaret.underline,
+    color: sticky.color ?? fromCaret.color,
+  };
   setTypingFormat(editor, typing);
 
   if (!range.collapsed) {
@@ -1088,9 +1225,14 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
 
   const newBlock = createPlacedTextBlockAt(left, nextTop);
   applyTypingFormatToPlacedBlock(newBlock, typing);
-  if (block.dataset.docAlign) {
-    newBlock.dataset.docAlign = block.dataset.docAlign;
-    newBlock.style.textAlign = block.style.textAlign;
+  // Continue paragraph chrome: align + indent survive Return.
+  const align = readPlacedTextAlign(block);
+  if (align !== "left") {
+    newBlock.dataset.docAlign = align;
+    newBlock.style.textAlign = align;
+  }
+  if (block.dataset.docIndent != null && block.dataset.docIndent !== "") {
+    newBlock.dataset.docIndent = block.dataset.docIndent;
   }
   if (tail && meaningfulText(tail.textContent)) {
     newBlock.appendChild(tail);
@@ -1402,6 +1544,7 @@ export function placeDocumentTextAtPoint(
     if (hitPlaced instanceof HTMLElement && editor.contains(hitPlaced)) {
       ensurePlacedBlockWrapWidth(editor, hitPlaced);
       focusPlacedBlockAtClientPoint(hitPlaced, clientX, clientY);
+      syncTypingFormatFromCaret(editor);
       reflowPlacedLinesBelow(editor, hitPlaced);
       return finish(hitPlaced, false);
     }
@@ -1419,6 +1562,7 @@ export function placeDocumentTextAtPoint(
   if (near) {
     ensurePlacedBlockWrapWidth(editor, near);
     focusPlacedBlockAtClientPoint(near, clientX, clientY);
+    syncTypingFormatFromCaret(editor);
     reflowPlacedLinesBelow(editor, near);
     return finish(near, false);
   }
@@ -1434,6 +1578,7 @@ export function placeDocumentTextAtPoint(
     if (after) {
       ensurePlacedBlockWrapWidth(editor, after);
       focusPlacedBlockAtClientPoint(after, clientX, clientY);
+      syncTypingFormatFromCaret(editor);
       reflowPlacedLinesBelow(editor, after);
       return finish(after, false);
     }
@@ -1441,6 +1586,7 @@ export function placeDocumentTextAtPoint(
       const sel = window.getSelection();
       sel?.removeAllRanges();
       sel?.addRange(usableRange);
+      syncTypingFormatFromCaret(editor);
     }
     return finish(null, false);
   }
@@ -1453,6 +1599,7 @@ export function placeDocumentTextAtPoint(
     if (after && placedBlockAcceptsClientPoint(after, clientX, clientY)) {
       ensurePlacedBlockWrapWidth(editor, after);
       focusPlacedBlockAtClientPoint(after, clientX, clientY);
+      syncTypingFormatFromCaret(editor);
       reflowPlacedLinesBelow(editor, after);
       return finish(after, false);
     }
@@ -1609,15 +1756,48 @@ export function focusPlacedBlockAtClientPoint(
   return focusPlacedBlockEnd(block);
 }
 
+/**
+ * Prefer the end of the last meaningful text node so click-away → continue typing
+ * inherits that run’s face/size (caret after a `</span>` lands on the block and
+ * picks up Arial/12 from the surface).
+ */
+function lastMeaningfulTextIn(block: HTMLElement): Text | null {
+  const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+  let last: Text | null = null;
+  let node = walker.nextNode();
+  while (node) {
+    const text = node as Text;
+    if ((text.textContent ?? "").replace(/\u00a0|\u200b/g, "").length) {
+      last = text;
+    }
+    node = walker.nextNode();
+  }
+  return last;
+}
+
 export function focusPlacedBlockEnd(block: HTMLElement): Range | null {
   const sel = window.getSelection();
   if (!sel) return null;
   const range = document.createRange();
-  range.selectNodeContents(block);
-  range.collapse(false);
+  const lastText = lastMeaningfulTextIn(block);
+  if (lastText) {
+    range.setStart(lastText, lastText.data.length);
+    range.collapse(true);
+  } else {
+    range.selectNodeContents(block);
+    range.collapse(false);
+  }
   sel.removeAllRanges();
   sel.addRange(range);
   return range;
+}
+
+/**
+ * After click-away / Return / mid-paragraph re-entry: refresh sticky typing attrs from
+ * the caret run so Face/Size banner + next insert match (and do not revert to Arial/12).
+ */
+export function syncTypingFormatFromCaret(editor: HTMLElement): void {
+  setTypingFormat(editor, typingFormatForInsert(editor));
 }
 
 function rangeAtEdgeOfBlock(block: HTMLElement, edge: "start" | "end"): boolean {

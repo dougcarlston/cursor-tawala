@@ -46,6 +46,7 @@ import {
   readPlacedTextAlign,
   reflowAllPlacedLines,
   reflowPlacedLinesBelow,
+  stripLeadingWhitespaceForLeftAlign,
 } from "./documentCanvas";
 import {
   blockContainer,
@@ -1758,6 +1759,34 @@ function ensureFormIndentBlock(editor: HTMLElement, start: Node): HTMLElement | 
   return wrap;
 }
 
+/** Form rich-text paragraph/div blocks that intersect the selection (not Document placed lines). */
+function listFormBlocksInSelection(editor: HTMLElement): HTMLElement[] {
+  // Document canvas uses `.doc-placed-text` — never treat those as Form blocks.
+  if (editor.querySelector(`.${PLACED_TEXT_CLASS}`)) return [];
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || !editor.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+    return [];
+  }
+  const range = sel.getRangeAt(0);
+  const top = Array.from(editor.children).filter(
+    (n): n is HTMLElement =>
+      n instanceof HTMLElement &&
+      (n.tagName === "P" || n.tagName === "DIV" || n.tagName === "LI") &&
+      !n.closest("table.user"),
+  );
+  const hit = top.filter((block) => {
+    try {
+      return range.intersectsNode(block);
+    } catch {
+      return false;
+    }
+  });
+  if (hit.length) return hit;
+  // Flat caret with no block yet — wrap the soft line so align sticks.
+  const wrapped = ensureFormIndentBlock(editor, range.startContainer);
+  return wrapped ? [wrapped] : [];
+}
+
 export function paletteAlign(dir: PaletteActiveState["align"]): void {
   withEditor((handle) => {
     const cssAlign = dir === "justify" ? "justify" : dir;
@@ -1780,6 +1809,16 @@ export function paletteAlign(dir: PaletteActiveState["align"]): void {
         alignPlacedTextBlock(handle.el, block, dir);
       }
       reflowAllPlacedLines(handle.el);
+      return;
+    }
+    const formBlocks = listFormBlocksInSelection(handle.el);
+    if (formBlocks.length > 0) {
+      for (const block of formBlocks) {
+        if (dir === "left") stripLeadingWhitespaceForLeftAlign(block);
+        block.style.textAlign = cssAlign;
+        if (dir === "left") delete block.dataset.docAlign;
+        else block.dataset.docAlign = dir;
+      }
       return;
     }
     document.execCommand(ALIGN_COMMAND[dir]);
@@ -2581,6 +2620,16 @@ export function readPaletteActiveState(): PaletteActiveState {
   const placed = handle ? findPlacedTextBlockAtCaret(handle.el) : null;
   if (placed) {
     align = readPlacedTextAlign(placed);
+  } else if (handle) {
+    const formBlocks = listFormBlocksInSelection(handle.el);
+    if (formBlocks.length === 1) {
+      align = readPlacedTextAlign(formBlocks[0]!);
+    } else if (formBlocks.length > 1) {
+      const first = readPlacedTextAlign(formBlocks[0]!);
+      align = formBlocks.every((b) => readPlacedTextAlign(b) === first) ? first : "left";
+    } else if (query("justifyCenter")) align = "center";
+    else if (query("justifyRight")) align = "right";
+    else if (query("justifyFull")) align = "justify";
   } else if (query("justifyCenter")) align = "center";
   else if (query("justifyRight")) align = "right";
   else if (query("justifyFull")) align = "justify";

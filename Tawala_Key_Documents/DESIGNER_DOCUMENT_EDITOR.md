@@ -340,6 +340,19 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 13. Type a paragraph → **Return twice** (visible blank line) → type a second paragraph → edit anywhere in the second paragraph → the blank-line gap between the two **must remain** (intentional empty placed line / flow paragraph is not collapsed or pruned).
 
+**Paragraph alignment / Center (July 14 leftover #6)**
+
+13a. Soft-refresh. Document placed line → Align **Center** (palette) → glyphs sit centered between left/right margins (not a left-stripped shrink box). **Left** / **Right** / **Justify** still work. **Return** on a centered line → new line stays centered. Soft-refresh / leave-return keeps Center. Table cell Align Center still affects only highlighted cells (smoke #15).
+13a2. Soft-refresh. Placed line (or Form Text) with **leading spaces/tabs** → Align **Left** → glyphs flush at left edge (leading whitespace characters gone). **Center** / **Right** still OK. Palette **Indent** (`margin-left` / `data-doc-indent`) still indents — Align Left must not clear that margin.
+
+**Window / MDI resize reflow (July 14 leftover #7)**
+
+13b. Soft-refresh. Document with wrapping placed text + a table beside (or with an intentional ✥ gap) → narrow the Document/MDI window (or browser). Text re-wraps; same-column overlaps clear; table does **not** snap under side-by-side prose; intentional vertical gap under text is kept.
+
+**Continue after break (July 14 leftover #8)**
+
+13c. Soft-refresh. Set **Trebuchet** + **20** → type a sentence → click away (another window / blank) → click back at the **end** of the sentence → keep typing → same face/size on the **same** placed line (no new wrong-margin/font block). Mid-sentence after a field chip still continues on one line (smoke #6).
+
 **Tables (July 14)**
 
 14. Caret inside a table → **Insert Table** greyed / no-op tip (“Cannot insert a table inside another table”).
@@ -375,4 +388,4 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 ---
 
-*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b).*
+*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b).*

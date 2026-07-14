@@ -393,7 +393,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onMouseUp={() => {
                 const el = editorRef.current;
-                if (el) handleTableCellPointerUp(el);
+                if (el) {
+                  handleTableCellPointerUp(el);
+                  // Click-away → continue: sticky Face/Size follows the caret run.
+                  setTypingFormat(el, typingFormatForInsert(el));
+                }
                 rememberSelection();
                 syncPaletteFocus();
               }}

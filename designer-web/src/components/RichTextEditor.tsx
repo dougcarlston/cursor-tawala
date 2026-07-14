@@ -40,7 +40,9 @@ import {
   placeDocumentTextAtPoint,
   PLACED_TEXT_CLASS,
   reflowAllPlacedLines,
+  reflowDocumentLayout,
   ensureDocumentTableLayout,
+  syncTypingFormatFromCaret,
   resolveDocumentFieldDropTarget,
   pruneEmptyPlacedTextBlocks,
   preserveBlankPlacedLines,
@@ -339,7 +341,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       } else {
         lastWidth = width;
       }
-      reflowAllPlacedLines(el);
+      reflowDocumentLayout(el);
       window.clearTimeout(settleTimer);
       settleTimer = window.setTimeout(() => {
         commitFromSurfaceRef.current(el);
@@ -349,6 +351,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const observer =
       typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => pack()) : null;
     observer?.observe(el);
+    // MDI window chrome may resize the editor without always notifying the surface.
+    const mdi = el.closest(".mdi-window, .document-editor");
+    if (mdi instanceof HTMLElement && mdi !== el) observer?.observe(mdi);
     // MDI / browser window resize can change layout without a reliable surface
     // ResizeObserver tick in some Chromium cases — pack on window resize too.
     window.addEventListener("resize", pack);
@@ -595,6 +600,10 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             if (formattingKind) clearFormattingFocus(formattingKind);
           }}
           onKeyUp={() => {
+            const el = surfaceRef.current;
+            if (el && formattingKind === "document") {
+              syncTypingFormatFromCaret(el);
+            }
             rememberSelection();
             syncPaletteFocus();
           }}
@@ -746,6 +755,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               clampDocumentSelectionToLayoutIsland(el);
             }
             rememberSelection();
+            if (el && formattingKind === "document") {
+              syncTypingFormatFromCaret(el);
+            }
             syncPaletteFocus();
             selectAnchorRef.current = null;
             const pointer = documentPointerRef.current;
