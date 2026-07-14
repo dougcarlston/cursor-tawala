@@ -10,7 +10,7 @@ import {
 } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { renderDocumentsPage } from "./documentRenderer.mjs";
-import { fibRowFields, fibRowLabel, fibUsesLeftLabels, parseFibPrompt } from "./fibPrompt.mjs";
+import { fibRowFields, fibRowLabel, fibUsesLeftLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
 import { getThemeCss, themeBodyClass } from "./themes/index.mjs";
 import {
   buildFormSegments,
@@ -92,21 +92,40 @@ function renderFib(item, ctx) {
   const rows = parseFibPrompt(prompt, blanks);
   const left = fibUsesLeftLabels(item.style);
 
+  // Legacy topLabels (SignupSheets): label text + separate inputs, no Design `_` runs.
+  // Design-authored prompts with `_` must use parseFibPrompt below — never dump
+  // underscore runs as fib-intro beside the boxes (Batch 3: boxes replace `_`).
   if (item.style === "topLabels") {
-    const intro =
-      prompt.trim() && !prompt.includes("//") && !prompt.includes("/") ? prompt.trim() : "";
-    const fieldRows = blanks;
-    const rowHtml = fieldRows
-      .map((blank) => {
-        const label = blank.displayLabel?.trim() || "";
-        return `<div class="fib-row fib-top-label">
+    const plainPrompt = normalizeFibPromptSource(prompt)
+      .replace(/<[^>]+>/g, "")
+      .trim();
+    const hasUnderscoreRuns = /_+/.test(plainPrompt);
+    if (!hasUnderscoreRuns) {
+      const introRaw =
+        prompt.trim() && !prompt.includes("//") && !prompt.includes("/") ? prompt.trim() : "";
+      const intro = introRaw
+        ? normalizeFibPromptSource(introRaw)
+            .replace(/<[^>]+>/g, "")
+            .replace(/_+/g, "")
+            .replace(/\s+/g, " ")
+            .trim()
+        : "";
+      const fieldRows = blanks;
+      const rowHtml = fieldRows
+        .map((blank) => {
+          const label = blank.displayLabel?.trim() || "";
+          return `<div class="fib-row fib-top-label">
           ${label ? `<div class="fib-top-label-text">${esc(label)}</div>` : ""}
           <div class="fib-top-label-field"><input type="text" class="text" name="${esc(`${item.label}:${blank.name}`)}" size="${Math.max(blank.length ?? 20, 5)}" readonly="readonly" /></div>
         </div>`;
-      })
-      .join("");
-    const introHtml = intro ? `<p class="fib-intro">${esc(intro)}</p>` : "";
-    return `<div class="fib fib-style-topLabels" id="item-${esc(itemKey(item))}">${introHtml}${rowHtml}</div>`;
+        })
+        .join("");
+      const introHtml =
+        intro && !/underscores create blanks/i.test(intro)
+          ? `<p class="fib-intro">${esc(intro)}</p>`
+          : "";
+      return `<div class="fib fib-style-topLabels" id="item-${esc(itemKey(item))}">${introHtml}${rowHtml}</div>`;
+    }
   }
 
   const rowHtml = rows
@@ -123,19 +142,29 @@ function renderFib(item, ctx) {
         .join("");
 
       const trailHtml = trailing
-        .map((t) => `<span class="fib-inline-text">${esc(t.text)}</span>`)
+        .map((t) => {
+          const text = String(t.text ?? "").replace(/_+/g, "");
+          if (!text) return "";
+          return `<span class="fib-inline-text">${esc(text)}</span>`;
+        })
         .join("");
 
       if (left && label) {
+        const cleanLabel = String(label).replace(/_+/g, "");
         return `<div class="fib-row">
-          <span class="fib-label">${esc(label)}:</span>
+          <span class="fib-label">${esc(cleanLabel)}:</span>
           <span class="fib-fields">${fieldHtml}${trailHtml}</span>
         </div>`;
       }
 
       const inline = row.segments
         .map((seg) => {
-          if (seg.type === "text") return `<span class="fib-inline-text">${esc(seg.text)}</span>`;
+          if (seg.type === "text") {
+            // Never paint leftover Design underscores — blanks are the inputs.
+            const text = String(seg.text ?? "").replace(/_+/g, "");
+            if (!text) return "";
+            return `<span class="fib-inline-text">${esc(text)}</span>`;
+          }
           if (seg.type === "blank") {
             const hint = seg.hint ? `<em class="fib-hint">${esc(seg.hint)}</em>` : "";
             return `<span class="fib-field">${hint}${blankInput(item, seg.blank, ctx)}</span>`;
@@ -147,6 +176,8 @@ function renderFib(item, ctx) {
     })
     .join("");
 
+  // Any blanks not matched by underscore runs (e.g. shorter prompt than blanks[]) —
+  // do not dump orphan boxes; Design/Preview stay in sync with prompt underscores.
   return `<div class="fib fib-style-${esc(item.style || "default")}" id="item-${esc(itemKey(item))}">${rowHtml}</div>`;
 }
 

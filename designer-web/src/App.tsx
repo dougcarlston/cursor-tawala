@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { MenuBar } from "./components/MenuBar";
 import { MainIconToolbar } from "./components/MainIconToolbar";
@@ -14,10 +14,43 @@ import { DeployDialog } from "./components/DeployDialog";
 import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import type { TemplateEntry } from "@/templates/catalog";
-import { clearProjectFileHandle, openProjectFromDisk } from "@/lib/shellCommands";
+import {
+  clearProjectFileHandle,
+  installDesignerShellGuards,
+  openProjectFromDisk,
+  runShellDelete,
+} from "@/lib/shellCommands";
 
 const ITEMS_COLUMN_WIDTH = 76 + 1; // .designer-items + border
 const SPLITTER_WIDTH = 4;
+/** Browser localStorage — panel widths are per-user/machine, not saved into project JSON. */
+const PANEL_WIDTHS_KEY = "tawala.designer.panelWidths";
+const DEFAULT_LEFT_WIDTH = 220;
+const DEFAULT_RIGHT_WIDTH = 280;
+
+function loadPanelWidths(): { left: number; right: number } {
+  try {
+    const raw = localStorage.getItem(PANEL_WIDTHS_KEY);
+    if (!raw) return { left: DEFAULT_LEFT_WIDTH, right: DEFAULT_RIGHT_WIDTH };
+    const parsed = JSON.parse(raw) as { left?: unknown; right?: unknown };
+    const left = Number(parsed.left);
+    const right = Number(parsed.right);
+    return {
+      left: Number.isFinite(left) ? Math.max(56, Math.min(left, 640)) : DEFAULT_LEFT_WIDTH,
+      right: Number.isFinite(right) ? Math.max(60, Math.min(right, 640)) : DEFAULT_RIGHT_WIDTH,
+    };
+  } catch {
+    return { left: DEFAULT_LEFT_WIDTH, right: DEFAULT_RIGHT_WIDTH };
+  }
+}
+
+function savePanelWidths(left: number, right: number): void {
+  try {
+    localStorage.setItem(PANEL_WIDTHS_KEY, JSON.stringify({ left, right }));
+  } catch {
+    /* private mode / quota — ignore */
+  }
+}
 
 export default function App() {
   const openWindows = useProjectStore((s) => s.openWindows);
@@ -25,25 +58,32 @@ export default function App() {
   const importJson = useProjectStore((s) => s.importJson);
   const loadTemplate = useProjectStore((s) => s.loadTemplate);
   const deploy = useProjectStore((s) => s.deploy);
-  const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const fileRef = useRef<HTMLInputElement>(null);
   const [showNewProject, setShowNewProject] = useState(false);
-  const [leftWidth, setLeftWidth] = useState(220);
-  const [rightWidth, setRightWidth] = useState(280);
+  const [leftWidth, setLeftWidth] = useState(() => loadPanelWidths().left);
+  const [rightWidth, setRightWidth] = useState(() => loadPanelWidths().right);
+
+  // Re-assert boot guards after Fast Refresh of App (idempotent in shellCommands).
+  useEffect(() => {
+    installDesignerShellGuards();
+  }, []);
 
   // Project Explorer: drag its right edge. Min ≈ icon-toolbar strip; leave room for Fields.
   const startResizeLeft = (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     const startX = e.clientX;
     const startWidth = leftWidth;
+    let latest = leftWidth;
     const onMove = (ev: PointerEvent) => {
-      const next = startWidth + (ev.clientX - startX);
-      setLeftWidth(Math.max(56, Math.min(next, window.innerWidth - rightWidth - 280)));
+      const next = Math.max(56, Math.min(startWidth + (ev.clientX - startX), window.innerWidth - rightWidth - 280));
+      latest = next;
+      setLeftWidth(next);
     };
     const onUp = () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       document.body.style.cursor = "";
+      savePanelWidths(latest, rightWidth);
     };
     document.body.style.cursor = "ew-resize";
     window.addEventListener("pointermove", onMove);
@@ -55,14 +95,17 @@ export default function App() {
     e.preventDefault();
     const startX = e.clientX;
     const startWidth = rightWidth;
+    let latest = rightWidth;
     const onMove = (ev: PointerEvent) => {
-      const next = startWidth + (startX - ev.clientX);
-      setRightWidth(Math.max(60, Math.min(next, window.innerWidth - leftWidth - 280)));
+      const next = Math.max(60, Math.min(startWidth + (startX - ev.clientX), window.innerWidth - leftWidth - 280));
+      latest = next;
+      setRightWidth(next);
     };
     const onUp = () => {
       window.removeEventListener("pointermove", onMove);
       window.removeEventListener("pointerup", onUp);
       document.body.style.cursor = "";
+      savePanelWidths(leftWidth, latest);
     };
     document.body.style.cursor = "ew-resize";
     window.addEventListener("pointermove", onMove);
@@ -121,7 +164,7 @@ export default function App() {
     onNewProject: () => setShowNewProject(true),
     onOpen: () => void onOpen(),
     onDeploy: () => void deploy(),
-    onDelete: () => deleteSelectedFormItem(),
+    onDelete: () => runShellDelete(),
   };
 
   return (

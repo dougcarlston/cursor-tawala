@@ -10,7 +10,8 @@ import {
   findPlacedTextBlockAtCaret,
 } from "./documentCanvas";
 import { getActivePaletteEditor } from "./formattingPaletteContext";
-import { getTypingFormat, isBlankTypingContext } from "./paletteTypingFormat";
+import { isBlankTypingContext, typingFormatForInsert } from "./paletteTypingFormat";
+import { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
 
 export const FIELD_TOKEN_CLASS = "field-token";
 export const FIELD_NAME_ATTR = "data-field-name";
@@ -42,20 +43,36 @@ function placeTokenAtSelection(span: HTMLElement): void {
     range.deleteContents();
   }
   range.insertNode(span);
-  const after = document.createRange();
-  after.setStartAfter(span);
-  after.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(after);
+  // Without a text landing after contenteditable=false, browsers often open a new
+  // block (split the .doc-placed-text <p>) on the next keystroke.
+  placeCaretAfterToken(span);
 }
 
 /** Insert a field token span at the current selection, replacing any selected content. */
 export function insertFieldTokenAtSelection(name: string): void {
+  const sel = window.getSelection();
+  // Double-click / accidental insert while a field token is selected: keep that token.
+  if (sel?.rangeCount) {
+    const range = sel.getRangeAt(0);
+    const anchor =
+      range.commonAncestorContainer instanceof Element
+        ? range.commonAncestorContainer
+        : range.commonAncestorContainer.parentElement;
+    const existing = anchor?.closest?.(`.${FIELD_TOKEN_CLASS}`);
+    if (existing instanceof HTMLElement) {
+      const keep = document.createRange();
+      keep.selectNode(existing);
+      sel.removeAllRanges();
+      sel.addRange(keep);
+      return;
+    }
+  }
+
   const span = createFieldTokenElement(name);
 
   const handle = getActivePaletteEditor();
   if (handle) {
-    const typing = getTypingFormat(handle.el);
+    const typing = typingFormatForInsert(handle.el);
     const placed = findPlacedTextBlockAtCaret(handle.el);
     if (placed && isBlankTypingContext(handle.el)) {
       applyTypingFormatToPlacedBlock(placed, typing);
@@ -74,11 +91,23 @@ export function moveFieldTokenToSelection(token: HTMLElement): void {
 /** Ensure loaded / upgraded tokens are draggable for in-editor move. */
 export function ensureFieldTokensDraggable(root: ParentNode): void {
   root.querySelectorAll(`.${FIELD_TOKEN_CLASS}`).forEach((node) => {
-    if (node instanceof HTMLElement) node.draggable = true;
+    if (!(node instanceof HTMLElement)) return;
+    node.draggable = true;
+    // Drop stale insert-time line-height:1 that forced stepped line boxes.
+    node.style.removeProperty("line-height");
+    node.style.verticalAlign = "baseline";
+    ensureTokenCaretLanding(node);
   });
 }
 
 const PLAIN_FIELD_RE = /<<([^<>]+)>>/g;
+
+/** Walk an editor and add caret landings around every field token. */
+export function ensureFieldTokenCaretGaps(root: ParentNode): void {
+  root.querySelectorAll(`.${FIELD_TOKEN_CLASS}`).forEach((node) => {
+    if (node instanceof HTMLElement) ensureTokenCaretLanding(node);
+  });
+}
 
 /** Upgrade legacy plain `<<field>>` text nodes to styled spans (idempotent). */
 export function normalizeFieldTokenSpans(root: ParentNode): void {
@@ -121,6 +150,8 @@ export function normalizeFieldTokenSpans(root: ParentNode): void {
     }
     node.parentNode?.replaceChild(frag, node);
   }
+
+  ensureFieldTokenCaretGaps(root);
 }
 
 export function readFieldNameFromToken(el: HTMLElement): string | null {

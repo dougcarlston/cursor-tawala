@@ -6,16 +6,26 @@ import {
 } from "./paletteDefaults";
 import {
   getTypingFormat,
+  setTypingFormat,
+  typingFormatForInsert,
   type TypingFormat,
 } from "./paletteTypingFormat";
 import { FIELD_TOKEN_CLASS } from "./fieldTokens";
 import { FUNCTION_TOKEN_CLASS } from "./functionTokens";
-import { formatPt, getAbsolutePositionPt, pxToPt } from "./tableLayout";
+import { listUserTableCells } from "./tableCellSelection";
+import { formatPt, getAbsolutePositionPt, parseCssPt, pxToPt } from "./tableLayout";
+import { wordBoundsInText } from "./wordSelect";
 
 const PLACED_TEXT_CLASS = "doc-placed-text";
+/** Marks an intentional blank placed line from Double-Return (keep until user deletes it). */
+export const DOC_BLANK_ATTR = "data-doc-blank";
 const LINE_TOLERANCE_PT = 2;
-/** Extra inset inside the editor content box (~10px). Editor padding already provides chrome inset. */
-const DOC_LINE_MARGIN_PT = pxToPt(10);
+/**
+ * Minimum left inset for invent / indent-0 (pt). Absolute children originate at the
+ * padding edge of `.rich-surface`, so left:0 sits under the MDI/chrome border and
+ * clips the caret — always keep at least this inset on invent.
+ */
+export const DOC_LINE_MARGIN_PT = pxToPt(10);
 /** Half-inch indent step (legacy paragraph indent feel). */
 export const DOC_INDENT_STEP_PT = 36;
 const MAX_DOC_INDENT_LEVEL = 16;
@@ -45,19 +55,20 @@ export function caretRangeAtPoint(x: number, y: number): Range | null {
   return null;
 }
 
-/** Viewport click → pt offset inside the editor content box (for absolute placement). */
+/**
+ * Viewport click → pt offset for absolute placement.
+ * Origin matches CSS absolute containing block (padding edge of the editor) —
+ * do not subtract padding, or content-area clicks map to left≈0 and hide the caret.
+ */
 export function clientPointToEditorPt(
   editor: HTMLElement,
   clientX: number,
   clientY: number,
 ): { left: number; top: number } {
   const rect = editor.getBoundingClientRect();
-  const style = getComputedStyle(editor);
-  const padL = Number.parseFloat(style.paddingLeft) || 0;
-  const padT = Number.parseFloat(style.paddingTop) || 0;
   return {
-    left: pxToPt(clientX - rect.left - padL),
-    top: pxToPt(clientY - rect.top - padT),
+    left: pxToPt(clientX - rect.left),
+    top: pxToPt(clientY - rect.top),
   };
 }
 
@@ -81,7 +92,89 @@ function isEditableTextTarget(node: Node | null, editor: HTMLElement): boolean {
   return false;
 }
 
-/** True when the click should create/focus a free-positioned text block. */
+/** True when a range / node sits inside a Document/Form `table.user`. */
+function rangeInsideUserTable(editor: HTMLElement, range: Range | null): boolean {
+  if (!range || !editor.contains(range.commonAncestorContainer)) return false;
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  if (!(node instanceof Element)) return false;
+  const table = node.closest("table.user");
+  return !!(table && editor.contains(table));
+}
+
+/**
+ * True when a caret range already sits in typed glyphs (placed line or orphan text).
+ * Orphan text is a direct text-node child of the contenteditable — `elementFromPoint`
+ * then returns the editor itself, and `caretRangeFromPoint` may report the editor with
+ * a child offset instead of the Text node. Neither case must invent a new placed line.
+ *
+ * Absolute `table.user` must NOT count as prose here: with only absolute children,
+ * `caretRangeFromPoint` often lands inside the table when the user clicks blank
+ * canvas, which previously blocked inventing a new `.doc-placed-text` forever.
+ */
+export function rangeIntersectsExistingDocumentText(
+  editor: HTMLElement,
+  range: Range | null,
+): boolean {
+  if (!range || !editor.contains(range.commonAncestorContainer)) return false;
+  // Table cells are not placeable prose anchors — hit-testing decides table clicks.
+  if (rangeInsideUserTable(editor, range)) return false;
+
+  const placed = findPlacedTextBlock(range.startContainer, editor);
+  if (placed) return true;
+
+  if (range.startContainer.nodeType === Node.TEXT_NODE) {
+    return meaningfulText(range.startContainer.textContent);
+  }
+
+  // Editor root + child offset (common for orphan Text under an absolutely positioned canvas).
+  if (range.startContainer === editor) {
+    const idx = Math.min(range.startOffset, editor.childNodes.length);
+    const around = [
+      editor.childNodes[idx],
+      editor.childNodes[idx - 1],
+      editor.childNodes[Math.max(0, idx - 1)],
+    ];
+    for (const child of around) {
+      if (!child) continue;
+      if (child.nodeType === Node.TEXT_NODE && meaningfulText(child.textContent)) return true;
+      if (child instanceof HTMLElement) {
+        if (child.matches("table.user")) continue;
+        if (child.classList.contains(PLACED_TEXT_CLASS)) return true;
+        if (meaningfulText(child.textContent)) return true;
+      }
+    }
+  }
+
+  if (range.commonAncestorContainer instanceof HTMLElement) {
+    const el = range.commonAncestorContainer;
+    if (el === editor) return false;
+    if (el.closest("table.user")) return false;
+    if (isEditableTextTarget(el, editor) && meaningfulText(el.textContent)) return true;
+  }
+
+  return false;
+}
+
+/** True when the editor has loose text/nodes outside `.doc-placed-text`. */
+export function hasOrphanDocumentContent(editor: HTMLElement): boolean {
+  for (const child of Array.from(editor.childNodes)) {
+    if (child instanceof HTMLElement) {
+      if (child.classList.contains(PLACED_TEXT_CLASS)) continue;
+      if (child.matches("table.user") || child.closest("table.user")) continue;
+      if (child.classList.contains("table-handles-overlay")) continue;
+      return true;
+    }
+    if (child.nodeType === Node.TEXT_NODE) {
+      if (meaningfulText(child.textContent) || (child.textContent ?? "").includes("\u200b")) {
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/** True when the click should create a new free-positioned text block. */
 export function shouldPlaceDocumentText(
   editor: HTMLElement,
   clientX: number,
@@ -91,9 +184,23 @@ export function shouldPlaceDocumentText(
   const hit = document.elementFromPoint(clientX, clientY);
   if (hit instanceof HTMLElement && hit.closest(".table-handles-overlay")) return false;
 
-  if (hit === editor) return true;
+  // Click on / inside an existing placed line — never spawn another anchor.
+  if (hit instanceof Element) {
+    const placed = hit.closest(`.${PLACED_TEXT_CLASS}`);
+    if (placed instanceof HTMLElement && editor.contains(placed)) return false;
+  }
 
-  if (isPlacedTextBlock(hit)) return false;
+  // Existing glyphs under the caret (including orphan text under the editor root).
+  if (rangeIntersectsExistingDocumentText(editor, range)) return false;
+
+  // Orphan text is painted under this point — do not overlay a new empty anchor.
+  if (hasOrphanDocumentContent(editor) && orphanTextUnderPoint(editor, clientX, clientY)) {
+    return false;
+  }
+
+  // Geometric/DOM cell under the point — never invent over a table (even when
+  // caretRangeFromPoint is blank-canvas noise elsewhere).
+  if (findUserTableCellAtPoint(editor, clientX, clientY)) return false;
 
   if (hit instanceof HTMLElement && editor.contains(hit)) {
     if (hit.closest("table.user")) return false;
@@ -103,10 +210,49 @@ export function shouldPlaceDocumentText(
     }
   }
 
+  if (hit === editor) {
+    // Bare text under click → hit is editor. Never treat as blank canvas when glyphs exist.
+    if (rangeIntersectsExistingDocumentText(editor, range)) return false;
+    if (orphanTextUnderPoint(editor, clientX, clientY)) return false;
+    return true;
+  }
+
   if (!range || !editor.contains(range.commonAncestorContainer)) return true;
 
-  if (range.commonAncestorContainer === editor) return true;
+  if (range.commonAncestorContainer === editor) {
+    if (rangeIntersectsExistingDocumentText(editor, range)) return false;
+    return true;
+  }
 
+  return false;
+}
+
+/** True when any orphan text node’s painted box covers (clientX, clientY). */
+function orphanTextUnderPoint(editor: HTMLElement, clientX: number, clientY: number): boolean {
+  for (const child of Array.from(editor.childNodes)) {
+    if (child instanceof HTMLElement && child.classList.contains(PLACED_TEXT_CLASS)) continue;
+    if (child instanceof HTMLElement && child.matches("table.user")) continue;
+    if (child.nodeType !== Node.TEXT_NODE && !(child instanceof HTMLElement)) continue;
+    if (child.nodeType === Node.TEXT_NODE && !meaningfulText(child.textContent)) continue;
+
+    const probe = document.createRange();
+    try {
+      if (child.nodeType === Node.TEXT_NODE) probe.selectNodeContents(child);
+      else probe.selectNode(child);
+    } catch {
+      continue;
+    }
+    for (const rect of Array.from(probe.getClientRects())) {
+      if (
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom
+      ) {
+        return true;
+      }
+    }
+  }
   return false;
 }
 
@@ -120,37 +266,135 @@ export function isPlacedTextBlockEmpty(block: HTMLElement): boolean {
   return !meaningfulText(block.textContent);
 }
 
+/** True when this empty placed line is an intentional Double-Return gap between content. */
+export function isIntentionalBlankPlacedBlock(
+  block: HTMLElement,
+  all: HTMLElement[] = [],
+  emptySet?: Set<HTMLElement>,
+): boolean {
+  if (block.getAttribute(DOC_BLANK_ATTR) === "1") return true;
+  if (!all.length) return false;
+  const empties = emptySet ?? new Set(all.filter(isPlacedTextBlockEmpty));
+  if (!empties.has(block)) return false;
+  const idx = all.indexOf(block);
+  if (idx < 0) return false;
+  const hasContentAbove = all.slice(0, idx).some((b) => !empties.has(b));
+  const hasContentBelow = all.slice(idx + 1).some((b) => !empties.has(b));
+  return hasContentAbove && hasContentBelow;
+}
+
+/**
+ * Scaffold / mark an empty placed line so Double-Return gaps keep one line-height
+ * through packing and sibling edits (Chromium often strips bare `<br>` husks).
+ */
+export function markBlankPlacedBlock(block: HTMLElement): void {
+  block.setAttribute(DOC_BLANK_ATTR, "1");
+  ensureBlankPlacedScaffold(block);
+}
+
+/** Clear blank mark once the line has real glyphs or tokens. */
+export function clearBlankPlacedBlockIfContent(block: HTMLElement): void {
+  if (!isPlacedTextBlockEmpty(block)) {
+    block.removeAttribute(DOC_BLANK_ATTR);
+    block.style.removeProperty("min-height");
+  }
+}
+
+function ensureBlankPlacedScaffold(block: HTMLElement): void {
+  if (!isPlacedTextBlockEmpty(block)) return;
+  if (!block.querySelector("br")) {
+    block.innerHTML = "<br>";
+  }
+  const linePt = placedBlockLineHeightPt(block);
+  block.style.minHeight = formatPt(linePt);
+}
+
+/**
+ * After typing in a neighboring line: restore blank scaffolds and clear marks on
+ * lines that now have content. Call from Document `onInput`.
+ */
+export function preserveBlankPlacedLines(editor: HTMLElement): void {
+  for (const block of listPlacedBlocksSorted(editor)) {
+    if (isPlacedTextBlockEmpty(block)) {
+      if (block.getAttribute(DOC_BLANK_ATTR) === "1") {
+        ensureBlankPlacedScaffold(block);
+      }
+    } else {
+      clearBlankPlacedBlockIfContent(block);
+    }
+  }
+}
+
 /**
  * After select-all + Delete (or backspace-to-empty), remove husk `.doc-placed-text`
  * lines so they do not remain as invisible snap/pack slots. Intentional blank lines
- * from Return are left alone until the user deletes them.
+ * from Double-Return (between content paragraphs) are kept until the user deletes them.
+ *
+ * `except` — keep these blocks even when empty (active invent / destination of a click).
+ * `keepCaretEmpty` — when true, do not remove the placed line that currently holds the caret
+ * (used while the designer is still focused in an unused invent anchor).
+ * `restoreFocus` — when false, never steal/clear the selection (table clicks / place finish).
+ * Default true only repositions when the caret’s placed line was among the removals.
  */
-export function pruneEmptyPlacedTextBlocks(editor: HTMLElement): boolean {
+export function pruneEmptyPlacedTextBlocks(
+  editor: HTMLElement,
+  options?: {
+    except?: HTMLElement | HTMLElement[] | null;
+    keepCaretEmpty?: boolean;
+    restoreFocus?: boolean;
+  },
+): boolean {
   const all = listPlacedBlocksSorted(editor);
   const empties = all.filter(isPlacedTextBlockEmpty);
   if (!empties.length) return false;
 
-  const emptySet = new Set(empties);
+  const exceptSet = new Set(
+    (Array.isArray(options?.except)
+      ? options.except
+      : options?.except
+        ? [options.except]
+        : []
+    ).filter((n): n is HTMLElement => n instanceof HTMLElement),
+  );
   const sel = window.getSelection();
   const caretBlock =
     sel?.rangeCount && sel.anchorNode && editor.contains(sel.anchorNode)
       ? findPlacedTextBlock(sel.anchorNode, editor)
       : null;
+  if (options?.keepCaretEmpty && caretBlock) exceptSet.add(caretBlock);
 
-  let focusAfter: HTMLElement | null =
-    caretBlock && !emptySet.has(caretBlock) ? caretBlock : null;
-  if (!focusAfter) {
+  const emptySet = new Set(empties);
+  const toRemove = empties.filter(
+    (empty) =>
+      !exceptSet.has(empty) && !isIntentionalBlankPlacedBlock(empty, all, emptySet),
+  );
+  if (!toRemove.length) {
+    // Still repair scaffolds on kept blanks (delete may have stripped `<br>`).
+    for (const empty of empties) {
+      if (isIntentionalBlankPlacedBlock(empty, all, emptySet)) {
+        markBlankPlacedBlock(empty);
+      }
+    }
+    return false;
+  }
+
+  const removeSet = new Set(toRemove);
+  const caretWasRemoved = !!(caretBlock && removeSet.has(caretBlock));
+  const restoreFocus = options?.restoreFocus !== false;
+
+  let focusAfter: HTMLElement | null = null;
+  if (restoreFocus && caretWasRemoved) {
     for (let i = 0; i < all.length && !focusAfter; i++) {
-      if (!emptySet.has(all[i])) continue;
+      if (!removeSet.has(all[i])) continue;
       for (let j = i - 1; j >= 0; j--) {
-        if (!emptySet.has(all[j])) {
+        if (!removeSet.has(all[j]) && !emptySet.has(all[j])) {
           focusAfter = all[j];
           break;
         }
       }
       if (focusAfter) break;
       for (let j = i + 1; j < all.length; j++) {
-        if (!emptySet.has(all[j])) {
+        if (!removeSet.has(all[j]) && !emptySet.has(all[j])) {
           focusAfter = all[j];
           break;
         }
@@ -158,18 +402,24 @@ export function pruneEmptyPlacedTextBlocks(editor: HTMLElement): boolean {
     }
   }
 
-  for (const empty of empties) {
+  for (const empty of toRemove) {
     empty.remove();
   }
+
+  // Keep / re-scaffold intentional blanks that survived.
+  preserveBlankPlacedLines(editor);
 
   if (listPlacedBlocksSorted(editor).length) {
     reflowAllPlacedLines(editor);
   }
 
-  if (focusAfter && editor.contains(focusAfter)) {
-    focusPlacedBlockEnd(focusAfter);
-  } else if (sel) {
-    sel.removeAllRanges();
+  // Do not clear a table-cell (or other non-placed) selection after pruning husks.
+  if (restoreFocus && caretWasRemoved) {
+    if (focusAfter && editor.contains(focusAfter)) {
+      focusPlacedBlockEnd(focusAfter);
+    } else if (sel) {
+      sel.removeAllRanges();
+    }
   }
   return true;
 }
@@ -196,24 +446,36 @@ export function findPlacedTextBlockAtCaret(editor: HTMLElement): HTMLElement | n
 
 /** Apply palette typing attributes to a document line block (inherited by typed characters). */
 export function applyTypingFormatToPlacedBlock(block: HTMLElement, typing: TypingFormat): void {
+  applyTypingFormatStylePatch(block.style, typing);
+}
+
+/**
+ * Face/size/color patch for a new paragraph after Return (Document placed line or Form Text
+ * `<div>`/`<p>`). Callers must pass sticky/caret typing attrs — never copy bare
+ * `getComputedStyle(parent)` (that ignored inline font spans and reset to Arial 12).
+ */
+export function applyTypingFormatStylePatch(
+  style: CSSStyleDeclaration,
+  typing: TypingFormat,
+): void {
   if (typing.fontSize === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
-    block.style.removeProperty("font-size");
+    style.removeProperty("font-size");
   } else {
-    block.style.fontSize = `${typing.fontSize}pt`;
+    style.fontSize = `${typing.fontSize}pt`;
   }
   if (typing.fontFace === DEFAULT_PALETTE_FONT_FACE) {
-    block.style.removeProperty("font-family");
+    style.removeProperty("font-family");
   } else {
-    block.style.fontFamily = typing.fontFace;
+    style.fontFamily = typing.fontFace;
   }
   if (typing.color) {
-    block.style.color = typing.color;
+    style.color = typing.color;
   } else {
-    block.style.removeProperty("color");
+    style.removeProperty("color");
   }
 }
 
-/** Apply face/size/color to a field or function token (overrides badge CSS). */
+/** Apply face/size/color/B/I/U to a field or function token (overrides badge CSS). */
 export function applyTypingFormatToToken(el: HTMLElement, typing: TypingFormat): void {
   if (typing.fontSize === String(DEFAULT_PALETTE_FONT_SIZE_PT)) {
     el.style.removeProperty("font-size");
@@ -226,10 +488,29 @@ export function applyTypingFormatToToken(el: HTMLElement, typing: TypingFormat):
     el.style.fontFamily = typing.fontFace;
   }
   if (typing.color) {
-    el.style.color = typing.color;
+    el.style.setProperty("color", typing.color);
   } else {
     el.style.removeProperty("color");
   }
+  if (typing.bold) {
+    el.style.fontWeight = "bold";
+  } else {
+    el.style.removeProperty("font-weight");
+  }
+  if (typing.italic) {
+    el.style.fontStyle = "italic";
+  } else {
+    el.style.removeProperty("font-style");
+  }
+  if (typing.underline) {
+    el.style.textDecoration = "underline";
+  } else {
+    el.style.removeProperty("text-decoration");
+  }
+  // Baseline + inherit line-height so chips match the text run (do not force
+  // line-height:1 — that + inline-block border blew out Document line boxes).
+  el.style.verticalAlign = "baseline";
+  el.style.removeProperty("line-height");
 }
 
 export type DocumentAlign = "left" | "center" | "right" | "justify";
@@ -296,7 +577,8 @@ export function adjustPlacedTextIndent(
   block.style.top = formatPt(top);
   block.style.left = formatPt(nextLeft);
   ensurePlacedBlockWrapWidth(editor, block);
-  reflowPlacedLinesBelow(editor, block);
+  // Force layout so wrap height is current before packing siblings (avoids overlap).
+  void block.offsetHeight;
 }
 
 /** Apply left/width from indent level (+ optional align) between document margins. */
@@ -317,21 +599,51 @@ function applyPlacedIndentLayout(editor: HTMLElement, block: HTMLElement): void 
 }
 
 /**
- * Constrain a placed line from its current `left` to the right margin and enable wrapping.
- * Typing past the right edge soft-wraps within the block; callers should reflow below.
+ * Stop a placed line’s wrap box at the left edge of any same-band user table to its right.
+ * Prevents full-width (or oversized) hit boxes from covering free space beside the table —
+ * click-invent to the right must see the editor, not a left/full-width line’s empty width.
  */
-export function ensurePlacedBlockWrapWidth(editor: HTMLElement, block: HTMLElement): void {
-  // Aligned / indented lines stay on the margin+indent grid.
-  if (block.dataset.docAlign || (block.dataset.docIndent != null && block.dataset.docIndent !== "")) {
-    applyPlacedIndentLayout(editor, block);
-    return;
-  }
-  const { left } = getAbsolutePositionPt(block);
+function clipPlacedBlockWrapBeforeTables(editor: HTMLElement, block: HTMLElement): void {
+  const { left, top } = getAbsolutePositionPt(block);
   const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
   const rightEdge = contentWidthPt - marginPt;
-  const width = Math.max(1, rightEdge - Math.min(left, rightEdge - 1));
+  const lineH = Math.max(placedBlockLayoutHeightPt(block), placedBlockLineHeightPt(block));
+  let maxRight = rightEdge;
+
+  for (const item of listDocumentUserTables(editor)) {
+    if (item === block) continue;
+    const tb = layoutItemBoxPt(item);
+    // Same vertical band (or overlapping) — clip wrap before the table.
+    if (!rangesOverlap1d(top, lineH, tb.top, tb.height, 4)) continue;
+    if (tb.left > left + 1) {
+      maxRight = Math.min(maxRight, tb.left - 2);
+    }
+  }
+
+  const width = Math.max(1, maxRight - Math.min(left, maxRight - 1));
   block.style.width = formatPt(width);
   block.style.right = "auto";
+}
+
+/**
+ * Constrain a placed line from its current `left` to the right margin and enable wrapping.
+ * Typing past the right edge soft-wraps within the block; callers should reflow below.
+ *
+ * Document tables: wrap width stops at the left edge of any user table that sits to the
+ * right on the same vertical band, so left-of-table prose stays beside the table instead
+ * of claiming the table’s X range (which made packing treat them as one stack column).
+ * Aligned / indented lines keep the margin+indent grid, then the same table clip so
+ * Centering does not leave a full-width invisible hit box across the table and its right.
+ */
+export function ensurePlacedBlockWrapWidth(editor: HTMLElement, block: HTMLElement): void {
+  // Aligned / indented lines stay on the margin+indent grid (held Centering batch).
+  if (block.dataset.docAlign || (block.dataset.docIndent != null && block.dataset.docIndent !== "")) {
+    applyPlacedIndentLayout(editor, block);
+    clipPlacedBlockWrapBeforeTables(editor, block);
+    applyPlacedBlockWrapStyles(block);
+    return;
+  }
+  clipPlacedBlockWrapBeforeTables(editor, block);
   applyPlacedBlockWrapStyles(block);
 }
 
@@ -342,46 +654,227 @@ function applyPlacedBlockWrapStyles(block: HTMLElement): void {
   block.dataset.docWrap = "1";
 }
 
+/** Top-level Document `table.user` elements (not nested in another table). */
+function listDocumentUserTables(editor: HTMLElement): HTMLTableElement[] {
+  return Array.from(editor.querySelectorAll("table.user")).filter(
+    (n): n is HTMLTableElement =>
+      n instanceof HTMLTableElement && editor.contains(n) && !n.parentElement?.closest("table.user"),
+  );
+}
+
+/** Absolute layout box in pt for a placed line or user table. */
+export function layoutItemBoxPt(item: HTMLElement): {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+} {
+  const { left, top } = getAbsolutePositionPt(item);
+  const height = layoutItemHeightPt(item);
+  let width = parseCssPt(item.style.width);
+  if (width < 1) {
+    const measured = pxToPt(item.getBoundingClientRect().width);
+    width = measured >= 1 ? measured : isDocumentUserTable(item) ? 120 : 40;
+  }
+  return { left, top, width, height };
+}
+
+function rangesOverlap1d(
+  aStart: number,
+  aSize: number,
+  bStart: number,
+  bSize: number,
+  slack = 0,
+): boolean {
+  return aStart < bStart + bSize + slack && bStart < aStart + aSize + slack;
+}
+
+/** True when two absolute layout boxes share horizontal space (side-by-side = false). */
+export function layoutBoxesHorizontallyOverlap(
+  a: { left: number; width: number },
+  b: { left: number; width: number },
+  slack = 1,
+): boolean {
+  return rangesOverlap1d(a.left, a.width, b.left, b.width, -slack);
+}
+
 /**
- * Pack following placed lines under `block`: push down to clear overlap, or pull up
- * to close the gap when `block`'s box shrinks.
- *
- * Height is the rendered line box (tallest glyph/token on the line), not the last
- * palette action:
- * - Enlarging a single word/character can grow the box and push lines below down.
- * - Lines below move back up only when the box actually shrinks — i.e. every
- *   enlarged run on that line has been shrunk (or never enlarged). Shrinking one
- *   word while another stays large must not pull up.
+ * Push following items down only when they share a horizontal column with a prior item
+ * and their top collides with that item’s bottom. Does **not** pull items up — intentional
+ * drag gaps and side-by-side (left/right of table) placements are preserved.
  */
-export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement): void {
-  const blocks = listPlacedBlocksSorted(editor);
-  const idx = blocks.indexOf(block);
-  if (idx < 0) return;
-
+export function resolveDocumentLayoutCollisions(editor: HTMLElement): void {
   const gapPt = 2;
-  const pos = getAbsolutePositionPt(block);
-  let nextTop = pos.top + placedBlockLayoutHeightPt(block) + gapPt;
-
-  for (let i = idx + 1; i < blocks.length; i++) {
-    const below = blocks[i];
-    const belowPos = getAbsolutePositionPt(below);
-    if (Math.abs(belowPos.top - nextTop) > 0.5) {
-      below.style.top = formatPt(nextTop);
+  const items = listDocumentLayoutItemsSorted(editor);
+  for (let i = 0; i < items.length; i++) {
+    const item = items[i];
+    void item.offsetHeight;
+    const box = layoutItemBoxPt(item);
+    let floor = 0;
+    for (let j = 0; j < i; j++) {
+      const prior = items[j];
+      const pb = layoutItemBoxPt(prior);
+      if (!layoutBoxesHorizontallyOverlap(box, pb)) continue;
+      floor = Math.max(floor, pb.top + pb.height + gapPt);
     }
-    nextTop = nextTop + placedBlockLayoutHeightPt(below) + gapPt;
+    const pos = getAbsolutePositionPt(item);
+    if (pos.top < floor - 0.5) {
+      item.style.top = formatPt(floor);
+    }
   }
 }
 
 /**
- * Re-apply wrap widths for every placed line and pack the stack (window / MDI resize).
+ * Pack following placed lines / tables under `block` only when they collide horizontally.
+ * Side-by-side prose + tables keep independent tops; intentional gaps are not closed.
+ *
+ * Height is the rendered line box (tallest glyph/token on the line), not the last
+ * palette action:
+ * - Enlarging a single word/character can grow the box and push overlapping lines below.
+ * - Lines below move only when they would overlap — shrinking does not pull them up.
+ *
+ * Document `table.user` items participate so remount cannot leave prose under a table
+ * in the same column.
+ */
+export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement): void {
+  const blocks = listDocumentLayoutItemsSorted(editor);
+  if (blocks.indexOf(block) < 0) return;
+  // Force layout before measuring — width/indent changes must settle first.
+  void block.offsetHeight;
+  resolveDocumentLayoutCollisions(editor);
+}
+
+/**
+ * Re-apply wrap widths for every placed line and resolve overlaps (window / MDI resize).
+ * Tables keep owner X/Y when they do not collide with prose in the same column.
  */
 export function reflowAllPlacedLines(editor: HTMLElement): void {
-  const blocks = listPlacedBlocksSorted(editor);
+  const blocks = listDocumentLayoutItemsSorted(editor);
   if (!blocks.length) return;
   for (const block of blocks) {
-    ensurePlacedBlockWrapWidth(editor, block);
+    if (block.classList.contains(PLACED_TEXT_CLASS)) {
+      ensurePlacedBlockWrapWidth(editor, block);
+    }
   }
-  reflowPlacedLinesBelow(editor, blocks[0]);
+  resolveDocumentLayoutCollisions(editor);
+}
+
+/**
+ * Convert Document `table.user` elements from float/relative (legacy insert) to
+ * absolute positions in the placed-text stack, and hoist tables nested inside
+ * `.doc-placed-text`. Call after HTML remount / insert so tables reserve space.
+ */
+export function normalizeDocumentUserTables(editor: HTMLElement): boolean {
+  let changed = false;
+  const tables = Array.from(editor.querySelectorAll("table.user")).filter(
+    (n): n is HTMLTableElement => n instanceof HTMLTableElement,
+  );
+
+  for (const table of tables) {
+    if (table.parentElement?.closest("table.user")) continue;
+
+    const host = table.closest(`.${PLACED_TEXT_CLASS}`);
+    if (host instanceof HTMLElement && host !== table && editor.contains(host)) {
+      // Nested in a placed line — hoist to editor so absolute tops are document-scoped.
+      const hostPos = getAbsolutePositionPt(host);
+      const hostHeight = placedBlockLayoutHeightPt(host);
+      const left = parseCssPt(table.style.left) || hostPos.left || DOC_LINE_MARGIN_PT;
+      const top =
+        parseCssPt(table.style.top) > 20
+          ? parseCssPt(table.style.top)
+          : hostPos.top + Math.max(hostHeight, 0) + 2;
+      host.after(table);
+      table.style.position = "absolute";
+      table.style.left = formatPt(left);
+      table.style.top = formatPt(top);
+      table.style.float = "";
+      table.style.marginRight = "";
+      table.style.marginLeft = "";
+      table.style.marginTop = "";
+      changed = true;
+      continue;
+    }
+
+    const float = (table.style.float || "").toLowerCase();
+    const pos = (table.style.position || "").toLowerCase();
+    if (float || pos === "relative" || pos !== "absolute") {
+      const left = parseCssPt(table.style.left) || DOC_LINE_MARGIN_PT;
+      const top = parseCssPt(table.style.top);
+      table.style.float = "";
+      table.style.marginRight = "";
+      table.style.marginLeft = "";
+      table.style.marginTop = "";
+      table.style.position = "absolute";
+      table.style.left = formatPt(left);
+      // Keep existing top when present so reflow can order vs placed lines.
+      table.style.top = formatPt(top);
+      changed = true;
+    }
+  }
+  return changed;
+}
+
+/**
+ * After Document HTML hydrate or leave/return: normalize tables into absolute
+ * positions and resolve same-column overlaps so text is never layered under a table.
+ * Side-by-side placement and intentional drag gaps are preserved.
+ */
+export function ensureDocumentTableLayout(editor: HTMLElement): void {
+  normalizeDocumentUserTables(editor);
+  if (listDocumentLayoutItemsSorted(editor).length) {
+    reflowAllPlacedLines(editor);
+  }
+}
+
+/**
+ * Place a user table into the Document absolute stack at/below the caret line.
+ * Returns the inserted table (caller focuses first cell).
+ */
+export function insertDocumentUserTable(
+  editor: HTMLElement,
+  table: HTMLTableElement,
+): HTMLTableElement {
+  normalizeDocumentUserTables(editor);
+
+  const { marginPt } = getDocumentContentMetrics(editor);
+  const placed = findPlacedTextBlockAtCaret(editor);
+  let left = marginPt;
+  let insertTop = marginPt;
+
+  if (placed) {
+    const pos = getAbsolutePositionPt(placed);
+    left = pos.left || marginPt;
+    insertTop = pos.top + placedBlockLayoutHeightPt(placed) + 2;
+  } else {
+    const items = listDocumentLayoutItemsSorted(editor);
+    if (items.length) {
+      const last = items[items.length - 1];
+      const pos = getAbsolutePositionPt(last);
+      left = marginPt;
+      insertTop = pos.top + layoutItemHeightPt(last) + 2;
+    }
+  }
+
+  table.style.float = "";
+  table.style.marginRight = "";
+  table.style.marginLeft = "";
+  table.style.marginTop = "";
+  table.style.marginBottom = "";
+  table.style.position = "absolute";
+  table.style.left = formatPt(left);
+  table.style.top = formatPt(insertTop);
+
+  if (placed && editor.contains(placed)) {
+    placed.after(table);
+  } else {
+    editor.appendChild(table);
+  }
+
+  void table.offsetHeight;
+  const height = layoutItemHeightPt(table);
+  pushPlacedLinesFrom(editor, insertTop + 0.1, height + 2, table, { columnOf: table });
+  reflowAllPlacedLines(editor);
+  return table;
 }
 
 /** Placed lines that intersect the current selection (visual multi-line highlight). */
@@ -439,6 +932,19 @@ export function extendDocumentSelectionToPoint(
     return false;
   }
 
+  // Never drag-select across a table ↔ placed-line boundary (face/size bleed + delete merge).
+  const anchorIsland = documentLayoutIsland(anchor.startContainer, editor);
+  const focusIsland = documentLayoutIsland(focusRange.startContainer, editor);
+  if (
+    anchorIsland &&
+    focusIsland &&
+    anchorIsland !== focusIsland &&
+    selectionWouldCrossTableBoundary(anchorIsland, focusIsland)
+  ) {
+    focusRange = edgeRangeOfIsland(anchorIsland, clientX, clientY);
+    if (!focusRange) return false;
+  }
+
   const sel = window.getSelection();
   if (!sel) return false;
 
@@ -463,10 +969,17 @@ export function extendDocumentSelectionToPoint(
 
 /** Rendered height of a placed line for packing (tallest content on the line). */
 function placedBlockLayoutHeightPt(block: HTMLElement): number {
+  const linePt = placedBlockLineHeightPt(block);
+  // Intentional Double-Return blanks must always reserve a full line even when the
+  // browser reports a collapsed empty box (or strips `<br>` mid-edit).
+  if (block.getAttribute(DOC_BLANK_ATTR) === "1" || isPlacedTextBlockEmpty(block)) {
+    const measuredEmpty = pxToPt(block.getBoundingClientRect().height);
+    return Math.max(linePt, measuredEmpty >= 1 ? measuredEmpty : 0);
+  }
   const measured = pxToPt(block.getBoundingClientRect().height);
   // Prefer the painted box so mixed inline sizes pack correctly; fall back for empty lines.
   if (measured >= 1) return measured;
-  return placedBlockLineHeightPt(block);
+  return linePt;
 }
 
 export function readPlacedTextAlign(block: HTMLElement): DocumentAlign {
@@ -487,16 +1000,6 @@ export function placedBlockLineHeightPt(block: HTMLElement): number {
   return pxToPt(fontSizePx * (Number.isFinite(factor) ? factor : 1.4));
 }
 
-function copyTypographicStyles(from: HTMLElement, to: HTMLElement): void {
-  const style = getComputedStyle(from);
-  to.style.fontFamily = style.fontFamily;
-  to.style.fontSize = style.fontSize;
-  to.style.fontWeight = style.fontWeight;
-  to.style.fontStyle = style.fontStyle;
-  to.style.color = style.color;
-  to.style.textDecoration = style.textDecoration;
-}
-
 function createPlacedTextBlockAt(left: number, top: number): HTMLParagraphElement {
   const p = document.createElement("p");
   p.className = PLACED_TEXT_CLASS;
@@ -509,31 +1012,41 @@ function createPlacedTextBlockAt(left: number, top: number): HTMLParagraphElemen
 }
 
 /**
- * Shift every placed line at or below `fromTopPt` down by `deltaPt`.
- * Used so Return / growth pushes existing text instead of stacking over it.
+ * Shift placed lines / user tables at or below `fromTopPt` down by `deltaPt`.
+ * When `columnOf` is set, only moves items that share a horizontal column with that
+ * item — so Return / growth next to a table does not shove the table down.
  */
 export function pushPlacedLinesFrom(
   editor: HTMLElement,
   fromTopPt: number,
   deltaPt: number,
   except?: HTMLElement | HTMLElement[],
+  options?: { columnOf?: HTMLElement },
 ): void {
   if (deltaPt <= 0) return;
   const skip = new Set(
     (Array.isArray(except) ? except : except ? [except] : []).filter(Boolean),
   );
-  listPlacedBlocksSorted(editor).forEach((node) => {
+  const columnBox = options?.columnOf ? layoutItemBoxPt(options.columnOf) : null;
+  listDocumentLayoutItemsSorted(editor).forEach((node) => {
     if (skip.has(node)) return;
     const pos = getAbsolutePositionPt(node);
-    if (pos.top >= fromTopPt - LINE_TOLERANCE_PT) {
-      node.style.top = formatPt(pos.top + deltaPt);
+    if (pos.top < fromTopPt - LINE_TOLERANCE_PT) return;
+    if (columnBox) {
+      const box = layoutItemBoxPt(node);
+      if (!layoutBoxesHorizontallyOverlap(columnBox, box)) return;
     }
+    node.style.top = formatPt(pos.top + deltaPt);
   });
 }
 
 /**
  * Typewriter Return inside a `.doc-placed-text` block: split at the caret into a new
  * placed block below; existing lines at/below that spot are pushed down (not deleted).
+ *
+ * New blank lines inherit the active typing format (palette sticky / caret run face+size),
+ * NOT the previous block's computed style — that ignored inline `<font>`/`<span>` wrappers
+ * and reset the banner + next glyphs to Arial 12 pt.
  */
 export function documentEnterInPlacedText(editor: HTMLElement): boolean {
   const sel = window.getSelection();
@@ -543,6 +1056,10 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
 
   const block = findPlacedTextBlock(range.startContainer, editor);
   if (!block) return false;
+
+  // Capture before extractContents moves the caret / empties the tail.
+  const typing = typingFormatForInsert(editor);
+  setTypingFormat(editor, typing);
 
   if (!range.collapsed) {
     range.deleteContents();
@@ -558,6 +1075,9 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
 
   if (!meaningfulText(block.textContent)) {
     block.innerHTML = "<br>";
+    markBlankPlacedBlock(block);
+  } else {
+    clearBlankPlacedBlockIfContent(block);
   }
 
   ensurePlacedBlockWrapWidth(editor, block);
@@ -567,24 +1087,114 @@ export function documentEnterInPlacedText(editor: HTMLElement): boolean {
   const step = placedBlockLineHeightPt(block);
 
   const newBlock = createPlacedTextBlockAt(left, nextTop);
-  copyTypographicStyles(block, newBlock);
+  applyTypingFormatToPlacedBlock(newBlock, typing);
   if (block.dataset.docAlign) {
     newBlock.dataset.docAlign = block.dataset.docAlign;
     newBlock.style.textAlign = block.style.textAlign;
   }
   if (tail && meaningfulText(tail.textContent)) {
     newBlock.appendChild(tail);
+    clearBlankPlacedBlockIfContent(newBlock);
   } else {
     newBlock.innerHTML = "<br>";
+    markBlankPlacedBlock(newBlock);
   }
   ensurePlacedBlockWrapWidth(editor, newBlock);
 
   // Make room first so the new line does not land on top of existing text.
-  pushPlacedLinesFrom(editor, nextTop, step, block);
+  pushPlacedLinesFrom(editor, nextTop, step, block, { columnOf: block });
   editor.appendChild(newBlock);
   reflowPlacedLinesBelow(editor, block);
   focusPlacedBlock(newBlock);
   return true;
+}
+
+/**
+ * After native Form Text Return, paint face/size onto an empty new `<div>`/`<p>`
+ * so the next glyphs (and blank-context palette banner) keep the prior typing format.
+ * Skips non-empty blocks (mid-paragraph split that carried styled tail).
+ */
+export function seedBlankBlockTypingFormat(editor: HTMLElement, typing: TypingFormat): void {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return;
+  const range = sel.getRangeAt(0);
+  if (!editor.contains(range.commonAncestorContainer)) return;
+
+  let node: Node | null = range.startContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  let block: HTMLElement | null = null;
+  while (node && node !== editor) {
+    if (node instanceof HTMLElement) {
+      const tag = node.tagName;
+      if (tag === "P" || tag === "DIV" || tag === "LI") {
+        block = node;
+        break;
+      }
+    }
+    node = node.parentNode;
+  }
+  if (!block || block === editor) return;
+  if (meaningfulText(block.textContent)) return;
+  applyTypingFormatToPlacedBlock(block, typing);
+  setTypingFormat(editor, typing);
+  // Tag empty post-Return paragraphs so Form Text Double-Return gaps survive sibling edits.
+  markBlankPlacedBlock(block);
+}
+
+/**
+ * Invent X: keep the click’s free-space left, with only a tiny inset when flush
+ * against the window/chrome edge so the caret stays visible. Never forces mid-
+ * canvas or L/R-of-table invents onto the left margin.
+ */
+export function inventPlacedLeftPt(leftPt: number): number {
+  return Math.max(DOC_LINE_MARGIN_PT, leftPt);
+}
+
+/**
+ * `td`/`th` of a Document `table.user` under a viewport point.
+ * Prefers `elementFromPoint`; falls back to painted cell boxes when the hit is
+ * the editor (or a non-cell overlay) but the point still sits in a cell.
+ */
+export function findUserTableCellAtPoint(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+): HTMLTableCellElement | null {
+  const hit = document.elementFromPoint(clientX, clientY);
+  if (hit instanceof Element && editor.contains(hit) && !hit.closest(".table-handles-overlay")) {
+    // Placed prose sits above tables in hit-testing — never steal those clicks for cells.
+    if (hit.closest(`.${PLACED_TEXT_CLASS}`)) return null;
+
+    const cell = hit.closest("td, th");
+    if (cell instanceof HTMLTableCellElement) {
+      const table = cell.closest("table.user");
+      if (table && editor.contains(table)) return cell;
+    }
+  }
+
+  for (const table of listDocumentUserTables(editor)) {
+    const tableRect = table.getBoundingClientRect();
+    if (
+      clientX < tableRect.left ||
+      clientX > tableRect.right ||
+      clientY < tableRect.top ||
+      clientY > tableRect.bottom
+    ) {
+      continue;
+    }
+    for (const cell of listUserTableCells(table)) {
+      const rect = cell.getBoundingClientRect();
+      if (
+        clientX >= rect.left &&
+        clientX <= rect.right &&
+        clientY >= rect.top &&
+        clientY <= rect.bottom
+      ) {
+        return cell;
+      }
+    }
+  }
+  return null;
 }
 
 /** Insert an absolutely positioned paragraph at the click point. */
@@ -594,12 +1204,23 @@ export function insertPlacedTextBlock(
   clientY: number,
 ): HTMLParagraphElement {
   const { left, top } = clientPointToEditorPt(editor, clientX, clientY);
-  const p = createPlacedTextBlockAt(left, top);
+  // Visible left inset only when inventing flush against the chrome edge.
+  const p = createPlacedTextBlockAt(inventPlacedLeftPt(left), top);
   applyTypingFormatToPlacedBlock(p, getTypingFormat(editor));
   p.innerHTML = "<br>";
   editor.appendChild(p);
   ensurePlacedBlockWrapWidth(editor, p);
+  clearPlacedBlockOverlap(editor, p);
   return p;
+}
+
+/**
+ * If `block` sits inside a previous layout item’s box in the same column, push it down.
+ * Preserves intentional free-placement gaps and side-by-side (beside table) placement.
+ */
+function clearPlacedBlockOverlap(editor: HTMLElement, block: HTMLElement): void {
+  resolveDocumentLayoutCollisions(editor);
+  reflowPlacedLinesBelow(editor, block);
 }
 
 export function focusPlacedBlock(block: HTMLElement): Range | null {
@@ -624,24 +1245,21 @@ export function resolveDocumentFieldDropTarget(
   clientY: number,
 ): HTMLElement {
   const hit = document.elementFromPoint(clientX, clientY);
-  if (hit instanceof HTMLElement && !hit.closest(".table-handles-overlay")) {
-    const cell = hit.closest("td, th");
-    if (cell instanceof HTMLTableCellElement && editor.contains(cell)) {
-      return cell;
-    }
-  }
-
-  // Snap to the nearest line first (generous band) so near-miss drops join the
-  // line instead of spawning an orphan block one row above/beside the text.
-  const near = findPlacedTextBlockNearPoint(editor, clientX, clientY, { bandScale: 2.5 });
-  if (near) return near;
-
+  // Prefer existing placed prose under the pointer (same as click — edit, do not invent).
   if (hit instanceof HTMLElement && !hit.closest(".table-handles-overlay")) {
     const placed = hit.closest(`.${PLACED_TEXT_CLASS}`);
     if (placed instanceof HTMLElement && editor.contains(placed)) {
       return placed;
     }
   }
+
+  const cell = findUserTableCellAtPoint(editor, clientX, clientY);
+  if (cell) return cell;
+
+  // Snap to the nearest line first (generous band) so near-miss drops join the
+  // line instead of spawning an orphan block one row above/beside the text.
+  const near = findPlacedTextBlockNearPoint(editor, clientX, clientY, { bandScale: 2.5 });
+  if (near) return near;
 
   return insertPlacedTextBlock(editor, clientX, clientY);
 }
@@ -677,36 +1295,244 @@ export function focusDocumentDropTarget(
 }
 
 /**
- * Document canvas click — place caret in existing text or start a new positioned block.
- * Returns true when a new block was inserted.
+ * Re-home loose document content (text / inline nodes outside `.doc-placed-text`)
+ * into placed paragraphs so mid-text clicks do not invent a second anchor on top.
+ * Returns true when the DOM changed.
+ */
+export function adoptOrphanDocumentContent(editor: HTMLElement): boolean {
+  const toWrap: Node[] = [];
+  for (const child of Array.from(editor.childNodes)) {
+    if (child instanceof HTMLElement) {
+      if (child.classList.contains(PLACED_TEXT_CLASS)) continue;
+      if (child.closest("table.user") || child.matches("table.user")) continue;
+      if (child.classList.contains("table-handles-overlay")) continue;
+      toWrap.push(child);
+      continue;
+    }
+    if (child.nodeType === Node.TEXT_NODE) {
+      if (!meaningfulText(child.textContent) && !(child.textContent ?? "").includes("\u200b")) {
+        continue;
+      }
+      toWrap.push(child);
+    }
+  }
+  if (!toWrap.length) return false;
+
+  // Group contiguous orphans into one placed line each run.
+  const groups: Node[][] = [];
+  let current: Node[] = [];
+  const childList = Array.from(editor.childNodes);
+  for (const node of childList) {
+    if (toWrap.includes(node)) {
+      current.push(node);
+    } else if (current.length) {
+      groups.push(current);
+      current = [];
+    }
+  }
+  if (current.length) groups.push(current);
+
+  for (const group of groups) {
+    const first = group[0];
+    let left = 0;
+    let top = 0;
+    if (first instanceof HTMLElement) {
+      const abs = getAbsolutePositionPt(first);
+      left = abs.left;
+      top = abs.top;
+    } else if (first.nodeType === Node.TEXT_NODE) {
+      const probe = document.createRange();
+      probe.selectNodeContents(first);
+      const rect = probe.getBoundingClientRect();
+      if (rect.height > 0 || rect.width > 0) {
+        const pt = clientPointToEditorPt(editor, rect.left, rect.top);
+        left = pt.left;
+        top = pt.top;
+      }
+    }
+
+    const block = createPlacedTextBlockAt(left, top);
+    applyTypingFormatToPlacedBlock(block, getTypingFormat(editor));
+    for (const node of group) {
+      block.appendChild(node);
+    }
+    if (!meaningfulText(block.textContent) && !block.querySelector("br")) {
+      block.innerHTML = "<br>";
+    }
+    editor.appendChild(block);
+    ensurePlacedBlockWrapWidth(editor, block);
+    clearPlacedBlockOverlap(editor, block);
+  }
+  return true;
+}
+
+/**
+ * Document canvas click / field-drop style placement:
+ * 1. Inside `.doc-placed-text` → edit caret in that line (never invent on top).
+ * 2. Inside `td`/`th` of `table.user` → caret/selection in that cell (never invent).
+ * 3. Else free space → invent at the point (visible left inset only when flush to chrome).
+ *
+ * Returns true when a new block was inserted. Unused empty invent anchors are pruned
+ * when focus moves to another line / invent / cell.
  */
 export function placeDocumentTextAtPoint(
   editor: HTMLElement,
   clientX: number,
   clientY: number,
 ): boolean {
+  // Re-home escaped glyphs first so later snap/hit tests see real placed lines.
+  if (hasOrphanDocumentContent(editor)) {
+    adoptOrphanDocumentContent(editor);
+  }
+
+  const finish = (keep: HTMLElement | null, invented: boolean): boolean => {
+    // Never steal table caret / already-placed focus when cleaning unused invents.
+    pruneEmptyPlacedTextBlocks(editor, { except: keep, restoreFocus: false });
+    return invented;
+  };
+
+  const hit = document.elementFromPoint(clientX, clientY);
+  if (hit instanceof Element && hit.closest(".table-handles-overlay")) {
+    return finish(null, false);
+  }
+
+  // 1) Existing placed prose under the pointer → edit (not invent).
+  if (hit instanceof Element && editor.contains(hit)) {
+    const hitPlaced = hit.closest(`.${PLACED_TEXT_CLASS}`);
+    if (hitPlaced instanceof HTMLElement && editor.contains(hitPlaced)) {
+      ensurePlacedBlockWrapWidth(editor, hitPlaced);
+      focusPlacedBlockAtClientPoint(hitPlaced, clientX, clientY);
+      reflowPlacedLinesBelow(editor, hitPlaced);
+      return finish(hitPlaced, false);
+    }
+  }
+
+  // 2) Table cell under the pointer → edit / highlight that cell (not invent / Y-snap).
+  const cell = findUserTableCellAtPoint(editor, clientX, clientY);
+  if (cell) {
+    focusDocumentDropTarget(cell, clientX, clientY);
+    return finish(null, false);
+  }
+
   // Prefer an existing line on this row (click past the end of text, empty margin, etc.).
   const near = findPlacedTextBlockNearPoint(editor, clientX, clientY);
   if (near) {
     ensurePlacedBlockWrapWidth(editor, near);
     focusPlacedBlockAtClientPoint(near, clientX, clientY);
     reflowPlacedLinesBelow(editor, near);
-    return false;
+    return finish(near, false);
   }
 
   const range = caretRangeAtPoint(clientX, clientY);
-  if (!shouldPlaceDocumentText(editor, clientX, clientY, range)) {
-    if (range && editor.contains(range.commonAncestorContainer)) {
+  // Absolute tables / left-column prose steal caretRangeFromPoint on blank-canvas clicks
+  // (incl. free space to the right of a table) — keep only geometrically honest ranges.
+  const usableRange = usableCaretRangeForDocumentPlace(editor, clientX, clientY, range);
+
+  // Orphan / non-placed glyphs under the point: focus — do not overlay a new empty anchor.
+  if (orphanTextUnderPoint(editor, clientX, clientY)) {
+    const after = findPlacedTextBlockNearPoint(editor, clientX, clientY);
+    if (after) {
+      ensurePlacedBlockWrapWidth(editor, after);
+      focusPlacedBlockAtClientPoint(after, clientX, clientY);
+      reflowPlacedLinesBelow(editor, after);
+      return finish(after, false);
+    }
+    if (usableRange && editor.contains(usableRange.commonAncestorContainer)) {
       const sel = window.getSelection();
       sel?.removeAllRanges();
-      sel?.addRange(range);
+      sel?.addRange(usableRange);
     }
-    return false;
+    return finish(null, false);
   }
 
+  // Caret landed in real prose that covers this point — edit that line (not invent).
+  if (rangeIntersectsExistingDocumentText(editor, usableRange)) {
+    const after =
+      (usableRange && findPlacedTextBlock(usableRange.startContainer, editor)) ||
+      findPlacedTextBlockNearPoint(editor, clientX, clientY);
+    if (after && placedBlockAcceptsClientPoint(after, clientX, clientY)) {
+      ensurePlacedBlockWrapWidth(editor, after);
+      focusPlacedBlockAtClientPoint(after, clientX, clientY);
+      reflowPlacedLinesBelow(editor, after);
+      return finish(after, false);
+    }
+    // Fall through: rangeIntersects saw absolute-sibling noise; invent free space.
+  }
+
+  if (!shouldPlaceDocumentText(editor, clientX, clientY, usableRange)) {
+    if (usableRange && editor.contains(usableRange.commonAncestorContainer)) {
+      const sel = window.getSelection();
+      sel?.removeAllRanges();
+      sel?.addRange(usableRange);
+    }
+    return finish(null, false);
+  }
+
+  // 3) Free space → invent at the click (left inset only when flush against chrome).
   const block = insertPlacedTextBlock(editor, clientX, clientY);
   focusPlacedBlock(block);
-  return true;
+  return finish(block, true);
+}
+
+/**
+ * True when a placed line’s painted box (plus snap slack) covers a viewport point.
+ * Shared by snap-to-line and caret-range false-positive filters so right-of-table
+ * free space is not stolen by a left-column line on the same Y band.
+ */
+export function placedBlockAcceptsClientPoint(
+  block: HTMLElement,
+  clientX: number,
+  clientY: number,
+  options?: { bandScale?: number },
+): boolean {
+  const bandScale = options?.bandScale ?? 1;
+  const rect = block.getBoundingClientRect();
+  if (rect.width <= 0 && rect.height <= 0) return false;
+
+  // Must be on this line’s horizontal band (small past-end slack for click-to-continue).
+  const slackXPx = 10;
+  if (clientX < rect.left - slackXPx || clientX > rect.right + slackXPx) return false;
+
+  let distPx: number;
+  if (clientY >= rect.top && clientY <= rect.bottom) {
+    distPx = 0;
+  } else if (clientY < rect.top) {
+    distPx = rect.top - clientY;
+  } else {
+    distPx = clientY - rect.bottom;
+  }
+
+  const lineH = Math.max(rect.height, 16);
+  const slackPx = (Math.max(lineH * 0.55, 12) + 6) * bandScale;
+  return distPx <= slackPx;
+}
+
+/**
+ * Drop caretRangeFromPoint results that do not honestly cover the click.
+ * Absolute `table.user` and left-of-table `.doc-placed-text` often steal blank-canvas
+ * (and especially right-of-table) invent clicks — same class of bug as table trapping.
+ */
+function usableCaretRangeForDocumentPlace(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+  range: Range | null,
+): Range | null {
+  if (!range || !editor.contains(range.commonAncestorContainer)) return null;
+  if (rangeInsideUserTable(editor, range)) return null;
+
+  const placed = findPlacedTextBlock(range.startContainer, editor);
+  if (placed && !placedBlockAcceptsClientPoint(placed, clientX, clientY)) {
+    return null;
+  }
+
+  // Editor-root + child offset among absolute siblings is blank-canvas noise unless
+  // orphan glyphs are actually painted under the point.
+  if (range.startContainer === editor && !orphanTextUnderPoint(editor, clientX, clientY)) {
+    return null;
+  }
+
+  return range;
 }
 
 /**
@@ -714,6 +1540,8 @@ export function placeDocumentTextAtPoint(
  *
  * Uses painted `getBoundingClientRect` bands — not `style.top` midpoints — so soft-wrapped
  * tall blocks and near-miss drops above/below glyphs still join the correct line.
+ * Horizontal: the click must fall within (or slightly past) the line’s width so free space
+ * beside a table is not stolen by a left-column line on the same Y band.
  */
 export function findPlacedTextBlockNearPoint(
   editor: HTMLElement,
@@ -721,16 +1549,14 @@ export function findPlacedTextBlockNearPoint(
   clientY: number,
   options?: { bandScale?: number },
 ): HTMLElement | null {
-  const bandScale = options?.bandScale ?? 1;
   let best: HTMLElement | null = null;
   let bestDist = Infinity;
 
   editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
-    const rect = node.getBoundingClientRect();
-    if (rect.width <= 0 && rect.height <= 0) return;
+    if (!placedBlockAcceptsClientPoint(node, clientX, clientY, options)) return;
 
-    // Inside the painted box (including wrap width / soft-wrap height) is a perfect hit.
+    const rect = node.getBoundingClientRect();
     let distPx: number;
     if (clientY >= rect.top && clientY <= rect.bottom) {
       distPx = 0;
@@ -740,10 +1566,7 @@ export function findPlacedTextBlockNearPoint(
       distPx = clientY - rect.bottom;
     }
 
-    const lineH = Math.max(rect.height, 16);
-    // Slack above/below glyphs so a drop slightly off the baseline still joins the line.
-    const slackPx = (Math.max(lineH * 0.55, 12) + 6) * bandScale;
-    if (distPx <= slackPx && distPx < bestDist) {
+    if (distPx < bestDist) {
       bestDist = distPx;
       best = node;
     }
@@ -763,6 +1586,24 @@ export function focusPlacedBlockAtClientPoint(
     sel.removeAllRanges();
     sel.addRange(range);
     return range;
+  }
+  // Absolute placed lines sometimes report the editor as caret container with a child
+  // offset that identifies this block — still land inside the paragraph, preferably
+  // near the click X via a second probe on the block’s box.
+  if (range?.startContainer === block.parentNode || range?.startContainer === block.parentElement) {
+    const child = range.startContainer.childNodes[range.startOffset] ??
+      range.startContainer.childNodes[range.startOffset - 1];
+    if (child === block || (child instanceof Node && block.contains(child))) {
+      const rect = block.getBoundingClientRect();
+      const clampedX = Math.min(Math.max(clientX, rect.left + 1), rect.right - 1);
+      const clampedY = Math.min(Math.max(clientY, rect.top + 1), rect.bottom - 1);
+      const inner = caretRangeAtPoint(clampedX, clampedY);
+      if (inner && block.contains(inner.commonAncestorContainer)) {
+        sel.removeAllRanges();
+        sel.addRange(inner);
+        return inner;
+      }
+    }
   }
   // Click/drop was on the line’s empty width (past the glyphs) — put caret at end.
   return focusPlacedBlockEnd(block);
@@ -831,6 +1672,43 @@ function listPlacedBlocksSorted(editor: HTMLElement): HTMLElement[] {
   ).sort((a, b) => getAbsolutePositionPt(a).top - getAbsolutePositionPt(b).top);
 }
 
+/** True when `el` is a top-level Document `table.user` (not a nested cell table). */
+export function isDocumentUserTable(el: HTMLElement): el is HTMLTableElement {
+  return el instanceof HTMLTableElement && el.classList.contains("user");
+}
+
+/**
+ * Placed lines + user tables sorted by absolute `top`.
+ * Tables participate so same-column remount/reflow can clear overlays; X is free
+ * (beside-table prose is not forced into a single vertical stack).
+ */
+export function listDocumentLayoutItemsSorted(editor: HTMLElement): HTMLElement[] {
+  const placed = Array.from(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`)).filter(
+    (n): n is HTMLElement => n instanceof HTMLElement,
+  );
+  const tables = Array.from(editor.querySelectorAll("table.user")).filter(
+    (n): n is HTMLTableElement =>
+      n instanceof HTMLTableElement && editor.contains(n) && !n.parentElement?.closest("table.user"),
+  );
+  return [...placed, ...tables].sort(
+    (a, b) => getAbsolutePositionPt(a).top - getAbsolutePositionPt(b).top,
+  );
+}
+
+/** Rendered height of a layout item (placed line or table) for packing. */
+function layoutItemHeightPt(item: HTMLElement): number {
+  if (item.classList.contains(PLACED_TEXT_CLASS)) {
+    return placedBlockLayoutHeightPt(item);
+  }
+  const measured = pxToPt(item.getBoundingClientRect().height);
+  if (measured >= 1) return measured;
+  if (item instanceof HTMLTableElement) {
+    const rows = item.rows.length || 1;
+    return Math.max(12, rows * 12);
+  }
+  return 12;
+}
+
 /**
  * Keep arrow / Home / End navigation inside Document placed lines (and move Up/Down between lines).
  * Within a soft-wrapped block, Up/Down move between visual lines until the first/last line.
@@ -881,3 +1759,441 @@ export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): bool
   }
   return false;
 }
+
+/**
+ * Resolve the block (placed line / P / DIV / editor) used for word and paragraph select.
+ */
+export function blockForSelectionAtPoint(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+): HTMLElement | null {
+  const caret = caretRangeAtPoint(clientX, clientY);
+  if (!caret || !editor.contains(caret.commonAncestorContainer)) return null;
+  const block =
+    findPlacedTextBlock(caret.startContainer, editor) ??
+    blockContainerForWord(caret.startContainer, editor);
+  if (!(block instanceof HTMLElement) || !editor.contains(block)) return null;
+  return block;
+}
+
+/**
+ * Triple-click: select the whole placed Document line / Form paragraph.
+ * Needed once double-click preventDefault + custom word select replaces native chaining.
+ */
+export function selectParagraphAtPoint(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+): boolean {
+  const block = blockForSelectionAtPoint(editor, clientX, clientY);
+  if (!block) return false;
+  const sel = window.getSelection();
+  if (!sel) return false;
+  const range = document.createRange();
+  range.selectNodeContents(block);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  return true;
+}
+
+/**
+ * Double-click: select the whole field/function token, or expand to word bounds
+ * across mixed B/I/U/face spans (native selection often chops at element edges).
+ */
+export function selectWordOrTokenAtPoint(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+): boolean {
+  const hit = document.elementFromPoint(clientX, clientY);
+  if (hit instanceof Element && editor.contains(hit)) {
+    const token = hit.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`);
+    if (token instanceof HTMLElement && editor.contains(token)) {
+      const sel = window.getSelection();
+      if (!sel) return false;
+      const range = document.createRange();
+      range.selectNode(token);
+      sel.removeAllRanges();
+      sel.addRange(range);
+      return true;
+    }
+  }
+
+  const hitPlaced =
+    hit instanceof Element && editor.contains(hit)
+      ? hit.closest(`.${PLACED_TEXT_CLASS}`)
+      : null;
+
+  const caret = caretRangeAtPoint(clientX, clientY);
+  if (!caret || !editor.contains(caret.commonAncestorContainer)) {
+    // Empty invent under the pointer when caretRangeFromPoint misses (absolute
+    // `<br>`-only lines). Land a caret so dblclick free space stays typeable.
+    if (
+      hitPlaced instanceof HTMLElement &&
+      editor.contains(hitPlaced) &&
+      isPlacedTextBlockEmpty(hitPlaced)
+    ) {
+      focusPlacedBlock(hitPlaced);
+      return true;
+    }
+    return false;
+  }
+
+  const block =
+    findPlacedTextBlock(caret.startContainer, editor) ??
+    blockContainerForWord(caret.startContainer, editor);
+  if (!(block instanceof HTMLElement) || !editor.contains(block)) return false;
+
+  const flat = flattenTextNodes(block);
+  if (!flat.length) {
+    // Empty invent / Double-Return blank (often only `<br>`): native dblclick +
+    // mouseup skipping place-at-point left no caret. Land one so typing works.
+    if (block.classList.contains(PLACED_TEXT_CLASS)) {
+      focusPlacedBlock(block);
+      return true;
+    }
+    return false;
+  }
+
+  let caretIndex = 0;
+  let found = false;
+  for (const part of flat) {
+    if (part.node === caret.startContainer) {
+      caretIndex += Math.min(caret.startOffset, part.node.length);
+      found = true;
+      break;
+    }
+    caretIndex += part.node.length;
+  }
+  if (!found) {
+    // Caret may be on an element — map via client point to nearest text.
+    const near = caretRangeAtPoint(clientX, clientY);
+    if (near?.startContainer.nodeType === Node.TEXT_NODE) {
+      caretIndex = 0;
+      for (const part of flat) {
+        if (part.node === near.startContainer) {
+          caretIndex += Math.min(near.startOffset, part.node.length);
+          found = true;
+          break;
+        }
+        caretIndex += part.node.length;
+      }
+    }
+  }
+  if (!found) return false;
+
+  const joined = flat.map((p) => p.node.textContent ?? "").join("");
+  const { start, end } = wordBoundsInText(joined, caretIndex);
+  if (start >= end) return false;
+
+  const startPos = locateFlatOffset(flat, start);
+  const endPos = locateFlatOffset(flat, end);
+  if (!startPos || !endPos) return false;
+
+  const sel = window.getSelection();
+  if (!sel) return false;
+  const range = document.createRange();
+  range.setStart(startPos.node, startPos.offset);
+  range.setEnd(endPos.node, endPos.offset);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  return true;
+}
+
+function blockContainerForWord(node: Node, editor: HTMLElement): HTMLElement {
+  let current: Node | null = node.nodeType === Node.TEXT_NODE ? node.parentNode : node;
+  while (current && current !== editor) {
+    if (current instanceof HTMLElement) {
+      const tag = current.tagName;
+      if (
+        tag === "P" ||
+        tag === "DIV" ||
+        tag === "TD" ||
+        tag === "TH" ||
+        tag === "LI" ||
+        current.classList.contains(PLACED_TEXT_CLASS)
+      ) {
+        return current;
+      }
+    }
+    current = current.parentNode;
+  }
+  return editor;
+}
+
+function flattenTextNodes(root: HTMLElement): Array<{ node: Text; start: number }> {
+  const out: Array<{ node: Text; start: number }> = [];
+  let offset = 0;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let n: Text | null;
+  while ((n = walker.nextNode() as Text | null)) {
+    if (n.parentElement?.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`)) {
+      continue;
+    }
+    out.push({ node: n, start: offset });
+    offset += n.length;
+  }
+  return out;
+}
+
+function locateFlatOffset(
+  flat: Array<{ node: Text; start: number }>,
+  index: number,
+): { node: Text; offset: number } | null {
+  for (let i = 0; i < flat.length; i++) {
+    const part = flat[i];
+    const len = part.node.length;
+    const nextStart = part.start + len;
+    if (index < nextStart || i === flat.length - 1) {
+      return { node: part.node, offset: Math.max(0, Math.min(len, index - part.start)) };
+    }
+  }
+  return null;
+}
+
+/**
+ * A Document editing island: one `.doc-placed-text` block or one `td`/`th` of `table.user`.
+ * Absolute placed lines and table cells must not merge across this boundary on delete.
+ */
+function documentLayoutIsland(node: Node | null, editor: HTMLElement): HTMLElement | null {
+  let current: Node | null = node;
+  if (current?.nodeType === Node.TEXT_NODE) current = current.parentNode;
+  while (current && current !== editor) {
+    if (current instanceof HTMLTableCellElement) {
+      const table = current.closest("table.user");
+      if (table && editor.contains(table)) return current;
+    }
+    if (current instanceof HTMLElement && current.classList.contains(PLACED_TEXT_CLASS)) {
+      return current;
+    }
+    current = current.parentNode;
+  }
+  return null;
+}
+
+function islandIsTableCell(island: HTMLElement): boolean {
+  return island instanceof HTMLTableCellElement;
+}
+
+/** True when extending a selection would bridge placed prose and a table cell. */
+function selectionWouldCrossTableBoundary(a: HTMLElement, b: HTMLElement): boolean {
+  return islandIsTableCell(a) !== islandIsTableCell(b);
+}
+
+function edgeRangeOfIsland(
+  island: HTMLElement,
+  clientX: number,
+  clientY: number,
+): Range | null {
+  const rect = island.getBoundingClientRect();
+  const midX = (rect.left + rect.right) / 2;
+  const towardStart = clientX < midX;
+  const selRange = document.createRange();
+  selRange.selectNodeContents(island);
+  selRange.collapse(towardStart);
+  // Prefer a caret near the pointer when the island still owns that point.
+  const atPoint = caretRangeAtPoint(
+    Math.min(Math.max(clientX, rect.left + 1), Math.max(rect.left + 1, rect.right - 1)),
+    Math.min(Math.max(clientY, rect.top + 1), Math.max(rect.top + 1, rect.bottom - 1)),
+  );
+  if (atPoint && island.contains(atPoint.commonAncestorContainer)) {
+    return atPoint;
+  }
+  return selRange;
+}
+
+/**
+ * Clamp a live selection that already spans placed text and a table cell back into
+ * the island that held the selection anchor (stops face/size apply bleed).
+ * Returns true when the selection was rewritten.
+ */
+export function clampDocumentSelectionToLayoutIsland(editor: HTMLElement): boolean {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  if (
+    range.commonAncestorContainer !== editor &&
+    !editor.contains(range.commonAncestorContainer)
+  ) {
+    return false;
+  }
+  const startIsland = documentLayoutIsland(range.startContainer, editor);
+  const endIsland = documentLayoutIsland(range.endContainer, editor);
+  if (!startIsland || !endIsland || startIsland === endIsland) return false;
+  if (!selectionWouldCrossTableBoundary(startIsland, endIsland)) return false;
+
+  const anchorIsland = documentLayoutIsland(sel.anchorNode, editor) ?? startIsland;
+  const next = document.createRange();
+  try {
+    next.selectNodeContents(anchorIsland);
+    // Keep a partial highlight when the anchor side of the range still sits in the island.
+    if (
+      sel.anchorNode &&
+      anchorIsland.contains(sel.anchorNode) &&
+      anchorIsland.contains(range.startContainer) &&
+      sel.anchorNode === range.startContainer &&
+      sel.anchorOffset === range.startOffset
+    ) {
+      next.setStart(range.startContainer, range.startOffset);
+    } else if (
+      sel.anchorNode &&
+      anchorIsland.contains(sel.anchorNode) &&
+      anchorIsland.contains(range.endContainer) &&
+      sel.anchorNode === range.endContainer &&
+      sel.anchorOffset === range.endOffset
+    ) {
+      next.setEnd(range.endContainer, range.endOffset);
+    }
+    sel.removeAllRanges();
+    sel.addRange(next);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isDeleteBackwardInput(inputType: string): boolean {
+  return (
+    inputType === "deleteContentBackward" ||
+    inputType === "deleteWordBackward" ||
+    inputType === "deleteSoftLineBackward" ||
+    inputType === "deleteHardLineBackward"
+  );
+}
+
+function isDeleteForwardInput(inputType: string): boolean {
+  return (
+    inputType === "deleteContentForward" ||
+    inputType === "deleteWordForward" ||
+    inputType === "deleteSoftLineForward" ||
+    inputType === "deleteHardLineForward"
+  );
+}
+
+/**
+ * Confine a non-collapsed selection delete to one layout island (placed line or cell).
+ */
+function deleteRangeWithinIsland(island: HTMLElement, fullRange: Range): void {
+  const clipped = fullRange.cloneRange();
+  const bounds = document.createRange();
+  bounds.selectNodeContents(island);
+  if (!island.contains(clipped.startContainer)) {
+    clipped.setStart(bounds.startContainer, bounds.startOffset);
+  }
+  if (!island.contains(clipped.endContainer)) {
+    clipped.setEnd(bounds.endContainer, bounds.endOffset);
+  }
+  if (
+    clipped.compareBoundaryPoints(Range.START_TO_END, clipped) <= 0 &&
+    clipped.startContainer === clipped.endContainer &&
+    clipped.startOffset === clipped.endOffset
+  ) {
+    // Empty after clamp.
+  } else {
+    clipped.deleteContents();
+  }
+  if (island.classList.contains(PLACED_TEXT_CLASS) && isPlacedTextBlockEmpty(island)) {
+    island.innerHTML = "<br>";
+  }
+  const sel = window.getSelection();
+  if (!sel) return;
+  const caret = document.createRange();
+  try {
+    caret.setStart(clipped.startContainer, clipped.startOffset);
+  } catch {
+    caret.selectNodeContents(island);
+    caret.collapse(true);
+  }
+  caret.collapse(true);
+  if (!island.contains(caret.startContainer)) {
+    caret.selectNodeContents(island);
+    caret.collapse(true);
+  }
+  sel.removeAllRanges();
+  sel.addRange(caret);
+}
+
+/**
+ * Stop Chromium contenteditable from merging a `.doc-placed-text` into an adjacent
+ * `table.user` (or another island) on Backspace/Delete.
+ *
+ * Classic failure: caret at the start of a short invent to the right of a table +
+ * Backspace → the whole word hops into the bottom-right cell; neighboring placed
+ * faces can also churn when the selection bled across the table.
+ *
+ * Returns true when the caller must `preventDefault` (DOM may already be updated).
+ */
+export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: string): boolean {
+  if (!inputType.startsWith("delete")) return false;
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  if (
+    range.commonAncestorContainer !== editor &&
+    !editor.contains(range.commonAncestorContainer)
+  ) {
+    return false;
+  }
+
+  // Selection that already bridges placed prose ↔ table: delete only inside the focus island.
+  if (!range.collapsed) {
+    const startIsland = documentLayoutIsland(range.startContainer, editor);
+    const endIsland = documentLayoutIsland(range.endContainer, editor);
+    if (
+      startIsland &&
+      endIsland &&
+      startIsland !== endIsland &&
+      selectionWouldCrossTableBoundary(startIsland, endIsland)
+    ) {
+      const focusIsland = documentLayoutIsland(sel.focusNode, editor) ?? startIsland;
+      deleteRangeWithinIsland(focusIsland, range);
+      return true;
+    }
+    return false;
+  }
+
+  const placed = findPlacedTextBlock(range.startContainer, editor);
+  if (placed) {
+    // Absolute placed lines are islands — never merge out at either edge.
+    if (isDeleteBackwardInput(inputType) && rangeAtEdgeOfBlock(placed, "start")) {
+      if (isPlacedTextBlockEmpty(placed)) {
+        // Drop the husk yourself. Native Backspace would join into the previous
+        // table cell / placed sibling instead.
+        placed.remove();
+        sel.removeAllRanges();
+        if (listPlacedBlocksSorted(editor).length) {
+          reflowAllPlacedLines(editor);
+        }
+      }
+      return true;
+    }
+    if (isDeleteForwardInput(inputType) && rangeAtEdgeOfBlock(placed, "end")) {
+      return true;
+    }
+    return false;
+  }
+
+  // Inside a table: do not pull neighboring placed prose in at the table’s outer edges.
+  const cell = documentLayoutIsland(range.startContainer, editor);
+  if (cell instanceof HTMLTableCellElement) {
+    const table = cell.closest("table.user");
+    if (!table || !editor.contains(table)) return false;
+    const cells = listUserTableCells(table);
+    const idx = cells.indexOf(cell);
+    if (idx < 0) return false;
+    if (isDeleteBackwardInput(inputType) && idx === 0 && rangeAtEdgeOfBlock(cell, "start")) {
+      return true;
+    }
+    if (
+      isDeleteForwardInput(inputType) &&
+      idx === cells.length - 1 &&
+      rangeAtEdgeOfBlock(cell, "end")
+    ) {
+      return true;
+    }
+  }
+
+  return false;
+}
+

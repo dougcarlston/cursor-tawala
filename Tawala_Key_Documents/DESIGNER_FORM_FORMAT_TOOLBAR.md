@@ -111,11 +111,13 @@ Maps to `textItemStyle` (`normal`, `instructional`, `error`).
 | Control | Enabled when |
 |---------|--------------|
 | Format toolbar (most) | Design tab + rich-text editor focused |
-| **Insert Table** | Parent is **TextItemView** |
+| **Insert Table** | Parent is **TextItemView**; **disabled** while caret is inside an existing table (no nested tables) |
 | **Tables** menu | Parent is **TextItemView** |
 | **fx** / Insert → Function | Parent is **TextItemView** |
 | Insert → Hyperlink / Invitation | Parent is **TextItemView** |
 | Insert → Image | `CanInsertImage(TargetTextEditor)` |
+
+Form Text tables share Document table behaviors: **Tab** / **Shift+Tab** cell navigation; multi-cell align (highlighted cells only); resize chrome plus one top-left ✥ move handle (no float wrap toggles).
 
 **Heading**, **FIB**, **MCQ** rich regions may enable subset of formatting; **Function / Hyperlink / Invitation** require **Text** item specifically.
 
@@ -129,4 +131,4 @@ Maps to `textItemStyle` (`normal`, `instructional`, `error`).
 
 ---
 
-*Last updated: June 2026 — from `MDIFormView.cs`, `Dialogs/*StylesDialog.cs`.*
+*Last updated: July 2026 — from `MDIFormView.cs`, `Dialogs/*StylesDialog.cs`; Insert Table blocked inside tables; Borders menu (Border 1 / Border 2 / No Border) shared with Document palette; Tab cell nav + cell-scoped align; one top-left table move handle (no float wrap toggles).*

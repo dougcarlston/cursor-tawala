@@ -1,20 +1,18 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { reflowAllPlacedLines } from "@/lib/documentCanvas";
 import {
   findActiveUserTable,
-  getTableFloatMode,
   getTablePositionPt,
   parseCssPt,
   pxToPt,
   resizeTableHeight,
   resizeTableWidth,
   setTableColumnWidths,
-  setTableFloatMode,
   setTablePositionPt,
   setTableRowHeights,
   tableBoxInContainer,
   tableColumnWidthsPt,
   tableRowHeightsPt,
-  type TableFloatMode,
 } from "@/lib/tableLayout";
 
 interface Props {
@@ -53,15 +51,15 @@ function attachPointerDrag(
 }
 
 /**
- * Selection chrome for `table.user` — move (relative offset), edge/corner resize, column/row dividers,
- * and float left/none/right so prose can sit beside the table.
+ * Selection chrome for `table.user` — one top-left move handle (anchor corner),
+ * edge/corner resize, and column/row dividers.
+ * Float wrap toggles (left/block/right) stay omitted.
  */
 export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
   const [table, setTable] = useState<HTMLTableElement | null>(null);
   const [box, setBox] = useState<{ top: number; left: number; width: number; height: number } | null>(
     null,
   );
-  const [floatMode, setFloatMode] = useState<TableFloatMode>("left");
   const dragRef = useRef<DragKind | null>(null);
   const tableRef = useRef<HTMLTableElement | null>(null);
 
@@ -83,7 +81,6 @@ export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
     }
     setTable(active);
     setBox(tableBoxInContainer(active, container));
-    setFloatMode(getTableFloatMode(active));
   }, [editorRef]);
 
   useEffect(() => {
@@ -119,16 +116,9 @@ export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
         const dxPt = pxToPt(dxPx);
         const dyPt = pxToPt(dyPx);
         switch (kind.type) {
-          case "move": {
-            const t = tableRef.current;
-            if (!t) break;
-            setTablePositionPt(
-              t,
-              kind.startLeftPt + dxPt,
-              kind.startTopPt + dyPt,
-            );
+          case "move":
+            setTablePositionPt(t, kind.startLeftPt + dxPt, kind.startTopPt + dyPt);
             break;
-          }
           case "edge-e":
             resizeTableWidth(t, kind.startWidthPt + dxPt);
             break;
@@ -166,8 +156,15 @@ export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
         sync();
       },
       () => {
+        const t = tableRef.current;
+        const editor = editorRef.current;
         dragRef.current = null;
         tableRef.current = null;
+        // Document absolute layout: resolve same-column overlaps after move; keep
+        // intentional gaps / beside placement (do not pack into a single stack).
+        if (t && editor && (t.style.position || "").toLowerCase() === "absolute") {
+          reflowAllPlacedLines(editor);
+        }
         onCommit();
         sync();
       },
@@ -178,6 +175,7 @@ export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
     tableColumnWidthsPt(table).reduce((a, b) => a + b, 0) || parseCssPt(table.style.width);
   const totalHeightPt =
     tableRowHeightsPt(table).reduce((a, b) => a + b, 0) || box.height * 0.75;
+  const movePos = getTablePositionPt(table);
 
   const colDividerAt = (index: number) => {
     const row = table.querySelector("tr");
@@ -230,8 +228,8 @@ export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
         onPointerDown={startDrag(
           {
             type: "move",
-            startLeftPt: getTablePositionPt(table).left,
-            startTopPt: getTablePositionPt(table).top,
+            startLeftPt: movePos.left,
+            startTopPt: movePos.top,
           },
           "grab",
         )}
@@ -295,33 +293,6 @@ export function TableHandlesOverlay({ editorRef, onCommit }: Props) {
           />
         );
       })}
-
-      <div className="table-float-toggle" role="group" aria-label="Table text wrap">
-        {(
-          [
-            ["left", "Float left — text on right"],
-            ["none", "Block — text above/below only"],
-            ["right", "Float right — text on left"],
-          ] as const
-        ).map(([mode, title]) => (
-          <button
-            key={mode}
-            type="button"
-            className={floatMode === mode ? "active" : undefined}
-            title={title}
-            aria-pressed={floatMode === mode}
-            onPointerDown={(e) => e.preventDefault()}
-            onClick={() => {
-              setTableFloatMode(table, mode);
-              setFloatMode(mode);
-              onCommit();
-              sync();
-            }}
-          >
-            {mode === "left" ? "◧" : mode === "right" ? "◨" : "▭"}
-          </button>
-        ))}
-      </div>
     </div>
   );
 }

@@ -48,6 +48,7 @@ export function MainIconToolbar({
   const editActive = shellEditContextActive();
   const canDeploy = canDeployProject();
   const canDelete = canDeleteSelection();
+  const dirty = useProjectStore((s) => s.dirty);
   const width = Math.max(zoneWidth, MAIN_ICON_CONTENT_MIN_PX, 200);
 
   const edit = (cmd: ShellEditCommand) => () => {
@@ -67,7 +68,15 @@ export function MainIconToolbar({
       <ToolIcon tip="Open Project" onClick={onOpen}>
         <OpenProjectIcon />
       </ToolIcon>
-      <ToolIcon tip="Save Project" onClick={() => void saveProjectToDownload()}>
+      {/*
+        Save is ALWAYS enabled (legacy + DESIGNER_MENU_SPEC). Never gate on dirty —
+        dirty only drives the status bar “· modified” cue and this tip.
+      */}
+      <ToolIcon
+        tip={dirty ? "Save Project (modified)" : "Save Project"}
+        onClick={() => void saveProjectToDownload()}
+        emphasis={dirty}
+      >
         <SaveIcon />
       </ToolIcon>
       <ToolIcon tip="Deploy Project" onClick={onDeploy} disabled={!canDeploy}>
@@ -104,11 +113,14 @@ export function MainIconToolbar({
 function ToolIcon({
   tip,
   disabled,
+  emphasis,
   onClick,
   children,
 }: {
   tip: string;
   disabled?: boolean;
+  /** Highlight when action is needed (e.g. unsaved changes) — never used to disable. */
+  emphasis?: boolean;
   onClick: () => void;
   children: ReactNode;
 }) {
@@ -117,7 +129,7 @@ function ToolIcon({
     <span className="explorer-tip" data-tip={tip}>
       <button
         type="button"
-        className="main-icon-tool-btn"
+        className={`main-icon-tool-btn${emphasis ? " main-icon-tool-btn-emphasis" : ""}`}
         aria-label={tip}
         disabled={disabled}
         onClick={onClick}

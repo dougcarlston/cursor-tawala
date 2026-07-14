@@ -32,18 +32,39 @@ import {
   extendDocumentSelectionToPoint,
   findPlacedTextBlockAtCaret,
   focusDocumentDropTarget,
-  focusPlacedBlock,
   documentEnterInPlacedText,
   handlePlacedTextArrowKey,
+  handleDocumentDeleteBoundary,
+  clampDocumentSelectionToLayoutIsland,
+  adoptOrphanDocumentContent,
   placeDocumentTextAtPoint,
   PLACED_TEXT_CLASS,
   reflowAllPlacedLines,
-  reflowPlacedLinesBelow,
+  ensureDocumentTableLayout,
   resolveDocumentFieldDropTarget,
   pruneEmptyPlacedTextBlocks,
+  preserveBlankPlacedLines,
+  clearBlankPlacedBlockIfContent,
+  selectParagraphAtPoint,
+  selectWordOrTokenAtPoint,
 } from "@/lib/documentCanvas";
+import {
+  clearTableCellSelection,
+  handleTableCellPointerDown,
+  handleTableCellPointerMove,
+  handleTableCellPointerUp,
+  navigateTableCellOnTab,
+} from "@/lib/tableCellSelection";
 import { openFunctionTokenForEdit } from "@/lib/functionPicker";
 import { FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
+import { isMultiClickSelectionGesture } from "@/lib/wordSelect";
+import { isRedundantDefaultFontSize } from "@/lib/fontSizeStrip";
+import {
+  bookmarkTextOffsets,
+  expandRangeToTouchedTokens,
+  restoreSelectionFromBookmark,
+  type TextOffsetBookmark,
+} from "@/lib/selectionBookmark";
 import {
   ITEMIZATION_TOKEN_DATA_ATTR,
   openStructuredFunctionTokenForEdit,
@@ -56,36 +77,6 @@ interface Props {
   placeholder?: string;
   /** Registers this surface with the shared Formatting Palette (row 2). */
   formattingKind?: Extract<FormattingFocusKind, "text" | "document" | "fib" | "mcq">;
-}
-
-const DEFAULT_FONT_SIZE_VALUE = "default";
-const LEGACY_DEFAULT_FONT_SIZE = "3";
-
-function mapPixelsToFontSize(value: number) {
-  if (value <= 10) return "1";
-  if (value <= 13) return "2";
-  if (value <= 16) return "3";
-  if (value <= 18) return "4";
-  if (value <= 24) return "5";
-  if (value <= 32) return "6";
-  return "7";
-}
-
-function normalizeFontSizeValue(value: unknown) {
-  const raw = String(value ?? "").trim();
-  if (!raw) return DEFAULT_FONT_SIZE_VALUE;
-
-  if (/^[1-7]$/.test(raw)) {
-    return raw === LEGACY_DEFAULT_FONT_SIZE ? DEFAULT_FONT_SIZE_VALUE : raw;
-  }
-
-  const pxMatch = raw.match(/^(\d+(?:\.\d+)?)px$/i);
-  if (pxMatch) return normalizeFontSizeValue(mapPixelsToFontSize(Number(pxMatch[1])));
-
-  const ptMatch = raw.match(/^(\d+(?:\.\d+)?)pt$/i);
-  if (ptMatch) return normalizeFontSizeValue(mapPixelsToFontSize(Number(ptMatch[1]) * (4 / 3)));
-
-  return DEFAULT_FONT_SIZE_VALUE;
 }
 
 /** Caret Range at a viewport point, across Chromium (`caretRangeFromPoint`) and Firefox. */
@@ -122,10 +113,15 @@ function unwrapElement(el: Element) {
   parent.removeChild(el);
 }
 
+/**
+ * Drop redundant default (12pt / legacy size 3) markers from saved HTML.
+ * Must keep explicit palette stops — especially 10pt and 11pt — which the old
+ * legacy 1–7 pixel buckets incorrectly treated as default and stripped.
+ */
 function stripFontSizeFormatting(root: ParentNode) {
   root.querySelectorAll("font[size]").forEach((node) => {
     const size = node.getAttribute("size");
-    if (normalizeFontSizeValue(size) !== DEFAULT_FONT_SIZE_VALUE) return;
+    if (!isRedundantDefaultFontSize(size)) return;
 
     node.removeAttribute("size");
     if (!node.getAttributeNames().length) {
@@ -135,7 +131,7 @@ function stripFontSizeFormatting(root: ParentNode) {
 
   root.querySelectorAll<HTMLElement>("[style]").forEach((node) => {
     if (!node.style.fontSize) return;
-    if (normalizeFontSizeValue(node.style.fontSize) !== DEFAULT_FONT_SIZE_VALUE) return;
+    if (!isRedundantDefaultFontSize(node.style.fontSize)) return;
 
     node.style.removeProperty("font-size");
     if (!node.getAttribute("style")) {
@@ -155,6 +151,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   const surfaceRef = useRef<HTMLDivElement>(null);
   const lastHtml = useRef(html);
   const savedRangeRef = useRef<Range | null>(null);
+  /** Text-offset bookmark survives Face/Size DOM rewrites and focus-steal Range nudges. */
+  const savedBookmarkRef = useRef<TextOffsetBookmark | null>(null);
   const [fieldDragOver, setFieldDragOver] = useState(false);
   /** Document canvas: distinguish click (place/focus block) from drag (text selection). */
   const documentPointerRef = useRef<{ x: number; y: number; dragged: boolean } | null>(null);
@@ -183,17 +181,29 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const el = surfaceRef.current;
     const selection = document.getSelection();
     if (!el || !selection || !selectionIsInside(selection, el) || !selection.rangeCount) return;
-    savedRangeRef.current = selection.getRangeAt(0).cloneRange();
+    const range = selection.getRangeAt(0).cloneRange();
+    if (!range.collapsed) {
+      expandRangeToTouchedTokens(el, range);
+    }
+    savedRangeRef.current = range;
+    savedBookmarkRef.current = !range.collapsed ? bookmarkTextOffsets(el, range) : null;
   };
 
   const restoreSelection = () => {
     const el = surfaceRef.current;
     const selection = document.getSelection();
+    if (!el || !selection) return;
+    const bookmark = savedBookmarkRef.current;
+    if (bookmark && restoreSelectionFromBookmark(el, bookmark)) return;
     const savedRange = savedRangeRef.current;
-    if (!el || !selection || !savedRange) return;
+    if (!savedRange) return;
     if (!el.contains(savedRange.commonAncestorContainer)) return;
     selection.removeAllRanges();
-    selection.addRange(savedRange);
+    try {
+      selection.addRange(savedRange);
+    } catch {
+      /* ignore detached endpoints */
+    }
   };
 
   useEffect(() => {
@@ -232,15 +242,25 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (next !== lastHtml.current) {
       el.innerHTML = next;
       lastHtml.current = next;
+      if (formattingKind === "document") {
+        ensureDocumentTableLayout(el);
+        lastHtml.current = el.innerHTML;
+      }
     }
-  }, [html]);
+  }, [html, formattingKind]);
 
   useEffect(() => {
     const el = surfaceRef.current;
     if (!el || !html) return;
     normalizeFieldTokenSpans(el);
     ensureFieldTokensDraggable(el);
-  }, [html]);
+    if (formattingKind === "document") {
+      ensureDocumentTableLayout(el);
+    }
+    // Landings mutate the DOM (ZWSP pads). Keep lastHtml in sync so a later
+    // blur remount does not wipe pads / shift Face-Size selection bookmarks.
+    lastHtml.current = el.innerHTML;
+  }, [html, formattingKind]);
 
   useEffect(() => {
     const el = surfaceRef.current;
@@ -248,7 +268,10 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       el.innerHTML = html;
       normalizeFieldTokenSpans(el);
       ensureFieldTokensDraggable(el);
-      lastHtml.current = html;
+      if (formattingKind === "document") {
+        ensureDocumentTableLayout(el);
+      }
+      lastHtml.current = el.innerHTML;
     }
   }, []);
 
@@ -256,9 +279,18 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const handleSelectionChange = () => {
       const el = surfaceRef.current;
       if (!el) return;
+      // Only refresh the saved bookmark while the editor keeps focus. Opening Face/Size
+      // <select> steals focus and Chrome often nudges CE=false chip ranges mid-word —
+      // overwriting the mousedown save would bake that corruption into the next apply.
+      if (document.activeElement !== el) return;
       const selection = document.getSelection();
       if (selectionIsInside(selection, el) && selection?.rangeCount) {
-        savedRangeRef.current = selection.getRangeAt(0).cloneRange();
+        const range = selection.getRangeAt(0).cloneRange();
+        if (!range.collapsed) {
+          expandRangeToTouchedTokens(el, range);
+        }
+        savedRangeRef.current = range;
+        savedBookmarkRef.current = !range.collapsed ? bookmarkTextOffsets(el, range) : null;
         syncPaletteFocus();
       }
     };
@@ -275,6 +307,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     restoreSelection();
     insertFieldTokenAtSelection(name);
     stripFontSizeFormatting(el);
+    rememberSelection();
     const nextHtml = el.innerHTML;
     lastHtml.current = nextHtml;
     onChange(nextHtml);
@@ -295,23 +328,33 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   useEffect(() => {
     if (formattingKind !== "document") return;
     const el = surfaceRef.current;
-    if (!el || typeof ResizeObserver === "undefined") return;
+    if (!el) return;
 
     let lastWidth = el.clientWidth;
     let settleTimer: number | undefined;
-    const observer = new ResizeObserver(() => {
+    const pack = () => {
       const width = el.clientWidth;
-      if (Math.abs(width - lastWidth) < 1) return;
-      lastWidth = width;
+      if (Math.abs(width - lastWidth) < 1 && document.visibilityState === "visible") {
+        // Still pack when height/MDI chrome changes without a surface width delta.
+      } else {
+        lastWidth = width;
+      }
       reflowAllPlacedLines(el);
       window.clearTimeout(settleTimer);
       settleTimer = window.setTimeout(() => {
         commitFromSurfaceRef.current(el);
       }, 120);
-    });
-    observer.observe(el);
+    };
+
+    const observer =
+      typeof ResizeObserver !== "undefined" ? new ResizeObserver(() => pack()) : null;
+    observer?.observe(el);
+    // MDI / browser window resize can change layout without a reliable surface
+    // ResizeObserver tick in some Chromium cases — pack on window resize too.
+    window.addEventListener("resize", pack);
     return () => {
-      observer.disconnect();
+      observer?.disconnect();
+      window.removeEventListener("resize", pack);
       window.clearTimeout(settleTimer);
     };
   }, [formattingKind]);
@@ -337,10 +380,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       if (!anchor) return;
       if (extendDocumentSelectionToPoint(el, anchor, e.clientX, e.clientY)) {
         e.preventDefault();
-        const selection = document.getSelection();
-        if (selection?.rangeCount) {
-          savedRangeRef.current = selection.getRangeAt(0).cloneRange();
-        }
+        rememberSelection();
       }
     };
 
@@ -373,6 +413,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     const placed = placeDocumentTextAtPoint(el, e.clientX, e.clientY);
     if (placed) {
       savedRangeRef.current = null;
+      savedBookmarkRef.current = null;
       registerAsPaletteEditor();
       syncPaletteFocus();
       commitFromSurface(el);
@@ -417,12 +458,16 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       el.focus();
       const target = resolveDocumentFieldDropTarget(el, e.clientX, e.clientY);
       const range = focusDocumentDropTarget(target, e.clientX, e.clientY);
-      if (range) savedRangeRef.current = range.cloneRange();
+      if (range) {
+        savedRangeRef.current = range.cloneRange();
+        savedBookmarkRef.current = null;
+      }
       if (moving) {
         moveFieldTokenToSelection(moving);
       } else if (name) {
         insertFieldTokenAtSelection(name);
       }
+      rememberSelection();
       if (target.classList.contains(PLACED_TEXT_CLASS)) {
         ensurePlacedBlockWrapWidth(el, target);
         reflowPlacedLinesBelow(el, target);
@@ -437,6 +482,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       selection.removeAllRanges();
       selection.addRange(range);
       savedRangeRef.current = range.cloneRange();
+      savedBookmarkRef.current = null;
     }
     if (moving) {
       moveFieldTokenToSelection(moving);
@@ -483,6 +529,22 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             if (fieldDragOver) setFieldDragOver(false);
           }}
           onDrop={handleFieldDrop}
+          onBeforeInput={(e) => {
+            if (formattingKind !== "document") return;
+            const el = surfaceRef.current;
+            if (!el) return;
+            const ie = e.nativeEvent as InputEvent;
+            const inputType = typeof ie.inputType === "string" ? ie.inputType : "";
+            if (!inputType.startsWith("delete")) return;
+            // Absolute placed lines must not merge into an adjacent table cell on
+            // Backspace at the start of a short invent (Chromium joins islands).
+            if (handleDocumentDeleteBoundary(el, inputType)) {
+              e.preventDefault();
+              commitFromSurface(el);
+              rememberSelection();
+              syncPaletteFocus();
+            }
+          }}
           onInput={(e) => {
             const target = e.target as HTMLDivElement;
             if (formattingKind === "document") {
@@ -491,15 +553,27 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               if (deleted) {
                 pruneEmptyPlacedTextBlocks(target);
               }
+              // Chromium can escape absolute `.doc-placed-text` and leave orphan glyphs
+              // as direct children — re-home them before wrap/reflow so the next click
+              // does not invent a second paragraph anchor mid-text.
+              adoptOrphanDocumentContent(target);
+              // Keep Double-Return blank lines from collapsing when editing the next para.
+              preserveBlankPlacedLines(target);
               const placed = findPlacedTextBlockAtCaret(target);
               if (placed) {
+                clearBlankPlacedBlockIfContent(placed);
                 ensurePlacedBlockWrapWidth(target, placed);
-                reflowPlacedLinesBelow(target, placed);
               }
+              // Full stack pack: a restored blank above the caret must push following lines.
+              reflowAllPlacedLines(target);
             }
             commitFromSurface(target);
           }}
           onFocus={() => {
+            const el = surfaceRef.current;
+            if (el && formattingKind === "document") {
+              ensureDocumentTableLayout(el);
+            }
             setActiveFieldTarget(insertFieldToken);
             registerAsPaletteEditor();
             syncPaletteFocus();
@@ -508,8 +582,15 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             const next = e.relatedTarget as HTMLElement | null;
             if (next?.closest(".formatting-palette")) return;
             if (next?.closest(".table-handles-overlay")) return;
-            if (next?.closest(".menu-bar, .menu-drop, .modal-overlay, .modal-backdrop, .configure-function-dialog, .insert-function-dialog")) {
+            if (next?.closest(".menu-bar, .menu-drop, .main-icon-toolbar, .modal-overlay, .modal-backdrop, .configure-function-dialog, .insert-function-dialog")) {
               return;
+            }
+            const el = surfaceRef.current;
+            if (el && formattingKind === "document") {
+              // Unused invent anchors (click blank, type nothing) go away when focus leaves.
+              if (pruneEmptyPlacedTextBlocks(el)) {
+                commitFromSurface(el);
+              }
             }
             if (formattingKind) clearFormattingFocus(formattingKind);
           }}
@@ -518,9 +599,36 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             syncPaletteFocus();
           }}
           onKeyDown={(e) => {
-            if (formattingKind !== "document") return;
             const el = surfaceRef.current;
+            if (el && e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+              if (navigateTableCellOnTab(el, e.shiftKey)) {
+                e.preventDefault();
+                rememberSelection();
+                syncPaletteFocus();
+                return;
+              }
+            }
+            if (formattingKind !== "document") return;
             if (!el) return;
+
+            // Fallback when beforeinput is missing: keep Backspace/Delete inside the
+            // placed-line / cell island (same contract as onBeforeInput).
+            if (
+              (e.key === "Backspace" || e.key === "Delete") &&
+              !e.ctrlKey &&
+              !e.metaKey &&
+              !e.altKey
+            ) {
+              const inputType =
+                e.key === "Backspace" ? "deleteContentBackward" : "deleteContentForward";
+              if (handleDocumentDeleteBoundary(el, inputType)) {
+                e.preventDefault();
+                commitFromSurface(el);
+                rememberSelection();
+                syncPaletteFocus();
+                return;
+              }
+            }
 
             if (
               e.key === "ArrowLeft" ||
@@ -542,9 +650,38 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             if (documentEnterInPlacedText(el)) {
               e.preventDefault();
               commitFromSurface(el);
+              rememberSelection();
+              syncPaletteFocus();
             }
           }}
           onMouseDown={(e) => {
+            if (e.button === 0 && e.detail === 3) {
+              const el = surfaceRef.current;
+              if (el && selectParagraphAtPoint(el, e.clientX, e.clientY)) {
+                // Custom dblclick word-select + preventDefault breaks native
+                // triple-click chaining — select the paragraph ourselves.
+                e.preventDefault();
+                rememberSelection();
+                registerAsPaletteEditor();
+                syncPaletteFocus();
+                return;
+              }
+            }
+            const el = surfaceRef.current;
+            if (el && handleTableCellPointerDown(el, e.target, e.button)) {
+              registerAsPaletteEditor();
+              // Multi-cell drag: do not start placed-line text selection from here.
+              documentPointerRef.current = {
+                x: e.clientX,
+                y: e.clientY,
+                dragged: false,
+              };
+              selectAnchorRef.current = null;
+              rememberSelection();
+              syncPaletteFocus();
+              return;
+            }
+            if (el) clearTableCellSelection(el);
             if (formattingKind === "document") {
               if (e.button !== 0) return;
               const target = e.target as HTMLElement;
@@ -554,7 +691,6 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 y: e.clientY,
                 dragged: false,
               };
-              const el = surfaceRef.current;
               el?.focus();
               const anchor = caretRangeAtPoint(e.clientX, e.clientY);
               if (anchor && el && (anchor.commonAncestorContainer === el || el.contains(anchor.commonAncestorContainer))) {
@@ -565,8 +701,16 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               return;
             }
             savedRangeRef.current = null;
+      savedBookmarkRef.current = null;
           }}
           onMouseMove={(e) => {
+            const el = surfaceRef.current;
+            if (el && handleTableCellPointerMove(el, e.clientX, e.clientY, e.buttons)) {
+              e.preventDefault();
+              rememberSelection();
+              syncPaletteFocus();
+              return;
+            }
             const pointer = documentPointerRef.current;
             if (!pointer) return;
             if (!pointer.dragged) {
@@ -579,7 +723,6 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               pointer.dragged = true;
             }
             if (formattingKind !== "document") return;
-            const el = surfaceRef.current;
             if (!el) return;
             if (!selectAnchorRef.current) {
               const sel = window.getSelection();
@@ -595,6 +738,13 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
           }}
           onMouseUp={(e) => {
+            const el = surfaceRef.current;
+            if (el) handleTableCellPointerUp(el);
+            if (el && formattingKind === "document") {
+              // Native drag can bridge absolute placed text and a table cell — clamp
+              // before Face/Size / delete see a cross-island range.
+              clampDocumentSelectionToLayoutIsland(el);
+            }
             rememberSelection();
             syncPaletteFocus();
             selectAnchorRef.current = null;
@@ -607,6 +757,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               return;
             }
             if (formattingKind !== "document") return;
+            // detail ≥ 2: word/paragraph selection — do not collapse via place-at-point.
+            if (isMultiClickSelectionGesture(e.detail)) return;
             handleDocumentCanvasClick(e);
           }}
           onDoubleClick={(e) => {
@@ -616,14 +768,51 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               e.stopPropagation();
               return;
             }
-            if (formattingKind === "document") {
-              const placed = (e.target as HTMLElement).closest(".doc-placed-text");
-              if (placed instanceof HTMLElement) {
-                e.preventDefault();
-                focusPlacedBlock(placed);
-                registerAsPaletteEditor();
-                syncPaletteFocus();
+
+            const el = surfaceRef.current;
+            if (!el) return;
+
+            // Field token: select it — never let a stray dblclick invent another insert.
+            const field = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);
+            if (field instanceof HTMLElement && el.contains(field)) {
+              e.preventDefault();
+              e.stopPropagation();
+              const sel = window.getSelection();
+              if (sel) {
+                const range = document.createRange();
+                range.selectNode(field);
+                sel.removeAllRanges();
+                sel.addRange(range);
+                rememberSelection();
               }
+              registerAsPaletteEditor();
+              syncPaletteFocus();
+              return;
+            }
+
+            // Word select across mixed style spans (native often chops mid-word at boundaries).
+            if (selectWordOrTokenAtPoint(el, e.clientX, e.clientY)) {
+              e.preventDefault();
+              e.stopPropagation();
+              rememberSelection();
+              registerAsPaletteEditor();
+              syncPaletteFocus();
+              return;
+            }
+
+            // Free space / empty invent: mouseup skips place for detail≥2 (word/para
+            // protect). Without a fallthrough invent here, dblclick on blank canvas
+            // leaves a dead Document — no caret, no typing.
+            if (formattingKind === "document") {
+              const target = e.target as HTMLElement;
+              if (target.closest("table.user")) return;
+              if (target.closest(".table-handles-overlay")) return;
+              e.preventDefault();
+              e.stopPropagation();
+              handleDocumentCanvasClick(e);
+              rememberSelection();
+              registerAsPaletteEditor();
+              syncPaletteFocus();
             }
           }}
         />

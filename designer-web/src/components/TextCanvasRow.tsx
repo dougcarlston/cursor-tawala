@@ -20,6 +20,23 @@ import {
 } from "@/lib/formattingPaletteContext";
 import { openFunctionTokenForEdit } from "@/lib/functionPicker";
 import { ensureFunctionTokenCaretGaps, FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
+import {
+  seedBlankBlockTypingFormat,
+  selectParagraphAtPoint,
+  selectWordOrTokenAtPoint,
+} from "@/lib/documentCanvas";
+import {
+  clearTableCellSelection,
+  handleTableCellPointerDown,
+  handleTableCellPointerMove,
+  handleTableCellPointerUp,
+  navigateTableCellOnTab,
+} from "@/lib/tableCellSelection";
+import { FIELD_TOKEN_CLASS } from "@/lib/fieldTokens";
+import {
+  setTypingFormat,
+  typingFormatForInsert,
+} from "@/lib/paletteTypingFormat";
 
 interface Props {
   item: TextItem;
@@ -80,6 +97,8 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   const labelInputRef = useRef<HTMLInputElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
   const wasSelected = useRef(selected);
+  /** Face/size captured before native insertParagraph so the new empty block can inherit them. */
+  const enterTypingRef = useRef<ReturnType<typeof typingFormatForInsert> | null>(null);
   const pendingFunctionEditRef = useRef<{
     instanceId: string | null;
     functionId: string | null;
@@ -298,7 +317,15 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       ) : (
         <div
           className={`text-badge${editing ? " editing" : ""}`}
-          title={selected ? "Click to edit text label" : "Click to select"}
+          draggable={selected}
+          title={selected ? "Drag to reorder, or click to edit text label" : "Click to select"}
+          onDragStart={(e) => {
+            if (!selected) {
+              e.preventDefault();
+              return;
+            }
+            e.dataTransfer.effectAllowed = "move";
+          }}
           onClick={(e) => {
             e.stopPropagation();
             setSelectedItemIndex(index);
@@ -317,22 +344,88 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               contentEditable
               suppressContentEditableWarning
               data-placeholder={TEXT_PLACEHOLDER}
-              onInput={() => {
+              onInput={(e) => {
+                const el = editorRef.current;
+                const pending = enterTypingRef.current;
+                if (el && pending) {
+                  enterTypingRef.current = null;
+                  const ie = e.nativeEvent as InputEvent;
+                  if (
+                    ie.inputType === "insertParagraph" ||
+                    ie.inputType === "insertLineBreak"
+                  ) {
+                    seedBlankBlockTypingFormat(el, pending);
+                  }
+                }
+                if (el) {
+                  // Restore Double-Return empty paragraphs Chromium may strip while editing.
+                  el.querySelectorAll("[data-doc-blank='1']").forEach((node) => {
+                    if (!(node instanceof HTMLElement)) return;
+                    const text = (node.textContent ?? "").replace(/\u00a0|\u200b/g, "").trim();
+                    if (!text && !node.querySelector("br")) {
+                      node.innerHTML = "<br>";
+                    }
+                  });
+                }
                 commit();
                 syncPaletteFocus();
+              }}
+              onKeyDown={(e) => {
+                const el = editorRef.current;
+                if (el && e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
+                  if (navigateTableCellOnTab(el, e.shiftKey)) {
+                    e.preventDefault();
+                    rememberSelection();
+                    syncPaletteFocus();
+                    return;
+                  }
+                }
+                if (e.key !== "Enter" || e.shiftKey || e.ctrlKey || e.metaKey || e.altKey) return;
+                if (!el) return;
+                // Capture before native insertParagraph drops font wrappers on the new block.
+                const typing = typingFormatForInsert(el);
+                setTypingFormat(el, typing);
+                enterTypingRef.current = typing;
               }}
               onKeyUp={() => {
                 rememberSelection();
                 syncPaletteFocus();
               }}
               onMouseUp={() => {
+                const el = editorRef.current;
+                if (el) handleTableCellPointerUp(el);
                 rememberSelection();
                 syncPaletteFocus();
               }}
+              onMouseMove={(e) => {
+                const el = editorRef.current;
+                if (el && handleTableCellPointerMove(el, e.clientX, e.clientY, e.buttons)) {
+                  e.preventDefault();
+                  rememberSelection();
+                  syncPaletteFocus();
+                }
+              }}
               onMouseDown={(e) => {
+                if (e.button === 0 && e.detail === 3) {
+                  const el = editorRef.current;
+                  if (el && selectParagraphAtPoint(el, e.clientX, e.clientY)) {
+                    e.preventDefault();
+                    rememberSelection();
+                    registerAsPaletteEditor();
+                    syncPaletteFocus();
+                    return;
+                  }
+                }
+                const el = editorRef.current;
+                if (el && handleTableCellPointerDown(el, e.target, e.button)) {
+                  registerAsPaletteEditor();
+                  rememberSelection();
+                  syncPaletteFocus();
+                  return;
+                }
+                if (el) clearTableCellSelection(el);
                 // Clicking empty padding below a lone function token: force caret after it.
                 if (e.target !== e.currentTarget) return;
-                const el = editorRef.current;
                 if (!el) return;
                 const tokens = el.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`);
                 const last = tokens[tokens.length - 1];
@@ -351,6 +444,33 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                 sel.removeAllRanges();
                 sel.addRange(range);
                 savedRangeRef.current = range.cloneRange();
+              }}
+              onDoubleClick={(e) => {
+                const el = editorRef.current;
+                if (!el) return;
+                const field = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);
+                if (field instanceof HTMLElement && el.contains(field)) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const sel = window.getSelection();
+                  if (sel) {
+                    const range = document.createRange();
+                    range.selectNode(field);
+                    sel.removeAllRanges();
+                    sel.addRange(range);
+                    savedRangeRef.current = range.cloneRange();
+                  }
+                  registerAsPaletteEditor();
+                  syncPaletteFocus();
+                  return;
+                }
+                if (selectWordOrTokenAtPoint(el, e.clientX, e.clientY)) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  rememberSelection();
+                  registerAsPaletteEditor();
+                  syncPaletteFocus();
+                }
               }}
               onFocus={() => {
                 setActiveFieldTarget(insertFieldToken);

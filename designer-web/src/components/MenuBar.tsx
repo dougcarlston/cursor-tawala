@@ -15,6 +15,9 @@ import {
   canDeployProject,
   openProjectManagerLocal,
   runShellEditCommand,
+  saveAcceleratorLabel,
+  saveAsAcceleratorLabel,
+  saveProjectAs,
   saveProjectToDownload,
   shellEditContextActive,
   type ShellEditCommand,
@@ -40,6 +43,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const activeWindowId = useProjectStore((s) => s.activeWindowId);
   const formCount = useProjectStore((s) => s.project.forms.length);
   const setStatus = useProjectStore((s) => s.setStatus);
+  const dirty = useProjectStore((s) => s.dirty);
   const focus = useSyncExternalStore(
     subscribeFormattingFocus,
     getFormattingFocusState,
@@ -55,6 +59,8 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const editActive = shellEditContextActive();
   const canDeploy = canDeployProject();
   const canDelete = canDeleteSelection();
+  const saveAccel = saveAcceleratorLabel();
+  const saveAsAccel = saveAsAcceleratorLabel();
 
   const edit = (cmd: ShellEditCommand) => () => {
     runShellEditCommand(cmd);
@@ -70,8 +76,26 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           Open Project…
         </button>
         <div className="menu-separator" />
-        <button type="button" onClick={() => void saveProjectToDownload()}>
-          Save
+        {/*
+          Save is ALWAYS enabled (legacy + DESIGNER_MENU_SPEC). Never gate on dirty —
+          dirty only drives the “modified” cue and status bar. Accel text is secondary
+          chrome, not a disabled state.
+        */}
+        <button
+          type="button"
+          className={dirty ? "menu-save-dirty" : undefined}
+          onClick={() => void saveProjectToDownload()}
+        >
+          Save{dirty ? " · modified" : ""}
+          <span className="menu-accel">{saveAccel}</span>
+        </button>
+        {/*
+          Save As always offered (clears remembered handle → native picker). Same enable
+          rules as Save — never gated on dirty.
+        */}
+        <button type="button" onClick={() => void saveProjectAs()}>
+          Save As…
+          <span className="menu-accel">{saveAsAccel}</span>
         </button>
         <div className="menu-separator" />
         <button type="button" disabled={!canDeploy} onClick={onDeploy}>

@@ -146,6 +146,8 @@ Documents  [-]
 
 Dragging the **right edge** of the Project Explorer column resizes the Explorer; the **Items** / **Statements** middle column (see below) is docked to that edge and **moves and resizes with it**. Those palettes **cannot** be widened, moved, or expanded independently of the Explorer today.
 
+**Browser persistence (July 14, 2026):** Explorer and Fields column widths are stored in **`localStorage`** (`tawala.designer.panelWidths`) on the designer machine — restored on Designer start / soft refresh. They are **not** written into project JSON (legacy WinForms kept shell dock sizes in user settings, not the `.tawala` project). Resize either splitter → release → reopen Designer → widths match.
+
 **Backlog:** Independent resize/move/expand of Items and Statements relative to the Explorer — `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` **§7**.
 
 ### MDI workspace (backlog context — not Phase 1)
@@ -570,7 +572,7 @@ Screenshot reference: `assets/Icon_Tool_Bar-*.png`.
 | 5 | **Cut** | Blue scissors | Context-dependent | See enable rules below |
 | 6 | **Copy** | Two pages | Context-dependent | |
 | 7 | **Paste** | Clipboard | Context-dependent | Often grey when nothing to paste |
-| 8 | **Delete** | Red **X** | Context-dependent | |
+| 8 | **Delete** | Red **X** | Context-dependent | Form item when a canvas row is selected; else selected Form / Process / Document (**Are you sure…?** confirm — legacy `ConfirmDialog`) |
 | | *(separator)* | | | |
 | 9 | **Undo** | Curved left arrow | Context-dependent | Owner: **always greyed** on Jan 2011 build — likely not wired / not implemented there |
 | 10 | **Redo** | Curved right arrow | Context-dependent | Same as Undo |
@@ -598,6 +600,21 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 ### Browser Designer note
 
 `designer-web` should use **local save/export** instead of www.tawala.com deploy; undo/redo should be implemented for canvas editors even if legacy build lacked them.
+
+**Save / dirty (browser — July 2026):**
+- **File → Save**, floppy toolbar, and **⌘S / Ctrl+S** are **always enabled** (never greyed on clean/dirty). Dirty only drives status `· modified`, File menu “Save · modified”, and a red-tint floppy highlight.
+- Grey accelerator text alone is **not** a disabled Save — do not confuse `.menu-accel` with `:disabled`.
+- Shell guards install from `main.tsx` (not only App `useEffect`) so Vite HMR cannot drop the shortcut / leave warning.
+- **Leave warning** (`beforeunload`) fires **only when `dirty` / status `· modified`**. Soft refresh (**Cmd+R**) and hard refresh (**Cmd+Shift+R**) both navigate — neither skips the warning. Quiet refresh: **Save first** (clears dirty) then Cmd+R, or choose Reload/Leave to discard.
+- First Save (no remembered file handle) uses the File System Access **native Save** dialog with suggested name **`{project.name}.json`** (empty template → `Untitled.json`). Later Saves rewrite that file quietly. **Shift+⌘S** / File → Save As clears the handle and asks again. Download fallback uses the same suggested name (no second spontaneous picker).
+- Prefer Designer in a normal browser tab (`http://localhost:5173`). Cursor Simple Browser / Electron webviews can still deliver ⌘S to the **IDE** (second Save As for an untitled editor buffer) even when the page calls `preventDefault`.
+
+**Smoke (Save):**
+1. Soft-refresh Designer once after a pull (`Cmd+R` / soft restart of Vite if needed) — should be **quiet** when status has no `· modified`.
+2. Edit a Document or Form → status shows **`· modified`**; floppy tip **Save Project (modified)** with red-tint highlight; File → **Save · modified**.
+3. **⌘S / Ctrl+S** (with caret in contenteditable) or File → Save or floppy → one picker/download named from the project (e.g. `Untitled.json` or `MyProject.json`); `· modified` clears. A second Save should **not** re-open the picker.
+4. **File → Save As…** (or **⇧⌘S** / **Shift+Ctrl+S**) always opens a picker even after a prior Save; new location becomes the quiet re-Save target. Ordinary Save / ⌘S must still rewrite quietly afterward.
+5. Edit again → **Cmd+R** *or* hard refresh (`Cmd+Shift+R`) → browser **leave warning** appears (both navigate; “soft” does not skip it). Save → `· modified` clears → Cmd+R is quiet again.
 
 ---
 
@@ -631,7 +648,8 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 | Insert | Context-sensitive (3 menus) | Partial; no Process insert |
 | Format / Themes / Tabs | Full | Minimal |
 | MDI Windows menu | Yes | Single editor pane |
-| Toolbars | Main icon bar + format bar (per MDI child) | Simplified |
+| Toolbars | Main icon bar + format bar (per MDI child) | Main icon toolbar + Formatting Palette; **Delete** (red X) removes selected Form/Process/Document with confirm, or selected form item |
+| Delete Form/Process/Document | Explorer + ConfirmDialog (`Delete {Type} "{name}"?`) | **Wired July 2026** via main toolbar / Edit → Delete (`confirmAndDeleteProjectEntity`) |
 
 ---
 

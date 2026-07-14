@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
-import { parseFibPrompt, segmentsFromUnderscorePrompt } from "./fibPrompt.mjs";
+import {
+  normalizeFibPromptSource,
+  parseFibPrompt,
+  segmentsFromUnderscorePrompt,
+} from "./fibPrompt.mjs";
 
 describe("FIB underscore → blanks (Preview / fibPrompt)", () => {
   const blanks = [
     { name: "a", length: 8, alternateLabel: "FIB1:a" },
     { name: "b", length: 6, alternateLabel: "FIB1:b" },
+    { name: "c", length: 6, alternateLabel: "FIB1:c" },
   ];
 
   it("replaces underscore runs with blank segments (no leftover _ characters)", () => {
@@ -32,5 +37,34 @@ describe("FIB underscore → blanks (Preview / fibPrompt)", () => {
     const rows = parseFibPrompt("City/", blanks.slice(0, 1));
     expect(rows[0].segments.map((s) => s.type)).toEqual(["text", "blank"]);
     expect(rows[0].segments[0].text).toBe("City");
+  });
+
+  it("does not treat the Design FIB placeholder as a legacy [hint]", () => {
+    const prompt =
+      "[Replace this with your question. Underscores create blanks.]\nName ________ Phone ________";
+    const rows = parseFibPrompt(prompt, blanks);
+    // Placeholder-only first soft row is dropped; Name/Phone line becomes one row of blanks.
+    expect(rows.length).toBeGreaterThanOrEqual(1);
+    const last = rows[rows.length - 1];
+    expect(last.segments.some((s) => s.type === "blank")).toBe(true);
+    const texts = rows.flatMap((r) => r.segments.filter((s) => s.type === "text").map((s) => s.text));
+    expect(texts.join(" ")).not.toMatch(/Underscores create blanks/i);
+    expect(texts.join("")).not.toMatch(/_/);
+  });
+
+  it("decodes &nbsp; so Preview text never shows the entity", () => {
+    expect(normalizeFibPromptSource("A&nbsp;B")).toBe("A B");
+    const rows = parseFibPrompt("Parent&nbsp;Email ________", blanks.slice(0, 1));
+    const text = rows[0].segments.find((s) => s.type === "text").text;
+    expect(text).toContain("Parent Email");
+    expect(text).not.toContain("&nbsp;");
+  });
+
+  it("does not invent a stray blank for an empty instructional leftover", () => {
+    const rows = parseFibPrompt(
+      "[Replace this with your question. Underscores create blanks.]",
+      blanks,
+    );
+    expect(rows).toHaveLength(0);
   });
 });

@@ -22,7 +22,18 @@ export function BreakCanvasRow({ item: _item, index, selected }: Props) {
         setSelectedItemIndex(index);
       }}
     >
-      <div className="break-badge" title="Page break">
+      <div
+        className="break-badge"
+        title={selected ? "Drag to reorder" : "Page break"}
+        draggable={selected}
+        onDragStart={(e) => {
+          if (!selected) {
+            e.preventDefault();
+            return;
+          }
+          e.dataTransfer.effectAllowed = "move";
+        }}
+      >
         BREAK
       </div>
       <div className="break-hatch" aria-hidden />

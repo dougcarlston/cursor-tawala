@@ -1,27 +1,64 @@
 /**
  * Parse JSON FIB prompt strings into labeled rows + blanks.
- * - `//` = new row
- * - `[hint]` = italic hint above next blank(s)
+ * - `//` or soft line breaks = new row
+ * - `[hint]` = italic hint above next blank(s) (short legacy hints only — not the Design placeholder)
  * - `/` = label segment then blank (repeated)
  * - `_+` = Designer underscore blanks (must become inputs, not visible underscores)
  */
 
+/** Design default prompt — must not be misread as a legacy `[hint]`. */
+const FIB_DESIGN_PLACEHOLDER =
+  "[Replace this with your question. Underscores create blanks.]";
+
 export function parseFibPrompt(prompt, blanks) {
   if (!prompt || !blanks?.length) return [];
-  const rows = prompt.split("//").map((r) => r.trim()).filter(Boolean);
+  const normalized = normalizeFibPromptSource(prompt);
+  const rows = splitFibPromptRows(normalized);
   let bi = 0;
   const parsed = [];
   for (const rowStr of rows) {
     const row = parseFibRow(rowStr, blanks, bi);
     bi = row.nextIdx;
-    parsed.push(row);
+    if (row.segments.length) parsed.push(row);
   }
   return parsed;
 }
 
+/** Decode entities / soft breaks so Preview never prints `&nbsp;` literally. */
+export function normalizeFibPromptSource(prompt) {
+  return String(prompt ?? "")
+    .replace(/\r\n/g, "\n")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&#160;/g, " ")
+    .replace(/&amp;/gi, "&")
+    .replace(/&lt;/gi, "<")
+    .replace(/&gt;/gi, ">")
+    .replace(/&quot;/gi, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/\u00a0/g, " ");
+}
+
+/** Soft rows from Design WYSIWYG (`<br>`, paragraphs) plus legacy `//`. */
+function splitFibPromptRows(prompt) {
+  const withBreaks = String(prompt)
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<\/(p|div)>/gi, "\n")
+    .replace(/<(p|div)(?:\s[^>]*)?>/gi, "");
+  return withBreaks
+    .split(/\/\/|\n+/)
+    .map((r) => r.trim())
+    .filter(Boolean)
+    .filter((r) => !isDesignPlaceholderOnly(r));
+}
+
+function isDesignPlaceholderOnly(rowStr) {
+  const plain = plainForUnderscores(rowStr).trim();
+  return plain === FIB_DESIGN_PLACEHOLDER || plain === FIB_DESIGN_PLACEHOLDER.slice(1, -1);
+}
+
 /** Plain text for underscore matching (rich Design prompts may carry light HTML). */
 function plainForUnderscores(rowStr) {
-  return String(rowStr ?? "")
+  return normalizeFibPromptSource(rowStr)
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
     .replace(/<[^>]+>/g, "")
@@ -57,13 +94,25 @@ export function segmentsFromUnderscorePrompt(rowStr, blanks, startIdx = 0) {
   return { segments, nextIdx: bi };
 }
 
+/** True when `[…]` is a short legacy hint, not the Design FIB placeholder. */
+function isLegacyHintBracket(inner) {
+  const t = inner.trim();
+  if (!t) return false;
+  if (/underscores create blanks/i.test(t)) return false;
+  if (t.length > 48) return false;
+  return true;
+}
+
 function parseFibRow(rowStr, blanks, bi) {
   const hints = [];
   let s = rowStr;
-  while (s.startsWith("[")) {
+  while (s.trimStart().startsWith("[")) {
+    s = s.trimStart();
     const end = s.indexOf("]");
     if (end === -1) break;
-    hints.push(s.slice(1, end));
+    const inner = s.slice(1, end);
+    if (!isLegacyHintBracket(inner)) break;
+    hints.push(inner);
     s = s.slice(end + 1);
   }
 
@@ -109,7 +158,10 @@ function parseFibRow(rowStr, blanks, bi) {
     return fromUnderscores;
   }
 
-  if (s) segments.push({ type: "text", text: s });
+  if (s) {
+    const text = plainForUnderscores(s);
+    if (text) segments.push({ type: "text", text });
+  }
 
   if (hints.length > 0) {
     for (const h of hints) {
@@ -123,7 +175,9 @@ function parseFibRow(rowStr, blanks, bi) {
       bi++;
     }
     segments.push({ type: "text", text: trailing });
-  } else if (bi < blanks.length) {
+  } else if (bi < blanks.length && segments.some((seg) => seg.type === "text")) {
+    // Slash-less label-only row without underscores: one blank after the label text.
+    // Do not invent blanks for empty/placeholder-only rows (avoids stray Preview boxes).
     segments.push({ type: "blank", blank: blanks[bi], hint: null });
     bi++;
   }

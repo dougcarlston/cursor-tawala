@@ -211,3 +211,42 @@ export function selectionPlainOffset(root: HTMLElement): number {
   pre.setEnd(range.startContainer, range.startOffset);
   return pre.toString().length;
 }
+
+/**
+ * Set `range` to cover plain-text offsets [start, end) inside `root`.
+ * Returns false when the offsets cannot be resolved.
+ */
+export function setPlainTextRange(
+  root: HTMLElement,
+  range: Range,
+  start: number,
+  end: number,
+): boolean {
+  const points: { node: Text; offset: number }[] = [];
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  let node: Text | null;
+  let offset = 0;
+  while ((node = walker.nextNode() as Text | null)) {
+    const len = node.data.length;
+    points.push({ node, offset });
+    offset += len;
+  }
+  if (start < 0 || end < start || end > offset) return false;
+
+  const locate = (target: number): { node: Text; offset: number } | null => {
+    for (let i = 0; i < points.length; i++) {
+      const { node: n, offset: at } = points[i];
+      const len = n.data.length;
+      if (target <= at + len) return { node: n, offset: target - at };
+    }
+    const last = points[points.length - 1];
+    return last ? { node: last.node, offset: last.node.data.length } : null;
+  };
+
+  const a = locate(start);
+  const b = locate(end);
+  if (!a || !b) return false;
+  range.setStart(a.node, a.offset);
+  range.setEnd(b.node, b.offset);
+  return true;
+}

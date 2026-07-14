@@ -108,6 +108,14 @@ Full list (owner screenshots):
 
 **Display behavior (owner):** Same rules as Font Face — reflects selection at cursor; title-bar click shows last-shown size; reopen may reset to **Default Size** when mixed formatting in document.
 
+**Smoke (Font Point Size — browser):**
+1. Select text in a Document or Form rich-text surface → choose **8** from Font Point Size → body stays ~8pt (not ~36pt); banner shows **8**.
+2. Choose **10** then **11** → glyphs and banner show those sizes (not **12 pt (default)**). Re-select plain 12-pt text → banner returns to **12 pt (default)**. Document commit must **keep** inline `10pt` / `11pt` (must not strip them as legacy size 3).
+3. Highlight **one word** (double-click) in a multi-word Document placed line → Size **20** (or Face) → only that word changes; **highlight stays on that word** (does not vanish, does not expand to the whole paragraph).
+4. After (3), change Face again → still only the same highlighted word changes (no ghost apply after the highlight was lost). Size-only follow-up applies to the same highlight.
+5. Drag-select **several words** → Face or Size → formatting applies to the full drag; highlight stays on that full span (does not collapse to only the last word).
+6. Spot-check **12**, **20**, **36** — banner label matches the sized run.
+
 ### Font Color split button
 
 **Main button click:** applies current color to selection.
@@ -139,9 +147,18 @@ Toolbar icon updates to match current paragraph alignment.
 
 | Control | Enable | Action |
 |---------|--------|--------|
-| **Insert Table** | When insert allowed at cursor | Inserts table at cursor |
-| **Delete Table** | When cursor **inside** a table | **Single click** — deletes the **entire** table containing the cursor (no submenu) |
+| **Insert Table** | When insert allowed at cursor (**not** inside an existing table — no nested tables) | Inserts table at cursor |
+| **Delete Table** | When cursor **inside** a table | **Single click** — confirms (**Are you sure you want to delete this table?**); **OK** deletes the entire table containing the cursor; **Cancel** leaves it |
 | **Insert or Delete Row or Column** | When cursor **inside** a table | Arrow opens submenu; all commands operate relative to **cursor position** |
+| **Borders** | When cursor **inside** a table | Arrow opens submenu: **Border 1** (thin grid), **Border 2** (thick outer + thin cells), **No Border**. Class on `table.user` (`user-border-1` / `user-border-2` / `user-border-none`) |
+
+**Multi-cell format:** drag across cells to highlight a rectangle; Bold / Italic / Underline / color / face / size / alignment apply to **all selected cells only** (cell-level `text-align` for alignment — never the whole table or row).
+
+**Tab navigation:** Inside a table, **Tab** moves the caret to the next cell (end of row → first cell of next row). **Shift+Tab** moves to the previous cell. At the last/first cell, caret stays in the table (no leave / no auto-insert row).
+
+**Table chrome:** When the caret is in a table: **one** top-left ✥ **move** handle (anchor corner — drag repositions the table; absolute X/Y is kept — no forced pack under preceding text), plus resize (edges / SE corner) and column/row dividers. **No** float wrap toggles (left/block/right). Prose above/beside/below stays editable via normal click/type + Indent/Outdent.
+
+**Document table layout:** Tables and `.doc-placed-text` share absolute positions. Packing is **collision-aware** (same horizontal column only): side-by-side L/R prose is allowed; intentional drag gaps are not closed; same-column overlaps still clear so leave/return never layers text under a table. Unused empty invent anchors prune on leave/other click (intentional Double-Return `data-doc-blank` gaps are kept). **Click/drop hit-test:** inside `.doc-placed-text` → edit that line; inside a `table.user` cell → caret/highlight that cell; otherwise invent in free space (including L/R of tables). Left-edge invent may use a tiny inset so the caret is visible — mid-canvas / free-space invents keep the click X. Blank-canvas / prose clicks must not stay trapped in the table when `caretRangeFromPoint` false-positives into an absolute table.
 
 **Insert or Delete Row or Column** submenu:
 
@@ -268,10 +285,80 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Document MDI editor | Full RTF + toolbar + tables + functions | Not implemented |
-| Middle column | Empty for documents | Form items palette always shown |
-| Fields drag into document | Yes | No drag |
-| Format toolbar row 2 | Per-document child toolbar | Minimal / form-only |
+| Document MDI editor | Full RTF + toolbar + tables + functions | Rich canvas with placed lines, tables, fx tokens (ongoing parity) |
+| Middle column | Empty for documents | Form items palette hidden for Document windows |
+| Fields drag into document | Yes | Drag + double-click insert `<<name>>` field tokens |
+| Format toolbar row 2 | Per-document child toolbar | Shared Formatting Palette (Document + Form Text) |
+
+### Must-not-break smoke (Document canvas — July 2026)
+
+**Toolbar state vs caret**
+
+1. Type mixed B/I/face runs (e.g. italic “pretty”, bold “much”, plain “everywhere”). Caret in plain “everywhere” → **B** and **I** not lit; Font Face shows default/Arial (not a prior Comic face).
+2. Select Comic Sans on one word, then click a plain/default run → Font Face returns to **Arial (default)** (not sticky Comic).
+
+**Double-click word select / triple-click paragraph**
+
+3. Double-click a word that straddles style boundaries (e.g. first letters plain, rest italic) → whole word selects, not a mid-word chop at the span edge.
+3b. Triple-click in a placed Document line (plain text, and a line with `<<field>>` chips) → whole paragraph/line selects. Same for Form Text body. Mid-text single click still places a caret only (no new `✥`). Field double-click still selects the chip only.
+3c. Double-click blank Document canvas (no text under the pointer) → invent/place a text anchor and show a caret (`|`) so typing works. Single-click free space still invents/places a caret too.
+3d. Click the **left** side of a blank Document (near the window border, before Indent) → blinking `|` is clearly visible inside the content area (not clipped under the MDI/chrome border). Mid-canvas invent and free-space L/R of a table still place at the click X.
+3e. **Click/drop hit-test (July 14):** Click or field-drop into **existing placed text** → caret/edit in that line (no second overlapping invent). Click/drop a **table cell** → caret or cell highlight in that cell (not invent elsewhere). Click/drop **free space** (including beside a table — **left and right**) → invent at that point. Left-edge invent may inset for caret visibility; other free-space invents must keep the click X. Dragging an existing ✥ line to the right of a table must keep working; click-invent in the empty white space to the right must invent (not stay dead from caretRange / full-width hit-box false positives).
+
+**Field tokens**
+
+4. Insert `<<Form:Field>>` into a 20 pt line → chip sits on the text baseline and matches surrounding face/size (not tiny mono badge or sticky wrong size). **Hard-refresh first.**
+5. Double-click an existing field token → selects that token only; does **not** spawn a second `<<…>>` elsewhere.
+6. Mid-sentence continuity: type `The player of the week was ` → insert field → type `, who rallied…` → stays **one** placed line/paragraph with the same face/size/margin (does **not** open a new block after the chip).
+7. Select a run that includes field chips (or select-all on the placed line) → choose **20 pt** → chips resize to **20 pt** to match body text (not stuck at insert-time 12/16). Same for Font Face.
+7b. Field chip baseline (16→20 pt): place `<<FIB1:a>>` / `b` / `c` mid-sentence at **16 pt Trebuchet**, select the placed line → **20 pt** → chips stay on the same baseline as body glyphs; selection highlight is a smooth block (no stepped/taller line through chips; no vertical drop after `<<FIB1:c>>`). **Hard-refresh first.**
+7c. Face/Size banner honesty (July 14): select a **uniform** Comic + larger-pt line that includes field chips → Face shows **Comic Sans MS** (not **Mixed**); Size shows the real point size (not false **12 pt (default)**). Repeated Face/Size changes keep chips and text matched. Mixed only when styles truly differ. Mid-span Comic+26 with a field → **click away** → **re-drag** the same span → Face still **Comic Sans MS** and Size **26** (not Mixed/Mixed).
+7d. B/I caret: after mixed bold/italic/plain runs, caret in plain text → **B** / **I** not lit (computed/probe style, not sticky queryCommandState).
+7e. Selection-scoped Size/Face (July 14): in a Document placed line, highlight **one word** → choose a non-default Size (or Face) → **only that word** changes; highlight must **not** expand to the whole placed paragraph; highlight must **remain** on that word after the palette command.
+7f. **10 pt** and **11 pt**: choose either Size → glyphs and Size banner show **10** / **11** (not stuck as **12 pt (default)**). Other stops (8, 9, 12, 14, …) still work. Click another run → banner follows that selection (not sticky 10). Document HTML must retain `font-size: 10pt` / `11pt` after commit (not stripped).
+7g. B/I/U on Fields: select a field chip alone (or a run that includes chips) → **Bold** / **Italic** / **Underline** apply to the chip(s). Button state lights when the chip carries that mark.
+7h. Selection restore after Face/Size (July 14): double-click one word → Face or Size → highlight remains. Drag several words → Face or Size → highlight stays on the full drag (not last-word-only). After a successful restore, a further Face change applies only to the still-highlighted span (no ghost range).
+7i. **Field-gap selection stability (July 14 retest):** triple-click a Document placed line that includes several `<<FIB…>>` chips → Size (or Face then Size) repeatedly (20→22→24→26). Highlight must stay **end-to-end** including chips and the trailing words (e.g. still covers `modification.`); must **not** creep inward by ~2 invisible pads per chip each pass (`modific`|`ation.`). After Comic Face then Size to 26, no orphan default-face/default-size fragments at the start or end of the original run.
+7j. **Face→Size with chips (July 14 SS1–SS4 / retest):** In a Document line that already has face/size (e.g. 18 pt Arial) and **three** field chips (`<<FIB1:a>>` / `c` / `b`), drag a **partial** highlight that includes text **and** at least one chip → **Face** Times New Roman (highlight kept, chip included in blue highlight) → **Size** **26 pt**. Selection must stay the same meaningful span (starts with `some`, ends with `while` — not mid-word `"th"`…`"w"`); glyphs that were in the highlight must remain Times+26 (not revert to default beside the selection); chip in the highlight must paint Times+26 and stay in the highlight (no white gap that excludes the chip from the next Size). Soft-wrap mid-word line breaks are OK only when both halves share the same face/size and stay selected. Harness: `designer-web/public/face-then-size-ss4.html`.
+7k. **Left-of-table defaults (July 14):** Invent/type a word left of a table (e.g. **Left**) → Face **Comic Sans MS** + Size **20** → then Face **Arial (default)** + Size **12 pt (default)**. Glyphs and Face/Size banner must show Arial/12 (not stuck on Comic/20). Persist after Save / soft-refresh. One-word default inside a longer Comic line must **not** strip the whole placed line’s face/size.
+
+**Indent (Batch 5 — keep face/size)**
+
+8. Indent a Document placed line → left edge steps in; wrap width to right margin; lines below **do not overlap**; face/size on the indented run stay unchanged.
+9. Form Text indent via margin-left / soft-line wrap → keeps face/size (no `blockquote` rewrite).
+
+**Mid-text caret (must not invent a second paragraph)**
+
+10. Type a sentence in a Document placed line. Click mid-word (e.g. to fix a typo) → caret appears **in that same placed line** at the click point; **no** new `✥` / `Npt × Mpt` paragraph anchor appears on top of the text. Delete/type to correct the word. **Hard-refresh before testing.**
+11. Mid-sentence field continuity still holds (smoke #6) after the click-caret fix.
+
+**Return keeps face/size (multi-paragraph)**
+
+12. Set **Trebuchet MS** + **20 pt** → type a line → **Return** → type again → second placed line stays **Trebuchet 20**; Formatting Palette Face/Size banner still shows that face/size (not Arial / default 12). Same for Form Text body paragraphs.
+
+**Double-Return blank line (July 14)**
+
+13. Type a paragraph → **Return twice** (visible blank line) → type a second paragraph → edit anywhere in the second paragraph → the blank-line gap between the two **must remain** (intentional empty placed line / flow paragraph is not collapsed or pruned).
+
+**Tables (July 14)**
+
+14. Caret inside a table → **Insert Table** greyed / no-op tip (“Cannot insert a table inside another table”).
+15. Drag across several cells → highlight → Bold / Size / Align Center apply to **all selected cells only** (other cells unchanged).
+16. Borders menu → **Border 1** / **Border 2** / **No Border**; reload / soft-refresh still shows the chosen border class on the table.
+17. Caret in a cell → **Tab** / **Shift+Tab** moves to next/previous cell; last/first cell stays put (does not jump outside the table).
+18. With caret in a table → **one** top-left ✥ move handle (no ◧/▭/◨ float icons); drag moves the table; type/drag/indent text above or below the table still works.
+19. Insert a table among Document text → click another window → click Document back → table still **reserves vertical space** (text not visible underneath / not layered under the table).
+20. Document with a table + prose → click in text above/beside/below (outside cells) → caret lands in that prose and typing works (not trapped in the table).
+
+**Free-space table / text layout (July 14 batch)**
+
+21. Place / type text **left** of a table when there is room → text stays beside the table (does **not** jump below).
+22. Place / type text **right** of a table when there is room → stays beside.
+22b. **Delete beside table (July 14):** Invent/type a short word (e.g. `Test`) in free space **right** of a table → Backspace/Delete erases **in that placed line** (word must **not** hop into a table cell). Nearby labels (Left / Right side / Bottom) keep their font face. Clicking a cell still edits that cell.
+23. Drag table with ✥ to leave a gap below preceding text (or beside) → after release, table keeps that X/Y (does **not** snap under the text above).
+24. Click blank canvas to invent a text anchor → click away / elsewhere **without typing** → empty anchor is gone (intentional Double-Return blank between paragraphs still kept).
+25. Soft-refresh → leave/return Document → still **no** table-over-text overlay.
+26. Caret in a table → **Delete Table** → **Are you sure you want to delete this table?** → **Cancel** keeps table; **OK** removes it.
 
 ---
 
@@ -288,4 +375,4 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 ---
 
-*Last updated: June 2026.*
+*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b).*

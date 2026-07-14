@@ -89,7 +89,15 @@ export function StructuredTextCanvasRow({ item, index, formName, selected }: Pro
       ) : (
         <div
           className="text-badge editing"
-          title={selected ? "Click to edit text label" : "Click to select"}
+          draggable={selected}
+          title={selected ? "Drag to reorder, or click to edit text label" : "Click to select"}
+          onDragStart={(e) => {
+            if (!selected) {
+              e.preventDefault();
+              return;
+            }
+            e.dataTransfer.effectAllowed = "move";
+          }}
           onClick={(e) => {
             e.stopPropagation();
             setSelectedItemIndex(index);

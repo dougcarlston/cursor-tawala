@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>SS4 Face→Size harness (3 chips)</title>
+    <style>
+      body {
+        font-family: system-ui, sans-serif;
+        margin: 1.5rem;
+        max-width: 52rem;
+      }
+      #editor {
+        border: 1px solid #888;
+        min-height: 8rem;
+        padding: 0.75rem;
+        font-size: 18pt;
+        font-family: Arial, sans-serif;
+        line-height: 1.35;
+      }
+      .doc-placed-text {
+        margin: 0;
+      }
+      .field-token {
+        display: inline;
+        border: 1px solid #666;
+        border-radius: 3px;
+        padding: 0 0.15em;
+        background: #f3f3f3;
+        white-space: nowrap;
+      }
+      #log {
+        white-space: pre-wrap;
+        font-family: ui-monospace, monospace;
+        font-size: 12px;
+        background: #111;
+        color: #ddd;
+        padding: 0.75rem;
+        margin-top: 1rem;
+      }
+      .ok {
+        color: #6d6;
+      }
+      .fail {
+        color: #f66;
+      }
+      button {
+        margin-right: 0.5rem;
+        margin-top: 0.75rem;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Owner SS1→SS4 harness</h1>
+    <p>
+      Partial highlight across text + <code>&lt;&lt;FIB1:a&gt;&gt;</code> → Face (Times) → Size
+      (26). Pass = selection text unchanged (starts with <code>some</code>, ends with
+      <code>while</code>), edges stay Times+26pt (no mid-word default revert).
+    </p>
+    <div id="editor" contenteditable="true"></div>
+    <div>
+      <button type="button" id="btn-select">1. Select partial (+chip)</button>
+      <button type="button" id="btn-face">2. Face → Times New Roman</button>
+      <button type="button" id="btn-size">3. Size → 26 pt</button>
+      <button type="button" id="btn-run">Run SS1→SS4</button>
+    </div>
+    <div id="log"></div>
+    <script type="module">
+      import {
+        paletteFontFace,
+        paletteFontSize,
+      } from "/src/lib/paletteCommands.ts";
+      import { setActivePaletteEditor } from "/src/lib/formattingPaletteContext.ts";
+      import { CARET_ZWSP } from "/src/lib/tokenCaretLanding.ts";
+      import { bookmarkTextOffsets, textBetweenOffsets } from "/src/lib/selectionBookmark.ts";
+
+      const editor = document.getElementById("editor");
+      const logEl = document.getElementById("log");
+      let saved = null;
+      let intended = "";
+
+      function log(msg, cls) {
+        const line = document.createElement("div");
+        if (cls) line.className = cls;
+        line.textContent = msg;
+        logEl.appendChild(line);
+      }
+
+      function chip(name) {
+        const span = document.createElement("span");
+        span.className = "field-token";
+        span.contentEditable = "false";
+        span.dataset.fieldName = name;
+        span.textContent = `<<${name}>>`;
+        return span;
+      }
+
+      function resetDoc() {
+        editor.innerHTML = "";
+        const block = document.createElement("p");
+        block.className = "doc-placed-text";
+        block.style.fontSize = "18pt";
+        block.style.fontFamily = "Arial";
+        const t = (s) => block.appendChild(document.createTextNode(s));
+        t("Here is one with some fields in it. ");
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        block.appendChild(chip("FIB1:a"));
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        t(" should be name, while ");
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        block.appendChild(chip("FIB1:c"));
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        t(" and ");
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        block.appendChild(chip("FIB1:b"));
+        block.appendChild(document.createTextNode(CARET_ZWSP));
+        t(" are contact fields.");
+        editor.appendChild(block);
+      }
+
+      function selectPartial() {
+        const block = editor.querySelector(".doc-placed-text");
+        const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+        let startNode = null;
+        let startOff = 0;
+        let endNode = null;
+        let endOff = 0;
+        let node;
+        while ((node = walker.nextNode())) {
+          if (node.parentElement?.closest(".field-token")) continue;
+          const iSome = node.data.indexOf("some");
+          if (iSome >= 0 && !startNode) {
+            startNode = node;
+            startOff = iSome;
+          }
+          const iWhile = node.data.indexOf("while");
+          if (iWhile >= 0) {
+            endNode = node;
+            endOff = iWhile + 5;
+          }
+        }
+        const range = document.createRange();
+        range.setStart(startNode, startOff);
+        range.setEnd(endNode, endOff);
+        const sel = getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+        intended = bookmarkTextOffsets(editor, range).text;
+        log(`Selected: "${intended}"`);
+        return range;
+      }
+
+      setActivePaletteEditor({
+        el: editor,
+        commit: () => {},
+        saveSelection: () => {
+          const sel = getSelection();
+          if (sel?.rangeCount) saved = sel.getRangeAt(0).cloneRange();
+        },
+        restoreSelection: () => {
+          if (!saved) return;
+          const sel = getSelection();
+          sel.removeAllRanges();
+          try {
+            sel.addRange(saved);
+          } catch {}
+        },
+      });
+
+      function assertPass() {
+        const sel = getSelection();
+        if (!sel?.rangeCount || sel.getRangeAt(0).collapsed) {
+          log("FAIL: selection collapsed", "fail");
+          return false;
+        }
+        const bm = bookmarkTextOffsets(editor, sel.getRangeAt(0));
+        const okText = bm.text === intended;
+        log(
+          okText
+            ? `PASS selection text: "${bm.text}"`
+            : `FAIL selection text got "${bm.text}" want "${intended}"`,
+          okText ? "ok" : "fail",
+        );
+        const midWord =
+          bm.text.startsWith("th ") || bm.text.startsWith("th") || !bm.text.startsWith("some");
+        if (midWord && bm.text !== intended) {
+          log("FAIL: mid-word shrink (SS4)", "fail");
+        }
+        const token = editor.querySelector('.field-token[data-field-name="FIB1:a"]');
+        const chipOk =
+          token && token.style.fontSize === "26pt" && /times/i.test(token.style.fontFamily);
+        log(
+          chipOk ? "PASS chip FIB1:a is Times 26pt" : "FAIL chip FIB1:a face/size",
+          chipOk ? "ok" : "fail",
+        );
+        return okText && chipOk;
+      }
+
+      document.getElementById("btn-select").onclick = () => {
+        logEl.textContent = "";
+        resetDoc();
+        editor.focus();
+        selectPartial();
+      };
+      document.getElementById("btn-face").onclick = () => {
+        editor.focus();
+        paletteFontFace("Times New Roman");
+        log("Applied Face: Times New Roman");
+      };
+      document.getElementById("btn-size").onclick = () => {
+        editor.focus();
+        paletteFontSize("26");
+        log("Applied Size: 26");
+        assertPass();
+      };
+      document.getElementById("btn-run").onclick = async () => {
+        logEl.textContent = "";
+        resetDoc();
+        editor.focus();
+        selectPartial();
+        paletteFontFace("Times New Roman");
+        log("After Face: " + textBetweenOffsets(editor, 0, 9999).slice(0, 80) + "…");
+        // Simulate focus-steal to Size <select>: blur must not corrupt the next apply.
+        const keep = bookmarkTextOffsets(editor, getSelection().getRangeAt(0));
+        editor.blur();
+        getSelection().removeAllRanges();
+        const { restoreSelectionFromBookmark } = await import("/src/lib/selectionBookmark.ts");
+        restoreSelectionFromBookmark(editor, keep);
+        editor.focus();
+        paletteFontSize("26");
+        assertPass();
+      };
+
+      resetDoc();
+      log("Ready — click Run SS1→SS4");
+    </script>
+  </body>
+</html>

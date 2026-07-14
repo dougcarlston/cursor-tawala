@@ -210,10 +210,13 @@ export const HEADING_PLACEHOLDER = "[Replace this with heading of your own.]";
 export const TEXT_PLACEHOLDER = "[Replace this with text of your own.]";
 
 /**
- * Legacy default FIB prompt (`Resources.FibItemDefaultRTF`). Inserted selected so the designer
- * can type over it immediately (see `FibCanvasRow` select-all).
+ * Legacy default FIB prompt (`Resources.FibItemDefaultRTF`). Inserted with the question text
+ * selected and ~20 unhighlighted trailing underscores (blank length).
  */
 export const FIB_PLACEHOLDER = "[Replace this with your question. Underscores create blanks.]";
+/** Trailing blank run on insert (~20). */
+export const FIB_DEFAULT_UNDERSCORES = "____________________";
+export const FIB_DEFAULT_PROMPT = `${FIB_PLACEHOLDER} ${FIB_DEFAULT_UNDERSCORES}`;
 
 /**
  * Legacy default MCQ question text (`Resources.McqItemDefaultRTF`). Inserted selected so the
@@ -232,8 +235,8 @@ export function createDefaultItem(type: FormItemType, label: string): FormItem {
       return {
         type,
         label,
-        prompt: FIB_PLACEHOLDER,
-        blanks: [{ name: "a", length: 10, height: 1, alternateLabel: `${label}:a` }],
+        prompt: FIB_DEFAULT_PROMPT,
+        blanks: [{ name: "a", length: FIB_DEFAULT_UNDERSCORES.length, height: 1, alternateLabel: `${label}:a` }],
       };
     case "mc":
       return {

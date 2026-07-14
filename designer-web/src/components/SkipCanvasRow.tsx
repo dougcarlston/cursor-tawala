@@ -38,7 +38,18 @@ export function SkipCanvasRow({ item, index, formName, selected }: Props) {
           setSelectedItemIndex(index);
         }}
       >
-        <div className="skip-badge" title="Skip instructions">
+        <div
+          className="skip-badge"
+          title={selected ? "Drag to reorder" : "Skip instructions"}
+          draggable={selected}
+          onDragStart={(e) => {
+            if (!selected) {
+              e.preventDefault();
+              return;
+            }
+            e.dataTransfer.effectAllowed = "move";
+          }}
+        >
           SKIP
         </div>
         <div className="skip-main">

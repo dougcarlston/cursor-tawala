@@ -98,13 +98,20 @@ export function getTablePositionPt(table: HTMLTableElement): { left: number; top
   };
 }
 
-/** Move table by setting `position: relative` offsets (works with float + side text). */
+/**
+ * Move table by setting left/top offsets (pt).
+ * Preserves `position: absolute` for Document stacked tables; Form Text keeps relative.
+ */
 export function setTablePositionPt(table: HTMLTableElement, left: number, top: number): void {
-  table.style.position = "relative";
+  const wasAbsolute = (table.style.position || "").toLowerCase() === "absolute";
+  table.style.position = wasAbsolute ? "absolute" : "relative";
   table.style.left = formatPt(left);
   table.style.top = formatPt(top);
   table.style.marginLeft = "";
   table.style.marginTop = "";
+  if (wasAbsolute) {
+    table.style.margin = "0";
+  }
 }
 
 /** Move table by adjusting top/left offsets (pt). */

@@ -198,7 +198,8 @@ export function isPaletteControlEnabled(
   }
 
   if (control === "insertTable") {
-    return kind === "text" || kind === "document";
+    // No nested tables — grey Insert Table while caret is inside an existing table.
+    return (kind === "text" || kind === "document") && !cursorInTable;
   }
 
   if (control === "fx") {

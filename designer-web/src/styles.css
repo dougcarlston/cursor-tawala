@@ -315,6 +315,29 @@ textarea {
   color: #999;
 }
 
+.menu-accel {
+  float: right;
+  margin-left: 24px;
+  color: #555;
+  font-size: 11px;
+  /* Accel is secondary chrome — never styled like :disabled (#999). */
+  opacity: 1;
+}
+
+.menu-dropdown button:hover:not(:disabled) .menu-accel {
+  color: inherit;
+}
+
+.menu-dropdown button.menu-save-dirty {
+  font-weight: 600;
+  color: #1a3a6b;
+}
+
+.menu-dropdown button.menu-save-dirty .menu-accel {
+  color: #a00;
+  font-weight: 600;
+}
+
 .menu-submenu {
   position: relative;
 }
@@ -424,6 +447,12 @@ textarea {
 
 .main-icon-tool-btn:disabled {
   opacity: 0.4;
+}
+
+.main-icon-tool-btn-emphasis:not(:disabled) {
+  border-color: #c07070;
+  background: #fdecec;
+  box-shadow: inset 0 0 0 1px #e8b0b0;
 }
 
 .main-icon-tool-btn svg {
@@ -804,6 +833,16 @@ textarea {
 }
 
 .form-item-slot.selected-slot {
+  cursor: default;
+}
+
+.form-item-slot.selected-slot .fib-badge,
+.form-item-slot.selected-slot .text-badge,
+.form-item-slot.selected-slot .heading-badge,
+.form-item-slot.selected-slot .mcq-badge,
+.form-item-slot.selected-slot .hidden-field-badge,
+.form-item-slot.selected-slot .skip-badge,
+.form-item-slot.selected-slot .break-badge {
   cursor: grab;
 }
 
@@ -811,7 +850,13 @@ textarea {
   opacity: 0.45;
 }
 
-.form-item-slot.selected-slot:active {
+.form-item-slot.selected-slot .fib-badge:active,
+.form-item-slot.selected-slot .text-badge:active,
+.form-item-slot.selected-slot .heading-badge:active,
+.form-item-slot.selected-slot .mcq-badge:active,
+.form-item-slot.selected-slot .hidden-field-badge:active,
+.form-item-slot.selected-slot .skip-badge:active,
+.form-item-slot.selected-slot .break-badge:active {
   cursor: grabbing;
 }
 
@@ -1142,8 +1187,16 @@ textarea {
   justify-content: center;
 }
 
+.text-rich-wrap {
+  position: relative;
+  width: 100%;
+  max-width: 100%;
+  overflow: auto;
+}
+
 .text-rich-editor {
   width: 100%;
+  max-width: 100%;
   box-sizing: border-box;
   border: 1px solid #cfcfcf;
   padding: 4px 6px;
@@ -1151,6 +1204,23 @@ textarea {
   font-size: 13px;
   line-height: 1.4;
   min-height: 24px;
+  overflow: auto;
+}
+
+.text-rich-editor table.user {
+  max-width: 100%;
+  border-collapse: collapse;
+}
+
+.text-rich-editor table.user td,
+.text-rich-editor table.user th {
+  user-select: text;
+  -webkit-user-select: text;
+  border: 1px solid #000;
+  min-width: 1.5em;
+  min-height: 1.2em;
+  padding: 1px 4px;
+  vertical-align: top;
 }
 
 /* While editing: room below tokens so the caret can land after a lone function box. */
@@ -2461,13 +2531,27 @@ button.skip-script-line:hover {
   line-height: inherit;
 }
 
-/* Field tokens share .function-table-token chrome; keep them on the text baseline
-   (badge defaults to vertical-align:bottom which lifts glyphs off the line). */
-.rich-surface .field-token.function-table-token {
+/* Document/Form rich-text chips share .function-table-token chrome. Use
+   display:inline (not inline-block) so vertical border/padding paint without
+   expanding the line box — chips sit on the text baseline and selection stays
+   even at 16→20 pt. Standalone function-table badges keep inline-block chrome. */
+.rich-surface .field-token.function-table-token,
+.rich-surface .function-token.function-table-token {
+  display: inline;
   vertical-align: baseline;
   line-height: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
+  padding: 0 0.2em;
+  /* Inherit face/size from surrounding text unless an inline style from insert wins. */
+  font-family: inherit;
+  font-size: inherit;
+  max-width: none;
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  /* Opaque badge fill hid the blue selection through CE=false chips (owner SS2/SS4 gap). */
+  background-color: color-mix(in srgb, #eef3ff 45%, transparent);
 }
 
 .function-table-inline {
@@ -3420,6 +3504,8 @@ button.skip-script-line:hover {
 .text-rich-wrap {
   position: relative;
   width: 100%;
+  max-width: 100%;
+  overflow: auto;
 }
 
 .rich-surface {
@@ -4424,6 +4510,8 @@ button.skip-script-line:hover {
 
 .document-editor .rich-surface .doc-placed-text {
   position: absolute;
+  /* Above absolute tables so prose keeps hit-testing/caret when packing is tight. */
+  z-index: 2;
   margin: 0;
   min-width: 2em;
   min-height: 1.2em;
@@ -4439,6 +4527,10 @@ button.skip-script-line:hover {
 
 .document-editor .rich-surface table.user {
   border-collapse: collapse;
+  /* Document tables are absolute in the placed stack (see ensureDocumentTableLayout).
+     Never float — float sits at flow origin and overlays absolute placed lines after remount. */
+  float: none;
+  z-index: 1;
 }
 
 .document-editor .rich-surface table.user td,
@@ -4450,7 +4542,48 @@ button.skip-script-line:hover {
   vertical-align: top;
 }
 
-/* `table.user` selection chrome — move, resize, float (legacy IE resize parity). */
+/* Table border presets (class on `table.user` — survives save/export). */
+.document-editor .rich-surface table.user.user-border-1 td,
+.document-editor .rich-surface table.user.user-border-1 th,
+.text-rich-editor table.user.user-border-1 td,
+.text-rich-editor table.user.user-border-1 th {
+  border: 1px solid #000;
+}
+
+.document-editor .rich-surface table.user.user-border-2,
+.text-rich-editor table.user.user-border-2 {
+  border: 3px solid #000;
+}
+
+.document-editor .rich-surface table.user.user-border-2 td,
+.document-editor .rich-surface table.user.user-border-2 th,
+.text-rich-editor table.user.user-border-2 td,
+.text-rich-editor table.user.user-border-2 th {
+  border: 1px solid #000;
+}
+
+.document-editor .rich-surface table.user.user-border-none,
+.text-rich-editor table.user.user-border-none {
+  border: none;
+}
+
+.document-editor .rich-surface table.user.user-border-none td,
+.document-editor .rich-surface table.user.user-border-none th,
+.text-rich-editor table.user.user-border-none td,
+.text-rich-editor table.user.user-border-none th {
+  border: none;
+}
+
+/* Multi-cell drag highlight for formatting. */
+.document-editor .rich-surface table.user td.table-cell-selected,
+.document-editor .rich-surface table.user th.table-cell-selected,
+.text-rich-editor table.user td.table-cell-selected,
+.text-rich-editor table.user th.table-cell-selected {
+  background: #cfe3ff;
+  outline: 1px solid #3f7fd6;
+}
+
+/* `table.user` selection chrome — top-left move + resize + col/row dividers (no float toggles). */
 .table-handles-overlay {
   position: absolute;
   pointer-events: none;
@@ -4478,6 +4611,7 @@ button.skip-script-line:hover {
   box-sizing: border-box;
 }
 
+/* Top-left anchor move (table + placed-text overlays). Float wrap toggles stay hidden. */
 .table-handle-move {
   top: -3px;
   left: -3px;
@@ -4494,12 +4628,7 @@ button.skip-script-line:hover {
 }
 
 .table-float-toggle {
-  position: absolute;
-  top: -22px;
-  right: 0;
-  pointer-events: auto;
-  display: flex;
-  gap: 1px;
+  display: none;
 }
 
 .table-handle-e {
@@ -4546,31 +4675,6 @@ button.skip-script-line:hover {
   cursor: row-resize;
   background: rgba(63, 127, 214, 0.15);
   border-color: transparent;
-}
-
-.table-float-toggle {
-  position: absolute;
-  top: -22px;
-  right: 0;
-  pointer-events: auto;
-  display: flex;
-  gap: 1px;
-}
-
-.table-float-toggle button {
-  width: 22px;
-  height: 22px;
-  padding: 0;
-  border: 1px solid #3f7fd6;
-  background: #fff;
-  font-size: 11px;
-  line-height: 1;
-  cursor: default;
-}
-
-.table-float-toggle button.active {
-  background: #dceaff;
-  font-weight: 600;
 }
 
 .process-layout {
@@ -4958,7 +5062,9 @@ button.skip-script-line:hover {
 
 /* Allow Document/Form rich-text drag-select to include field tokens in a highlight. */
 .rich-surface .field-token,
-.rich-surface .function-token {
+.rich-surface .function-token,
+.text-rich-editor .field-token,
+.text-rich-editor .function-token {
   user-select: text;
   -webkit-user-select: text;
 }
@@ -4966,6 +5072,9 @@ button.skip-script-line:hover {
 .rich-surface .field-token {
   cursor: grab;
   vertical-align: baseline;
+  /* Reinforce inline flow if badge chrome ever reasserts inline-block. */
+  display: inline;
+  line-height: inherit;
 }
 
 .rich-surface .field-token:active {

@@ -35,11 +35,13 @@ import {
   paletteInsertTable,
   paletteItalic,
   paletteOutdent,
+  paletteTableBorder,
   paletteUnderline,
   getPaletteActiveStateSnapshot,
   subscribePaletteActiveState,
   type PaletteActiveState,
 } from "@/lib/paletteCommands";
+import { selectionInsideUserTable } from "@/lib/tableCellSelection";
 
 /** Web-safe font list — `DESIGNER_DOCUMENT_EDITOR.md` § Font Face dropdown. */
 const FONT_FACES = [
@@ -129,6 +131,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
   const formCount = useProjectStore((s) => s.project.forms.length);
   const [alignMenuOpen, setAlignMenuOpen] = useState(false);
   const [tableMenuOpen, setTableMenuOpen] = useState(false);
+  const [borderMenuOpen, setBorderMenuOpen] = useState(false);
   const [insertTableOpen, setInsertTableOpen] = useState(false);
   /** Sticky face/size so the boxes update as soon as chosen — before typing rewrites the DOM. */
   const [pendingFace, setPendingFace] = useState<string | null>(null);
@@ -154,13 +157,18 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
       setPendingFace(null);
       return;
     }
-    // Caret moved onto text with a different explicit face — drop the sticky choice.
+    // Mixed highlight while applying: keep sticky so banner does not flicker to
+    // Arial/default before chips catch up.
+    if (state.fontFace === MIXED_PALETTE_VALUE) return;
+    // Ignore brief default-Arial readout while a non-default face is applying.
     if (
-      state.fontFace !== MIXED_PALETTE_VALUE &&
-      state.fontFace !== DEFAULT_PALETTE_FONT_FACE
+      state.fontFace === DEFAULT_PALETTE_FONT_FACE &&
+      pendingFace !== DEFAULT_PALETTE_FONT_FACE
     ) {
-      setPendingFace(null);
+      return;
     }
+    // Concrete different face → follow the new selection.
+    setPendingFace(null);
   }, [state, pendingFace]);
 
   useEffect(() => {
@@ -169,13 +177,26 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
       setPendingSize(null);
       return;
     }
+    if (state.fontSize === MIXED_PALETTE_VALUE) return;
+    // Ignore brief default-12 readout while 10/11 (etc.) finish restore/commit.
     if (
-      state.fontSize !== MIXED_PALETTE_VALUE &&
-      state.fontSize !== String(DEFAULT_PALETTE_FONT_SIZE_PT)
+      state.fontSize === String(DEFAULT_PALETTE_FONT_SIZE_PT) &&
+      pendingSize !== String(DEFAULT_PALETTE_FONT_SIZE_PT)
     ) {
-      setPendingSize(null);
+      return;
     }
+    setPendingSize(null);
   }, [state, pendingSize]);
+
+  // Safety: drop sticky Face/Size if the live readout never confirms (e.g. plain 12pt click).
+  useEffect(() => {
+    if (pendingFace == null && pendingSize == null) return;
+    const t = window.setTimeout(() => {
+      setPendingFace(null);
+      setPendingSize(null);
+    }, 600);
+    return () => window.clearTimeout(t);
+  }, [pendingFace, pendingSize]);
 
   if (!paletteVisible) return null;
 
@@ -204,6 +225,11 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
 
   const openInsertTableDialog = () => {
     saveEditorSelection();
+    const editor = getActivePaletteEditor()?.el;
+    if (editor && selectionInsideUserTable(editor)) {
+      useProjectStore.getState().setStatus("Cannot insert a table inside another table");
+      return;
+    }
     setInsertTableOpen(true);
   };
 
@@ -365,6 +391,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => {
             setTableMenuOpen(false);
+            setBorderMenuOpen(false);
             setAlignMenuOpen((o) => !o);
           }}
         >
@@ -428,6 +455,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           onMouseDown={(e) => e.preventDefault()}
           onClick={() => {
             setAlignMenuOpen(false);
+            setBorderMenuOpen(false);
             setTableMenuOpen((o) => !o);
           }}
         >
@@ -471,6 +499,60 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
                 onClick={() => {
                   action();
                   setTableMenuOpen(false);
+                }}
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        )}
+      </span>
+
+      <span className="formatting-palette-split">
+        <PaletteButton
+          id="tableRowCol"
+          title="Borders"
+          label="▣"
+          enabled={enabled("tableRowCol")}
+          className="formatting-palette-icon"
+          onClick={() => {
+            setAlignMenuOpen(false);
+            setTableMenuOpen(false);
+            setBorderMenuOpen((o) => !o);
+          }}
+        />
+        <button
+          type="button"
+          className="formatting-palette-split-arrow"
+          title="Borders"
+          disabled={!enabled("tableRowCol")}
+          aria-label="Table borders menu"
+          onMouseDown={(e) => e.preventDefault()}
+          onClick={() => {
+            setAlignMenuOpen(false);
+            setTableMenuOpen(false);
+            setBorderMenuOpen((o) => !o);
+          }}
+        >
+          ▾
+        </button>
+        {borderMenuOpen && enabled("tableRowCol") && (
+          <div className="formatting-palette-menu" role="menu">
+            {(
+              [
+                ["Border 1", "border1" as const],
+                ["Border 2", "border2" as const],
+                ["No Border", "none" as const],
+              ] as const
+            ).map(([label, style]) => (
+              <button
+                key={label}
+                type="button"
+                role="menuitem"
+                onMouseDown={(e) => e.preventDefault()}
+                onClick={() => {
+                  paletteTableBorder(style);
+                  setBorderMenuOpen(false);
                 }}
               >
                 {label}

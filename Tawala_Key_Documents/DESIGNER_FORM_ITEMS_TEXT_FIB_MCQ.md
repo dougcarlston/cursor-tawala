@@ -135,6 +135,10 @@ Screenshot references:
 
 See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting Palette).
 
+### Text must-not-break smoke (browser Designer)
+
+1. Set **Trebuchet MS** + **20 pt** on a Form Text body → type a line → **Return** → type again → second paragraph stays **Trebuchet 20**; palette Face/Size still shows that pair (not Arial / default 12). Cross-check Document smoke #12 in `DESIGNER_DOCUMENT_EDITOR.md`.
+
 ---
 
 ## Fill in the Blank — FIB (Q1)
@@ -180,15 +184,15 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 - Blank length can be adjusted by **more/fewer underscores** and/or **Height**.
 - Visible prompt text and alternate label are **independent** (important for export/runtime field names).
 - **Multiple blanks** in one FIB item: **each blank** has its own Alternate Label (default `Qn:a`, `Qn:b`, …).
-- **Edit vs idle:** while the prompt is being edited, underscore characters are typed literally; when the FIB row is **idle** (not editing the prompt), each underscore run must render as a **read-only text box** (legacy blank preview), not as `_` characters.
+- **Edit vs idle:** while editing, underscore characters are typed literally. When the FIB row is **idle** on Design, underscore runs stay as `_` (length still drives blank metadata). **Preview** and **Deploy** convert `_` runs into input boxes.
 
 ### FIB must-not-break smoke (browser Designer)
 
 Run before merging FIB canvas, `fibBlanks`, `fibPrompt`, or Form Preview/runtime FIB changes:
 
-1. Design: insert FIB, type `Name ________` in the prompt, blur/deselect so the row is idle → underscores become a text box (not literal `_`).
-2. Design: select the blank (or place caret in the underscore run while editing) → Alternate Label / Height / Required still target that blank.
-3. Preview: same item shows **Name** + one input — **no** leftover `________` beside the box.
+1. Design: insert FIB, type `Name ________` in the prompt, blur/deselect so the row is idle → underscores remain visible `_` (not Design-canvas text boxes).
+2. Design: place caret in an underscore run while editing → Alternate Label / Height / Required still target that blank.
+3. Preview: same item shows **Name** + one input — **no** leftover `________` beside the box. (Restart `designer-web` API on `:3001` after `server/runtime.mjs` / `fibPrompt.mjs` edits — Node does not HMR those.)
 4. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata and Preview prompt parse).
 
 ### Backlog parity note (July 2026)
@@ -328,7 +332,7 @@ Example (SportsDashboards template in test fixtures):
 | Palette greyed when Heading focused | Yes | N/A (no palette) |
 | Table tools gated on `CursorInTable` | Yes | N/A |
 | Text inline rich edit (Properties) | N/A (canvas only) | `RichTextEditor` with embedded mini-toolbar (B/I/U + size only) |
-| FIB underscore → blanks | Yes | Design idle: underscore runs → read-only inputs; Preview/`fibPrompt` strips `_` into blank segments. Smoke + `npm test` in `designer-web/`. |
+| FIB underscore → blanks | Yes | Design idle keeps `_`; Preview/`fibPrompt` strips `_` into blank inputs. Smoke + `npm test`. |
 | FIB alternate label | Yes | `blank.name` / `alternateLabel` partial |
 | FIB height | Yes | Not exposed |
 | FIB validation types | Yes | Not exposed |

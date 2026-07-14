@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState, type ReactNode } from "react";
-import { BlankValidation, FibItem, FIB_PLACEHOLDER } from "@/types/tawala";
+import { useEffect, useRef, useState } from "react";
+import { BlankValidation, FibItem, FIB_DEFAULT_PROMPT, FIB_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
   FIB_VALIDATION_OPTIONS,
@@ -9,6 +9,7 @@ import {
   isAlternateLabelUnique,
   selectionIsSingleBlank,
   selectionPlainOffset,
+  setPlainTextRange,
   syncBlanksFromPrompt,
   validatorMeta,
 } from "@/lib/fibBlanks";
@@ -57,8 +58,8 @@ interface Props {
 
 /**
  * FIB item — canvas-inline WYSIWYG (spec: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` FIB section;
- * legacy `FibItemView`). Q-badge, rich prompt (B/I/U via palette), underscore runs become
- * inline blank inputs when idle, property strip for the active blank.
+ * legacy `FibItemView`). Q-badge, rich prompt (B/I/U via palette), underscore runs stay as
+ * `_` on the Design canvas (boxes appear in Preview/Deploy only), property strip for the active blank.
  */
 export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
@@ -112,8 +113,20 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     const sel = window.getSelection();
     if (!sel) return;
     const range = document.createRange();
+    const plain = htmlToPlainText(prompt);
+    // Default insert/edit: highlight question text only; leave trailing underscores unselected.
+    if (plain === FIB_DEFAULT_PROMPT || plain.startsWith(`${FIB_PLACEHOLDER} `)) {
+      const end = FIB_PLACEHOLDER.length;
+      if (setPlainTextRange(el, range, 0, end)) {
+        sel.removeAllRanges();
+        sel.addRange(range);
+        savedRangeRef.current = range.cloneRange();
+        syncActiveBlank(el);
+        return;
+      }
+    }
     range.selectNodeContents(el);
-    if (htmlToPlainText(prompt) !== FIB_PLACEHOLDER) range.collapse(false);
+    if (plain !== FIB_PLACEHOLDER) range.collapse(false);
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
@@ -306,45 +319,6 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const currentBlank = activeBlank >= 0 ? blanks[activeBlank] : null;
   const stripEnabled = activeBlank >= 0 && !!currentBlank;
 
-  /** Idle Design canvas: underscore runs → read-only blank inputs (not literal `_`). */
-  const renderedPrompt = () => {
-    if (isEmpty) {
-      return <span className="fib-rendered-placeholder">{FIB_PLACEHOLDER}</span>;
-    }
-    const parts: ReactNode[] = [];
-    const re = /_+/g;
-    let lastIndex = 0;
-    let blankIdx = 0;
-    let match: RegExpExecArray | null;
-    while ((match = re.exec(plainPrompt)) !== null) {
-      if (match.index > lastIndex) {
-        parts.push(
-          <span key={`t-${lastIndex}`}>{plainPrompt.slice(lastIndex, match.index)}</span>,
-        );
-      }
-      const blank = blanks[blankIdx];
-      const size = Math.min(Math.max(blank?.length ?? match[0].length, 5), 120);
-      parts.push(
-        <input
-          key={`b-${match.index}`}
-          type="text"
-          className="fib-canvas-blank"
-          size={size}
-          style={blank?.height && blank.height > 1 ? { height: `${blank.height * 1.4}em` } : undefined}
-          readOnly
-          tabIndex={-1}
-          aria-label={blank?.alternateLabel ?? blank?.name ?? `blank ${blankIdx + 1}`}
-        />,
-      );
-      blankIdx++;
-      lastIndex = match.index + match[0].length;
-    }
-    if (lastIndex < plainPrompt.length) {
-      parts.push(<span key={`t-${lastIndex}`}>{plainPrompt.slice(lastIndex)}</span>);
-    }
-    return parts;
-  };
-
   return (
     <div
       className={`fib-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}`}
@@ -376,7 +350,16 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
       ) : (
         <div
           className={`fib-badge${editing ? " editing" : ""}`}
-          title={selected ? "Click to edit question label" : "Click to select"}
+          draggable={selected}
+          title={selected ? "Drag to reorder, or click to edit question label" : "Click to select"}
+          onDragStart={(e) => {
+            if (!selected) {
+              e.preventDefault();
+              return;
+            }
+            // Bubble to .form-item-slot so FormEditor can set MIME / reorder UI.
+            e.dataTransfer.effectAllowed = "move";
+          }}
           onClick={(e) => {
             e.stopPropagation();
             setSelectedItemIndex(index);
@@ -455,8 +438,10 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
                   className={altLabelError ? "fib-alt-invalid" : undefined}
                   value={currentBlank?.alternateLabel ?? ""}
                   disabled={!stripEnabled}
-                  onFocus={() => {
+                  onFocus={(e) => {
                     altLabelDraftRef.current = currentBlank?.alternateLabel ?? "";
+                    // Select the whole field so "FIB1:a" highlights together (colon does not split).
+                    e.currentTarget.select();
                   }}
                   onChange={(e) => {
                     const v = e.target.value;
@@ -535,9 +520,13 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
             </div>
           </>
         ) : (
-          <div key="fib-rendered" className={`fib-rendered${isEmpty ? " placeholder" : ""}`}>
-            {renderedPrompt()}
-          </div>
+          <div
+            key="fib-rendered"
+            className={`fib-rendered${isEmpty ? " placeholder" : ""}`}
+            dangerouslySetInnerHTML={{
+              __html: isEmpty ? FIB_PLACEHOLDER : prompt,
+            }}
+          />
         )}
       </div>
       {validationDialogOpen && currentBlank?.validation && (

@@ -19,6 +19,7 @@ import {
   readFormItemReorderDrag,
   setFormItemReorderDrag,
 } from "@/lib/designerDrag";
+import { isFormItemReorderHandle } from "@/lib/formItemReorder";
 
 interface Props {
   formName: string;
@@ -343,7 +344,7 @@ export function FormEditor({ formName }: Props) {
             {form.items.length === 0 ? (
               <p className="hint form-canvas-hint">
                 Drag an item from the Items palette into this window, or click a palette button to
-                insert. Drag selected items up or down to reorder.
+                insert. Drag a selected item by its badge to reorder.
               </p>
             ) : (
               form.items.map((item, i) => (
@@ -351,18 +352,11 @@ export function FormEditor({ formName }: Props) {
                   key={`${item.label}-${i}`}
                   className={`form-item-slot${selectedItemIndex === i ? " selected-slot" : ""}${reorderFromIndex === i ? " dragging" : ""}`}
                   data-form-item-index={i}
-                  draggable={selectedItemIndex === i}
+                  draggable={false}
                   onDragStart={(e) => {
-                    const target = e.target as HTMLElement;
-                    if (
-                      target.closest(
-                        "input, textarea, select, button, a, [contenteditable='true']",
-                      )
-                    ) {
-                      e.preventDefault();
-                      return;
-                    }
-                    if (selectedItemIndex !== i) {
+                    // Drag is initiated on the selected badge (child has draggable=true);
+                    // this bubbles here so we can attach reorder MIME and UI state.
+                    if (selectedItemIndex !== i || !isFormItemReorderHandle(e.target)) {
                       e.preventDefault();
                       return;
                     }

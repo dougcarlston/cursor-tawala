@@ -16,7 +16,10 @@ import {
   applyTypingFormatToToken,
   findPlacedTextBlockAtCaret,
 } from "./documentCanvas";
-import { getTypingFormat, isBlankTypingContext } from "./paletteTypingFormat";
+import { isBlankTypingContext, typingFormatForInsert } from "./paletteTypingFormat";
+import { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
+
+export { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
 
 export const FUNCTION_TOKEN_CLASS = "function-token";
 export const FUNCTION_TOKEN_ATTR = "data-function-id";
@@ -121,35 +124,14 @@ export function createFunctionTokenElement(
   return span;
 }
 
-/** Invisible caret landing so clicks/typing work next to contenteditable=false tokens. */
-const CARET_ZWSP = "\u200B";
-
-function isCaretLandingNode(node: Node | null): boolean {
-  if (!node) return false;
-  if (node.nodeType === Node.TEXT_NODE) return true;
-  return node.nodeName === "BR";
-}
-
-/**
- * Ensure editable text (or `<br>`) immediately before/after a non-editable token so the
- * caret can land when the Text item otherwise only contains the function box.
- */
-export function ensureTokenCaretLanding(span: HTMLElement): void {
-  const parent = span.parentNode;
-  if (!parent) return;
-
-  if (!isCaretLandingNode(span.previousSibling)) {
-    parent.insertBefore(document.createTextNode(CARET_ZWSP), span);
-  }
-  if (!isCaretLandingNode(span.nextSibling)) {
-    parent.insertBefore(document.createTextNode(CARET_ZWSP), span.nextSibling);
-  }
-}
-
 /** Walk an editor and add caret landings around every function token. */
 export function ensureFunctionTokenCaretGaps(root: HTMLElement): void {
   root.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`).forEach((node) => {
-    if (node instanceof HTMLElement) ensureTokenCaretLanding(node);
+    if (!(node instanceof HTMLElement)) return;
+    // Drop stale insert-time line-height:1 (same contract as field chips).
+    node.style.removeProperty("line-height");
+    node.style.verticalAlign = "baseline";
+    ensureTokenCaretLanding(node);
   });
 }
 
@@ -219,7 +201,7 @@ export function insertFunctionTokenAtSelection(
   if (!sel) return;
 
   const span = createFunctionTokenElement(def, config, replace?.instanceId || undefined);
-  const typing = getTypingFormat(root);
+  const typing = typingFormatForInsert(root);
   const placed = findPlacedTextBlockAtCaret(root);
   if (placed && isBlankTypingContext(root)) {
     applyTypingFormatToPlacedBlock(placed, typing);
@@ -228,17 +210,7 @@ export function insertFunctionTokenAtSelection(
 
   if (replace) {
     replace.element.replaceWith(span);
-    ensureTokenCaretLanding(span);
-    const range = document.createRange();
-    const after = span.nextSibling;
-    if (after?.nodeType === Node.TEXT_NODE) {
-      range.setStart(after, Math.min(1, after.textContent?.length ?? 0));
-    } else {
-      range.setStartAfter(span);
-    }
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
+    placeCaretAfterToken(span);
     return;
   }
 
@@ -250,18 +222,7 @@ export function insertFunctionTokenAtSelection(
   }
   if (!range.collapsed) range.deleteContents();
   range.insertNode(span);
-  ensureTokenCaretLanding(span);
-
-  const after = document.createRange();
-  const landing = span.nextSibling;
-  if (landing?.nodeType === Node.TEXT_NODE) {
-    after.setStart(landing, Math.min(1, landing.textContent?.length ?? 0));
-  } else {
-    after.setStartAfter(span);
-  }
-  after.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(after);
+  placeCaretAfterToken(span);
 }
 
 export function lookupFunctionDefByName(name: string): FunctionDef | undefined {

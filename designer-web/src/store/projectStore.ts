@@ -233,6 +233,12 @@ interface ProjectState {
   addForm: () => void;
   addProcess: () => void;
   addDocument: () => void;
+  /** Remove a Form / Process / Document from the project (closes its window if open). */
+  deleteForm: (name: string) => void;
+  deleteProcess: (name: string) => void;
+  deleteDocument: (name: string) => void;
+  /** Delete the Explorer-selected Form/Process/Document (not a form item). */
+  deleteSelectedEntity: () => boolean;
   toggleFormStartPoint: (name: string) => void;
   toggleFormBlockBack: (name: string) => void;
   moveSelectedNode: (direction: "up" | "down") => void;
@@ -276,9 +282,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   lastDeploy: null,
   showLogin: false,
   showDeployResult: false,
-  // Owner decision (July 2026): the canvas starts EMPTY — no window is auto-opened
-  // on first mount or project load. The empty-canvas placeholder shows until the
-  // designer single-clicks a form / process / document in Project Explorer.
+  // Cold start: empty canvas until New/Open. Opening a project (or New with Form 1)
+  // auto-opens the Explorer-highlighted Form/Process/Document (owner Jul 14).
   openWindows: [],
   activeWindowId: null,
   cascadeIndex: 0,
@@ -798,8 +803,6 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const project = empty
       ? { ...emptyProject(), forms: [], processes: [], documents: [] }
       : emptyProject();
-    // Decision 2 (July 2026): start empty — do NOT auto-open the first form. The
-    // canvas shows its placeholder until the designer clicks a node in Explorer.
     set({
       project,
       dirty: true,
@@ -816,6 +819,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: null,
       cascadeIndex: 0,
     });
+    // Owner Jul 14: when Explorer already highlights Form 1, open it on the canvas.
+    if (!empty) get().openWindow("form", "Form 1");
   },
 
   loadTemplate: async (samplePath) => {
@@ -866,6 +871,178 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: { kind: "document", name },
       statusMessage: `Added document ${name}`,
     });
+  },
+
+  deleteForm: (name) => {
+    const s = get();
+    const { project, openWindows, activeWindowId, selection, selectedItemIndex, insertBeforeIndex } =
+      s;
+    if (!project.forms.some((f) => f.name === name)) return;
+    const forms = project.forms.filter((f) => f.name !== name);
+    const winId = windowId("form", name);
+    const nextWindows = openWindows.filter((w) => w.id !== winId);
+    let nextActive = activeWindowId === winId ? null : activeWindowId;
+    if (nextActive === null && nextWindows.length > 0) {
+      nextActive = nextWindows.reduce((top, w) => (w.z > top.z ? w : top), nextWindows[0]!).id;
+    }
+    const nextActiveWin = nextActive ? nextWindows.find((w) => w.id === nextActive) ?? null : null;
+    const selectionWasThis = selection.kind === "form" && selection.name === name;
+    const nextSelection: Selection = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWasThis
+        ? { kind: "forms" }
+        : selection;
+    const sameEntity =
+      !!nextActiveWin &&
+      selection.kind === nextActiveWin.kind &&
+      selection.name === nextActiveWin.name;
+    const toTarget = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWindowTarget(nextSelection);
+    set({
+      project: { ...project, forms },
+      dirty: true,
+      openWindows: nextWindows,
+      activeWindowId: nextActive,
+      selection: nextSelection,
+      selectedItemIndex: selectionWasThis || !sameEntity ? null : selectedItemIndex,
+      insertBeforeIndex: nextActiveWin
+        ? insertIndexWhenSwitchingEntity(
+            { ...project, forms },
+            nextActiveWin.kind,
+            nextActiveWin.name,
+            sameEntity,
+            insertBeforeIndex,
+          )
+        : 0,
+      statusMessage: `Deleted form ${name}`,
+      ...applyProcessWindowTransition(
+        selection,
+        toTarget.kind,
+        toTarget.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
+      ...(nextWindows.length === 0 ? { cascadeIndex: 0 } : {}),
+    });
+  },
+
+  deleteProcess: (name) => {
+    const s = get();
+    const { project, openWindows, activeWindowId, selection, processUiByName } = s;
+    const processes = project.processes ?? [];
+    if (!processes.some((p) => p.name === name)) return;
+    const nextProcesses = processes.filter((p) => p.name !== name);
+    const forms = project.forms.map((f) => {
+      if (f.preProcess !== name && f.process !== name) return f;
+      const next = { ...f };
+      if (f.preProcess === name) next.preProcess = undefined;
+      if (f.process === name) next.process = undefined;
+      return next;
+    });
+    const winId = windowId("process", name);
+    const nextWindows = openWindows.filter((w) => w.id !== winId);
+    let nextActive = activeWindowId === winId ? null : activeWindowId;
+    if (nextActive === null && nextWindows.length > 0) {
+      nextActive = nextWindows.reduce((top, w) => (w.z > top.z ? w : top), nextWindows[0]!).id;
+    }
+    const nextActiveWin = nextActive ? nextWindows.find((w) => w.id === nextActive) ?? null : null;
+    const selectionWasThis = selection.kind === "process" && selection.name === name;
+    const nextUi = { ...processUiByName };
+    delete nextUi[name];
+    const nextSelection: Selection = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWasThis
+        ? { kind: "processes" }
+        : selection;
+    const sameEntity =
+      !!nextActiveWin &&
+      selection.kind === nextActiveWin.kind &&
+      selection.name === nextActiveWin.name;
+    const toTarget = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWindowTarget(nextSelection);
+    set({
+      project: { ...project, processes: nextProcesses, forms },
+      dirty: true,
+      openWindows: nextWindows,
+      activeWindowId: nextActive,
+      selection: nextSelection,
+      statusMessage: `Deleted process ${name}`,
+      ...applyProcessWindowTransition(
+        selection,
+        toTarget.kind,
+        toTarget.name,
+        sameEntity,
+        nextUi,
+        pickProcessUi(s),
+      ),
+      ...(nextWindows.length === 0 ? { cascadeIndex: 0 } : {}),
+    });
+  },
+
+  deleteDocument: (name) => {
+    const s = get();
+    const { project, openWindows, activeWindowId, selection } = s;
+    const documents = project.documents ?? [];
+    if (!documents.some((d) => d.name === name)) return;
+    const nextDocs = documents.filter((d) => d.name !== name);
+    const winId = windowId("document", name);
+    const nextWindows = openWindows.filter((w) => w.id !== winId);
+    let nextActive = activeWindowId === winId ? null : activeWindowId;
+    if (nextActive === null && nextWindows.length > 0) {
+      nextActive = nextWindows.reduce((top, w) => (w.z > top.z ? w : top), nextWindows[0]!).id;
+    }
+    const nextActiveWin = nextActive ? nextWindows.find((w) => w.id === nextActive) ?? null : null;
+    const selectionWasThis = selection.kind === "document" && selection.name === name;
+    const nextSelection: Selection = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWasThis
+        ? { kind: "documents" }
+        : selection;
+    const sameEntity =
+      !!nextActiveWin &&
+      selection.kind === nextActiveWin.kind &&
+      selection.name === nextActiveWin.name;
+    const toTarget = nextActiveWin
+      ? { kind: nextActiveWin.kind, name: nextActiveWin.name }
+      : selectionWindowTarget(nextSelection);
+    set({
+      project: { ...project, documents: nextDocs },
+      dirty: true,
+      openWindows: nextWindows,
+      activeWindowId: nextActive,
+      selection: nextSelection,
+      statusMessage: `Deleted document ${name}`,
+      ...applyProcessWindowTransition(
+        selection,
+        toTarget.kind,
+        toTarget.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
+      ...(nextWindows.length === 0 ? { cascadeIndex: 0 } : {}),
+    });
+  },
+
+  deleteSelectedEntity: () => {
+    const { selection } = get();
+    if (!selection.name) return false;
+    if (selection.kind === "form") {
+      get().deleteForm(selection.name);
+      return true;
+    }
+    if (selection.kind === "process") {
+      get().deleteProcess(selection.name);
+      return true;
+    }
+    if (selection.kind === "document") {
+      get().deleteDocument(selection.name);
+      return true;
+    }
+    return false;
   },
 
   toggleFormStartPoint: (name) => {
@@ -1173,14 +1350,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   importJson: (raw) => {
     const project = JSON.parse(raw) as TawalaProject;
+    // Prefer first form; if none, highlight first process/document when present.
     const firstForm = project.forms[0]?.name;
-    // Decision 2 (July 2026): start empty on load — select the first form in the
-    // tree for context, but do NOT auto-open a window; the canvas stays empty
-    // until the designer single-clicks a node.
+    const firstProcess = project.processes?.[0]?.name;
+    const firstDocument = project.documents?.[0]?.name;
+    const selection: Selection = firstForm
+      ? { kind: "form", name: firstForm }
+      : firstProcess
+        ? { kind: "process", name: firstProcess }
+        : firstDocument
+          ? { kind: "document", name: firstDocument }
+          : { kind: "forms" };
     set({
       project,
       dirty: false,
-      selection: firstForm ? { kind: "form", name: firstForm } : { kind: "forms" },
+      selection,
       statusMessage: `Loaded ${project.name}`,
       selectedItemIndex: null,
       insertBeforeIndex: 0,
@@ -1193,6 +1377,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: null,
       cascadeIndex: 0,
     });
+    // Owner Jul 14: open the Explorer-highlighted Form/Process/Document on load.
+    if (
+      (selection.kind === "form" ||
+        selection.kind === "process" ||
+        selection.kind === "document") &&
+      selection.name
+    ) {
+      get().openWindow(selection.kind, selection.name);
+    }
   },
 
   deploy: async () => {

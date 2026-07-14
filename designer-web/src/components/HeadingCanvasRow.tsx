@@ -395,7 +395,15 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
       ) : (
         <div
           className={`heading-badge${editing ? " editing" : ""}`}
-          title={selected ? "Click to edit heading label" : "Click to select"}
+          draggable={selected}
+          title={selected ? "Drag to reorder, or click to edit heading label" : "Click to select"}
+          onDragStart={(e) => {
+            if (!selected) {
+              e.preventDefault();
+              return;
+            }
+            e.dataTransfer.effectAllowed = "move";
+          }}
           onClick={(e) => {
             e.stopPropagation();
             setSelectedItemIndex(index);

@@ -85,7 +85,18 @@ export function HiddenFieldCanvasRow({ item, index, formName, selected }: Props)
         setSelectedItemIndex(index);
       }}
     >
-      <div className="hidden-field-badge" title="Hidden field">
+      <div
+        className="hidden-field-badge"
+        title={selected ? "Drag to reorder" : "Hidden field"}
+        draggable={selected}
+        onDragStart={(e) => {
+          if (!selected) {
+            e.preventDefault();
+            return;
+          }
+          e.dataTransfer.effectAllowed = "move";
+        }}
+      >
         FIELD
       </div>
       <div className="hidden-field-main">
