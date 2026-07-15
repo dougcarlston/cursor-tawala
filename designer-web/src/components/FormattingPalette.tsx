@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { useEffect, useState, useSyncExternalStore } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import type { WindowKind } from "@/store/projectStore";
 import {
@@ -9,6 +9,7 @@ import {
   type PaletteControlId,
 } from "@/lib/formattingPaletteContext";
 import { InsertTableDialog } from "./InsertTableDialog";
+import { FontColorPickerDialog } from "./FontColorPickerDialog";
 import { openFunctionPickerFromEditor } from "@/lib/functionPicker";
 import {
   DEFAULT_PALETTE_FONT_FACE,
@@ -42,6 +43,11 @@ import {
   type PaletteActiveState,
 } from "@/lib/paletteCommands";
 import { selectionInsideUserTable } from "@/lib/tableCellSelection";
+import {
+  getPaletteCurrentFontColor,
+  setPaletteCurrentFontColor,
+  subscribePaletteCurrentFontColor,
+} from "@/lib/paletteCurrentFontColor";
 
 /** Web-safe font list — `DESIGNER_DOCUMENT_EDITOR.md` § Font Face dropdown. */
 const FONT_FACES = [
@@ -132,11 +138,17 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
   const [alignMenuOpen, setAlignMenuOpen] = useState(false);
   const [tableMenuOpen, setTableMenuOpen] = useState(false);
   const [borderMenuOpen, setBorderMenuOpen] = useState(false);
+  const [colorMenuOpen, setColorMenuOpen] = useState(false);
+  const [colorPickerOpen, setColorPickerOpen] = useState(false);
   const [insertTableOpen, setInsertTableOpen] = useState(false);
   /** Sticky face/size so the boxes update as soon as chosen — before typing rewrites the DOM. */
   const [pendingFace, setPendingFace] = useState<string | null>(null);
   const [pendingSize, setPendingSize] = useState<string | null>(null);
-  const colorInputRef = useRef<HTMLInputElement>(null);
+  const currentFontColor = useSyncExternalStore(
+    subscribePaletteCurrentFontColor,
+    getPaletteCurrentFontColor,
+    getPaletteCurrentFontColor,
+  );
 
   const paletteVisible = activeKind === "form" || activeKind === "document";
   const designActive = activeKind === "document" || editorTab === "design";
@@ -198,6 +210,20 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
     return () => window.clearTimeout(t);
   }, [pendingFace, pendingSize]);
 
+  // ▾ Font Color menu: dismiss on outside click.
+  useEffect(() => {
+    if (!colorMenuOpen) return;
+    const onPointerDown = (e: PointerEvent) => {
+      const el = e.target as HTMLElement | null;
+      if (!el) return;
+      if (el.closest(".formatting-palette-color-menu")) return;
+      if (el.closest('[aria-label="Font color menu"]')) return;
+      setColorMenuOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown, true);
+    return () => document.removeEventListener("pointerdown", onPointerDown, true);
+  }, [colorMenuOpen]);
+
   if (!paletteVisible) return null;
 
   // Indent the palette so its controls line up with the left edge of the MDI canvas,
@@ -211,16 +237,27 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
   // Selects and the color picker take focus from the editor, so save its selection first.
   const saveEditorSelection = () => getActivePaletteEditor()?.saveSelection();
 
-  /** Legacy: main Font Color button applies the current color to the selection. */
+  /** Apply sticky A-bar color to the selection (does not open the picker). */
   const applyCurrentFontColor = () => {
     saveEditorSelection();
-    paletteFontColor(state?.color ?? "#000000");
+    setColorMenuOpen(false);
+    paletteFontColor(currentFontColor);
   };
 
-  /** Arrow / Choose Color — opens the native picker (onChange applies the new color). */
+  /** Choose Color… — in-app picker (OS Color panel cannot host Recent row). */
   const openColorPicker = () => {
     saveEditorSelection();
-    colorInputRef.current?.click();
+    setColorMenuOpen(false);
+    setAlignMenuOpen(false);
+    setTableMenuOpen(false);
+    setBorderMenuOpen(false);
+    setColorPickerOpen(true);
+  };
+
+  /** Live pick from Choose Color — sticky A-bar + apply to selection. */
+  const onPickerColorChange = (hex: string) => {
+    setPaletteCurrentFontColor(hex);
+    paletteFontColor(hex);
   };
 
   const openInsertTableDialog = () => {
@@ -295,7 +332,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           label={
             <span
               className="formatting-palette-color-a"
-              style={{ textDecorationColor: state?.color ?? "#000000" }}
+              style={{ textDecorationColor: currentFontColor }}
             >
               A
             </span>
@@ -306,27 +343,43 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
         <button
           type="button"
           className="formatting-palette-split-arrow"
-          title="Choose Color"
+          title="Font Color"
           disabled={!enabled("fontColor")}
-          aria-label="Choose font color"
+          aria-label="Font color menu"
+          aria-expanded={colorMenuOpen}
           onMouseDown={(e) => e.preventDefault()}
-          onClick={openColorPicker}
+          onClick={() => {
+            saveEditorSelection();
+            setAlignMenuOpen(false);
+            setTableMenuOpen(false);
+            setBorderMenuOpen(false);
+            setColorMenuOpen((o) => !o);
+          }}
         >
           ▾
         </button>
-        <input
-          ref={colorInputRef}
-          type="color"
-          className="formatting-palette-color-input"
-          tabIndex={-1}
-          aria-hidden
-          value={state?.color ?? "#000000"}
-          onChange={(e) => {
-            // Do not saveSelection here — focus is on the color input, so a save would
-            // overwrite the highlight captured when the picker was opened.
-            paletteFontColor(e.target.value);
-          }}
-        />
+        {colorMenuOpen && enabled("fontColor") && (
+          <div className="formatting-palette-menu formatting-palette-color-menu" role="menu">
+            <button type="button" role="menuitem" disabled title="Theme Color (not available)">
+              <span
+                className="formatting-palette-color-swatch formatting-palette-color-swatch-muted"
+                aria-hidden
+              />
+              Theme Color
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={openColorPicker}
+            >
+              <span className="formatting-palette-menu-glyph" aria-hidden>
+                ▣
+              </span>
+              Choose Color…
+            </button>
+          </div>
+        )}
       </span>
 
       <PaletteSep />
@@ -392,6 +445,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           onClick={() => {
             setTableMenuOpen(false);
             setBorderMenuOpen(false);
+            setColorMenuOpen(false);
             setAlignMenuOpen((o) => !o);
           }}
         >
@@ -456,6 +510,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           onClick={() => {
             setAlignMenuOpen(false);
             setBorderMenuOpen(false);
+            setColorMenuOpen(false);
             setTableMenuOpen((o) => !o);
           }}
         >
@@ -518,6 +573,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           onClick={() => {
             setAlignMenuOpen(false);
             setTableMenuOpen(false);
+            setColorMenuOpen(false);
             setBorderMenuOpen((o) => !o);
           }}
         />
@@ -531,6 +587,7 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           onClick={() => {
             setAlignMenuOpen(false);
             setTableMenuOpen(false);
+            setColorMenuOpen(false);
             setBorderMenuOpen((o) => !o);
           }}
         >
@@ -582,6 +639,13 @@ export function FormattingPalette({ activeKind, flushLeft = false }: Props) {
           setInsertTableOpen(false);
           paletteInsertTable(options);
         }}
+      />
+    )}
+    {colorPickerOpen && (
+      <FontColorPickerDialog
+        color={currentFontColor}
+        onColorChange={onPickerColorChange}
+        onClose={() => setColorPickerOpen(false)}
       />
     )}
     </>

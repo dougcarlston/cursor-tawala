@@ -17,7 +17,7 @@ Selection, Save/dirty (Chrome), Face/Size/B/I, Color, Tables (#8–9, #11), Alig
 1. **Safari / Save As:** **In-app Save As name dialog landed** (File → Save As… / ⇧⌘S). Default = `{project.name}.json`; after confirm Chromium gets native picker, Safari downloads to Downloads under the chosen name. Owner should re-smoke on Safari; folder picker remains a WebKit limit (documented in `DESIGNER_MENU_SPEC.md`).
 2. **Safari chip highlight → left margin** (cosmetic; low priority).
 3. **New Project → “Could not parse JSON.”** (deferred; not in today's fix batch).
-4. **Enhancement:** Color picker Recent row (4–6) for applying one color to separated words.
+4. **Enhancement:** Color picker Recent row — under in-app Color Picker dialog (Choose Color…); ▾ menu has Theme Color + Choose Color… only. In-app picker required because OS Color panel cannot host Recent. Sticky A-bar + long-press sample kept.
 5. After Save As is acceptable: commit any leftover Save As work if not in this commit; optional full re-smoke; 8080 deploy still deferred unless owner asks.
 6. Push only when owner asks (`cursor/forms-canvas-wysiwyg` may be ahead of origin).
 

@@ -118,17 +118,37 @@ Full list (owner screenshots):
 
 ### Font Color split button
 
-**Main button click:** applies current color to selection.
+**Main button click (A + bar):** applies the **current** sticky color to the selection (does not open a menu).
 
-**Arrow menu:**
+**A-bar current color:** the underline on **A** is sticky — it stays after Choose Color / Recent-slot picks, and does **not** follow ordinary caret moves into differently colored text. To sync the A-bar from existing text: **long-press** (~450ms, no drag) on that colored text (Document or Form rich-text). Long-press samples only; it does not recolor the selection.
+
+**Arrow menu (▾):**
 
 | Item | Behavior |
 |------|----------|
 | **Theme Color** | **Greyed out** (owner: always disabled in observed sessions) |
-| **Recent Color** | Swatch matches the color currently in use; **Font Color** icon bar shows same color. On a **new document** before color is set, icon may have no color bar — Recent then reflects that default state |
-| **Choose Color…** | Opens standard Windows **Color** dialog (basic colors grid, custom colors, HSL/RGB, OK/Cancel) |
+| **Choose Color…** | Opens an **in-app Color Picker** dialog (SV spectrum + hue + R·G·B, optional Eyedropper). **No Recent row in this ▾ menu.** |
 
-Owner example: after choosing purple via Choose Color, **Recent Color** swatch and toolbar **A** underline both show purple.
+**Why in-app Color Picker (not OS Colors):** a web app cannot inject HTML/controls into the macOS (or other OS) Color window. To put Recent under RGB, Choose Color… must open Designer chrome.
+
+**Color Picker dialog:**
+
+| Region | Behavior |
+|--------|----------|
+| **SV + hue + RGB** | Mac-like spectrum / brightness / R·G·B. Live pick updates sticky **A** bar and applies to the selection. |
+| **Eyedropper** | `EyeDropper` API when available; greyed when not. |
+| **Recent swatch row** | Fixed row of **8 small** (~15px) boxes at the **bottom of this dialog** (under RGB). Empty = light-border empty square (**no diagonal slash**). Newest fills left-to-right, deduped, capped at 8, persisted in `localStorage`. |
+| **Dismiss** | Click outside dialog or Escape. |
+
+Each committed pick fills a Recent slot and updates the sticky **A** bar. Click a filled Recent box to apply that color (same as **A** / color command). Empty boxes are inert.
+
+Owner example: Choose Color… → pick purple → **A** underline stays purple; reopen Choose Color… → purple in the Recent row. Highlight other text → click that box (or **A**) → that text turns purple.
+
+**Smoke (Font Color — browser, July 2026):**
+1. Document (or Form Text): ▾ Font Color → **Theme Color** (greyed) and **Choose Color…** only — **no** Recent boxes in the ▾ menu.
+2. Choose Color… → **in-app** Color Picker (not the system Color panel). Empty Recent boxes under RGB are small, clean squares (**no diagonals**).
+3. Pick colors → boxes fill small and clean; reopen → click a recent box to reuse; **A** bar sticky + apply still works.
+4. Color some text purple, some black. Click (short) into black text → **A** bar still purple. Long-press (~½ s) on purple text → **A** bar becomes purple; selection is not force-recolored by the long-press alone.
 
 ### Paragraph Alignment split button
 
@@ -216,7 +236,7 @@ See **`DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`** — Field, Image, Invitation, Hy
 | Bold | Ctrl+B |
 | Italic | Ctrl+I |
 | Underline | Ctrl+U |
-| Color → Theme / Recent / Choose… | |
+| Color → Theme / Choose… | |
 | Reset Formatting | |
 | *(separator)* | |
 | Tabs… | Tab-stop dialog (inches) |

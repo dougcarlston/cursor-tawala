@@ -72,6 +72,12 @@ import {
   openStructuredFunctionTokenForEdit,
   STRUCTURED_NODE_DATA_ATTR,
 } from "@/lib/structuredItemizationEdit";
+import { setPaletteCurrentFontColor } from "@/lib/paletteCurrentFontColor";
+import { sampleFontColorAtPoint } from "@/lib/sampleFontColorAtPoint";
+
+/** Long-press (~450ms, no move) samples text color into the A-bar only. */
+const COLOR_SAMPLE_HOLD_MS = 450;
+const COLOR_SAMPLE_MOVE_TOLERANCE = 4;
 
 interface Props {
   html: string;
@@ -161,6 +167,34 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   /** Anchor range for cross-block Document drag-select. */
   const selectAnchorRef = useRef<Range | null>(null);
   const commitFromSurfaceRef = useRef<(target: HTMLDivElement) => void>(() => {});
+  /** Long-press sample: sync A-bar color from text under the pointer (does not recolor). */
+  const colorSampleRef = useRef<{
+    timer: number | null;
+    x: number;
+    y: number;
+    fired: boolean;
+  } | null>(null);
+
+  const clearColorSampleHold = () => {
+    const hold = colorSampleRef.current;
+    if (hold?.timer != null) window.clearTimeout(hold.timer);
+    colorSampleRef.current = null;
+  };
+
+  const beginColorSampleHold = (clientX: number, clientY: number) => {
+    if (!formattingKind) return;
+    clearColorSampleHold();
+    const hold = { timer: null as number | null, x: clientX, y: clientY, fired: false };
+    hold.timer = window.setTimeout(() => {
+      hold.fired = true;
+      hold.timer = null;
+      const el = surfaceRef.current;
+      if (!el) return;
+      const hex = sampleFontColorAtPoint(el, hold.x, hold.y);
+      if (hex) setPaletteCurrentFontColor(hex);
+    }, COLOR_SAMPLE_HOLD_MS);
+    colorSampleRef.current = hold;
+  };
 
   const selectionIsInside = (selection: Selection | null, el: HTMLDivElement) => {
     if (!selection) return false;
@@ -210,6 +244,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
   useEffect(() => {
     return () => {
+      clearColorSampleHold();
       if (formattingKind) clearFormattingFocus(formattingKind);
       clearActivePaletteEditor(surfaceRef.current ?? undefined);
     };
@@ -664,12 +699,18 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
           }}
           onMouseDown={(e) => {
+            if (e.button === 0 && formattingKind) {
+              beginColorSampleHold(e.clientX, e.clientY);
+            } else {
+              clearColorSampleHold();
+            }
             if (e.button === 0 && e.detail === 3) {
               const el = surfaceRef.current;
               if (el && selectParagraphAtPoint(el, e.clientX, e.clientY)) {
                 // Custom dblclick word-select + preventDefault breaks native
                 // triple-click chaining — select the paragraph ourselves.
                 e.preventDefault();
+                clearColorSampleHold();
                 rememberSelection();
                 registerAsPaletteEditor();
                 syncPaletteFocus();
@@ -678,6 +719,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
             const el = surfaceRef.current;
             if (el && handleTableCellPointerDown(el, e.target, e.button)) {
+              clearColorSampleHold();
               registerAsPaletteEditor();
               // Multi-cell drag: do not start placed-line text selection from here.
               documentPointerRef.current = {
@@ -713,6 +755,14 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       savedBookmarkRef.current = null;
           }}
           onMouseMove={(e) => {
+            const sample = colorSampleRef.current;
+            if (sample && !sample.fired) {
+              const dx = Math.abs(e.clientX - sample.x);
+              const dy = Math.abs(e.clientY - sample.y);
+              if (dx > COLOR_SAMPLE_MOVE_TOLERANCE || dy > COLOR_SAMPLE_MOVE_TOLERANCE) {
+                clearColorSampleHold();
+              }
+            }
             const el = surfaceRef.current;
             if (el && handleTableCellPointerMove(el, e.clientX, e.clientY, e.buttons)) {
               e.preventDefault();
@@ -730,6 +780,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 return;
               }
               pointer.dragged = true;
+              clearColorSampleHold();
             }
             if (formattingKind !== "document") return;
             if (!el) return;
@@ -747,6 +798,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
           }}
           onMouseUp={(e) => {
+            const sampled = colorSampleRef.current?.fired === true;
+            clearColorSampleHold();
             const el = surfaceRef.current;
             if (el) handleTableCellPointerUp(el);
             if (el && formattingKind === "document") {
@@ -762,7 +815,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             selectAnchorRef.current = null;
             const pointer = documentPointerRef.current;
             documentPointerRef.current = null;
-            if (pointer?.dragged || e.button !== 0) return;
+            // Long-press only updates A-bar; skip invent / token-open side effects.
+            if (sampled || pointer?.dragged || e.button !== 0) return;
             if (tryOpenFunctionToken(e.target)) {
               e.preventDefault();
               e.stopPropagation();
