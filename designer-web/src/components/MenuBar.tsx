@@ -90,8 +90,8 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           <span className="menu-accel">{saveAccel}</span>
         </button>
         {/*
-          Save As always offered (clears remembered handle → native picker). Same enable
-          rules as Save — never gated on dirty.
+          Save As always offered (clears remembered handle → native picker on Chromium).
+          Safari/Firefox: same force-download path as Save (no folder picker). Never gated on dirty.
         */}
         <button type="button" onClick={() => void saveProjectAs()}>
           Save As…

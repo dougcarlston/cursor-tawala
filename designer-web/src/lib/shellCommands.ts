@@ -47,14 +47,109 @@ export function suggestedProjectFileName(projectName?: string): string {
   return safe.toLowerCase().endsWith(".json") ? safe : `${safe}.json`;
 }
 
-function downloadJsonFallback(json: string, filename: string): void {
-  const blob = new Blob([json], { type: "application/json" });
+/**
+ * Apple Safari (not Chrome / Edge / Firefox / Android WebView).
+ * Exported for unit tests.
+ */
+export function isAppleSafari(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /Safari/i.test(ua) && !/Chrome|Chromium|CriOS|Edg|Firefox|Android/i.test(ua);
+}
+
+/**
+ * Same-origin form POST → `/api/download-project` with Content-Disposition.
+ * Safari honors this far more reliably than a Blob `<a download>` click (which
+ * can silently no-op after a menu close, and historically nudged `.json`→`.html`).
+ * Exported for unit tests.
+ */
+export function downloadJsonViaFormPost(json: string, filename: string): boolean {
+  try {
+    const iframeName = "tawala-json-dl";
+    let iframe = document.querySelector<HTMLIFrameElement>(`iframe[name="${iframeName}"]`);
+    if (!iframe) {
+      iframe = document.createElement("iframe");
+      iframe.name = iframeName;
+      iframe.title = "Download";
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.style.cssText =
+        "position:fixed;left:-9999px;top:0;width:1px;height:1px;border:0;opacity:0";
+      document.body.appendChild(iframe);
+    }
+
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/api/download-project";
+    form.target = iframeName;
+    form.enctype = "application/x-www-form-urlencoded";
+    form.style.display = "none";
+
+    const nameField = document.createElement("input");
+    nameField.type = "hidden";
+    nameField.name = "filename";
+    nameField.value = filename;
+    form.appendChild(nameField);
+
+    const jsonField = document.createElement("textarea");
+    jsonField.name = "json";
+    jsonField.value = json;
+    form.appendChild(jsonField);
+
+    document.body.appendChild(form);
+    form.submit();
+    form.remove();
+    return true;
+  } catch (err) {
+    console.warn("Form download failed; falling back to blob anchor", err);
+    return false;
+  }
+}
+
+/**
+ * Blob `<a download>` path (Firefox / Chromium fallback when File System Access
+ * fails). Appends in-DOM and uses MouseEvent — WebKit no-ops detached `a.click()`.
+ * Exported for unit tests.
+ */
+export function downloadJsonViaBlobAnchor(json: string, filename: string): void {
+  const blob = new Blob([json], { type: "application/json;charset=utf-8" });
   const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
+  // FileSaver uses createElementNS; some WebKit builds are picky about `<a download>`.
+  const a = document.createElementNS("http://www.w3.org/1999/xhtml", "a") as HTMLAnchorElement;
   a.href = url;
   a.download = filename;
-  a.click();
-  URL.revokeObjectURL(url);
+  a.rel = "noopener";
+  a.style.display = "none";
+  document.body.appendChild(a);
+  try {
+    a.dispatchEvent(new MouseEvent("click", { bubbles: true, cancelable: true, view: window }));
+  } catch {
+    a.click();
+  }
+  // Do not remove in the same turn — Safari can miss the download if the node vanishes immediately.
+  window.setTimeout(() => {
+    a.remove();
+    URL.revokeObjectURL(url);
+  }, 2_000);
+}
+
+/**
+ * One-shot JSON download when File System Access save picker is unavailable
+ * (Safari / Firefox) or fails.
+ *
+ * Safari: prefer form POST + Content-Disposition (via local API). Other browsers
+ * (and Safari if the form path throws): Blob anchor.
+ * Exported for unit tests.
+ */
+export function downloadJsonFallback(json: string, filename: string): void {
+  if (isAppleSafari() && downloadJsonViaFormPost(json, filename)) return;
+  downloadJsonViaBlobAnchor(json, filename);
+}
+
+/** True when the browser exposes a usable Save file picker (Chromium). */
+export function canUseSaveFilePicker(): boolean {
+  // Safari never ships disk pickers; refuse even if a stub appears in TP builds.
+  if (isAppleSafari()) return false;
+  return typeof savePickerWindow().showSaveFilePicker === "function";
 }
 
 async function writeJsonToHandle(handle: FileSystemFileHandle, json: string): Promise<void> {
@@ -73,6 +168,20 @@ export function setProjectFileHandle(handle: FileSystemFileHandle | null): void 
 }
 
 /**
+ * Shared one-shot download used by Safari/Firefox Save and Save As (and as the
+ * Chromium fallback when File System Access fails).
+ */
+function completeDownloadSave(json: string, filename: string): void {
+  downloadJsonFallback(json, filename);
+  useProjectStore.setState({
+    dirty: false,
+    statusMessage: isAppleSafari()
+      ? `Saved to Downloads: ${filename} (Safari has no Save As folder picker)`
+      : `Project saved (download: ${filename})`,
+  });
+}
+
+/**
  * Save the current project to disk.
  *
  * Uses the File System Access API when available so Chrome does not open its
@@ -81,6 +190,8 @@ export function setProjectFileHandle(handle: FileSystemFileHandle | null): void 
  * file (suggested name = project name + `.json`); later Saves rewrite that file
  * quietly. Never opens a picker spontaneously — only File → Save / floppy / ⌘S
  * (or Shift+⌘S Save As).
+ *
+ * Safari / Firefox: Save and Save As share the same force-download path (no picker).
  */
 export async function saveProjectToDownload(): Promise<void> {
   if (saveInFlight) return;
@@ -91,26 +202,30 @@ export async function saveProjectToDownload(): Promise<void> {
     const filename = suggestedProjectFileName();
     const win = savePickerWindow();
 
+    // Safari/Firefox: never enter the File System Access branch.
+    if (!canUseSaveFilePicker()) {
+      completeDownloadSave(json, filename);
+      return;
+    }
+
     try {
-      if (typeof win.showSaveFilePicker === "function") {
-        if (!projectFileHandle) {
-          projectFileHandle = await win.showSaveFilePicker({
-            suggestedName: filename,
-            types: [
-              {
-                description: "Tawala project JSON",
-                accept: { "application/json": [".json"] },
-              },
-            ],
-          });
-        }
-        await writeJsonToHandle(projectFileHandle, json);
-        useProjectStore.setState({
-          dirty: false,
-          statusMessage: `Saved ${projectFileHandle.name}`,
+      if (!projectFileHandle) {
+        projectFileHandle = await win.showSaveFilePicker!({
+          suggestedName: filename,
+          types: [
+            {
+              description: "Tawala project JSON",
+              accept: { "application/json": [".json"] },
+            },
+          ],
         });
-        return;
       }
+      await writeJsonToHandle(projectFileHandle, json);
+      useProjectStore.setState({
+        dirty: false,
+        statusMessage: `Saved ${projectFileHandle.name}`,
+      });
+      return;
     } catch (err) {
       const name = err instanceof DOMException ? err.name : "";
       if (name === "AbortError") {
@@ -119,13 +234,10 @@ export async function saveProjectToDownload(): Promise<void> {
       }
       // Permission / API quirks → fall back to a one-shot download below.
       console.warn("File System Access save failed; using download fallback", err);
+      clearProjectFileHandle();
     }
 
-    downloadJsonFallback(json, filename);
-    useProjectStore.setState({
-      dirty: false,
-      statusMessage: "Project saved (download)",
-    });
+    completeDownloadSave(json, filename);
   } finally {
     saveInFlight = false;
   }
@@ -134,9 +246,13 @@ export async function saveProjectToDownload(): Promise<void> {
 /**
  * Force a new location (legacy Save As). Clears the remembered handle first.
  * Only from File → Save As or Shift+⌘S — not from ordinary Save.
+ *
+ * Chromium: opens the native save picker again. Safari/Firefox: same force-download
+ * path as Save (never a silent no-op; no folder picker exists).
  */
 export async function saveProjectAs(): Promise<void> {
   clearProjectFileHandle();
+  // Same entry as Save so Safari cannot diverge — download vs download.
   await saveProjectToDownload();
 }
 

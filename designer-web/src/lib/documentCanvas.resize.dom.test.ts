@@ -7,8 +7,14 @@ import {
   alignPlacedTextBlock,
   PLACED_TEXT_CLASS,
   reflowDocumentLayout,
+  resolveDocumentLayoutCollisions,
 } from "./documentCanvas";
-import { formatPt, getAbsolutePositionPt, parseCssPt } from "./tableLayout";
+import {
+  formatPt,
+  getAbsolutePositionPt,
+  parseCssPt,
+  setLayoutHomeTopPt,
+} from "./tableLayout";
 
 function makeDocEditor(widthPx: number): HTMLElement {
   const editor = document.createElement("div");
@@ -111,5 +117,25 @@ describe("Document resize reflow (#7)", () => {
     expect(block.style.textAlign).toBe("center");
     expect(parseCssPt(block.style.width)).toBeGreaterThan(100);
     expect(parseCssPt(block.style.left) + parseCssPt(block.style.width)).toBeLessThan(320);
+  });
+
+  it("restores table top toward home when widen clears a narrow-resize collision", () => {
+    const editor = makeDocEditor(800);
+    const leftText = makePlaced(editor, 12, 40, "Left", 180);
+    setLayoutHomeTopPt(leftText, 40);
+    const table = makeAbsoluteTable(editor, 220, 40, 200);
+    setLayoutHomeTopPt(table, 40);
+
+    // Force same-column overlap (as when a narrow window clips L/R columns together).
+    table.style.left = formatPt(12);
+    resolveDocumentLayoutCollisions(editor);
+    expect(getAbsolutePositionPt(table).top).toBeGreaterThan(40);
+
+    // Widen / side-by-side again — table must not stay ratcheted down.
+    table.style.left = formatPt(220);
+    reflowDocumentLayout(editor);
+
+    expect(getAbsolutePositionPt(leftText).top).toBeCloseTo(40, 0);
+    expect(getAbsolutePositionPt(table).top).toBeCloseTo(40, 0);
   });
 });

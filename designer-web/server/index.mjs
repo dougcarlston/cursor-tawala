@@ -323,6 +323,30 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+/**
+ * Safari-friendly project download. Blob `<a download>` is unreliable in WebKit
+ * (silent no-op / `.json`→`.html` nudge). Form POST + Content-Disposition forces a
+ * real Downloads entry named `*.json` while staying inside the user-gesture turn.
+ */
+app.post(
+  "/api/download-project",
+  express.urlencoded({ extended: true, limit: "50mb" }),
+  (req, res) => {
+    const rawName = typeof req.body?.filename === "string" ? req.body.filename : "Untitled.json";
+    const cleaned = rawName.replace(/[\\/:*?"<>|\r\n\0]+/g, "_").trim() || "Untitled.json";
+    const filename = cleaned.toLowerCase().endsWith(".json") ? cleaned : `${cleaned}.json`;
+    const json = typeof req.body?.json === "string" ? req.body.json : "{}";
+    const ascii = filename.replace(/[^\x20-\x7E]/g, "_").replace(/"/g, "");
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(filename)}`,
+    );
+    res.setHeader("X-Content-Type-Options", "nosniff");
+    res.status(200).send(json);
+  },
+);
+
 await resolveJavaBackend();
 
 app.listen(PORT, () => {

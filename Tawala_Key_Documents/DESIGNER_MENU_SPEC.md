@@ -607,13 +607,14 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 - Shell guards install from `main.tsx` (not only App `useEffect`) so Vite HMR cannot drop the shortcut / leave warning.
 - **Leave warning** (`beforeunload`) fires **only when `dirty` / status `· modified`**. Soft refresh (**Cmd+R**) and hard refresh (**Cmd+Shift+R**) both navigate — neither skips the warning. Quiet refresh: **Save first** (clears dirty) then Cmd+R, or choose Reload/Leave to discard.
 - First Save (no remembered file handle) uses the File System Access **native Save** dialog with suggested name **`{project.name}.json`** (empty template → `Untitled.json`). Later Saves rewrite that file quietly. **Shift+⌘S** / File → Save As clears the handle and asks again. Download fallback uses the same suggested name (no second spontaneous picker).
+- **Safari / browsers without `showSaveFilePicker`:** Save and Save As share the **same force-download path** (never File System Access; never a silent no-op). Safari uses a same-origin form POST to `/api/download-project` with `Content-Disposition: attachment` so the file lands in **Downloads** as `*.json` (Blob `<a download>` alone was a WebKit silent no-op / `.json`→`.html` nudge). Status: `Saved to Downloads: {name}.json (Safari has no Save As folder picker)`.
 - Prefer Designer in a normal browser tab (`http://localhost:5173`). Cursor Simple Browser / Electron webviews can still deliver ⌘S to the **IDE** (second Save As for an untitled editor buffer) even when the page calls `preventDefault`.
 
 **Smoke (Save):**
 1. Soft-refresh Designer once after a pull (`Cmd+R` / soft restart of Vite if needed) — should be **quiet** when status has no `· modified`.
 2. Edit a Document or Form → status shows **`· modified`**; floppy tip **Save Project (modified)** with red-tint highlight; File → **Save · modified**.
 3. **⌘S / Ctrl+S** (with caret in contenteditable) or File → Save or floppy → one picker/download named from the project (e.g. `Untitled.json` or `MyProject.json`); `· modified` clears. A second Save should **not** re-open the picker.
-4. **File → Save As…** (or **⇧⌘S** / **Shift+Ctrl+S**) always opens a picker even after a prior Save; new location becomes the quiet re-Save target. Ordinary Save / ⌘S must still rewrite quietly afterward.
+4. **File → Save As…** (or **⇧⌘S** / **Shift+Ctrl+S**) always opens a picker even after a prior Save; new location becomes the quiet re-Save target. Ordinary Save / ⌘S must still rewrite quietly afterward. **Safari:** there is **no** folder-picker popup — success = status `Saved to Downloads: ….json` **and** a new/updated `*.json` in **~/Downloads** (Allow downloads / keep `.json` if Safari asks). File → Save and File → Save As must behave the same on Safari.
 5. Edit again → **Cmd+R** *or* hard refresh (`Cmd+Shift+R`) → browser **leave warning** appears (both navigate; “soft” does not skip it). Save → `· modified` clears → Cmd+R is quiet again.
 
 ---

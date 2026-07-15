@@ -13,7 +13,14 @@ import {
 import { FIELD_TOKEN_CLASS } from "./fieldTokens";
 import { FUNCTION_TOKEN_CLASS } from "./functionTokens";
 import { listUserTableCells } from "./tableCellSelection";
-import { formatPt, getAbsolutePositionPt, parseCssPt, pxToPt } from "./tableLayout";
+import {
+  formatPt,
+  getAbsolutePositionPt,
+  getLayoutHomeTopPt,
+  parseCssPt,
+  pxToPt,
+  setLayoutHomeTopPt,
+} from "./tableLayout";
 import { wordBoundsInText } from "./wordSelect";
 
 const PLACED_TEXT_CLASS = "doc-placed-text";
@@ -794,16 +801,31 @@ export function layoutBoxesHorizontallyOverlap(
 }
 
 /**
- * Push following items down only when they share a horizontal column with a prior item
- * and their top collides with that item’s bottom. Does **not** pull items up — intentional
- * drag gaps and side-by-side (left/right of table) placements are preserved.
+ * Resolve same-column overlaps for absolute placed lines / tables.
+ *
+ * Each item targets `max(homeTop, collisionFloor)`:
+ * - Collision push moves `style.top` down without rewriting home — so table ✥
+ *   drag and window widen can restore prior positions when space returns.
+ * - Intentional gaps stay (home sits below free space; we do not pack-to-tight).
+ * - Side-by-side (no horizontal overlap) items ignore each other’s floors.
  */
 export function resolveDocumentLayoutCollisions(editor: HTMLElement): void {
   const gapPt = 2;
-  const items = listDocumentLayoutItemsSorted(editor);
+  // Order by intentional home (not displaced current top) so a restored item is
+  // placed before later siblings and cannot land underneath them after pull-up.
+  const items = listDocumentLayoutItemsSorted(editor)
+    .slice()
+    .sort((a, b) => {
+      const ha = getLayoutHomeTopPt(a);
+      const hb = getLayoutHomeTopPt(b);
+      if (Math.abs(ha - hb) > 0.5) return ha - hb;
+      return getAbsolutePositionPt(a).top - getAbsolutePositionPt(b).top;
+    });
   for (let i = 0; i < items.length; i++) {
     const item = items[i];
     void item.offsetHeight;
+    const homeTop = getLayoutHomeTopPt(item);
+    // Measure width/height at current paint; X is unchanged by this pass.
     const box = layoutItemBoxPt(item);
     let floor = 0;
     for (let j = 0; j < i; j++) {
@@ -812,9 +834,10 @@ export function resolveDocumentLayoutCollisions(editor: HTMLElement): void {
       if (!layoutBoxesHorizontallyOverlap(box, pb)) continue;
       floor = Math.max(floor, pb.top + pb.height + gapPt);
     }
+    const targetTop = Math.max(homeTop, floor);
     const pos = getAbsolutePositionPt(item);
-    if (pos.top < floor - 0.5) {
-      item.style.top = formatPt(floor);
+    if (Math.abs(pos.top - targetTop) > 0.5) {
+      item.style.top = formatPt(targetTop);
     }
   }
 }
@@ -826,7 +849,8 @@ export function resolveDocumentLayoutCollisions(editor: HTMLElement): void {
  * Height is the rendered line box (tallest glyph/token on the line), not the last
  * palette action:
  * - Enlarging a single word/character can grow the box and push overlapping lines below.
- * - Lines below move only when they would overlap — shrinking does not pull them up.
+ * - Lines / tables that were only collision-displaced restore toward `data-doc-home-top`
+ *   when the overlapping item moves away or the window widens again.
  *
  * Document `table.user` items participate so remount cannot leave prose under a table
  * in the same column.
@@ -842,8 +866,9 @@ export function reflowPlacedLinesBelow(editor: HTMLElement, block: HTMLElement):
 /**
  * Re-apply wrap widths for every placed line and resolve overlaps (window / MDI resize).
  * Clamps left edges that overflow a narrower content box so text/fields/tables do not
- * keep absolute anchors off-canvas. Tables keep owner X/Y when they do not collide with
- * prose in the same column (no forced pack-under; intentional gaps / beside layout stay).
+ * keep absolute anchors off-canvas. Tables keep owner home X/Y when they do not collide
+ * with prose in the same column (no forced pack-under; intentional gaps / beside stay).
+ * Widen after a narrow push restores toward each item’s `data-doc-home-top`.
  */
 export function reflowAllPlacedLines(editor: HTMLElement): void {
   normalizeDocumentUserTables(editor);
@@ -909,6 +934,7 @@ export function normalizeDocumentUserTables(editor: HTMLElement): boolean {
       table.style.position = "absolute";
       table.style.left = formatPt(left);
       table.style.top = formatPt(top);
+      setLayoutHomeTopPt(table, top);
       table.style.float = "";
       table.style.marginRight = "";
       table.style.marginLeft = "";
@@ -930,6 +956,7 @@ export function normalizeDocumentUserTables(editor: HTMLElement): boolean {
       table.style.left = formatPt(left);
       // Keep existing top when present so reflow can order vs placed lines.
       table.style.top = formatPt(top);
+      setLayoutHomeTopPt(table, top);
       changed = true;
     }
   }
@@ -985,6 +1012,7 @@ export function insertDocumentUserTable(
   table.style.position = "absolute";
   table.style.left = formatPt(left);
   table.style.top = formatPt(insertTop);
+  setLayoutHomeTopPt(table, insertTop);
 
   if (placed && editor.contains(placed)) {
     placed.after(table);
@@ -1127,9 +1155,11 @@ function createPlacedTextBlockAt(left: number, top: number): HTMLParagraphElemen
   p.className = PLACED_TEXT_CLASS;
   p.style.position = "absolute";
   p.style.left = formatPt(Math.max(0, left));
-  p.style.top = formatPt(Math.max(0, top));
+  const topPt = Math.max(0, top);
+  p.style.top = formatPt(topPt);
   p.style.margin = "0";
   p.style.minWidth = "2em";
+  setLayoutHomeTopPt(p, topPt);
   return p;
 }
 
@@ -1158,7 +1188,11 @@ export function pushPlacedLinesFrom(
       const box = layoutItemBoxPt(node);
       if (!layoutBoxesHorizontallyOverlap(columnBox, box)) return;
     }
-    node.style.top = formatPt(pos.top + deltaPt);
+    const nextTop = pos.top + deltaPt;
+    node.style.top = formatPt(nextTop);
+    // Return / insert growth is intentional — move home with the item so the next
+    // collision resolve does not pull siblings back onto the new line.
+    setLayoutHomeTopPt(node, nextTop);
   });
 }
 

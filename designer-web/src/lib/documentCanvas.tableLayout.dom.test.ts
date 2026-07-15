@@ -13,7 +13,13 @@ import {
   reflowAllPlacedLines,
   resolveDocumentLayoutCollisions,
 } from "./documentCanvas";
-import { formatPt, getAbsolutePositionPt, parseCssPt } from "./tableLayout";
+import {
+  formatPt,
+  getAbsolutePositionPt,
+  parseCssPt,
+  setLayoutHomeTopPt,
+  setTablePositionPt,
+} from "./tableLayout";
 
 function makeDocEditor(): HTMLElement {
   const editor = document.createElement("div");
@@ -156,6 +162,27 @@ describe("Document table layout (no overlay)", () => {
     reflowAllPlacedLines(editor);
 
     expect(getAbsolutePositionPt(table).top).toBe(120);
+    editor.remove();
+  });
+
+  it("restores displaced same-column text after table ✥ move clears the overlap", () => {
+    const editor = makeDocEditor();
+    const text = makePlaced(editor, 12, 40, "Text here", 400);
+    setLayoutHomeTopPt(text, 40);
+    const table = makeAbsoluteTable(editor, 12, 80, 200);
+    setLayoutHomeTopPt(table, 80);
+
+    // Simulate collision push while the table sits on the text’s home band.
+    setTablePositionPt(table, 12, 30);
+    resolveDocumentLayoutCollisions(editor);
+    expect(getAbsolutePositionPt(text).top).toBeGreaterThan(40);
+
+    // Move table clear of the home band (same as ✥ release + reflow).
+    setTablePositionPt(table, 12, 200);
+    resolveDocumentLayoutCollisions(editor);
+
+    expect(getAbsolutePositionPt(text).top).toBeCloseTo(40, 0);
+    expect(getAbsolutePositionPt(table).top).toBeCloseTo(200, 0);
     editor.remove();
   });
 

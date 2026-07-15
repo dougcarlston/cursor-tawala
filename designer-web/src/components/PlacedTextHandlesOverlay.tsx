@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PLACED_TEXT_CLASS } from "@/lib/documentCanvas";
+import { PLACED_TEXT_CLASS, reflowAllPlacedLines } from "@/lib/documentCanvas";
 import {
   formatPt,
   getAbsolutePositionPt,
@@ -125,8 +125,14 @@ export function PlacedTextHandlesOverlay({ editorRef, onCommit }: Props) {
         if (b && container) setBox(blockBoxInContainer(b, container));
       },
       () => {
+        const b = blockRef.current;
+        const editor = editorRef.current;
         dragRef.current = false;
         blockRef.current = null;
+        // Same packing as table ✥ — restore neighbors toward home when space frees.
+        if (b && editor) {
+          reflowAllPlacedLines(editor);
+        }
         onCommit();
         sync();
       },

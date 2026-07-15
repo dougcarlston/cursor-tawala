@@ -68,6 +68,31 @@ export function setTableRowHeights(table: HTMLTableElement, heights: number[]): 
   });
 }
 
+/**
+ * Intentional vertical home for Document absolute items (placed text / tables).
+ * Collision packing may push `style.top` down; widen / table-drag clear restores
+ * toward this home without closing intentional gaps (home itself is below free space).
+ */
+export const DOC_HOME_TOP_ATTR = "data-doc-home-top";
+
+/** Record intentional vertical home (invent, ✥ drag, Return push). */
+export function setLayoutHomeTopPt(el: HTMLElement, top: number): void {
+  el.setAttribute(DOC_HOME_TOP_ATTR, formatPt(Math.max(0, top)));
+}
+
+/**
+ * Home top for packing restore. Seeds from current `style.top` once when missing
+ * so the first collision push can later pull back when space returns.
+ */
+export function getLayoutHomeTopPt(el: HTMLElement): number {
+  if (el.hasAttribute(DOC_HOME_TOP_ATTR)) {
+    return parseCssPt(el.getAttribute(DOC_HOME_TOP_ATTR) || "");
+  }
+  const top = parseCssPt(el.style.top);
+  setLayoutHomeTopPt(el, top);
+  return top;
+}
+
 /** Read absolute offset for positioned elements (`.doc-placed-text`, etc.). */
 export function getAbsolutePositionPt(el: HTMLElement): { left: number; top: number } {
   return {
@@ -82,6 +107,7 @@ export function setAbsolutePositionPt(el: HTMLElement, left: number, top: number
   el.style.left = formatPt(left);
   el.style.top = formatPt(top);
   el.style.margin = "0";
+  setLayoutHomeTopPt(el, top);
 }
 
 /** Read table offset used for drag positioning (relative `left`/`top`, pt). */
@@ -111,6 +137,9 @@ export function setTablePositionPt(table: HTMLTableElement, left: number, top: n
   table.style.marginTop = "";
   if (wasAbsolute) {
     table.style.margin = "0";
+    // Document absolute stack: ✥ move is intentional — home tracks the new anchor
+    // so collision packing can restore displaced neighbors when the table leaves.
+    setLayoutHomeTopPt(table, top);
   }
 }
 

@@ -348,6 +348,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 **Window / MDI resize reflow (July 14 leftover #7)**
 
 13b. Soft-refresh. Document with wrapping placed text + a table beside (or with an intentional ✥ gap) → narrow the Document/MDI window (or browser). Text re-wraps; same-column overlaps clear; table does **not** snap under side-by-side prose; intentional vertical gap under text is kept.
+13b2. Soft-refresh. Side-by-side text + table → **narrow** until they stack (table/text pushed down) → **widen** again → tops restore toward their prior homes (not permanently ratcheted down). Intentional ✥ gaps must still stay.
 
 **Continue after break (July 14 leftover #8)**
 
@@ -369,6 +370,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 22. Place / type text **right** of a table when there is room → stays beside.
 22b. **Delete beside table (July 14):** Invent/type a short word (e.g. `Test`) in free space **right** of a table → Backspace/Delete erases **in that placed line** (word must **not** hop into a table cell). Nearby labels (Left / Right side / Bottom) keep their font face. Clicking a cell still edits that cell.
 23. Drag table with ✥ to leave a gap below preceding text (or beside) → after release, table keeps that X/Y (does **not** snap under the text above).
+23b. Soft-refresh. Place several “Text here” lines in the table’s column → drag table ✥ over them (they yield downward) → drag table clear / back → yielded prose snaps back toward prior homes (not left orphaned far down the canvas).
 24. Click blank canvas to invent a text anchor → click away / elsewhere **without typing** → empty anchor is gone (intentional Double-Return blank between paragraphs still kept).
 25. Soft-refresh → leave/return Document → still **no** table-over-text overlay.
 26. Caret in a table → **Delete Table** → **Are you sure you want to delete this table?** → **Cancel** keeps table; **OK** removes it.
@@ -388,4 +390,4 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 ---
 
-*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b).*
+*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7) + widen home-restore (13b2); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; table ✥ yield/restore (23b); empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b).*
