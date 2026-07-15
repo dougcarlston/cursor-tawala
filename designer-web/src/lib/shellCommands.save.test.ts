@@ -1,9 +1,12 @@
-import { describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import {
   applyDirtyBeforeUnload,
+  cancelSaveAsDialog,
   eventIsSaveChord,
+  isSaveAsDialogOpen,
   saveAcceleratorLabel,
   saveAsAcceleratorLabel,
+  saveProjectAs,
   suggestedProjectFileName,
 } from "@/lib/shellCommands";
 
@@ -88,5 +91,24 @@ describe("suggestedProjectFileName", () => {
 
   it("strips reserved filename characters", () => {
     expect(suggestedProjectFileName('a/b:c*"')).toBe("a_b_c_.json");
+  });
+});
+
+describe("in-app Save As dialog request", () => {
+  afterEach(() => {
+    if (isSaveAsDialogOpen()) cancelSaveAsDialog();
+  });
+
+  it("saveProjectAs opens the dialog without writing", () => {
+    expect(isSaveAsDialogOpen()).toBe(false);
+    saveProjectAs();
+    expect(isSaveAsDialogOpen()).toBe(true);
+  });
+
+  it("cancelSaveAsDialog closes the prompt", () => {
+    saveProjectAs();
+    expect(isSaveAsDialogOpen()).toBe(true);
+    cancelSaveAsDialog();
+    expect(isSaveAsDialogOpen()).toBe(false);
   });
 });

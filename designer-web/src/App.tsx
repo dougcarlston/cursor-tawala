@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { MenuBar } from "./components/MenuBar";
 import { MainIconToolbar } from "./components/MainIconToolbar";
@@ -13,12 +13,15 @@ import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
 import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
+import { SaveAsDialog } from "./components/SaveAsDialog";
 import type { TemplateEntry } from "@/templates/catalog";
 import {
   clearProjectFileHandle,
   installDesignerShellGuards,
+  isSaveAsDialogOpen,
   openProjectFromDisk,
   runShellDelete,
+  subscribeSaveAsDialog,
 } from "@/lib/shellCommands";
 
 const ITEMS_COLUMN_WIDTH = 76 + 1; // .designer-items + border
@@ -60,6 +63,11 @@ export default function App() {
   const deploy = useProjectStore((s) => s.deploy);
   const fileRef = useRef<HTMLInputElement>(null);
   const [showNewProject, setShowNewProject] = useState(false);
+  const showSaveAs = useSyncExternalStore(
+    subscribeSaveAsDialog,
+    isSaveAsDialogOpen,
+    isSaveAsDialogOpen,
+  );
   const [leftWidth, setLeftWidth] = useState(() => loadPanelWidths().left);
   const [rightWidth, setRightWidth] = useState(() => loadPanelWidths().right);
 
@@ -230,6 +238,7 @@ export default function App() {
         onClose={() => setShowNewProject(false)}
         onSelect={(t) => void onPickTemplate(t)}
       />
+      <SaveAsDialog open={showSaveAs} />
       <FunctionPickerHost />
     </div>
   );

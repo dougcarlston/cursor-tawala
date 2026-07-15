@@ -5171,6 +5171,16 @@ button.skip-script-line:hover {
   background: #f5f5f5;
 }
 
+.save-as-dialog .hint {
+  margin: 0 0 8px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+.save-as-ext-hint {
+  margin: 0 0 4px !important;
+}
+
 .deploy-urls {
   list-style: none;
   padding: 0;

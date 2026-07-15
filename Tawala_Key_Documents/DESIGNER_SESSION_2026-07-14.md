@@ -14,7 +14,7 @@
 Selection, Save/dirty (Chrome), Face/Size/B/I, Color, Tables (#8–9, #11), Align (#12), Continue-after-break (#14), bonuses (#15–16), table snapback (#4 fix), resize restore (#5 fix).
 
 ## Still open — tomorrow
-1. **Safari / Save As (important):** Current behavior dumps Untitled `*.json` to Downloads. Need a better UX (sensible default filename from project name; clear Save vs Save As; document Safari limits; ideally name prompt before download). Owner stopped for the day with this failing their bar.
+1. **Safari / Save As:** **In-app Save As name dialog landed** (File → Save As… / ⇧⌘S). Default = `{project.name}.json`; after confirm Chromium gets native picker, Safari downloads to Downloads under the chosen name. Owner should re-smoke on Safari; folder picker remains a WebKit limit (documented in `DESIGNER_MENU_SPEC.md`).
 2. **Safari chip highlight → left margin** (cosmetic; low priority).
 3. **New Project → “Could not parse JSON.”** (deferred; not in today's fix batch).
 4. **Enhancement:** Color picker Recent row (4–6) for applying one color to separated words.
@@ -22,5 +22,5 @@ Selection, Save/dirty (Chrome), Face/Size/B/I, Color, Tables (#8–9, #11), Alig
 6. Push only when owner asks (`cursor/forms-canvas-wysiwyg` may be ahead of origin).
 
 ## Do not
-- Do not treat Safari Save As as done.
-- Prefer Chrome for Save As picker until Safari path is acceptable.
+- Prefer Chrome when you need a true Save As **folder** picker; Safari can only name the file and land it in Downloads.
+- Do not treat New Project JSON parse or chip highlight as part of the Save As fix.

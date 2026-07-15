@@ -90,10 +90,10 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           <span className="menu-accel">{saveAccel}</span>
         </button>
         {/*
-          Save As always offered (clears remembered handle → native picker on Chromium).
-          Safari/Firefox: same force-download path as Save (no folder picker). Never gated on dirty.
+          Save As opens an in-app name dialog, then Chromium native picker (clears handle)
+          or Safari/Firefox download under the chosen name. Never gated on dirty.
         */}
-        <button type="button" onClick={() => void saveProjectAs()}>
+        <button type="button" onClick={() => saveProjectAs()}>
           Save As…
           <span className="menu-accel">{saveAsAccel}</span>
         </button>

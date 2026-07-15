@@ -13,6 +13,42 @@ let projectFileHandle: FileSystemFileHandle | null = null;
 /** Blocks overlapping Save / Save As so ⌘S spam cannot open two native pickers. */
 let saveInFlight = false;
 
+/** In-app Save As dialog open state (Menu / ⇧⌘S → name prompt before picker/download). */
+let saveAsDialogOpen = false;
+type SaveAsDialogListener = (open: boolean) => void;
+const saveAsDialogListeners = new Set<SaveAsDialogListener>();
+
+function emitSaveAsDialog(): void {
+  saveAsDialogListeners.forEach((cb) => cb(saveAsDialogOpen));
+}
+
+/** Subscribe to in-app Save As dialog visibility. Exported for App host. */
+export function subscribeSaveAsDialog(listener: SaveAsDialogListener): () => void {
+  saveAsDialogListeners.add(listener);
+  listener(saveAsDialogOpen);
+  return () => {
+    saveAsDialogListeners.delete(listener);
+  };
+}
+
+export function isSaveAsDialogOpen(): boolean {
+  return saveAsDialogOpen;
+}
+
+/** Open the in-app Save As name prompt (does not write yet). */
+export function requestSaveAsDialog(): void {
+  saveAsDialogOpen = true;
+  emitSaveAsDialog();
+}
+
+/** Cancel the in-app Save As prompt without writing. */
+export function cancelSaveAsDialog(): void {
+  if (!saveAsDialogOpen) return;
+  saveAsDialogOpen = false;
+  emitSaveAsDialog();
+  useProjectStore.getState().setStatus("Save As cancelled");
+}
+
 type SavePickerWindow = Window &
   typeof globalThis & {
     showSaveFilePicker?: (options?: {
@@ -36,8 +72,9 @@ function savePickerWindow(): SavePickerWindow {
 }
 
 /**
- * Suggested disk name for File System Access / download fallback.
+ * Suggested disk name for File System Access / download fallback / Save As dialog.
  * Uses the project `name` (empty template defaults to `Untitled` → `Untitled.json`).
+ * Ensures a single `.json` suffix; strips path / reserved characters.
  * Exported for unit tests.
  */
 export function suggestedProjectFileName(projectName?: string): string {
@@ -182,24 +219,20 @@ function completeDownloadSave(json: string, filename: string): void {
 }
 
 /**
- * Save the current project to disk.
+ * Write project JSON to disk under `filename`.
  *
- * Uses the File System Access API when available so Chrome does not open its
- * Downloads shelf on every Save (the old `<a download>` path stacked Temp.json /
- * Save1.json entries across the toolbar). First Save may ask where to put the
- * file (suggested name = project name + `.json`); later Saves rewrite that file
- * quietly. Never opens a picker spontaneously — only File → Save / floppy / ⌘S
- * (or Shift+⌘S Save As).
- *
- * Safari / Firefox: Save and Save As share the same force-download path (no picker).
+ * `preferExistingHandle`: ordinary Save reuses a remembered Chromium handle.
+ * Save As always clears the handle first and passes false so the picker reopens.
  */
-export async function saveProjectToDownload(): Promise<void> {
+async function writeProjectToDisk(
+  filename: string,
+  options: { preferExistingHandle: boolean },
+): Promise<void> {
   if (saveInFlight) return;
   saveInFlight = true;
   try {
     const { exportJson } = useProjectStore.getState();
     const json = exportJson();
-    const filename = suggestedProjectFileName();
     const win = savePickerWindow();
 
     // Safari/Firefox: never enter the File System Access branch.
@@ -209,7 +242,7 @@ export async function saveProjectToDownload(): Promise<void> {
     }
 
     try {
-      if (!projectFileHandle) {
+      if (!options.preferExistingHandle || !projectFileHandle) {
         projectFileHandle = await win.showSaveFilePicker!({
           suggestedName: filename,
           types: [
@@ -244,16 +277,40 @@ export async function saveProjectToDownload(): Promise<void> {
 }
 
 /**
- * Force a new location (legacy Save As). Clears the remembered handle first.
- * Only from File → Save As or Shift+⌘S — not from ordinary Save.
+ * Save the current project to disk.
  *
- * Chromium: opens the native save picker again. Safari/Firefox: same force-download
- * path as Save (never a silent no-op; no folder picker exists).
+ * Uses the File System Access API when available so Chrome does not open its
+ * Downloads shelf on every Save (the old `<a download>` path stacked Temp.json /
+ * Save1.json entries across the toolbar). First Save may ask where to put the
+ * file (suggested name = project name + `.json`); later Saves rewrite that file
+ * quietly. Never opens a picker spontaneously — only File → Save / floppy / ⌘S.
+ *
+ * Safari / Firefox: force-download (no picker). Save As uses an in-app name
+ * dialog first, then this same download path with the chosen name.
  */
-export async function saveProjectAs(): Promise<void> {
+export async function saveProjectToDownload(): Promise<void> {
+  await writeProjectToDisk(suggestedProjectFileName(), { preferExistingHandle: true });
+}
+
+/**
+ * File → Save As / Shift+⌘S — open the in-app name dialog (does not write yet).
+ * Writing happens in {@link confirmSaveAs} after the user confirms.
+ */
+export function saveProjectAs(): void {
+  requestSaveAsDialog();
+}
+
+/**
+ * After the in-app Save As dialog confirms a name: clear any remembered Chromium
+ * handle, ensure `.json`, then open the native picker (Chromium) or download
+ * (Safari / no picker) under that name.
+ */
+export async function confirmSaveAs(chosenName: string): Promise<void> {
+  const filename = suggestedProjectFileName(chosenName);
+  saveAsDialogOpen = false;
+  emitSaveAsDialog();
   clearProjectFileHandle();
-  // Same entry as Save so Safari cannot diverge — download vs download.
-  await saveProjectToDownload();
+  await writeProjectToDisk(filename, { preferExistingHandle: false });
 }
 
 /**
@@ -489,7 +546,7 @@ export function installDesignerShellGuards(): void {
     e.stopPropagation();
     e.stopImmediatePropagation();
     if (e.shiftKey) {
-      void saveProjectAs();
+      saveProjectAs();
     } else {
       void saveProjectToDownload();
     }
