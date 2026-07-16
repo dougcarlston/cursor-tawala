@@ -44,6 +44,24 @@ describe("Document Double-Return blank lines", () => {
     editor.remove();
   });
 
+  it("does not treat From-your-PC embedded images as empty (keep on prune)", () => {
+    const editor = document.createElement("div");
+    document.body.appendChild(editor);
+    const pic = placed(
+      0,
+      `<img class="tawala-embedded-image" data-tawala-image-id="image1" ` +
+        `data-image-width="40" data-image-height="20" width="40" height="20" ` +
+        `src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="" />`,
+    );
+    editor.append(pic);
+
+    expect(isPlacedTextBlockEmpty(pic)).toBe(false);
+    expect(pruneEmptyPlacedTextBlocks(editor)).toBe(false);
+    expect(editor.contains(pic)).toBe(true);
+
+    editor.remove();
+  });
+
   it("still prunes leading/trailing empty husks after delete", () => {
     const editor = document.createElement("div");
     document.body.appendChild(editor);

@@ -3,6 +3,7 @@ import { RichTextEditor } from "./RichTextEditor";
 import {
   STRUCTURED_NODE_DATA_ATTR as STRUCTURED_NODE_ATTR,
   encodeStructuredNode,
+  type ChoiceTallyNode,
   type ItemizationNode,
   type QuestionCorrelationNode,
   type StructuredFunctionNode,
@@ -28,10 +29,15 @@ interface StructuredLocation {
 const EDITOR_CARET_SLOT_ATTR = "data-tawala-caret-slot";
 const ITEMIZATION_TOKEN_LABEL = "{ MULTIPLE QUESTION LIST }";
 const CORRELATION_TOKEN_LABEL = "{ QUESTION CORRELATION TABLE }";
+const CHOICE_TALLY_TOKEN_LABEL = "{ RESPONSE BAR GRAPH }";
 const EDITOR_CARET_GUARD = "\u200b";
 
 function isEditableStructuredType(type: string): type is StructuredFunctionNode["type"] {
-  return type === "itemizationTable" || type === "questionCorrelationTable";
+  return (
+    type === "itemizationTable" ||
+    type === "questionCorrelationTable" ||
+    type === "choiceTallyTable"
+  );
 }
 
 function findEditableStructuredFunction(content: RichContentBlock[]): StructuredLocation | null {
@@ -179,6 +185,12 @@ function richNodesToEditorHtml(nodes: RichTextNode[] = []): string {
             node as QuestionCorrelationNode,
             CORRELATION_TOKEN_LABEL,
             "QUESTION CORRELATION TABLE",
+          );
+        case "choiceTallyTable":
+          return structuredTokenHtml(
+            node as ChoiceTallyNode,
+            CHOICE_TALLY_TOKEN_LABEL,
+            "RESPONSE BAR GRAPH",
           );
         default:
           return richNodesToEditorHtml(node.nodes ?? []);
@@ -424,6 +436,7 @@ export function itemizationPreviewLabel(content: RichContentBlock[]): string | n
   const node = findEditableStructuredFunction(content)?.node;
   if (!node) return null;
   if (node.type === "questionCorrelationTable") return "QUESTION CORRELATION TABLE";
+  if (node.type === "choiceTallyTable") return "RESPONSE BAR GRAPH";
   if (!node.columns?.length) return "MULTIPLE QUESTION LIST";
   return `MULTIPLE QUESTION LIST (${node.columns.map((c) => c.header).join(", ")})`;
 }

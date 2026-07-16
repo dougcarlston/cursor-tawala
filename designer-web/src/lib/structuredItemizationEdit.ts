@@ -32,11 +32,30 @@ export interface QuestionCorrelationNode {
   [key: string]: unknown;
 }
 
-export type StructuredFunctionNode = ItemizationNode | QuestionCorrelationNode;
+export interface ChoiceTallyNode {
+  type: "choiceTallyTable";
+  form?: string;
+  version?: number;
+  /** Often `Record:Form:Q1` or `Form:Q1`. */
+  field?: string;
+  [key: string]: unknown;
+}
+
+export type StructuredFunctionNode =
+  | ItemizationNode
+  | QuestionCorrelationNode
+  | ChoiceTallyNode;
 
 const STRUCTURED_FUNCTION_IDS: Record<StructuredFunctionNode["type"], string> = {
   itemizationTable: "itemization-table",
   questionCorrelationTable: "question-correlation-table",
+  choiceTallyTable: "choice-tally-table",
+};
+
+const STRUCTURED_TOKEN_LABELS: Record<StructuredFunctionNode["type"], string> = {
+  itemizationTable: "{ MULTIPLE QUESTION LIST }",
+  questionCorrelationTable: "{ QUESTION CORRELATION TABLE }",
+  choiceTallyTable: "{ RESPONSE BAR GRAPH }",
 };
 
 export function encodeStructuredNode(node: StructuredFunctionNode): string {
@@ -47,7 +66,11 @@ export function decodeStructuredNode(value: string | null): StructuredFunctionNo
   if (!value) return null;
   try {
     const parsed = JSON.parse(decodeURIComponent(value)) as StructuredFunctionNode;
-    if (parsed?.type === "itemizationTable" || parsed?.type === "questionCorrelationTable") {
+    if (
+      parsed?.type === "itemizationTable" ||
+      parsed?.type === "questionCorrelationTable" ||
+      parsed?.type === "choiceTallyTable"
+    ) {
       return parsed;
     }
     return null;
@@ -93,8 +116,22 @@ function correlationToConfig(node: QuestionCorrelationNode): FunctionConfig {
   };
 }
 
+function choiceTallyToConfig(node: ChoiceTallyNode): FunctionConfig {
+  const def = getFunctionDef("choice-tally-table");
+  const base = def ? defaultFunctionConfig(def) : {};
+  const field = String(node.field ?? "").trim();
+  return {
+    ...base,
+    field: field.includes("<<") ? field : field ? `<<${field}>>` : "",
+    conditionsRows: [{ field: "", op: "equals", value: "" }],
+    conditionsCombinator: "and",
+  };
+}
+
 function nodeToConfig(node: StructuredFunctionNode): FunctionConfig {
-  return node.type === "itemizationTable" ? itemizationToConfig(node) : correlationToConfig(node);
+  if (node.type === "itemizationTable") return itemizationToConfig(node);
+  if (node.type === "choiceTallyTable") return choiceTallyToConfig(node);
+  return correlationToConfig(node);
 }
 
 function patchNodeFromConfig(
@@ -119,6 +156,17 @@ function patchNodeFromConfig(
     };
   }
 
+  if (node.type === "choiceTallyTable") {
+    let field = String(nextConfig.field ?? "").trim();
+    if (field.startsWith("<<") && field.endsWith(">>")) field = field.slice(2, -2).trim();
+    const formPart = field.includes(":") ? field.split(":")[0] : String(node.form ?? "").trim();
+    return {
+      ...node,
+      field,
+      form: formPart || node.form,
+    };
+  }
+
   const form = String(node.form ?? "").trim();
   return {
     ...node,
@@ -129,7 +177,7 @@ function patchNodeFromConfig(
   };
 }
 
-/** Open Configure for a structured function token (itemization / correlation) in rich text. */
+/** Open Configure for a structured function token (itemization / correlation / choice tally). */
 export function openStructuredFunctionTokenForEdit(
   tokenEl: HTMLElement,
   onPatched: () => void,
@@ -155,10 +203,7 @@ export function openStructuredFunctionTokenForEdit(
         tokenEl.setAttribute("data-itemization-form", patched.form);
       }
       tokenEl.setAttribute("title", def.name);
-      tokenEl.textContent =
-        patched.type === "itemizationTable"
-          ? "{ MULTIPLE QUESTION LIST }"
-          : "{ QUESTION CORRELATION TABLE }";
+      tokenEl.textContent = STRUCTURED_TOKEN_LABELS[patched.type];
       onPatched();
     },
   });

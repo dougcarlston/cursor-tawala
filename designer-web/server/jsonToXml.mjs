@@ -517,7 +517,88 @@ export function projectToXml(project) {
     })
     .join("");
 
-  return `<project name="${escAttr(project.name)}" themePath="${escAttr(project.themePath ?? "default")}" format="1.11" designerBuild="204"><forms>${forms}</forms><processes>${processes}</processes><documents>${documents}</documents></project>`;
+  // Merge project.images with any data-URL embeds still only present in HTML
+  // (Design/Preview show src=data:…; Deploy needs <imagedef> or Java 404s).
+  const imagesXml = imagesToXml(collectProjectImages(project));
+
+  return `<project name="${escAttr(project.name)}" themePath="${escAttr(project.themePath ?? "default")}" format="1.11" designerBuild="204"><forms>${forms}</forms><processes>${processes}</processes><documents>${documents}</documents>${imagesXml}</project>`;
+}
+
+/**
+ * Collect imagedefs from `project.images` plus `<img data-tawala-image-id src="data:…">`
+ * scattered in Form Text / Document HTML so Deploy never drops a Design-visible picture.
+ * Exported for unit tests.
+ */
+export function collectProjectImages(project) {
+  const byId = new Map();
+  for (const img of Array.isArray(project?.images) ? project.images : []) {
+    const id = String(img?.id ?? "").trim();
+    const data = String(img?.data ?? "").replace(/\s+/g, "");
+    if (!id || !data) continue;
+    byId.set(id, {
+      id,
+      imageFormat: img.imageFormat,
+      data,
+      fileName: img.fileName,
+    });
+  }
+
+  const htmlChunks = [];
+  for (const form of project?.forms ?? []) {
+    for (const item of form?.items ?? []) {
+      if (typeof item?.content === "string") htmlChunks.push(item.content);
+    }
+  }
+  for (const doc of project?.documents ?? []) {
+    if (typeof doc?.content === "string") htmlChunks.push(doc.content);
+  }
+
+  const imgRe =
+    /<img\b([^>]*?)(?:\/>|>)/gi;
+  for (const html of htmlChunks) {
+    let m;
+    while ((m = imgRe.exec(html)) !== null) {
+      const attrs = m[1] ?? "";
+      const idM = attrs.match(/data-tawala-image-id=["']([^"']+)["']/i);
+      const srcM = attrs.match(/\bsrc=["'](data:image\/[^"']+)["']/i);
+      if (!idM?.[1] || !srcM?.[1]) continue;
+      const id = idM[1].trim();
+      if (byId.has(id)) continue;
+      const parsed = parseDataUrlBase64(srcM[1]);
+      if (!parsed) continue;
+      byId.set(id, { id, imageFormat: parsed.imageFormat, data: parsed.data });
+    }
+  }
+
+  return [...byId.values()];
+}
+
+function parseDataUrlBase64(dataUrl) {
+  const m = /^data:image\/(png|gif|jpeg|jpg);base64,(.+)$/i.exec(String(dataUrl ?? "").trim());
+  if (!m) return null;
+  const fmt = m[1].toLowerCase();
+  const imageFormat = fmt === "png" ? "PNG" : fmt === "gif" ? "GIF" : "JPEG";
+  return { imageFormat, data: m[2].replace(/\s+/g, "") };
+}
+
+/** Project `images[]` → legacy `<images><imagedef><imagedata imageFormat>…`. Omit when empty. */
+export function imagesToXml(images) {
+  const list = Array.isArray(images) ? images : [];
+  if (list.length === 0) return "";
+  const defs = list
+    .map((img) => {
+      const id = String(img?.id ?? "").trim();
+      const data = String(img?.data ?? "").replace(/\s+/g, "");
+      if (!id || !data) return "";
+      // Java Image.Data.Format is PNG|GIF|JPEG (not C# extension JPG).
+      let format = String(img?.imageFormat ?? "PNG").toUpperCase();
+      if (format === "JPG") format = "JPEG";
+      if (!/^(PNG|GIF|JPEG)$/.test(format)) format = "PNG";
+      return `<imagedef id="${escAttr(id)}"><imagedata imageFormat="${escAttr(format)}">${data}</imagedata></imagedef>`;
+    })
+    .filter(Boolean)
+    .join("");
+  return defs ? `<images>${defs}</images>` : "";
 }
 
 export function buildUploadRequest(credentials, project) {

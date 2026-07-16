@@ -12,6 +12,7 @@ import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from 
 import { renderDocumentsPage } from "./documentRenderer.mjs";
 import { fibRowFields, fibRowLabel, fibUsesLeftLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
 import { renderItemizationTableHtml, blankAliasesFromForm } from "./itemizationPreview.mjs";
+import { renderChoiceTallyTableHtml } from "./choiceTallyPreview.mjs";
 import { BASE_FORM_CSS, resolveTheme as resolveThemeCss, themeBodyClass } from "./themes/index.mjs";
 import {
   buildFormSegments,
@@ -216,6 +217,7 @@ function enhanceRichTextHtml(content, ctx) {
     records: ctx.records,
     formName: ctx.formName,
     blankAliases: ctx.blankAliases,
+    project: ctx.project,
   });
 }
 
@@ -246,9 +248,9 @@ function renderRichNodes(nodes, ctx) {
         case "itemizationTable":
           return renderItemizationTableHtml(n, ctx);
         case "choiceTallyTable":
-          return `<div class="preview-function-table"><em>Choice tally</em> (rendered on Java deploy)</div>`;
+          return renderChoiceTallyTableHtml(n, ctx);
         case "questionCorrelationTable":
-          return `<div class="preview-function-table"><em>Date correlation table</em> (rendered on Java deploy)</div>`;
+          return `<div class="preview-function-table"><em>Question correlation table</em> (rendered on Java deploy)</div>`;
         default:
           return renderRichNodes(n.nodes, ctx);
       }
@@ -395,6 +397,10 @@ table.component tbody tr.odd { background-color: #f8f8f8; }
 table.component tbody tr.even { background-color: #ffffff; }
 table.component tbody tr:hover { background-color: #e8e8e8; }
 table.component td { padding-left: 1em; padding-right: 1em; line-height: 1.5em; border: 1px solid #dddddd; }
+table.component .graph { background: #e8e8e8; min-width: 120px; height: 1.2em; position: relative; }
+table.component .graph .bar { display: block; height: 100%; background: #6a9fd8; min-width: 0; }
+table.component .graph .bar span { padding-left: 4px; font-size: 0.85em; white-space: nowrap; }
+.preview-choice-tally { margin: 0.5rem 0; }
 `;
 
 /** Match Design canvas vertical gaps between Form Items (Preview / Deploy runtime only). */
@@ -475,6 +481,7 @@ export function prepareFormContext(project, form, session) {
   const ctx = buildContext(session, form.name);
   ctx.formName = form.name;
   ctx.blankAliases = blankAliasesFromForm(form);
+  ctx.project = project;
 
   if (form.preProcess) {
     runProcessByName(project, form.preProcess, ctx);
@@ -590,6 +597,7 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
   const ctx = buildContext(session, formName);
   ctx.formName = formName;
   ctx.blankAliases = blankAliasesFromForm(form);
+  ctx.project = project;
 
   if (form.preProcess) {
     runProcessByName(project, form.preProcess, ctx);

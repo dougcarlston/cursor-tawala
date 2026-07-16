@@ -24,6 +24,27 @@ function parseClassAttr(tagHtml) {
   return m ? m[1].split(/\s+/) : [];
 }
 
+/** Form Text / Document local image → `<image id width height/>` (not display-image). */
+function embeddedImageToXml(attrs, escAttr) {
+  const idM = attrs.match(/data-tawala-image-id="([^"]*)"/i);
+  if (!idM?.[1]) return "";
+  const id = idM[1];
+  const width =
+    attrs.match(/data-image-width="([^"]*)"/i)?.[1] ??
+    attrs.match(/\bwidth="([^"]*)"/i)?.[1] ??
+    "0";
+  const height =
+    attrs.match(/data-image-height="([^"]*)"/i)?.[1] ??
+    attrs.match(/\bheight="([^"]*)"/i)?.[1] ??
+    "0";
+  // Legacy Form Text wraps embeds in <font> (Get Together / DirtBowl samples).
+  return (
+    `<font face="Arial" size="200" color="000000">` +
+    `<image id="${escAttr(id)}" width="${escAttr(width)}" height="${escAttr(height)}"></image>` +
+    `</font>`
+  );
+}
+
 function parseAlignFromTag(tagHtml) {
   const style = parseStyleAttr(tagHtml);
   if (style["text-align"]) return style["text-align"];
@@ -48,9 +69,35 @@ function extractTagInner(html, tagName) {
 }
 
 function extractOpenTag(html) {
-  const m = html.trim().match(/^<([a-z0-9]+)\b([^>]*)>/i);
+  const trimmed = html.trim();
+  const m = trimmed.match(/^<([a-z0-9]+)\b/i);
   if (!m) return null;
-  return { name: m[1].toLowerCase(), attrs: m[2] ?? "", full: m[0] };
+  // Do not use [^>]* — function configs often contain `<<Form:Field>>` with raw `>`.
+  let i = m[0].length;
+  let quote = null;
+  while (i < trimmed.length) {
+    const ch = trimmed[i];
+    if (quote) {
+      if (ch === quote) quote = null;
+      i++;
+      continue;
+    }
+    if (ch === '"' || ch === "'") {
+      quote = ch;
+      i++;
+      continue;
+    }
+    if (ch === ">") {
+      const full = trimmed.slice(0, i + 1);
+      return {
+        name: m[1].toLowerCase(),
+        attrs: full.slice(m[0].length, -1),
+        full,
+      };
+    }
+    i++;
+  }
+  return null;
 }
 
 function nextTopLevelBlock(html) {
@@ -72,6 +119,89 @@ function fontSizeToLegacy(sizePt) {
   const pt = Number.parseFloat(sizePt);
   if (!Number.isFinite(pt)) return 200;
   return Math.round(pt * 20);
+}
+
+/**
+ * CSS color → 6-digit hex without `#` for Java `Font` (`Integer.parseInt(..., 16)`).
+ * Browsers often serialize palette colors as `rgb(0, 0, 0)`; emitting that rejects Deploy.
+ * Exported for unit tests via documentHtmlToXml behavior.
+ */
+function cssColorToLegacyHex(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return "000000";
+  const hex = /^#?([0-9a-f]{3}|[0-9a-f]{6})$/i.exec(s);
+  if (hex) {
+    const h = hex[1];
+    if (h.length === 3) {
+      return (h[0] + h[0] + h[1] + h[1] + h[2] + h[2]).toUpperCase();
+    }
+    return h.toUpperCase();
+  }
+  const rgb = /^rgba?\(\s*(\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i.exec(s);
+  if (rgb) {
+    const to = (n) =>
+      Math.max(0, Math.min(255, Number.parseInt(n, 10)))
+        .toString(16)
+        .padStart(2, "0");
+    return (to(rgb[1]) + to(rgb[2]) + to(rgb[3])).toUpperCase();
+  }
+  // Unknown (named colors, etc.) — omit-safe default black rather than crash Java.
+  return "000000";
+}
+
+/**
+ * Find the matching close tag for `open`, respecting nesting.
+ * Returns { block, inner, rest } or null if unclosed.
+ */
+function sliceMatchingElement(html, open) {
+  const name = open.name;
+  const openRe = new RegExp(`<${name}\\b`, "i");
+  const closeRe = new RegExp(`</${name}\\s*>`, "i");
+
+  // Consume the opening tag we already parsed.
+  let i = open.full.length;
+  let depth = 1;
+
+  while (i < html.length && depth > 0) {
+    const slice = html.slice(i);
+    const nextOpen = slice.search(openRe);
+    const nextClose = slice.search(closeRe);
+    if (nextClose < 0) return null;
+
+    if (nextOpen >= 0 && nextOpen < nextClose) {
+      const absOpen = i + nextOpen;
+      const tag = extractOpenTag(html.slice(absOpen));
+      if (!tag) {
+        i = absOpen + 1;
+        continue;
+      }
+      const selfClosing =
+        /\/\s*>$/.test(tag.full) || /^(br|hr|img|sp)$/i.test(tag.name);
+      if (!selfClosing) depth++;
+      i = absOpen + tag.full.length;
+      continue;
+    }
+
+    const absClose = i + nextClose;
+    const closeMatch = html.slice(absClose).match(closeRe);
+    if (!closeMatch) return null;
+    depth--;
+    i = absClose + closeMatch[0].length;
+    if (depth === 0) {
+      const block = html.slice(0, i);
+      return {
+        block,
+        inner: extractTagInner(block, name),
+        rest: html.slice(i),
+      };
+    }
+  }
+  return null;
+}
+
+/** Unwrap a single leading/trailing bare `<font>…</font>` (no attributes). */
+function unwrapBareFont(xml) {
+  return String(xml ?? "").replace(/^<font>([\s\S]*)<\/font>$/i, "$1");
 }
 
 function inlineHtmlToXml(html, escAttr, escText) {
@@ -99,23 +229,23 @@ function inlineHtmlToXml(html, escAttr, escText) {
       break;
     }
 
-    const closeRe = new RegExp(`</${open.name}>`, "i");
-    const closeIdx = rest.search(closeRe);
-    if (closeIdx < 0) {
-      // Self-closing / void tags (e.g. <br>) — no inner content.
-      if (/^(br|hr|img|sp)$/i.test(open.name)) {
-        if (open.name.toLowerCase() === "br") out += "\n";
-        rest = rest.slice(open.full.length);
-        continue;
+    if (/^(br|hr|img|sp)$/i.test(open.name)) {
+      if (open.name.toLowerCase() === "br") out += "\n";
+      else if (open.name.toLowerCase() === "img") {
+        out += embeddedImageToXml(open.attrs, escAttr);
       }
+      rest = rest.slice(open.full.length);
+      continue;
+    }
+
+    const matched = sliceMatchingElement(rest, open);
+    if (!matched) {
       const plain = stripTags(rest);
       if (plain) out += escText(plain);
       break;
     }
-    const closeLen = rest.slice(closeIdx).match(closeRe)[0].length;
-    const block = rest.slice(0, closeIdx + closeLen);
-    const inner = extractTagInner(block, open.name);
-    rest = rest.slice(closeIdx + closeLen);
+    const { inner } = matched;
+    rest = matched.rest;
 
     if (open.name === "span") {
       const classes = parseClassAttr(open.attrs);
@@ -135,8 +265,12 @@ function inlineHtmlToXml(html, escAttr, escText) {
       if (style["font-size"] || style["font-family"] || style.color) {
         const face = style["font-family"]?.split(",")[0]?.replace(/['"]/g, "") ?? "";
         const size = style["font-size"] ? fontSizeToLegacy(style["font-size"]) : 200;
-        const color = style.color?.replace(/^#/, "") ?? "000000";
-        innerXml = `<font${face ? ` face="${escAttr(face)}"` : ""} size="${size}" color="${escAttr(color)}">${innerXml}</font>`;
+        const color = cssColorToLegacyHex(style.color);
+        // Avoid nested <font> — Java Font FACTORY does not register "font" (drops children).
+        const unwrapped = unwrapBareFont(innerXml);
+        innerXml =
+          `<font${face ? ` face="${escAttr(face)}"` : ""} size="${size}" color="${escAttr(color)}">` +
+          `${unwrapped}</font>`;
       }
       out += innerXml;
       continue;
@@ -155,7 +289,8 @@ function inlineHtmlToXml(html, escAttr, escText) {
       continue;
     }
     if (open.name === "font") {
-      out += `<font>${inlineHtmlToXml(inner, escAttr, escText)}</font>`;
+      // Flatten nested bare <font> so web components are not dropped by Java.
+      out += `<font>${unwrapBareFont(inlineHtmlToXml(inner, escAttr, escText))}</font>`;
       continue;
     }
 
@@ -164,26 +299,78 @@ function inlineHtmlToXml(html, escAttr, escText) {
   return out;
 }
 
-function functionTokenToXml(attrs, escAttr, escText) {
-  const idM = attrs.match(/data-function-id="([^"]*)"/i);
-  const configM = attrs.match(/data-function-config="([^"]*)"/i);
-  const id = idM?.[1] ?? "";
-  let config = {};
-  if (configM?.[1]) {
+/** Decode HTML entities commonly used in contenteditable attribute serialization. */
+function decodeHtmlAttrEntities(s) {
+  return String(s ?? "")
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&apos;/g, "'")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&");
+}
+
+/**
+ * Parse `data-function-config` from a tag's attribute string.
+ * Handles browser entity-encoded values and raw JSON with embedded quotes
+ * (naive `="([^"]*)"` truncates at the first quote inside JSON).
+ */
+function parseFunctionConfigAttr(attrs) {
+  const key = /data-function-config\s*=/i.exec(attrs);
+  if (!key) return {};
+  const afterEq = attrs.slice(key.index + key[0].length).trimStart();
+  if (!afterEq) return {};
+
+  // Entity-encoded attribute: data-function-config="{&quot;field-name&quot;:…}"
+  const quoted = /^"([^"]*)"/.exec(afterEq);
+  if (quoted) {
     try {
-      config = JSON.parse(
-        configM[1]
-          .replace(/&quot;/g, '"')
-          .replace(/&#39;/g, "'")
-          .replace(/&apos;/g, "'")
-          .replace(/&lt;/g, "<")
-          .replace(/&gt;/g, ">")
-          .replace(/&amp;/g, "&"),
-      );
+      const parsed = JSON.parse(decodeHtmlAttrEntities(quoted[1]));
+      return parsed && typeof parsed === "object" ? parsed : {};
     } catch {
-      config = {};
+      /* fall through to brace scan */
     }
   }
+
+  // Raw / partially broken: find `{…}` and JSON.parse brace-balanced slice.
+  const brace = afterEq.indexOf("{");
+  if (brace < 0) return {};
+  const decoded = decodeHtmlAttrEntities(afterEq.slice(brace));
+  let depth = 0;
+  let inStr = false;
+  let esc = false;
+  for (let i = 0; i < decoded.length; i++) {
+    const ch = decoded[i];
+    if (inStr) {
+      if (esc) esc = false;
+      else if (ch === "\\") esc = true;
+      else if (ch === '"') inStr = false;
+      continue;
+    }
+    if (ch === '"') {
+      inStr = true;
+      continue;
+    }
+    if (ch === "{") depth++;
+    else if (ch === "}") {
+      depth--;
+      if (depth === 0) {
+        try {
+          const parsed = JSON.parse(decoded.slice(0, i + 1));
+          return parsed && typeof parsed === "object" ? parsed : {};
+        } catch {
+          return {};
+        }
+      }
+    }
+  }
+  return {};
+}
+
+function functionTokenToXml(attrs, escAttr, escText) {
+  const idM = attrs.match(/data-function-id="([^"]*)"/i);
+  const id = idM?.[1] ?? "";
+  let config = parseFunctionConfigAttr(attrs);
 
   const bareField = (raw) => {
     let s = String(raw ?? "").trim();

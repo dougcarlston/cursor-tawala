@@ -139,7 +139,8 @@ describe("enhanceRichTextHtml display-image / display-mcq / record-count", () =>
       `data-function-config='${config}'>fx</span>`;
     const out = enhanceRichTextHtml(html, () => "");
     expect(out).toContain("preview-display-mcq");
-    expect(out).toContain("Responses to Survey:Q1");
+    expect(out).toContain("Labels for Survey:Q1");
+    expect(out).toContain("after Submit");
   });
 
   it("replaces FORM RECORD COUNT with the filtered record count", () => {

@@ -190,7 +190,8 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
         id: "display",
         type: "enumeration",
         name: "Display",
-        description: "How responses will be displayed.",
+        description:
+          "How responses will be displayed. “only labels…” is blank on the same form until after Submit (use on a Document/review page). “all choices…” shows the checkbox layout on Deploy even before answers.",
         required: true,
         defaultValue: "label_only",
         choices: [

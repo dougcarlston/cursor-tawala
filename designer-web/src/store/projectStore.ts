@@ -10,10 +10,12 @@ import {
   EditorTab,
   TawalaProcessCommand,
   RichContentBlock,
+  type TawalaImageFormat,
 } from "@/types/tawala";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { nextHiddenFieldName } from "@/lib/fieldNames";
 import { nextLinkedProcessName } from "@/lib/projectModel";
+import { addOrReuseImage } from "@/lib/projectImages";
 import {
   moveProcessCommandAtPath,
   moveProcessCommandBefore,
@@ -259,6 +261,15 @@ interface ProjectState {
   ) => void;
   updateProcessCommands: (processName: string, commands: TawalaProcessCommand[]) => void;
   updateDocumentContent: (documentName: string, content: string | RichContentBlock[]) => void;
+  /**
+   * Register a From-your-PC image (or reuse identical bytes). Returns the `imageN` id
+   * for `<img data-tawala-image-id>`.
+   */
+  registerProjectImage: (input: {
+    data: string;
+    imageFormat: TawalaImageFormat;
+    fileName?: string;
+  }) => string;
   selectForm: (name: string) => void;
   exportJson: () => string;
   importJson: (raw: string) => void;
@@ -1351,6 +1362,16 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       d.name === documentName ? { ...d, content } : d,
     );
     set({ project: { ...project, documents }, dirty: true, statusMessage: "Document updated" });
+  },
+
+  registerProjectImage: (input) => {
+    const { project } = get();
+    const result = addOrReuseImage(project.images ?? [], input);
+    set({
+      project: { ...project, images: result.images },
+      dirty: true,
+    });
+    return result.id;
   },
 
   exportJson: () => JSON.stringify(get().project, null, 2),

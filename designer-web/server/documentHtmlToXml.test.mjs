@@ -128,3 +128,56 @@ describe("documentHtmlToXml function emit matrix", () => {
     });
   }
 });
+
+describe("documentHtmlToXml nested function tokens", () => {
+  it("keeps display-mcq when the token sits inside a styled span (palette face/size)", () => {
+    const cfg =
+      `{&quot;field-name&quot;:&quot;Form 1:Q1&quot;,&quot;display&quot;:&quot;all_choices&quot;}`;
+    const html =
+      `<p><span style="font-size: 12pt; font-family: Arial; color: #000000">` +
+      `<span class="function-token" data-function-id="display-mcq-label" ` +
+      `data-function-config="${cfg}">x</span></span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain("<display-mcq-label");
+    expect(xml).toContain("<field-name>Form 1:Q1</field-name>");
+    expect(xml).toContain("<display>all_choices</display>");
+    // Single font wrapper — nested <font> would be dropped by Java.
+    expect(xml).not.toMatch(/<font[^>]*>\s*<font/);
+  });
+
+  it("converts rgb() span colors to hex so Java Deploy does not reject the upload", () => {
+    const cfg =
+      `{&quot;field-name&quot;:&quot;Form 1:Q1&quot;,&quot;display&quot;:&quot;all_choices&quot;}`;
+    const html =
+      `<p><span style="font-size: 12pt; font-family: Arial; color: rgb(0, 0, 0)">` +
+      `<span class="function-token" data-function-id="display-mcq-label" ` +
+      `data-function-config="${cfg}">x</span></span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('color="000000"');
+    expect(xml).not.toContain("rgb(");
+    expect(xml).toContain("<display-mcq-label");
+  });
+});
+
+describe("documentHtmlToXml embedded local image", () => {
+  it("exports data-tawala-image-id img as <image id width height/>", () => {
+    const html =
+      `<p><img class="tawala-embedded-image" data-tawala-image-id="image1" ` +
+      `data-image-width="12" data-image-height="8" width="12" height="8" ` +
+      `src="data:image/png;base64,AAAA" alt=""/></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<image id="image1" width="12" height="8"></image>');
+    expect(xml).toContain('<font face="Arial" size="200" color="000000">');
+    expect(xml).not.toContain("data:image");
+    expect(xml).not.toContain("display-image");
+  });
+
+  it("ignores img without data-tawala-image-id", () => {
+    const xml = documentHtmlToXml(
+      `<p><img src="https://example.com/x.png" width="10" height="10"/></p>`,
+      escAttr,
+      escText,
+    );
+    expect(xml).not.toContain("<image ");
+  });
+});

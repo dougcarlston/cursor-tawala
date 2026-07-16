@@ -265,7 +265,7 @@ The **fx** button and **Insert → Function…** open the function configuration
 
 - **Insert:** new function instance at cursor.
 - **Edit:** when cursor is on an existing function field, opens editor for that instance.
-- **Image from upload:** Insert → Image → From the Web or Tawala Upload… uses `display-image` function path.
+- **Image from upload:** Insert → Image → **From your PC…** stores project `images[]` + inline `<img data-tawala-image-id>` (Deploy `<image>`/`<imagedef>`). **From the Web or Tawala Upload…** uses the `display-image` function path.
 
 Requires at least one form in the project for **Function** / **fx** to enable.
 

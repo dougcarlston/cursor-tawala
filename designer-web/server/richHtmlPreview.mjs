@@ -8,6 +8,10 @@ import {
   renderItemizationTableHtml,
   countFormRecordsFromConfig,
 } from "./itemizationPreview.mjs";
+import {
+  choiceTallyNodeFromConfig,
+  renderChoiceTallyTableHtml,
+} from "./choiceTallyPreview.mjs";
 import { readAttr, replaceMatchingSpans } from "./htmlSpanReplace.mjs";
 
 function esc(s) {
@@ -81,7 +85,13 @@ function parseStructuredNodeAttr(attrs) {
   if (!raw) return null;
   try {
     const parsed = JSON.parse(decodeURIComponent(raw));
-    if (parsed?.type === "itemizationTable") return parsed;
+    if (
+      parsed?.type === "itemizationTable" ||
+      parsed?.type === "choiceTallyTable" ||
+      parsed?.type === "questionCorrelationTable"
+    ) {
+      return parsed;
+    }
   } catch {
     /* ignore */
   }
@@ -96,7 +106,12 @@ function matchFunctionId(attrs, id) {
 function matchItemizationToken(attrs) {
   if (matchFunctionId(attrs, "itemization-table")) return true;
   if (readAttr(attrs, "data-itemization-token") === "true") return true;
-  return Boolean(parseStructuredNodeAttr(attrs));
+  return parseStructuredNodeAttr(attrs)?.type === "itemizationTable";
+}
+
+function matchChoiceTallyToken(attrs) {
+  if (matchFunctionId(attrs, "choice-tally-table")) return true;
+  return parseStructuredNodeAttr(attrs)?.type === "choiceTallyTable";
 }
 
 function replaceDisplayImageTokens(html) {
@@ -115,8 +130,15 @@ function replaceDisplayMcqTokens(html) {
       const config = parseFunctionConfigAttr(attrs);
       let field = String(config["field-name"] ?? "").trim();
       if (field.startsWith("<<") && field.endsWith(">>")) field = field.slice(2, -2).trim();
-      const label = field || "MCQ responses";
-      return `<span class="preview-display-mcq">${esc(`<<Responses to ${label}>>`)}</span>`;
+      const label = field || "MCQ";
+      const display = String(config.display ?? "label_only").trim() || "label_only";
+      // Node Preview cannot show live answers; spell out Deploy behavior so
+      // label_only on the fill-in form is not mistaken for a broken function.
+      const hint =
+        display === "all_choices"
+          ? `All choices for ${label} — Deploy shows checkbox layout`
+          : `Labels for ${label} — blank on Deploy until after Submit`;
+      return `<span class="preview-display-mcq">${esc(hint)}</span>`;
     },
   );
 }
@@ -142,10 +164,11 @@ function replaceItemizationTokens(html, opts) {
     records: opts.records ?? {},
     formName: opts.formName ?? "",
     blankAliases: opts.blankAliases ?? {},
+    project: opts.project,
   };
   return replaceMatchingSpans(html, matchItemizationToken, (attrs) => {
     const structured = parseStructuredNodeAttr(attrs);
-    if (structured) {
+    if (structured?.type === "itemizationTable") {
       return renderItemizationTableHtml(
         {
           form: structured.form ?? "",
@@ -161,6 +184,23 @@ function replaceItemizationTokens(html, opts) {
     const config = parseFunctionConfigAttr(attrs);
     const node = itemizationNodeFromConfig(config, attrs, ctx.formName);
     return renderItemizationTableHtml(node, ctx);
+  });
+}
+
+function replaceChoiceTallyTokens(html, opts) {
+  const ctx = {
+    records: opts.records ?? {},
+    formName: opts.formName ?? "",
+    project: opts.project,
+  };
+  return replaceMatchingSpans(html, matchChoiceTallyToken, (attrs) => {
+    const structured = parseStructuredNodeAttr(attrs);
+    if (structured?.type === "choiceTallyTable") {
+      return renderChoiceTallyTableHtml(structured, ctx);
+    }
+    const config = parseFunctionConfigAttr(attrs);
+    const node = choiceTallyNodeFromConfig(config, ctx.formName);
+    return renderChoiceTallyTableHtml(node, ctx);
   });
 }
 
@@ -187,6 +227,7 @@ export function enhanceRichTextHtml(content, getField, opts = {}) {
   // Replace function spans before <<...>> field substitution — nested <<field>> inside
   // function display strings otherwise leave scraps like `equals "Doug")>>`.
   html = replaceItemizationTokens(html, opts);
+  html = replaceChoiceTallyTokens(html, opts);
   const replaceTemplate = (_match, ref) => {
     const key = String(ref).trim();
     if (FUNCTION_DISPLAY_NAME_RE.test(key)) return "";

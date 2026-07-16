@@ -25,6 +25,7 @@ RUN mkdir -p /tmp/ROOT \
  && cp -r /tmp/patch/css/project /tmp/ROOT/css/ \
  && cp -r /tmp/patch/images/silk /tmp/ROOT/images/ \
  && cp /tmp/patch/images/submit-progress.gif /tmp/ROOT/images/ \
+ && cp /tmp/patch/images/checkbox_on.gif /tmp/patch/images/checkbox_off.gif /tmp/ROOT/images/ \
  && cd /tmp/ROOT && jar cf /usr/local/tomcat/webapps/ROOT.war . \
  && rm -rf /tmp/ROOT /tmp/ROOT.war /tmp/patch
 

@@ -16,6 +16,10 @@ Source: [markjames/famfamfam-silk-icons](https://github.com/markjames/famfamfam-
 
 Animated spinner shown in the **“Processing, please wait…”** modal on form submit (`web/scripts/project/default.js` references `/images/submit-progress.gif`). Not bundled in build-1700 `ROOT.war`; patched from YUI `loading.gif` so the wait panel is not a broken image.
 
+## `images/checkbox_on.gif` / `images/checkbox_off.gif`
+
+12×12 view-only checkbox glyphs used by Java `Checkbox.toHtml(..., selectedValues)` when **DISPLAY MCQ RESPONSES** (`display-mcq-label`) is in **`all_choices`** mode. Missing from build-1700 `ROOT.war`; without them the runtime shows broken-image icons and overlapping alt text (“Not selected”). Also copied into `TawalaWebapp-build1700/web/images/` for WAR rebuilds.
+
 ## `css/project/`
 
 Project theme styles loaded per `themePath` in `.tawala` XML.

@@ -10,6 +10,7 @@ import {
   openDisplayImageConfigureFromEditor,
   openFunctionPickerFromEditor,
 } from "@/lib/functionPicker";
+import { openLocalImageInsertFromEditor } from "@/lib/localImageInsert";
 import {
   canDeleteSelection,
   canDeployProject,
@@ -231,7 +232,16 @@ function InsertMenuBody({
           Field
         </button>
         <MenuSubmenu label="Image…" disabled={!canImage}>
-          <button type="button" disabled title="Local image insert not implemented yet">
+          <button
+            type="button"
+            onClick={() => {
+              if (!getActivePaletteEditor()) {
+                onStub("Place the cursor in the document text first");
+                return;
+              }
+              openLocalImageInsertFromEditor();
+            }}
+          >
             From your PC…
           </button>
           <button
@@ -292,7 +302,14 @@ function InsertMenuBody({
       ))}
       <div className="menu-separator" />
       <MenuSubmenu label="Image…" disabled={!canRichImage}>
-        <button type="button" disabled title="Local image insert not implemented yet">
+        <button
+          type="button"
+          disabled={!canRichImage}
+          onClick={() => {
+            if (!canRichImage) return;
+            openLocalImageInsertFromEditor();
+          }}
+        >
           From your PC…
         </button>
         <button

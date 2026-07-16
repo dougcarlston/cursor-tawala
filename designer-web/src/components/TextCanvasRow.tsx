@@ -10,6 +10,13 @@ import {
 } from "@/lib/fieldInsertion";
 import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
+import { EmbeddedImageHandlesOverlay } from "./EmbeddedImageHandlesOverlay";
+import {
+  EMBEDDED_IMAGE_HANDLES_CLASS,
+  clearEmbeddedImageSelection,
+  embeddedImageFromEventTarget,
+  selectEmbeddedImage,
+} from "@/lib/embeddedImageResize";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -71,6 +78,16 @@ function htmlToPlainText(html: string): string {
   const tmp = document.createElement("div");
   tmp.innerHTML = html;
   return (tmp.textContent ?? "").replace(/\u200B/g, "");
+}
+
+/** True when the body has no visible text and no media / tokens worth keeping. */
+function textHtmlIsEmpty(html: string): boolean {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html;
+  if (tmp.querySelector("img, table, video, iframe, .function-token, .field-token, .tawala-embedded-image")) {
+    return false;
+  }
+  return (tmp.textContent ?? "").replace(/\u200B/g, "").trim() === "";
 }
 
 /**
@@ -249,6 +266,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     const next = e.relatedTarget as HTMLElement | null;
     if (next?.closest(".formatting-palette")) return;
     if (next?.closest(".table-handles-overlay")) return;
+    if (next?.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
     // Keep the editor mounted while dragging/double-clicking from the Fields panel.
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
     clearFormattingFocus("text");
@@ -257,7 +275,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     setEditing(false);
   };
 
-  const isEmpty = htmlToPlainText(content).trim() === "";
+  const isEmpty = textHtmlIsEmpty(content);
   const renderedHtml = isEmpty ? "" : content;
 
   return (
@@ -421,6 +439,16 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                   }
                 }
                 const el = editorRef.current;
+                const hitImage = embeddedImageFromEventTarget(e.target);
+                if (el && hitImage && e.button === 0) {
+                  selectEmbeddedImage(el, hitImage);
+                } else if (
+                  el &&
+                  e.button === 0 &&
+                  !(e.target as HTMLElement).closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)
+                ) {
+                  clearEmbeddedImageSelection(el);
+                }
                 if (el && handleTableCellPointerDown(el, e.target, e.button)) {
                   registerAsPaletteEditor();
                   rememberSelection();
@@ -511,6 +539,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               }}
             />
             <TableHandlesOverlay editorRef={editorRef} onCommit={commit} />
+            <EmbeddedImageHandlesOverlay editorRef={editorRef} onCommit={commit} />
           </div>
         ) : (
           <div

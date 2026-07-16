@@ -27,6 +27,13 @@ import {
 } from "@/lib/formattingPaletteContext";
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
 import { PlacedTextHandlesOverlay } from "./PlacedTextHandlesOverlay";
+import { EmbeddedImageHandlesOverlay } from "./EmbeddedImageHandlesOverlay";
+import {
+  EMBEDDED_IMAGE_HANDLES_CLASS,
+  clearEmbeddedImageSelection,
+  embeddedImageFromEventTarget,
+  selectEmbeddedImage,
+} from "@/lib/embeddedImageResize";
 import {
   ensurePlacedBlockWrapWidth,
   extendDocumentSelectionToPoint,
@@ -445,6 +452,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (!el) return;
     const target = e.target as HTMLElement;
     if (target.closest(".table-handles-overlay")) return;
+    if (target.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
     if (target.closest(`.${FIELD_TOKEN_CLASS}`)) return;
     if (target.closest(`.${FUNCTION_TOKEN_CLASS}`)) return;
     if (target.closest(`[${STRUCTURED_NODE_DATA_ATTR}]`)) return;
@@ -622,6 +630,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             const next = e.relatedTarget as HTMLElement | null;
             if (next?.closest(".formatting-palette")) return;
             if (next?.closest(".table-handles-overlay")) return;
+            if (next?.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
             if (next?.closest(".menu-bar, .menu-drop, .main-icon-toolbar, .modal-overlay, .modal-backdrop, .configure-function-dialog, .insert-function-dialog")) {
               return;
             }
@@ -704,8 +713,15 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             } else {
               clearColorSampleHold();
             }
+            const el = surfaceRef.current;
+            const hitImage = embeddedImageFromEventTarget(e.target);
+            if (el && hitImage && e.button === 0) {
+              selectEmbeddedImage(el, hitImage);
+              // Let the browser select the image; chrome appears via selectionchange.
+            } else if (el && e.button === 0 && !(e.target as HTMLElement).closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) {
+              clearEmbeddedImageSelection(el);
+            }
             if (e.button === 0 && e.detail === 3) {
-              const el = surfaceRef.current;
               if (el && selectParagraphAtPoint(el, e.clientX, e.clientY)) {
                 // Custom dblclick word-select + preventDefault breaks native
                 // triple-click chaining — select the paragraph ourselves.
@@ -717,7 +733,6 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 return;
               }
             }
-            const el = surfaceRef.current;
             if (el && handleTableCellPointerDown(el, e.target, e.button)) {
               clearColorSampleHold();
               registerAsPaletteEditor();
@@ -737,6 +752,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               if (e.button !== 0) return;
               const target = e.target as HTMLElement;
               if (target.closest(".table-handles-overlay")) return;
+              if (target.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
               documentPointerRef.current = {
                 x: e.clientX,
                 y: e.clientY,
@@ -752,7 +768,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               return;
             }
             savedRangeRef.current = null;
-      savedBookmarkRef.current = null;
+            savedBookmarkRef.current = null;
           }}
           onMouseMove={(e) => {
             const sample = colorSampleRef.current;
@@ -873,6 +889,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               const target = e.target as HTMLElement;
               if (target.closest("table.user")) return;
               if (target.closest(".table-handles-overlay")) return;
+              if (target.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
               e.preventDefault();
               e.stopPropagation();
               handleDocumentCanvasClick(e);
@@ -884,6 +901,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
         />
         {(formattingKind === "document" || formattingKind === "text") && (
           <TableHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
+        )}
+        {(formattingKind === "document" || formattingKind === "text") && (
+          <EmbeddedImageHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
         )}
         {formattingKind === "document" && (
           <PlacedTextHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />

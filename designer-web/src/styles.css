@@ -1207,6 +1207,52 @@ textarea {
   overflow: auto;
 }
 
+/* Insert → Image → From your PC (Approach A): keep Design canvas from blowing layout. */
+.text-rich-editor img.tawala-embedded-image,
+.document-editor .rich-surface img.tawala-embedded-image {
+  max-width: 100%;
+  vertical-align: middle;
+  outline: 1px solid transparent;
+}
+
+.text-rich-editor img.tawala-embedded-image-selected,
+.document-editor .rich-surface img.tawala-embedded-image-selected {
+  outline: 1px solid #3f7fd6;
+}
+
+/* SE-corner resize chrome (mirrors table.user handles). */
+.embedded-image-handles-overlay {
+  position: absolute;
+  pointer-events: none;
+  z-index: 3;
+  box-sizing: border-box;
+}
+
+.embedded-image-handles-frame {
+  position: absolute;
+  inset: 0;
+  border: 1px solid #3f7fd6;
+  pointer-events: none;
+  box-sizing: border-box;
+}
+
+.embedded-image-handle {
+  position: absolute;
+  pointer-events: auto;
+  padding: 0;
+  border: 1px solid #3f7fd6;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.embedded-image-handle-se {
+  right: -5px;
+  bottom: -5px;
+  width: 10px;
+  height: 10px;
+  cursor: nwse-resize;
+}
+
 .text-rich-editor table.user {
   max-width: 100%;
   border-collapse: collapse;
@@ -1252,6 +1298,11 @@ textarea {
   white-space: pre-wrap;
   word-break: break-word;
   border: 1px solid transparent;
+}
+
+.text-rendered img.tawala-embedded-image {
+  max-width: 100%;
+  vertical-align: middle;
 }
 
 .text-rendered.placeholder {

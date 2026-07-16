@@ -34,7 +34,7 @@ This is **not** a general `.tawala` importer (File → Open still does not load 
 |----------------|---------------------|
 | `<pageHeader>` | Dropped (not in JSON schema; theme absorbs styling) |
 | Global `<styles>` | Absent in this project; would be dropped if present |
-| `<imagedef>` | None in this project; not in JSON schema |
+| `<imagedef>` | Project `images[]` (Jul 16 Approach A — Insert → Image → From your PC) |
 | `<rawHtmlData>` on documents | Would be stripped if present |
 | Theme `mvsc` | Kept as string; local Designer/Tomcat may not ship that theme CSS |
 | MC `paddingBottom="false"` | Stored on item as `paddingBottom: false` (Designer UI may ignore) |

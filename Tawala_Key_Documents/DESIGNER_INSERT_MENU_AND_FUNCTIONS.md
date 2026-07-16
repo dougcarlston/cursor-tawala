@@ -59,8 +59,17 @@ Submenu (Form and Document):
 
 | Item | Behavior |
 |------|----------|
-| **From your PC…** | Insert image file from local disk |
+| **From your PC…** | Insert GIF/JPG/PNG from disk into Form Text or Document. Stores bytes in project `images[]`; Design shows `<img data-tawala-image-id>`; Deploy emits `<image id width height/>` plus `<images><imagedef><imagedata>`. |
 | **From the Web or Tawala Upload…** | Opens **Configure Function** for **DISPLAY IMAGE** (see below). Owner: likely pairs with **File Uploader** form item URL in the image-source field — not yet tested on reference PC |
+
+### Smoke — From your PC (Jul 16)
+
+1. New project → Form Text → Insert → Image → **From your PC…** → pick a small PNG.
+2. Design canvas shows the image; status bar notes `image1`. Large photos are scaled down on insert (max ~480px / editor width).
+3. Click the image → drag the **lower-right** handle to resize (aspect locked). Deploy keeps the new width/height. Idle Form Text must still show the image (image-only bodies are not treated as empty — Jul 16).
+4. Save JSON → reopen → image still visible at that size; `project.images` has matching `imagedef`.
+5. Deploy to `:8080` → form shows the same graphic (not a broken image).
+6. Confirm **From the Web…** still opens DISPLAY IMAGE Configure (separate path).
 
 Screenshot: `assets/Insert_-_Image_-_From_the_Web-*.png`
 
@@ -277,7 +286,15 @@ Screenshot: [`assets/Function_-_Display_MCQ_Responses.png`](assets/Function_-_Di
 
 ### Browser gaps
 
-Catalog + Configure present. Document **and Form Text** HTML→XML: **emits** `<display-mcq-label>` (Jul 13). Runtime shows labels only after that MCQ has answers in the submission (typically a later page or Document after Submit — blank on the unanswered form).
+Catalog + Configure present. Document **and Form Text** HTML→XML: **emits** `<display-mcq-label>` (Jul 13). Runtime shows labels only after that MCQ has answers in the submission (typically a later page or Document after Submit — blank / all “Not selected” on the unanswered form).
+
+**`all_choices` Deploy:** Java emits `/images/checkbox_on.gif` and `/images/checkbox_off.gif`. Those assets were missing from local Tomcat (404 → broken-image icons + overlapping alt text). Patched into `docker/tomcat/images/` + Dockerfile (Jul 16); hot-copied into running `tawala-tomcat`. Rebuild image for permanence. **Smoke:** open `http://localhost:8080/images/checkbox_on.gif` — must be 200 before Redeploy.
+
+**From-your-PC picture on Form Text:** Design/Preview can show `src=data:…` even when `project.images[]` is empty; Deploy needs `<imagedef>`. Jul 16: Deploy harvests base64 from HTML `data-tawala-image-id` embeds into `<images>` if missing from `images[]`. Redeploy after API restart.
+
+**Deploy smoke (same form as the MCQ):** Configure **Display** = **all choices, using the question layout** → Redeploy → you should see checkbox glyphs + choice text under the Text item (no question prompt). Default **only labels of selected choices** is intentionally **blank** on that fill-in form until the MCQ has been submitted (put labels mode on a Document/review page after Submit).
+
+**Deploy blank while Design shows the token (Jul 16):** If the function token sits inside a styled `<span>` (palette face/size/color), a naive `</span>` match closed the outer span too early and Deploy XML kept only the token text — no `<display-mcq-label>`. Fixed: nested tag matching + unwrap nested `<font>` so Java does not drop the component. Also: browsers often store `color: rgb(0, 0, 0)` — Java `Font` requires 6-digit hex and **rejects the whole upload** on `rgb(...)`; convert to hex on export.
 
 Tables-category MCQ functions (RESPONSE TOTALS, RESPONSE BAR GRAPH, QUESTION CORRELATION TABLE, etc.): HTML→XML **emits** real elements (Jul 13); conditions infer `<form name>` from the Question field when no separate form param.
 
@@ -533,6 +550,8 @@ Screenshot: [`assets/Function_-_Response_Bar_Graph.png`](assets/Function_-_Respo
 
 Catalog matches. Document **and Form Text** HTML→XML: **emits** `<choice-tally-table>`. Template Deploy smoke: Simple Survey **Passed**; Multiple Question Survey **Passed** (owner Jul 2026).
 
+**Design / Preview (Jul 16):** Structured Form Text `choiceTallyTable` (Simple Survey Report) was invisible on the Design canvas — now shows a **RESPONSE BAR GRAPH** token (click to Configure). Node Preview renders Choice / Count / Percentage table (+ bar) from session records.
+
 ---
 
 ## Configure Function: RESPONSE TOTALS (`response-totals-table`)
@@ -601,7 +620,7 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 |---|----------|-----|----------|---------------------|
 | 1 | CATEGORIZER | `categorizer` | **Deferred stub** | No sample need |
 | 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Code ready** — Preview placeholder + Deploy XML; owner Deploy smoke (URL image) |
-| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Code ready** — Preview stub; Deploy live after submit; owner smoke |
+| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Deploy fix Jul 16** — `checkbox_on/off.gif` for `all_choices`; Preview stub; smoke after Redeploy / hard refresh |
 | 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
 | 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Preview wired Jul 16** (session record count); Deploy XML yes; owner smoke |
 | 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | Hosted My Tawala |
@@ -612,12 +631,12 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 | 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | Smoke-needed |
 | 12 | RANKED RESPONSE COUNTS | `popular-choice-count` | **Yes** | Smoke-needed |
 | 13 | RANKED RESPONSE NAME | `popular-choice-display` | **Yes** | Smoke-needed |
-| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | Simple Survey **Passed**; Multi Survey **Passed** (template) |
+| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | **Design+Preview Jul 16** — Report shows token + tally table; Simple/Multi Survey Deploy passed |
 | 15 | RESPONSE TOTALS | `response-totals-table` | **Yes** | Smoke-needed |
 | 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | Smoke-needed |
 | 17 | SUM | `sum` | **Yes** | Potluck **Passed w/ caveats** |
 
-**Insert siblings (not in the 17):** Invitation…, Hyperlink…, Image from PC — **not implemented** (stubs). Image → From the Web → DISPLAY IMAGE Configure works.
+**Insert siblings (not in the 17):** Invitation…, Hyperlink… — **not implemented** (stubs). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
 
 ---
 
@@ -634,7 +653,7 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink / Image-from-PC stubs |
 | Invitation / Hyperlink dialogs | Yes | **No** (stubs) |
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
-| Image from PC / upload URL | Yes | **No** (File Uploader deferred) |
+| Image from PC / upload URL | Yes | **From your PC** Approach A (Jul 16); From the Web = DISPLAY IMAGE; File Uploader deferred |
 | Insert Field (document) | Yes | Fields palette / tokens partial |
 | Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — Jul 16 |
 

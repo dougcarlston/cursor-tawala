@@ -169,6 +169,17 @@ export interface TawalaProcess {
   commands: TawalaProcessCommand[];
 }
 
+/** Project-embedded image (Insert → Image → From your PC…). Deploy: `<imagedef>`. */
+export type TawalaImageFormat = "PNG" | "GIF" | "JPEG";
+
+export interface TawalaImageDef {
+  id: string;
+  imageFormat: TawalaImageFormat;
+  /** Raw base64 (no `data:` prefix). */
+  data: string;
+  fileName?: string;
+}
+
 export interface TawalaProject {
   name: string;
   format: string;
@@ -176,6 +187,8 @@ export interface TawalaProject {
   forms: TawalaForm[];
   processes?: TawalaProcess[];
   documents?: TawalaDocument[];
+  /** Local images referenced by Form Text / Document `<img data-tawala-image-id>`. */
+  images?: TawalaImageDef[];
 }
 
 export type EditorTab = "design" | "preview";
@@ -272,5 +285,6 @@ export function emptyProject(): TawalaProject {
     ],
     processes: [],
     documents: [],
+    images: [],
   };
 }

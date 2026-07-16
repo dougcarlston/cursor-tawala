@@ -28,8 +28,10 @@ interface ItemizationNode extends RichTextNode {
 
 const ITEMIZATION_TOKEN_LABEL = "MULTIPLE QUESTION LIST";
 const CORRELATION_TOKEN_LABEL = "QUESTION CORRELATION TABLE";
+const CHOICE_TALLY_TOKEN_LABEL = "RESPONSE BAR GRAPH";
 const ITEMIZATION_FUNCTION_ID = "itemization-table";
 const CORRELATION_FUNCTION_ID = "question-correlation-table";
+const CHOICE_TALLY_FUNCTION_ID = "choice-tally-table";
 
 interface QuestionCorrelationNode extends RichTextNode {
   type: "questionCorrelationTable";
@@ -39,13 +41,20 @@ interface QuestionCorrelationNode extends RichTextNode {
   preferredField?: string;
 }
 
+interface ChoiceTallyNode extends RichTextNode {
+  type: "choiceTallyTable";
+  form?: string;
+  field?: string;
+}
+
 function findEditableFunctionTable(
   content: RichContentBlock[],
-): ItemizationNode | QuestionCorrelationNode | null {
+): ItemizationNode | QuestionCorrelationNode | ChoiceTallyNode | null {
   for (const block of content) {
     for (const node of block.nodes ?? []) {
       if (node.type === "itemizationTable") return node as ItemizationNode;
       if (node.type === "questionCorrelationTable") return node as QuestionCorrelationNode;
+      if (node.type === "choiceTallyTable") return node as ChoiceTallyNode;
     }
   }
   return null;
@@ -98,6 +107,38 @@ function correlationToConfig(node: QuestionCorrelationNode): FunctionConfig {
     conditionsRows: [{ field: "", op: "equals", value: "" }],
     conditionsCombinator: "and",
   };
+}
+
+function choiceTallyToConfig(node: ChoiceTallyNode): FunctionConfig {
+  const def = getFunctionDef(CHOICE_TALLY_FUNCTION_ID);
+  const base = def ? defaultFunctionConfig(def) : {};
+  const field = String(node.field ?? "").trim();
+  return {
+    ...base,
+    field: field.includes("<<") ? field : field ? `<<${field}>>` : "",
+    conditionsRows: [{ field: "", op: "equals", value: "" }],
+    conditionsCombinator: "and",
+  };
+}
+
+function patchChoiceTallyFromConfig(
+  content: RichContentBlock[],
+  config: FunctionConfig,
+): RichContentBlock[] {
+  return content.map((block) => ({
+    ...block,
+    nodes: (block.nodes ?? []).map((node) => {
+      if (node.type !== "choiceTallyTable") return node;
+      let field = String(config.field ?? "").trim();
+      if (field.startsWith("<<") && field.endsWith(">>")) field = field.slice(2, -2).trim();
+      const formPart = field.includes(":") ? field.split(":")[0] : undefined;
+      return {
+        ...(node as ChoiceTallyNode),
+        field,
+        form: formPart || (node as ChoiceTallyNode).form,
+      };
+    }),
+  }));
 }
 
 function patchCorrelationFromConfig(
@@ -192,6 +233,24 @@ function renderFunctionBlock(
     );
   }
 
+  if (node.type === "choiceTallyTable") {
+    return (
+      <button
+        key={key}
+        type="button"
+        className="function-table-badge function-table-standalone function-table-editable"
+        style={style}
+        title="Click to edit RESPONSE BAR GRAPH"
+        onClick={(e) => {
+          e.stopPropagation();
+          onActivate();
+        }}
+      >
+        <span className="function-table-label function-table-token">{CHOICE_TALLY_TOKEN_LABEL}</span>
+      </button>
+    );
+  }
+
   return (
     <div key={key} className="function-table-badge" style={style}>
       Function table
@@ -252,6 +311,21 @@ function renderInlineNodes(nodes: RichTextNode[] = [], onActivate: () => void): 
             {CORRELATION_TOKEN_LABEL}
           </button>
         );
+      case "choiceTallyTable":
+        return (
+          <button
+            key={key}
+            type="button"
+            className="function-table-inline function-table-token function-table-editable"
+            title="Click to edit RESPONSE BAR GRAPH"
+            onClick={(e) => {
+              e.stopPropagation();
+              onActivate();
+            }}
+          >
+            {CHOICE_TALLY_TOKEN_LABEL}
+          </button>
+        );
       default:
         return <Fragment key={key}>{renderInlineNodes(node.nodes ?? [], onActivate)}</Fragment>;
     }
@@ -287,6 +361,24 @@ export function FunctionTableBadge({ content, onChange }: Props) {
       return;
     }
 
+    if (table.type === "choiceTallyTable") {
+      const def = getFunctionDef(CHOICE_TALLY_FUNCTION_ID);
+      if (!def) return;
+      requestFunctionPicker({
+        mode: "edit",
+        existing: {
+          element: document.createElement("span"),
+          functionId: CHOICE_TALLY_FUNCTION_ID,
+          config: choiceTallyToConfig(table),
+          instanceId: 0,
+        },
+        commitConfig: (_def, config) => {
+          onChange(patchChoiceTallyFromConfig(content, config));
+        },
+      });
+      return;
+    }
+
     const def = getFunctionDef(CORRELATION_FUNCTION_ID);
     if (!def) return;
     requestFunctionPicker({
@@ -303,7 +395,12 @@ export function FunctionTableBadge({ content, onChange }: Props) {
     });
   };
 
-  if (!table || (table.type !== "itemizationTable" && table.type !== "questionCorrelationTable")) {
+  if (
+    !table ||
+    (table.type !== "itemizationTable" &&
+      table.type !== "questionCorrelationTable" &&
+      table.type !== "choiceTallyTable")
+  ) {
     return <div className="function-table-badge">Function table</div>;
   }
 

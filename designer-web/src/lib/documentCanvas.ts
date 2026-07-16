@@ -267,9 +267,10 @@ function meaningfulText(text: string | null | undefined): boolean {
   return (text ?? "").replace(/\u00a0|\u200b/g, "").trim().length > 0;
 }
 
-/** True when a placed line has no glyphs and no field/function tokens. */
+/** True when a placed line has no glyphs and no field/function tokens / embedded images. */
 export function isPlacedTextBlockEmpty(block: HTMLElement): boolean {
   if (block.querySelector(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`)) return false;
+  if (block.querySelector("img.tawala-embedded-image, img[data-tawala-image-id]")) return false;
   return !meaningfulText(block.textContent);
 }
 

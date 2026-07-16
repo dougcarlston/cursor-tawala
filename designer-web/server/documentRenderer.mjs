@@ -1,6 +1,7 @@
 import { getFieldValue, resolveTemplate } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { blankAliasesFromForm, renderItemizationTableHtml } from "./itemizationPreview.mjs";
+import { renderChoiceTallyTableHtml } from "./choiceTallyPreview.mjs";
 import { BASE_FORM_CSS, resolveTheme, themeBodyClass } from "./themes/index.mjs";
 
 function esc(s) {
@@ -20,7 +21,11 @@ table.component tbody tr.odd { background-color: #f8f8f8; }
 table.component tbody tr.even { background-color: #ffffff; }
 table.component tbody tr:hover { background-color: #e8e8e8; }
 table.component td { padding-left: 1em; padding-right: 1em; line-height: 1.5em; border: 1px solid #dddddd; }
+table.component .graph { background: #e8e8e8; min-width: 120px; height: 1.2em; position: relative; }
+table.component .graph .bar { display: block; height: 100%; background: #6a9fd8; min-width: 0; }
+table.component .graph .bar span { padding-left: 4px; font-size: 0.85em; white-space: nowrap; }
 .preview-itemization-table { margin: 1rem 0; }
+.preview-choice-tally { margin: 1rem 0; }
 `;
 
 function renderNodes(nodes, ctx, baseUrl, uniqueId) {
@@ -40,6 +45,8 @@ function renderNodes(nodes, ctx, baseUrl, uniqueId) {
           return esc(getFieldValue(ctx, n.name ?? n.field));
         case "itemizationTable":
           return renderItemizationTableHtml(n, ctx);
+        case "choiceTallyTable":
+          return renderChoiceTallyTableHtml(n, ctx);
         case "font": {
           const color = n.color ? ` style="color:${esc(n.color)}"` : "";
           return `<span${color}>${renderNodes(n.nodes, ctx, baseUrl, uniqueId)}</span>`;
@@ -64,6 +71,7 @@ function renderDocumentBody(doc, ctx, baseUrl, uniqueId) {
         records: ctx.records,
         formName: ctx.formName,
         blankAliases: ctx.blankAliases,
+        project: ctx.project,
       });
     }
     return `<p>${esc(resolveTemplate(doc.content, ctx))}</p>`;
@@ -92,6 +100,7 @@ export function renderDocumentsPage(project, documentNames, session, baseUrl, un
     recordBindings: {},
     formName: fromForm,
     blankAliases: blankAliasesFromForm(formDef),
+    project,
   };
 
   const sections = [];
