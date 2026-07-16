@@ -117,6 +117,21 @@ function rowMatchesConditions(row, conditions, combinator, sourceForm, aliases =
   return combinator === "or" ? conditions.some(check) : conditions.every(check);
 }
 
+/**
+ * FORM RECORD COUNT Preview — count stored rows for a form (optional Where filter).
+ * @returns {number}
+ */
+export function countFormRecordsFromConfig(config, ctx = {}) {
+  const form = String(config["form-name"] ?? config.form ?? "").trim() || ctx.formName || "";
+  if (!form) return 0;
+  const all = ctx.records?.[form] ?? [];
+  const conditions = conditionRowsFromConfig(config);
+  const combinator = config.conditionsCombinator === "or" ? "or" : "and";
+  const aliases = ctx.blankAliases ?? {};
+  return all.filter((row) => rowMatchesConditions(row, conditions, combinator, form, aliases))
+    .length;
+}
+
 function truthyFlag(v) {
   return v === true || v === "true" || v === "yes" || v === 1 || v === "1";
 }

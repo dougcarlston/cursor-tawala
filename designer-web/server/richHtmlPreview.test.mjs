@@ -114,3 +114,49 @@ describe("enhanceRichTextHtml itemization", () => {
     expect(out).toContain("Export to Excel");
   });
 });
+
+describe("enhanceRichTextHtml display-image / display-mcq / record-count", () => {
+  it("replaces DISPLAY IMAGE with a sized name placeholder", () => {
+    const config = JSON.stringify({
+      source: "https://example.com/photos/logo.png",
+      width: "200",
+      alt_title: "Team logo",
+    });
+    const html =
+      `<span class="function-token" data-function-id="display-image" ` +
+      `data-function-config='${config}'>fx</span>`;
+    const out = enhanceRichTextHtml(html, () => "");
+    expect(out).toContain("preview-display-image");
+    expect(out).toContain("Team logo");
+    expect(out).toContain("width:200px");
+    expect(out).not.toContain("function-token");
+  });
+
+  it("replaces DISPLAY MCQ with a responses stub", () => {
+    const config = JSON.stringify({ "field-name": "<<Survey:Q1>>", display: "label_only" });
+    const html =
+      `<span class="function-token" data-function-id="display-mcq-label" ` +
+      `data-function-config='${config}'>fx</span>`;
+    const out = enhanceRichTextHtml(html, () => "");
+    expect(out).toContain("preview-display-mcq");
+    expect(out).toContain("Responses to Survey:Q1");
+  });
+
+  it("replaces FORM RECORD COUNT with the filtered record count", () => {
+    const config = JSON.stringify({
+      "form-name": "Form 1",
+      conditionsRows: [{ field: "Status", op: "equals", value: "ok" }],
+      conditionsCombinator: "and",
+    });
+    const html =
+      `<span class="function-token" data-function-id="record-count" ` +
+      `data-function-config='${config}'>fx</span>`;
+    const out = enhanceRichTextHtml(html, () => "", {
+      records: {
+        "Form 1": [{ Status: "ok" }, { Status: "ok" }, { Status: "no" }],
+      },
+    });
+    expect(out).toContain('preview-record-count">2<');
+    expect(out).not.toContain("function-token");
+  });
+});

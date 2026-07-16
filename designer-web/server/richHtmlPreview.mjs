@@ -6,6 +6,7 @@
 import {
   itemizationNodeFromConfig,
   renderItemizationTableHtml,
+  countFormRecordsFromConfig,
 } from "./itemizationPreview.mjs";
 import { readAttr, replaceMatchingSpans } from "./htmlSpanReplace.mjs";
 
@@ -120,6 +121,22 @@ function replaceDisplayMcqTokens(html) {
   );
 }
 
+function replaceRecordCountTokens(html, opts) {
+  return replaceMatchingSpans(
+    html,
+    (attrs) => matchFunctionId(attrs, "record-count"),
+    (attrs) => {
+      const config = parseFunctionConfigAttr(attrs);
+      const n = countFormRecordsFromConfig(config, {
+        records: opts.records ?? {},
+        formName: opts.formName ?? "",
+        blankAliases: opts.blankAliases ?? {},
+      });
+      return `<span class="preview-record-count">${esc(String(n))}</span>`;
+    },
+  );
+}
+
 function replaceItemizationTokens(html, opts) {
   const ctx = {
     records: opts.records ?? {},
@@ -149,7 +166,7 @@ function replaceItemizationTokens(html, opts) {
 
 /** Function display names that must not be treated as field refs. */
 const FUNCTION_DISPLAY_NAME_RE =
-  /^(MULTIPLE QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|CHOICE\s+TALLY|QUESTION\s+CORRELATION|SIMPLE\s+LIST)\b/i;
+  /^(MULTIPLE QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|CHOICE\s+TALLY|QUESTION\s+CORRELATION|SIMPLE\s+LIST|FORM\s+RECORD\s+COUNT)\b/i;
 
 const RICH_TEXT_HTML_TAG_RE = /<\/?[a-z][\s\S]*>/i;
 
@@ -166,6 +183,7 @@ export function enhanceRichTextHtml(content, getField, opts = {}) {
   let html = String(content ?? "");
   html = replaceDisplayImageTokens(html);
   html = replaceDisplayMcqTokens(html);
+  html = replaceRecordCountTokens(html, opts);
   // Replace function spans before <<...>> field substitution — nested <<field>> inside
   // function display strings otherwise leave scraps like `equals "Doug")>>`.
   html = replaceItemizationTokens(html, opts);

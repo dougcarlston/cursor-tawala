@@ -600,10 +600,10 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 | # | Function | id | XML emit | Owner smoke / notes |
 |---|----------|-----|----------|---------------------|
 | 1 | CATEGORIZER | `categorizer` | **Deferred stub** | No sample need |
-| 2 | DISPLAY IMAGE | `display-image` | **Yes** | Smoke-needed (Configure OK) |
-| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | Smoke-needed |
+| 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Code ready** — Preview placeholder + Deploy XML; owner Deploy smoke (URL image) |
+| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Code ready** — Preview stub; Deploy live after submit; owner smoke |
 | 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
-| 5 | FORM RECORD COUNT | `record-count` | **Yes** | Smoke-needed |
+| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Preview wired Jul 16** (session record count); Deploy XML yes; owner smoke |
 | 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | Hosted My Tawala |
 | 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16 |
 | 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | Payment integration |
