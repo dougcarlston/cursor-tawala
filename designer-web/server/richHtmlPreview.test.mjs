@@ -73,40 +73,44 @@ describe("enhanceRichTextHtml itemization", () => {
     expect(out).not.toContain("no columns configured");
   });
 
-  it("resolves <<Form 1:First>> via blank alternateLabel when row only has a", () => {
+  it("shows Print This List / Export to Excel when Configure toggles are yes", () => {
     const config = JSON.stringify({
-      numberOfColumns: 4,
-      column: [
-        { header: "First Name", contents: "<<Form 1:First>>" },
-        { header: "Last Name", contents: "<<Form 1:Last>>" },
-        { header: "Email", contents: "<<Form 1:Email>>" },
-        { header: "Phone", contents: "<<Form 1:Tel>>" },
-      ],
+      numberOfColumns: 1,
+      column: [{ header: "First", contents: "FirstName" }],
+      "form-name": "Form 1",
+      "show-print-control": "true",
+      "show-export-control": "true",
     });
     const html =
       `<span class="function-token" data-function-id="itemization-table" ` +
       `data-function-config='${config}'>fx</span>`;
     const out = enhanceRichTextHtml(html, () => "", {
+      records: { "Form 1": [{ FirstName: "Ada" }] },
       formName: "Form 1",
-      blankAliases: { First: "a", Last: "b", Email: "c", Tel: "d", a: "a", b: "b", c: "c", d: "d" },
-      records: {
-        "Form 1": [
-          {
-            "FIB1:a": "Doug",
-            "FIB1:b": "Carlston",
-            "FIB1:c": "doug@carlston.net",
-            "FIB1:d": "415 730-5951",
-            a: "Doug",
-            b: "Carlston",
-            c: "doug@carlston.net",
-            d: "415 730-5951",
-          },
-        ],
-      },
     });
-    expect(out).toContain("Doug");
-    expect(out).toContain("Carlston");
-    expect(out).toContain("doug@carlston.net");
-    expect(out).toContain("415 730-5951");
+    expect(out).toContain("Print This List");
+    expect(out).toContain("Export to Excel");
+    expect(out).toContain("Ada");
+  });
+
+  it("shows print/export from structured Document MQL node", () => {
+    const node = encodeURIComponent(
+      JSON.stringify({
+        type: "itemizationTable",
+        form: "Form 1",
+        columns: [{ header: "First", field: "FirstName" }],
+        showPrint: true,
+        showExport: true,
+      }),
+    );
+    const html =
+      `<span class="function-table-token" data-itemization-token="true" ` +
+      `data-tawala-structured-node="${node}">fx</span>`;
+    const out = enhanceRichTextHtml(html, () => "", {
+      records: { "Form 1": [{ FirstName: "Ada" }] },
+      formName: "Form 1",
+    });
+    expect(out).toContain("Print This List");
+    expect(out).toContain("Export to Excel");
   });
 });

@@ -74,6 +74,15 @@ export function inferredBlankValidation(blank) {
   return null;
 }
 
+function blankDisplayName(blank) {
+  return (
+    String(blank.alternateLabel ?? "").trim() ||
+    String(blank.displayLabel ?? "").trim() ||
+    String(blank.name ?? "").trim() ||
+    "This field"
+  );
+}
+
 function checkOne(value, validation) {
   const type = validation?.type;
   if (!type) return null;
@@ -104,10 +113,13 @@ export function validateFibBlanks(form, ctx, items) {
   for (const item of items ?? []) {
     if (item.type !== "fib") continue;
     for (const blank of item.blanks ?? []) {
-      const validation = inferredBlankValidation(blank);
-      if (!validation) continue;
       const raw = blankPostedValue(ctx, formName, item, blank);
       const value = String(raw ?? "").trim();
+      if (blank.required && !value) {
+        return `${blankDisplayName(blank)} is required.`;
+      }
+      const validation = inferredBlankValidation(blank);
+      if (!validation) continue;
       if (!value) continue;
       const err = checkOne(value, validation);
       if (err) return err;

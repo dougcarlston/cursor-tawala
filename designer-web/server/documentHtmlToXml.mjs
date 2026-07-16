@@ -191,6 +191,18 @@ function functionTokenToXml(attrs, escAttr, escText) {
     return s;
   };
 
+  /** Legacy itemization cell refs use Record:Form:Field (see Signup Sheet Template.tawala). */
+  const itemizationContentsField = (raw) => {
+    const s = bareField(raw);
+    if (!s) return "";
+    if (/^Record:/i.test(s)) return s;
+    const colon = s.indexOf(":");
+    if (colon > 0) {
+      return `Record:${s.slice(0, colon).trim()}:${s.slice(colon + 1).trim()}`;
+    }
+    return s;
+  };
+
   switch (id) {
     case "record-count":
       return (
@@ -311,15 +323,21 @@ function functionTokenToXml(attrs, escAttr, escText) {
         .slice(0, n)
         .map((col) => {
           const heading = escText(col.header ?? "");
+          const field = itemizationContentsField(col.contents ?? col.field ?? "");
           return (
             `<column><header><string value="${heading}"/></header>` +
-            `<contents><field name="${escAttr(col.contents ?? "")}"/></contents></column>`
+            `<contents><field name="${escAttr(field)}"/></contents></column>`
           );
         })
         .join("");
+      const showPrint =
+        config["show-print-control"] === true || config["show-print-control"] === "true";
+      const showExport =
+        config["show-export-control"] === true || config["show-export-control"] === "true";
       return (
         `<itemization-table version="2">` +
-        `<show-print-control>false</show-print-control>` +
+        `<show-print-control>${showPrint ? "true" : "false"}</show-print-control>` +
+        `<show-export-control>${showExport ? "true" : "false"}</show-export-control>` +
         `<number-of-columns>${n}</number-of-columns>${colXml}` +
         conditionsXml(config, escAttr) +
         `</itemization-table>`
@@ -333,8 +351,8 @@ function functionTokenToXml(attrs, escAttr, escText) {
 function formFromFieldRef(raw) {
   let s = String(raw ?? "").trim();
   if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  if (/^Record:/i.test(s)) s = s.slice("Record:".length).trim();
   const parts = s.split(":").filter(Boolean);
-  if (parts.length >= 3 && /^record$/i.test(parts[0])) return parts[1];
   if (parts.length >= 2) return parts[0];
   return "";
 }
@@ -357,6 +375,13 @@ function inferFormName(config) {
   for (const c of candidates) {
     const form = formFromFieldRef(c);
     if (form) return form;
+  }
+  const cols = config.column ?? config.columns;
+  if (Array.isArray(cols)) {
+    for (const col of cols) {
+      const form = formFromFieldRef(col?.contents ?? col?.field);
+      if (form) return form;
+    }
   }
   if (Array.isArray(config.conditionsRows)) {
     for (const row of config.conditionsRows) {
@@ -445,8 +470,6 @@ function blockHtmlToXml(blockHtml, escAttr, escText) {
     const body = inlineHtmlToXml(inner, escAttr, escText);
 
     if (classes.includes("doc-placed-text") || style.position === "absolute") {
-      const left = ptToTwips(style.left ?? "0");
-      const top = ptToTwips(style.top ?? "0");
       // Drop empty canvas husks — they become blank gaps on Deploy (Java ignores absolute top
       // and lays paragraphs out in flow, so leftover empty lines stack vertically).
       const meaningful = String(body ?? "")
@@ -454,11 +477,10 @@ function blockHtmlToXml(blockHtml, escAttr, escText) {
         .replace(/\s+/g, "")
         .trim();
       if (!meaningful) return "";
-      return (
-        `<paragraph indent="0" align="${escAttr(align)}">` +
-        `<division indent="0" align="${escAttr(align)}" left="${left}" top="${top}">` +
-        `<font>${body}</font></division></paragraph>`
-      );
+      // Do NOT wrap in <division left/top> — Document Paragraph FACTORY has no "division".
+      // Do NOT wrap again in <font> — inlineHtmlToXml already wraps function tokens in <font>,
+      // and Java Font FACTORY cannot nest <font> (drops the inner itemization).
+      return `<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`;
     }
 
     if (!String(body ?? "").replace(/<sp\s*\/>/gi, "").replace(/\s+/g, "").trim()) {

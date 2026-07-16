@@ -76,12 +76,16 @@ function blankInput(item, blank, ctx) {
     getFieldValue(ctx, fname) ||
     getFieldValue(ctx, alt) ||
     "";
-  const len = blank.length ?? 20;
+  // Underscore-run length from Design — keep size/ch width so multi-blank rows can
+  // share left+right edges the way the Designer laid out the underscores.
+  const len = Math.max(1, Math.min(Number(blank.length) || 20, 80));
   let cls = "fib-medium";
   if (len <= 8) cls = "fib-date";
   else if (len >= 30) cls = "fib-wide";
-  const width = len >= 30 ? "" : ` size="${len}"`;
-  return `<input type="text" class="${cls}" name="${esc(fname)}" value="${esc(val)}"${width} />`;
+  return (
+    `<input type="text" class="${cls}" name="${esc(fname)}" value="${esc(val)}" ` +
+    `size="${len}" style="width:${len}ch;max-width:100%;box-sizing:content-box" />`
+  );
 }
 
 function renderFib(item, ctx) {

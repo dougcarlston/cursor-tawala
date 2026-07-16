@@ -69,6 +69,8 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Process / runtime navigation
 
+- **Process statement: block highlight and text caret conflict** — Selecting a Process script row (e.g. “Show Form Form 1”) shows both the light-blue row selection chrome **and** a text insertion caret in the label at once. They fight visually; only one selection mode should win (block select vs inline edit). **Owner Jul 16** (screenshot). **Open.**
+
 - **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — Process / navigation start-point from DirtBowl stress pass. **Real bug;** separate track from Document/palette work.
 
 ### Fixed Jul 15 (Signup Sheet smoke — held bugs)
@@ -96,10 +98,10 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 | # | Item | Notes |
 |---|------|--------|
-| 1 | **Horizontal FIB layout** | Vertical spacing OK; owner still wants better label/field horizontal parity (default/baseball vs legacy). |
-| 2 | **FIB Required per blank** | Suspected Email Required also flipped Phone — re-verify; pin `activeBlank` while editing strip if it recurs. |
-| 3 | **Required / empty submit** | Format validators run when non-empty; confirm `required: true` blanks block empty Submit. |
-| 4 | **MQL Where clause** | Preview now filters via `conditionsRows`; smoke with Where on/off (owner earlier removed Where while debugging empty cells). |
+| 1 | **Horizontal FIB layout** | **Owner Jul 16:** Design aligns left+right edges of two FIB rows via underscore lengths; Preview should size blanks from underscore counts the same way. **Fix in progress:** `size`+`ch` width from `blank.length`; stacked rows use inline flow (not flex stretch). |
+| 2 | **FIB Required per blank** | **Owner Jul 16:** Not dual-Required — first click parked caret at end of last blank (Phone) while user thought Email was active. **Fix:** first click selects item only; second click places caret under the click. |
+| 3 | **Required / empty submit** | **Owner Jul 16: confirmed fails.** **Fix:** `blank.required` blocks empty Submit (`"{label} is required."`). |
+| 4 | **MQL Where clause** | **Owner Jul 16: OK.** |
 | 5 | **Print / Excel export links** | Configure has print/export toggles; Node Preview table does not emit those links yet. |
 | 6 | **`baseball` theme CSS** | Missing file → `resolveTheme` falls back to default; optional real baseball stylesheet. |
 | 7 | **Java Deploy (8080) parity** | Tonight’s smoke was Node runtime on 5173/3001; when Tomcat is up, re-check MQL + validators on 8080. |

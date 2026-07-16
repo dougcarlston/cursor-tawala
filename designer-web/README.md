@@ -22,18 +22,45 @@ This starts **both**:
 
 ### Deploy credentials (dev)
 
-| User | Password |
-|------|----------|
-| `dev` | `dev` |
-| `designer` | `designer` |
+| User | Password | Notes |
+|------|----------|--------|
+| `dev` | `dev` | Works for Node runtime **and** Java Tomcat `/client` |
+| `designer` | `dev` | Java DB seed (same password as `dev`). Node API also accepts `designer` / `designer`. |
 
-Use **File → Deploy** or the toolbar **Deploy** button. On first deploy you’ll be prompted for Designer credentials (not DirtBowl participant login).
+Use **File → Deploy** or the toolbar **Deploy** button. On first deploy you’ll be prompted for Designer credentials (not DirtBowl participant login). For **Java Deploy** (`javaProxy: true`), prefer **`dev` / `dev`**.
 
 After deploy, the dialog lists **start point URLs** like:
 
 `http://localhost:5173/p/{uniqueId}/Registration`
 
 Open those links to exercise the dev runtime HTML forms.
+
+### Preview / Deploy “failed to fetch”
+
+Vite (`:5173`) can stay up while the Express API (`:3001`) dies (common when a tool shell exits and SIGTERMs the API). Check and restart:
+
+```bash
+curl -s http://localhost:3001/api/health
+cd designer-web && bash scripts/ensure-dev-api.sh
+```
+
+Prefer starting Designer from a **terminal you leave open**: `cd designer-web && npm run dev` (or `npm run dev:local` for Node-only Deploy).
+
+### Java Deploy (Tomcat `:8080`)
+
+1. Start containers from the repo root: `docker compose up -d`
+2. Wait until `http://localhost:8080` responds.
+3. Restart the Designer API **without** `TAWALA_DEV_ONLY` so it can discover Java:
+   ```bash
+   cd designer-web
+   # stop old API/Vite if needed, then:
+   unset TAWALA_DEV_ONLY
+   export TAWALA_JAVA_URL=http://localhost:8080
+   npm run dev
+   ```
+4. Confirm `/api/health` shows `"javaProxy": true`, then **File → Deploy** again — start URLs will target Tomcat.
+
+Until Tomcat is up, Deploy stays on the Node runtime (`:5173`/`:3001`).
 
 ## Load DirtBowl (advanced)
 

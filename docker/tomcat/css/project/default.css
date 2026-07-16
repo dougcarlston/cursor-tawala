@@ -124,9 +124,48 @@ table {
     font-weight: bold;
 }
 
+/* Client-side validation banner (default.js → #formErrorMsg) */
+#formErrorMsg {
+	border: 1px solid #cc0000;
+	padding: 6px 10px;
+	margin: 0 0 12px 0;
+	color: #880000;
+	background: #ffcccc;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 11pt;
+	font-weight: bold;
+	line-height: 1.35;
+	text-align: center;
+}
+
 .error { 
 	background:#ffcccc; 
 }
+
+/* default.js adds class validateError to invalid inputs (“outlined in red”) */
+input.validateError,
+textarea.validateError,
+select.validateError {
+	border: 2px solid #cc0000 !important;
+	background-color: #fff0f0 !important;
+}
+
+#validateMsg {
+	position: absolute;
+	z-index: 1000;
+	display: none;
+	max-width: 22em;
+	padding: 6px 10px;
+	border: 1px solid #cc0000;
+	background: #fff8f8;
+	color: #880000;
+	font-family: Verdana, Helvetica, Arial, sans-serif;
+	font-size: 10pt;
+	line-height: 1.3;
+	box-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+	cursor: pointer;
+}
+
 
 form, div.tawalaDocument, div.document {
     text-align: left;

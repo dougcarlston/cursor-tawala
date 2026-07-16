@@ -53,6 +53,29 @@ describe("validateFibBlanks", () => {
     expect(err).toBe("Bad phone.");
   });
 
+  it("blocks empty required blank before format checks", () => {
+    const requiredForm = {
+      name: "Form 1",
+      items: [
+        {
+          type: "fib",
+          label: "FIB1",
+          blanks: [{ name: "c", alternateLabel: "Email", required: true }],
+        },
+      ],
+    };
+    const err = validateFibBlanks(
+      requiredForm,
+      {
+        formName: "Form 1",
+        fields: {},
+        formFields: { "Form 1": { "FIB1:c": "  " } },
+      },
+      requiredForm.items,
+    );
+    expect(err).toBe("Email is required.");
+  });
+
   it("infers Email/Tel validators from alternateLabel when unset", () => {
     const signupForm = {
       name: "Form 1",
@@ -108,6 +131,48 @@ describe("validateFibBlanks", () => {
       form.items,
     );
     expect(err).toBeNull();
+  });
+
+  it("handleFormSubmit blocks empty required Email", () => {
+    const project = {
+      name: "Signup Sheet Template",
+      forms: [
+        {
+          name: "Form 1",
+          items: [
+            {
+              type: "fib",
+              label: "FIB1",
+              style: "default",
+              prompt: "Email ____________________",
+              blanks: [
+                {
+                  name: "c",
+                  alternateLabel: "Email",
+                  length: 20,
+                  required: true,
+                  validation: { type: "email", errorMessage: "Please enter a valid email address." },
+                },
+              ],
+            },
+          ],
+        },
+      ],
+      processes: [],
+      documents: [],
+    };
+    const session = createSession(project);
+    const html = handleFormSubmit(
+      project,
+      "Form 1",
+      session,
+      { "FIB1:c": "", segmentId: "0", submit: "Submit" },
+      "http://localhost:5173",
+      "uid-req",
+    );
+    expect(html).toContain("Email is required.");
+    expect(html).toContain("validation-error");
+    expect(session.records["Form 1"]).toBeUndefined();
   });
 
   it("handleFormSubmit blocks bad email before Document/MQL", () => {

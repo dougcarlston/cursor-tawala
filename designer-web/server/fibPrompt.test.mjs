@@ -67,4 +67,32 @@ describe("FIB underscore → blanks (Preview / fibPrompt)", () => {
     );
     expect(rows).toHaveLength(0);
   });
+
+  it("does not treat </span> as a legacy slash separator (contenteditable around underscores)", () => {
+    const signupBlanks = [
+      { name: "a", alternateLabel: "First", length: 20 },
+      { name: "b", alternateLabel: "Last", length: 11 },
+      { name: "c", alternateLabel: "Email", length: 20 },
+      { name: "d", alternateLabel: "Tel", length: 19 },
+    ];
+    const prompt =
+      `First Name: ________ Last Name: ________<br>` +
+      `Email <span style="font-family: inherit; background-color: transparent;">________</span> ` +
+      `Phone <span style="font-family: inherit; background-color: transparent;">________</span>`;
+    const rows = parseFibPrompt(prompt, signupBlanks);
+    expect(rows.length).toBeGreaterThanOrEqual(2);
+    const allText = rows
+      .flatMap((r) => r.segments.filter((s) => s.type === "text").map((s) => s.text))
+      .join("");
+    expect(allText).not.toMatch(/span/i);
+    expect(allText).not.toMatch(/_/);
+    expect(allText).not.toMatch(/font-family/i);
+    const blanksUsed = rows.flatMap((r) => r.segments.filter((s) => s.type === "blank"));
+    expect(blanksUsed.map((s) => s.blank.alternateLabel)).toEqual([
+      "First",
+      "Last",
+      "Email",
+      "Tel",
+    ]);
+  });
 });

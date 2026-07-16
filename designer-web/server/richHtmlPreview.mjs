@@ -91,6 +91,13 @@ function matchFunctionId(attrs, id) {
   return readAttr(attrs, "data-function-id") === id;
 }
 
+/** Document MQL chips may be structured nodes (no data-function-id). */
+function matchItemizationToken(attrs) {
+  if (matchFunctionId(attrs, "itemization-table")) return true;
+  if (readAttr(attrs, "data-itemization-token") === "true") return true;
+  return Boolean(parseStructuredNodeAttr(attrs));
+}
+
 function replaceDisplayImageTokens(html) {
   return replaceMatchingSpans(
     html,
@@ -119,25 +126,25 @@ function replaceItemizationTokens(html, opts) {
     formName: opts.formName ?? "",
     blankAliases: opts.blankAliases ?? {},
   };
-  return replaceMatchingSpans(
-    html,
-    (attrs) => matchFunctionId(attrs, "itemization-table"),
-    (attrs) => {
-      const structured = parseStructuredNodeAttr(attrs);
-      if (structured) {
-        return renderItemizationTableHtml(
-          {
-            form: structured.form ?? "",
-            columns: structured.columns ?? [],
-          },
-          ctx,
-        );
-      }
-      const config = parseFunctionConfigAttr(attrs);
-      const node = itemizationNodeFromConfig(config, attrs, ctx.formName);
-      return renderItemizationTableHtml(node, ctx);
-    },
-  );
+  return replaceMatchingSpans(html, matchItemizationToken, (attrs) => {
+    const structured = parseStructuredNodeAttr(attrs);
+    if (structured) {
+      return renderItemizationTableHtml(
+        {
+          form: structured.form ?? "",
+          columns: structured.columns ?? [],
+          showPrint: structured.showPrint ?? structured["show-print-control"],
+          showExport: structured.showExport ?? structured["show-export-control"],
+          conditions: structured.conditions,
+          combinator: structured.combinator,
+        },
+        ctx,
+      );
+    }
+    const config = parseFunctionConfigAttr(attrs);
+    const node = itemizationNodeFromConfig(config, attrs, ctx.formName);
+    return renderItemizationTableHtml(node, ctx);
+  });
 }
 
 /** Function display names that must not be treated as field refs. */

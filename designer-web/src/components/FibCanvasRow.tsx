@@ -60,6 +60,7 @@ interface Props {
  * FIB item — canvas-inline WYSIWYG (spec: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` FIB section;
  * legacy `FibItemView`). Q-badge, rich prompt (B/I/U via palette), underscore runs stay as
  * `_` on the Design canvas (boxes appear in Preview/Deploy only), property strip for the active blank.
+ * Click: first selects the item; second places the caret (and active blank) under the click.
  */
 export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
@@ -75,6 +76,8 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const labelInputRef = useRef<HTMLInputElement>(null);
   const altLabelInputRef = useRef<HTMLInputElement>(null);
   const savedRangeRef = useRef<Range | null>(null);
+  /** Second-click viewport point — place caret here instead of end-of-last-blank. */
+  const pendingCaretPointRef = useRef<{ x: number; y: number } | null>(null);
   const wasSelected = useRef(selected);
   const altLabelDraftRef = useRef<string | null>(null);
   const revertingAltLabelRef = useRef(false);
@@ -85,11 +88,9 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const update = (patch: Partial<FibItem>) =>
     updateFormItem(formName, index, { ...item, ...patch });
 
-  // Expand when selected; collapse only when selection leaves (not on blur).
-  // Blur alone must not shrink the row — HTML5 reorder drag blurs contentEditable
-  // first, and collapsing mid-drag moves the hit box out from under the cursor.
+  // Select without editing on first click. Collapse when selection leaves.
+  // (Do not auto-enter contentEditable — that parked the caret at end of last blank.)
   useEffect(() => {
-    if (selected && !wasSelected.current) setEditing(true);
     if (!selected && wasSelected.current) setEditing(false);
     wasSelected.current = selected;
   }, [selected]);
@@ -114,6 +115,19 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     if (!sel) return;
     const range = document.createRange();
     const plain = htmlToPlainText(prompt);
+    // Prefer caret under the second click (Email blank, etc.) over end-of-content.
+    const pending = pendingCaretPointRef.current;
+    pendingCaretPointRef.current = null;
+    if (pending) {
+      const atPoint = caretRangeAtPoint(pending.x, pending.y);
+      if (atPoint && el.contains(atPoint.commonAncestorContainer)) {
+        sel.removeAllRanges();
+        sel.addRange(atPoint);
+        savedRangeRef.current = atPoint.cloneRange();
+        syncActiveBlank(el);
+        return;
+      }
+    }
     // Default insert/edit: highlight question text only; leave trailing underscores unselected.
     if (plain === FIB_DEFAULT_PROMPT || plain.startsWith(`${FIB_PLACEHOLDER} `)) {
       const end = FIB_PLACEHOLDER.length;
@@ -125,8 +139,9 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
         return;
       }
     }
+    // No click point: start of content (not end of last blank).
     range.selectNodeContents(el);
-    if (plain !== FIB_PLACEHOLDER) range.collapse(false);
+    range.collapse(true);
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
@@ -150,7 +165,10 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     el.select();
   }, [editingLabel]);
 
-  const enterEditing = () => {
+  const enterEditing = (clientX?: number, clientY?: number) => {
+    if (clientX != null && clientY != null) {
+      pendingCaretPointRef.current = { x: clientX, y: clientY };
+    }
     setSelectedItemIndex(index);
     setEditing(true);
   };
@@ -324,8 +342,21 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
       className={`fib-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}`}
       onClick={(e) => {
         e.stopPropagation();
-        if (editing) setSelectedItemIndex(index);
-        else enterEditing();
+        const target = e.target as HTMLElement;
+        if (target.closest(".fib-badge, .fib-badge-input, .fib-property-strip, .canvas-item-delete")) {
+          return;
+        }
+        // First click: select only (no caret). Second click: edit at click point.
+        if (!selected) {
+          setSelectedItemIndex(index);
+          setEditing(false);
+          return;
+        }
+        if (!editing) {
+          enterEditing(e.clientX, e.clientY);
+          return;
+        }
+        setSelectedItemIndex(index);
       }}
       onBlur={handleBlur}
     >

@@ -1,0 +1,49 @@
+---
+description: Hard-won Java Deploy / JSON→XML traps (FIB, Document, Process timing, ops)
+alwaysApply: true
+---
+
+# Java Deploy parity traps
+
+Lessons from SignupSheet / DirtBowl Deploy work. Apply whenever changing `designer-web/server/*ToXml*`, Preview/runtime, or Tomcat CSS.
+
+## 1. Design canvas ≫ Preview ≫ do not unify for Deploy
+
+Fix Deploy/Preview in **server export or runtime** paths. Do not rewrite Design `*CanvasRow` idle/edit UX so “Preview matches Design.” See `tawala-work-scopes.mdc`.
+
+## 2. Java XML factories are strict (silent empty output)
+
+Legacy Java drops unknown or illegal nesting — often as blank pages, not stack traces:
+
+| Trap | Do instead |
+|------|------------|
+| Wrap Document body in `<division>` | Paragraphs only; Document has no division |
+| Nest `<font><font>…` | One font level; put b/i/u **inside** font |
+| Document field `<<Form:Field>>` | `Record:Form:Field` (or project’s Record token form) |
+
+When Deploy looks empty, check Tomcat logs for `No class registered for …` before blaming CSS.
+
+## 3. FIB prompt: three contracts, three parsers
+
+- **Design** may keep underscores / rich HTML while editing.
+- **Preview** (`fibPrompt.mjs`) and **Deploy** (`fibToXml.mjs` / `fibRichPromptToXml.mjs`) must both turn `_` runs into blanks.
+- Contenteditable wraps (`</span>`) contain `/` — **never** take the legacy `Label/` slash path on raw HTML; underscore-match on **plain** text first.
+- Freeform: one Design soft-row (`<br>` / line) → **one** Deploy `<paragraph>` (multi-blank lines stay one line).
+- Character formatting on labels: mirror Design B/I/U (and face/size/color) into Deploy font XML — do not strip to plain and re-guess bold from the word “Name”.
+
+Add/extend unit tests on **each path you touch** (`fibPrompt`, `fibToXml`, Document HTML→XML).
+
+## 4. Process timing vs “latest submission”
+
+Java runs Process **before** persisting the current form submission. A Document MQL shown after Submit can be **one record behind**. Stock Signup puts the list on the **Form** (or refresh after Thank-you). Do not “fix” empty tables by changing Design layout unless the owner wants that product pattern.
+
+## 5. Ops before code archaeology
+
+- Vite `:5173` often survives while Express `:3001` dies → Preview/Deploy “failed to fetch”. Check `/api/health`; use `designer-web/scripts/ensure-dev-api.sh`.
+- Java Deploy credentials default **`dev` / `dev`**.
+- Stale Preview sessions or Tomcat `submission` rows look like product bugs — clear or Redeploy with a fresh unique id before deep debugging.
+- Theme/validation CSS under `docker/tomcat/css/project/` may need hard refresh / cache-buster after `docker cp`.
+
+## 6. Misleading deploy errors
+
+Prefer accurate parse/deploy messages over generic copy (e.g. do not blame “itemization headers” for unrelated XML failures).

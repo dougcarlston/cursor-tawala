@@ -33,6 +33,9 @@ cd designer-web && npm run dev
 - UI: http://localhost:5173 — **File → Deploy** or toolbar Deploy
 - API: http://localhost:3001 — proxies via Vite
 - For Java backend: `TAWALA_JAVA_URL=http://localhost:8080` when running API
+- If Preview/Deploy fails while 5173 still loads: `./scripts/ensure-dev-api.sh` (Vite often outlives a dead API)
+
+Credentials for local Java: prefer **`dev` / `dev`**.
 
 ## CSS / theme changes on 8080
 

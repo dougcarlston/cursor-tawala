@@ -18,3 +18,25 @@ table.component thead {
   background-color: #1f4d1f;
   color: #ffffff;
 }
+
+/* Validation chrome (also in default.css; repeated here so theme loads still apply) */
+#formErrorMsg {
+  border: 1px solid #cc0000;
+  padding: 6px 10px;
+  margin: 0 0 12px 0;
+  color: #880000;
+  background: #ffcccc;
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 11pt;
+  font-weight: bold;
+  line-height: 1.35;
+  text-align: center;
+}
+
+input.validateError,
+textarea.validateError,
+select.validateError {
+  border: 2px solid #cc0000 !important;
+  background-color: #fff0f0 !important;
+}
+

@@ -39,7 +39,7 @@ export function normalizeFibPromptSource(prompt) {
 }
 
 /** Soft rows from Design WYSIWYG (`<br>`, paragraphs) plus legacy `//`. */
-function splitFibPromptRows(prompt) {
+export function splitFibPromptRows(prompt) {
   const withBreaks = String(prompt)
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/(p|div)>/gi, "\n")
@@ -57,7 +57,7 @@ function isDesignPlaceholderOnly(rowStr) {
 }
 
 /** Plain text for underscore matching (rich Design prompts may carry light HTML). */
-function plainForUnderscores(rowStr) {
+export function plainForUnderscores(rowStr) {
   return normalizeFibPromptSource(rowStr)
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
@@ -125,8 +125,29 @@ function parseFibRow(rowStr, blanks, bi) {
 
   const segments = [];
 
-  if (s.includes("/")) {
-    const parts = s.split("/");
+  const plain = plainForUnderscores(s);
+
+  // Prefer underscore blanks whenever the *visible* prompt has `_` runs.
+  // Contenteditable may wrap blanks in <span>…</span>; those closing tags contain `/`
+  // and must not take the legacy slash-label path (leaks "span>" / leftover underscores).
+  if (/_+/.test(plain)) {
+    const fromUnderscores = segmentsFromUnderscorePrompt(s, blanks, bi);
+    if (hints.length > 0) {
+      for (const seg of fromUnderscores.segments) {
+        if (seg.type === "blank" && seg.hint == null) {
+          seg.hint = hints.shift() ?? null;
+        }
+      }
+    }
+    if (trailing) {
+      fromUnderscores.segments.push({ type: "text", text: trailing });
+    }
+    return fromUnderscores;
+  }
+
+  // Legacy "Label/" rows — split on `/` in plain text only (never raw HTML).
+  if (plain.includes("/")) {
+    const parts = plain.split("/");
     for (const part of parts) {
       const t = part.trim();
       if (t) segments.push({ type: "text", text: t });
@@ -142,25 +163,8 @@ function parseFibRow(rowStr, blanks, bi) {
     return { segments, nextIdx: bi };
   }
 
-  // Designer WYSIWYG: "Name ________" → "Name " + blank input (not underscores + box).
-  if (/_+/.test(plainForUnderscores(s))) {
-    const fromUnderscores = segmentsFromUnderscorePrompt(s, blanks, bi);
-    if (hints.length > 0) {
-      for (const seg of fromUnderscores.segments) {
-        if (seg.type === "blank" && seg.hint == null) {
-          seg.hint = hints.shift() ?? null;
-        }
-      }
-    }
-    if (trailing) {
-      fromUnderscores.segments.push({ type: "text", text: trailing });
-    }
-    return fromUnderscores;
-  }
-
   if (s) {
-    const text = plainForUnderscores(s);
-    if (text) segments.push({ type: "text", text });
+    if (plain) segments.push({ type: "text", text: plain });
   }
 
   if (hints.length > 0) {

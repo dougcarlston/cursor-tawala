@@ -117,9 +117,13 @@ function rowMatchesConditions(row, conditions, combinator, sourceForm, aliases =
   return combinator === "or" ? conditions.some(check) : conditions.every(check);
 }
 
+function truthyFlag(v) {
+  return v === true || v === "true" || v === "yes" || v === 1 || v === "1";
+}
+
 /**
  * Normalize designer function config or structured node into
- * `{ form, columns: [{ header, field }], conditions, combinator }` for rendering.
+ * `{ form, columns, conditions, combinator, showPrint, showExport }` for rendering.
  */
 export function itemizationNodeFromConfig(config, attrs = "", fallbackForm = "") {
   const colsRaw = config.column ?? config.columns ?? [];
@@ -134,6 +138,8 @@ export function itemizationNodeFromConfig(config, attrs = "", fallbackForm = "")
     columns,
     conditions: conditionRowsFromConfig(config),
     combinator: config.conditionsCombinator === "or" ? "or" : "and",
+    showPrint: truthyFlag(config["show-print-control"] ?? config.showPrint),
+    showExport: truthyFlag(config["show-export-control"] ?? config.showExport),
   };
 }
 
@@ -174,7 +180,23 @@ export function renderItemizationTableHtml(node, ctx = {}) {
     ? ' class="tawalaDataTable dtFixTableWidth preview-itemization-table"'
     : ' class="preview-itemization-table"';
 
-  return `<div${containerClass}><table class="component outline sortable stripe">
+  const controls = [];
+  if (truthyFlag(node.showPrint ?? node["show-print-control"])) {
+    controls.push(
+      `<a href="#" onclick="window.print();return false;">Print This List</a>`,
+    );
+  }
+  if (truthyFlag(node.showExport ?? node["show-export-control"])) {
+    // Preview facsimile — CSV download (legacy Excel needs Java export endpoint).
+    controls.push(
+      `<a href="#" onclick="(function(a){var t=a.closest('.preview-itemization-table')||a.parentElement.nextElementSibling;if(!t)return false;var table=t.querySelector?t.querySelector('table'):null;if(!table)table=t;var rows=[].slice.call(table.querySelectorAll('tr'));var csv=rows.map(function(tr){return[].slice.call(tr.querySelectorAll('th,td')).map(function(c){var s=String(c.textContent||'').replace(/\"/g,'\"\"');return '\"'+s+'\"';}).join(',');}).join('\\n');var blob=new Blob([csv],{type:'text/csv'});var u=URL.createObjectURL(blob);var l=document.createElement('a');l.href=u;l.download='signup-list.csv';l.click();URL.revokeObjectURL(u);return false;})(this);return false;">Export to Excel</a>`,
+    );
+  }
+  const controlsHtml = controls.length
+    ? `<p class="preview-itemization-controls">${controls.join("")}</p>`
+    : "";
+
+  return `<div${containerClass}>${controlsHtml}<table class="component outline sortable stripe">
 <thead><tr>${headerCells}</tr></thead>
 <tbody>${bodyRows}</tbody>
 </table></div>`;

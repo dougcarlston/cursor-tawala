@@ -1,6 +1,6 @@
 import { getFieldValue, resolveTemplate } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml, looksLikeRichHtml } from "./richHtmlPreview.mjs";
-import { blankAliasesFromForm } from "./itemizationPreview.mjs";
+import { blankAliasesFromForm, renderItemizationTableHtml } from "./itemizationPreview.mjs";
 import { BASE_FORM_CSS, resolveTheme, themeBodyClass } from "./themes/index.mjs";
 
 function esc(s) {
@@ -38,6 +38,8 @@ function renderNodes(nodes, ctx, baseUrl, uniqueId) {
           return `<span class="doc-underline">${renderNodes(n.nodes, ctx, baseUrl, uniqueId)}</span>`;
         case "field":
           return esc(getFieldValue(ctx, n.name ?? n.field));
+        case "itemizationTable":
+          return renderItemizationTableHtml(n, ctx);
         case "font": {
           const color = n.color ? ` style="color:${esc(n.color)}"` : "";
           return `<span${color}>${renderNodes(n.nodes, ctx, baseUrl, uniqueId)}</span>`;

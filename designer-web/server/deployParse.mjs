@@ -53,12 +53,19 @@ export function parseDeployFailure(xmlText) {
   const m = xmlText.match(/<error id="([^"]+)" message="([^"]*)"/);
   if (m) return `${m[1]}: ${m[2]}`;
   // Java sometimes returns the public Error HTML page instead of <response status="failure">
-  // when project XML is rejected during upload (e.g. invalid function table markup).
+  // when /client blows up before writing XML (World down, bad upload, etc.).
   if (/<h1[^>]*>\s*Error\s*<\/h1>/i.test(xmlText) || /We are very sorry!/i.test(xmlText)) {
+    if (/World is not initialized/i.test(xmlText)) {
+      return (
+        "Java Tomcat World is not initialized (usually Postgres was unreachable at startup). " +
+        "Restart Tomcat after Postgres is healthy: `docker compose up -d --force-recreate tawala`, " +
+        "then Deploy again with credentials `dev` / `dev`."
+      );
+    }
     return (
-      "Java rejected the uploaded project XML (server Error page). " +
-      "Common causes: invalid function tables (itemization headers must be expression form), " +
-      "or unsupported export markup. Check the browser Designer export / server logs."
+      "Java rejected the upload (server Error page). " +
+      "If Tomcat just started, wait until it is healthy and retry with `dev` / `dev`. " +
+      "Otherwise check Tomcat logs (`docker logs tawala-tomcat`) — often theme/XML markup, not Designer Preview."
     );
   }
   if (/<!DOCTYPE\s+html/i.test(xmlText) && !/status="success"/i.test(xmlText)) {

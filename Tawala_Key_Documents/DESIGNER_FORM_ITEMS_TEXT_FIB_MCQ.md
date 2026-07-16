@@ -193,7 +193,9 @@ Run before merging FIB canvas, `fibBlanks`, `fibPrompt`, or Form Preview/runtime
 1. Design: insert FIB, type `Name ________` in the prompt, blur/deselect so the row is idle → underscores remain visible `_` (not Design-canvas text boxes).
 2. Design: place caret in an underscore run while editing → Alternate Label / Height / Required still target that blank.
 3. Preview: same item shows **Name** + one input — **no** leftover `________` beside the box. (Restart `designer-web` API on `:3001` after `server/runtime.mjs` / `fibPrompt.mjs` edits — Node does not HMR those.)
-4. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata and Preview prompt parse).
+4. Deploy: a Design soft-row with two underscore blanks (e.g. `First ____ Last ____`) must stay **one line** with both boxes — not one blank per line (`fibToXml` / Redeploy to Java).
+5. Deploy: B/I/U (and face/size/color when set) on FIB prompt labels in Design must appear on the Java form after Redeploy (`fibRichPromptToXml` / `fibToXml`).
+5. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata and Preview prompt parse).
 
 ### Backlog parity note (July 2026)
 

@@ -56,19 +56,27 @@ export function decodeStructuredNode(value: string | null): StructuredFunctionNo
   }
 }
 
+function flagToEnum(v: unknown, fallback = "false"): "true" | "false" {
+  if (v === true || v === "true" || v === "yes" || v === 1 || v === "1") return "true";
+  if (v === false || v === "false" || v === "no" || v === 0 || v === "0") return "false";
+  return fallback === "true" ? "true" : "false";
+}
+
 function itemizationToConfig(node: ItemizationNode): FunctionConfig {
   const def = getFunctionDef("itemization-table");
   const cols = node.columns ?? [];
   const base = def ? defaultFunctionConfig(def) : {};
   return {
     ...base,
-    "show-print-control": "false",
-    "show-export-control": "false",
+    "show-print-control": flagToEnum(node.showPrint ?? node["show-print-control"]),
+    "show-export-control": flagToEnum(node.showExport ?? node["show-export-control"]),
     numberOfColumns: Math.max(1, cols.length),
     column: cols.map((c) => ({ header: c.header ?? "", contents: c.field ?? "" })),
     "form-name": node.form ?? "",
-    conditionsRows: [{ field: "", op: "equals", value: "" }],
-    conditionsCombinator: "and",
+    conditionsRows: (node.conditions as FunctionConfig["conditionsRows"]) ?? [
+      { field: "", op: "equals", value: "" },
+    ],
+    conditionsCombinator: node.combinator === "or" ? "or" : "and",
   };
 }
 
@@ -104,6 +112,10 @@ function patchNodeFromConfig(
         header: c.header ?? "",
         field: c.contents ?? "",
       })),
+      showPrint: flagToEnum(nextConfig["show-print-control"]) === "true",
+      showExport: flagToEnum(nextConfig["show-export-control"]) === "true",
+      conditions: nextConfig.conditionsRows ?? node.conditions,
+      combinator: nextConfig.conditionsCombinator === "or" ? "or" : "and",
     };
   }
 

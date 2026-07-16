@@ -18,10 +18,41 @@ input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
 .fib-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 12px; margin-bottom: 0.45rem; }
 .fib-row .fib-label { flex: 0 0 160px; min-width: 120px; padding-top: 4px; }
 .fib-row .fib-fields { flex: 1 1 240px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px; }
+/* Underscore-prompt FIB: one group, left+right edges align across rows (like Design).
+   Labels/boxes keep natural spacing (~2 spaces); do not force equal columns. */
+.fib:not(.fib-style-topLabels) {
+  display: inline-block;
+  max-width: 100%;
+  vertical-align: top;
+  box-sizing: border-box;
+}
+.fib-row.fib-row-stacked {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: space-between;
+  align-items: baseline;
+  width: 100%;
+  gap: 0.25em 0.5em;
+  line-height: 1.8;
+  box-sizing: border-box;
+}
+.fib-row.fib-row-stacked .fib-inline-text { white-space: pre-wrap; }
+.fib-row.fib-row-stacked .fib-field { display: inline; flex: 0 0 auto; }
+.fib-row.fib-row-stacked input[type=text] {
+  display: inline-block;
+  vertical-align: baseline;
+  margin: 0 0.15em;
+  font: inherit;
+  /* Honor size=/ch from blank length — do not stretch to fill a grid cell */
+  max-width: 100%;
+  box-sizing: content-box;
+}
 .fib-row.fib-top-label { flex-direction: row; align-items: center; }
 .fib-top-label-text { flex: 0 0 140px; min-width: 100px; font-size: 13px; color: #444; }
-.fib-top-label-field { flex: 1 1 200px; }
-.fib-top-label-field input { width: 100%; max-width: 28em; box-sizing: border-box; }
+.fib-top-label-field { flex: 0 1 auto; }
+.fib-top-label-field input { box-sizing: content-box; }
+.preview-itemization-controls { margin: 0.35rem 0 0.5rem; font-size: 13px; }
+.preview-itemization-controls a { color: #000080; margin-right: 12px; }
 .validation-error { background: #fdecea; border: 1px solid #e74c3c; color: #922; padding: 8px 12px; margin: 0 0 1rem; }
 `;
 

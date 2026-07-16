@@ -76,6 +76,19 @@ function itemizationHeaderXml(header) {
   return `<header><string value="${escText(h)}"/></header>`;
 }
 
+/** Legacy Signup Sheet cells use Record:Form:Field — not <<Form:Field>>. */
+function itemizationContentsFieldName(raw) {
+  let s = String(raw ?? "").trim();
+  if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  if (!s) return "";
+  if (/^Record:/i.test(s)) return s;
+  const colon = s.indexOf(":");
+  if (colon > 0) {
+    return `Record:${s.slice(0, colon).trim()}:${s.slice(colon + 1).trim()}`;
+  }
+  return s;
+}
+
 /**
  * Record-list table used on Form Text and Documents.
  * Legacy shape: forms + optional nested &lt;conditions&gt; filter (e.g. SheetChosen).
@@ -83,9 +96,10 @@ function itemizationHeaderXml(header) {
 function itemizationTableToXml(n) {
   const cols = (n.columns ?? [])
     .map((col) => {
+      const field = itemizationContentsFieldName(col.field ?? col.contents ?? "");
       return (
         `<column>${itemizationHeaderXml(col.header)}` +
-        `<contents><field name="${escAttr(col.field)}"/></contents>` +
+        `<contents><field name="${escAttr(field)}"/></contents>` +
         `${columnDisplayConditionsXml(col.displayCondition ?? col.displayConditions)}` +
         `</column>`
       );
@@ -103,7 +117,13 @@ function itemizationTableToXml(n) {
     const dc = col.displayCondition ?? col.displayConditions;
     const f = dc?.field;
     if (typeof f === "string" && f.includes(":")) {
-      formNames.add(f.split(":")[0]);
+      const bare = f.replace(/^<<|>>$/g, "").replace(/^Record:/i, "");
+      formNames.add(bare.split(":")[0]);
+    }
+    const cell = String(col.field ?? col.contents ?? "").replace(/^<<|>>$/g, "");
+    if (cell.includes(":")) {
+      const bare = cell.replace(/^Record:/i, "");
+      formNames.add(bare.split(":")[0]);
     }
   }
 
@@ -112,9 +132,13 @@ function itemizationTableToXml(n) {
     .join("");
   const filter = n.where ? `<conditions>${conditionToXml(n.where)}</conditions>` : "";
   const nCols = (n.columns ?? []).length;
+  const showPrint = n.showPrint === true || n["show-print-control"] === true || n["show-print-control"] === "true";
+  const showExport =
+    n.showExport === true || n["show-export-control"] === true || n["show-export-control"] === "true";
   return (
     `<itemization-table version="2">` +
-    `<show-print-control>false</show-print-control>` +
+    `<show-print-control>${showPrint ? "true" : "false"}</show-print-control>` +
+    `<show-export-control>${showExport ? "true" : "false"}</show-export-control>` +
     `<number-of-columns>${nCols}</number-of-columns>${cols}` +
     `<conditions>${formTags}${filter}</conditions>` +
     `</itemization-table>`

@@ -1,4 +1,13 @@
-import { parseFibPrompt, fibUsesLeftLabels, fibUsesRightAlignLabels, fibRowFields } from "./fibPrompt.mjs";
+import {
+  parseFibPrompt,
+  fibUsesLeftLabels,
+  fibUsesRightAlignLabels,
+  fibRowFields,
+  normalizeFibPromptSource,
+  splitFibPromptRows,
+  plainForUnderscores,
+} from "./fibPrompt.mjs";
+import { richFibRowHtmlToXml } from "./fibRichPromptToXml.mjs";
 
 const TAB_LEFT =
   '<tabPositions><tabStop position="4031"/><tabStop position="6192"/></tabPositions>';
@@ -173,14 +182,37 @@ function rightAlignRowXml(row, letters, escAttr, escText) {
   return paragraph(body, TAB_TOPLABELS);
 }
 
-/** Default/freeform: tabbed paragraphs for multi-field rows. */
+/** True when Design prompt row carries character formatting to mirror into Deploy XML. */
+function rowHasRichFormatting(rowStr) {
+  return /<(?:b|i|u|strong|em|span|font)\b/i.test(rowStr) || /\bstyle\s*=/i.test(rowStr);
+}
+
+/**
+ * Strip leading legacy `[hint]` brackets (same rules as parseFibRow) so rich HTML
+ * walk does not emit them as literal label text.
+ */
+function stripLeadingLegacyHints(rowStr) {
+  let s = rowStr;
+  const hints = [];
+  while (s.trimStart().startsWith("[")) {
+    s = s.trimStart();
+    const end = s.indexOf("]");
+    if (end === -1) break;
+    const inner = s.slice(1, end);
+    if (inner.length === 0 || inner.length > 48 || /underscores create blanks/i.test(inner)) break;
+    hints.push(inner);
+    s = s.slice(end + 1);
+  }
+  return { html: s, hints };
+}
+
+/** Default/freeform: one paragraph per Design soft-row (preserve multi-blank WYSIWYG lines). */
 function defaultRowXml(row, letters, escAttr, escText) {
   if (isDobRow(row)) {
     return dobRowsXml(row, letters, escAttr, escText);
   }
 
-  const fields = row.segments.filter((s) => s.type === "blank");
-  const texts = row.segments.filter((s) => s.type === "text");
+  const fields = fibRowFields(row.segments);
   const hints = fields.map((f) => f.hint).filter(Boolean);
   const parts = [];
 
@@ -188,33 +220,76 @@ function defaultRowXml(row, letters, escAttr, escText) {
     parts.push(hintParagraph(hints, escText));
   }
 
-  if (fields.length > 1 && texts.length <= 1) {
-    const labelText = texts[0]?.text ?? "";
-    let body = labelFont(labelText, escText, { bold: isBoldLabel(labelText) });
-    for (const field of fields) {
-      body += "<tab/>";
-      body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
-    }
-    parts.push(paragraph(body));
-    return parts;
-  }
-
-  let pending = "";
+  // Walk text/blank segments in order so "First ____ Last ____" stays one Deploy line.
+  // (Previously each blank became its own <paragraph>, which ignored Design layout.)
+  let body = "";
   for (const seg of row.segments) {
     if (seg.type === "text") {
-      const { note, rest } = splitNoteText(seg.text.trim());
-      if (note) {
-        parts.push(paragraph(fontXml(note, escText, { italic: true, size: 180 })));
+      const raw = seg.text ?? "";
+      const trimmed = raw.trim();
+      if (!trimmed) {
+        if (raw) body += fontXml(raw, escText);
+        continue;
       }
-      pending = rest || pending;
+      if (trimmed.startsWith("(")) {
+        body += fontXml(raw, escText, { italic: true });
+      } else {
+        // Keep Design spacing; add a trailing space after bare labels ending in ":"
+        let shown = raw;
+        if (trimmed.endsWith(":") && !/\s$/.test(raw)) shown = `${raw} `;
+        body += fontXml(shown, escText, { bold: isBoldLabel(trimmed) });
+      }
       continue;
     }
-    const lt = pending.trim();
-    let body = labelFont(lt, escText, { bold: isBoldLabel(lt) }) + "<tab/>";
     body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
-    parts.push(paragraph(body));
-    pending = "";
   }
+
+  if (body) {
+    // Single tab stop — enough for legacy paragraph chrome; no dual-stop forcing one blank/line.
+    parts.push(paragraph(body, TAB_FREEFORM));
+  }
+  return parts;
+}
+
+/**
+ * Freeform Deploy paragraphs: mirror Design B/I/U / face / size / color when present;
+ * otherwise keep the plain-segment path (name-heuristic bold, etc.).
+ */
+function freeformRowsXml(prompt, blanks, letters, escAttr, escText) {
+  const rowStrs = splitFibPromptRows(normalizeFibPromptSource(prompt));
+  const rows = parseFibPrompt(prompt, blanks);
+  let bi = 0;
+  const parts = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowStr = rowStrs[i] ?? "";
+    const blankCount = fibRowFields(row.segments).length;
+
+    if (isDobRow(row)) {
+      parts.push(...dobRowsXml(row, letters, escAttr, escText));
+      bi += blankCount;
+      continue;
+    }
+
+    const hasUnderscores = /_+/.test(plainForUnderscores(rowStr));
+    if (hasUnderscores && rowHasRichFormatting(rowStr)) {
+      const fields = fibRowFields(row.segments);
+      const hints = fields.map((f) => f.hint).filter(Boolean);
+      if (hints.length >= 2) parts.push(hintParagraph(hints, escText));
+
+      const { html } = stripLeadingLegacyHints(rowStr);
+      const blankXmlFn = (blank) => blankXml(blank, letters.get(blank), escAttr, escText);
+      const { body } = richFibRowHtmlToXml(html, blanks, bi, escAttr, escText, blankXmlFn);
+      if (body) parts.push(paragraph(body, TAB_FREEFORM));
+      bi += blankCount;
+      continue;
+    }
+
+    parts.push(...defaultRowXml(row, letters, escAttr, escText));
+    bi += blankCount;
+  }
+
   return parts;
 }
 
@@ -308,16 +383,19 @@ export function fibToXml(item, escAttr, escText) {
   } else if (!prompt.trim() && blanks.length > 0) {
     parts = emptyPromptBlanksXml(blanks, escAttr, escText);
   } else {
-    const rows = parseFibPrompt(prompt, blanks);
     const right = fibUsesRightAlignLabels(style);
-    for (const row of rows) {
-      if (right) {
-        parts.push(rightAlignRowXml(row, letters, escAttr, escText));
-      } else if (left) {
-        parts.push(leftAlignRowXml(row, letters, escAttr, escText));
-      } else {
-        parts.push(...defaultRowXml(row, letters, escAttr, escText));
+    if (right || left) {
+      const rows = parseFibPrompt(prompt, blanks);
+      for (const row of rows) {
+        if (right) {
+          parts.push(rightAlignRowXml(row, letters, escAttr, escText));
+        } else {
+          parts.push(leftAlignRowXml(row, letters, escAttr, escText));
+        }
       }
+    } else {
+      // Freeform / default: preserve Design soft-rows + character formatting.
+      parts = freeformRowsXml(prompt, blanks, letters, escAttr, escText);
     }
   }
 
