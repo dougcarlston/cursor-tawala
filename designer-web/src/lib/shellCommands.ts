@@ -223,6 +223,10 @@ function completeDownloadSave(json: string, filename: string): void {
  *
  * `preferExistingHandle`: ordinary Save reuses a remembered Chromium handle.
  * Save As always clears the handle first and passes false so the picker reopens.
+ *
+ * Important (Chrome): call `showSaveFilePicker` **before** `exportJson()`. Large
+ * projects (embedded images) make stringify slow enough that user activation expires
+ * and the native Save As picker never appears.
  */
 async function writeProjectToDisk(
   filename: string,
@@ -231,18 +235,18 @@ async function writeProjectToDisk(
   if (saveInFlight) return;
   saveInFlight = true;
   try {
-    const { exportJson } = useProjectStore.getState();
-    const json = exportJson();
     const win = savePickerWindow();
 
     // Safari/Firefox: never enter the File System Access branch.
     if (!canUseSaveFilePicker()) {
+      const json = useProjectStore.getState().exportJson();
       completeDownloadSave(json, filename);
       return;
     }
 
     try {
       if (!options.preferExistingHandle || !projectFileHandle) {
+        // Must run while the click gesture is still active — before heavy JSON work.
         projectFileHandle = await win.showSaveFilePicker!({
           suggestedName: filename,
           types: [
@@ -253,6 +257,7 @@ async function writeProjectToDisk(
           ],
         });
       }
+      const json = useProjectStore.getState().exportJson();
       await writeJsonToHandle(projectFileHandle, json);
       useProjectStore.setState({
         dirty: false,
@@ -270,6 +275,7 @@ async function writeProjectToDisk(
       clearProjectFileHandle();
     }
 
+    const json = useProjectStore.getState().exportJson();
     completeDownloadSave(json, filename);
   } finally {
     saveInFlight = false;
@@ -304,13 +310,21 @@ export function saveProjectAs(): void {
  * After the in-app Save As dialog confirms a name: clear any remembered Chromium
  * handle, ensure `.json`, then open the native picker (Chromium) or download
  * (Safari / no picker) under that name.
+ *
+ * Keep the name dialog open until the picker is requested so Chrome still has a
+ * user gesture when `showSaveFilePicker` runs (then close the dialog).
  */
 export async function confirmSaveAs(chosenName: string): Promise<void> {
   const filename = suggestedProjectFileName(chosenName);
-  saveAsDialogOpen = false;
-  emitSaveAsDialog();
   clearProjectFileHandle();
-  await writeProjectToDisk(filename, { preferExistingHandle: false });
+  try {
+    await writeProjectToDisk(filename, { preferExistingHandle: false });
+  } finally {
+    if (saveAsDialogOpen) {
+      saveAsDialogOpen = false;
+      emitSaveAsDialog();
+    }
+  }
 }
 
 /**
