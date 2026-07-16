@@ -321,6 +321,10 @@ Screenshot: [`assets/Function_-_Form_Record_Count.png`](assets/Function_-_Form_R
 
 Configure matches (Form + conditions). XML export: **yes**. Node Preview (Jul 16): shows filtered session count (`richHtmlPreview`).
 
+---
+
+## Configure Function: LINK TO PROJECT DETAILS IN MY TAWALA (`link-to-project-details`)
+
 Owner screenshot July 10, 2026. All-only; navigates to My Tawala project details (needs www.tawala.com / hosted account in real use).
 
 **Description:** Creates a link to navigate to the project details of the current project.
