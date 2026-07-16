@@ -1,6 +1,7 @@
 import fs from "fs";
 import path from "path";
 import { fileURLToPath } from "url";
+import { blankAliasesFromForm } from "./itemizationPreview.mjs";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const SESSION_DIR = path.join(__dirname, "..", ".deployed", "sessions");
@@ -129,4 +130,72 @@ export function applySubmission(session, formName, body) {
     }
     session.fields[`${formName}:${key}`] = value;
   }
+}
+
+/**
+ * Clear posted answers for a form so the next visitor/signup starts blank.
+ * Keeps session.records (e.g. prior signups for MULTIPLE QUESTION LIST) and DirtBowl seed data.
+ * When `form` is provided, also clears alternateLabel / displayLabel session keys
+ * (e.g. First ↔ a) so blankInput does not re-fill the next Show Form.
+ */
+export function clearFormAnswers(session, formName, form) {
+  if (!session) return;
+  const posted = session.formFields?.[formName] ?? {};
+  const keys = new Set(Object.keys(posted));
+  for (const key of keys) {
+    delete session.fields[key];
+    delete session.fields[`${formName}:${key}`];
+    if (key.includes(":")) {
+      const parts = key.split(":");
+      const blank = parts[parts.length - 1];
+      delete session.fields[blank];
+      delete session.fields[`${formName}:${blank}`];
+      if (parts.length === 2) {
+        delete session.fields[`${formName}:${parts[0]}:${parts[1]}`];
+      }
+    }
+  }
+  if (form) {
+    const aliases = blankAliasesFromForm(form);
+    for (const label of Object.keys(aliases)) {
+      delete session.fields[label];
+      delete session.fields[`${formName}:${label}`];
+    }
+  }
+  if (session.formFields) session.formFields[formName] = {};
+  if (session.formState?.[formName]) {
+    session.formState[formName].segmentIndex = 0;
+    session.formState[formName].skipStartLabel = null;
+  }
+}
+
+/** Snapshot current form answers into records[formName] for Signup-style itemization tables. */
+export function appendFormRecord(session, formName, form) {
+  if (!session) return;
+  const src = session.formFields?.[formName];
+  if (!src || Object.keys(src).length === 0) return;
+  const row = { ...src };
+  for (const [key, value] of Object.entries(src)) {
+    if (key.includes(":")) {
+      const blank = key.split(":").pop();
+      if (blank && row[blank] === undefined) row[blank] = value;
+    }
+  }
+  // Alias alternateLabel / displayLabel (e.g. First → a) so MQL <<Form 1:First>> resolves.
+  if (form) {
+    const aliases = blankAliasesFromForm(form);
+    for (const [label, blankName] of Object.entries(aliases)) {
+      if (label === blankName) continue;
+      const v = row[blankName];
+      if (v != null && v !== "" && (row[label] === undefined || row[label] === "")) {
+        row[label] = v;
+      }
+    }
+  }
+  // Skip all-empty posts (e.g. older readonly topLabels submits) so MQL stays clean.
+  const hasValue = Object.values(row).some((v) => String(v ?? "").trim() !== "");
+  if (!hasValue) return;
+  if (!session.records) session.records = {};
+  if (!session.records[formName]) session.records[formName] = [];
+  session.records[formName].push(row);
 }

@@ -20,6 +20,10 @@ import {
   setFormItemReorderDrag,
 } from "@/lib/designerDrag";
 import { isFormItemReorderHandle } from "@/lib/formItemReorder";
+import {
+  confirmAndDeleteFormItem,
+  confirmAndDeleteSelectedFormItem,
+} from "@/lib/shellCommands";
 
 interface Props {
   formName: string;
@@ -41,8 +45,6 @@ export function FormEditor({ formName }: Props) {
   const insertFormItem = useProjectStore((s) => s.insertFormItem);
   const moveSelectedFormItem = useProjectStore((s) => s.moveSelectedFormItem);
   const moveFormItemBefore = useProjectStore((s) => s.moveFormItemBefore);
-  const deleteFormItem = useProjectStore((s) => s.deleteFormItem);
-  const deleteSelectedFormItem = useProjectStore((s) => s.deleteSelectedFormItem);
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [previewError, setPreviewError] = useState<string | null>(null);
   /** Live insert-before index while dragging (palette or reorder). */
@@ -62,7 +64,9 @@ export function FormEditor({ formName }: Props) {
     const onKeyDown = (e: KeyboardEvent) => {
       if (editorTab !== "design") return;
       const target = e.target as HTMLElement | null;
-      if (target?.closest("input, textarea, select, [contenteditable='true']")) return;
+      if (target?.closest("input, textarea, select, button, [contenteditable='true']")) return;
+      // FIB/MCQ property strips — Del must not remove the whole item while editing blanks.
+      if (target?.closest(".fib-property-strip, .mcq-property-strip")) return;
 
       if (selectedItemIndex !== null) {
         if (e.altKey && e.key === "ArrowUp" && canMoveUp) {
@@ -77,7 +81,7 @@ export function FormEditor({ formName }: Props) {
         }
         if (e.key === "Delete" || e.key === "Backspace") {
           e.preventDefault();
-          deleteSelectedFormItem();
+          confirmAndDeleteSelectedFormItem();
         }
       }
     };
@@ -88,7 +92,6 @@ export function FormEditor({ formName }: Props) {
     selectedItemIndex,
     canMoveUp,
     canMoveDown,
-    deleteSelectedFormItem,
     moveSelectedFormItem,
     form,
   ]);
@@ -220,7 +223,7 @@ export function FormEditor({ formName }: Props) {
             title="Delete item"
             onClick={(e) => {
               e.stopPropagation();
-              deleteFormItem(formName, i);
+              confirmAndDeleteFormItem(formName, i);
             }}
           >
             Delete
@@ -270,7 +273,7 @@ export function FormEditor({ formName }: Props) {
               type="button"
               className="form-item-delete-btn"
               title="Delete selected item (Del)"
-              onClick={() => deleteSelectedFormItem()}
+              onClick={() => confirmAndDeleteSelectedFormItem()}
             >
               ×
             </button>

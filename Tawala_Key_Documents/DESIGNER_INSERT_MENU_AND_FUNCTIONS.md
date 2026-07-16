@@ -384,7 +384,7 @@ Owner (July 10): browser Configure is **functionally the same** for the core par
 |------|--------|----------------|
 | Print / Excel export dropdowns | Yes | Yes (`show-print-control`, `show-export-control`) |
 | Excel Template | Shown (**Default**) | **Missing** |
-| Columns | Bordered “Column 1” with Heading / Contents / “always displayed” link; +/−/↑/↓ toolbar | Bordered Column *n* groups; footer **+** / **−** / ↑ / ↓ (add / remove / reorder). “Always displayed” link present (display-condition editor still deferred) |
+| Columns | Bordered “Column 1” with Heading / Contents / “always displayed” link; +/−/↑/↓ toolbar | Bordered Column *n* groups; footer **+** / **−** / ▲ / ▼ with hover tips (Jul 15). “Always displayed” link present (display-condition editor still deferred) |
 | Conditions | “Show only fields from records where” | Present (`FunctionConditionsEditor`) |
 | OK greyed until valid | Yes | Yes |
 | Yellow help + REQUIRED | Yes (with duplicate label bug) | Help pane present; REQUIRED styling may differ |

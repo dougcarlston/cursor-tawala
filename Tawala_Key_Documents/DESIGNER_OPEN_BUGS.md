@@ -71,6 +71,45 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — Process / navigation start-point from DirtBowl stress pass. **Real bug;** separate track from Document/palette work.
 
+### Fixed Jul 15 (Signup Sheet smoke — held bugs)
+
+- **MQL Configure column toolbar blank + no tips** — footer +/−/↑/↓ used SVG + native `title` (invisible under modal CSS; tips clipped / absent on disabled). Fixed: glyph buttons + upward `win-tip` tooltips.
+- **Signup Sheet submit showed “Registration step complete”** — `renderSubmitAck` DirtBowl copy. Fixed: generic “Thank you” / “Back to {form}” unless Registration.
+- **Return to Form 1 kept prior values** — session formFields not cleared. Fixed: append record + `clearFormAnswers` on complete; back link `?fresh=1`.
+- **Preview/Deploy lost Form Item spacing** — runtime CSS had no inter-item margins. Fixed: `.tawala-form > …` spacing in `runtime.mjs` page shell (Design canvas unchanged).
+- **Signup MQL headers with empty thin rows** — `topLabels` Preview inputs were `readonly` (empty submits → blank records). Fixed: live `blankInput`; skip all-empty `appendFormRecord`.
+- **Document injected `Continue →`** — Show Document then Show Form used a separate Continue page. Fixed: stack blank Form under Document on the same response (no Continue artifact).
+- **Document MQL config with `<<Field>>` broke parse** — span regex used `[^>]*`. Fixed: quote-aware `htmlSpanReplace.mjs`.
+- **Email/Phone validators ignored in Node Preview** — only Registration had checks. Fixed: `fibBlankValidation.mjs` on submit when blank.validation is set.
+- **Horizontal FIB layout missing on default/baseball** — vertical spacing only. Fixed: flex rules in `BASE_FORM_CSS`.
+- **MQL columns blank despite stored signups** — blanks named `a`/`b`/`c`/`d` with alternateLabel `First`/`Last`/…; MQL asked for `<<Form 1:First>>`. Fixed: `blankAliasesFromForm` at render + append. Also force-restarted API (stale process still injected Continue →).
+- **Show Form after Document left prior answers** — `clearFormAnswers` cleared `a`/`b` but not alternateLabel keys (`First`/`Last`), so `blankInput` refilled. Fixed: clear aliases + Form stacks blank.
+- **Email/Phone accepted garbage on Signup** — Node Preview skipped validators unless `blank.validation` set. Fixed: infer Email/Tel from name/alternateLabel; reject `..` emails.
+
+**Smoke (SignupSheet Preview/Deploy):** Fill Form 1 → Submit → Document table shows the new row (plus prior rows) **above** a **blank** Form 1; no `Continue →`. Bad email/phone shows error and stays on Form. Soft-refresh 5173 after API restart.
+
+### Pickup Jul 16 — MULTIPLE QUESTION LIST / SignupSheet (owner resume)
+
+**Passed Jul 15 (owner):** MQL table shows stored rows; Document stacks above blank Form 1 (no Continue →); Delete on form items asks “Are you sure?” (blur/Del mishap mitigated).
+
+**Still fix / re-smoke before leaving MQL:**
+
+| # | Item | Notes |
+|---|------|--------|
+| 1 | **Horizontal FIB layout** | Vertical spacing OK; owner still wants better label/field horizontal parity (default/baseball vs legacy). |
+| 2 | **FIB Required per blank** | Suspected Email Required also flipped Phone — re-verify; pin `activeBlank` while editing strip if it recurs. |
+| 3 | **Required / empty submit** | Format validators run when non-empty; confirm `required: true` blanks block empty Submit. |
+| 4 | **MQL Where clause** | Preview now filters via `conditionsRows`; smoke with Where on/off (owner earlier removed Where while debugging empty cells). |
+| 5 | **Print / Excel export links** | Configure has print/export toggles; Node Preview table does not emit those links yet. |
+| 6 | **`baseball` theme CSS** | Missing file → `resolveTheme` falls back to default; optional real baseball stylesheet. |
+| 7 | **Java Deploy (8080) parity** | Tonight’s smoke was Node runtime on 5173/3001; when Tomcat is up, re-check MQL + validators on 8080. |
+| 8 | **Dev API on 3001 dies** | Vite 5173 often stays up while Express dies → Preview/Deploy fail; restart detached API if `/api/health` ≠ 200. |
+| 9 | **Session junk rows** | Earlier empty/bad signups may still be in Deploy session; `?reset=1` or new Deploy uniqueId for a clean list. |
+
+**Then:** finish MQL checklist above → continue **#9** other untested functions that already emit Document XML (skip four deferred stubs: Categorizer / Roster / Link / PayPal).
+
+- **Form item Delete had no confirm** — Del/× removed canvas items immediately (easy after FIB Required focus). Fixed Jul 15: `confirmAndDeleteFormItem` + strip/button Del ignore.
+
 ---
 
 ## Removed from bugs list (July 10 review)

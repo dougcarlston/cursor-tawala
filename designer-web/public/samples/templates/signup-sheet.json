@@ -50,13 +50,21 @@
               "name": "Email",
               "alternateLabel": "Email",
               "displayLabel": "Email",
-              "length": 50
+              "length": 50,
+              "validation": {
+                "type": "email",
+                "errorMessage": "Please enter a valid email address."
+              }
             },
             {
               "name": "Tel",
               "alternateLabel": "Tel",
               "displayLabel": "Telephone",
-              "length": 50
+              "length": 50,
+              "validation": {
+                "type": "phone",
+                "errorMessage": "Please enter a valid phone number including area code."
+              }
             },
             {
               "name": "Address",

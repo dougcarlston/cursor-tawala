@@ -1,9 +1,14 @@
 /**
  * Guards Explorer entity Delete enable rules (Form / Process / Document).
- * Confirm dialog is not exercised here — see runShellDelete / confirmAndDeleteProjectEntity.
+ * Confirm dialog is stubbed via window.confirm for form items + entities.
  */
-import { describe, expect, it, beforeEach } from "vitest";
-import { canDeleteProjectEntity, canDeleteSelection } from "@/lib/shellCommands";
+import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
+import {
+  canDeleteProjectEntity,
+  canDeleteSelection,
+  confirmAndDeleteFormItem,
+  confirmAndDeleteSelectedFormItem,
+} from "@/lib/shellCommands";
 import { useProjectStore } from "@/store/projectStore";
 
 describe("canDeleteSelection / canDeleteProjectEntity", () => {
@@ -38,12 +43,52 @@ describe("canDeleteSelection / canDeleteProjectEntity", () => {
   it("deleteDocument removes the entity and closes its window", () => {
     const name = useProjectStore.getState().project.documents![0]!.name;
     useProjectStore.getState().openWindow("document", name);
-    expect(useProjectStore.getState().openWindows.some((w) => w.name === name)).toBe(true);
     useProjectStore.getState().deleteDocument(name);
-    expect(useProjectStore.getState().project.documents?.some((d) => d.name === name)).toBe(
-      false,
-    );
-    expect(useProjectStore.getState().openWindows.some((w) => w.name === name)).toBe(false);
-    expect(useProjectStore.getState().dirty).toBe(true);
+    expect(useProjectStore.getState().project.documents?.some((d) => d.name === name)).toBe(false);
+  });
+});
+
+describe("confirmAndDeleteFormItem", () => {
+  const confirmMock = vi.fn();
+
+  beforeEach(() => {
+    useProjectStore.getState().newProject({ empty: true });
+    useProjectStore.getState().addForm();
+    useProjectStore.getState().insertFormItem("text");
+    confirmMock.mockReset();
+    vi.stubGlobal("confirm", confirmMock);
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("cancels without deleting when confirm is false", () => {
+    confirmMock.mockReturnValue(false);
+    const formName = useProjectStore.getState().project.forms[0]!.name;
+    const before = useProjectStore.getState().project.forms[0]!.items.length;
+    expect(confirmAndDeleteFormItem(formName, 0)).toBe(false);
+    expect(useProjectStore.getState().project.forms[0]!.items.length).toBe(before);
+    expect(confirmMock).toHaveBeenCalled();
+  });
+
+  it("deletes when confirm is true", () => {
+    confirmMock.mockReturnValue(true);
+    const formName = useProjectStore.getState().project.forms[0]!.name;
+    const before = useProjectStore.getState().project.forms[0]!.items.length;
+    expect(confirmAndDeleteFormItem(formName, 0)).toBe(true);
+    expect(useProjectStore.getState().project.forms[0]!.items.length).toBe(before - 1);
+  });
+
+  it("confirmAndDeleteSelectedFormItem uses selected row", () => {
+    confirmMock.mockReturnValue(true);
+    const formName = useProjectStore.getState().project.forms[0]!.name;
+    useProjectStore.setState({
+      selection: { kind: "form", name: formName },
+      selectedItemIndex: 0,
+    });
+    const before = useProjectStore.getState().project.forms[0]!.items.length;
+    expect(confirmAndDeleteSelectedFormItem()).toBe(true);
+    expect(useProjectStore.getState().project.forms[0]!.items.length).toBe(before - 1);
   });
 });

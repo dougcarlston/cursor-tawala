@@ -1,4 +1,4 @@
-import { useProjectStore } from "@/store/projectStore";
+import { confirmAndDeleteFormItem } from "@/lib/shellCommands";
 
 /** Red × delete control for selected canvas WYSIWYG rows (legacy toolbar #8 parity). */
 export function FormItemDeleteButton({
@@ -10,7 +10,6 @@ export function FormItemDeleteButton({
   index: number;
   visible: boolean;
 }) {
-  const deleteFormItem = useProjectStore((s) => s.deleteFormItem);
   if (!visible) return null;
   return (
     <button
@@ -19,7 +18,7 @@ export function FormItemDeleteButton({
       title="Delete item (Del)"
       onClick={(e) => {
         e.stopPropagation();
-        deleteFormItem(formName, index);
+        confirmAndDeleteFormItem(formName, index);
       }}
     >
       ×

@@ -3,22 +3,18 @@
  * Kept separate so documentRenderer and runtime can both use it without circular imports.
  */
 
+import {
+  itemizationNodeFromConfig,
+  renderItemizationTableHtml,
+} from "./itemizationPreview.mjs";
+import { readAttr, replaceMatchingSpans } from "./htmlSpanReplace.mjs";
+
 function esc(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
-}
-
-function decodeHtmlAttr(value) {
-  return String(value ?? "")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
 }
 
 function parseDisplayImagePx(raw) {
@@ -69,27 +65,45 @@ function renderDisplayImagePlaceholder(config) {
 }
 
 function parseFunctionConfigAttr(attrs) {
-  const m = attrs.match(/\bdata-function-config\s*=\s*(["'])([\s\S]*?)\1/i);
-  if (!m) return {};
+  const raw = readAttr(attrs, "data-function-config");
+  if (!raw) return {};
   try {
-    const parsed = JSON.parse(decodeHtmlAttr(m[2]));
+    const parsed = JSON.parse(raw);
     return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
     return {};
   }
 }
 
+function parseStructuredNodeAttr(attrs) {
+  const raw = readAttr(attrs, "data-tawala-structured-node");
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(decodeURIComponent(raw));
+    if (parsed?.type === "itemizationTable") return parsed;
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+function matchFunctionId(attrs, id) {
+  return readAttr(attrs, "data-function-id") === id;
+}
+
 function replaceDisplayImageTokens(html) {
-  return String(html).replace(
-    /<span\b([^>]*\bdata-function-id\s*=\s*(["'])display-image\2[^>]*)>[\s\S]*?<\/span>/gi,
-    (_match, attrs) => renderDisplayImagePlaceholder(parseFunctionConfigAttr(attrs)),
+  return replaceMatchingSpans(
+    html,
+    (attrs) => matchFunctionId(attrs, "display-image"),
+    (attrs) => renderDisplayImagePlaceholder(parseFunctionConfigAttr(attrs)),
   );
 }
 
 function replaceDisplayMcqTokens(html) {
-  return String(html).replace(
-    /<span\b([^>]*\bdata-function-id\s*=\s*(["'])display-mcq-label\2[^>]*)>[\s\S]*?<\/span>/gi,
-    (_match, attrs) => {
+  return replaceMatchingSpans(
+    html,
+    (attrs) => matchFunctionId(attrs, "display-mcq-label"),
+    (attrs) => {
       const config = parseFunctionConfigAttr(attrs);
       let field = String(config["field-name"] ?? "").trim();
       if (field.startsWith("<<") && field.endsWith(">>")) field = field.slice(2, -2).trim();
@@ -98,6 +112,37 @@ function replaceDisplayMcqTokens(html) {
     },
   );
 }
+
+function replaceItemizationTokens(html, opts) {
+  const ctx = {
+    records: opts.records ?? {},
+    formName: opts.formName ?? "",
+    blankAliases: opts.blankAliases ?? {},
+  };
+  return replaceMatchingSpans(
+    html,
+    (attrs) => matchFunctionId(attrs, "itemization-table"),
+    (attrs) => {
+      const structured = parseStructuredNodeAttr(attrs);
+      if (structured) {
+        return renderItemizationTableHtml(
+          {
+            form: structured.form ?? "",
+            columns: structured.columns ?? [],
+          },
+          ctx,
+        );
+      }
+      const config = parseFunctionConfigAttr(attrs);
+      const node = itemizationNodeFromConfig(config, attrs, ctx.formName);
+      return renderItemizationTableHtml(node, ctx);
+    },
+  );
+}
+
+/** Function display names that must not be treated as field refs. */
+const FUNCTION_DISPLAY_NAME_RE =
+  /^(MULTIPLE QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|CHOICE\s+TALLY|QUESTION\s+CORRELATION|SIMPLE\s+LIST)\b/i;
 
 const RICH_TEXT_HTML_TAG_RE = /<\/?[a-z][\s\S]*>/i;
 
@@ -108,19 +153,26 @@ export function looksLikeRichHtml(content) {
 /**
  * @param {string} content
  * @param {(ref: string) => string} getField
+ * @param {{ records?: Record<string, object[]>, formName?: string }} [opts]
  */
-export function enhanceRichTextHtml(content, getField) {
+export function enhanceRichTextHtml(content, getField, opts = {}) {
   let html = String(content ?? "");
   html = replaceDisplayImageTokens(html);
   html = replaceDisplayMcqTokens(html);
+  // Replace function spans before <<...>> field substitution — nested <<field>> inside
+  // function display strings otherwise leave scraps like `equals "Doug")>>`.
+  html = replaceItemizationTokens(html, opts);
   const replaceTemplate = (_match, ref) => {
     const key = String(ref).trim();
-    if (/^DISPLAY\s+IMAGE\b/i.test(key)) return "";
-    if (/^DISPLAY\s+MULTIPLE/i.test(key)) return "";
+    if (FUNCTION_DISPLAY_NAME_RE.test(key)) return "";
     if (/^Responses to /i.test(key)) return esc(key);
     return esc(getField(key) ?? "");
   };
-  return html
+  html = html
     .replace(/&lt;&lt;([\s\S]+?)&gt;&gt;/g, replaceTemplate)
     .replace(/<<([^>]+)>>/g, replaceTemplate);
+  // Orphaned condition tails if a nested <<field>> broke an outer function display string.
+  html = html.replace(/\b(?:equals|contains|does not equal|is blank|is not blank)\s+"[^"]*"\)?>>/gi, "");
+  html = html.replace(/,\s*\)>>/g, "");
+  return html;
 }

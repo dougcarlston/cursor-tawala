@@ -1,6 +1,7 @@
 import { getFieldValue, resolveTemplate } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml, looksLikeRichHtml } from "./richHtmlPreview.mjs";
-import { getThemeCss, themeBodyClass } from "./themes/index.mjs";
+import { blankAliasesFromForm } from "./itemizationPreview.mjs";
+import { BASE_FORM_CSS, resolveTheme, themeBodyClass } from "./themes/index.mjs";
 
 function esc(s) {
   return String(s ?? "")
@@ -9,6 +10,18 @@ function esc(s) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;");
 }
+
+const DOC_COMPONENT_TABLE_CSS = `
+table.component { border-collapse: collapse; font-size: 1em; margin: 12px 0; }
+table.component.outline { border: 1px solid #cccccc; }
+table.component thead { background-color: #888888; color: #eeeeee; }
+table.component thead th { padding: .2em 1em; border: 1px solid #cccccc; }
+table.component tbody tr.odd { background-color: #f8f8f8; }
+table.component tbody tr.even { background-color: #ffffff; }
+table.component tbody tr:hover { background-color: #e8e8e8; }
+table.component td { padding-left: 1em; padding-right: 1em; line-height: 1.5em; border: 1px solid #dddddd; }
+.preview-itemization-table { margin: 1rem 0; }
+`;
 
 function renderNodes(nodes, ctx, baseUrl, uniqueId) {
   if (!nodes) return "";
@@ -45,7 +58,11 @@ function renderNodes(nodes, ctx, baseUrl, uniqueId) {
 function renderDocumentBody(doc, ctx, baseUrl, uniqueId) {
   if (typeof doc.content === "string") {
     if (looksLikeRichHtml(doc.content)) {
-      return enhanceRichTextHtml(doc.content, (ref) => getFieldValue(ctx, ref));
+      return enhanceRichTextHtml(doc.content, (ref) => getFieldValue(ctx, ref), {
+        records: ctx.records,
+        formName: ctx.formName,
+        blankAliases: ctx.blankAliases,
+      });
     }
     return `<p>${esc(resolveTemplate(doc.content, ctx))}</p>`;
   }
@@ -62,14 +79,17 @@ function renderDocumentBody(doc, ctx, baseUrl, uniqueId) {
 }
 
 export function renderDocumentsPage(project, documentNames, session, baseUrl, uniqueId, opts = {}) {
-  const theme = project.themePath || "default";
+  const { name: themeName, css: themeCss } = resolveTheme(project.themePath || "default");
+  const fromForm = opts.fromForm ?? "";
+  const formDef = fromForm ? project.forms?.find((f) => f.name === fromForm) : null;
   const ctx = {
     fields: { ...session.fields },
     formFields: session.formFields,
     records: session.records,
     recordLists: {},
     recordBindings: {},
-    formName: opts.fromForm ?? "",
+    formName: fromForm,
+    blankAliases: blankAliasesFromForm(formDef),
   };
 
   const sections = [];
@@ -89,19 +109,28 @@ export function renderDocumentsPage(project, documentNames, session, baseUrl, un
   const back = opts.fromForm
     ? `${baseUrl}/p/${uniqueId}/${encodeURIComponent(opts.fromForm)}`
     : null;
+  const thenFresh = opts.freshThenForm ? "?fresh=1" : "";
   const thenForm = opts.thenForm
-    ? `${baseUrl}/p/${uniqueId}/${encodeURIComponent(opts.thenForm)}`
+    ? `${baseUrl}/p/${uniqueId}/${encodeURIComponent(opts.thenForm)}${thenFresh}`
     : null;
+  const backFresh = opts.freshThenForm || opts.freshBack ? "?fresh=1" : "";
+  const backHref = back ? `${back}${backFresh}` : null;
+  // When Form follows Document in the same process, prefer stacking (appendHtml) so the
+  // questionnaire appears under the Document — no injected "Continue →" artifact.
+  const stackedForm = String(opts.appendHtml ?? "").trim();
 
-  // Show only the documents themselves — no DirtBowl "Registration complete" chrome.
+  // Show documents (+ optional following form). No DirtBowl "Registration complete" chrome.
   const body = `
   ${sections.join("\n<hr/>\n")}
+  ${stackedForm ? `<div class="doc-following-form">${stackedForm}</div>` : ""}
   ${
-    thenForm
-      ? `<p class="doc-continue"><a href="${thenForm}">Continue →</a></p>`
-      : back
-        ? `<p class="doc-back"><a href="${back}">← Back</a></p>`
-        : ""
+    stackedForm
+      ? ""
+      : thenForm
+        ? `<p class="doc-continue"><a href="${thenForm}">Continue →</a></p>`
+        : backHref
+          ? `<p class="doc-back"><a href="${backHref}">← Back</a></p>`
+          : ""
   }`;
 
   return `<!doctype html>
@@ -111,10 +140,11 @@ export function renderDocumentsPage(project, documentNames, session, baseUrl, un
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(project.name)}</title>
   <style>
-    ${getThemeCss(theme)}
-    body { max-width: 800px; margin: 2rem auto; padding: 0 1rem; }
-    .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }
-    .doc-section { margin: 1.5rem 0; position: relative; min-height: 12rem; }
+    ${BASE_FORM_CSS}
+    ${DOC_COMPONENT_TABLE_CSS}
+    ${themeCss}
+    .doc-section { margin: 1rem 0; position: relative; }
+    .doc-following-form { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #ccc; }
     .doc-title { font-size: 1.1rem; color: #333; }
     .doc-invitation { color: #000080; font-weight: bold; }
     .doc-underline { text-decoration: underline; }
@@ -128,7 +158,7 @@ export function renderDocumentsPage(project, documentNames, session, baseUrl, un
     .preview-display-mcq { font-style: italic; color: #555; }
   </style>
 </head>
-<body class="${themeBodyClass(theme)}">
+<body class="${themeBodyClass(themeName)}">
   <div class="dev-banner">Tawala local runtime — ${esc(project.name)}</div>
   ${body}
 </body>

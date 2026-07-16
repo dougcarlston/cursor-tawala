@@ -11,7 +11,8 @@ import {
 import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { renderDocumentsPage } from "./documentRenderer.mjs";
 import { fibRowFields, fibRowLabel, fibUsesLeftLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
-import { getThemeCss, themeBodyClass } from "./themes/index.mjs";
+import { renderItemizationTableHtml, blankAliasesFromForm } from "./itemizationPreview.mjs";
+import { BASE_FORM_CSS, resolveTheme as resolveThemeCss, themeBodyClass } from "./themes/index.mjs";
 import {
   buildFormSegments,
   findSegmentForSkip,
@@ -25,6 +26,8 @@ import {
   renderRegistrationText,
 } from "./registrationLayout.mjs";
 import { validateRegistrationPage1 } from "./registrationPage1Validation.mjs";
+import { validateFibBlanks } from "./fibBlankValidation.mjs";
+import { appendFormRecord, clearFormAnswers } from "./sessionStore.mjs";
 
 function esc(s) {
   return String(s ?? "")
@@ -114,9 +117,11 @@ function renderFib(item, ctx) {
       const rowHtml = fieldRows
         .map((blank) => {
           const label = blank.displayLabel?.trim() || "";
+          // Live Preview inputs — never readonly (that produced empty signup records /
+          // blank MULTIPLE QUESTION LIST rows). Reuse blankInput for name + session value.
           return `<div class="fib-row fib-top-label">
           ${label ? `<div class="fib-top-label-text">${esc(label)}</div>` : ""}
-          <div class="fib-top-label-field"><input type="text" class="text" name="${esc(`${item.label}:${blank.name}`)}" size="${Math.max(blank.length ?? 20, 5)}" readonly="readonly" /></div>
+          <div class="fib-top-label-field">${blankInput(item, blank, ctx)}</div>
         </div>`;
         })
         .join("");
@@ -203,61 +208,11 @@ function containsRichTextHtml(content) {
 
 function enhanceRichTextHtml(content, ctx) {
   const html = applyLegacyTextSubstitutions(content, ctx);
-  return enhanceRichHtmlShared(html, (ref) => getFieldValue(ctx, ref));
-}
-
-function parseRecordField(field) {
-  const parts = String(field ?? "").split(":");
-  if (parts[0] === "Record" && parts.length >= 3) {
-    return { form: parts[1], name: parts.slice(2).join(":") };
-  }
-  return { form: null, name: String(field ?? "") };
-}
-
-function recordCellValue(row, ref, defaultForm) {
-  const name = ref.name;
-  if (row[name] != null && row[name] !== "") return row[name];
-  const form = ref.form ?? defaultForm;
-  if (form) {
-    const qualified = `${form}:${name}`;
-    if (row[qualified] != null && row[qualified] !== "") return row[qualified];
-  }
-  return "";
-}
-
-/** HTML facsimile of legacy itemization (MULTIPLE QUESTION LIST) tables. */
-function renderItemizationTableHtml(node, ctx) {
-  const columns = node.columns ?? [];
-  if (columns.length === 0) return "";
-
-  const sourceForm = node.form ?? ctx.formName;
-  const records = ctx.records?.[sourceForm] ?? [];
-  const headerCells = columns.map((c) => `<th>${esc(c.header)}</th>`).join("");
-
-  const bodyRows =
-    records.length === 0
-      ? ""
-      : records
-          .map((row, i) => {
-            const cls = i % 2 === 0 ? "even" : "odd";
-            const cells = columns
-              .map((col) => {
-                const ref = parseRecordField(col.field);
-                const val = recordCellValue(row, ref, sourceForm);
-                return `<td>${esc(val)}</td>`;
-              })
-              .join("");
-            return `<tr class="${cls}">${cells}</tr>`;
-          })
-          .join("\n");
-
-  const fixWidth = columns.length > 3;
-  const containerClass = fixWidth ? ' class="tawalaDataTable dtFixTableWidth"' : "";
-
-  return `<div${containerClass}><table class="component outline sortable stripe">
-<thead><tr>${headerCells}</tr></thead>
-<tbody>${bodyRows}</tbody>
-</table></div>`;
+  return enhanceRichHtmlShared(html, (ref) => getFieldValue(ctx, ref), {
+    records: ctx.records,
+    formName: ctx.formName,
+    blankAliases: ctx.blankAliases,
+  });
 }
 
 function renderRichNodes(nodes, ctx) {
@@ -438,6 +393,24 @@ table.component tbody tr:hover { background-color: #e8e8e8; }
 table.component td { padding-left: 1em; padding-right: 1em; line-height: 1.5em; border: 1px solid #dddddd; }
 `;
 
+/** Match Design canvas vertical gaps between Form Items (Preview / Deploy runtime only). */
+const FORM_ITEM_SPACING_CSS = `
+.tawala-form > .text,
+.tawala-form > .fib,
+.tawala-form > fieldset.mc,
+.tawala-form > h2,
+.tawala-form > h3,
+.tawala-form > .preview-function-table {
+  margin-top: 0;
+  margin-bottom: 0.85rem;
+}
+.tawala-form > .text p { margin: 0.35rem 0; }
+.tawala-form > h2 { margin-bottom: 0.65rem; }
+.tawala-form > h3 { margin-bottom: 0.55rem; }
+.tawala-form > fieldset.mc { margin-top: 0.25rem; margin-bottom: 0.85rem; }
+.tawala-form > .fib { margin-bottom: 0.75rem; }
+`;
+
 /** Form Preview stand-in for DISPLAY IMAGE — sized box, image name centered (not live URL fetch). */
 const DISPLAY_IMAGE_PREVIEW_CSS = `
 .preview-display-image {
@@ -465,10 +438,8 @@ const DISPLAY_IMAGE_PREVIEW_CSS = `
 `;
 
 function pageShell(title, body, banner, themePath) {
-  const theme = themePath || "default";
-  const bodyClass = themeBodyClass(theme);
-  const themeCss = getThemeCss(theme);
-  const isThemed = theme !== "default";
+  const { name: themeName, css: themeCss } = resolveThemeCss(themePath);
+  const bodyClass = themeBodyClass(themeName);
   const bannerHtml = banner ? `<div class="dev-banner">${banner}</div>` : "";
 
   return `<!doctype html>
@@ -478,16 +449,11 @@ function pageShell(title, body, banner, themePath) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>${esc(title)}</title>
   <style>
+    ${BASE_FORM_CSS}
     ${COMPONENT_TABLE_CSS}
     ${DISPLAY_IMAGE_PREVIEW_CSS}
-    ${!isThemed ? `body { font-family: Arial, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; }
-    h1 { font-size: 1.25rem; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
-    .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }
-    fieldset.mc { margin: 1rem 0; border: 1px solid #ccc; padding: 8px 12px; }
-    .preview-mc-choice { display: block; margin: 4px 0; }
-    .fib label { display: inline-block; margin: 4px 8px 4px 0; }
-    input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
-    .text-block p { margin: 0.5rem 0; }` : themeCss}
+    ${FORM_ITEM_SPACING_CSS}
+    ${themeCss}
   </style>
 </head>
 <body class="${bodyClass}">
@@ -504,6 +470,7 @@ function resolveTheme(project, form) {
 export function prepareFormContext(project, form, session) {
   const ctx = buildContext(session, form.name);
   ctx.formName = form.name;
+  ctx.blankAliases = blankAliasesFromForm(form);
 
   if (form.preProcess) {
     runProcessByName(project, form.preProcess, ctx);
@@ -529,10 +496,17 @@ function getSegmentItems(form, session) {
   return { segments, seg, items, state };
 }
 
-export function renderFormPage(project, formName, baseUrl, uniqueId, session, options = {}) {
+/** Build form markup (and shell metadata). Used by renderFormPage and Document+Form stacking. */
+export function buildFormPageParts(project, formName, baseUrl, uniqueId, session, options = {}) {
   const form = project.forms?.find((f) => f.name === formName);
   if (!form) {
-    return pageShell("Not found", "<h1>Form not found</h1>", "Error", "default");
+    return {
+      ok: false,
+      theme: "default",
+      banner: "Error",
+      body: "<h1>Form not found</h1>",
+      title: "Not found",
+    };
   }
 
   const theme = resolveTheme(project, form);
@@ -565,10 +539,16 @@ export function renderFormPage(project, formName, baseUrl, uniqueId, session, op
     ? ` · <a href="${resetUrl}">Start over</a> · runtime 2026-06-28`
     : "";
 
-  const showPageChrome = !options.designerPreview;
+  const showPageChrome = !options.designerPreview && !options.embedded;
+  const message = String(session.fields?.Message ?? "").trim();
+  const messageHtml =
+    message && message !== " "
+      ? `<div class="validation-error" role="alert">${esc(message)}</div>`
+      : "";
   const body = `
   ${showPageChrome && !isRegistrationForm(formName) ? `<div class="project-title">${esc(project.name)}</div>` : ""}
   ${showPageChrome ? `<h1 class="form-title">${esc(formName)}</h1>` : ""}
+  ${messageHtml}
   <form class="tawala-form" method="post" action="${action}"${formAttrs}>
     <input type="hidden" name="segmentId" value="${state.segmentIndex}" />
     ${itemHtml}
@@ -582,16 +562,30 @@ export function renderFormPage(project, formName, baseUrl, uniqueId, session, op
     ? ""
     : `Tawala dev runtime — ${esc(project.name)} / ${esc(formName)} — page ${state.segmentIndex + 1} of ${segments.length}${bannerExtra}`;
 
-  return pageShell(`${project.name} — ${formName}`, body, banner, theme);
+  return {
+    ok: true,
+    theme,
+    banner,
+    body,
+    title: `${project.name} — ${formName}`,
+    form,
+    segments,
+  };
+}
+
+export function renderFormPage(project, formName, baseUrl, uniqueId, session, options = {}) {
+  const parts = buildFormPageParts(project, formName, baseUrl, uniqueId, session, options);
+  return pageShell(parts.title, parts.body, parts.banner, parts.theme);
 }
 
 export function handleFormSubmit(project, formName, session, body, baseUrl, uniqueId) {
   const form = project.forms?.find((f) => f.name === formName);
   if (!form) return pageShell("Error", "<h1>Form not found</h1>", "", "default");
 
-  applySubmissionToSession(session, formName, body);
+  applySubmissionToSession(session, formName, body, form);
   const ctx = buildContext(session, formName);
   ctx.formName = formName;
+  ctx.blankAliases = blankAliasesFromForm(form);
 
   if (form.preProcess) {
     runProcessByName(project, form.preProcess, ctx);
@@ -616,35 +610,76 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
     ctx.fields.Message = " ";
   }
 
+  {
+    const fibErr = validateFibBlanks(form, ctx, prevSegment.items);
+    if (fibErr) {
+      session.fields.Message = fibErr;
+      ctx.fields.Message = fibErr;
+      return renderFormPage(project, formName, baseUrl, uniqueId, session);
+    }
+    if (session.fields.Message && session.fields.Message !== " ") {
+      session.fields.Message = " ";
+      ctx.fields.Message = " ";
+    }
+  }
+
   const skipTarget = runSkipBlocks(prevSegment.skipBlocks, ctx);
   Object.assign(session.fields, ctx.fields);
 
-  const finishPostProcess = () => {
-    if (!form.process) return null;
-    const nav = runProcessByName(project, form.process, ctx);
-    Object.assign(session.fields, ctx.fields);
-    if (nav.type === "form") {
-      formState(session, nav.form).segmentIndex = 0;
-      formState(session, nav.form).skipStartLabel = null;
-      return renderFormPage(project, nav.form, baseUrl, uniqueId, session);
-    }
-    if (nav.type === "documents") {
-      return renderDocumentsPage(project, nav.documents, session, baseUrl, uniqueId, {
-        fromForm: formName,
-        thenForm: nav.thenForm || null,
+  const finishFormAndMaybeProcess = () => {
+    // Persist this response for itemization tables before clearing answers.
+    appendFormRecord(session, formName, form);
+
+    if (form.process) {
+      const nav = runProcessByName(project, form.process, ctx);
+      Object.assign(session.fields, ctx.fields);
+      // Clear after process so Object.assign(ctx.fields) cannot restore submitted answers.
+      // Records (for Document MQL tables) are kept separately.
+      clearFormAnswers(session, formName, form);
+      if (nav.type === "form") {
+        const destForm = project.forms?.find((f) => f.name === nav.form);
+        if (nav.form !== formName) clearFormAnswers(session, nav.form, destForm);
+        formState(session, nav.form).segmentIndex = 0;
+        formState(session, nav.form).skipStartLabel = null;
+        return renderFormPage(project, nav.form, baseUrl, uniqueId, session);
+      }
+      if (nav.type === "documents") {
+        const thenForm = nav.thenForm || null;
+        let appendHtml = "";
+        if (thenForm) {
+          formState(session, thenForm).segmentIndex = 0;
+          formState(session, thenForm).skipStartLabel = null;
+          const thenFormDef = project.forms?.find((f) => f.name === thenForm);
+          if (thenForm !== formName) clearFormAnswers(session, thenForm, thenFormDef);
+          // Ensure aliases for *this* form are gone before stacking the blank questionnaire.
+          clearFormAnswers(session, formName, form);
+          appendHtml = buildFormPageParts(project, thenForm, baseUrl, uniqueId, session, {
+            embedded: true,
+          }).body;
+        }
+        return renderDocumentsPage(project, nav.documents, session, baseUrl, uniqueId, {
+          fromForm: formName,
+          thenForm: appendHtml ? null : thenForm,
+          appendHtml,
+          freshThenForm: true,
+          freshBack: true,
+        });
+      }
+      return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
+        note: `Post-process “${form.process}” finished without a show step in dev runtime.`,
       });
     }
+
+    clearFormAnswers(session, formName, form);
     return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
-      note: `Post-process “${form.process}” finished without a show step in dev runtime.`,
+      note: isRegistrationForm(formName)
+        ? "Dev runtime recorded field values."
+        : "Your response has been recorded.",
     });
   };
 
   if (skipTarget === "__EndOfForm__") {
-    const finished = finishPostProcess();
-    if (finished) return finished;
-    return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
-      note: "Dev runtime recorded field values.",
-    });
+    return finishFormAndMaybeProcess();
   }
 
   if (skipTarget) {
@@ -660,17 +695,20 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
     return renderFormPage(project, formName, baseUrl, uniqueId, session);
   }
 
-  if (form.process) {
-    const finished = finishPostProcess();
-    if (finished) return finished;
-  }
-
-  return renderSubmitAck(project, form, session, baseUrl, uniqueId);
+  return finishFormAndMaybeProcess();
 }
 
-function applySubmissionToSession(session, formName, body) {
+function applySubmissionToSession(session, formName, body, form) {
   if (!session.formFields[formName]) session.formFields[formName] = {};
   const sharedSlots = new Set(["a", "b", "c"]);
+  const aliases = blankAliasesFromForm(form);
+  // blank.name → alternate/display labels (inverse of aliases map)
+  const labelsForBlank = new Map();
+  for (const [label, blankName] of Object.entries(aliases)) {
+    if (label === blankName) continue;
+    if (!labelsForBlank.has(blankName)) labelsForBlank.set(blankName, []);
+    labelsForBlank.get(blankName).push(label);
+  }
   for (const [key, value] of Object.entries(body)) {
     if (key === "submit" || key === "from" || key === "segmentId") continue;
     session.formFields[formName][key] = value;
@@ -684,6 +722,10 @@ function applySubmissionToSession(session, formName, body) {
           session.fields[blank] = value;
           session.fields[`${formName}:${blank}`] = value;
         }
+        for (const label of labelsForBlank.get(blank) ?? []) {
+          session.fields[label] = value;
+          session.fields[`${formName}:${label}`] = value;
+        }
       }
     }
     const mcNames = ["SexMCQ", "DivRequest", "LastDiv", "ShirtSize", "InfoCorrect", "ParentWillingToCoach", "WillingToUmpire"];
@@ -695,11 +737,18 @@ function applySubmissionToSession(session, formName, body) {
 
 export function renderSubmitAck(project, form, session, baseUrl, uniqueId, opts = {}) {
   const theme = resolveTheme(project, form);
-  const back = `${baseUrl}/p/${uniqueId}/${encodeURIComponent(form.name)}`;
+  const isReg = isRegistrationForm(form.name);
+  // Fresh start so Signup Sheet (and other append-style forms) reopen blank.
+  const back = `${baseUrl}/p/${uniqueId}/${encodeURIComponent(form.name)}?fresh=1`;
+  const heading = isReg ? "Registration step complete" : "Thank you";
+  const note =
+    opts.note ??
+    (isReg ? "Dev runtime recorded field values." : "Your response has been recorded.");
+  const backLabel = isReg ? "← Back to registration" : `← Back to ${form.name}`;
   const body = `
-  <h1>Registration step complete</h1>
+  <h1>${esc(heading)}</h1>
   <p><strong>${esc(project.name)}</strong> — ${esc(form.name)}</p>
-  <p>${esc(opts.note ?? "Dev runtime recorded field values.")}</p>
-  <p><a href="${back}">← Back to registration</a></p>`;
+  <p>${esc(note)}</p>
+  <p><a href="${back}">${esc(backLabel)}</a></p>`;
   return pageShell("Submitted", body, "Tawala dev runtime", theme);
 }

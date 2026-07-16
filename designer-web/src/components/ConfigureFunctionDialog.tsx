@@ -417,6 +417,11 @@ function focusedHelp(
   return { title: def.name, body: def.description };
 }
 
+/**
+ * Column toolbar control. Native `title` tips are unreliable on disabled buttons and
+ * are clipped/suppressed inside `.fib-validation-dialog { overflow: hidden }`, so tips
+ * use the same `data-tip` wrapper pattern as Project Explorer (`explorer-tip` / `win-tip`).
+ */
 function ToolbarIconButton({
   tip,
   disabled,
@@ -429,47 +434,49 @@ function ToolbarIconButton({
   children: ReactNode;
 }) {
   return (
-    <button
-      type="button"
-      className="configure-function-tool-btn"
-      title={tip}
-      aria-label={tip}
-      disabled={disabled}
-      onClick={onClick}
-    >
-      {children}
-    </button>
+    <span className="win-tip configure-function-tip" data-tip={tip}>
+      <button
+        type="button"
+        className="configure-function-tool-btn"
+        aria-label={tip}
+        disabled={disabled}
+        onClick={onClick}
+      >
+        {children}
+      </button>
+    </span>
   );
 }
 
+/** Visible glyphs (not SVG) — SVG strokes were painting as empty boxes under modal button CSS. */
 function PlusIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
-      <path d="M8 3v10M3 8h10" stroke="#2e7d32" strokeWidth="2" fill="none" strokeLinecap="round" />
-    </svg>
+    <span className="configure-function-tool-glyph configure-function-tool-plus" aria-hidden="true">
+      +
+    </span>
   );
 }
 
 function MinusIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
-      <path d="M3 8h10" stroke="#2e7d32" strokeWidth="2" fill="none" strokeLinecap="round" />
-    </svg>
+    <span className="configure-function-tool-glyph configure-function-tool-minus" aria-hidden="true">
+      −
+    </span>
   );
 }
 
 function MoveUpIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
-      <path d="M8 3 L13 10 H3 Z" fill="#666" />
-    </svg>
+    <span className="configure-function-tool-glyph configure-function-tool-up" aria-hidden="true">
+      ▲
+    </span>
   );
 }
 
 function MoveDownIcon() {
   return (
-    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
-      <path d="M8 13 L13 6 H3 Z" fill="#666" />
-    </svg>
+    <span className="configure-function-tool-glyph configure-function-tool-down" aria-hidden="true">
+      ▼
+    </span>
   );
 }

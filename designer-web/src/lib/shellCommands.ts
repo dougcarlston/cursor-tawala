@@ -388,6 +388,48 @@ export function canDeleteProjectEntity(): boolean {
 }
 
 /**
+ * Confirm + delete a form canvas item.
+ * Same “Are you sure?” cue as Explorer entity delete — Del/× used to remove items
+ * with no prompt (easy to hit after focusing FIB Required / property strip).
+ */
+export function confirmAndDeleteFormItem(formName: string, index: number): boolean {
+  const form = useProjectStore.getState().project.forms.find((f) => f.name === formName);
+  const item = form?.items[index];
+  if (!item) return false;
+  const kind =
+    item.type === "fib"
+      ? "Fill-in-the-Blank"
+      : item.type === "mc"
+        ? "Multiple Choice"
+        : item.type === "text"
+          ? "Text"
+          : item.type === "heading"
+            ? "Heading"
+            : item.type === "field"
+              ? "Hidden Field"
+              : item.type === "break"
+                ? "Page Break"
+                : item.type === "skipInstructions"
+                  ? "Skip Instructions"
+                  : "item";
+  const label = "label" in item && item.label ? String(item.label) : String(index + 1);
+  const ok = globalThis.confirm(`Are you sure you want to delete ${kind} "${label}"?`);
+  if (!ok) {
+    useProjectStore.getState().setStatus("Delete cancelled");
+    return false;
+  }
+  useProjectStore.getState().deleteFormItem(formName, index);
+  return true;
+}
+
+/** Confirm + delete the currently selected form canvas row. */
+export function confirmAndDeleteSelectedFormItem(): boolean {
+  const { selection, selectedItemIndex } = useProjectStore.getState();
+  if (selection.kind !== "form" || !selection.name || selectedItemIndex === null) return false;
+  return confirmAndDeleteFormItem(selection.name, selectedItemIndex);
+}
+
+/**
  * Confirm + delete the Explorer-selected Form / Process / Document.
  * Message mirrors legacy ConfirmDialog (`Delete {Type} "{name}"?`) with an Are-you-sure cue.
  * Returns true when the user confirmed and the entity was removed.
@@ -397,7 +439,7 @@ export function confirmAndDeleteProjectEntity(): boolean {
   if (!canDeleteProjectEntity() || !selection.name) return false;
   const typeLabel =
     selection.kind === "form" ? "Form" : selection.kind === "process" ? "Process" : "Document";
-  const ok = window.confirm(
+  const ok = globalThis.confirm(
     `Are you sure you want to delete ${typeLabel} "${selection.name}"?`,
   );
   if (!ok) {
@@ -409,12 +451,12 @@ export function confirmAndDeleteProjectEntity(): boolean {
 
 /**
  * Main toolbar / Edit → Delete: form item when a canvas row is selected, otherwise
- * the selected Form / Process / Document (with confirm).
+ * the selected Form / Process / Document (always with confirm).
  */
 export function runShellDelete(): void {
   const { selection, selectedItemIndex } = useProjectStore.getState();
   if (selection.kind === "form" && selection.name && selectedItemIndex !== null) {
-    useProjectStore.getState().deleteSelectedFormItem();
+    confirmAndDeleteSelectedFormItem();
     return;
   }
   confirmAndDeleteProjectEntity();

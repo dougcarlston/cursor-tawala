@@ -10,7 +10,7 @@ import {
   startPointFormNames,
   uniqueIdFromStartpoints,
 } from "./deployParse.mjs";
-import { getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
+import { clearFormAnswers, getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
 let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
@@ -257,6 +257,14 @@ app.get("/p/:uniqueId/:formName", (req, res) => {
     return;
   }
   const session = getOrCreateSession(req.params.uniqueId, data.project);
+  // Fresh signup / next respondent: clear prior answers but keep stored records.
+  if (req.query.fresh !== undefined) {
+    const form = data.project.forms?.find((f) => f.name === req.params.formName);
+    clearFormAnswers(session, req.params.formName, form);
+    saveSession(req.params.uniqueId, session);
+    res.redirect(302, `/p/${req.params.uniqueId}/${encodeURIComponent(req.params.formName)}`);
+    return;
+  }
   const from = req.query.from ? String(req.query.from) : undefined;
   res
     .type("html")
