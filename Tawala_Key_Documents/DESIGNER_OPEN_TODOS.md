@@ -76,17 +76,19 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | # | Task | Notes / sequencing |
 |---|------|-------------------|
 | 1 | **Wire Main icon toolbar** (“frequently used” strip) | **Done Jul 12** — `MainIconToolbar` shares handlers with File/Edit via `shellCommands.ts`. |
-| 2 | **Home-page control audit — menus, tabs, and toolbars** | Draft canvas delivered Jul 12. **Insert menu context-sensitivity fixed Jul 12** (Form / Process / Document; Image→From the Web → DISPLAY IMAGE Configure). Remaining audit items still open. |
-| 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. |
+| 2 | **Home-page control audit — menus, tabs, and toolbars** | Draft canvas delivered Jul 12. **Insert menu context-sensitivity fixed Jul 12.** **Deferred until after #9 function smoke** (cleanup plan Jul 16) — File/Edit/View/Project/Help vs toolbar duplicates; View/Help/Page Header/Themes still stubs. |
+| 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. **Do not start during #9 smoke.** |
 | 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | Priority for SignupSheets-class apps; still **Deferred** in Form items until scheduled. |
-| 5 | **HTML→XML export for functions we already Configure** | Mostly landed Jul 13 for the catalog peers used by templates (itemization, correlation, tally, ranked/*, sum, record-count, display-image/mcq, etc.). Remaining gaps fold into #9. |
+| 5 | **HTML→XML export for functions we already Configure** | **Mostly done Jul 13–16** — 13 of 17 emit real XML; 4 deferred stubs. Remaining work is **owner smoke**, not emit. See function status matrix in `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`. |
 | 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder. **Document blocks — owner smoke Jul 15: pass.** |
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
-| 9 | **Wire the rest of the functions** | **Active — pause on MQL/SignupSheet Jul 15.** Picker + Configure for all 17. **Deferred:** CATEGORIZER, EXPORT TEAM ROSTER, LINK TO PROJECT DETAILS, PAYPAL (stubs). **In progress:** MULTIPLE QUESTION LIST / SignupSheet Preview+Deploy — core table+Document+Form stack owner-passed; remaining checklist in `DESIGNER_OPEN_BUGS.md` “Pickup Jul 16”. **Next after MQL:** smoke other XML-emitting functions; structured Form Text for choice-tally peers; Invitation/Hyperlink/Image from PC. |
-| 10 | **Get Deploy working** | **Usable Jul 12–15** on 5173/3001 and 8080 when Tomcat up. Still: email Send, theme `mvsc` polish, AdminDash→Thank you navigation bug. |
+| 9 | **Wire the rest of the functions** | **Active — smoke ladder (Jul 16).** Configure for all 17. **Deferred stubs:** categorizer, export-team-roster, link-to-project-details, paypal. **Template smoke done:** itemization (SignupSheet), choice-tally (Simple + Multi Survey), correlation (Get Together caveats), sum (Potluck caveats). **Emit locked by tests** (`documentHtmlToXml.test.mjs` function emit matrix). **Still smoke-needed (no template owner pass):** display-image, display-mcq-label, record-count, project-email-count, response-totals, simple-list, ranked* (3). Full matrix: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`. |
+| 10 | **Get Deploy working** | **Usable Jul 12–16** on 5173/3001 and 8080 when Tomcat up (`dev`/`dev`). Still: email Send, theme polish, AdminDash→Thank you navigation bug. |
 
 **Sequencing note (owner Jul 12):** Finish **#9 (functions)** and **#10 (Deploy)**, then **re-review sample projects** (#7 second pass).
+
+**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
 
 ---
 
@@ -94,9 +96,11 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 
 Owner (July 12, 2026): park these until the browser Designer is considered **basically finished**. **Do not start any of these without prior discussion with the owner.**
 
+**Jul 16 cleanup:** Explicitly deferred until after #9 remaining function smokes (and owner says Designer is basically finished).
+
 1. **Big smoke test on three different browsers** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on three browsers; capture browser-specific defects. *(Also listed in Owner review queue #3.)*
 2. **Conform Look and Feel** of the Designer shell and its windows to the legacy Designer application **without breaking** underlying behavior already shipped (layout, chrome, typography/colors — visual parity pass only after functional freeze). *(Also listed in Owner review queue #3.)*
-3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit.
+3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit. **Also parks owner review #2** remaining home-page control audit (View/Help stubs, Page Header/Themes, File↔toolbar parity).
 
 ---
 

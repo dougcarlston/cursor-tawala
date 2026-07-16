@@ -41,18 +41,18 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 
 ## Deploy smoke tests (Phase 2)
 
-| Priority | Template | Minimal pass criteria |
-|----------|----------|---------------------|
-| 1 | **Simple Survey Template** | **Passed** — owner confirmed Survey → Report on 8080 |
-| 2 | **Signup Sheet Template** | **Passed** — submit → Thank You page → back to Form 1 → table shows all rows |
-| 3 | **Form with process** | **Passed** — Designer demo; empty Form 1 + Process 1 (not a sample app) |
-| 4 | **Form with process connecting a document** | Submit → **Document 1** HTML visible |
-| 5 | **Sign-up Sheet w Email** | FIB submit + table; Send process (email may need mail config) |
-| 6 | **Get Together** | **Passed w/ caveats** — correlation data OK; silk icons + table CSS patched in Docker |
-| 7 | **Multiple Question Survey** | Multiple tally sections + itemization table on Report |
-| 8 | **Potluck** | **Passed w/ caveats** — see matrix (first-run NotComing glitch; Q5 optional) |
+| Priority | Template | Status | Minimal pass criteria |
+|----------|----------|--------|---------------------|
+| 1 | **Simple Survey Template** | **Passed** | Survey → Report tally on 8080 |
+| 2 | **Signup Sheet Template** | **Passed** (Jul 16 refresh) | Submit → table rows; Form MQL path; FIB Deploy formatting |
+| 3 | **Form with process** | **Passed** | Empty Form 1 + Process 1 (Designer demo) |
+| 4 | **Form with process connecting a document** | **Unmarked** | Submit → **Document 1** HTML visible |
+| 5 | **Sign-up Sheet w Email** | **Unmarked** | FIB submit + table; Send may need mail config |
+| 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
+| 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026 — see reference below) | Multi tally sections + itemization on Report |
+| 8 | **Potluck** | **Passed w/ caveats** | See matrix (first-run NotComing glitch; Q5 optional) |
 
-Update **Status** column in `docs/ROADMAP.md` as each passes owner click-test.
+Update this table when each passes owner click-test. Function-level status: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
 
 ---
 
@@ -213,7 +213,7 @@ Prior caveats before patch:
 
 **Smoke test:** Submit Survey with MCQ answers → Report shows tally sections for Q2, Q3, Q5 and response table with all columns.
 
-**Owner confirmed (July 2026):** Worked perfectly.
+**Owner confirmed (July 2026):** Worked perfectly. **Status: Passed** (template Deploy smoke; listed in Phase 2 table).
 
 ---
 

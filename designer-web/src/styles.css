@@ -2241,17 +2241,22 @@ button.skip-insertion-line.active:hover {
   line-height: 1.5;
   color: #000;
   user-select: none;
-}
-
-button.skip-script-line {
+  caret-color: transparent;
   cursor: default;
 }
 
-button.skip-script-line:focus {
+button.skip-script-line,
+div.skip-script-line[role="button"] {
+  cursor: default;
+}
+
+button.skip-script-line:focus,
+div.skip-script-line[role="button"]:focus {
   outline: none;
 }
 
-button.skip-script-line:hover {
+button.skip-script-line:hover,
+div.skip-script-line[role="button"]:hover {
   background: #f0f6ff;
 }
 

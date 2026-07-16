@@ -69,7 +69,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Process / runtime navigation
 
-- **Process statement: block highlight and text caret conflict** — Selecting a Process script row (e.g. “Show Form Form 1”) shows both the light-blue row selection chrome **and** a text insertion caret in the label at once. They fight visually; only one selection mode should win (block select vs inline edit). **Owner Jul 16** (screenshot). **Open.**
+- **Process statement: block highlight and text caret conflict** — Selecting a Process script row showed both light-blue row selection chrome **and** a text insertion caret in the label. **Fixed Jul 16:** statement labels are `div role="button"` (not focusable `<button>`); caret suppressed; smoke: select “Show Form …” → block chrome only, no text caret; drag-reorder still works when selected.
 
 - **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — Process / navigation start-point from DirtBowl stress pass. **Real bug;** separate track from Document/palette work.
 
@@ -94,21 +94,28 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 **Passed Jul 15 (owner):** MQL table shows stored rows; Document stacks above blank Form 1 (no Continue →); Delete on form items asks “Are you sure?” (blur/Del mishap mitigated).
 
-**Still fix / re-smoke before leaving MQL:**
+**Passed / fixed Jul 16 (code + owner smoke where noted):**
 
 | # | Item | Notes |
 |---|------|--------|
-| 1 | **Horizontal FIB layout** | **Owner Jul 16:** Design aligns left+right edges of two FIB rows via underscore lengths; Preview should size blanks from underscore counts the same way. **Fix in progress:** `size`+`ch` width from `blank.length`; stacked rows use inline flow (not flex stretch). |
-| 2 | **FIB Required per blank** | **Owner Jul 16:** Not dual-Required — first click parked caret at end of last blank (Phone) while user thought Email was active. **Fix:** first click selects item only; second click places caret under the click. |
-| 3 | **Required / empty submit** | **Owner Jul 16: confirmed fails.** **Fix:** `blank.required` blocks empty Submit (`"{label} is required."`). |
-| 4 | **MQL Where clause** | **Owner Jul 16: OK.** |
-| 5 | **Print / Excel export links** | Configure has print/export toggles; Node Preview table does not emit those links yet. |
-| 6 | **`baseball` theme CSS** | Missing file → `resolveTheme` falls back to default; optional real baseball stylesheet. |
-| 7 | **Java Deploy (8080) parity** | Tonight’s smoke was Node runtime on 5173/3001; when Tomcat is up, re-check MQL + validators on 8080. |
-| 8 | **Dev API on 3001 dies** | Vite 5173 often stays up while Express dies → Preview/Deploy fail; restart detached API if `/api/health` ≠ 200. |
-| 9 | **Session junk rows** | Earlier empty/bad signups may still be in Deploy session; `?reset=1` or new Deploy uniqueId for a clean list. |
+| 1 | **Horizontal FIB layout** | **Fixed:** Preview/Deploy blank widths from underscore `blank.length` (`size` + `ch`); stacked rows inline (not flex-stretch). Theme CSS in `themes/index.mjs`. |
+| 2 | **FIB Required per blank** | **Owner OK.** First click selects item only; second click places caret under the click (`FibCanvasRow`). |
+| 3 | **Required / empty submit** | **Owner OK.** `blank.required` blocks empty Submit; validators on Node + Java CSS (`.validateError` in `docker/tomcat/css/project/default.css`). |
+| 4 | **MQL Where clause** | **Owner OK.** |
+| 5 | **Print / Excel export links** | **Owner OK on Deploy.** Configure toggles persist; Preview emits Print / CSV export (`itemizationPreview.mjs`). |
+| 7 | **Java Deploy (8080) parity** | **Owner OK** for Signup Form+MQL path (Tomcat up, `dev`/`dev`). Also: Document MQL field tokens + no nested font/division; FIB multi-blank soft-rows; Design B/I/U→Deploy (`fibRichPromptToXml`). **Re-smoke:** Redeploy after `fcebcfa` to confirm latest FIB formatting on 8080. |
+| 8 | **Dev API on 3001 dies** | **Mitigated:** `designer-web/scripts/ensure-dev-api.sh` + README; check `/api/health` when Preview/Deploy fails. |
+| 9 | **Session junk rows** | **Mitigated (ops):** cleared stale Java submissions / Preview sessions once; use `?reset=1` or fresh Deploy uniqueId if lists look wrong. |
+| — | **FIB Design formatting → Deploy** | **Fixed Jul 16:** freeform prompts mirror B/I/U / face / size / color into Java font XML (`fibToXml` + tests). |
 
-**Then:** finish MQL checklist above → continue **#9** other untested functions that already emit Document XML (skip four deferred stubs: Categorizer / Roster / Link / PayPal).
+**Still open (leave MQL when these are done or explicitly deferred):**
+
+| # | Item | Notes |
+|---|------|--------|
+| 6 | **`baseball` theme CSS** | Stub / fallback still weak vs full theme; optional — not blocking Signup default theme. |
+| — | **Process caret + row highlight** | **Fixed Jul 16** — see Active bugs (resolved). |
+
+**Then:** MQL/SignupSheet core is done enough to leave — continue owner review **#9** other untested functions that already emit Document XML (skip four deferred stubs: Categorizer / Roster / Link / PayPal).
 
 - **Form item Delete had no confirm** — Del/× removed canvas items immediately (easy after FIB Required focus). Fixed Jul 15: `confirmAndDeleteFormItem` + strip/button Del ignore.
 

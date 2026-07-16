@@ -120,18 +120,32 @@ function ScriptCommandLineRow({
 }) {
   const path = line.path!;
   const lineButton = (
-    <button
-      type="button"
+    <div
+      role="button"
+      tabIndex={-1}
       className={`${lineClassName}${selected ? " selected" : ""}`}
       onMouseDown={(e) => {
-        // Allow HTML5 reorder drag when selected; otherwise keep focus from jumping.
+        // Never focus the label — a focused <button> shows a text caret that fights
+        // block selection chrome. Reorder drag is owned by the parent row (draggable);
+        // preventDefault here would cancel HTML5 drag, so only prevent when not
+        // arming a drag from a selected row.
         if (!(selected && onReorderDragStart)) e.preventDefault();
       }}
-      onClick={onSelect}
+      onClick={(e) => {
+        onSelect();
+        // Kill any accidental focus caret after select (selected+drag path skips preventDefault).
+        (e.currentTarget as HTMLElement).blur();
+      }}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onSelect();
+        }
+      }}
     >
       <span className="skip-script-pad">{pad}</span>
       <span>{line.text}</span>
-    </button>
+    </div>
   );
 
   if (!showLineControls) {

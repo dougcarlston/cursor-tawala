@@ -233,7 +233,7 @@ Screenshot: [`assets/Function_-_Categorizer.png`](assets/Function_-_Categorizer.
 
 ### Browser gaps
 
-Catalog params present. No Document HTML→XML emission yet (would become a comment). Column UI matches Multiple Question List (+/−/↑/↓ toolbar); per-column “always displayed” condition editor still deferred.
+Catalog params present. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Column UI matches Multiple Question List (+/−/↑/↓ toolbar); per-column “always displayed” condition editor still deferred.
 
 ---
 
@@ -298,7 +298,7 @@ Screenshot: [`assets/Function_-_Export_Team_Roster.png`](assets/Function_-_Expor
 
 ### Browser gaps
 
-Catalog entry exists but **`parameters: []`** — Configure shows “no parameters.” Need **Link text** + **Team ID** to match legacy. Document HTML→XML: not emitted. Low priority outside SportsDashboards.
+Catalog entry exists but **`parameters: []`** — Configure shows “no parameters.” Need **Link text** + **Team ID** to match legacy. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Low priority outside SportsDashboards.
 
 ---
 
@@ -338,7 +338,7 @@ Screenshot: [`assets/Function_-_Link_to_Project_Details.png`](assets/Function_-_
 
 ### Browser gaps
 
-Configure fields match. Document HTML→XML: **not** emitted yet (comment). Runtime depends on hosted My Tawala — limited value for local 8080.
+Configure fields match. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Runtime depends on hosted My Tawala — limited value for local 8080.
 
 ---
 
@@ -388,7 +388,7 @@ Owner (July 10): browser Configure is **functionally the same** for the core par
 | Conditions | “Show only fields from records where” | Present (`FunctionConditionsEditor`) |
 | OK greyed until valid | Yes | Yes |
 | Yellow help + REQUIRED | Yes (with duplicate label bug) | Help pane present; REQUIRED styling may differ |
-| Document HTML → XML | Real `<itemization-table>` | **Yes** (one of the few functions that already emit real XML) |
+| Document HTML → XML | Real `<itemization-table>` | **Yes** — SignupSheet owner-passed Jul 16 |
 
 ---
 
@@ -413,7 +413,7 @@ Screenshots: [`assets/Function_-_Paypal_Single_Item.png`](assets/Function_-_Payp
 
 ### Browser gaps
 
-Catalog params match. Document HTML→XML: **not** emitted. Runtime needs payment integration — defer for sample four.
+Catalog params match. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Runtime needs payment integration.
 
 ---
 
@@ -450,7 +450,7 @@ Screenshot: [`assets/Function_-_Question_Correlation_Table.png`](assets/Function
 
 ### Browser gaps
 
-Catalog + Configure present. Form Text with embedded `questionCorrelationTable` (e.g. Get Together **Report**) supports canvas rich-edit around the token and click-to-Configure (same path as Multiple Question List). Document HTML→XML: **not** emitted yet (comment).
+Catalog + Configure present. Form Text with embedded `questionCorrelationTable` (e.g. Get Together **Report**) supports canvas rich-edit around the token and click-to-Configure (same path as Multiple Question List). Document **and Form Text** HTML→XML: **emits** `<question-correlation-table>` (Jul 13+). Template Deploy smoke: Get Together **Passed w/ caveats**.
 
 ---
 
@@ -472,7 +472,7 @@ Screenshot: [`assets/Function_-_Ranked_Multiquestion_Response_List.png`](assets/
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **not** emitted yet.
+Catalog matches. Document HTML→XML: **emits** `<popular-choice-correlation-table>`. **Smoke-needed** (no sample template owner-passed yet).
 
 ---
 
@@ -492,7 +492,7 @@ Screenshot: [`assets/Function_-_Ranked_Response_Counts.png`](assets/Function_-_R
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **not** emitted yet.
+Catalog matches. Document HTML→XML: **emits** `<popular-choice-count>`. **Smoke-needed.**
 
 ---
 
@@ -512,13 +512,13 @@ Screenshot: [`assets/Function_-_Ranked_Response_Name.png`](assets/Function_-_Ran
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **not** emitted yet.
+Catalog matches. Document HTML→XML: **emits** `<popular-choice-display>`. **Smoke-needed.**
 
 ---
 
 ## Configure Function: RESPONSE BAR GRAPH (`choice-tally-table`)
 
-Owner screenshot July 10, 2026. Used by **Simple Survey** (results). Form Text JSON path can emit `choice-tally-table`; Document HTML→XML still comments.
+Owner screenshot July 10, 2026. Used by **Simple Survey** (results). Form Text JSON path and Document HTML→XML both emit `<choice-tally-table>`.
 
 **Description:** Displays a bar graph showing both the number and percentage of each response to a multiple-choice question.
 
@@ -531,7 +531,7 @@ Screenshot: [`assets/Function_-_Response_Bar_Graph.png`](assets/Function_-_Respo
 
 ### Browser gaps
 
-Catalog matches. Document token XML: **not** emitted yet (Form Text structured nodes may still export via `jsonToXml.mjs`).
+Catalog matches. Document **and Form Text** HTML→XML: **emits** `<choice-tally-table>`. Template Deploy smoke: Simple Survey **Passed**; Multiple Question Survey **Passed** (owner Jul 2026).
 
 ---
 
@@ -551,7 +551,7 @@ Screenshot: [`assets/Function_-_Response_Totals.png`](assets/Function_-_Response
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **not** emitted yet.
+Catalog matches. Document HTML→XML: **emits** `<response-totals-table>`. **Smoke-needed.**
 
 ---
 
@@ -570,7 +570,7 @@ Screenshot: [`assets/Function_-_Single_Question_List.png`](assets/Function_-_Sin
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **not** emitted yet.
+Catalog matches. Document HTML→XML: **emits** `<simple-list>`. **Smoke-needed.**
 
 ---
 
@@ -589,7 +589,35 @@ Screenshot: [`assets/Function_-_Sum.png`](assets/Function_-_Sum.png)
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **yes**.
+Catalog matches. Document HTML→XML: **yes** (`<sum>`). Template Deploy smoke: Potluck **Passed w/ caveats**.
+
+---
+
+## Function status matrix (Jul 16, 2026)
+
+Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.mjs` (`default` → XML comment). Form Text structured nodes also export via `jsonToXml.mjs` where noted.
+
+| # | Function | id | XML emit | Owner smoke / notes |
+|---|----------|-----|----------|---------------------|
+| 1 | CATEGORIZER | `categorizer` | **Deferred stub** | No sample need |
+| 2 | DISPLAY IMAGE | `display-image` | **Yes** | Smoke-needed (Configure OK) |
+| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | Smoke-needed |
+| 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
+| 5 | FORM RECORD COUNT | `record-count` | **Yes** | Smoke-needed |
+| 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | Hosted My Tawala |
+| 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16 |
+| 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | Payment integration |
+| 9 | PROJECT EMAIL COUNT | `project-email-count` | **Yes** | Smoke-needed (needs Send history) |
+| 10 | QUESTION CORRELATION TABLE | `question-correlation-table` | **Yes** | Get Together **Passed w/ caveats** |
+| 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | Smoke-needed |
+| 12 | RANKED RESPONSE COUNTS | `popular-choice-count` | **Yes** | Smoke-needed |
+| 13 | RANKED RESPONSE NAME | `popular-choice-display` | **Yes** | Smoke-needed |
+| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | Simple Survey **Passed**; Multi Survey **Passed** (template) |
+| 15 | RESPONSE TOTALS | `response-totals-table` | **Yes** | Smoke-needed |
+| 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | Smoke-needed |
+| 17 | SUM | `sum` | **Yes** | Potluck **Passed w/ caveats** |
+
+**Insert siblings (not in the 17):** Invitation…, Hyperlink…, Image from PC — **not implemented** (stubs). Image → From the Web → DISPLAY IMAGE Configure works.
 
 ---
 
@@ -603,12 +631,12 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Context Insert menus | Form / Process / Document | Partial |
-| Invitation / Hyperlink dialogs | Yes | No |
-| Function picker + Configure | Full repository | Picker + Configure shell; per-function depth varies (see MULTIPLE QUESTION LIST above) |
-| Image from PC / upload URL | Yes | No |
+| Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink / Image-from-PC stubs |
+| Invitation / Hyperlink dialogs | Yes | **No** (stubs) |
+| Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
+| Image from PC / upload URL | Yes | **No** (File Uploader deferred) |
 | Insert Field (document) | Yes | Fields palette / tokens partial |
-| Document HTML → XML for functions | Full set | Partial — `display-image`, `display-mcq-label`, Tables MCQ functions, `itemization-table`, `sum`, `record-count`, `project-email-count` emit real XML (Jul 13) |
+| Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — Jul 16 |
 
 ---
 
@@ -624,4 +652,4 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 ---
 
-*Last updated: July 10, 2026 (all 17 Configure Function dialogs captured).*
+*Last updated: July 16, 2026 — function XML emit matrix synced to `documentHtmlToXml.mjs`.*
