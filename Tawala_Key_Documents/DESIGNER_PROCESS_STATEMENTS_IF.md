@@ -224,8 +224,8 @@ The **If** property panel stays visible in the **top** details area while **If**
 | Cue | Meaning |
 |-----|---------|
 | **Orange/highlighted button** in Statements palette | Which statement type’s property panel is shown on top |
-| **Blue arrow** in lower script pane | Where the next **Add** will insert |
-| **Add** vs **Modify** on the button | Add = new line at insertion point; Modify = editing an existing script line (double-click that line) |
+| **Blue arrow** in lower script pane | **Insert mode:** ▶ points at the gap between lines (where **Add** inserts). **Edit mode:** ▶ points at the highlighted statement (**Modify**). Never both at once (legacy). |
+| **Add** vs **Modify** on the button | Add = new line at insertion point; Modify = editing the selected script line (click that line) |
 
 Click another statement button (**Show**, **Set**, …) or click in the script to move the insertion point when leaving If configuration.
 

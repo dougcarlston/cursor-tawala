@@ -69,7 +69,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Process / runtime navigation
 
-- **Process statement: block highlight and text caret conflict** — Selecting a Process script row showed both light-blue row selection chrome **and** a text insertion caret in the label. **Fixed Jul 16:** statement labels are `div role="button"` (not focusable `<button>`); caret suppressed; smoke: select “Show Form …” → block chrome only, no text caret; drag-reorder still works when selected.
+- **Process statement: edit vs insert mode (legacy arrow)** — **Fixed Jul 16 (v2):** Selecting a script row enters **edit mode** — solid blue highlight and left **▶** on that statement; insert gap arrow is hidden. Clicking an insert gap / setting insert point clears selection (**insert mode** — ▶ on the separator between lines). Insert hit overlays no longer steal statement clicks (narrower hit band; rows above hits). Smoke: click “Show Form …” → arrow on statement + Modify; click between lines → arrow on gap, no statement highlight.
 
 - **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — Process / navigation start-point from DirtBowl stress pass. **Real bug;** separate track from Document/palette work.
 
@@ -113,7 +113,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 | # | Item | Notes |
 |---|------|--------|
 | 6 | **`baseball` theme CSS** | Stub / fallback still weak vs full theme; optional — not blocking Signup default theme. |
-| — | **Process caret + row highlight** | **Fixed Jul 16** — see Active bugs (resolved). |
+| — | **Process caret + row highlight** | **Fixed Jul 16 (v2)** — legacy edit vs insert arrow (see Active bugs). |
 
 **Then:** MQL/SignupSheet core is done enough to leave — continue owner review **#9** other untested functions that already emit Document XML (skip four deferred stubs: Categorizer / Roster / Link / PayPal).
 

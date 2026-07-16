@@ -645,7 +645,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setProcessInsertPoint: (path, index) => {
     const { selection } = get();
     if (selection.kind !== "process" || !selection.name) return;
-    set({ processInsertPath: path, processInsertIndex: Math.max(0, index) });
+    // Insert mode: one blue arrow at the gap — clear statement edit selection (legacy).
+    set({
+      processInsertPath: path,
+      processInsertIndex: Math.max(0, index),
+      selectedProcessCommandPath: null,
+    });
   },
   setSelectedProcessCommandPath: (path) => {
     const { selection, processStatementPanel, project } = get();
@@ -664,12 +669,14 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         nextPanel = panelForCmd;
       }
     }
+    const { parentPath, childIndex } = parentPathAndChildIndex(path);
     set({
       selectedProcessCommandPath: path,
       processStatementPanel: nextPanel,
-      // Next palette insert lands after the selected statement (script-editor feel).
-      processInsertPath: parentPathAndChildIndex(path).parentPath,
-      processInsertIndex: parentPathAndChildIndex(path).childIndex + 1,
+      // Remember where Add would go after leaving edit, but UI hides the insert arrow
+      // while a statement is selected (edit mode — arrow points at the statement).
+      processInsertPath: parentPath,
+      processInsertIndex: childIndex + 1,
     });
   },
   setProcessStatementPanel: (panel) => {

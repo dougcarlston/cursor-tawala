@@ -4404,11 +4404,12 @@ button.font-color-picker-recent-slot:hover {
   right: 8px;
 }
 
-/* Zero-height insert slots for drag hit-testing (no permanent caret bars). */
+/* Insert hit slots — keep out of the way of statement clicks unless dragging. */
 .process-insert-hit {
   position: relative;
   height: 0;
-  z-index: 1;
+  z-index: 0;
+  pointer-events: auto;
 }
 
 .process-insert-hit::before {
@@ -4416,8 +4417,18 @@ button.font-color-picker-recent-slot:hover {
   position: absolute;
   left: 0;
   right: 0;
-  top: -8px;
-  bottom: -8px;
+  /* Narrow band so statement rows win clicks (was ±8px and stole selection). */
+  top: -2px;
+  bottom: -2px;
+}
+
+.process-script-dragging .process-insert-hit {
+  z-index: 3;
+}
+
+.process-script-dragging .process-insert-hit::before {
+  top: -10px;
+  bottom: -10px;
 }
 
 .process-script-area {
@@ -4431,22 +4442,45 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .skip-script-area.process-script-area .skip-script-line {
-  line-height: 1;
+  line-height: 1.15;
   padding: 0;
-  min-height: 0;
+  min-height: 14px;
   font-size: 11px;
 }
 
 .skip-script-area.process-script-area .skip-script-line-row {
   position: relative;
+  z-index: 2;
   padding: 0;
   gap: 0;
-  min-height: 0;
+  min-height: 14px;
   align-items: center;
 }
 
+/* Edit mode: solid highlight + left arrow pointing at the statement (legacy). */
 .skip-script-area.process-script-area .skip-script-line-row.selected {
   cursor: grab;
+  background: #7aa7e0;
+  outline: none;
+}
+
+.skip-script-area.process-script-area .skip-script-line-row.selected .skip-script-line {
+  background: transparent;
+  outline: none;
+  color: #000;
+}
+
+.skip-script-area.process-script-area .skip-script-edit-arrow {
+  position: absolute;
+  left: -14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #0040c0;
+  font-size: 9px;
+  font-weight: bold;
+  line-height: 1;
+  pointer-events: none;
+  user-select: none;
 }
 
 .skip-script-area.process-script-area .skip-script-line-row.selected:active {
@@ -4454,8 +4488,9 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .skip-script-area.process-script-area .skip-script-line-row .skip-script-line {
-  min-height: 0;
-  padding-right: 72px;
+  min-height: 14px;
+  padding: 1px 72px 1px 0;
+  cursor: pointer;
 }
 
 .skip-script-area.process-script-area .skip-script-line-toolbar {
@@ -4464,11 +4499,14 @@ button.font-color-picker-recent-slot:hover {
   top: 50%;
   transform: translateY(-50%);
   padding-right: 0;
+  z-index: 3;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line {
   min-height: 0;
   height: 2px;
+  position: relative;
+  z-index: 1;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line:not(.active) {

@@ -132,8 +132,8 @@ function ScriptCommandLineRow({
         if (!(selected && onReorderDragStart)) e.preventDefault();
       }}
       onClick={(e) => {
+        e.stopPropagation();
         onSelect();
-        // Kill any accidental focus caret after select (selected+drag path skips preventDefault).
         (e.currentTarget as HTMLElement).blur();
       }}
       onKeyDown={(e) => {
@@ -144,7 +144,7 @@ function ScriptCommandLineRow({
       }}
     >
       <span className="skip-script-pad">{pad}</span>
-      <span>{line.text}</span>
+      <span className="skip-script-line-text">{line.text}</span>
     </div>
   );
 
@@ -169,13 +169,22 @@ function ScriptCommandLineRow({
         onReorderDragStart(path, e.dataTransfer);
       }}
     >
+      {/* Legacy: edit mode — arrow points at the highlighted statement (not the insert gap). */}
+      {selected ? (
+        <span className="skip-script-edit-arrow" aria-hidden>
+          ▶
+        </span>
+      ) : null}
       {lineButton}
       <span className="skip-script-line-toolbar" role="toolbar" aria-label="Statement actions">
         <button
           type="button"
           title="Move up (Alt+↑)"
           disabled={!canMoveCommand?.(path, "up")}
-          onClick={() => onMoveCommand?.(path, "up")}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveCommand?.(path, "up");
+          }}
         >
           ↑
         </button>
@@ -183,7 +192,10 @@ function ScriptCommandLineRow({
           type="button"
           title="Move down (Alt+↓)"
           disabled={!canMoveCommand?.(path, "down")}
-          onClick={() => onMoveCommand?.(path, "down")}
+          onClick={(e) => {
+            e.stopPropagation();
+            onMoveCommand?.(path, "down");
+          }}
         >
           ↓
         </button>
@@ -191,7 +203,10 @@ function ScriptCommandLineRow({
           type="button"
           className="skip-script-line-delete"
           title="Delete statement"
-          onClick={() => onDeleteCommand?.(path)}
+          onClick={(e) => {
+            e.stopPropagation();
+            onDeleteCommand?.(path);
+          }}
         >
           ×
         </button>
@@ -232,7 +247,9 @@ function emitGap(ctx: RenderCtx, path: string, index: number, key: string): Reac
   const storedActive = ctx.insertPath === path && ctx.insertIndex === index;
   const dragActive =
     ctx.highlightInsertPath === path && ctx.highlightInsertIndex === index;
-  const active = ctx.hitTargets ? dragActive : storedActive;
+  // Edit mode: no insert-gap arrow (arrow sits on the selected statement instead).
+  const editMode = ctx.selectedCommandPath != null;
+  const active = ctx.hitTargets ? dragActive : !editMode && storedActive;
   return (
     <SkipInsertionLine
       key={key}
@@ -402,6 +419,8 @@ function renderLineAt(ctx: RenderCtx, i: number): { nodes: ReactNode[]; nextInde
 }
 
 function renderWithLegacyArrow(ctx: RenderCtx, i: number, nodes: ReactNode[]) {
+  // Legacy: insert-mode arrow between lines OR edit-mode arrow on the statement — never both.
+  if (ctx.selectedCommandPath != null) return;
   if (!ctx.indexedMode && i === ctx.resolvedInsertAfterIndex) {
     const line = ctx.lines[i];
     const emptyInteriorActive =
@@ -549,7 +568,7 @@ export function SkipScriptView({
     i = nextIndex;
   }
 
-  if (!indexedMode && resolvedInsertAfterIndex < 0 && insertPath === "root") {
+  if (!indexedMode && selectedCommandPath == null && resolvedInsertAfterIndex < 0 && insertPath === "root") {
     elements.unshift(
       <SkipInsertionLine
         key="ins-root-start"
