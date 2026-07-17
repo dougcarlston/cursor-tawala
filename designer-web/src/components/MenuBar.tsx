@@ -18,13 +18,21 @@ import {
 import {
   canDeleteSelection,
   canDeployProject,
+  copyAcceleratorLabel,
+  cutAcceleratorLabel,
+  deleteAcceleratorLabel,
+  newProjectAcceleratorLabel,
+  openProjectAcceleratorLabel,
   openProjectManagerLocal,
+  pasteAcceleratorLabel,
+  redoAcceleratorLabel,
   runShellEditCommand,
   saveAcceleratorLabel,
   saveAsAcceleratorLabel,
   saveProjectAs,
   saveProjectToDownload,
   shellEditContextActive,
+  undoAcceleratorLabel,
   type ShellEditCommand,
 } from "@/lib/shellCommands";
 import {
@@ -64,8 +72,16 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const editActive = shellEditContextActive();
   const canDeploy = canDeployProject();
   const canDelete = canDeleteSelection();
+  const newAccel = newProjectAcceleratorLabel();
+  const openAccel = openProjectAcceleratorLabel();
   const saveAccel = saveAcceleratorLabel();
   const saveAsAccel = saveAsAcceleratorLabel();
+  const cutAccel = cutAcceleratorLabel();
+  const copyAccel = copyAcceleratorLabel();
+  const pasteAccel = pasteAcceleratorLabel();
+  const deleteAccel = deleteAcceleratorLabel();
+  const undoAccel = undoAcceleratorLabel();
+  const redoAccel = redoAcceleratorLabel();
 
   const edit = (cmd: ShellEditCommand) => () => {
     runShellEditCommand(cmd);
@@ -76,9 +92,11 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
       <MenuDrop label="File">
         <button type="button" onClick={onNewProject}>
           New Project…
+          <span className="menu-accel">{newAccel}</span>
         </button>
         <button type="button" onClick={onOpen}>
           Open Project…
+          <span className="menu-accel">{openAccel}</span>
         </button>
         <div className="menu-separator" />
         {/*
@@ -107,6 +125,33 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           Deploy…
         </button>
       </MenuDrop>
+      <MenuDrop label="Edit">
+        <button type="button" disabled={!editActive} onClick={edit("cut")}>
+          Cut
+          <span className="menu-accel">{cutAccel}</span>
+        </button>
+        <button type="button" disabled={!editActive} onClick={edit("copy")}>
+          Copy
+          <span className="menu-accel">{copyAccel}</span>
+        </button>
+        <button type="button" disabled={!editActive} onClick={edit("paste")}>
+          Paste
+          <span className="menu-accel">{pasteAccel}</span>
+        </button>
+        <button type="button" disabled={!canDelete} onClick={onDelete}>
+          Delete
+          <span className="menu-accel">{deleteAccel}</span>
+        </button>
+        <div className="menu-separator" />
+        <button type="button" disabled={!editActive} onClick={edit("undo")}>
+          Undo
+          <span className="menu-accel">{undoAccel}</span>
+        </button>
+        <button type="button" disabled={!editActive} onClick={edit("redo")}>
+          Redo
+          <span className="menu-accel">{redoAccel}</span>
+        </button>
+      </MenuDrop>
       <MenuDrop label="Insert">
         <InsertMenuBody
           activeKind={activeKind}
@@ -123,27 +168,6 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           }}
           onStub={(msg) => setStatus(msg)}
         />
-      </MenuDrop>
-      <MenuDrop label="Edit">
-        <button type="button" disabled={!editActive} onClick={edit("cut")}>
-          Cut
-        </button>
-        <button type="button" disabled={!editActive} onClick={edit("copy")}>
-          Copy
-        </button>
-        <button type="button" disabled={!editActive} onClick={edit("paste")}>
-          Paste
-        </button>
-        <button type="button" disabled={!canDelete} onClick={onDelete}>
-          Delete
-        </button>
-        <div className="menu-separator" />
-        <button type="button" disabled={!editActive} onClick={edit("undo")}>
-          Undo
-        </button>
-        <button type="button" disabled={!editActive} onClick={edit("redo")}>
-          Redo
-        </button>
       </MenuDrop>
       <MenuDrop label="View">
         <button type="button" disabled>

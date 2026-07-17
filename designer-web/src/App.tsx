@@ -22,6 +22,7 @@ import {
   isSaveAsDialogOpen,
   openProjectFromDisk,
   runShellDelete,
+  setShellFileActions,
   subscribeSaveAsDialog,
 } from "@/lib/shellCommands";
 
@@ -143,6 +144,18 @@ export default function App() {
     const opened = await openProjectFromDisk();
     if (!opened) fileRef.current?.click();
   };
+
+  // File → New / Open accelerators (⌘N / ⌘O) call into App dialogs.
+  useEffect(() => {
+    setShellFileActions({
+      onNewProject: () => setShowNewProject(true),
+      onOpen: () => {
+        if (showNewProject) return;
+        void onOpen();
+      },
+    });
+    return () => setShellFileActions({});
+  }, [showNewProject]);
 
   const onPickTemplate = async (template: TemplateEntry) => {
     setShowNewProject(false);

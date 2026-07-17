@@ -204,3 +204,26 @@ describe("Response Totals question titles", () => {
     expect((xml.match(/<response-totals-table/g) || []).length).toBe(2);
   });
 });
+
+describe("projectToXml form flags", () => {
+  it("emits dataEntryOnly and blockBackButton when set", () => {
+    const xml = projectToXml({
+      name: "Flags",
+      themePath: "default",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          dataEntryOnly: true,
+          blockBackButton: true,
+          items: [],
+        },
+      ],
+      processes: [],
+      documents: [],
+    });
+    expect(xml).toContain('startPoint="true"');
+    expect(xml).toContain('dataEntryOnly="true"');
+    expect(xml).toContain('blockBackButton="true"');
+  });
+});

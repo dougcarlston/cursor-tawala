@@ -364,6 +364,18 @@ C# source: `FieldsPalette.cs` (`getSortedVariables`, form field leaves); `Projec
 
 *Enable states vary with selection (example: form with Pre-/Post- processes connected).*
 
+### Browser File / Edit decisions (Jul 16 Main Menu pass)
+
+| Decision | Notes |
+|----------|--------|
+| Menu order | **File → Edit → …** (Edit is second, conventional) |
+| File omit | Print Preview, Print, Exit (desktop-era; use browser print / close tab) |
+| File shortcuts | New **Ctrl/⌘N**, Open **Ctrl/⌘O**, Save **Ctrl/⌘S**, Save As **Shift+Ctrl/⌘S** |
+| Edit slim | Cut / Copy / Paste / Delete / Undo / Redo only (+ standard shortcuts; Redo Mac **⇧⌘Z**) |
+| Edit omit | Rename; Connect/Disconnect Pre/Post (use Process banner) |
+| Form toggles | **Starting Point** + **Pre-populate With Last Entry** on Form Properties; **Block Back** on Explorer toolbar |
+| Held bugs | Save/Save As last-loaded name; greyed `.json` in picker — see `DESIGNER_OPEN_BUGS.md` |
+
 ---
 
 ## Menu: View

@@ -496,25 +496,78 @@ export function openProjectManagerLocal(): void {
 
 /** Platform accelerator label for File → Save (DESIGNER_MENU_SPEC: Ctrl+S). */
 export function saveAcceleratorLabel(): string {
-  if (typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.platform)) {
-    return "⌘S";
-  }
-  return "Ctrl+S";
+  return modKeyLabel() + "S";
 }
 
 /** Platform accelerator for File → Save As (Shift+⌘S / Shift+Ctrl+S). */
 export function saveAsAcceleratorLabel(): string {
-  if (typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.platform)) {
-    return "⇧⌘S";
-  }
-  return "Shift+Ctrl+S";
+  return isApplePlatform() ? "⇧⌘S" : "Shift+Ctrl+S";
 }
 
-function isSaveChord(e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "code" | "key">): boolean {
+/** File → New Project (Ctrl+N / ⌘N). */
+export function newProjectAcceleratorLabel(): string {
+  return modKeyLabel() + "N";
+}
+
+/** File → Open Project (Ctrl+O / ⌘O). */
+export function openProjectAcceleratorLabel(): string {
+  return modKeyLabel() + "O";
+}
+
+export function cutAcceleratorLabel(): string {
+  return modKeyLabel() + "X";
+}
+export function copyAcceleratorLabel(): string {
+  return modKeyLabel() + "C";
+}
+export function pasteAcceleratorLabel(): string {
+  return modKeyLabel() + "V";
+}
+export function deleteAcceleratorLabel(): string {
+  return "Del";
+}
+export function undoAcceleratorLabel(): string {
+  return modKeyLabel() + "Z";
+}
+/** Redo: Ctrl+Y on Windows/Linux; ⇧⌘Z on Mac (platform convention). */
+export function redoAcceleratorLabel(): string {
+  return isApplePlatform() ? "⇧⌘Z" : "Ctrl+Y";
+}
+
+function isApplePlatform(): boolean {
+  return typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
+}
+
+function modKeyLabel(): string {
+  return isApplePlatform() ? "⌘" : "Ctrl+";
+}
+
+type ShellFileActions = {
+  onNewProject?: () => void;
+  onOpen?: () => void;
+};
+
+let shellFileActions: ShellFileActions = {};
+
+/** App registers New/Open so File accelerators can open dialogs without circular imports. */
+export function setShellFileActions(actions: ShellFileActions): void {
+  shellFileActions = actions;
+}
+
+function isSaveChord(e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "code" | "key" | "shiftKey">): boolean {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return false;
-  // Prefer `code` so layout / Caps Lock still maps to physical S.
   if (e.code === "KeyS") return true;
   return e.key.toLowerCase() === "s";
+}
+
+function isModLetterChord(
+  e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "shiftKey" | "code" | "key">,
+  letter: string,
+): boolean {
+  if (!(e.ctrlKey || e.metaKey) || e.altKey || e.shiftKey) return false;
+  const code = `Key${letter.toUpperCase()}`;
+  if (e.code === code) return true;
+  return e.key.toLowerCase() === letter.toLowerCase();
 }
 
 /** Exported for unit tests — true when the event is Ctrl/Cmd+S (Save chord). */
@@ -522,6 +575,20 @@ export function eventIsSaveChord(
   e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "code" | "key">,
 ): boolean {
   return isSaveChord(e);
+}
+
+/** Exported for unit tests — Ctrl/Cmd+N (no Shift/Alt). */
+export function eventIsNewProjectChord(
+  e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "shiftKey" | "code" | "key">,
+): boolean {
+  return isModLetterChord(e, "n");
+}
+
+/** Exported for unit tests — Ctrl/Cmd+O (no Shift/Alt). */
+export function eventIsOpenProjectChord(
+  e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "shiftKey" | "code" | "key">,
+): boolean {
+  return isModLetterChord(e, "o");
 }
 
 type ShellGuardBag = {
@@ -588,6 +655,28 @@ export function installDesignerShellGuards(): void {
   }
 
   const keydown = (e: KeyboardEvent) => {
+    // File → New / Open (before Save so Shift+S still wins for Save As).
+    if (eventIsNewProjectChord(e)) {
+      const marked = e as KeyboardEvent & { __tawalaFileChordHandled?: boolean };
+      if (marked.__tawalaFileChordHandled) return;
+      marked.__tawalaFileChordHandled = true;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      shellFileActions.onNewProject?.();
+      return;
+    }
+    if (eventIsOpenProjectChord(e)) {
+      const marked = e as KeyboardEvent & { __tawalaFileChordHandled?: boolean };
+      if (marked.__tawalaFileChordHandled) return;
+      marked.__tawalaFileChordHandled = true;
+      e.preventDefault();
+      e.stopPropagation();
+      e.stopImmediatePropagation();
+      shellFileActions.onOpen?.();
+      return;
+    }
+
     if (!isSaveChord(e)) return;
     // Window + document both listen in capture — handle only once per event.
     const marked = e as KeyboardEvent & { __tawalaSaveHandled?: boolean };

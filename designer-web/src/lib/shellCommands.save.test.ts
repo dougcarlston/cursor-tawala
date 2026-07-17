@@ -2,6 +2,8 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   applyDirtyBeforeUnload,
   cancelSaveAsDialog,
+  eventIsNewProjectChord,
+  eventIsOpenProjectChord,
   eventIsSaveChord,
   isSaveAsDialogOpen,
   saveAcceleratorLabel,
@@ -42,6 +44,15 @@ describe("Save chord helpers", () => {
     expect(
       eventIsSaveChord({ ctrlKey: false, metaKey: false, altKey: false, code: "KeyS", key: "s" }),
     ).toBe(false);
+  });
+});
+
+describe("New / Open file chords", () => {
+  it("recognizes Ctrl/Cmd+N and Ctrl/Cmd+O", () => {
+    const base = { ctrlKey: true, metaKey: false, altKey: false, shiftKey: false };
+    expect(eventIsNewProjectChord({ ...base, code: "KeyN", key: "n" })).toBe(true);
+    expect(eventIsOpenProjectChord({ ...base, code: "KeyO", key: "o" })).toBe(true);
+    expect(eventIsNewProjectChord({ ...base, shiftKey: true, code: "KeyN", key: "n" })).toBe(false);
   });
 });
 

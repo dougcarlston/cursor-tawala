@@ -573,6 +573,8 @@ export function projectToXml(project) {
       const attrs = [
         `name="${escAttr(form.name)}"`,
         form.startPoint ? `startPoint="true"` : "",
+        form.blockBackButton ? `blockBackButton="true"` : "",
+        form.dataEntryOnly ? `dataEntryOnly="true"` : "",
         form.process ? `process="${escAttr(form.process)}"` : "",
         form.preProcess ? `preProcess="${escAttr(form.preProcess)}"` : "",
         form.themePath ? `themePath="${escAttr(form.themePath)}"` : "",
