@@ -28,7 +28,6 @@ import {
   getFieldsPaletteSelection,
   subscribeFieldsPaletteSelection,
 } from "@/lib/fieldsPaletteSelection";
-import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import { insertFieldIntoActiveTarget } from "@/lib/fieldInsertion";
 import { insertFieldTokenAtSelection } from "@/lib/fieldTokens";
 import {
