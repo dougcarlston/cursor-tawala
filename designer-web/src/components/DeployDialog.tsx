@@ -28,7 +28,7 @@ export function DeployDialog() {
         ) : lastDeploy.startpoints && lastDeploy.startpoints.length > 0 ? (
           <>
             <p className="hint">
-              Only forms marked <strong>Starting Point</strong> in form Properties are listed
+              Only forms marked <strong>Starting Point</strong> (Project Explorer flag) are listed
               here.
             </p>
             <ul className="deploy-urls">

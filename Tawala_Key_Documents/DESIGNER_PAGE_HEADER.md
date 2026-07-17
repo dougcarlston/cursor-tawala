@@ -39,6 +39,10 @@ On **OK**, saves to `Project.PageHeader` (XML `<pageHeader>`): header text + opt
 - `TawalaDesigner/Code/TAWALA/DesignerUI/Dialogs/PageHeaderDialog.cs`
 - `TawalaDesigner/Code/TAWALA/Projects/PageHeader.cs`
 
+### Browser (`designer-web`) — Jul 17, 2026
+
+**Project → Page Header…** is a **stub** for the **8080 / Tomcat / CSS** track (deployed page banner). Not wired in Design canvas authoring.
+
 ---
 
-*Last updated: June 2026.*
+*Last updated: July 17, 2026.*

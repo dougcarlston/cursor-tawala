@@ -139,7 +139,7 @@ export function openFunctionPickerFromEditor(): void {
 }
 
 /**
- * Insert → Image… → From the Web or Tawala Upload… — same Configure as Function → DISPLAY IMAGE.
+ * Insert → Image… → From the Web… — same Configure as Function → DISPLAY IMAGE.
  */
 export function openDisplayImageConfigureFromEditor(): void {
   const handle = getActivePaletteEditor();

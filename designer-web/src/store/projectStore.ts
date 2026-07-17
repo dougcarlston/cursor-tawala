@@ -28,6 +28,12 @@ import { deployProject as apiDeploy } from "@/api/deploy";
 import type { ProcessStatementPanel } from "@/processStatements";
 import { processPanelKeyForCommand, processPanelKeyForLabel } from "@/processStatements";
 import {
+  cascadeBounds as layoutCascade,
+  getMdiSurfaceViewport,
+  tileHorizontalBounds,
+  tileVerticalBounds,
+} from "@/lib/mdiWindowLayout";
+import {
   remapProcessUiCache,
   snapshotProcessUi,
   transitionProcessUi,
@@ -200,6 +206,13 @@ interface ProjectState {
     id: string,
     bounds: Partial<Pick<DesignerWindow, "x" | "y" | "w" | "h">>,
   ) => void;
+  /** Windows → Cascade / Tile — restores minimized; layouts all open windows. */
+  cascadeWindows: (viewport?: { width: number; height: number }) => void;
+  tileWindows: (
+    direction: "horizontal" | "vertical",
+    viewport?: { width: number; height: number },
+  ) => void;
+  closeAllWindows: () => void;
   setProject: (project: TawalaProject) => void;
   setSelection: (selection: Selection) => void;
   setEditorTab: (tab: EditorTab) => void;
@@ -243,6 +256,8 @@ interface ProjectState {
   deleteSelectedEntity: () => boolean;
   toggleFormStartPoint: (name: string) => void;
   toggleFormBlockBack: (name: string) => void;
+  /** Legacy Edit → Pre-populate With Last Entry (`dataEntryOnly`). */
+  toggleFormDataEntryOnly: (name: string) => void;
   moveSelectedNode: (direction: "up" | "down") => void;
   renameForm: (oldName: string, newName: string) => boolean;
   renameProcess: (oldName: string, newName: string) => boolean;
@@ -549,6 +564,101 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { openWindows } = get();
     set({
       openWindows: openWindows.map((w) => (w.id === id ? { ...w, ...bounds } : w)),
+    });
+  },
+
+  cascadeWindows: (viewport) => {
+    const s = get();
+    const { openWindows } = s;
+    if (openWindows.length === 0) return;
+    const vp = viewport ?? getMdiSurfaceViewport();
+    const bounds = layoutCascade(openWindows.length, vp);
+    const baseZ = maxZ(openWindows);
+    const next = openWindows.map((w, i) => ({
+      ...w,
+      ...bounds[i]!,
+      minimized: false,
+      z: baseZ + 1 + i,
+    }));
+    const top = next[next.length - 1]!;
+    const sameEntity = s.selection.kind === top.kind && s.selection.name === top.name;
+    set({
+      openWindows: next,
+      activeWindowId: top.id,
+      cascadeIndex: openWindows.length,
+      selection: { kind: top.kind, name: top.name },
+      selectedItemIndex: sameEntity ? s.selectedItemIndex : null,
+      insertBeforeIndex: insertIndexWhenSwitchingEntity(
+        s.project,
+        top.kind,
+        top.name,
+        sameEntity,
+        s.insertBeforeIndex,
+      ),
+      ...applyProcessWindowTransition(
+        s.selection,
+        top.kind,
+        top.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
+      statusMessage: "Windows cascaded",
+    });
+  },
+
+  tileWindows: (direction, viewport) => {
+    const s = get();
+    const { openWindows } = s;
+    if (openWindows.length === 0) return;
+    const vp = viewport ?? getMdiSurfaceViewport();
+    const layoutBounds =
+      direction === "horizontal"
+        ? tileHorizontalBounds(openWindows.length, vp)
+        : tileVerticalBounds(openWindows.length, vp);
+    const baseZ = maxZ(openWindows);
+    const next = openWindows.map((w, i) => ({
+      ...w,
+      ...layoutBounds[i]!,
+      minimized: false,
+      z: baseZ + 1 + i,
+    }));
+    const top = next[0]!;
+    const sameEntity = s.selection.kind === top.kind && s.selection.name === top.name;
+    set({
+      openWindows: next,
+      activeWindowId: top.id,
+      selection: { kind: top.kind, name: top.name },
+      selectedItemIndex: sameEntity ? s.selectedItemIndex : null,
+      insertBeforeIndex: insertIndexWhenSwitchingEntity(
+        s.project,
+        top.kind,
+        top.name,
+        sameEntity,
+        s.insertBeforeIndex,
+      ),
+      ...applyProcessWindowTransition(
+        s.selection,
+        top.kind,
+        top.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
+      statusMessage:
+        direction === "horizontal" ? "Windows tiled horizontally" : "Windows tiled vertically",
+    });
+  },
+
+  closeAllWindows: () => {
+    const { openWindows } = get();
+    if (openWindows.length === 0) return;
+    set({
+      openWindows: [],
+      activeWindowId: null,
+      cascadeIndex: 0,
+      selectedItemIndex: null,
+      statusMessage: "All windows closed",
     });
   },
 
@@ -1094,6 +1204,23 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       statusMessage: next
         ? `Back button blocked on ${name}`
         : `Back button allowed on ${name}`,
+    });
+  },
+
+  toggleFormDataEntryOnly: (name) => {
+    const { project } = get();
+    const target = project.forms.find((f) => f.name === name);
+    if (!target) return;
+    const next = !target.dataEntryOnly;
+    const forms = project.forms.map((f) =>
+      f.name === name ? { ...f, dataEntryOnly: next } : f,
+    );
+    set({
+      project: { ...project, forms },
+      dirty: true,
+      statusMessage: next
+        ? `${name} will pre-populate with last entry`
+        : `${name} will not pre-populate`,
     });
   },
 

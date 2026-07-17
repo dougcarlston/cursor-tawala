@@ -15,6 +15,7 @@ import {
   setFieldDragData,
   subscribeActiveFieldTargetContext,
 } from "@/lib/fieldInsertion";
+import { setFieldsPaletteSelection } from "@/lib/fieldsPaletteSelection";
 import {
   recordBranchForConditionsForm,
   recordBranchesAtInsertPath,
@@ -99,6 +100,7 @@ export function FieldsPalette({
     setPrevSignature(treeSignature);
     setCollapsed(defaultCollapsed());
     setSelectedKey(null);
+    setFieldsPaletteSelection(null);
   }
 
   const isOpen = (key: string) => !collapsed.has(key);
@@ -115,7 +117,25 @@ export function FieldsPalette({
   }
 
   return (
-    <div className="fields-tree" role="tree" aria-label="Fields">
+    <div
+      className="fields-tree"
+      role="tree"
+      aria-label="Fields"
+      onKeyDown={(e) => {
+        if (e.key === "Escape") {
+          setSelectedKey(null);
+          setFieldsPaletteSelection(null);
+        }
+      }}
+      onClick={(e) => {
+        // Click empty tree chrome (not a leaf) clears selection so Insert → Field greys out.
+        const t = e.target as HTMLElement;
+        if (t.closest(".fields-leaf")) return;
+        if (t.closest(".fields-tree-toggle")) return;
+        setSelectedKey(null);
+        setFieldsPaletteSelection(null);
+      }}
+    >
       {branches.map((branch) => {
         const key = `form:${branch.name}`;
         const open = isOpen(key);
@@ -127,7 +147,11 @@ export function FieldsPalette({
               hasChildren={branch.fields.length > 0}
               active={branch.name === activeFormName}
               star={branch.startPoint}
-              onToggle={() => toggle(key)}
+              onToggle={() => {
+                setSelectedKey(null);
+                setFieldsPaletteSelection(null);
+                toggle(key);
+              }}
             />
             {open && branch.fields.length > 0 ? (
               <ul className="fields-leaf-list">
@@ -159,7 +183,11 @@ export function FieldsPalette({
               open={open}
               hasChildren={branch.leaves.length > 0}
               record
-              onToggle={() => toggle(key)}
+              onToggle={() => {
+                setSelectedKey(null);
+                setFieldsPaletteSelection(null);
+                toggle(key);
+              }}
             />
             {open && branch.leaves.length > 0 ? (
               <ul className="fields-leaf-list">
@@ -187,7 +215,11 @@ export function FieldsPalette({
             label="Variables"
             open={isOpen("node:Variables")}
             hasChildren
-            onToggle={() => toggle("node:Variables")}
+            onToggle={() => {
+              setSelectedKey(null);
+              setFieldsPaletteSelection(null);
+              toggle("node:Variables");
+            }}
           />
           {isOpen("node:Variables") ? (
             <ul className="fields-leaf-list">
@@ -284,17 +316,25 @@ function FieldLeafRow({
             ? "Variables cannot be used in this field"
             : `Drag or double-click to insert ${preview}`
         }
-        onClick={onSelect}
-        onDoubleClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect();
+          setFieldsPaletteSelection(insertName);
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
           if (!canInsert) return;
           onSelect();
+          setFieldsPaletteSelection(insertName);
           insertFieldIntoActiveTarget(insertName);
         }}
         onKeyDown={(e) => {
           if (disabled) return;
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
+            e.stopPropagation();
             onSelect();
+            setFieldsPaletteSelection(insertName);
             if (canInsert) insertFieldIntoActiveTarget(insertName);
           }
         }}
@@ -303,6 +343,8 @@ function FieldLeafRow({
             ev.preventDefault();
             return;
           }
+          ev.stopPropagation();
+          setFieldsPaletteSelection(insertName);
           setFieldDragActive(true);
           setFieldDragData(ev.dataTransfer, leaf.dragValue, formName);
         }}
@@ -342,20 +384,30 @@ function RecordFieldLeafRow({
         tabIndex={0}
         draggable
         title={`Drag or double-click to insert ${preview}`}
-        onClick={onSelect}
-        onDoubleClick={() => {
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect();
+          setFieldsPaletteSelection(insertName);
+        }}
+        onDoubleClick={(e) => {
+          e.stopPropagation();
           if (!canInsert) return;
           onSelect();
+          setFieldsPaletteSelection(insertName);
           insertFieldIntoActiveTarget(insertName);
         }}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
             e.preventDefault();
+            e.stopPropagation();
             onSelect();
+            setFieldsPaletteSelection(insertName);
             if (canInsert) insertFieldIntoActiveTarget(insertName);
           }
         }}
         onDragStart={(ev) => {
+          ev.stopPropagation();
+          setFieldsPaletteSelection(insertName);
           setFieldDragActive(true);
           setFieldDragData(ev.dataTransfer, insertName);
         }}

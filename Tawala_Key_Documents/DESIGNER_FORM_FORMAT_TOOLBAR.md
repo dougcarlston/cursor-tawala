@@ -129,6 +129,14 @@ Form Text tables share Document table behaviors: **Tab** / **Shift+Tab** cell na
 - [x] **Preview tab** — owner: only www.tawala.com error (see `DESIGNER_STARTUP_AND_FORM_CANVAS.md` §8)
 - [x] **Page Header** — `DESIGNER_PAGE_HEADER.md`
 
+### Browser (`designer-web`) — Jul 17, 2026
+
+- **Format** menu: **removed** (palette + Project).
+- Live B/I/U/color/fonts/tables: **Formatting Palette**.
+- **Project → Styles →** FIB / MCQ / Text: **wired** (Apply to Selected writes `style` / `columnCount` / `paddingBottom`).
+- **Project → Tabs…**: **wired** (item `tabPositions` inches → Deploy twips).
+- **Page Header / Themes**: **stubs** on Project for **8080 / CSS** track.
+
 ---
 
-*Last updated: July 2026 — from `MDIFormView.cs`, `Dialogs/*StylesDialog.cs`; Insert Table blocked inside tables; Borders menu (Border 1 / Border 2 / No Border) shared with Document palette; Tab cell nav + cell-scoped align; one top-left table move handle (no float wrap toggles).*
+*Last updated: July 17, 2026 — Project Styles/Tabs wired; Format menu removed; from `MDIFormView.cs`, `Dialogs/*StylesDialog.cs`; Insert Table blocked inside tables; Borders menu (Border 1 / Border 2 / No Border) shared with Document palette; Tab cell nav + cell-scoped align; one top-left table move handle (no float wrap toggles).*

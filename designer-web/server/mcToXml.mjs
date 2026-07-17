@@ -1,4 +1,6 @@
-const TAB_MC = '<tabPositions><tabStop position="2880"/></tabPositions>';
+import { tabPositionsXmlFromInches } from "./tabPositionsXml.mjs";
+
+const TAB_MC_DEFAULT = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
 function templateToField(expr) {
   const m = String(expr ?? "").match(/<<([^>]+)>>/);
@@ -17,19 +19,23 @@ function questionPlainText(question) {
   return String(question ?? "").replace(/<[^>]+>/g, "");
 }
 
-function questionParagraph(question, escText) {
+function tabsFor(item) {
+  return tabPositionsXmlFromInches(item.tabPositions, TAB_MC_DEFAULT);
+}
+
+function questionParagraph(question, escText, tabsXml) {
   const q = questionPlainText(question);
   const italicMatch = q.match(/^(.*?)(\([^)]+\))\s*$/);
   if (italicMatch) {
     const main = italicMatch[1].trim();
     const note = italicMatch[2];
     const mainPart = main ? fontXml(`${main} `, escText) : "";
-    return `<paragraph indent="0" align="left">${TAB_MC}${mainPart}${fontXml(note, escText, { italic: true })}</paragraph>`;
+    return `<paragraph indent="0" align="left">${tabsXml}${mainPart}${fontXml(note, escText, { italic: true })}</paragraph>`;
   }
   if (!q) {
-    return `<paragraph indent="0" align="left">${TAB_MC}</paragraph>`;
+    return `<paragraph indent="0" align="left">${tabsXml}</paragraph>`;
   }
-  return `<paragraph indent="0" align="left">${TAB_MC}${fontXml(q, escText, { bold: true })}</paragraph>`;
+  return `<paragraph indent="0" align="left">${tabsXml}${fontXml(q, escText, { bold: true })}</paragraph>`;
 }
 
 function dynamicMcBody(choice) {
@@ -41,11 +47,11 @@ function dynamicMcBody(choice) {
 </value-expression><sort-expression></sort-expression><record-selector><form name="${sourceForm}" /></record-selector></dynamic-mcq></data-provider>`;
 }
 
-function staticChoicesXml(choices, escAttr, escText) {
+function staticChoicesXml(choices, escAttr, escText, tabsXml) {
   return choices
     .map((c, i) => {
       const label = c.label ?? c.name ?? String.fromCharCode(97 + i);
-      return `<choice label="${escAttr(label)}"><paragraph indent="0" align="left">${TAB_MC}${fontXml(c.text ?? "", escText)}</paragraph></choice>`;
+      return `<choice label="${escAttr(label)}"><paragraph indent="0" align="left">${tabsXml}${fontXml(c.text ?? "", escText)}</paragraph></choice>`;
     })
     .join("");
 }
@@ -64,9 +70,15 @@ export function mcToXml(item, escAttr, escText) {
   const altLabel = item.name ? ` alternateLabel="${escAttr(item.name)}"` : "";
   const style = mcStyleAttr(item);
   const styleAttr = style ? ` style="${escAttr(style)}"` : "";
+  const colAttr =
+    style === "multicolumn" && typeof item.columnCount === "number" && item.columnCount > 0
+      ? ` columnCount="${escAttr(String(item.columnCount))}"`
+      : "";
+  const padAttr = item.paddingBottom === false ? ` paddingBottom="false"` : "";
+  const tabsXml = tabsFor(item);
   const body = dynamic
     ? dynamicMcBody(dynamic)
-    : staticChoicesXml(choices, escAttr, escText);
+    : staticChoicesXml(choices, escAttr, escText, tabsXml);
 
-  return `<mc label="${escAttr(item.label)}"${altLabel} onlyone="${item.onlyone !== false ? "true" : "false"}" required="${item.required ? "true" : "false"}"${styleAttr}><question>${questionParagraph(item.question, escText)}</question>${body}</mc>`;
+  return `<mc label="${escAttr(item.label)}"${altLabel} onlyone="${item.onlyone !== false ? "true" : "false"}" required="${item.required ? "true" : "false"}"${styleAttr}${colAttr}${padAttr}><question>${questionParagraph(item.question, escText, tabsXml)}</question>${body}</mc>`;
 }

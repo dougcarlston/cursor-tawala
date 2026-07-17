@@ -13,6 +13,7 @@ import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
 import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { LinkInsertHost } from "./components/LinkInsertHost";
+import { ProjectChromeHost } from "./components/ProjectChromeHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import { SaveAsDialog } from "./components/SaveAsDialog";
 import type { TemplateEntry } from "@/templates/catalog";
@@ -25,6 +26,7 @@ import {
   setShellFileActions,
   subscribeSaveAsDialog,
 } from "@/lib/shellCommands";
+import { getViewChrome, subscribeViewChrome } from "@/lib/viewChrome";
 
 const ITEMS_COLUMN_WIDTH = 76 + 1; // .designer-items + border
 const SPLITTER_WIDTH = 4;
@@ -72,6 +74,7 @@ export default function App() {
   );
   const [leftWidth, setLeftWidth] = useState(() => loadPanelWidths().left);
   const [rightWidth, setRightWidth] = useState(() => loadPanelWidths().right);
+  const viewChrome = useSyncExternalStore(subscribeViewChrome, getViewChrome, getViewChrome);
 
   // Re-assert boot guards after Fast Refresh of App (idempotent in shellCommands).
   useEffect(() => {
@@ -178,10 +181,12 @@ export default function App() {
   const activeWindow = openWindows.find((w) => w.id === activeWindowId) ?? null;
   const activeKind = activeWindow?.kind ?? null;
 
+  const showItemsColumn =
+    viewChrome.itemsPalette && (activeKind === "form" || activeKind === "process");
   // Main icon toolbar sits above PE (+ Items/Statements); Formatting Palette starts at canvas.
-  const midPalette =
-    activeKind === "form" || activeKind === "process" ? ITEMS_COLUMN_WIDTH : 0;
-  const mainIconZoneWidth = leftWidth + SPLITTER_WIDTH + midPalette;
+  const midPalette = showItemsColumn ? ITEMS_COLUMN_WIDTH : 0;
+  const explorerZone = viewChrome.projectExplorer ? leftWidth + SPLITTER_WIDTH : 0;
+  const mainIconZoneWidth = explorerZone + midPalette;
 
   const shell = {
     onNewProject: () => setShowNewProject(true),
@@ -209,30 +214,36 @@ export default function App() {
         onChange={onOpenFile}
       />
       <MenuBar {...shell} />
-      <div className="designer-chrome-row">
-        <MainIconToolbar {...shell} zoneWidth={mainIconZoneWidth} />
-        <FormattingPalette activeKind={activeKind} flushLeft />
-      </div>
+      {viewChrome.toolbar && (
+        <div className="designer-chrome-row">
+          <MainIconToolbar {...shell} zoneWidth={mainIconZoneWidth} />
+          <FormattingPalette activeKind={activeKind} flushLeft />
+        </div>
+      )}
       <div className="designer-main">
-        <aside
-          className="designer-left"
-          style={{ width: leftWidth, minWidth: 56, flex: "0 0 auto" }}
-        >
-          <ProjectExplorer />
-        </aside>
-        <div
-          className="designer-left-splitter"
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize Project Explorer"
-          onPointerDown={startResizeLeft}
-        />
-        {activeKind === "form" && (
+        {viewChrome.projectExplorer && (
+          <>
+            <aside
+              className="designer-left"
+              style={{ width: leftWidth, minWidth: 56, flex: "0 0 auto" }}
+            >
+              <ProjectExplorer />
+            </aside>
+            <div
+              className="designer-left-splitter"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize Project Explorer"
+              onPointerDown={startResizeLeft}
+            />
+          </>
+        )}
+        {viewChrome.itemsPalette && activeKind === "form" && (
           <aside className="designer-items">
             <FormItemsPalette />
           </aside>
         )}
-        {activeKind === "process" && (
+        {viewChrome.itemsPalette && activeKind === "process" && (
           <aside className="designer-items">
             <ProcessStatementsPalette />
           </aside>
@@ -240,21 +251,25 @@ export default function App() {
         <main className="designer-center">
           <CanvasWindowManager />
         </main>
-        <div
-          className="designer-right-splitter"
-          role="separator"
-          aria-orientation="vertical"
-          aria-label="Resize Fields column"
-          onPointerDown={startResizeRight}
-        />
-        <aside
-          className="designer-right"
-          style={{ width: rightWidth, minWidth: 60, flex: "0 0 auto" }}
-        >
-          <InspectorPanel />
-        </aside>
+        {viewChrome.fieldsPalette && (
+          <>
+            <div
+              className="designer-right-splitter"
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize Fields column"
+              onPointerDown={startResizeRight}
+            />
+            <aside
+              className="designer-right"
+              style={{ width: rightWidth, minWidth: 60, flex: "0 0 auto" }}
+            >
+              <InspectorPanel />
+            </aside>
+          </>
+        )}
       </div>
-      <StatusBar />
+      {viewChrome.statusBar && <StatusBar />}
       <LoginDialog />
       <DeployDialog />
       <NewProjectDialog
@@ -265,6 +280,7 @@ export default function App() {
       <SaveAsDialog open={showSaveAs} />
       <FunctionPickerHost />
       <LinkInsertHost />
+      <ProjectChromeHost />
     </div>
   );
 }

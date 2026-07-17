@@ -294,9 +294,9 @@ Form renamed **Form 1** → **Start** in later shots.
 
 ---
 
-## File Uploader (deferred — not on 2011 Designer build)
+## File Uploader (deferred — out of browser Items palette)
 
-**Status:** Not documentable from live Designer UI on the Jan 2011 build. Confirmed in production projects (**SportsDashboards** divisions) and fully present in repo source.
+**Status:** Not on the Jan 2011 reference Designer UI. Present in production projects (**SportsDashboards** divisions) and in repo C# source. **Owner Jul 17:** omitted from the browser Items palette (no greyed stub) and dropped from **Insert → Image** wording (“Tawala Upload”). Images in browser Designer: **From your PC…** (embed) or **From the Web…** (DISPLAY IMAGE URL). Keep this section for XML/`<file>` parity if a later build ever needs the form item.
 
 ### From source + XML (for browser Designer later)
 

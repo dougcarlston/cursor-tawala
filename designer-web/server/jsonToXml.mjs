@@ -545,7 +545,8 @@ function itemToXml(item, formName = "", project = null) {
     case "text": {
       const legacy = registrationTextToXml(item, formName);
       const body = legacy ?? textContentToXml(item.content, item.style, project);
-      return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}">${body}</text>`;
+      const padAttr = item.paddingBottom === false ? ` paddingBottom="false"` : "";
+      return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}"${padAttr}>${body}</text>`;
     }
     case "fib": {
       if (formName === "Registration") {

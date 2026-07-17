@@ -138,14 +138,14 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "display-image",
     name: "DISPLAY IMAGE",
     description:
-      "Shows an image from an http:// or https:// URL. To use an uploaded file, put a File Uploader on a form and drop that field here (File Uploader is greyed in this Designer until implemented — same gap as the Jan 2011 legacy build).",
+      "Shows an image from an http:// or https:// URL (or a field that holds one). For a file on your computer, use Insert → Image → From your PC… instead — that embeds the image in the project.",
     parameters: [
       {
         id: "source",
         type: "expression",
         name: "Image Source",
         description:
-          "Paste a full image URL (http:// or https://), or drop a field that holds a URL. Desktop file paths and drag-dropping image files are not supported here.",
+          "Paste a full image URL (http:// or https://), or drop a field that holds a URL. To embed a local file, use Insert → Image → From your PC… (not this function).",
         required: true,
       },
       {

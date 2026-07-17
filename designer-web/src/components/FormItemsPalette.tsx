@@ -8,35 +8,25 @@ import { setFormItemDrag } from "@/lib/designerDrag";
  * look-and-feel (owner, July 2026): blue "Items" header + tall icon-over-label buttons.
  *
  * Icons are Unicode/CSS placeholders for now; real icon assets can be swapped in later.
- * File Uploader is shown for visual parity with legacy but is **always disabled** — it was
- * never implemented in the browser Designer (see specs).
+ * **File Uploader** is omitted (owner Jul 17) — never wired in the 2011 reference build or
+ * browser Designer; see `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` (deferred / out of palette).
  *
  * Click inserts at the current selection (before the selected item, or at end);
  * drag onto a Form window shows a live caret at the drop point.
  */
 
 interface PaletteItem {
-  /** `null` marks a display-only item with no insert action (File Uploader). */
-  type: FormItemType | null;
+  type: FormItemType;
   label: string;
   glyph: string;
-  alwaysDisabled?: boolean;
-  note?: string;
 }
 
-// Order and labels mirror the legacy Items toolbox.
+// Order and labels mirror the legacy Items toolbox (without File Uploader).
 const ITEMS: PaletteItem[] = [
   { type: "heading", label: "Heading", glyph: "H" },
   { type: "text", label: "Text", glyph: "T" },
   { type: "fib", label: "Fill in the Blank", glyph: "▭" },
   { type: "mc", label: "Multiple Choice", glyph: "☑" },
-  {
-    type: null,
-    label: "File Uploader",
-    glyph: "⬆",
-    alwaysDisabled: true,
-    note: "File Uploader is not implemented in the browser Designer yet.",
-  },
   { type: "field", label: "Hidden Field", glyph: "▨" },
   { type: "break", label: "Page Break", glyph: "⤓" },
   { type: "skipInstructions", label: "Skip Instructions", glyph: "⚙" },
@@ -52,28 +42,21 @@ export function FormItemsPalette() {
       <div className="items-palette-title">Items</div>
       <div className="items-palette-body">
         {ITEMS.map((item) => {
-          const title = item.alwaysDisabled
-            ? item.note
-            : formInactive
-              ? "Open a Form window (or drag this item onto one)"
-              : `Insert ${item.label} (click uses selection; or drag onto a Form window)`;
+          const title = formInactive
+            ? "Open a Form window (or drag this item onto one)"
+            : `Insert ${item.label} (click uses selection; or drag onto a Form window)`;
           return (
             <button
               key={item.label}
               type="button"
               className="items-palette-button"
-              disabled={!!item.alwaysDisabled}
               title={title}
-              draggable={!!item.type && !item.alwaysDisabled}
+              draggable
               onDragStart={(e) => {
-                if (!item.type || item.alwaysDisabled) {
-                  e.preventDefault();
-                  return;
-                }
                 setFormItemDrag(e.dataTransfer, item.type);
               }}
               onClick={() => {
-                if (!item.type || formInactive) return;
+                if (formInactive) return;
                 insertFormItem(item.type);
               }}
             >

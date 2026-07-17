@@ -188,9 +188,8 @@ Pre-processes that are not Post-processes show the **Not connected** banner text
 | 2 | Text | Add a text item for displaying formatted text. |
 | 3 | Fill in the Blank | Add questions with one or more blanks. |
 | 4 | Multiple Choice | Add single or multiple choice question. |
-| 5 | File Uploader | Add a form item that requests a file upload from the user and includes room for a paragraph of instructions. |
 
-> **Owner note (June 2026):** On the **Jan 24, 2011** Designer build available on the reference PC, **File Uploader is not implemented** (palette entry may exist but does not work). A later build clearly shipped it — e.g. **SportsDashboards** projects use `<file>` items for division uploads. Until a newer Designer is found, document File Uploader from **project XML** and **`TawalaDesigner` source** (`FileUploadItem.cs`, `FileUploadItemView.cs`). See `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § File Uploader (deferred).
+> **Owner note (June 2026 / Jul Jul 17):** Legacy **File Uploader** form item existed in later builds (e.g. SportsDashboards `<file>`) and in C# source, but was **not** on the Jan 2011 reference Designer and is **omitted** from the browser Items palette (no greyed stub). Documented only in `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § File Uploader (deferred / out of palette). Images: **Insert → Image → From your PC…** (embed) or **From the Web…** (DISPLAY IMAGE URL).
 
 *(line break)*
 
@@ -198,9 +197,9 @@ Pre-processes that are not Post-processes show the **Not connected** banner text
 
 | # | Item | Tooltip |
 |---|------|---------|
-| 6 | Hidden Field | Add hidden field to store additional data associated with the form. |
-| 7 | Page Break | Add a page break which causes a submit button to appear. |
-| 8 | Skip Instructions | Add processing instructions to skip over form items. |
+| 5 | Hidden Field | Add hidden field to store additional data associated with the form. |
+| 6 | Page Break | Add a page break which causes a submit button to appear. |
+| 7 | Skip Instructions | Add processing instructions to skip over form items. |
 
 ### Statements (process selected)
 
@@ -373,14 +372,14 @@ C# source: `FieldsPalette.cs` (`getSortedVariables`, form field leaves); `Projec
 | File shortcuts | New **Ctrl/⌘N**, Open **Ctrl/⌘O**, Save **Ctrl/⌘S**, Save As **Shift+Ctrl/⌘S** |
 | Edit slim | Cut / Copy / Paste / Delete / Undo / Redo only (+ standard shortcuts; Redo Mac **⇧⌘Z**) |
 | Edit omit | Rename; Connect/Disconnect Pre/Post (use Process banner) |
-| Form toggles | **Starting Point** + **Pre-populate With Last Entry** on Form Properties; **Block Back** on Explorer toolbar |
+| Form toggles | **Starting Point**, **Pre-populate With Last Entry**, and **Block Back** on **Project Explorer** toolbar (form selected). Right-column Properties panel was removed July 2026 (Fields only). |
 | Held bugs | Save/Save As last-loaded name; greyed `.json` in picker — see `DESIGNER_OPEN_BUGS.md` |
 
 ---
 
 ## Menu: View
 
-All items are **show/hide toggles** (checked = visible):
+All items are **show/hide toggles** (checked = visible). Intent: hide chrome (especially **Toolbar** / **Status Bar**) to give the canvas more height when imagining a full screen; side panels for width.
 
 | Item |
 |------|
@@ -390,6 +389,17 @@ All items are **show/hide toggles** (checked = visible):
 | Toolbar |
 | Status Bar |
 | Items Palette |
+
+### Browser (`designer-web`) — Jul 17, 2026
+
+| Decision | Notes |
+|----------|--------|
+| Menu labels | Full legacy list (all five + separator) |
+| Behavior | **Wired** — checkmarks toggle shell chrome; state in `localStorage` (`tawala.designer.viewChrome`) |
+| Toolbar | Entire chrome row: main icon toolbar **and** Formatting Palette (row collapses for canvas height) |
+| Items Palette | Hides Form Items / Process Statements column |
+| Fields Palette | Hides right Fields column |
+| Smoke | Uncheck Toolbar + Status Bar → taller canvas; re-check to restore; refresh keeps choices |
 
 ---
 
@@ -426,7 +436,7 @@ Insert contents depend on the **active MDI child** (Form, Process, or Document).
 | Hyperlink... | | Greyed unless cursor in **Text** item |
 | Function... | | Greyed unless cursor in **Text** item |
 
-Matches **Items** palette except **File Uploader** appears on palette but not in this Insert list. **Field** not present (Document only).
+Matches **Items** palette (seven items; File Uploader omitted). **Field** not present (Document only).
 
 ### B) Process selected
 
@@ -463,27 +473,37 @@ Insert uses internal `*StatementView` names; palette uses short names:
 
 **Insert → Image…**, **Invitation…**, **Hyperlink…**, **Function…** dialogs: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`.
 
+### Browser (`designer-web`) — Jul 17, 2026 (menu review)
+
+| Decision | Notes |
+|----------|--------|
+| Menu bar order | **Insert before View** is fine (owner) — Insert used more even when Items/Statements palette is easier for most commands |
+| Keep Insert menu | Yes — duplicates palette by design (legacy parity); palette remains the faster path |
+| Form / Process / Document | Already context-sensitive and largely wired — see gaps below |
+| Image submenu | **From your PC…** (embed) · **From the Web…** (DISPLAY IMAGE). Dropped “Tawala Upload”; File Uploader form item omitted from Items palette (Jul 17) |
+| Form/Process vs palettes | **Identical handlers** (owner Jul 17 — Insert Form items ↔ Items palette; Process statements ↔ Statements palette). Document Image/Invitation/Hyperlink/Function + **Field** (Jul 17) via Insert/fx |
+| Open gaps | Polish only if owner flags during review |
+
 ---
 
 ## Menu: Format
 
-Active when rich text has focus (e.g. text inside a form item). Some items greyed when nothing formattable is selected.
+**Owner Jul 17:** No Format menu in browser Designer. Day-to-day B/I/U / color / fonts / tables live on the **Formatting Palette**. Project-scoped chrome moved to **Project** (see below). Legacy Format contents documented here for parity reference:
 
 | Item | Shortcut | Notes |
 |------|----------|-------|
-| Bold | Ctrl+B | |
-| Italic | Ctrl+I | |
-| Underline | Ctrl+U | |
-| Reset Formatting | | Eraser icon; greyed when inactive |
+| Bold | Ctrl+B | → Formatting Palette |
+| Italic | Ctrl+I | → Formatting Palette |
+| Underline | Ctrl+U | → Formatting Palette |
+| Reset Formatting | | → Formatting Palette |
 | *(separator)* | | |
-| **Page Header…** | Project-wide banner — `DESIGNER_PAGE_HEADER.md` |
-| Project Themes | → | Submenu |
-| Color | → | Submenu |
-| Tabs... | | Dialog |
+| **Page Header…** | → **Project** (8080 stub) — `DESIGNER_PAGE_HEADER.md` |
+| Project Themes | → **Project → Themes…** (8080 stub) |
+| Color | → Formatting Palette |
+| Tabs... | → **Project → Tabs…** (wired) |
+| **Styles** → | → **Project → Styles** (wired) — `DESIGNER_FORM_FORMAT_TOOLBAR.md` |
 
-*An earlier capture also listed **Styles** → submenu; not re-verified in June 2026 session.*
-
-### Format → Color →
+### Format → Color → (legacy; palette owns this)
 
 | Item | Opens |
 |------|--------|
@@ -492,13 +512,13 @@ Active when rich text has focus (e.g. text inside a form item). Some items greye
 | *(separator)* | |
 | Choose... | Standard Windows **Color** dialog |
 
-### Format → Project Themes →
+### Format → Project Themes → (legacy list; browser stub on Project)
 
 Checklist; one theme active (✓). Themes observed:
 
 Baseball, Basic Blue, Basic Green, Basic Pink, Basic Yellow, Big Q, Blue Lined Paper, Chocolate, Dark, **Default**, Dirtbowl, Dirtbowl - Variable Width, Full Moon, Green Lined Paper, Green Tea, Light Green, Lime, MVSC, Orange Swirl, Plain, Purple Haze, Red, Red Rays, Salzburg, Soup's On, Tennis, Tin Car Bell, Yellow
 
-### Format → Tabs... dialog
+### Format → Tabs... dialog (legacy; browser: Project → Tabs…)
 
 Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / twips on export).
 
@@ -511,28 +531,37 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Clear All | Remove all |
 | OK / Cancel | |
 
+### Browser (`designer-web`) — Jul 17, 2026 (menu review)
+
+| Decision | Notes |
+|----------|--------|
+| Format menu | **Removed** — palette + Project own the useful bits |
+| Tables menu | **Skipped** — tables stay on Formatting Palette |
+| Live formatting | Formatting Palette |
+| When returning | Optional palette↔legacy Format label consistency pass |
+| **8080 / CSS stubs** | **Page Header…**, **Themes…** on Project (Deployed page chrome) |
+| **Wired on Project** | **Tabs…** (item `tabPositions` inches → Deploy twips); **Styles →** FIB / MCQ / Text (writes `style` / `columnCount` / `paddingBottom` on selected item) |
+
+---
+
+## Menu: Project
+
+| Item | Browser |
+|------|---------|
+| Deploy | Live |
+| Project Manager… | Live |
+| *(separator)* | |
+| Page Header… | **Stub** — 8080 / Tomcat / CSS track |
+| Themes… | **Stub** — 8080 / Tomcat / CSS track |
+| *(separator)* | |
+| Tabs… | **Wired** — Form window; selected Heading/Text/FIB/MCQ |
+| Styles → Fill in the Blank… / Multiple Choice… / Text… | **Wired** — Form window; Apply to Selected |
+
 ---
 
 ## Menu: Tables
 
-### Tables → Insert →
-
-| Item | Notes |
-|------|-------|
-| Table | Active |
-| Column Before | Greyed until inside a table |
-| Column After | Greyed |
-| Row Before | Greyed |
-| Row After | Greyed |
-
-### Tables → Delete →
-
-| Item |
-|------|
-| Table |
-| Column |
-| Row |
-
+**Owner Jul 17:** Skip Tables menu — use Formatting Palette table tools.
 ---
 
 ## Menu: Tools
@@ -556,6 +585,15 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | 2 Document - [name] | |
 | … | |
 
+### Browser (`designer-web`) — Jul 17, 2026
+
+| Decision | Notes |
+|----------|--------|
+| Placement | Before **Help** on the menu bar |
+| Cascade / Tile H / Tile V / Close All | **Wired** — uses existing MDI `openWindows` shell |
+| Window list | Numbered open windows; ✓ = active; click focuses (restores if minimized) |
+| Empty canvas | Layout commands disabled |
+
 ---
 
 ## Menu: Help
@@ -563,6 +601,13 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Item |
 |------|
 | About |
+
+### Browser (`designer-web`) — Jul 17, 2026
+
+| Decision | Notes |
+|----------|--------|
+| About Tawala Designer | **Stub** (disabled). Legacy popup = copyright + build status; owner will paste text later |
+| Other Help items | None on reference build |
 
 ---
 
@@ -660,10 +705,12 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 | Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Gaps:** auto-name on attach when Connect Pre/Post UI exists; `[-]`/`[+]` chrome, dotted lines, toolbar icons 4–7, rename/reorder, default-expanded forms on first open |
 | Middle column | Items / Statements / empty | Form items palette only; always visible |
 | Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; **Phase 2 (July 2026):** drag **and** double-click insert `<<name>>` into item property editors, rich-text surface, and process JSON (Records/RecordSet drop context deferred) |
-| Insert | Context-sensitive (3 menus) | Partial; no Process insert |
-| Format / Themes / Tabs | Full | Minimal |
-| MDI Windows menu | Yes | Single editor pane |
+| Insert | Context-sensitive Form / Process / Document menus | **Mostly wired (Jul 2026):** Form top-7 + Image/Invitation/Hyperlink/Function; Process statements; Document Image/Invitation/Hyperlink/Function + **Field** (Jul 17 — Fields palette selection). Menu before View (owner OK) |
+| Format / Themes / Tabs | Full Format menu + Styles | **Jul 17:** Format menu **removed**. Palette owns typing chrome. **Project:** Tabs + Styles wired; Page Header + Themes **8080 stubs** |
+| Tables | Tables menu | **Skipped** — Formatting Palette only |
+| MDI Windows menu | Yes | **Jul 17:** Windows menu wired (Cascade / Tile H / Tile V / Close All + window list) |
 | Toolbars | Main icon bar + format bar (per MDI child) | Main icon toolbar + Formatting Palette; **Delete** (red X) removes selected Form/Process/Document with confirm, or selected form item |
+| View menu | Five check-toggles (Explorer, Fields, Toolbar, Status Bar, Items Palette) | **Jul 17:** **Wired** — toggles hide/show chrome; persisted in localStorage |
 | Delete Form/Process/Document | Explorer + ConfirmDialog (`Delete {Type} "{name}"?`) | **Wired July 2026** via main toolbar / Edit → Delete (`confirmAndDeleteProjectEntity`) |
 
 ---
@@ -683,4 +730,4 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 
 ---
 
-*Last updated: July 2026 — Owner decisions Q1–Q4 (Fields leaves, variable scope, collapse defaults, `_InviteeID` ordering); Phase 1 browser gap table refreshed.*
+*Last updated: July 17, 2026 — Format stubs; View stubs; Insert image/Uploader decisions; File/Edit owner decisions.*

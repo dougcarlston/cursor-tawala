@@ -45,6 +45,11 @@ export interface FormItemBase {
   label: string;
   alternateLabel?: string;
   style?: string;
+  /**
+   * Paragraph tab stops in **inches** (Project → Tabs…). Deploy emits twips (×1440).
+   * Absent → export uses layout defaults (e.g. 2").
+   */
+  tabPositions?: number[];
 }
 
 export interface HeadingItem extends FormItemBase {
@@ -69,6 +74,8 @@ export interface HeadingItem extends FormItemBase {
 export interface TextItem extends FormItemBase {
   type: "text";
   content?: string | RichContentBlock[];
+  /** When false, Deploy omits blank space below (`paddingBottom="false"`). */
+  paddingBottom?: boolean;
 }
 
 export interface FibItem extends FormItemBase {
@@ -90,6 +97,10 @@ export interface McItem extends FormItemBase {
    * `stored` = dynamic choices from project data (Configure Function). Absent = manual.
    */
   choiceSource?: "manual" | "stored";
+  /** Multi-column count; 0 / absent with style multicolumn = Auto. */
+  columnCount?: number;
+  /** When false, Deploy omits blank space below (`paddingBottom="false"`). */
+  paddingBottom?: boolean;
 }
 
 export interface FieldItem extends FormItemBase {

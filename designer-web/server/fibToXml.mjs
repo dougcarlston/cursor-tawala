@@ -8,11 +8,20 @@ import {
   plainForUnderscores,
 } from "./fibPrompt.mjs";
 import { richFibRowHtmlToXml } from "./fibRichPromptToXml.mjs";
+import { tabPositionsXmlFromInches } from "./tabPositionsXml.mjs";
 
-const TAB_LEFT =
+const TAB_LEFT_DEFAULT =
   '<tabPositions><tabStop position="4031"/><tabStop position="6192"/></tabPositions>';
-const TAB_HINT =
+const TAB_HINT_DEFAULT =
   '<tabPositions><tabStop position="4896"/><tabStop position="8496"/></tabPositions>';
+const TAB_FREEFORM_DEFAULT = '<tabPositions><tabStop position="4031"/></tabPositions>';
+const TAB_TOPLABELS_DEFAULT = '<tabPositions><tabStop position="2880"/></tabPositions>';
+
+/** Active tab XML for nested helpers (set for the duration of `fibToXml`). */
+let TAB_LEFT = TAB_LEFT_DEFAULT;
+let TAB_HINT = TAB_HINT_DEFAULT;
+let TAB_FREEFORM = TAB_FREEFORM_DEFAULT;
+let TAB_TOPLABELS = TAB_TOPLABELS_DEFAULT;
 
 function blankLetter(i) {
   return String.fromCharCode(97 + (i % 26));
@@ -293,9 +302,66 @@ function freeformRowsXml(prompt, blanks, letters, escAttr, escText) {
   return parts;
 }
 
-const TAB_FREEFORM = '<tabPositions><tabStop position="4031"/></tabPositions>';
+/** Convert JSON FIB item → legacy Java <fib> XML with paragraphs + blanks. */
+export function fibToXml(item, escAttr, escText) {
+  const customTabs =
+    Array.isArray(item.tabPositions) && item.tabPositions.length > 0
+      ? tabPositionsXmlFromInches(item.tabPositions, TAB_FREEFORM_DEFAULT)
+      : null;
+  TAB_LEFT = customTabs ?? TAB_LEFT_DEFAULT;
+  TAB_HINT = customTabs ?? TAB_HINT_DEFAULT;
+  TAB_FREEFORM = customTabs ?? TAB_FREEFORM_DEFAULT;
+  TAB_TOPLABELS = customTabs ?? TAB_TOPLABELS_DEFAULT;
 
-const TAB_TOPLABELS = '<tabPositions><tabStop position="2880"/></tabPositions>';
+  try {
+    const prompt = typeof item.prompt === "string" ? item.prompt : "";
+    const blanks = item.blanks ?? [];
+    const style = item.style ?? "";
+    const alternateLabel = item.alternateLabel ?? item.name;
+    const left = fibUsesLeftLabels(style);
+    const letters = new Map(blanks.map((b, i) => [b, blankLetter(i)]));
+
+    let parts = [];
+    if (style === "topLabels") {
+      const rows = parseFibPrompt(prompt, blanks);
+      const hasDisplayLabels = blanks.some((b) => b.displayLabel?.trim());
+      parts = hasDisplayLabels
+        ? topLabelsFromBlanks(item, letters, escAttr, escText)
+        : rows.length > 0
+          ? topLabelsRowsXml(rows, letters, escAttr, escText)
+          : emptyPromptBlanksXml(blanks, escAttr, escText);
+    } else if (!prompt.trim() && blanks.length > 0) {
+      parts = emptyPromptBlanksXml(blanks, escAttr, escText);
+    } else {
+      const right = fibUsesRightAlignLabels(style);
+      if (right || left) {
+        const rows = parseFibPrompt(prompt, blanks);
+        for (const row of rows) {
+          if (right) {
+            parts.push(rightAlignRowXml(row, letters, escAttr, escText));
+          } else {
+            parts.push(leftAlignRowXml(row, letters, escAttr, escText));
+          }
+        }
+      } else {
+        // Freeform / default: preserve Design soft-rows + character formatting.
+        parts = freeformRowsXml(prompt, blanks, letters, escAttr, escText);
+      }
+    }
+
+    const styleAttr = style ? ` style="${escAttr(style)}"` : "";
+    const altAttr =
+      alternateLabel && alternateLabel !== item.label
+        ? ` alternateLabel="${escAttr(alternateLabel)}"`
+        : "";
+    return `<fib label="${escAttr(item.label)}"${altAttr}${styleAttr}>${parts.join("")}</fib>`;
+  } finally {
+    TAB_LEFT = TAB_LEFT_DEFAULT;
+    TAB_HINT = TAB_HINT_DEFAULT;
+    TAB_FREEFORM = TAB_FREEFORM_DEFAULT;
+    TAB_TOPLABELS = TAB_TOPLABELS_DEFAULT;
+  }
+}
 
 /** topLabels: one paragraph per blank; displayLabel is shown text, name/alternateLabel is stored field. */
 function topLabelsFromBlanks(item, letters, escAttr, escText) {
@@ -360,49 +426,4 @@ function emptyPromptBlanksXml(blanks, escAttr, escText) {
     const body = `${pad}${blankXml(blank, letter, escAttr, escText)}`;
     return paragraph(body, TAB_FREEFORM);
   });
-}
-
-/** Convert JSON FIB item → legacy Java <fib> XML with paragraphs + blanks. */
-export function fibToXml(item, escAttr, escText) {
-  const prompt = typeof item.prompt === "string" ? item.prompt : "";
-  const blanks = item.blanks ?? [];
-  const style = item.style ?? "";
-  const alternateLabel = item.alternateLabel ?? item.name;
-  const left = fibUsesLeftLabels(style);
-  const letters = new Map(blanks.map((b, i) => [b, blankLetter(i)]));
-
-  let parts = [];
-  if (style === "topLabels") {
-    const rows = parseFibPrompt(prompt, blanks);
-    const hasDisplayLabels = blanks.some((b) => b.displayLabel?.trim());
-    parts = hasDisplayLabels
-      ? topLabelsFromBlanks(item, letters, escAttr, escText)
-      : rows.length > 0
-        ? topLabelsRowsXml(rows, letters, escAttr, escText)
-        : emptyPromptBlanksXml(blanks, escAttr, escText);
-  } else if (!prompt.trim() && blanks.length > 0) {
-    parts = emptyPromptBlanksXml(blanks, escAttr, escText);
-  } else {
-    const right = fibUsesRightAlignLabels(style);
-    if (right || left) {
-      const rows = parseFibPrompt(prompt, blanks);
-      for (const row of rows) {
-        if (right) {
-          parts.push(rightAlignRowXml(row, letters, escAttr, escText));
-        } else {
-          parts.push(leftAlignRowXml(row, letters, escAttr, escText));
-        }
-      }
-    } else {
-      // Freeform / default: preserve Design soft-rows + character formatting.
-      parts = freeformRowsXml(prompt, blanks, letters, escAttr, escText);
-    }
-  }
-
-  const styleAttr = style ? ` style="${escAttr(style)}"` : "";
-  const altAttr =
-    alternateLabel && alternateLabel !== item.label
-      ? ` alternateLabel="${escAttr(alternateLabel)}"`
-      : "";
-  return `<fib label="${escAttr(item.label)}"${altAttr}${styleAttr}>${parts.join("")}</fib>`;
 }

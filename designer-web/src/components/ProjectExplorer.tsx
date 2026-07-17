@@ -26,6 +26,7 @@ export function ProjectExplorer() {
   const addDocument = useProjectStore((s) => s.addDocument);
   const toggleFormStartPoint = useProjectStore((s) => s.toggleFormStartPoint);
   const toggleFormBlockBack = useProjectStore((s) => s.toggleFormBlockBack);
+  const toggleFormDataEntryOnly = useProjectStore((s) => s.toggleFormDataEntryOnly);
   const moveSelectedNode = useProjectStore((s) => s.moveSelectedNode);
   const renameForm = useProjectStore((s) => s.renameForm);
   const renameProcess = useProjectStore((s) => s.renameProcess);
@@ -146,6 +147,15 @@ export function ProjectExplorer() {
           <StartPointIcon />
         </ToolbarButton>
         <ToolbarButton
+          tip="Pre-populate With Last Entry"
+          aria-pressed={isFormSelected ? !!selectedForm?.dataEntryOnly : undefined}
+          className={selectedForm?.dataEntryOnly ? "toggled" : undefined}
+          disabled={!isFormSelected}
+          onClick={() => selectedForm && toggleFormDataEntryOnly(selectedForm.name)}
+        >
+          <PrePopulateIcon />
+        </ToolbarButton>
+        <ToolbarButton
           tip="Block Back Button"
           aria-pressed={isFormSelected ? !!selectedForm?.blockBackButton : undefined}
           className={selectedForm?.blockBackButton ? "toggled" : undefined}
@@ -203,6 +213,7 @@ export function ProjectExplorer() {
                             <FormNodeIcon
                               startPoint={form.startPoint}
                               blockBack={form.blockBackButton}
+                              prePopulate={form.dataEntryOnly}
                             />
                           }
                         />
@@ -573,9 +584,11 @@ function FolderIcon() {
 function FormNodeIcon({
   startPoint,
   blockBack,
+  prePopulate,
 }: {
   startPoint?: boolean;
   blockBack?: boolean;
+  prePopulate?: boolean;
 } = {}) {
   return (
     <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
@@ -584,6 +597,9 @@ function FormNodeIcon({
       <line x1="2" y1="8.4" x2="14" y2="8.4" stroke="#9db4d4" />
       <line x1="6" y1="5.1" x2="6" y2="13.5" stroke="#9db4d4" />
       <line x1="10" y1="5.1" x2="10" y2="13.5" stroke="#9db4d4" />
+      {prePopulate ? (
+        <circle cx="12.5" cy="12.5" r="2.2" fill="#2a6fdb" stroke="#1a4a9a" strokeWidth="0.6" />
+      ) : null}
       {blockBack ? (
         <g>
           <path d="M11 14 L6.5 11.5 L11 9 Z" fill="#d6006e" />
@@ -693,6 +709,26 @@ function StartPointIcon() {
       <line x1="3" y1="8.2" x2="9" y2="8.2" stroke="#9db4d4" />
       <line x1="9" y1="4" x2="9" y2="15" stroke="#1b7a2e" strokeWidth="1.3" />
       <path d="M9 4 L15 5.8 L9 8 Z" fill="#2ea043" stroke="#1b7a2e" strokeWidth="0.5" />
+    </svg>
+  );
+}
+
+/** Toolbar: Pre-populate With Last Entry — form with a fill/reuse badge. */
+function PrePopulateIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <rect x="1.5" y="2" width="10" height="11" rx="1" fill="#ffffff" stroke="#4a6fa5" />
+      <rect x="1.5" y="2" width="10" height="2.2" fill="#4a6fa5" />
+      <line x1="3.2" y1="6.5" x2="10" y2="6.5" stroke="#9db4d4" />
+      <line x1="3.2" y1="8.5" x2="10" y2="8.5" stroke="#9db4d4" />
+      <line x1="3.2" y1="10.5" x2="7.5" y2="10.5" stroke="#9db4d4" />
+      <circle cx="12.2" cy="12.2" r="3" fill="#2a6fdb" stroke="#1a4a9a" strokeWidth="0.7" />
+      <path
+        d="M11 12.2h2.4M12.2 11v2.4"
+        stroke="#fff"
+        strokeWidth="1.1"
+        strokeLinecap="round"
+      />
     </svg>
   );
 }

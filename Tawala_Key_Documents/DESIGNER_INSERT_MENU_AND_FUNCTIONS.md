@@ -31,7 +31,7 @@ Related: `DESIGNER_MENU_SPEC.md`, `DESIGNER_DOCUMENT_EDITOR.md`, `DESIGNER_UI_RE
 
 **Format toolbar `fx`** on forms follows the same rule as **Insert → Function…** — active when cursor is in a **Text** item text box (owner observation; source: `enableOrDisableInsertFunctionButton`).
 
-Top **seven** items match the **Items** palette (except **File Uploader** is on the palette but not in Insert).
+Top **seven** items match the **Items** palette. (**File Uploader** omitted from browser palette — owner Jul 17.)
 
 ### Process (MDI child active)
 
@@ -43,11 +43,18 @@ No Image, Invitation, Hyperlink, Function, or Field.
 
 | Item | Enable rules |
 |------|--------------|
-| **Field** | When a **field leaf** is selected in the **Fields** palette (Document-only menu item) |
+| **Field** | When a **field leaf** is selected in the **Fields** palette (Document-only menu item). Browser Jul 17: enabled from palette highlight; inserts at last document caret (same as double-click). |
 | **Image…** | When document editor active |
 | **Invitation…** | Available in document context |
 | **Hyperlink…** | Available in document context |
 | **Function…** | When project has **≥1 form**; same as **fx** on document format toolbar |
+
+**Document Field — intentional UX (owner Jul 17, not a bug):**
+
+- Open Document and **do not** place a caret → **double-click** a Fields leaf does nothing (no error). **Drag-and-drop** still places the field where dropped.
+- Clicking a Fields leaf focuses the palette (clears an empty Document caret). A subsequent double-click may insert at the default top-left / last landing spot — expected.
+- **Insert → Field** requires a Fields leaf **and** a live Document caret (palette editor). If the caret is missing, status bar shows *Place the cursor in the document text first* (Status Bar must be visible under View).
+- Clear Fields leaf highlight: click a form/Variables folder header, click empty Fields chrome, or press Escape — then Insert → Field greys out.
 
 No form item types (Heading, Text, FIB, etc.).
 
@@ -60,7 +67,7 @@ Submenu (Form and Document):
 | Item | Behavior |
 |------|----------|
 | **From your PC…** | Insert GIF/JPG/PNG from disk into Form Text or Document. Stores bytes in project `images[]`; Design shows `<img data-tawala-image-id>`; Deploy emits `<image id width height/>` plus `<images><imagedef><imagedata>`. |
-| **From the Web or Tawala Upload…** | Opens **Configure Function** for **DISPLAY IMAGE** (see below). Owner: likely pairs with **File Uploader** form item URL in the image-source field — not yet tested on reference PC |
+| **From the Web…** | Opens **Configure Function** for **DISPLAY IMAGE** (URL or field holding a URL). Renamed Jul 17 — legacy “or Tawala Upload” dropped; File Uploader form item is out of the browser palette. |
 
 ### Smoke — From your PC (Jul 16)
 
@@ -263,20 +270,20 @@ Catalog params present. Document HTML→XML: **not emitted** (comment stub) — 
 
 ## Configure Function: DISPLAY IMAGE (`display-image`)
 
-Owner screenshot July 10, 2026. Owner: **simple**. Also reachable from **Image → From the Web or Tawala Upload…** in legacy.
+Owner screenshot July 10, 2026. Owner: **simple**. Also reachable from **Insert → Image → From the Web…**.
 
-**Description:** Displays an image that can be accessed via a URL. The image can be a file uploaded via a Tawala "File Uploader" Form Item, or any other valid URL for an image on the Internet.
+**Description:** Displays an image from an `http://` / `https://` URL (or a field that holds one). For a file on disk, use **Insert → Image → From your PC…** (project embed) — not this function.
 
 | Field | Required | Help (focused on Image Source) |
 |-------|----------|--------------------------------|
-| **Image Source** | **REQUIRED** | Field, variable or literal URL. File Uploader or `http://` / `https://`. Link: *A compound expression*. (Repository XML name: **Image URL** / id `source`.) |
+| **Image Source** | **REQUIRED** | Field, variable or literal URL (`http://` / `https://`). Link: *A compound expression*. (Repository XML name: **Image URL** / id `source`.) |
 | **Display width** | Optional | **Whole pixels** (not inches). Blank = natural width. Prefer width alone so height scales. |
 | **Display height** | Optional (hidden in browser Configure Jul 13) | Legacy still supports it; UI hides it so width-only scaling stays simple. |
 | **Alternative name** | Optional | Hover text in browsers |
 
 No column toolbar. **OK** greyed until Image Source filled.
 
-**Owner Jul 13:** Design canvas shows a `<<DISPLAY IMAGE(...)>>` token only. **Form Preview** shows a dashed placeholder box sized to width (and height if set; else banner height 80px) with the **image name** centered (Alternative name, else URL filename / field name — not the full URL). **Deploy** (Java) renders the real `<img>`. File Uploader (form item) is the path for user-uploaded images; greyed in browser Designer and missing on the Jan 2011 reference build. Owner: drag-in images are rare (headers); prefer editing graphics outside Designer, then paste a URL.
+**Owner Jul 13 / Update Jul 17:** Design canvas shows a `<<DISPLAY IMAGE(...)>>` token only. **Form Preview** shows a dashed placeholder box sized to width (and height if set; else banner height 80px) with the **image name** centered (Alternative name, else URL filename / field name — not the full URL). **Deploy** (Java) renders the real `<img>`. Local files: **Insert → Image → From your PC…**. File Uploader form item is out of the browser palette (deferred in specs only). Owner: drag-in images are rare (headers); prefer editing graphics outside Designer, then paste a URL.
 
 Screenshot: [`assets/Function_-_Display_Image.png`](assets/Function_-_Display_Image.png)
 
@@ -693,8 +700,8 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink live (Jul 16) |
 | Invitation / Hyperlink dialogs | Yes | **Yes (Jul 16)** — Insert dialogs + Design tokens + Deploy `<invitation>` / `<link>` |
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
-| Image from PC / upload URL | Yes | **From your PC** Approach A (Jul 16); From the Web = DISPLAY IMAGE; File Uploader deferred |
-| Insert Field (document) | Yes | Fields palette / tokens partial |
+| Image from PC / Web URL | Yes | **From your PC** Approach A (Jul 16); **From the Web…** = DISPLAY IMAGE (Jul 17 rename); File Uploader form item omitted from palette |
+| Insert Field (document) | Yes | **Jul 17:** Insert → Field enabled from Fields palette selection; same insert path as double-click |
 | Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — Jul 16 |
 
 ---

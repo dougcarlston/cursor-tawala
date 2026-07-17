@@ -15,6 +15,22 @@ import {
   openHyperlinkInsertFromEditor,
   openInvitationInsertFromEditor,
 } from "@/lib/linkInsert";
+import { openFormItemStylesDialog } from "@/lib/formItemStyles";
+import { openTabsDialog } from "@/lib/tabStops";
+import { windowMenuLabel } from "@/lib/mdiWindowLayout";
+import {
+  getViewChrome,
+  subscribeViewChrome,
+  toggleViewChrome,
+  type ViewChromeKey,
+} from "@/lib/viewChrome";
+import {
+  getFieldsPaletteSelection,
+  subscribeFieldsPaletteSelection,
+} from "@/lib/fieldsPaletteSelection";
+import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
+import { insertFieldIntoActiveTarget } from "@/lib/fieldInsertion";
+import { insertFieldTokenAtSelection } from "@/lib/fieldTokens";
 import {
   canDeleteSelection,
   canDeployProject,
@@ -54,6 +70,11 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const editorTab = useProjectStore((s) => s.editorTab);
   const openWindows = useProjectStore((s) => s.openWindows);
   const activeWindowId = useProjectStore((s) => s.activeWindowId);
+  const cascadeWindows = useProjectStore((s) => s.cascadeWindows);
+  const tileWindows = useProjectStore((s) => s.tileWindows);
+  const closeAllWindows = useProjectStore((s) => s.closeAllWindows);
+  const focusWindow = useProjectStore((s) => s.focusWindow);
+  const restoreWindow = useProjectStore((s) => s.restoreWindow);
   const formCount = useProjectStore((s) => s.project.forms.length);
   const setStatus = useProjectStore((s) => s.setStatus);
   const dirty = useProjectStore((s) => s.dirty);
@@ -61,6 +82,12 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
     subscribeFormattingFocus,
     getFormattingFocusState,
     getFormattingFocusState,
+  );
+  const viewChrome = useSyncExternalStore(subscribeViewChrome, getViewChrome, getViewChrome);
+  const fieldsPaletteSelection = useSyncExternalStore(
+    subscribeFieldsPaletteSelection,
+    getFieldsPaletteSelection,
+    getFieldsPaletteSelection,
   );
   const activeWindow = openWindows.find((w) => w.id === activeWindowId) ?? null;
   const activeKind = activeWindow?.kind ?? null;
@@ -158,6 +185,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           designActive={designActive}
           formCount={formCount}
           focusKind={focus.kind}
+          fieldsPaletteSelection={fieldsPaletteSelection}
           onInsertFormItem={insertFormItem}
           onInsertProcess={(label, template) => {
             if (PROCESS_PANEL_LABELS.has(label)) {
@@ -170,12 +198,24 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         />
       </MenuDrop>
       <MenuDrop label="View">
-        <button type="button" disabled>
-          Project Explorer
-        </button>
-        <button type="button" disabled>
-          Fields Palette
-        </button>
+        <ViewToggle
+          checked={viewChrome.projectExplorer}
+          chromeKey="projectExplorer"
+          label="Project Explorer"
+        />
+        <ViewToggle
+          checked={viewChrome.fieldsPalette}
+          chromeKey="fieldsPalette"
+          label="Fields Palette"
+        />
+        <div className="menu-separator" />
+        <ViewToggle checked={viewChrome.toolbar} chromeKey="toolbar" label="Toolbar" />
+        <ViewToggle checked={viewChrome.statusBar} chromeKey="statusBar" label="Status Bar" />
+        <ViewToggle
+          checked={viewChrome.itemsPalette}
+          chromeKey="itemsPalette"
+          label="Items Palette"
+        />
       </MenuDrop>
       <MenuDrop label="Project">
         <button type="button" disabled={!canDeploy} onClick={onDeploy}>
@@ -184,15 +224,114 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         <button type="button" onClick={openProjectManagerLocal}>
           Project Manager…
         </button>
-        <button type="button" disabled>
+        <div className="menu-separator" />
+        {/* 8080 / CSS track — stubs until that agent owns page chrome */}
+        <button
+          type="button"
+          disabled
+          title="Deployed page banner — park for 8080 / Tomcat / CSS track"
+        >
           Page Header…
         </button>
-        <button type="button" disabled>
+        <button
+          type="button"
+          disabled
+          title="Deployed theme CSS — park for 8080 / Tomcat / CSS track"
+        >
           Themes…
         </button>
+        <div className="menu-separator" />
+        <button
+          type="button"
+          disabled={activeKind !== "form"}
+          title={
+            activeKind === "form"
+              ? "Tab stops for the selected form item (Deploy)"
+              : "Open a Form window first"
+          }
+          onClick={() => openTabsDialog()}
+        >
+          Tabs…
+        </button>
+        <MenuSubmenu label="Styles" disabled={activeKind !== "form"}>
+          <button
+            type="button"
+            disabled={activeKind !== "form"}
+            onClick={() => openFormItemStylesDialog("fib")}
+          >
+            Fill in the Blank…
+          </button>
+          <button
+            type="button"
+            disabled={activeKind !== "form"}
+            onClick={() => openFormItemStylesDialog("mc")}
+          >
+            Multiple Choice…
+          </button>
+          <button
+            type="button"
+            disabled={activeKind !== "form"}
+            onClick={() => openFormItemStylesDialog("text")}
+          >
+            Text…
+          </button>
+        </MenuSubmenu>
+      </MenuDrop>
+      <MenuDrop label="Windows">
+        <button
+          type="button"
+          disabled={openWindows.length === 0}
+          onClick={() => cascadeWindows()}
+        >
+          Cascade
+        </button>
+        <button
+          type="button"
+          disabled={openWindows.length === 0}
+          onClick={() => tileWindows("horizontal")}
+        >
+          Tile Horizontally
+        </button>
+        <button
+          type="button"
+          disabled={openWindows.length === 0}
+          onClick={() => tileWindows("vertical")}
+        >
+          Tile Vertically
+        </button>
+        <button
+          type="button"
+          disabled={openWindows.length === 0}
+          onClick={() => closeAllWindows()}
+        >
+          Close All
+        </button>
+        {openWindows.length > 0 && <div className="menu-separator" />}
+        {openWindows.map((win, i) => {
+          const active = win.id === activeWindowId;
+          return (
+            <button
+              key={win.id}
+              type="button"
+              className="menu-check-item"
+              aria-checked={active}
+              onClick={() => {
+                if (win.minimized) restoreWindow(win.id);
+                else focusWindow(win.id);
+              }}
+            >
+              <span className="menu-check" aria-hidden>
+                {active ? "✓" : ""}
+              </span>
+              {i + 1} {windowMenuLabel(win.kind, win.name)}
+              {win.minimized ? " (minimized)" : ""}
+            </button>
+          );
+        })}
       </MenuDrop>
       <MenuDrop label="Help">
-        <button type="button" disabled>
+        {/* Stub — owner will paste legacy copyright + build status text later. */}
+        <button type="button" disabled title="About dialog stub — copyright / build text TBD">
           About Tawala Designer
         </button>
       </MenuDrop>
@@ -205,6 +344,7 @@ function InsertMenuBody({
   designActive,
   formCount,
   focusKind,
+  fieldsPaletteSelection,
   onInsertFormItem,
   onInsertProcess,
   onStub,
@@ -213,6 +353,7 @@ function InsertMenuBody({
   designActive: boolean;
   formCount: number;
   focusKind: string;
+  fieldsPaletteSelection: string | null;
   onInsertFormItem: (type: (typeof FORM_ITEM_PALETTE)[number]["type"]) => void;
   onInsertProcess: (
     label: string,
@@ -250,12 +391,33 @@ function InsertMenuBody({
   if (activeKind === "document") {
     const canFunction = formCount >= 1;
     const canImage = true;
+    const canField = !!fieldsPaletteSelection;
     return (
       <>
         <button
           type="button"
-          disabled
-          title="Select a field in the Fields palette first (not tracked yet)"
+          disabled={!canField}
+          title={
+            canField
+              ? `Insert ${fieldsPaletteSelection}`
+              : "Select a field in the Fields palette first"
+          }
+          onClick={() => {
+            if (!fieldsPaletteSelection) return;
+            const editor = getActivePaletteEditor();
+            const inDocument =
+              !!editor?.el?.isConnected && !!editor.el.closest(".document-editor");
+            if (!inDocument) {
+              onStub("Place the cursor in the document text first");
+              return;
+            }
+            editor.el.focus();
+            editor.restoreSelection();
+            if (!insertFieldIntoActiveTarget(fieldsPaletteSelection)) {
+              insertFieldTokenAtSelection(fieldsPaletteSelection);
+              editor.commit();
+            }
+          }}
         >
           Field
         </button>
@@ -282,7 +444,7 @@ function InsertMenuBody({
               openDisplayImageConfigureFromEditor();
             }}
           >
-            From the Web or Tawala Upload…
+            From the Web…
           </button>
         </MenuSubmenu>
         <button
@@ -322,7 +484,7 @@ function InsertMenuBody({
     );
   }
 
-  // Form context — top 7 match Items palette (no File Uploader); then Image / Invitation / Hyperlink / Function.
+  // Form context — top 7 match Items palette; then Image / Invitation / Hyperlink / Function.
   const canFormItems = designActive;
   const inTextBody = focusKind === "text";
   const canRichImage = inTextBody;
@@ -360,7 +522,7 @@ function InsertMenuBody({
             openDisplayImageConfigureFromEditor();
           }}
         >
-          From the Web or Tawala Upload…
+          From the Web…
         </button>
       </MenuSubmenu>
       <button
@@ -434,6 +596,30 @@ function MenuDrop({ label, children }: { label: string; children: ReactNode }) {
         {children}
       </div>
     </div>
+  );
+}
+
+function ViewToggle({
+  checked,
+  chromeKey,
+  label,
+}: {
+  checked: boolean;
+  chromeKey: ViewChromeKey;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      className="menu-check-item"
+      aria-checked={checked}
+      onClick={() => toggleViewChrome(chromeKey)}
+    >
+      <span className="menu-check" aria-hidden>
+        {checked ? "✓" : ""}
+      </span>
+      {label}
+    </button>
   );
 }
 

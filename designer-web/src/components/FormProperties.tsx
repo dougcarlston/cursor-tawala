@@ -6,9 +6,9 @@ interface Props {
 }
 
 /**
- * Form-level settings (legacy Edit checkboxes that apply only to a Form).
- * Starting Point + Pre-populate live here; Block Back stays on Explorer toolbar.
- * Pre/Post-process linking lives on the Process window banner.
+ * Form-level settings UI (kept for possible future Properties re-dock).
+ * Live toggles today: Project Explorer toolbar — Starting Point, Pre-populate,
+ * Block Back (Properties panel was removed July 2026; Fields-only right column).
  */
 export function FormProperties({ form, onChange }: Props) {
   return (
