@@ -510,7 +510,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
         type: "enumeration",
         name: "Table Layout",
         required: true,
-        description: 'Tall = "Choice" and "Count" columns; Wide = rows.',
+        description: 'Tall = "Choice" and "Count" columns; Wide = rows. Deploy shows the MCQ question text above each table.',
         defaultValue: "vertical",
         choices: [
           { value: "vertical", description: "Tall" },

@@ -13,14 +13,26 @@ interface Props {
   state: FunctionConditionsState;
   onChange: (next: FunctionConditionsState) => void;
   onFocus?: () => void;
+  /** `displayWhen` = Hyperlink dialog (no "Limit output…" chrome). */
+  variant?: "recordsWhere" | "displayWhen";
+  disabled?: boolean;
 }
 
 /**
  * Legacy `ConditionListControl` — "Limit output to records where" + field / operator / value rows.
+ * Hyperlink uses `variant="displayWhen"` → "Display link only when" + condition row.
  */
-export function FunctionConditionsEditor({ paramName, state, onChange, onFocus }: Props) {
+export function FunctionConditionsEditor({
+  paramName,
+  state,
+  onChange,
+  onFocus,
+  variant = "recordsWhere",
+  disabled = false,
+}: Props) {
   const { combinator, rows } = state;
   const multi = rows.length > 1;
+  const displayWhen = variant === "displayWhen";
 
   const patchRow = (index: number, patch: Partial<FunctionConditionRow>) => {
     onChange({
@@ -44,36 +56,71 @@ export function FunctionConditionsEditor({ paramName, state, onChange, onFocus }
   };
 
   return (
-    <div className="function-conditions-editor" onFocus={onFocus}>
-      <div className="function-conditions-header">
-        <span className="function-conditions-where">Limit output to records where</span>
-        {multi && (
-          <>
-            <select
-              className="function-conditions-combinator"
-              value={combinator}
-              aria-label="Condition combinator"
-              onChange={(e) =>
-                onChange({
-                  ...state,
-                  combinator: e.target.value as FunctionConditionsState["combinator"],
-                })
-              }
-            >
-              <option value="and">ALL</option>
-              <option value="or">ANY</option>
-            </select>
-            <span className="function-conditions-where-tail">of the following are true:</span>
-          </>
-        )}
-      </div>
-      <p className="function-conditions-param-name">{paramName}</p>
+    <div
+      className={`function-conditions-editor${displayWhen ? " function-conditions-display-when" : ""}`}
+      onFocus={onFocus}
+      aria-disabled={disabled || undefined}
+    >
+      {displayWhen ? (
+        <div className="function-conditions-header">
+          <span className="function-conditions-where">{paramName}</span>
+          {multi && (
+            <>
+              <select
+                className="function-conditions-combinator"
+                value={combinator}
+                disabled={disabled}
+                aria-label="Condition combinator"
+                onChange={(e) =>
+                  onChange({
+                    ...state,
+                    combinator: e.target.value as FunctionConditionsState["combinator"],
+                  })
+                }
+              >
+                <option value="and">ALL</option>
+                <option value="or">ANY</option>
+              </select>
+              <span className="function-conditions-where-tail">of the following conditions are true:</span>
+            </>
+          )}
+        </div>
+      ) : (
+        <>
+          <div className="function-conditions-header">
+            <span className="function-conditions-where">Limit output to records where</span>
+            {multi && (
+              <>
+                <select
+                  className="function-conditions-combinator"
+                  value={combinator}
+                  disabled={disabled}
+                  aria-label="Condition combinator"
+                  onChange={(e) =>
+                    onChange({
+                      ...state,
+                      combinator: e.target.value as FunctionConditionsState["combinator"],
+                    })
+                  }
+                >
+                  <option value="and">ALL</option>
+                  <option value="or">ANY</option>
+                </select>
+                <span className="function-conditions-where-tail">of the following are true:</span>
+              </>
+            )}
+          </div>
+          <p className="function-conditions-param-name">{paramName}</p>
+        </>
+      )}
       {rows.map((row, i) => (
         <div key={i} className="skip-if-row function-conditions-row">
           <FieldTextInput
+            configureDialog
             className="skip-if-field"
             placeholder="Record:Form:Field"
             value={row.field}
+            disabled={disabled}
             onFocus={onFocus}
             onValueChange={(v) => patchRow(i, { field: v })}
           />
@@ -81,6 +128,7 @@ export function FunctionConditionsEditor({ paramName, state, onChange, onFocus }
             className="skip-if-operator"
             value={row.op}
             aria-label="Operator"
+            disabled={disabled}
             onFocus={onFocus}
             onChange={(e) => patchRow(i, { op: e.target.value })}
           >
@@ -92,9 +140,11 @@ export function FunctionConditionsEditor({ paramName, state, onChange, onFocus }
           </select>
           {!UNARY_SKIP_OPERATORS.has(row.op) ? (
             <FieldTextInput
+              configureDialog
               className="skip-if-value"
               placeholder="Value"
               value={row.value}
+              disabled={disabled}
               onFocus={onFocus}
               onValueChange={(v) => patchRow(i, { value: v })}
             />
@@ -105,7 +155,7 @@ export function FunctionConditionsEditor({ paramName, state, onChange, onFocus }
             type="button"
             className="skip-if-row-btn"
             title="Add condition row"
-            disabled={!functionConditionsRowIsComplete(row)}
+            disabled={disabled || !functionConditionsRowIsComplete(row)}
             onClick={() => addRowAfter(i)}
           >
             +
@@ -114,6 +164,7 @@ export function FunctionConditionsEditor({ paramName, state, onChange, onFocus }
             type="button"
             className="skip-if-row-btn"
             title="Remove condition row"
+            disabled={disabled}
             onClick={() => removeRow(i)}
           >
             −

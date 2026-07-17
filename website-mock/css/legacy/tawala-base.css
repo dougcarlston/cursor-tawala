@@ -876,6 +876,7 @@ div.levelLink {
 table.component {
 	border-collapse: collapse;
 	font-size: 1em;
+	margin: 12px 0;
 }
 	table.component.outline {
 		border: 1px solid #cccccc;				

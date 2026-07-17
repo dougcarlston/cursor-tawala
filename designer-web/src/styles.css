@@ -5132,6 +5132,8 @@ button.font-color-picker-recent-slot:hover {
 /* Insert Function dialog — legacy `InsertFunctionDialog` */
 .insert-function-backdrop {
   pointer-events: auto;
+  /* Above menu bar (400) and palette menus (200); match color-picker stacking. */
+  z-index: 1100;
 }
 
 .insert-function-dialog {
@@ -5224,6 +5226,147 @@ button.font-color-picker-recent-slot:hover {
   justify-content: flex-end;
   gap: 8px;
   margin-top: 12px;
+}
+
+.insert-link-dialog .insert-link-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 8px 0;
+  font-size: 12px;
+}
+
+.insert-link-dialog .insert-link-help {
+  font-size: 11px;
+  color: var(--muted);
+  margin: 0 0 8px;
+  max-width: 28em;
+}
+
+.insert-link-dialog .insert-link-italic {
+  font-style: italic;
+}
+
+.insert-link-dialog .insert-link-dimmed {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.insert-link-dialog .insert-link-conditions {
+  margin-top: 8px;
+  border-top: 1px solid var(--border);
+  padding-top: 8px;
+}
+
+.insert-link-dialog .insert-link-footer {
+  justify-content: center;
+  gap: 12px;
+}
+
+/* Legacy Insert Invitation — Form / in / Project row + InviteeID help */
+.insert-invitation-dialog {
+  width: min(400px, 94vw);
+}
+
+.insert-invitation-form-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.insert-invitation-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+}
+
+.insert-invitation-field label {
+  font-size: 12px;
+}
+
+.insert-invitation-field select,
+.insert-invitation-field input,
+.insert-invitation-display input {
+  width: 100%;
+  font-size: 12px;
+}
+
+.insert-invitation-in {
+  flex: 0 0 auto;
+  padding-bottom: 6px;
+  font-size: 12px;
+  color: var(--text);
+}
+
+.insert-invitation-display {
+  margin-bottom: 10px;
+}
+
+.insert-invitation-help {
+  margin: 10px 0 8px;
+  font-size: 11px;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--text);
+}
+
+/* Legacy Hyperlink dialog */
+.insert-hyperlink-dialog {
+  width: min(640px, 96vw);
+}
+
+.insert-hyperlink-row {
+  display: grid;
+  grid-template-columns: 88px 1fr;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.insert-hyperlink-label {
+  font-size: 12px;
+  text-align: right;
+}
+
+.insert-hyperlink-row input {
+  width: 100%;
+  font-size: 12px;
+}
+
+.insert-hyperlink-optional {
+  margin: -2px 0 10px 96px;
+  font-size: 11px;
+  font-style: italic;
+  color: var(--text);
+}
+
+.insert-hyperlink-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 12px 0;
+}
+
+.function-conditions-display-when {
+  margin: 6px 0 0;
+  padding: 8px;
+  background: #f3f3f3;
+  border: 1px solid #c8c8c8;
+}
+
+.function-conditions-display-when .function-conditions-where {
+  font-weight: 400;
+}
+
+/* Design canvas Invitation / Hyperlink chips (legacy blue underline). */
+.invitation-token,
+.hyperlink-token {
+  color: #000080;
+  text-decoration: underline;
+  cursor: default;
+  white-space: pre-wrap;
 }
 
 .configure-function-dialog .configure-function-fields select,
@@ -5574,6 +5717,22 @@ button.font-color-picker-recent-slot:hover {
 
 .modal-overlay .modal-dialog,
 .modal-overlay > .modal-dialog {
+  pointer-events: auto;
+}
+
+/* New Project must block File → Open / toolbar / canvas until dismissed. */
+.new-project-overlay {
+  pointer-events: auto;
+  z-index: 1200;
+}
+
+/* Configure Function: dim chrome but keep Fields interactive for double-click fill. */
+.configure-function-overlay {
+  pointer-events: none;
+  z-index: 1100;
+}
+
+.configure-function-overlay .configure-function-dialog {
   pointer-events: auto;
 }
 

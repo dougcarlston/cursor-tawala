@@ -260,6 +260,14 @@ function inlineHtmlToXml(html, escAttr, escText) {
         out += `<font>${functionTokenToXml(open.attrs, escAttr, escText)}</font>`;
         continue;
       }
+      if (classes.includes("invitation-token")) {
+        out += `<font color="000080"><u>${invitationTokenToXml(open.attrs, inner, escAttr, escText)}</u></font>`;
+        continue;
+      }
+      if (classes.includes("hyperlink-token")) {
+        out += `<font color="000080"><u>${hyperlinkTokenToXml(open.attrs, escAttr, escText)}</u></font>`;
+        continue;
+      }
       const style = parseStyleAttr(open.attrs);
       let innerXml = inlineHtmlToXml(inner, escAttr, escText);
       if (style["font-size"] || style["font-family"] || style.color) {
@@ -301,13 +309,20 @@ function inlineHtmlToXml(html, escAttr, escText) {
 
 /** Decode HTML entities commonly used in contenteditable attribute serialization. */
 function decodeHtmlAttrEntities(s) {
-  return String(s ?? "")
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/&apos;/g, "'")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
+  // Decode &amp; first so double-encoded values (&amp;quot;) become usable JSON.
+  let out = String(s ?? "");
+  for (let i = 0; i < 4; i++) {
+    const next = out
+      .replace(/&amp;/gi, "&")
+      .replace(/&quot;/gi, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&apos;/gi, "'")
+      .replace(/&lt;/gi, "<")
+      .replace(/&gt;/gi, ">");
+    if (next === out) break;
+    out = next;
+  }
+  return out;
 }
 
 /**
@@ -365,6 +380,93 @@ function parseFunctionConfigAttr(attrs) {
     }
   }
   return {};
+}
+
+/** `<<Form:Field>>` / `Form:Field` → field ref; else literal string value. */
+function expressionToXml(raw, escAttr) {
+  let s = String(raw ?? "").trim();
+  if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  if (!s) return `<string value=""/>`;
+  // Keep real URL schemes as strings. Form:Field refs also contain ":" but are not schemes.
+  if (/^(https?|mailto|ftp|file|tel):/i.test(s) || /^www\./i.test(s)) {
+    return `<string value="${escAttr(s)}"/>`;
+  }
+  if (s.includes(":") && !s.includes(" ")) {
+    return `<field name="${escAttr(s)}"/>`;
+  }
+  return `<string value="${escAttr(s)}"/>`;
+}
+
+function parseJsonConfigAttr(attrs, keyName) {
+  const re = new RegExp(`${keyName}\\s*=`, "i");
+  const key = re.exec(attrs);
+  if (!key) return {};
+  const afterEq = attrs.slice(key.index + key[0].length).trimStart();
+  if (!afterEq) return {};
+  const quoted = /^"([^"]*)"/.exec(afterEq);
+  if (quoted) {
+    try {
+      const parsed = JSON.parse(decodeHtmlAttrEntities(quoted[1]));
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      /* fall through */
+    }
+  }
+  return parseFunctionConfigAttr(`${keyName}=${afterEq}`);
+}
+
+function invitationTokenToXml(attrs, innerHtml, escAttr, escText) {
+  const config = parseJsonConfigAttr(attrs, "data-invitation-config");
+  const form = String(config.form ?? "").trim();
+  const project = String(config.project ?? "");
+  const display =
+    String(config.displayText ?? "").trim() || stripTags(innerHtml).trim() || form;
+  const isPrivate = config.isPrivate === true || config.isPrivate === "true";
+  const projectAttr = ` project="${escAttr(project)}"`;
+  if (isPrivate) {
+    const auth = expressionToXml(config.authToken, escAttr);
+    return (
+      `<invitation form="${escAttr(form)}"${projectAttr} private="true">` +
+      `<authenticationTokenValue>${auth}</authenticationTokenValue>` +
+      `${escText(display)}` +
+      `</invitation>`
+    );
+  }
+  return `<invitation form="${escAttr(form)}"${projectAttr}>${escText(display)}</invitation>`;
+}
+
+function hyperlinkTokenToXml(attrs, escAttr, escText) {
+  const config = parseJsonConfigAttr(attrs, "data-hyperlink-config");
+  const url = String(config.url ?? "").trim();
+  const display = String(config.displayText ?? "").trim() || url || "(Link appears here)";
+  const newWindow = config.openNewWindow === true || config.openNewWindow === "true";
+  const conditional = config.conditional === true || config.conditional === "true";
+  const rows = Array.isArray(config.conditions) ? config.conditions : [];
+  let conditions = "";
+  if (conditional) {
+    const filled = rows.filter((r) => String(r?.field ?? "").trim());
+    if (filled.length) {
+      const inner = filled
+        .map((row) => {
+          const op = row.op ?? "equals";
+          const field = String(row.field).trim().replace(/^<<|>>$/g, "");
+          if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
+            return `<${op} field="${escAttr(field)}"/>`;
+          }
+          return `<${op} field="${escAttr(field)}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+        })
+        .join("");
+      conditions = `<displayConditions>${inner}</displayConditions>`;
+    }
+  }
+  return (
+    `<link>` +
+    (newWindow ? `<new-window/>` : "") +
+    `<description><string value="${escAttr(display)}"/></description>` +
+    `<url>${expressionToXml(url, escAttr)}</url>` +
+    conditions +
+    `</link>`
+  );
 }
 
 function functionTokenToXml(attrs, escAttr, escText) {

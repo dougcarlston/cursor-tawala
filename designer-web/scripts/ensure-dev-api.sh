@@ -18,7 +18,15 @@ for p in $(lsof -nP -tiTCP:3001 -sTCP:LISTEN 2>/dev/null || true); do
 done
 sleep 0.3
 
-export TAWALA_DEV_ONLY="${TAWALA_DEV_ONLY:-1}"
+# Match start-dev.sh: Deploy → Tomcat :8080 unless TAWALA_DEV_ONLY=1.
+# (Previously defaulted DEV_ONLY=1, which made “ensure” revive a Node-only Deploy.)
+if [ "${TAWALA_DEV_ONLY:-}" = "1" ]; then
+  unset TAWALA_JAVA_URL || true
+  export TAWALA_DEV_ONLY=1
+else
+  unset TAWALA_DEV_ONLY || true
+  export TAWALA_JAVA_URL="${TAWALA_JAVA_URL:-http://localhost:8080}"
+fi
 export TAWALA_DEV_HOST="${TAWALA_DEV_HOST:-http://localhost:5173}"
 export TAWALA_DEV_PORT=3001
 LOG="$ROOT/.dev-server-api.log"

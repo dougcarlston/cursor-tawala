@@ -15,6 +15,7 @@ import {
   type FunctionDef,
   type FunctionParamDef,
 } from "@/lib/functionCatalog";
+import { setConfigureFunctionFieldLock } from "@/lib/fieldInsertion";
 
 interface Props {
   def: FunctionDef;
@@ -57,6 +58,11 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
     setFocused(def.parameters[0]?.id ?? "summary");
     setSelectedColumn(0);
   }, [def, initialConfig]);
+
+  useEffect(() => {
+    setConfigureFunctionFieldLock(true);
+    return () => setConfigureFunctionFieldLock(false);
+  }, []);
 
   useEffect(() => {
     if (selectedColumn >= columns.length) {
@@ -108,7 +114,7 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
   };
 
   return (
-    <div className="modal-overlay" role="presentation">
+    <div className="modal-overlay configure-function-overlay" role="presentation">
       <div
         className="modal-dialog fib-validation-dialog configure-function-dialog"
         role="dialog"
@@ -252,6 +258,7 @@ function ParamField({
             <label>
               <span>Heading:</span>
               <FieldTextInput
+                configureDialog
                 value={col.header ?? ""}
                 onFocus={() => {
                   onSelectColumn(i);
@@ -267,6 +274,7 @@ function ParamField({
             <label>
               <span>Contents:</span>
               <FieldTextInput
+                configureDialog
                 value={col.contents ?? ""}
                 onFocus={() => {
                   onSelectColumn(i);
@@ -354,6 +362,7 @@ function ParamField({
       </span>
       {isExpression ? (
         <FieldTextInput
+          configureDialog
           value={String(config[param.id] ?? "")}
           onFocus={() => onFocus(param.id)}
           onValueChange={(v) => onPatch(param.id, v)}

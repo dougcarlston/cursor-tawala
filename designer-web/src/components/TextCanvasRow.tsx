@@ -166,6 +166,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
+    return () => {
+      // Drop this row's handle when leaving edit (contenteditable unmounts). Do not
+      // clearActivePaletteEditor() with no args — that can wipe the next Text row.
+      clearActivePaletteEditor(el);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
@@ -269,9 +274,12 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     if (next?.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
     // Keep the editor mounted while dragging/double-clicking from the Fields panel.
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
-    clearFormattingFocus("text");
     // Keep expanded while selected so form-item reorder drag does not collapse mid-drag.
+    // Also keep Formatting Palette / fx / Insert → Function enabled — clearing focus here
+    // greys them out while the Text body is still editing (common after clicking Explorer,
+    // Items, or an image chrome in projects like MCQ.json).
     if (selected) return;
+    clearFormattingFocus("text");
     setEditing(false);
   };
 

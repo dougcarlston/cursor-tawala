@@ -631,7 +631,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             if (next?.closest(".formatting-palette")) return;
             if (next?.closest(".table-handles-overlay")) return;
             if (next?.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
-            if (next?.closest(".menu-bar, .menu-drop, .main-icon-toolbar, .modal-overlay, .modal-backdrop, .configure-function-dialog, .insert-function-dialog")) {
+            if (next?.closest(".menu-bar, .menu-drop, .main-icon-toolbar, .designer-left, .designer-items, .modal-overlay, .modal-backdrop, .configure-function-dialog, .insert-function-dialog")) {
               return;
             }
             const el = surfaceRef.current;

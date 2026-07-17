@@ -12,6 +12,7 @@ import { StatusBar } from "./components/StatusBar";
 import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
 import { FunctionPickerHost } from "./components/FunctionPickerHost";
+import { LinkInsertHost } from "./components/LinkInsertHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import { SaveAsDialog } from "./components/SaveAsDialog";
 import type { TemplateEntry } from "@/templates/catalog";
@@ -138,6 +139,7 @@ export default function App() {
   };
 
   const onOpen = async () => {
+    if (showNewProject) return;
     const opened = await openProjectFromDisk();
     if (!opened) fileRef.current?.click();
   };
@@ -170,9 +172,18 @@ export default function App() {
 
   const shell = {
     onNewProject: () => setShowNewProject(true),
-    onOpen: () => void onOpen(),
-    onDeploy: () => void deploy(),
-    onDelete: () => runShellDelete(),
+    onOpen: () => {
+      if (showNewProject) return;
+      void onOpen();
+    },
+    onDeploy: () => {
+      if (showNewProject) return;
+      void deploy();
+    },
+    onDelete: () => {
+      if (showNewProject) return;
+      runShellDelete();
+    },
   };
 
   return (
@@ -240,6 +251,7 @@ export default function App() {
       />
       <SaveAsDialog open={showSaveAs} />
       <FunctionPickerHost />
+      <LinkInsertHost />
     </div>
   );
 }

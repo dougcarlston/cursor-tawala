@@ -27,6 +27,12 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
+### File / Save (held — fix later)
+
+- **Save / Save As ignore last-loaded file name** — After **Open…** / load, Save and Save As should default to that file’s name (and Chromium quiet-Save should keep targeting it). **Untitled** (or `Untitled.json`) only for **New Project**. Today suggested name comes from `project.name` only, so Save As has no memory of the path/name last loaded. **Bug; hold until later.**
+
+- **Many `.json` files greyed out in Open / Save As pickers** — Native Chromium picker marks lots of valid project JSON as the wrong type (greyed), yet they can still be clicked and their names used to overwrite/save. Likely the File System Access `accept: { "application/json": [".json"] }` filter (macOS UTI/MIME mismatch — e.g. files typed as `text/plain`). Should treat normal `.json` project files as selectable without looking “invalid.” **Bug; hold until later.**
+
 ### Palette
 
 - **Reset Formatting broken** — **Removed July 10** (control deleted from Formatting Palette; was always greyed and unreliable).

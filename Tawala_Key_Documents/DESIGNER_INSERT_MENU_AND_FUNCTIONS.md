@@ -83,16 +83,19 @@ Sends a user a **Start link** to this project or another project.
 
 | Control | Purpose |
 |---------|---------|
-| **Form:** | Dropdown — target form for the invitation link (e.g. Form 2) |
-| **in Project:** | Dropdown — **(Current Project)** or other project |
-| **Display Text:** | Link text shown to the invitee |
+| **Form:** | Dropdown — target form (same row as Project) |
+| **in** | Literal connector between Form and Project |
+| **Project:** | Dropdown — **(Current Project)** or other project |
+| **Display Text:** | Link text shown to the invitee (optional; falls back to form name) |
 | **Make this a private invitation** | Checkbox |
-| Explanatory text | Describes storing text or a field value in **`_InviteeID`** when the invitee responds via the invitation link |
-| Text field below | For private-invitation value; **dimmed/inactive** when checkbox unchecked |
+| Explanatory text (centered) | Exact legacy copy: *Enter text or a field to be placed in the special variable "_InviteeID" when someone responds to this invitation. That text, or the value of the field, will be available in the "_InviteeID" variable when your invitee responds by clicking the Invitation link.* |
+| Text field below | Private value / field for `_InviteeID`; **dimmed** when private unchecked |
 
-**OK** / **Cancel**
+**OK** / **Cancel** (centered)
 
-Screenshot: `assets/Insert_-_Invitation-*.png`
+Screenshot: [`assets/Insert_Invitation.png`](assets/Insert_Invitation.png)
+
+**Deploy:** emits `<font color="000080"><u><invitation form="…" project="…">…</invitation></u></font>` inside Form Text / Document paragraphs. Runtime must show a live `<a href=…>` (not plain text). If Deploy shows plain text only, restart the Designer API on `:3001` so it loads current `documentHtmlToXml.mjs`.
 
 ---
 
@@ -104,15 +107,19 @@ Inserts a URL hyperlink into rich text (Form Text item or Document).
 
 | Control | Purpose |
 |---------|---------|
-| **Url** | Destination URL |
-| **Display text** | Optional; italic note: *if you leave this blank the full URL or filename will be shown* |
-| **Open in new browser window** | Checkbox |
+| **Url:** | Destination URL (label left of field) |
+| **Display text:** | Optional |
+| Italic note | `(optional; if you leave this blank the full URL or filename will be shown)` |
+| **Open in new browser window.** | Checkbox (trailing period matches legacy) |
+| Separator | Thin horizontal rule |
 | **Display link conditionally** | Checkbox — enables condition section |
-| **Display link only when** | If-style row: field (green box), operator dropdown, value, **+** / **−** |
+| **Display link only when** | Field (green box), operator dropdown, value, **+** / **−** |
 
-**OK** / **Cancel**
+**OK** / **Cancel** (centered)
 
-Screenshot: `assets/Insert_Hyperlink-*.png`
+Screenshot: [`assets/Insert_Hyperlink.png`](assets/Insert_Hyperlink.png)
+
+**Deploy:** emits `<font color="000080"><u><link>…</link></u></font>`. Runtime must show a live `<a href=…>` (with `target="_blank"` when new-window is set).
 
 ---
 
@@ -121,6 +128,14 @@ Screenshot: `assets/Insert_Hyperlink-*.png`
 **Dialog title:** Insert Function
 
 Two-step flow: pick function → **Configure Function** dialog for parameters.
+
+### Smoke — fx / Insert → Function (Jul 16)
+
+1. Open a project that already has Form Text with an image and/or existing function chips (e.g. `MCQ.json`).
+2. Click into a Text body (not an MCQ question). **fx** and **Insert → Function…** should stay enabled after clicking Project Explorer or Items (row still selected).
+3. Place the caret *after* an existing function chip (not on it) → **fx** / Insert → Function opens the **Insert Function** list (not Configure).
+4. Click a function chip → Configure opens for that function.
+5. New empty Text → Insert → Function still opens the list.
 
 ### Insert Function dialog
 
@@ -556,13 +571,27 @@ Catalog matches. Document **and Form Text** HTML→XML: **emits** `<choice-tally
 
 ## Configure Function: RESPONSE TOTALS (`response-totals-table`)
 
+Owner Configure capture + Deploy smoke Jul 16.
+
+**Deploy title:** each totals table is preceded by the **MCQ question text** (e.g. “Where is Greenland?”) as a bold paragraph — not a rename of the **Choice** column header. Export injects titles in `jsonToXml.mjs` (`injectResponseTotalsQuestionTitles`), including when several chips share one paragraph. Tall Preview also uses the question as the first-column header. Column headers on Deploy stay **Choice** | **Count** (`component.properties`) unless/until Java renders the question in the Tall header.
+
+**Deploy spacing:** export also emits a blank spacer paragraph after each table; Tomcat `table.component { margin: 12px 0 }` in `default.css` reinforces equal one-line rhythm (CSS is baked into ROOT.war — rebuild or `docker cp` after CSS edits).
+
+### Smoke — Response Totals (Jul 16)
+
+1. Form with 3 MCQs + Text with three RESPONSE TOTALS (one per MCQ).
+2. Configure → double-click Fields leaf into **Question** — fills Configure, not the Text body.
+3. OK → chip font size unchanged vs before Configure.
+4. Redeploy: each table has its MCQ question text **above** it; column headers still **Choice** | **Count**.
+5. Redeploy / live CSS: equal gaps between stacked tables (not flush).
+
 Owner screenshot July 10, 2026. Table Layout dropdown open.
 
 **Description:** Displays a table showing the count of each response to a multiple-choice question.
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| **Table Layout** | Yes | **Tall** (`vertical`) — Choice/Count columns; **Wide** (`horizontal`) — Choice/Count rows. |
+| **Table Layout** | Yes | **Tall** (`vertical`) — Choice/Count columns; **Wide** (`horizontal`) — Choice/Count rows. Deploy adds the MCQ question text above the table. |
 | **Question** | Yes | MCQ whose counts to show. |
 | **Include only the records where** | Conditions | |
 
@@ -570,7 +599,7 @@ Screenshot: [`assets/Function_-_Response_Totals.png`](assets/Function_-_Response
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **emits** `<response-totals-table>`. **Smoke-needed.**
+Catalog matches. Document + Form Text HTML→XML: **emits** `<response-totals-table>` with question title paragraphs + spacers. Preview renders the same title above Choice/Count.
 
 ---
 
@@ -636,7 +665,18 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 | 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | Smoke-needed |
 | 17 | SUM | `sum` | **Yes** | Potluck **Passed w/ caveats** |
 
-**Insert siblings (not in the 17):** Invitation…, Hyperlink… — **not implemented** (stubs). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
+**Insert siblings (not in the 17):** Invitation…, Hyperlink… — **wired Jul 16** (dialogs + Design tokens + Deploy XML). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
+
+### Smoke — Invitation / Hyperlink (Jul 16)
+
+**Owner OK Jul 16** — both live and valid on Deploy (after config double-encode fix).
+
+1. Form Text → Insert → **Invitation…** → Form + Project on one row with **in** between; Display Text; OK → blue underline chip in Design.
+2. Redeploy → runtime shows a **live** `<a>` (blue underline), not plain text. Click navigates to the invited form.
+3. Insert → **Hyperlink…** → Url + optional Display text + **Open in new browser window.** → OK → chip → Redeploy opens URL (`target=_blank` when checked).
+4. Private invitation: check private, drop a field into the InviteeID box → Redeploy includes `<authenticationTokenValue>`.
+5. If step 2/3 shows plain text only: restart API (`:3001`) so export includes `<invitation>` / `<link>`, then Redeploy.
+6. If links are blue but **invalid** (JS alert / empty href): chips were double-encoded in Design — fixed Jul 16 (`setAttribute` uses raw JSON; Deploy decodes `&amp;quot;`). Hard-refresh Designer, re-insert chips **or** Redeploy existing content after API restart.
 
 ---
 
@@ -650,8 +690,8 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink / Image-from-PC stubs |
-| Invitation / Hyperlink dialogs | Yes | **No** (stubs) |
+| Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink live (Jul 16) |
+| Invitation / Hyperlink dialogs | Yes | **Yes (Jul 16)** — Insert dialogs + Design tokens + Deploy `<invitation>` / `<link>` |
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
 | Image from PC / upload URL | Yes | **From your PC** Approach A (Jul 16); From the Web = DISPLAY IMAGE; File Uploader deferred |
 | Insert Field (document) | Yes | Fields palette / tokens partial |

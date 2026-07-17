@@ -313,6 +313,9 @@ form {
 table.component {
 	border-collapse: collapse;
 	font-size: 1em;
+	/* Even vertical rhythm between stacked Response Totals / Bar Graph tables
+	   (matches designer Preview; without this, adjacent tables can sit flush). */
+	margin: 12px 0;
 }
 	table.component.outline {
 		border: 1px solid #cccccc;				

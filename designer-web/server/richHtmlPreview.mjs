@@ -12,6 +12,10 @@ import {
   choiceTallyNodeFromConfig,
   renderChoiceTallyTableHtml,
 } from "./choiceTallyPreview.mjs";
+import {
+  responseTotalsNodeFromConfig,
+  renderResponseTotalsTableHtml,
+} from "./responseTotalsPreview.mjs";
 import { readAttr, replaceMatchingSpans } from "./htmlSpanReplace.mjs";
 
 function esc(s) {
@@ -114,6 +118,11 @@ function matchChoiceTallyToken(attrs) {
   return parseStructuredNodeAttr(attrs)?.type === "choiceTallyTable";
 }
 
+function matchResponseTotalsToken(attrs) {
+  if (matchFunctionId(attrs, "response-totals-table")) return true;
+  return parseStructuredNodeAttr(attrs)?.type === "responseTotalsTable";
+}
+
 function replaceDisplayImageTokens(html) {
   return replaceMatchingSpans(
     html,
@@ -204,9 +213,26 @@ function replaceChoiceTallyTokens(html, opts) {
   });
 }
 
+function replaceResponseTotalsTokens(html, opts) {
+  const ctx = {
+    records: opts.records ?? {},
+    formName: opts.formName ?? "",
+    project: opts.project,
+  };
+  return replaceMatchingSpans(html, matchResponseTotalsToken, (attrs) => {
+    const structured = parseStructuredNodeAttr(attrs);
+    if (structured?.type === "responseTotalsTable") {
+      return renderResponseTotalsTableHtml(structured, ctx);
+    }
+    const config = parseFunctionConfigAttr(attrs);
+    const node = responseTotalsNodeFromConfig(config, ctx.formName);
+    return renderResponseTotalsTableHtml(node, ctx);
+  });
+}
+
 /** Function display names that must not be treated as field refs. */
 const FUNCTION_DISPLAY_NAME_RE =
-  /^(MULTIPLE QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|CHOICE\s+TALLY|QUESTION\s+CORRELATION|SIMPLE\s+LIST|FORM\s+RECORD\s+COUNT)\b/i;
+  /^(MULTIPLE QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|CHOICE\s+TALLY|RESPONSE\s+TOTALS|QUESTION\s+CORRELATION|SIMPLE\s+LIST|FORM\s+RECORD\s+COUNT)\b/i;
 
 const RICH_TEXT_HTML_TAG_RE = /<\/?[a-z][\s\S]*>/i;
 
@@ -228,6 +254,7 @@ export function enhanceRichTextHtml(content, getField, opts = {}) {
   // function display strings otherwise leave scraps like `equals "Doug")>>`.
   html = replaceItemizationTokens(html, opts);
   html = replaceChoiceTallyTokens(html, opts);
+  html = replaceResponseTotalsTokens(html, opts);
   const replaceTemplate = (_match, ref) => {
     const key = String(ref).trim();
     if (FUNCTION_DISPLAY_NAME_RE.test(key)) return "";

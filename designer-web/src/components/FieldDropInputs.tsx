@@ -63,6 +63,7 @@ function targetContext(options: FieldDropOptions): FieldTargetContext {
     bare: options.bare,
     formFieldsOnly: options.formFieldsOnly,
     knownVariables: options.knownVariables,
+    configureDialog: options.configureDialog,
   };
 }
 
@@ -173,6 +174,8 @@ interface FieldTextInputProps
   bare?: boolean;
   formFieldsOnly?: boolean;
   knownVariables?: ReadonlySet<string>;
+  /** Configure Function dialog — wins Fields double-click over the canvas editor. */
+  configureDialog?: boolean;
 }
 
 /** `<input>` that accepts `<<field>>` drops and double-click inserts from the Fields panel. */
@@ -182,12 +185,14 @@ export function FieldTextInput({
   bare,
   formFieldsOnly,
   knownVariables,
+  configureDialog,
   ...rest
 }: FieldTextInputProps) {
   const { dragOver, handlers } = useFieldDropTarget(onValueChange, {
     bare,
     formFieldsOnly,
     knownVariables,
+    configureDialog,
   });
   return (
     <input

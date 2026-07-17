@@ -52,7 +52,7 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
     <div
       className="modal-backdrop insert-function-backdrop"
       role="presentation"
-      onMouseDown={(e) => {
+      onClick={(e) => {
         if (e.target === e.currentTarget) onCancel();
       }}
     >

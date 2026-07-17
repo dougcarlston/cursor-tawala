@@ -159,7 +159,7 @@ function fontXml(text, { bold = false, italic = false, size = 200 } = {}) {
   return `<font face="Arial" size="${size}" color="000000">${inner}</font>`;
 }
 
-function textContentToXml(content, style) {
+function textContentToXml(content, style, project = null) {
   if (typeof content === "string") {
     if (!content) {
       return `<paragraph indent="0" align="left">${TAB_MC}</paragraph>`;
@@ -167,12 +167,96 @@ function textContentToXml(content, style) {
     // Canvas Text items store WYSIWYG HTML (field/function tokens). Escape-as-text
     // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
     if (/<[a-z][\s\S]*>/i.test(content)) {
-      return documentHtmlToXml(content, escAttr, escText);
+      const xml = documentHtmlToXml(content, escAttr, escText);
+      return injectResponseTotalsQuestionTitles(xml, project);
     }
     const italic = style === "instructional";
     return `<paragraph indent="0" align="left">${TAB_MC}${fontXml(content, { italic })}</paragraph>`;
   }
   return richContentToXml(content);
+}
+
+/**
+ * Plain MCQ question text for a totals table field ref (`Form:Label` or `Record:Form:Label`).
+ */
+export function lookupMcqQuestionPlain(project, fieldRef) {
+  if (!project || !fieldRef) return "";
+  const cleaned = String(fieldRef)
+    .replace(/^<<|>>$/g, "")
+    .replace(/^Record:/i, "")
+    .trim();
+  const parts = cleaned.split(":");
+  if (parts.length < 2) return "";
+  const formName = parts[0].trim();
+  const fieldId = parts.slice(1).join(":").trim();
+  const form = (project.forms ?? []).find((f) => f.name === formName);
+  if (!form) return "";
+  const item = (form.items ?? []).find(
+    (i) =>
+      i.type === "mc" &&
+      (i.label === fieldId || i.name === fieldId || i.alternateLabel === fieldId),
+  );
+  if (!item) return "";
+  return String(item.question ?? "")
+    .replace(/\u200b/g, "")
+    .replace(/<br\s*\/?>/gi, " ")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+/**
+ * Before each `<response-totals-table>`, emit a bold paragraph with the MCQ question
+ * text, and keep a blank spacer paragraph after the table so Deploy gaps match Preview
+ * (Tomcat `table.component` historically has no margin; CSS patches need image rebuild).
+ *
+ * Several chips often share one `<paragraph>` (inserted without Enter). Split those
+ * so every Tall/Wide table gets its own title — a "lone table in paragraph" regex
+ * misses shared paragraphs entirely.
+ */
+export function injectResponseTotalsQuestionTitles(xml, project) {
+  if (!xml || !project) return xml;
+
+  const wrapTable = (tableXml) => {
+    const fieldM = tableXml.match(/<field>([^<]*)<\/field>/i);
+    const title = lookupMcqQuestionPlain(project, fieldM?.[1] ?? "");
+    const titlePara = title
+      ? `<paragraph indent="0" align="left"><font face="Arial" size="200" color="000000"><b>${escText(title)}</b></font></paragraph>`
+      : "";
+    const spacer = `<paragraph indent="0" align="left">${TAB_MC}</paragraph>`;
+    return (
+      `${titlePara}` +
+      `<paragraph indent="0" align="left"><font>${tableXml}</font></paragraph>` +
+      `${spacer}`
+    );
+  };
+
+  return xml.replace(/<paragraph\b[^>]*>([\s\S]*?)<\/paragraph>/gi, (full, inner) => {
+    if (!/<response-totals-table\b/i.test(inner)) return full;
+
+    const parts = [];
+    let last = 0;
+    const re =
+      /(?:<font\b[^>]*>)?(<response-totals-table\b[\s\S]*?<\/response-totals-table>)(?:<\/font>)?/gi;
+    let m;
+    while ((m = re.exec(inner))) {
+      const before = inner.slice(last, m.index).trim();
+      if (before && !/^<tabPositions\b[\s\S]*<\/tabPositions>$/i.test(before)) {
+        parts.push(`<paragraph indent="0" align="left">${before}</paragraph>`);
+      }
+      parts.push(wrapTable(m[1]));
+      last = m.index + m[0].length;
+    }
+    const after = inner.slice(last).trim();
+    if (after && !/^<tabPositions\b[\s\S]*<\/tabPositions>$/i.test(after)) {
+      parts.push(`<paragraph indent="0" align="left">${after}</paragraph>`);
+    }
+    return parts.join("") || full;
+  });
 }
 
 function templateToFieldRef(value) {
@@ -448,7 +532,7 @@ function richNodesToXml(nodes) {
     .join("");
 }
 
-function itemToXml(item, formName = "") {
+function itemToXml(item, formName = "", project = null) {
   const altLabel = item.alternateLabel ?? item.name;
   const altAttr =
     altLabel && altLabel !== item.label ? ` alternateLabel="${escAttr(altLabel)}"` : "";
@@ -460,7 +544,7 @@ function itemToXml(item, formName = "") {
       return `<heading label="${escAttr(item.label)}" type="Sub">${escText(headingPlainText(item.content))}</heading>`;
     case "text": {
       const legacy = registrationTextToXml(item, formName);
-      const body = legacy ?? textContentToXml(item.content, item.style);
+      const body = legacy ?? textContentToXml(item.content, item.style, project);
       return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}">${body}</text>`;
     }
     case "fib": {
@@ -495,7 +579,9 @@ export function projectToXml(project) {
       ]
         .filter(Boolean)
         .join(" ");
-      const items = (form.items ?? []).map((item) => itemToXml(item, form.name)).join("");
+      const items = (form.items ?? [])
+        .map((item) => itemToXml(item, form.name, project))
+        .join("");
       return `<form ${attrs}><items>${items}</items></form>`;
     })
     .join("");
@@ -511,7 +597,10 @@ export function projectToXml(project) {
     .map((d) => {
       const body =
         typeof d.content === "string"
-          ? documentHtmlToXml(d.content, escAttr, escText)
+          ? injectResponseTotalsQuestionTitles(
+              documentHtmlToXml(d.content, escAttr, escText),
+              project,
+            )
           : richContentToXml(d.content);
       return `<document name="${escAttr(d.name)}"><xmlData>${body}</xmlData></document>`;
     })

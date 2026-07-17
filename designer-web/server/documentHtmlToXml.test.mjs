@@ -159,6 +159,115 @@ describe("documentHtmlToXml nested function tokens", () => {
   });
 });
 
+describe("documentHtmlToXml invitation / hyperlink", () => {
+  it("emits <invitation> for invitation-token", () => {
+    const config = JSON.stringify({
+      form: "Form 2",
+      project: "",
+      displayText: "Continue",
+      isPrivate: false,
+      authToken: "",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const html = `<p><span class="invitation-token" data-invitation-config="${config}">Continue</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<invitation form="Form 2" project="">Continue</invitation>');
+  });
+
+  it("emits private invitation with authenticationTokenValue", () => {
+    const config = JSON.stringify({
+      form: "PlayerDash",
+      project: "",
+      displayText: "Dashboard",
+      isPrivate: true,
+      authToken: "<<Registration:RegID>>",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const html = `<p><span class="invitation-token" data-invitation-config="${config}">Dashboard</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('private="true"');
+    expect(xml).toContain('<field name="Registration:RegID"/>');
+    expect(xml).toContain("Dashboard</invitation>");
+  });
+
+  it("emits <link> for hyperlink-token", () => {
+    const config = JSON.stringify({
+      url: "http://www.dirtbowl.com",
+      displayText: "Home",
+      openNewWindow: true,
+      conditional: false,
+      conditions: [],
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const html = `<p><span class="hyperlink-token" data-hyperlink-config="${config}">Home</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain("<link>");
+    expect(xml).toContain("<new-window/>");
+    expect(xml).toContain('<string value="Home"/>');
+    expect(xml).toContain('<string value="http://www.dirtbowl.com"/>');
+  });
+
+  it("recovers double-encoded invitation/hyperlink configs (setAttribute + entity encode bug)", () => {
+    // Browser setAttribute(pre-encoded) then innerHTML → &amp;quot; in the attribute.
+    const inv = JSON.stringify({
+      form: "Form 1",
+      project: "",
+      displayText: "Go",
+      isPrivate: false,
+      authToken: "",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/&/g, "&amp;"); // second pass like literal & in attr → &amp;
+    const link = JSON.stringify({
+      url: "http://example.com",
+      displayText: "Example",
+      openNewWindow: true,
+      conditional: false,
+      conditions: [],
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/&/g, "&amp;");
+    const html =
+      `<p><span class="invitation-token" data-invitation-config="${inv}">Go</span> ` +
+      `<span class="hyperlink-token" data-hyperlink-config="${link}">Example</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<invitation form="Form 1" project="">Go</invitation>');
+    expect(xml).toContain('<string value="http://example.com"/>');
+    expect(xml).not.toContain('form=""');
+    expect(xml).not.toContain('<string value=""/>');
+  });
+
+  it("keeps mailto / https URLs as strings, not field refs", () => {
+    const config = JSON.stringify({
+      url: "mailto:a@b.com",
+      displayText: "mail",
+      openNewWindow: false,
+      conditional: false,
+      conditions: [],
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const xml = documentHtmlToXml(
+      `<p><span class="hyperlink-token" data-hyperlink-config="${config}">mail</span></p>`,
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('<string value="mailto:a@b.com"/>');
+    expect(xml).not.toContain("<field name=");
+  });
+});
+
 describe("documentHtmlToXml embedded local image", () => {
   it("exports data-tawala-image-id img as <image id width height/>", () => {
     const html =

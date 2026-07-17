@@ -3,10 +3,14 @@
  * or by clicking an existing function token.
  */
 
-import { getActivePaletteEditor, type PaletteEditorHandle } from "./formattingPaletteContext";
+import {
+  clearActivePaletteEditor,
+  getActivePaletteEditor,
+  setActivePaletteEditor,
+  type PaletteEditorHandle,
+} from "./formattingPaletteContext";
 import { getFunctionDef, type FunctionConfig, type FunctionDef } from "./functionCatalog";
 import {
-  findFunctionTokenAtSelection,
   FUNCTION_TOKEN_CLASS,
   tokenRefFromElement,
   type FunctionTokenRef,
@@ -35,18 +39,16 @@ export interface FunctionPickerRequest {
   configureFunctionId?: string;
 }
 
-type FunctionPickerListener = (request: FunctionPickerRequest | null) => void;
-
 let pendingRequest: FunctionPickerRequest | null = null;
-const listeners = new Set<FunctionPickerListener>();
+/** React `useSyncExternalStore` subscribers — must not be invoked synchronously in subscribe. */
+const listeners = new Set<() => void>();
 
 function emit() {
-  listeners.forEach((cb) => cb(pendingRequest));
+  listeners.forEach((cb) => cb());
 }
 
-export function subscribeFunctionPicker(listener: FunctionPickerListener): () => void {
+export function subscribeFunctionPicker(listener: () => void): () => void {
   listeners.add(listener);
-  listener(pendingRequest);
   return () => listeners.delete(listener);
 }
 
@@ -64,17 +66,71 @@ export function clearFunctionPickerRequest(): void {
   emit();
 }
 
+/**
+ * True when the caret/selection is *inside* a function token (legacy: active element
+ * id starts with `func_`). Caret merely after a token must still open the Insert list.
+ */
+function functionTokenContainingSelection(root: HTMLElement): FunctionTokenRef | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return null;
+  let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
+  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
+  while (node && node !== root) {
+    if (
+      node instanceof HTMLSpanElement &&
+      node.classList.contains(FUNCTION_TOKEN_CLASS) &&
+      node.hasAttribute("data-function-id")
+    ) {
+      return tokenRefFromElement(node);
+    }
+    node = node.parentNode;
+  }
+  return null;
+}
+
 /** Open the picker from palette **fx** or Insert → Function…. */
 export function openFunctionPickerFromEditor(): void {
-  const handle = getActivePaletteEditor();
+  let handle = getActivePaletteEditor();
+  if (handle && !handle.el.isConnected) {
+    clearActivePaletteEditor(handle.el);
+    handle = null;
+  }
+  if (!handle) {
+    // Recover after image insert / remount left focus kind live but cleared the handle.
+    const live =
+      document.querySelector<HTMLElement>(
+        ".text-canvas-row.selected.editing .text-rich-editor, .text-canvas-row.editing .text-rich-editor",
+      ) ??
+      document.querySelector<HTMLElement>(".rich-surface[contenteditable='true']");
+    if (live?.isConnected) {
+      handle = {
+        el: live,
+        commit: () => {
+          live.dispatchEvent(new InputEvent("input", { bubbles: true }));
+        },
+        saveSelection: () => {},
+        restoreSelection: () => {
+          live.focus();
+        },
+      };
+      // Re-seed so later palette clicks hit the live editor.
+      setActivePaletteEditor(handle);
+    }
+  }
   if (!handle) {
     useProjectStore
       .getState()
       .setStatus("Click inside a Form Text or Document first, then Insert → Function…");
     return;
   }
-  handle.saveSelection();
-  const existing = findFunctionTokenAtSelection(handle.el);
+  try {
+    handle.saveSelection();
+  } catch {
+    /* selection may be outside a remounted editor */
+  }
+  // Legacy FormView.functionToolStripMenuItem_Click: Edit only when the function
+  // chip itself is active; otherwise always show the Insert Function list.
+  const existing = functionTokenContainingSelection(handle.el);
   requestFunctionPicker({
     mode: existing ? "edit" : "insert",
     existing,

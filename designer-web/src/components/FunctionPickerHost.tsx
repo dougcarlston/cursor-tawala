@@ -14,11 +14,12 @@ import {
 } from "@/lib/functionTokens";
 import { useProjectStore } from "@/store/projectStore";
 
-type Step = "pick" | "configure";
-
 /**
  * Orchestrates Insert Function → Configure Function and commits tokens into the
  * active palette editor. Mounted once in `App.tsx`.
+ *
+ * UI is derived from the current request on every render so we never paint a blank
+ * frame while useEffect catches up (that looked like fx “doing nothing”).
  */
 export function FunctionPickerHost() {
   const request = useSyncExternalStore(
@@ -26,52 +27,24 @@ export function FunctionPickerHost() {
     getFunctionPickerRequest,
     () => null,
   );
-  const [step, setStep] = useState<Step>("pick");
-  const [selectedDef, setSelectedDef] = useState<FunctionDef | null>(null);
-  const [editRef, setEditRef] = useState<FunctionTokenRef | null>(null);
-  const [initialConfig, setInitialConfig] = useState<FunctionConfig | undefined>();
+  /** Set when the user picks a function from the Insert list (insert flow only). */
+  const [picked, setPicked] = useState<{
+    def: FunctionDef;
+    config?: FunctionConfig;
+    editRef: FunctionTokenRef | null;
+  } | null>(null);
 
   useEffect(() => {
-    if (!request) {
-      setStep("pick");
-      setSelectedDef(null);
-      setEditRef(null);
-      setInitialConfig(undefined);
-      return;
-    }
-
-    if (request.mode === "edit" && request.existing) {
-      const def = getFunctionDef(request.existing.functionId);
-      if (def) {
-        setEditRef(request.existing);
-        setSelectedDef(def);
-        setInitialConfig(request.existing.config);
-        setStep("configure");
-        return;
-      }
-    }
-
-    if (request.configureFunctionId) {
-      const def = getFunctionDef(request.configureFunctionId);
-      if (def) {
-        setEditRef(null);
-        setSelectedDef(def);
-        setInitialConfig(undefined);
-        setStep("configure");
-        return;
-      }
-    }
-
-    setEditRef(request.existing ?? null);
-    setSelectedDef(null);
-    setInitialConfig(undefined);
-    setStep("pick");
+    setPicked(null);
   }, [request]);
 
   const close = () => clearFunctionPickerRequest();
 
-  const commitToken = (def: FunctionDef, config: FunctionConfig) => {
-    // Width-only DISPLAY IMAGE: drop any leftover height so Deploy preserves aspect ratio.
+  const commitToken = (
+    def: FunctionDef,
+    config: FunctionConfig,
+    editRef: FunctionTokenRef | null,
+  ) => {
     const nextConfig =
       def.id === "display-image" ? { ...config, height: "" } : config;
     const commitConfig = request?.commitConfig;
@@ -81,7 +54,7 @@ export function FunctionPickerHost() {
       return;
     }
     const handle = request?.editor ?? getActivePaletteEditor();
-    if (!handle) {
+    if (!handle?.el?.isConnected) {
       useProjectStore
         .getState()
         .setStatus("Could not insert function — click inside Form Text or Document and try again");
@@ -97,30 +70,45 @@ export function FunctionPickerHost() {
 
   if (!request) return null;
 
-  if (step === "pick") {
-    return (
-      <InsertFunctionDialog
-        initialFunctionId={editRef?.functionId}
-        onCancel={close}
-        onSelect={(def) => {
-          setSelectedDef(def);
-          setInitialConfig(editRef ? editRef.config : undefined);
-          setStep("configure");
-        }}
-      />
-    );
-  }
+  const editDef =
+    request.mode === "edit" && request.existing
+      ? getFunctionDef(request.existing.functionId)
+      : undefined;
+  const skipListDef = request.configureFunctionId
+    ? getFunctionDef(request.configureFunctionId)
+    : undefined;
 
-  if (step === "configure" && selectedDef) {
+  const configure =
+    picked ??
+    (editDef && request.existing
+      ? { def: editDef, config: request.existing.config, editRef: request.existing }
+      : null) ??
+    (skipListDef
+      ? { def: skipListDef, config: undefined, editRef: null as FunctionTokenRef | null }
+      : null);
+
+  if (configure) {
     return (
       <ConfigureFunctionDialog
-        def={selectedDef}
-        initialConfig={initialConfig}
+        def={configure.def}
+        initialConfig={configure.config}
         onCancel={close}
-        onSave={(config) => commitToken(selectedDef, config)}
+        onSave={(config) => commitToken(configure.def, config, configure.editRef)}
       />
     );
   }
 
-  return null;
+  return (
+    <InsertFunctionDialog
+      initialFunctionId={request.existing?.functionId}
+      onCancel={close}
+      onSelect={(def) => {
+        setPicked({
+          def,
+          config: request.existing?.config,
+          editRef: request.existing ?? null,
+        });
+      }}
+    />
+  );
 }

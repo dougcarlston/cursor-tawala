@@ -12,12 +12,19 @@ export function NewProjectDialog({ open, onClose, onSelect }: Props) {
   const byCategory = templatesByCategory();
 
   return (
-    <div className="modal-overlay" role="presentation">
+    <div
+      className="modal-overlay new-project-overlay"
+      role="presentation"
+      onClick={(e) => {
+        if (e.target === e.currentTarget) onClose();
+      }}
+    >
       <div
         className="modal-dialog new-project-dialog"
         role="dialog"
         aria-labelledby="new-project-title"
         aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
           <h2 id="new-project-title">New Project</h2>

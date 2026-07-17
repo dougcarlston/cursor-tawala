@@ -201,18 +201,22 @@ export function insertFunctionTokenAtSelection(
   if (!sel) return;
 
   const span = createFunctionTokenElement(def, config, replace?.instanceId || undefined);
+
+  if (replace) {
+    // Keep existing chip face/size — applying caret "typing format" after Configure
+    // randomly resized placeholders (owner Jul 16 Response Totals).
+    copyFunctionTokenPresentation(replace.element, span);
+    replace.element.replaceWith(span);
+    placeCaretAfterToken(span);
+    return;
+  }
+
   const typing = typingFormatForInsert(root);
   const placed = findPlacedTextBlockAtCaret(root);
   if (placed && isBlankTypingContext(root)) {
     applyTypingFormatToPlacedBlock(placed, typing);
   }
   applyTypingFormatToToken(span, typing);
-
-  if (replace) {
-    replace.element.replaceWith(span);
-    placeCaretAfterToken(span);
-    return;
-  }
 
   let range: Range | null = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;
   if (!range || !root.contains(range.commonAncestorContainer)) {
@@ -223,6 +227,24 @@ export function insertFunctionTokenAtSelection(
   if (!range.collapsed) range.deleteContents();
   range.insertNode(span);
   placeCaretAfterToken(span);
+}
+
+/** Copy inline presentation styles from an existing function chip onto its replacement. */
+function copyFunctionTokenPresentation(from: HTMLElement, to: HTMLElement): void {
+  const keys = [
+    "fontSize",
+    "fontFamily",
+    "fontWeight",
+    "fontStyle",
+    "textDecoration",
+    "color",
+    "verticalAlign",
+    "lineHeight",
+  ] as const;
+  for (const key of keys) {
+    const value = from.style[key];
+    if (value) to.style[key] = value;
+  }
 }
 
 export function lookupFunctionDefByName(name: string): FunctionDef | undefined {

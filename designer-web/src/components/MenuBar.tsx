@@ -12,6 +12,10 @@ import {
 } from "@/lib/functionPicker";
 import { openLocalImageInsertFromEditor } from "@/lib/localImageInsert";
 import {
+  openHyperlinkInsertFromEditor,
+  openInvitationInsertFromEditor,
+} from "@/lib/linkInsert";
+import {
   canDeleteSelection,
   canDeployProject,
   openProjectManagerLocal,
@@ -259,15 +263,27 @@ function InsertMenuBody({
         </MenuSubmenu>
         <button
           type="button"
-          disabled
-          title="Insert Invitation dialog not implemented yet"
+          disabled={!canFunction}
+          onClick={() => {
+            if (!getActivePaletteEditor()) {
+              onStub("Place the cursor in the document text first");
+              return;
+            }
+            openInvitationInsertFromEditor();
+          }}
         >
           Invitation…
         </button>
         <button
           type="button"
-          disabled
-          title="Hyperlink dialog not implemented yet"
+          disabled={!canFunction}
+          onClick={() => {
+            if (!getActivePaletteEditor()) {
+              onStub("Place the cursor in the document text first");
+              return;
+            }
+            openHyperlinkInsertFromEditor();
+          }}
         >
           Hyperlink…
         </button>
@@ -326,16 +342,20 @@ function InsertMenuBody({
       <button
         type="button"
         disabled={!canTextExtras}
-        title="Insert Invitation dialog not implemented yet"
-        onClick={() => onStub("Insert Invitation… is not implemented yet")}
+        onClick={() => {
+          if (!canTextExtras) return;
+          openInvitationInsertFromEditor();
+        }}
       >
         Invitation…
       </button>
       <button
         type="button"
         disabled={!canTextExtras}
-        title="Hyperlink dialog not implemented yet"
-        onClick={() => onStub("Insert Hyperlink… is not implemented yet")}
+        onClick={() => {
+          if (!canTextExtras) return;
+          openHyperlinkInsertFromEditor();
+        }}
       >
         Hyperlink…
       </button>

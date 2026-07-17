@@ -401,6 +401,8 @@ table.component .graph { background: #e8e8e8; min-width: 120px; height: 1.2em; p
 table.component .graph .bar { display: block; height: 100%; background: #6a9fd8; min-width: 0; }
 table.component .graph .bar span { padding-left: 4px; font-size: 0.85em; white-space: nowrap; }
 .preview-choice-tally { margin: 0.5rem 0; }
+.preview-response-totals { margin: 0.75rem 0; }
+.preview-response-totals .response-totals-title { margin: 0 0 0.35rem; font-size: 1em; }
 `;
 
 /** Match Design canvas vertical gaps between Form Items (Preview / Deploy runtime only). */

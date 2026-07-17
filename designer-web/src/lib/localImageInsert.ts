@@ -6,6 +6,7 @@
 
 import {
   getActivePaletteEditor,
+  setActivePaletteEditor,
   type PaletteEditorHandle,
 } from "./formattingPaletteContext";
 import {
@@ -103,6 +104,10 @@ export async function insertLocalImageFile(
     insertEmbeddedImageAtSelection(handle.el, img);
     selectEmbeddedImage(handle.el, img);
     handle.commit();
+    // Keep palette / fx targeting this editor after the store re-render from commit.
+    if (handle.el.isConnected) {
+      setActivePaletteEditor(handle);
+    }
     const scaled =
       fitted.width < natural.width
         ? ` (scaled to ${fitted.width}×${fitted.height}; drag SE corner to resize)`

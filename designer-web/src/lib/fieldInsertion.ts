@@ -211,11 +211,32 @@ export type FieldTargetContext = {
   formFieldsOnly?: boolean;
   /** If set: accept form fields or these variables only — reject unknown plain names (If). */
   knownVariables?: ReadonlySet<string>;
+  /** Allow register while Configure Function lock is on (Configure dialog inputs only). */
+  configureDialog?: boolean;
 };
 
 let activeInserter: ActiveInserter | null = null;
 let activeTargetContext: FieldTargetContext = {};
 const activeTargetListeners = new Set<() => void>();
+
+/**
+ * While Configure Function is open, canvas editors must not steal Fields double-click —
+ * only inputs that pass `configureDialog: true` may register as the insert target.
+ */
+let configureFunctionFieldLock = false;
+
+export function setConfigureFunctionFieldLock(locked: boolean): void {
+  configureFunctionFieldLock = locked;
+  if (locked) {
+    activeInserter = null;
+    activeTargetContext = {};
+    notifyActiveTargetListeners();
+  }
+}
+
+export function isConfigureFunctionFieldLock(): boolean {
+  return configureFunctionFieldLock;
+}
 
 function notifyActiveTargetListeners(): void {
   for (const listener of activeTargetListeners) listener();
@@ -247,6 +268,9 @@ export function retainEditorFocusOnBlur(relatedTarget: EventTarget | null): bool
       [
         ".fields-tree",
         ".fields-palette",
+        ".designer-left",
+        ".designer-items",
+        ".main-icon-toolbar",
         ".menu-bar",
         ".menu-drop",
         ".menu-submenu",
@@ -270,6 +294,9 @@ export function setActiveFieldTarget(
   inserter: ActiveInserter | null,
   context: FieldTargetContext = {},
 ): void {
+  if (configureFunctionFieldLock && inserter && !context.configureDialog) {
+    return;
+  }
   activeInserter = inserter;
   activeTargetContext = inserter ? context : {};
   notifyActiveTargetListeners();
