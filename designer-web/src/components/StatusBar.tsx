@@ -7,6 +7,7 @@ export function StatusBar() {
   const project = useProjectStore((s) => s.project);
   const credentials = useProjectStore((s) => s.credentials);
   const [runtime, setRuntime] = useState<"dev" | "java" | "…">("…");
+  const [flashKey, setFlashKey] = useState(0);
 
   useEffect(() => {
     fetch("/api/health")
@@ -15,10 +16,16 @@ export function StatusBar() {
       .catch(() => setRuntime("dev"));
   }, []);
 
+  useEffect(() => {
+    setFlashKey((k) => k + 1);
+  }, [statusMessage]);
+
   return (
     <footer className="status-bar">
-      <span>{statusMessage}</span>
-      <span>
+      <span key={flashKey} className="status-bar-message" title={statusMessage}>
+        {statusMessage}
+      </span>
+      <span className="status-bar-meta">
         {project.name} · format {project.format}
         {dirty ? <span className="dirty"> · modified</span> : null}
         {" · "}

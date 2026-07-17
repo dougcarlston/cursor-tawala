@@ -19,90 +19,217 @@ When cursor is in a **Heading** item, the **entire** format toolbar is greyed (s
 
 ## Format menu extras (Form only)
 
-Merged into main **Format** menu when Form MDI active:
+Merged into main **Format** menu when Form MDI active (legacy screenshot Jul 17):
 
 | Item | Notes |
 |------|-------|
-| Bold / Italic / Underline / Color / Reset | Same as Document |
-| **Page Header…** | Project-wide banner (text + optional image) — **not** the Heading form item; see `DESIGNER_PAGE_HEADER.md` |
+| Bold / Italic / Underline / Color / Reset Formatting | Icons + accelerators (Ctrl+B/I/U); live on Form rich text — **browser:** Formatting Palette |
+| **Styles** → | Cascade (no icons): Fill in the Blank… / Multiple Choice… / Text… |
+| **Page Header…** | Project-wide banner — **not** the Heading form item; see `DESIGNER_PAGE_HEADER.md` |
 | **Project Themes** | Theme checklist (see `DESIGNER_MENU_SPEC.md`) |
 | **Tabs…** | Tab stops in inches |
-| **Styles** → | Form-item style dialogs only on Form |
-| → **Fill in the Blank…** | Global FIB layout style |
-| → **Multiple Choice…** | Global MCQ layout style |
-| → **Text…** | Text style dialog (title **Styles**) |
 
-Source typo in menu: **Reset Formattting** (three t’s) in `MDIFormView.Designer.cs`.
+**Browser:** Format menu **removed**; **Project → Styles… / Page Header / Themes** own the retained items. **Tabs…** is documented but not exposed. **Styles…** opens from the **selected** FIB / MCQ / Text (no submenu).
 
-Screenshots: `assets/Format_-_Styles_-_FIB-*.png`, `Format_-_Styles_-_MCQ-*.png`, `Format_-_Styles_-_Text-*.png`.
+Screenshot: [`assets/Format_-_Styles_submenu.png`](assets/Format_-_Styles_submenu.png)
+
+Source typo in older Designer builds: **Reset Formattting** (three t’s) in `MDIFormView.Designer.cs`.
 
 ---
 
-## Format → Styles dialogs (owner June 2026)
+## Format → Styles dialogs (owner June–July 2026)
 
-Opened from **Format → Styles →** sub-menu when a **Form** MDI child is active.
+Opened from **Format → Styles →** cascade (legacy) or **Project → Styles…** (browser: opens the dialog matching the **selected** form item) when a **Form** MDI child is active.
 
-**Shared behavior (all three):**
+**Authoritative FIB UI:** `FibStylesDialog` (compact Labels + Blanks + one preview). Older `FibItemStylesDialog` (scrollable radio-per-preview) is superseded by the owner screenshots below.
 
-- Live **preview** panel (lavender background) updates as options change.
-- Footer note: *Style may be applied only to selected [item type] questions in the active form, if any. The "Apply to All" feature has been disabled.*
-- **Apply to All** — **always greyed** (removed in source Sept 2009 — “inadvertent click wreaks havoc in large projects”).
-- **Apply to Selected** — enabled when a layout/style radio is chosen; applies to **selected** items of that type on the active form (greyed if none selected / no style picked).
-- **Cancel** — closes without applying.
+**Shared footer behavior (FIB / MCQ / Text):**
+
+**Legacy (screenshots Jul 17):**
+
+- Note: *Note: Style may be applied only to selected [item type] … The "Apply to All" feature has been disabled.*
+- **Apply to All** — always disabled (removed Sept 2009 — project-wide apply “wreaks havoc in large projects”).
+- **Apply to Selected** — hidden when no matching item selected; otherwise applies to the **one** selected canvas item (no multi-select).
+- Button order: **Apply to Selected** · **Apply to All** · **Cancel**.
+
+**Browser (`designer-web`, Jul 17 — form-scoped Apply to All + selection-routed Styles…):**
+
+- **Project → Styles…** — single menu item; enabled only when a FIB / MCQ / Text is selected; opens that kind’s dialog (no FIB/MCQ/Text submenu). Heading / Break / etc. keep Styles greyed.
+- **Apply to Selected** — same one-item contract; always available in the dialog (you opened it from a matching selection).
+- **Apply to All** — **enabled** when the active form has ≥1 item of that kind; updates **every matching item on this form only** (not other forms / not project-wide). Safer than legacy project-wide `SetAll*Styles`.
+- Note copy explains Selected vs All and the form-only scope.
+- Design canvas may not yet *visually* reflect every layout token (Deploy/runtime do for many); canvas visual parity is a follow-up.
 
 ---
 
 ### Fill in the Blank Styles
 
 **Title:** `Fill in the Blank Styles`  
-**Menu:** Format → Styles → **Fill in the Blank…**
+**Menu:** Format → Styles → **Fill in the Blank…** (browser: Project → Styles)  
+**Source:** `FibStylesDialog.cs` + sample UserControls under `Dialogs/Fib*Sample*`
 
-| Group | Control | Options |
-|-------|---------|---------|
-| **Labels** | Radio | **Above** (default in screenshot), **Left justified**, **Right justified**, **Freeform** |
-| **Blanks** | Checkbox | **Align right side** — enabled only when **Left justified** or **Right justified** selected; greyed for Above/Freeform |
+**Layout (≈449×311 fixed dialog):**
 
-Preview shows sample FIB layout for the selected label/blank combination.
+| Region | Content |
+|--------|---------|
+| Left | **Labels** group (radios) stacked above **Blanks** group (one checkbox) |
+| Right | Single **lavender** preview panel (`RGB 200,200,255`) — swaps sample control as options change |
+| Bottom | Note + buttons on grey footer strip |
+
+#### Labels
+
+| Radio | Preview sample | Stored `style` |
+|-------|----------------|----------------|
+| **Above** | `Name:` / `Address:` each above its blank (2 rows; blanks different widths) | `topLabels` |
+| **Left justified** | `Name:` / `Address:` / `Phone:` left-aligned labels; blanks of varying width to the right | `leftAlignLabels` or `leftAlignLabelsJustified` |
+| **Right justified** | Same three rows; labels right-aligned so colons line up | `rightAlignLabels` or `rightAlignLabelsJustified` |
+| **Freeform** | Inline: *Columbus had three ships called the □ the □ and the □* | `freeform` |
+
+Preview labels are **dark blue**; blanks are disabled textboxes (inset). Labels in the Styles preview are **not** auto-bolded; Deploy must not bold Name/Email/Phone by heuristic either (author B/I/U only).
+
+**Deploy smoke (left/right Align, Jul 17):**
+
+1. Multi-blank FIB (Name / Email / Phone on separate soft-rows or one soft-row) → Deploy shows **one label + one field per row** (not “Name: Email” with two boxes).
+2. Label column hugs the longest label — fields sit close to labels (not a ~380px gutter). DirtBowl Registration themes may still use a wider `--reg-label-width`.
+3. No unintended bold on Email/Phone/Name unless the Design prompt used Bold.
+4. **Align right side** (`…Justified`): blanks stretch so right edges share a margin within that FIB table (CSS on `table.fib.justified`). Freeform does not offer Align right side.
+
+#### Blanks
+
+| Control | Rules |
+|---------|--------|
+| **Align right side** | Checkbox. **Enabled** only when **Left justified** or **Right justified** is selected; **greyed** for Above / Freeform (may retain checked appearance while disabled). When checked with Left/Right justified, blank **right edges** align and style token gains `…Justified`. |
+
+#### Screenshots (owner Jul 17, 2026)
+
+| Shot | File |
+|------|------|
+| Above | [`assets/Format_-_Styles_-_FIB-Above.png`](assets/Format_-_Styles_-_FIB-Above.png) |
+| Left justified | [`assets/Format_-_Styles_-_FIB-LeftJustified.png`](assets/Format_-_Styles_-_FIB-LeftJustified.png) |
+| Right justified | [`assets/Format_-_Styles_-_FIB-RightJustified.png`](assets/Format_-_Styles_-_FIB-RightJustified.png) |
+| Right justified + Align right side | [`assets/Format_-_Styles_-_FIB-RightJustified-AlignRight.png`](assets/Format_-_Styles_-_FIB-RightJustified-AlignRight.png) |
+| Freeform | [`assets/Format_-_Styles_-_FIB-Freeform.png`](assets/Format_-_Styles_-_FIB-Freeform.png) |
 
 ---
 
 ### Multiple Choice — Styles
 
 **Title:** `Styles`  
-**Menu:** Format → Styles → **Multiple Choice…**
+**Menu:** Format → Styles → **Multiple Choice…**  
+**Source:** `McqItemStylesDialog.cs`
 
-| Layout | Preview |
-|--------|---------|
-| **Vertical** | Question + choices stacked (sample: “What is your favorite color?”) |
-| **Horizontal** | Choices in one row |
-| **Multi-column** | Choices in columns; sub-dropdown **greyed** until Multi-column selected |
+**Layout:** Three **stacked** rows — each row is a **bold** radio on the left and a lavender preview panel on the right (**all three previews visible at once**; selecting a radio chooses which layout applies). Column-count combo sits under **Multi-column**. **Spacing** group box below the stack.
 
-**Multi-column** column-count dropdown (enabled when Multi-column selected): **Auto**, **2**, **3**, **4**, **5**
+| Radio | Preview |
+|-------|---------|
+| **Vertical** | “What is your favorite color?” + Red / Orange / Yellow stacked (Red shown selected) |
+| **Horizontal** | Same question; Red / Orange / Yellow in one row |
+| **Multi-column** | Same question; six choices in two columns — left Red/Orange/Yellow, right Green/Blue/Violet |
+
+**Multi-column** dropdown (enabled only when Multi-column selected; greyed otherwise): **Auto**, **2**, **3**, **4**, **5**. `Auto` → `columnCount` 0.
 
 | Group | Control |
 |-------|---------|
-| **Spacing** | **Do not add blank space below question when displayed.** (checkbox) |
+| **Spacing** | **Do not add blank space below question when displayed.** → `paddingBottom: false` when checked |
 
-Maps to project/form `mcItemStyle` (e.g. `vertical`, `horizontal`, multi-column).
+Maps to item `style` `vertical` / `horizontal` / `multicolumn` (+ optional `columnCount`).
+
+**Deploy smoke (Jul 17):**
+
+1. **Vertical** — stacked radios; labels clear of the control (OK in owner smoke).
+2. **Horizontal** — choices in one row; radios must not overlap choice text (fixed: CSS now targets plain `<label>`, not only `label.choice`).
+3. **Multi-column** — table cells have a readable gutter (~2em) between columns (was flush in default theme).
+4. Design canvas still shows a vertical list for all three — layout paint is a follow-up; check layouts on Deploy.
+
+#### Screenshots (owner Jul 17, 2026)
+
+| Shot | File |
+|------|------|
+| Vertical selected (no MCQ selected → Apply to Selected hidden) | [`assets/Format_-_Styles_-_MCQ-Vertical.png`](assets/Format_-_Styles_-_MCQ-Vertical.png) |
+| Multi-column + column dropdown open (Apply to Selected visible) | [`assets/Format_-_Styles_-_MCQ-MultiColumn.png`](assets/Format_-_Styles_-_MCQ-MultiColumn.png) |
 
 ---
 
 ### Text — Styles
 
 **Title:** `Styles`  
-**Menu:** Format → Styles → **Text…**
+**Menu:** Format → Styles → **Text…**  
+**Source:** `TextItemStylesDialog.cs`
 
-| Style | Preview appearance |
-|-------|-------------------|
-| **Normal** | “This is normal text” — plain |
-| **Instructional** | “This is instructional text” — **bold italic** |
-| **Error** | “This is error text” — **bold italic red** |
+**Layout:** Three stacked radio + lavender preview rows (all visible), then **Spacing** group, then footer.
+
+| Radio | Preview text | Appearance |
+|-------|--------------|------------|
+| **Normal** | This is normal text | Plain black |
+| **Instructional** | This is instructional text | **Bold italic blue** (legacy dialog: `SystemColors.Desktop`; browser/Deploy use navy `#000080`) |
+| **Error** | This is error text | **Bold italic red** type (`#C00000`) — **no** red/pink background (lavender panel is dialog chrome only) |
+
+**Browser Design + Deploy:** Text canvas rows and Deploy CSS follow that type contract. Error must not pick up form-validation `.error` pink fill. DirtBowl Registration may still wrap instructional copy in a light banner; the type itself stays blue bold italic.
+
+**Style vs local formatting (owner Jul 17):** Item Style is the default look. Palette / character formatting on the text (bold, italic, color, face, size) **wins** when present — same as Word style vs direct formatting. To see Instructional or Error from Styles, leave runs at **Default** (or use **Reset Formatting**). Applying Styles does not strip local formatting.
+
+**Deploy note (Jul 17):** Designer API must be running code that includes Text Style color export (`applyTextItemStyleToXml`). If the API process predates that change, re-Deploy will still drop colors — restart `node server/index.mjs` (port 3001), then Deploy again.
+
+**FIB multi-blank + Align right side:** Freeform is required for “Name ____ Email ____ Phone ____” on one line. Left/Right justified (+ Align right side) turn each blank into its own table row; do not Apply All justified styles onto a freeform multi-blank FIB.
 
 | Group | Control |
 |-------|---------|
-| **Spacing** | **Do not add blank space below text when displayed.** (checkbox) |
+| **Spacing** | **Do not add blank space below text when displayed.** → `paddingBottom: false` when checked |
 
-Maps to `textItemStyle` (`normal`, `instructional`, `error`).
+Maps to `style` `normal` / `instructional` / `error`.
+
+#### Screenshot (owner Jul 17, 2026)
+
+| Shot | File |
+|------|------|
+| Instructional selected (Apply to Selected visible) | [`assets/Format_-_Styles_-_Text-Instructional.png`](assets/Format_-_Styles_-_Text-Instructional.png) |
+
+---
+
+### Browser (`designer-web`) — visual parity (Jul 17 polish)
+
+Tokens under **Project → Styles**. Dialog chrome aligned to owner screenshots:
+
+| Area | Status |
+|------|--------|
+| FIB Labels + Blanks groups, lavender Name/Address/Phone + Columbus freeform | Done |
+| MCQ/Text stacked radio + three simultaneous lavender previews | Done |
+| Apply to Selected **hidden** when no matching item; button order Apply to Selected · Apply to All · Cancel | Done |
+| **Apply to All** = all matching items on **active form only** | Done (Jul 17) |
+| Design canvas visual layout for each style token | **Follow-up** — paint FIB/MCQ layout styles on Design the way Deploy already shows (underscores / vertical·horizontal·multicolumn); not started |
+| Deploy left/right Align: one blank per table row; no Name/Email auto-bold | Done (Jul 17) |
+| Deploy label column: content-sized (not fixed 380px gutter) | Done (Jul 17; DirtBowl reg forms keep `--reg-label-width`) |
+
+*Legacy Preview tab (www.tawala.com) is unavailable offline — not required for this polish.*
+
+---
+
+### Tabs… (Form)
+
+**Title:** `Tabs`  
+**Menu (legacy):** Format → **Tabs…** · **Browser:** removed from the app (Jul 17)  
+**Source:** `TabDialog.cs` / `TabDialog.Designer.cs`
+
+**Layout (owner Jul 17 screenshot):**
+
+- Label **Tab stop position:** + text field + unit **inch**
+- List of stops (`0.00` format) with **Set** / **Clear** (greyed with no selection) / **Clear All**
+- **OK** / **Cancel**
+
+**Legacy rules:** Stops are inches, `0 < tab ≤ 6.5`, no duplicates.
+
+**Browser decision (owner Jul 17):** Remove Tabs from the app for now. Tawala Designer is not intended to be a word processor, and the browser implementation did not provide a practical Tab action:
+
+- Documents never exposed the command.
+- Form Text / Heading could store `tabPositions`, but their export did not use them.
+- FIB / MCQ could emit tab-stop metadata, but most exported paragraphs had no `<tab/>` marker to activate it.
+- Tab / Shift+Tab in Text and Document remains reserved for table-cell navigation.
+
+Keep the screenshot and legacy behavior documented. Preserve existing `tabPositions` fields and server conversion helpers for compatibility with imported projects; do not expose an editor dialog or Project menu item. A source search found the C# `TabDialog` itself but no code that opens it in the available legacy tree.
+
+| Shot | File |
+|------|------|
+| Tabs dialog (0.50 / 2.00 / 4.00) | [`assets/Format_-_Tabs_dialog.png`](assets/Format_-_Tabs_dialog.png) |
 
 ---
 
@@ -125,7 +252,8 @@ Form Text tables share Document table behaviors: **Tab** / **Shift+Tab** cell na
 
 ## Owner documentation gaps
 
-- [x] **Format → Styles** sub-dialogs (FIB / MCQ / Text)
+- [x] **Format → Styles** FIB dialog (Jul 17 screenshots + `FibStylesDialog`)
+- [x] **Format → Styles** MCQ / Text dialogs (Jul 17 screenshots + `McqItemStylesDialog` / `TextItemStylesDialog`)
 - [x] **Preview tab** — owner: only www.tawala.com error (see `DESIGNER_STARTUP_AND_FORM_CANVAS.md` §8)
 - [x] **Page Header** — `DESIGNER_PAGE_HEADER.md`
 
@@ -133,10 +261,12 @@ Form Text tables share Document table behaviors: **Tab** / **Shift+Tab** cell na
 
 - **Format** menu: **removed** (palette + Project).
 - Live B/I/U/color/fonts/tables: **Formatting Palette**.
-- **Project → Styles →** FIB / MCQ / Text: **wired** (Apply to Selected writes `style` / `columnCount` / `paddingBottom`).
-- **Project → Tabs…**: **wired** (item `tabPositions` inches → Deploy twips).
+- **Project → Styles…**: **wired** — opens from selected FIB / MCQ / Text; Apply to Selected (one item); **Apply to All** (all matching on **active form** only).
+- **Project → Tabs…**: **removed** (Jul 17). Legacy dialog documented; compatibility fields/converters retained for imported projects.
 - **Page Header / Themes**: **stubs** on Project for **8080 / CSS** track.
+- Styles **visual** dialog parity: **Jul 17**.
+- **Follow-up:** Design-canvas paint of FIB/MCQ layout style tokens (Deploy already correct).
 
 ---
 
-*Last updated: July 17, 2026 — Project Styles/Tabs wired; Format menu removed; from `MDIFormView.cs`, `Dialogs/*StylesDialog.cs`; Insert Table blocked inside tables; Borders menu (Border 1 / Border 2 / No Border) shared with Document palette; Tab cell nav + cell-scoped align; one top-left table move handle (no float wrap toggles).*
+*Last updated: July 17, 2026 — Tabs documented and removed from browser UI; Design FIB/MCQ layout paint deferred.*

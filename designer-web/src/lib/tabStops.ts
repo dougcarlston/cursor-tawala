@@ -1,6 +1,7 @@
 /**
- * Project → Tabs… — paragraph tab stops in inches (legacy TabDialog).
- * Stored on the selected form item as `tabPositions` (inches); Deploy converts to twips (×1440).
+ * Legacy paragraph tab-stop compatibility.
+ * Browser UI was removed Jul 17, 2026; imported `tabPositions` remain supported
+ * where server exporters consume them.
  */
 
 export const TAB_MAX_INCHES = 6.5;
@@ -43,33 +44,4 @@ export function tabPositionsXmlFromInches(
     .join("");
   if (!stops) return fallbackXml;
   return `<tabPositions>${stops}</tabPositions>`;
-}
-
-type TabsListener = (open: boolean) => void;
-
-let tabsOpen = false;
-const tabsListeners = new Set<TabsListener>();
-
-function emitTabs() {
-  tabsListeners.forEach((cb) => cb(tabsOpen));
-}
-
-export function subscribeTabsDialog(listener: TabsListener): () => void {
-  tabsListeners.add(listener);
-  listener(tabsOpen);
-  return () => tabsListeners.delete(listener);
-}
-
-export function isTabsDialogOpen(): boolean {
-  return tabsOpen;
-}
-
-export function openTabsDialog(): void {
-  tabsOpen = true;
-  emitTabs();
-}
-
-export function clearTabsDialog(): void {
-  tabsOpen = false;
-  emitTabs();
 }

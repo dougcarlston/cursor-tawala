@@ -15,8 +15,7 @@ import {
   openHyperlinkInsertFromEditor,
   openInvitationInsertFromEditor,
 } from "@/lib/linkInsert";
-import { openFormItemStylesDialog } from "@/lib/formItemStyles";
-import { openTabsDialog } from "@/lib/tabStops";
+import { openFormItemStylesDialog, stylesKindForFormItem } from "@/lib/formItemStyles";
 import { windowMenuLabel } from "@/lib/mdiWindowLayout";
 import {
   getViewChrome,
@@ -28,7 +27,7 @@ import {
   getFieldsPaletteSelection,
   subscribeFieldsPaletteSelection,
 } from "@/lib/fieldsPaletteSelection";
-import { insertFieldIntoActiveTarget } from "@/lib/fieldInsertion";
+import { insertFieldIntoActiveTarget, isInsideActiveMdiWindow } from "@/lib/fieldInsertion";
 import { insertFieldTokenAtSelection } from "@/lib/fieldTokens";
 import {
   canDeleteSelection,
@@ -75,6 +74,9 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const focusWindow = useProjectStore((s) => s.focusWindow);
   const restoreWindow = useProjectStore((s) => s.restoreWindow);
   const formCount = useProjectStore((s) => s.project.forms.length);
+  const project = useProjectStore((s) => s.project);
+  const selection = useProjectStore((s) => s.selection);
+  const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const setStatus = useProjectStore((s) => s.setStatus);
   const dirty = useProjectStore((s) => s.dirty);
   const focus = useSyncExternalStore(
@@ -92,8 +94,15 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const activeKind = activeWindow?.kind ?? null;
   const designActive = activeKind === "document" || editorTab === "design";
 
-  // Touch selection index so Delete enable state re-renders with the toolbar.
-  useProjectStore((s) => s.selectedItemIndex);
+  const selectedFormItem =
+    activeKind === "form" &&
+    activeWindow &&
+    selection.kind === "form" &&
+    selection.name === activeWindow.name &&
+    selectedItemIndex != null
+      ? project.forms.find((f) => f.name === activeWindow.name)?.items[selectedItemIndex] ?? null
+      : null;
+  const stylesKind = stylesKindForFormItem(selectedFormItem);
 
   const editActive = shellEditContextActive();
   const canDeploy = canDeployProject();
@@ -242,39 +251,32 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         <div className="menu-separator" />
         <button
           type="button"
-          disabled={activeKind !== "form"}
+          disabled={!stylesKind}
           title={
-            activeKind === "form"
-              ? "Tab stops for the selected form item (Deploy)"
-              : "Open a Form window first"
+            stylesKind
+              ? `Style the selected ${
+                  stylesKind === "fib"
+                    ? "Fill in the Blank"
+                    : stylesKind === "mc"
+                      ? "Multiple Choice"
+                      : "Text"
+                } (and optionally all of that type on this form)`
+              : activeKind !== "form"
+                ? "Open a Form window and select a FIB, Multiple Choice, or Text item"
+                : "Select a Fill in the Blank, Multiple Choice, or Text item (not Heading, Hidden Field, Page Break, or Skip Instructions)"
           }
-          onClick={() => openTabsDialog()}
+          onClick={() => {
+            if (!stylesKind) {
+              setStatus(
+                "Select a Fill in the Blank, Multiple Choice, or Text item first",
+              );
+              return;
+            }
+            openFormItemStylesDialog(stylesKind);
+          }}
         >
-          Tabs…
+          Styles…
         </button>
-        <MenuSubmenu label="Styles" disabled={activeKind !== "form"}>
-          <button
-            type="button"
-            disabled={activeKind !== "form"}
-            onClick={() => openFormItemStylesDialog("fib")}
-          >
-            Fill in the Blank…
-          </button>
-          <button
-            type="button"
-            disabled={activeKind !== "form"}
-            onClick={() => openFormItemStylesDialog("mc")}
-          >
-            Multiple Choice…
-          </button>
-          <button
-            type="button"
-            disabled={activeKind !== "form"}
-            onClick={() => openFormItemStylesDialog("text")}
-          >
-            Text…
-          </button>
-        </MenuSubmenu>
       </MenuDrop>
       <MenuDrop label="Windows">
         <button
@@ -404,9 +406,11 @@ function InsertMenuBody({
           onClick={() => {
             if (!fieldsPaletteSelection) return;
             const editor = getActivePaletteEditor();
-            const inDocument =
-              !!editor?.el?.isConnected && !!editor.el.closest(".document-editor");
-            if (!inDocument) {
+            const inActiveDocument =
+              !!editor?.el?.isConnected &&
+              !!editor.el.closest(".document-editor") &&
+              isInsideActiveMdiWindow(editor.el);
+            if (!inActiveDocument) {
               onStub("Place the cursor in the document text first");
               return;
             }
@@ -424,7 +428,8 @@ function InsertMenuBody({
           <button
             type="button"
             onClick={() => {
-              if (!getActivePaletteEditor()) {
+              const editor = getActivePaletteEditor();
+              if (!editor?.el || !isInsideActiveMdiWindow(editor.el)) {
                 onStub("Place the cursor in the document text first");
                 return;
               }
@@ -436,7 +441,8 @@ function InsertMenuBody({
           <button
             type="button"
             onClick={() => {
-              if (!getActivePaletteEditor()) {
+              const editor = getActivePaletteEditor();
+              if (!editor?.el || !isInsideActiveMdiWindow(editor.el)) {
                 onStub("Place the cursor in the document text first");
                 return;
               }
@@ -450,7 +456,8 @@ function InsertMenuBody({
           type="button"
           disabled={!canFunction}
           onClick={() => {
-            if (!getActivePaletteEditor()) {
+            const editor = getActivePaletteEditor();
+            if (!editor?.el || !isInsideActiveMdiWindow(editor.el)) {
               onStub("Place the cursor in the document text first");
               return;
             }
@@ -463,7 +470,8 @@ function InsertMenuBody({
           type="button"
           disabled={!canFunction}
           onClick={() => {
-            if (!getActivePaletteEditor()) {
+            const editor = getActivePaletteEditor();
+            if (!editor?.el || !isInsideActiveMdiWindow(editor.el)) {
               onStub("Place the cursor in the document text first");
               return;
             }

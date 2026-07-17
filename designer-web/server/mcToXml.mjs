@@ -56,11 +56,17 @@ function staticChoicesXml(choices, escAttr, escText, tabsXml) {
     .join("");
 }
 
+/**
+ * Prefer explicit Styles-dialog `style` (vertical / horizontal / multicolumn).
+ * Legacy signup-sheets used `displayAs: "radio"` to mean horizontal layout — only
+ * apply that when `style` is absent. Dynamic choices default to multicolumn likewise.
+ */
 function mcStyleAttr(item) {
+  if (item.style) return item.style;
   const dynamic = (item.choices ?? []).some((c) => c.type === "dynamic");
   if (dynamic) return "multicolumn";
   if (item.displayAs === "radio") return "horizontal";
-  return item.style ?? "";
+  return "";
 }
 
 /** Convert JSON multiple-choice item → legacy Java <mc> XML. */

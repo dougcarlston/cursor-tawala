@@ -99,7 +99,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     if (!el) return;
     el.innerHTML = question;
     el.focus();
-    setActiveFieldTarget(insertFieldToken);
+    setActiveFieldTarget(insertFieldToken, {}, el);
     registerAsPaletteEditor();
     setFormattingFocus({ kind: "mcq", cursorInTable: false });
     // Re-entering after all choices were pruned leaves nothing to type into.
@@ -325,7 +325,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
                 syncPaletteFocus();
               }}
               onFocus={() => {
-                setActiveFieldTarget(insertFieldToken);
+                setActiveFieldTarget(insertFieldToken, {}, editorRef.current);
                 registerAsPaletteEditor();
                 syncPaletteFocus();
               }}

@@ -116,15 +116,41 @@ function splitNoteText(text) {
   return { note: `(${m[1]})`, rest: m[2].trim() };
 }
 
-function isBoldLabel(text) {
-  return /name|email|phone|parent/i.test(text);
-}
-
 function isDobRow(row) {
   const fields = row.segments.filter((s) => s.type === "blank");
   const texts = row.segments.filter((s) => s.type === "text");
   const trailing = texts[texts.length - 1]?.text ?? "";
   return fields.length === 3 && /mm|dd|yyyy/i.test(trailing);
+}
+
+/**
+ * Java AlignedLabelsLayout / JustifiedInputsLayout only treat text before the *first*
+ * blank as the label; later blanks land in the remainder cell (e.g. "Name: Email" + two boxes).
+ * Split multi-blank Design soft-rows into one blank per paragraph before export.
+ */
+function splitRowIntoSingleBlankRows(row) {
+  const blankCount = row.segments.filter((s) => s.type === "blank").length;
+  if (blankCount <= 1) return [row];
+
+  const out = [];
+  let leading = [];
+  for (const seg of row.segments) {
+    if (seg.type === "text") {
+      leading.push(seg);
+      continue;
+    }
+    out.push({ segments: [...leading, seg] });
+    leading = [];
+  }
+  if (leading.length > 0) {
+    if (out.length > 0) {
+      const last = out[out.length - 1];
+      out[out.length - 1] = { segments: [...last.segments, ...leading] };
+    } else {
+      out.push({ segments: leading });
+    }
+  }
+  return out;
 }
 
 /** Date of Birth row — label + inline (mm/dd/yyyy) hint, then mo/day/year (5173 layout). */
@@ -146,21 +172,29 @@ function dobRowsXml(row, letters, escAttr, escText) {
   return [paragraph(body)];
 }
 
-/** leftAlignLabels: no <tab/> — Java only reads labels from simple paragraphs. */
+/**
+ * leftAlignLabels: no <tab/> — Java only reads labels from simple paragraphs.
+ * Walk text/blank in order (one blank expected after splitRowIntoSingleBlankRows).
+ * Do not force bold — Styles dialog labels are regular weight unless the author bolds them.
+ */
 function leftAlignRowXml(row, letters, escAttr, escText) {
-  const fields = row.segments.filter((s) => s.type === "blank");
-  const texts = row.segments.filter((s) => s.type === "text");
-  let body = labelFont(texts[0]?.text ?? "", escText, { bold: true });
-  for (let i = 1; i < texts.length; i++) {
-    const t = texts[i].text.trim();
-    if (t.startsWith("(")) {
-      body += fontXml(t, escText, { italic: true });
-    } else {
-      body += fontXml(t, escText);
+  let body = "";
+  let seenBlank = false;
+  for (const seg of row.segments) {
+    if (seg.type === "text") {
+      const t = (seg.text ?? "").trim();
+      if (!t) continue;
+      if (t.startsWith("(")) {
+        body += fontXml(t, escText, { italic: true });
+      } else if (!seenBlank) {
+        body += labelFont(t, escText, { bold: false });
+      } else {
+        body += fontXml(t, escText);
+      }
+      continue;
     }
-  }
-  for (const field of fields) {
-    body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
+    seenBlank = true;
+    body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
   }
   return paragraph(body);
 }
@@ -170,23 +204,23 @@ function leftAlignRowXml(row, letters, escAttr, escText) {
  * uses a single 2880 twip tab stop (not the DirtBowl dual stops).
  */
 function rightAlignRowXml(row, letters, escAttr, escText) {
-  const fields = row.segments.filter((s) => s.type === "blank");
-  const texts = row.segments.filter((s) => s.type === "text");
   let body = "";
-  if (texts[0]?.text) {
-    // Legacy SignupSheets Name/Parent/Email are not bold; keep prompt text as-is.
-    body += promptRunXml(texts[0].text, escAttr, escText);
-  }
-  for (let i = 1; i < texts.length; i++) {
-    const t = texts[i].text.trim();
-    if (t.startsWith("(")) {
-      body += fontXml(t, escText, { italic: true });
-    } else {
-      body += fontXml(t, escText);
+  let seenBlank = false;
+  for (const seg of row.segments) {
+    if (seg.type === "text") {
+      const t = (seg.text ?? "").trim();
+      if (!t) continue;
+      if (t.startsWith("(")) {
+        body += fontXml(t, escText, { italic: true });
+      } else if (!seenBlank) {
+        body += promptRunXml(seg.text, escAttr, escText);
+      } else {
+        body += fontXml(t, escText);
+      }
+      continue;
     }
-  }
-  for (const field of fields) {
-    body += blankXml(field.blank, letters.get(field.blank), escAttr, escText);
+    seenBlank = true;
+    body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
   }
   return paragraph(body, TAB_TOPLABELS);
 }
@@ -244,9 +278,10 @@ function defaultRowXml(row, letters, escAttr, escText) {
         body += fontXml(raw, escText, { italic: true });
       } else {
         // Keep Design spacing; add a trailing space after bare labels ending in ":"
+        // Do not auto-bold Name/Email/Phone — only Design B/I/U (rich path) should bold.
         let shown = raw;
         if (trimmed.endsWith(":") && !/\s$/.test(raw)) shown = `${raw} `;
-        body += fontXml(shown, escText, { bold: isBoldLabel(trimmed) });
+        body += fontXml(shown, escText);
       }
       continue;
     }
@@ -262,7 +297,7 @@ function defaultRowXml(row, letters, escAttr, escText) {
 
 /**
  * Freeform Deploy paragraphs: mirror Design B/I/U / face / size / color when present;
- * otherwise keep the plain-segment path (name-heuristic bold, etc.).
+ * otherwise keep the plain-segment path (no name-heuristic bold).
  */
 function freeformRowsXml(prompt, blanks, letters, escAttr, escText) {
   const rowStrs = splitFibPromptRows(normalizeFibPromptSource(prompt));
@@ -337,10 +372,12 @@ export function fibToXml(item, escAttr, escText) {
       if (right || left) {
         const rows = parseFibPrompt(prompt, blanks);
         for (const row of rows) {
-          if (right) {
-            parts.push(rightAlignRowXml(row, letters, escAttr, escText));
-          } else {
-            parts.push(leftAlignRowXml(row, letters, escAttr, escText));
+          for (const sub of splitRowIntoSingleBlankRows(row)) {
+            if (right) {
+              parts.push(rightAlignRowXml(sub, letters, escAttr, escText));
+            } else {
+              parts.push(leftAlignRowXml(sub, letters, escAttr, escText));
+            }
           }
         }
       } else {

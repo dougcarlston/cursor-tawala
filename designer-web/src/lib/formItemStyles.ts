@@ -98,10 +98,53 @@ export function applyTextStyle(item: TextItem, draft: TextStyleDraft): TextItem 
   return next;
 }
 
+/** How many form items of this Styles dialog kind exist on the form. */
+export function countFormItemsOfKind(items: readonly FormItem[], kind: StylesDialogKind): number {
+  return items.filter((item) => itemMatchesStylesKind(item, kind)).length;
+}
+
+/**
+ * Apply a Styles draft to every matching item on one form (browser Apply to All —
+ * active form only, not project-wide like the disabled legacy button).
+ * Returns `{ items, changed }` where `changed` is the number of items patched.
+ */
+export function applyStyleToAllFormItems(
+  items: readonly FormItem[],
+  kind: StylesDialogKind,
+  draft: FibStyleDraft | McStyleDraft | TextStyleDraft,
+): { items: FormItem[]; changed: number } {
+  let changed = 0;
+  const next = items.map((item) => {
+    if (!itemMatchesStylesKind(item, kind)) return item;
+    changed += 1;
+    if (kind === "fib" && item.type === "fib") {
+      return applyFibStyle(item, draft as FibStyleDraft);
+    }
+    if (kind === "mc" && item.type === "mc") {
+      return applyMcStyle(item, draft as McStyleDraft);
+    }
+    if (kind === "text" && item.type === "text") {
+      return applyTextStyle(item, draft as TextStyleDraft);
+    }
+    return item;
+  });
+  return { items: next, changed };
+}
+
 export function itemMatchesStylesKind(item: FormItem, kind: StylesDialogKind): boolean {
   if (kind === "fib") return item.type === "fib";
   if (kind === "mc") return item.type === "mc";
   return item.type === "text";
+}
+
+/** Styles dialog kind for a selected form item, or null if not styleable
+ * (Heading, Hidden Field, Page Break, Skip Instructions, etc.). */
+export function stylesKindForFormItem(item: FormItem | null | undefined): StylesDialogKind | null {
+  if (!item) return null;
+  if (item.type === "fib") return "fib";
+  if (item.type === "mc") return "mc";
+  if (item.type === "text") return "text";
+  return null;
 }
 
 export function stylesKindLabel(kind: StylesDialogKind): string {

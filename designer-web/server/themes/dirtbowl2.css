@@ -57,8 +57,18 @@ body.tawala-theme-dirtbowl2 {
   border-left: 4px solid var(--tawala-instructional-border);
   padding: 10px 14px;
   margin: 1.25rem 0;
+  font-weight: bold;
   font-style: italic;
   color: var(--tawala-instructional-text);
+}
+
+.tawala-theme-dirtbowl2 div.text.error,
+.tawala-theme-dirtbowl2 div.text.text-item-error,
+.tawala-theme-dirtbowl2 .text-block.error {
+  font-weight: bold;
+  font-style: italic;
+  color: #c00000;
+  background: transparent;
 }
 
 .tawala-theme-dirtbowl2 .fib {

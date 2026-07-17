@@ -108,7 +108,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     // Register with the palette immediately so B/I/U work on the first click, without
     // waiting for a later focus event (fixes formatting being dead until the editor is
     // re-focused). Mirrors the onFocus handler.
-    setActiveFieldTarget(insertFieldToken);
+    setActiveFieldTarget(insertFieldToken, {}, el);
     registerAsPaletteEditor();
     setFormattingFocus({ kind: "fib", cursorInTable: false });
     const sel = window.getSelection();
@@ -429,7 +429,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
                 if (el) syncActiveBlank(el);
               }}
               onFocus={() => {
-                setActiveFieldTarget(insertFieldToken);
+                setActiveFieldTarget(insertFieldToken, {}, editorRef.current);
                 registerAsPaletteEditor();
                 setFormattingFocus({ kind: "fib", cursorInTable: false });
                 const el = editorRef.current;

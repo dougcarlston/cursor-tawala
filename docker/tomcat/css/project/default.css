@@ -142,6 +142,25 @@ table {
 	background:#ffcccc; 
 }
 
+/* Text item Styles (Designer Format/Project → Styles → Text…).
+   Item Style sets the container look; author palette/local formatting on runs wins
+   (inline styles / <b>/<i>/<font>) — leave formatting at Default to see Style.
+   More specific than bare `.error` so Text style=error is not validation pink fill. */
+div.text.instructional {
+	font-weight: bold;
+	font-style: italic;
+	color: #000080;
+	background: transparent !important;
+}
+
+div.text.error,
+div.text.text-item-error {
+	font-weight: bold;
+	font-style: italic;
+	color: #c00000;
+	background: transparent !important;
+}
+
 /* default.js adds class validateError to invalid inputs (“outlined in red”) */
 input.validateError,
 textarea.validateError,
@@ -210,9 +229,11 @@ form {
 		padding-right: .5em;
 	}
 	
+    /* Column width = longest label (table layout), not a fixed 380px gutter. */
     form table.fib tr td.label {
-		width: 380px;
-		padding-right: 1em;
+		width: 1%;
+		white-space: nowrap;
+		padding-right: 0.5em;
 	}
 
 		form table.fib tr td.label.left {
@@ -222,6 +243,26 @@ form {
 	    form table.fib tr td.label.right {
 			text-align: right;
 		}
+
+	/* Styles → Align right side (…Justified): stretch blanks so right edges share a margin. */
+	form table.fib.justified {
+		width: 100%;
+		max-width: 36em;
+	}
+
+	form table.fib.justified td.blank,
+	form table.fib.justified td.remainder {
+		width: 99%;
+	}
+
+	form table.fib.justified td.blank input,
+	form table.fib.justified td.remainder input,
+	form table.fib.justified td.blank input.text,
+	form table.fib.justified td.remainder input.text {
+		width: 100%;
+		max-width: 100%;
+		box-sizing: border-box;
+	}
 	
     form div.fib label {
 		padding-right: 1em;
@@ -251,40 +292,72 @@ form {
        	padding-top: .5em;
    	}
 
+		/* Modern choice rows — avoid legacy IE margin:-15px/24px “staircase” indent. */
     	form div.mcRadio span.answer, form div.mcCheckbox span.answer {
-			display: block;
-			padding-top: .3em;
+			display: flex;
+			align-items: flex-start;
+			gap: 0.4em;
+			padding-top: 0.25em;
+			margin: 0;
     	}
 
     	form div.mcRadio span.answer input, 
 		form div.mcCheckbox span.answer input {
+			margin: 0.2em 0 0 0;
+			flex: 0 0 auto;
     	}
 
 		form div.mcRadio span.answer label, 
 		form div.mcCheckbox span.answer label {
-			display: block;
+			display: inline;
 			font-size: 100%;
-			padding: 0 0 0 0;
-			margin: -15px 0 .4em 24px; 
-			* margin-top: -20px;
-			/* width: 90%; */
+			padding: 0;
+			margin: 0;
 		}
 		
-		form div.mcRadio.vertical span.answer label.choice, 
-		form div.mcCheckbox.vertical span.answer label.choice {
-			width: 90%;
+		form div.mcRadio.vertical span.answer label.choice,
+		form div.mcCheckbox.vertical span.answer label.choice,
+		form div.mcRadio.vertical span.answer label,
+		form div.mcCheckbox.vertical span.answer label {
+			width: auto;
 		}
 		
 		form div.mcRadio.horizontal span.answer, 
 		form div.mcCheckbox.horizontal span.answer {
-			display: inline;
-			padding-right: 1em;
+			display: inline-flex;
+			align-items: center;
+			padding-right: 1.25em;
+			vertical-align: middle;
 		}
 		
-		form div.mcRadio.horizontal span.answer label.choice, 
-		form div.mcCheckbox.horizontal span.answer label.choice {
+		form div.mcRadio.horizontal span.answer label.choice,
+		form div.mcCheckbox.horizontal span.answer label.choice,
+		form div.mcRadio.horizontal span.answer label,
+		form div.mcCheckbox.horizontal span.answer label {
 			display: inline;
-			margin: -15px 0 .4em 0;
+			margin: 0;
+			vertical-align: middle;
+		}
+
+		form div.mcRadio.multicolumn table.answer,
+		form div.mcCheckbox.multicolumn table.answer {
+			border-collapse: separate;
+			border-spacing: 0;
+		}
+
+		form div.mcRadio.multicolumn table.answer td,
+		form div.mcCheckbox.multicolumn table.answer td {
+			padding: 0.25em 2.25em 0.25em 0;
+			vertical-align: top;
+			white-space: nowrap;
+		}
+
+		form div.mcRadio.multicolumn span.answer,
+		form div.mcCheckbox.multicolumn span.answer {
+			display: flex;
+			align-items: flex-start;
+			gap: 0.4em;
+			padding-top: 0;
 		}
 		
     form .submitButton {

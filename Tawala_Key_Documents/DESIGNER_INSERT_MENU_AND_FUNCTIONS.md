@@ -52,8 +52,10 @@ No Image, Invitation, Hyperlink, Function, or Field.
 **Document Field — intentional UX (owner Jul 17, not a bug):**
 
 - Open Document and **do not** place a caret → **double-click** a Fields leaf does nothing (no error). **Drag-and-drop** still places the field where dropped.
-- Clicking a Fields leaf focuses the palette (clears an empty Document caret). A subsequent double-click may insert at the default top-left / last landing spot — expected.
-- **Insert → Field** requires a Fields leaf **and** a live Document caret (palette editor). If the caret is missing, status bar shows *Place the cursor in the document text first* (Status Bar must be visible under View).
+- Clicking a Fields leaf focuses the palette (clears an empty Document caret). A subsequent double-click may insert at the default top-left / last landing spot — expected **only for the active MDI Document**.
+- Bringing another Document to front (Project Explorer or title bar) **clears** a stale caret/target from a background Document — Fields / Insert → Field must not write into the prior window.
+- Title-bar / Explorer activate does **not** invent a caret; click in the document body first.
+- **Insert → Field** requires a Fields leaf **and** a live caret in the **active** Document. If the caret is missing (or only a background Document still had focus), status bar shows *Place the cursor in the document text first* (Status Bar must be visible under View).
 - Clear Fields leaf highlight: click a form/Variables folder header, click empty Fields chrome, or press Escape — then Insert → Field greys out.
 
 No form item types (Heading, Text, FIB, etc.).
@@ -608,6 +610,8 @@ Screenshot: [`assets/Function_-_Response_Totals.png`](assets/Function_-_Response
 
 Catalog matches. Document + Form Text HTML→XML: **emits** `<response-totals-table>` with question title paragraphs + spacers. Preview renders the same title above Choice/Count.
 
+**Parked (owner Jul 17 — final Designer run-through):** Where clause **`<<field>>` is not blank** showed inappropriate list behavior. Capture exact wrong result on retest; see `DESIGNER_OPEN_BUGS.md` § Functions.
+
 ---
 
 ## Configure Function: SINGLE QUESTION LIST (`simple-list`)
@@ -701,7 +705,7 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Invitation / Hyperlink dialogs | Yes | **Yes (Jul 16)** — Insert dialogs + Design tokens + Deploy `<invitation>` / `<link>` |
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
 | Image from PC / Web URL | Yes | **From your PC** Approach A (Jul 16); **From the Web…** = DISPLAY IMAGE (Jul 17 rename); File Uploader form item omitted from palette |
-| Insert Field (document) | Yes | **Jul 17:** Insert → Field enabled from Fields palette selection; same insert path as double-click |
+| Insert Field (document) | Yes | **Jul 17:** Insert → Field from Fields selection; **Jul 17 fix:** only active MDI Document (stale prior cleared on window activate); status nudge when no caret |
 | Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — Jul 16 |
 
 ---

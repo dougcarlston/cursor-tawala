@@ -152,11 +152,57 @@ function withDisplayConditions(itemXml, item) {
   return itemXml.replace(/<\/([a-zA-Z0-9_-]+)>\s*$/, `${dc}</$1>`);
 }
 
-function fontXml(text, { bold = false, italic = false, size = 200 } = {}) {
+function fontXml(text, { bold = false, italic = false, size = 200, color = "000000" } = {}) {
   let inner = escText(text);
   if (italic) inner = `<i>${inner}</i>`;
   if (bold) inner = `<b>${inner}</b>`;
-  return `<font face="Arial" size="${size}" color="000000">${inner}</font>`;
+  return `<font face="Arial" size="${size}" color="${color}">${inner}</font>`;
+}
+
+/**
+ * Canvas Text is almost always HTML. documentHtmlToXml either emits color="000000"
+ * on <font> (beats Deploy CSS color) or bare paragraph text (no color at all).
+ * Put Styles-dialog colors + bold/italic onto default runs; leave non-default author colors.
+ */
+export function applyTextItemStyleToXml(bodyXml, style) {
+  if (style !== "instructional" && style !== "error") return bodyXml;
+  const color = style === "error" ? "C00000" : "000080";
+
+  const wrapEmphasis = (inner) => {
+    let next = inner;
+    // Avoid double-wrapping if author already bolded/italicized the whole run.
+    const hasI = /<(?:i|em)\b/i.test(next);
+    const hasB = /<(?:b|strong)\b/i.test(next);
+    if (!hasI) next = `<i>${next}</i>`;
+    if (!hasB) next = `<b>${next}</b>`;
+    return next;
+  };
+
+  let xml = String(bodyXml ?? "").replace(/<font\b([^>]*)>([\s\S]*?)<\/font>/gi, (full, attrs, inner) => {
+    const colorMatch = attrs.match(/\bcolor="([^"]*)"/i);
+    const current = (colorMatch?.[1] ?? "000000").replace(/^#/, "").toUpperCase();
+    const isDefault =
+      !colorMatch || current === "000000" || current === "000" || current === "BLACK";
+    let a = attrs;
+    if (isDefault) {
+      if (colorMatch) a = a.replace(/\bcolor="[^"]*"/i, `color="${color}"`);
+      else a = `${a} color="${color}"`;
+    }
+    // Style emphasis only when the run still looks like Default (black / no color).
+    const body = isDefault ? wrapEmphasis(inner) : inner;
+    return `<font${a}>${body}</font>`;
+  });
+
+  // Bare paragraph body (no <font>): wrap so Deploy does not rely on CSS alone.
+  xml = xml.replace(/<paragraph\b([^>]*)>([\s\S]*?)<\/paragraph>/gi, (full, attrs, inner) => {
+    if (/<font\b/i.test(inner)) return full;
+    const tabs = inner.match(/<tabPositions\b[\s\S]*?<\/tabPositions>/i)?.[0] ?? "";
+    const rest = inner.replace(/<tabPositions\b[\s\S]*?<\/tabPositions>/i, "").trim();
+    if (!rest) return full;
+    return `<paragraph${attrs}>${tabs}<font face="Arial" size="200" color="${color}">${wrapEmphasis(rest)}</font></paragraph>`;
+  });
+
+  return xml;
 }
 
 function textContentToXml(content, style, project = null) {
@@ -168,10 +214,17 @@ function textContentToXml(content, style, project = null) {
     // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
     if (/<[a-z][\s\S]*>/i.test(content)) {
       const xml = documentHtmlToXml(content, escAttr, escText);
-      return injectResponseTotalsQuestionTitles(xml, project);
+      const styled = applyTextItemStyleToXml(xml, style);
+      return injectResponseTotalsQuestionTitles(styled, project);
     }
-    const italic = style === "instructional";
-    return `<paragraph indent="0" align="left">${TAB_MC}${fontXml(content, { italic })}</paragraph>`;
+    // Styles dialog: Instructional = bold italic blue; Error = bold italic red (type only).
+    const instructional = style === "instructional";
+    const error = style === "error";
+    return `<paragraph indent="0" align="left">${TAB_MC}${fontXml(content, {
+      bold: instructional || error,
+      italic: instructional || error,
+      color: error ? "C00000" : instructional ? "000080" : "000000",
+    })}</paragraph>`;
   }
   return richContentToXml(content);
 }

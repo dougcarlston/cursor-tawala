@@ -12,6 +12,11 @@
  * module-level "active target" the focused editor registers; see `insertFieldIntoActiveTarget`.
  */
 
+import {
+  clearActivePaletteEditor,
+  getActivePaletteEditor,
+} from "./formattingPaletteContext";
+
 export const FIELD_DRAG_MIME = "application/x-tawala-field";
 /** Form branch name when a field leaf is dragged from under a form folder (not Variables). */
 export const FIELD_DRAG_FORM_MIME = "application/x-tawala-field-form";
@@ -216,6 +221,8 @@ export type FieldTargetContext = {
 };
 
 let activeInserter: ActiveInserter | null = null;
+/** Editor DOM node that registered `activeInserter` (used to drop stale MDI targets). */
+let activeOwnerEl: HTMLElement | null = null;
 let activeTargetContext: FieldTargetContext = {};
 const activeTargetListeners = new Set<() => void>();
 
@@ -229,6 +236,7 @@ export function setConfigureFunctionFieldLock(locked: boolean): void {
   configureFunctionFieldLock = locked;
   if (locked) {
     activeInserter = null;
+    activeOwnerEl = null;
     activeTargetContext = {};
     notifyActiveTargetListeners();
   }
@@ -288,18 +296,59 @@ export function retainEditorFocusOnBlur(relatedTarget: EventTarget | null): bool
  * Register (or clear) the editor target that a double-clicked field leaf should insert into.
  * The most recently focused drop-enabled editor wins, matching legacy "insert at current
  * editor focus". Not cleared on blur so clicking a tree leaf (which blurs the editor) still
- * targets the last-focused editor.
+ * targets the last-focused editor — but only while that editor still lives in the **active**
+ * MDI window (see `syncDesignerTargetsToActiveMdiWindow`).
  */
 export function setActiveFieldTarget(
   inserter: ActiveInserter | null,
   context: FieldTargetContext = {},
+  ownerEl?: HTMLElement | null,
 ): void {
   if (configureFunctionFieldLock && inserter && !context.configureDialog) {
     return;
   }
   activeInserter = inserter;
   activeTargetContext = inserter ? context : {};
+  if (!inserter) {
+    activeOwnerEl = null;
+  } else if (ownerEl !== undefined) {
+    activeOwnerEl = ownerEl;
+  }
   notifyActiveTargetListeners();
+}
+
+/** DOM root of the editor that last registered as the field-insert target (if known). */
+export function getActiveFieldTargetOwner(): HTMLElement | null {
+  return activeOwnerEl;
+}
+
+/**
+ * When the active MDI window changes (Explorer / title bar / Windows menu), drop field and
+ * Formatting Palette targets that belong to a background window so Insert → Field and
+ * Fields double-click cannot silently write into a prior Document.
+ */
+export function syncDesignerTargetsToActiveMdiWindow(): void {
+  const activeWin = document.querySelector(".mdi-window.active") as HTMLElement | null;
+  if (!activeWin) {
+    if (activeInserter) setActiveFieldTarget(null);
+    clearActivePaletteEditor();
+    return;
+  }
+  if (activeOwnerEl && !activeWin.contains(activeOwnerEl)) {
+    setActiveFieldTarget(null);
+  }
+  const pe = getActivePaletteEditor();
+  if (pe?.el && !activeWin.contains(pe.el)) {
+    clearActivePaletteEditor();
+  }
+}
+
+/** True when `el` is inside the frontmost MDI window (or there is no MDI chrome yet). */
+export function isInsideActiveMdiWindow(el: HTMLElement | null | undefined): boolean {
+  if (!el?.isConnected) return false;
+  const activeWin = document.querySelector(".mdi-window.active") as HTMLElement | null;
+  if (!activeWin) return true;
+  return activeWin.contains(el);
 }
 
 /** Subscribe to active target context changes (Fields palette If-only filtering). */
@@ -339,12 +388,15 @@ export function isValidIfConditionField(
 /** Whether a Fields-panel leaf may insert into the active target. */
 export function fieldLeafAcceptedByActiveTarget(name: string): boolean {
   if (!activeInserter) return false;
+  if (activeOwnerEl && !isInsideActiveMdiWindow(activeOwnerEl)) return false;
   return fieldAcceptedByTarget(name, activeTargetContext);
 }
 
 /** Fire the active editor's inserter (double-click). Returns false when nothing is focused. */
 export function insertFieldIntoActiveTarget(name: string): boolean {
   if (!activeInserter) return false;
+  // Refuse a background-window target even if sync has not run yet.
+  if (activeOwnerEl && !isInsideActiveMdiWindow(activeOwnerEl)) return false;
   if (!fieldLeafAcceptedByActiveTarget(name)) return false;
   activeInserter(name);
   return true;

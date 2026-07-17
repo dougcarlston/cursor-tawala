@@ -91,7 +91,7 @@ function useFieldDropTarget(
         return;
       }
       insertTokenAtCaret(el, text, onValueChange);
-    }, context);
+    }, context, el);
   };
 
   const acceptFieldDrag = (e: React.DragEvent<HTMLInputElement | HTMLTextAreaElement>) => {

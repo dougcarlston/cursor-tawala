@@ -7,10 +7,14 @@ import {
 import {
   applyFibStyle,
   applyMcStyle,
+  applyStyleToAllFormItems,
   applyTextStyle,
+  countFormItemsOfKind,
   fibStyleToken,
   parseFibStyle,
+  stylesKindForFormItem,
 } from "./formItemStyles";
+import type { FormItem } from "@/types/tawala";
 
 describe("formItemStyles", () => {
   it("maps FIB placement + align-right to legacy style tokens", () => {
@@ -50,6 +54,54 @@ describe("formItemStyles", () => {
     );
     expect(withPad.style).toBe("instructional");
     expect(withPad.paddingBottom).toBeUndefined();
+  });
+
+  it("applyStyleToAllFormItems patches only matching kinds on one form", () => {
+    const items: FormItem[] = [
+      { type: "fib", label: "F1", style: "topLabels" },
+      { type: "text", label: "T1", style: "normal" },
+      { type: "fib", label: "F2", style: "freeform" },
+      { type: "mc", label: "M1", style: "vertical" },
+    ];
+    expect(countFormItemsOfKind(items, "fib")).toBe(2);
+    expect(countFormItemsOfKind(items, "text")).toBe(1);
+
+    const { items: next, changed } = applyStyleToAllFormItems(items, "fib", {
+      placement: "left",
+      alignRightSide: true,
+    });
+    expect(changed).toBe(2);
+    expect(next[0]).toMatchObject({ type: "fib", label: "F1", style: "leftAlignLabelsJustified" });
+    expect(next[1]).toEqual(items[1]);
+    expect(next[2]).toMatchObject({ type: "fib", label: "F2", style: "leftAlignLabelsJustified" });
+    expect(next[3]).toEqual(items[3]);
+  });
+
+  it("applyStyleToAllFormItems leaves other forms' items untouched when called per form", () => {
+    const formA: FormItem[] = [
+      { type: "mc", label: "A1", style: "vertical" },
+      { type: "mc", label: "A2", style: "horizontal" },
+    ];
+    const formB: FormItem[] = [{ type: "mc", label: "B1", style: "vertical" }];
+    const { items: nextA, changed } = applyStyleToAllFormItems(formA, "mc", {
+      layout: "multicolumn",
+      columnCount: 2,
+      noPaddingBottom: true,
+    });
+    expect(changed).toBe(2);
+    expect(nextA.every((i) => i.type === "mc" && i.style === "multicolumn")).toBe(true);
+    expect(formB[0].style).toBe("vertical");
+  });
+
+  it("stylesKindForFormItem maps only FIB / MCQ / Text", () => {
+    expect(stylesKindForFormItem({ type: "fib", label: "F1" })).toBe("fib");
+    expect(stylesKindForFormItem({ type: "mc", label: "M1" })).toBe("mc");
+    expect(stylesKindForFormItem({ type: "text", label: "T1" })).toBe("text");
+    expect(stylesKindForFormItem({ type: "heading", label: "H1", content: "" })).toBeNull();
+    expect(stylesKindForFormItem({ type: "field", label: "HF1", name: "x" })).toBeNull();
+    expect(stylesKindForFormItem({ type: "break", label: "PB1" })).toBeNull();
+    expect(stylesKindForFormItem({ type: "skipInstructions", label: "SI1" })).toBeNull();
+    expect(stylesKindForFormItem(null)).toBeNull();
   });
 });
 

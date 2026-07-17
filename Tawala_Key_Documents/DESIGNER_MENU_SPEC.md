@@ -540,7 +540,7 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Live formatting | Formatting Palette |
 | When returning | Optional palette↔legacy Format label consistency pass |
 | **8080 / CSS stubs** | **Page Header…**, **Themes…** on Project (Deployed page chrome) |
-| **Wired on Project** | **Tabs…** (item `tabPositions` inches → Deploy twips); **Styles →** FIB / MCQ / Text (writes `style` / `columnCount` / `paddingBottom` on selected item) |
+| **Wired on Project** | **Tabs…**; **Styles…** (selection-routed FIB/MCQ/Text dialog; Apply Selected / form-scoped Apply All) |
 
 ---
 
@@ -555,7 +555,7 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Themes… | **Stub** — 8080 / Tomcat / CSS track |
 | *(separator)* | |
 | Tabs… | **Wired** — Form window; selected Heading/Text/FIB/MCQ |
-| Styles → Fill in the Blank… / Multiple Choice… / Text… | **Wired** — Form window; Apply to Selected |
+| Styles… | **Wired** — Form window; opens dialog for selected FIB / MCQ / Text only |
 
 ---
 

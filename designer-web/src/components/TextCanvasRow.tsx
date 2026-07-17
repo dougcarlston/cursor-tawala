@@ -150,7 +150,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // Register with the palette immediately so B/I/U (and font/align) work on the first
     // click — same timing fix as FibCanvasRow / McqCanvasRow. setFormattingFocus alone
     // enables the buttons; without a PaletteEditorHandle they silently no-op.
-    setActiveFieldTarget(insertFieldToken);
+    setActiveFieldTarget(insertFieldToken, {}, el);
     registerAsPaletteEditor();
     setFormattingFocus({
       kind: "text",
@@ -285,10 +285,16 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
 
   const isEmpty = textHtmlIsEmpty(content);
   const renderedHtml = isEmpty ? "" : content;
+  const styleClass =
+    item.style === "instructional"
+      ? " text-style-instructional"
+      : item.style === "error"
+        ? " text-style-error"
+        : "";
 
   return (
     <div
-      className={`text-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}`}
+      className={`text-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}${styleClass}`}
       onClick={(e) => {
         e.stopPropagation();
         setSelectedItemIndex(index);
@@ -513,7 +519,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                 }
               }}
               onFocus={() => {
-                setActiveFieldTarget(insertFieldToken);
+                setActiveFieldTarget(insertFieldToken, {}, editorRef.current);
                 registerAsPaletteEditor();
                 syncPaletteFocus();
               }}

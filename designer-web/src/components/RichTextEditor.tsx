@@ -622,7 +622,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             if (el && formattingKind === "document") {
               ensureDocumentTableLayout(el);
             }
-            setActiveFieldTarget(insertFieldToken);
+            setActiveFieldTarget(insertFieldToken, {}, el);
             registerAsPaletteEditor();
             syncPaletteFocus();
           }}

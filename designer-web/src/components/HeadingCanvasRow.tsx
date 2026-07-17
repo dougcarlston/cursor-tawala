@@ -429,7 +429,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
               onKeyUp={syncCurrentSize}
               onMouseUp={syncCurrentSize}
               onFocus={() => {
-                setActiveFieldTarget(insertFieldToken);
+                setActiveFieldTarget(insertFieldToken, {}, editorRef.current);
                 setFormattingFocus({ kind: "heading", cursorInTable: false });
               }}
               onDragOver={(e) => {

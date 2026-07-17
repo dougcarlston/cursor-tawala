@@ -357,7 +357,14 @@ function renderItem(item, ctx, project) {
       const style = item.style && item.style !== "normal" ? ` ${esc(item.style)}` : "";
       const inner = renderRichContent(content, ctx, item);
       if (!inner.trim()) return "";
-      const wrapCls = item.style === "instructional" ? "text instructional reg-page-footer" : `text${style}`;
+      // Prefer `text instructional` / `text error` (Styles dialog contract). Avoid
+      // conflating with form validation `.error` by keeping both class tokens.
+      const wrapCls =
+        item.style === "instructional"
+          ? "text instructional"
+          : item.style === "error"
+            ? "text error text-item-error"
+            : `text${style}`;
       return `<div class="${wrapCls}">${inner}</div>`;
     }
     case "fib":

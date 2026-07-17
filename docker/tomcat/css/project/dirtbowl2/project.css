@@ -75,9 +75,22 @@ div.text.instructional {
   border-left: 4px solid var(--tawala-instructional-border);
   padding: 10px 14px;
   margin: 1.25rem 0;
+  font-weight: bold;
   font-style: italic;
   color: var(--tawala-instructional-text);
   font-size: 16px;
+}
+
+/* Text Styles → Error (bold italic red; do not use validation `.error` pink fill) */
+div.text.error,
+div.text.text-item-error {
+  font-weight: bold;
+  font-style: italic;
+  color: #c00000;
+  background: transparent;
+  border-left: none;
+  padding: 0;
+  margin: 0.5rem 0;
 }
 
 /* Registration info block (T4) — no row divider lines */

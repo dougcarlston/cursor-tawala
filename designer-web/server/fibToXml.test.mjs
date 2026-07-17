@@ -66,4 +66,58 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(xml).toContain('color="FF0000"');
     expect(xml).toContain(">Label</font>");
   });
+
+  it("leftAlign multi-blank soft-row becomes one paragraph per blank (Java table layout)", () => {
+    const item = {
+      type: "fib",
+      label: "FIB1",
+      style: "leftAlignLabels",
+      prompt: "Name ________ Email ________ Phone ________",
+      blanks: [
+        { name: "a", alternateLabel: "Name", length: 8 },
+        { name: "b", alternateLabel: "Email", length: 8 },
+        { name: "c", alternateLabel: "Phone", length: 8 },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml.match(/<paragraph\b/g)?.length).toBe(3);
+    expect(xml.match(/<blank\b/g)?.length).toBe(3);
+    // Each paragraph has exactly one blank (no Name+Email collapsed into label cell).
+    const paras = xml.match(/<paragraph[\s\S]*?<\/paragraph>/g) ?? [];
+    for (const p of paras) {
+      expect(p.match(/<blank\b/g)?.length).toBe(1);
+    }
+    expect(paras[0]).toContain("Name:");
+    expect(paras[0]).toContain('alternateLabel="Name"');
+    expect(paras[1]).toContain("Email:");
+    expect(paras[2]).toContain("Phone:");
+  });
+
+  it("leftAlign does not auto-bold Name/Email/Phone labels", () => {
+    const item = {
+      type: "fib",
+      label: "FIB2",
+      style: "leftAlignLabels",
+      prompt: "Email ________",
+      blanks: [{ name: "a", alternateLabel: "Email", length: 12 }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain("Email:");
+    expect(xml).not.toMatch(/<b>Email:/);
+  });
+
+  it("freeform does not auto-bold Name/Email labels", () => {
+    const item = {
+      type: "fib",
+      label: "FIB3",
+      prompt: "Name ________ Email ________",
+      blanks: [
+        { name: "a", alternateLabel: "Name", length: 8 },
+        { name: "b", alternateLabel: "Email", length: 8 },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).not.toMatch(/<b>Name/);
+    expect(xml).not.toMatch(/<b>Email/);
+  });
 });

@@ -67,6 +67,10 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Design-mode checkboxes and radios change state** on the canvas. **UX bug; deferred.**
 
+### Functions (final Designer run-through)
+
+- **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). **Do not dig now** — park for final Designer run-through. See also `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § RESPONSE TOTALS.
+
 ### Skip Instructions (parked — fix when Skip is reopened)
 
 - **Skip dialog re-open does not restore insertion point.** **Real bug; parked with Skip.** (Smoke: Skip dialog itself felt solid July 10.)

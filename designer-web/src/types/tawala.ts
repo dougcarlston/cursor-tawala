@@ -46,8 +46,8 @@ export interface FormItemBase {
   alternateLabel?: string;
   style?: string;
   /**
-   * Paragraph tab stops in **inches** (Project → Tabs…). Deploy emits twips (×1440).
-   * Absent → export uses layout defaults (e.g. 2").
+   * Imported legacy paragraph tab stops in inches. The browser editor no longer
+   * exposes Tabs; compatible exporters may still emit these as twips (×1440).
    */
   tabPositions?: number[];
 }

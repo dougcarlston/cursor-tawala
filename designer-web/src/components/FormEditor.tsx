@@ -442,7 +442,13 @@ function CanvasItem({ item }: { item: Exclude<FormItem, { type: "heading" }> }) 
       }
       return (
         <div
-          className={`text-block${item.style === "instructional" ? " instructional" : ""}`}
+          className={`text-block${
+            item.style === "instructional"
+              ? " instructional"
+              : item.style === "error"
+                ? " error"
+                : ""
+          }`}
           dangerouslySetInnerHTML={{ __html: typeof item.content === "string" ? item.content : "" }}
         />
       );

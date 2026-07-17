@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { CanvasWindow } from "./CanvasWindow";
 import {
@@ -7,6 +7,7 @@ import {
   hasProcessStatementDrag,
   readExplorerEntityDrag,
 } from "@/lib/designerDrag";
+import { syncDesignerTargetsToActiveMdiWindow } from "@/lib/fieldInsertion";
 
 const KIND_LABEL = { form: "Form", process: "Process", document: "Document" } as const;
 
@@ -24,6 +25,12 @@ export function CanvasWindowManager() {
 
   const visible = openWindows.filter((w) => !w.minimized);
   const minimized = openWindows.filter((w) => w.minimized);
+
+  // Drop stale Document/Form field + palette targets when the front window changes
+  // (Explorer select, title bar, Windows menu) so Insert/Fields never write to a background doc.
+  useEffect(() => {
+    syncDesignerTargetsToActiveMdiWindow();
+  }, [activeWindowId]);
 
   return (
     <div className="mdi-canvas">

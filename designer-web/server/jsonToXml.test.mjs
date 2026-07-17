@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { collectProjectImages, imagesToXml, projectToXml } from "./jsonToXml.mjs";
+import {
+  applyTextItemStyleToXml,
+  collectProjectImages,
+  imagesToXml,
+  projectToXml,
+} from "./jsonToXml.mjs";
 
 describe("imagesToXml", () => {
   it("omits empty images", () => {
@@ -225,5 +230,55 @@ describe("projectToXml form flags", () => {
     expect(xml).toContain('startPoint="true"');
     expect(xml).toContain('dataEntryOnly="true"');
     expect(xml).toContain('blockBackButton="true"');
+  });
+});
+
+describe("Text item Styles colors on export", () => {
+  it("rewrites default black font color for instructional / error", () => {
+    const base = `<paragraph><font face="Arial" size="200" color="000000">Hi</font></paragraph>`;
+    expect(applyTextItemStyleToXml(base, "instructional")).toContain('color="000080"');
+    expect(applyTextItemStyleToXml(base, "error")).toContain('color="C00000"');
+    expect(applyTextItemStyleToXml(base, "normal")).toContain('color="000000"');
+  });
+
+  it("adds bold+italic when Style is instructional / error", () => {
+    const base = `<paragraph><font face="Arial" size="200" color="000000">Hi</font></paragraph>`;
+    const xml = applyTextItemStyleToXml(base, "instructional");
+    expect(xml).toContain("<b>");
+    expect(xml).toContain("<i>");
+    expect(xml).toContain("Hi");
+  });
+
+  it("keeps non-default author colors", () => {
+    const green = `<paragraph><font color="00FF00">Hi</font></paragraph>`;
+    expect(applyTextItemStyleToXml(green, "instructional")).toContain('color="00FF00"');
+  });
+
+  it("projectToXml HTML Text instructional emits blue font color", () => {
+    const xml = projectToXml({
+      name: "Styles",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "text",
+              label: "T1",
+              style: "instructional",
+              content: "<p>This is instructional</p>",
+            },
+            {
+              type: "text",
+              label: "T2",
+              style: "error",
+              content: "<p>This is a warning</p>",
+            },
+          ],
+        },
+      ],
+    });
+    expect(xml).toMatch(/style="instructional"[\s\S]*color="000080"/);
+    expect(xml).toMatch(/style="error"[\s\S]*color="C00000"/);
   });
 });
