@@ -162,6 +162,7 @@ function replaceRecordCountTokens(html, opts) {
         records: opts.records ?? {},
         formName: opts.formName ?? "",
         blankAliases: opts.blankAliases ?? {},
+        project: opts.project,
       });
       return `<span class="preview-record-count">${esc(String(n))}</span>`;
     },

@@ -48,7 +48,7 @@ export function resolveTemplate(str, ctx) {
   return String(str).replace(/<<([^>]+)>>/g, (_, ref) => getFieldValue(ctx, ref.trim()));
 }
 
-function compareValues(left, op, right) {
+export function compareValues(left, op, right) {
   const l = String(left ?? "");
   const r = String(right ?? "");
   switch (op) {

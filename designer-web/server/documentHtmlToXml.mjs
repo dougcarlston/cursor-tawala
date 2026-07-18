@@ -688,28 +688,81 @@ function inferFormName(config) {
 function conditionsXml(config, escAttr, escText) {
   const form = inferFormName(config);
   const rows = config.conditionsRows;
+  const combinator = config.conditionsCombinator === "or" ? "or" : "and";
   const formTag = form ? `<form name="${escAttr(form)}"/>` : "";
   if (Array.isArray(rows)) {
     const filled = rows.filter((r) => r?.field?.trim());
     if (!filled.length) {
       return form ? `<conditions>${formTag}</conditions>` : `<conditions/>`;
     }
-    const inner = filled
-      .map((row) => {
-        const op = row.op ?? "equals";
-        const field = String(row.field).trim().replace(/^<<|>>$/g, "");
-        if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
-          return `<${op} field="${escAttr(field)}"/>`;
-        }
-        return `<${op} field="${escAttr(field)}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
-      })
-      .join("");
-    return `<conditions>${formTag}${inner ? `<conditions>${inner}</conditions>` : ""}</conditions>`;
+    const parts = filled.map((row) => {
+      const op = normalizeXmlConditionOp(row.op);
+      const field = conditionFieldForXml(row.field, form);
+      if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
+        return `<${op} field="${escAttr(field)}"/>`;
+      }
+      return `<${op} field="${escAttr(field)}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+    });
+    // Legacy: inner <conditions>; multi-row is nested binary <and>/<or> (DirtBowl).
+    const body = nestConditionOps(parts, combinator);
+    return `<conditions>${formTag}<conditions>${body}</conditions></conditions>`;
   }
   if (form) {
     return `<conditions>${formTag}</conditions>`;
   }
   return `<conditions/>`;
+}
+
+/** Configure stores Skip op ids; emit those as XML element names. */
+function normalizeXmlConditionOp(op) {
+  const raw = String(op ?? "equals").trim() || "equals";
+  const fromLabel = {
+    "does not equal": "doesNotEqual",
+    "does not contain": "doesNotContain",
+    "begins with": "beginsWith",
+    "ends with": "endsWith",
+    "is less than": "isLessThan",
+    "is less than or equal to": "isLessThanOrEqualTo",
+    "is greater than": "isGreaterThan",
+    "is greater than or equal to": "isGreaterThanOrEqualTo",
+    "is blank": "isBlank",
+    "is not blank": "isNotBlank",
+  };
+  return fromLabel[raw.toLowerCase()] ?? raw;
+}
+
+function nestConditionOps(parts, combinator) {
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0];
+  let nested = parts[parts.length - 1];
+  for (let i = parts.length - 2; i >= 0; i--) {
+    nested = `<${combinator}>${parts[i]}${nested}</${combinator}>`;
+  }
+  return nested;
+}
+
+/** Deploy Where fields use Record:Form:Field (DirtBowl / SportsDashboards). */
+function conditionFieldForXml(raw, defaultForm) {
+  let s = String(raw ?? "").trim();
+  if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  if (!s) return "";
+  if (/^Record:/i.test(s)) {
+    const rest = s.slice("Record:".length).trim();
+    // Record:FIB1:a (item:blank, form missing) → Record:Form 1:FIB1:a
+    if (defaultForm && rest && !rest.startsWith(`${defaultForm}:`)) {
+      return `Record:${defaultForm}:${rest}`;
+    }
+    return s;
+  }
+  if (defaultForm) {
+    // Fields palette often inserts FIB1:a (already has ':') without the Form prefix.
+    if (s === defaultForm || s.startsWith(`${defaultForm}:`)) {
+      return `Record:${s}`;
+    }
+    return `Record:${defaultForm}:${s}`;
+  }
+  if (s.includes(":")) return `Record:${s}`;
+  return s;
 }
 
 function tableHtmlToXml(tableHtml, escAttr, escText) {
@@ -802,6 +855,17 @@ function placedTopPt(blockHtml) {
   return Number.isFinite(n) ? n : null;
 }
 
+/** Absolute `left` in pt for a placed Document block (secondary sort), or 0. */
+function placedLeftPt(blockHtml) {
+  const open = extractOpenTag(blockHtml);
+  if (!open) return 0;
+  const style = parseStyleAttr(open.attrs);
+  const raw = style.left;
+  if (!raw) return 0;
+  const n = Number.parseFloat(String(raw).replace(/pt$/i, ""));
+  return Number.isFinite(n) ? n : 0;
+}
+
 /**
  * Design canvas gaps are absolute `top` deltas; Deploy is flow layout. When two
  * content lines are clearly separated on the canvas (e.g. two DISPLAY MCQ chips
@@ -819,6 +883,39 @@ function spacerXmlForPlacedGap(prevTopPt, nextTopPt) {
   return [BLANK_PARAGRAPH_XML, BLANK_PARAGRAPH_XML, BLANK_PARAGRAPH_XML];
 }
 
+/**
+ * Collect top-level blocks, then order placed lines by absolute `top` (then `left`)
+ * so Deploy flow matches the Design canvas when lines were dragged out of DOM order.
+ */
+function collectBlocksInDeployOrder(html) {
+  const blocks = [];
+  let rest = String(html ?? "");
+  while (rest.trim()) {
+    const block = nextTopLevelBlock(rest);
+    if (!block) break;
+    blocks.push(block.html);
+    rest = block.rest;
+  }
+  const indexed = blocks.map((blockHtml, i) => ({
+    html: blockHtml,
+    i,
+    top: placedTopPt(blockHtml),
+    left: placedLeftPt(blockHtml),
+  }));
+  indexed.sort((a, b) => {
+    if (a.top != null && b.top != null) {
+      if (a.top !== b.top) return a.top - b.top;
+      if (a.left !== b.left) return a.left - b.left;
+    } else if (a.top != null && b.top == null) {
+      return -1;
+    } else if (a.top == null && b.top != null) {
+      return 1;
+    }
+    return a.i - b.i;
+  });
+  return indexed.map((x) => x.html);
+}
+
 /** Convert document editor HTML string to legacy xmlData body markup. */
 export function documentHtmlToXml(html, escAttr, escText) {
   const source = String(html ?? "").trim();
@@ -828,12 +925,9 @@ export function documentHtmlToXml(html, escAttr, escText) {
 
   const parts = [];
   let lastContentTop = null;
-  let rest = source;
-  while (rest.trim()) {
-    const block = nextTopLevelBlock(rest);
-    if (!block) break;
-    const top = placedTopPt(block.html);
-    const xml = blockHtmlToXml(block.html, escAttr, escText);
+  for (const blockHtml of collectBlocksInDeployOrder(source)) {
+    const top = placedTopPt(blockHtml);
+    const xml = blockHtmlToXml(blockHtml, escAttr, escText);
     if (xml) {
       const isBlankOnly = xml === BLANK_PARAGRAPH_XML;
       if (!isBlankOnly && top != null && lastContentTop != null) {
@@ -844,7 +938,6 @@ export function documentHtmlToXml(html, escAttr, escText) {
       parts.push(xml);
       if (!isBlankOnly && top != null) lastContentTop = top;
     }
-    rest = block.rest;
   }
 
   return parts.length ? parts.join("") : `<paragraph indent="0" align="left"></paragraph>`;

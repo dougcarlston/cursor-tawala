@@ -3,6 +3,8 @@
  * Used by runtime.mjs (structured nodes) and richHtmlPreview.mjs (function-token spans).
  */
 
+import { compareValues } from "./runtimeEngine.mjs";
+
 function esc(s) {
   return String(s ?? "")
     .replace(/&/g, "&amp;")
@@ -27,12 +29,33 @@ export function parseRecordField(field) {
 export function recordCellValue(row, ref, defaultForm, aliases = {}) {
   const name = ref.name;
   if (!name) return "";
-  const mapped = aliases[name];
-  const keys = mapped && mapped !== name ? [name, mapped] : [name];
+
+  /** Candidate keys: bare name, aliases, and Item:blank tail (FIB1:a → a). */
+  const keys = [];
+  const push = (k) => {
+    const s = String(k ?? "").trim();
+    if (s && !keys.includes(s)) keys.push(s);
+  };
+  push(name);
+  if (aliases[name]) push(aliases[name]);
+  if (name.includes(":")) {
+    const tail = name.split(":").pop();
+    push(tail);
+    if (tail && aliases[tail]) push(aliases[tail]);
+  }
+
+  const forms = [];
+  const pushForm = (f) => {
+    const s = String(f ?? "").trim();
+    if (s && !forms.includes(s)) forms.push(s);
+  };
+  // Prefer the record-count / MQL source form over a mis-parsed "FIB1" form segment.
+  pushForm(defaultForm);
+  if (ref.form && ref.form !== defaultForm) pushForm(ref.form);
+
   for (const key of keys) {
     if (row[key] != null && row[key] !== "") return row[key];
-    const form = ref.form ?? defaultForm;
-    if (form) {
+    for (const form of forms) {
       const qualified = `${form}:${key}`;
       if (row[qualified] != null && row[qualified] !== "") return row[qualified];
     }
@@ -43,16 +66,19 @@ export function recordCellValue(row, ref, defaultForm, aliases = {}) {
 /**
  * Map alternateLabel / displayLabel / blank.name → blank.name for MQL column lookups
  * (`<<Form 1:First>>` when the blank is named `a` with alternateLabel `First`).
+ * Also maps `ItemLabel:blankName` (e.g. FIB1:a → a) to match Fields-palette / POST keys.
  */
 export function blankAliasesFromForm(form) {
   /** @type {Record<string, string>} */
   const aliases = {};
   for (const item of form?.items ?? []) {
     if (item.type !== "fib") continue;
+    const itemLabel = String(item.label ?? "").trim();
     for (const blank of item.blanks ?? []) {
       const name = String(blank.name ?? "").trim();
       if (!name) continue;
       aliases[name] = name;
+      if (itemLabel) aliases[`${itemLabel}:${name}`] = name;
       for (const label of [blank.alternateLabel, blank.displayLabel]) {
         const alt = String(label ?? "").trim();
         if (alt) aliases[alt] = name;
@@ -95,10 +121,35 @@ function conditionRowsFromConfig(config) {
   return rows
     .map((r) => ({
       field: String(r?.field ?? "").trim(),
-      op: String(r?.op ?? "equals").trim() || "equals",
+      op: normalizeConditionOp(r?.op),
       value: String(r?.value ?? "").trim(),
     }))
     .filter((r) => r.field);
+}
+
+/** Map Configure / Skip UI op ids (and legacy spaced labels) to compareValues keys. */
+export function normalizeConditionOp(op) {
+  const raw = String(op ?? "equals").trim();
+  if (!raw) return "equals";
+  const fromLabel = {
+    equals: "equals",
+    "does not equal": "doesNotEqual",
+    contains: "contains",
+    "does not contain": "doesNotContain",
+    "begins with": "beginsWith",
+    "ends with": "endsWith",
+    "is less than": "isLessThan",
+    "is less than or equal to": "isLessThanOrEqualTo",
+    "is greater than": "isGreaterThan",
+    "is greater than or equal to": "isGreaterThanOrEqualTo",
+    "is blank": "isBlank",
+    "is not blank": "isNotBlank",
+    blank: "isBlank",
+    "not blank": "isNotBlank",
+  };
+  const lower = raw.toLowerCase();
+  if (fromLabel[lower]) return fromLabel[lower];
+  return raw; // already camelCase id (equals, isNotBlank, …)
 }
 
 function rowMatchesConditions(row, conditions, combinator, sourceForm, aliases = {}) {
@@ -106,15 +157,14 @@ function rowMatchesConditions(row, conditions, combinator, sourceForm, aliases =
   const check = (cond) => {
     const ref = parseRecordField(cond.field);
     const left = String(recordCellValue(row, ref, sourceForm, aliases) ?? "");
-    const op = cond.op;
-    if (op === "is blank" || op === "blank") return left.trim() === "";
-    if (op === "is not blank" || op === "not blank") return left.trim() !== "";
-    const right = cond.value;
-    if (op === "contains") return left.toLowerCase().includes(right.toLowerCase());
-    if (op === "does not equal" || op === "not equals") return left !== right;
-    return left === right; // equals (default)
+    return compareValues(left, normalizeConditionOp(cond.op), cond.value);
   };
   return combinator === "or" ? conditions.some(check) : conditions.every(check);
+}
+
+/** Exported for unit tests. */
+export function rowMatchesConditionsForTest(row, conditions, combinator, sourceForm, aliases) {
+  return rowMatchesConditions(row, conditions, combinator, sourceForm, aliases);
 }
 
 /**
@@ -127,7 +177,12 @@ export function countFormRecordsFromConfig(config, ctx = {}) {
   const all = ctx.records?.[form] ?? [];
   const conditions = conditionRowsFromConfig(config);
   const combinator = config.conditionsCombinator === "or" ? "or" : "and";
-  const aliases = ctx.blankAliases ?? {};
+  // Prefer aliases for the counted form (FIB1:a → a), not only the submitting fromForm.
+  const formDef = ctx.project?.forms?.find((f) => f.name === form);
+  const aliases = {
+    ...(ctx.blankAliases ?? {}),
+    ...(formDef ? blankAliasesFromForm(formDef) : {}),
+  };
   return all.filter((row) => rowMatchesConditions(row, conditions, combinator, form, aliases))
     .length;
 }

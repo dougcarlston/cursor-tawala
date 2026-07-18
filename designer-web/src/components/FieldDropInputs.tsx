@@ -56,7 +56,13 @@ export function NameTextInput({
  * token at the caret (replacing any selection) and drives the caller's `onValueChange`;
  * on focus it registers itself as the double-click insertion target.
  */
-interface FieldDropOptions extends FieldTargetContext {}
+interface FieldDropOptions extends FieldTargetContext {
+  /**
+   * Replace the whole input value on drop / Fields double-click (do not insert at caret).
+   * Used with or without `bare` — Where field slots must never append a second field.
+   */
+  replaceOnInsert?: boolean;
+}
 
 function targetContext(options: FieldDropOptions): FieldTargetContext {
   return {
@@ -73,24 +79,29 @@ function useFieldDropTarget(
 ) {
   const [dragOver, setDragOver] = useState(false);
   const context = targetContext(options);
+  const replaceWhole = Boolean(options.bare || options.replaceOnInsert);
+
+  const applyInsert = (el: HTMLInputElement | HTMLTextAreaElement, text: string) => {
+    if (replaceWhole) {
+      onValueChange(text);
+      requestAnimationFrame(() => {
+        try {
+          el.focus();
+          el.setSelectionRange(text.length, text.length);
+        } catch {
+          /* element may have unmounted */
+        }
+      });
+      return;
+    }
+    insertTokenAtCaret(el, text, onValueChange);
+  };
 
   const registerActiveTarget = (el: HTMLInputElement | HTMLTextAreaElement) => {
     setActiveFieldTarget((qualifiedName) => {
       if (!fieldAcceptedByTarget(qualifiedName, context)) return;
       const text = fieldInsertText(qualifiedName, context);
-      if (options.bare) {
-        onValueChange(text);
-        requestAnimationFrame(() => {
-          try {
-            el.focus();
-            el.setSelectionRange(text.length, text.length);
-          } catch {
-            /* element may have unmounted */
-          }
-        });
-        return;
-      }
-      insertTokenAtCaret(el, text, onValueChange);
+      applyInsert(el, text);
     }, context, el);
   };
 
@@ -131,20 +142,8 @@ function useFieldDropTarget(
       e.preventDefault();
       const el = e.currentTarget;
       const text = fieldInsertText(qualifiedName, context);
-      if (options.bare) {
-        onValueChange(text);
-        requestAnimationFrame(() => {
-          try {
-            el.focus();
-            el.setSelectionRange(text.length, text.length);
-          } catch {
-            /* element may have unmounted */
-          }
-        });
-        return;
-      }
-      // Drop without prior focus: place caret at end so token inserts predictably.
-      if (document.activeElement !== el) {
+      // Unfocused non-replace drops: caret at end. Replace mode always overwrites.
+      if (!replaceWhole && document.activeElement !== el) {
         try {
           el.focus();
           el.setSelectionRange(el.value.length, el.value.length);
@@ -152,14 +151,22 @@ function useFieldDropTarget(
           /* element may have unmounted */
         }
       }
-      insertTokenAtCaret(el, text, onValueChange);
+      applyInsert(el, text);
     },
     onFocus: (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
       registerActiveTarget(e.currentTarget);
+      // Where field slots: select all so typing/drop replaces the prior field.
+      if (replaceWhole && e.currentTarget.value) {
+        try {
+          e.currentTarget.select();
+        } catch {
+          /* ignore */
+        }
+      }
     },
   };
 
-  return { dragOver, handlers };
+  return { dragOver, handlers, replaceWhole };
 }
 
 function mergeClass(base: string | undefined, dragOver: boolean): string | undefined {
@@ -172,6 +179,8 @@ interface FieldTextInputProps
   onValueChange: (next: string) => void;
   /** When true, insert bare `Form:Field` instead of `<<Form:Field>>` (MCQ / blank params). */
   bare?: boolean;
+  /** Replace the whole box on drop (Where field). Implied by `bare`. */
+  replaceOnInsert?: boolean;
   formFieldsOnly?: boolean;
   knownVariables?: ReadonlySet<string>;
   /** Configure Function dialog — wins Fields double-click over the canvas editor. */
@@ -183,13 +192,20 @@ export function FieldTextInput({
   onValueChange,
   className,
   bare,
+  replaceOnInsert,
   formFieldsOnly,
   knownVariables,
   configureDialog,
+  onFocus,
+  onDrop,
+  onDragOver,
+  onDragEnter,
+  onDragLeave,
   ...rest
 }: FieldTextInputProps) {
   const { dragOver, handlers } = useFieldDropTarget(onValueChange, {
     bare,
+    replaceOnInsert,
     formFieldsOnly,
     knownVariables,
     configureDialog,
@@ -200,6 +216,26 @@ export function FieldTextInput({
       {...handlers}
       className={mergeClass(className, dragOver)}
       onChange={(e) => onValueChange(e.target.value)}
+      onFocus={(e) => {
+        handlers.onFocus(e);
+        onFocus?.(e);
+      }}
+      onDrop={(e) => {
+        handlers.onDrop(e);
+        onDrop?.(e);
+      }}
+      onDragOver={(e) => {
+        handlers.onDragOver(e);
+        onDragOver?.(e);
+      }}
+      onDragEnter={(e) => {
+        handlers.onDragEnter(e);
+        onDragEnter?.(e);
+      }}
+      onDragLeave={(e) => {
+        handlers.onDragLeave(e);
+        onDragLeave?.(e);
+      }}
     />
   );
 }

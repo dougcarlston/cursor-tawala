@@ -117,6 +117,7 @@ export function FunctionConditionsEditor({
         <div key={i} className="skip-if-row function-conditions-row">
           <FieldTextInput
             configureDialog
+            bare
             className="skip-if-field"
             placeholder="Record:Form:Field"
             value={row.field}

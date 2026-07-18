@@ -160,4 +160,27 @@ describe("enhanceRichTextHtml display-image / display-mcq / record-count", () =>
     expect(out).toContain('preview-record-count">2<');
     expect(out).not.toContain("function-token");
   });
+
+  it("FORM RECORD COUNT Where uses Configure op ids (isNotBlank)", () => {
+    // Configure / Skip UI stores camelCase ids; spaced labels must not be required.
+    const config = JSON.stringify({
+      "form-name": "Registration",
+      conditionsRows: [{ field: "Record:Registration:WaiverReceived", op: "isNotBlank", value: "" }],
+      conditionsCombinator: "and",
+    });
+    const html =
+      `<span class="function-token" data-function-id="record-count" ` +
+      `data-function-config='${config}'>fx</span>`;
+    const out = enhanceRichTextHtml(html, () => "", {
+      records: {
+        Registration: [
+          { WaiverReceived: "Yes" },
+          { WaiverReceived: "" },
+          { WaiverReceived: "  " },
+          {},
+        ],
+      },
+    });
+    expect(out).toContain('preview-record-count">1<');
+  });
 });

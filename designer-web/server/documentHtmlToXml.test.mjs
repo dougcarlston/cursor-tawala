@@ -129,6 +129,64 @@ describe("documentHtmlToXml function emit matrix", () => {
   }
 });
 
+describe("documentHtmlToXml record-count Where conditions", () => {
+  it("emits Record:Form:Field and isNotBlank for Deploy", () => {
+    const xml = documentHtmlToXml(
+      tokenHtml("record-count", {
+        "form-name": "Registration",
+        conditionsRows: [{ field: "<<Registration:WaiverReceived>>", op: "isNotBlank", value: "" }],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<record-count");
+    expect(xml).toContain('field="Record:Registration:WaiverReceived"');
+    expect(xml).toContain("<isNotBlank ");
+    expect(xml).toMatch(
+      /<conditions><form name="Registration"\/><conditions><isNotBlank field="Record:Registration:WaiverReceived"\/>/,
+    );
+  });
+
+  it("qualifies FIB Item:blank (FIB1:a) with form-name for Deploy", () => {
+    // Fields palette inserts FIB1:a (already has ':') without Form 1: prefix.
+    const xml = documentHtmlToXml(
+      tokenHtml("record-count", {
+        "form-name": "Form 1",
+        conditionsRows: [{ field: "FIB1:a", op: "equals", value: "Bogus" }],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('field="Record:Form 1:FIB1:a"');
+    expect(xml).not.toContain('field="Record:FIB1:a"');
+    expect(xml).toContain("<string value=\"Bogus\"/>");
+  });
+
+  it("nests multi-row Where with binary <and> (DirtBowl shape)", () => {
+    const xml = documentHtmlToXml(
+      tokenHtml("record-count", {
+        "form-name": "Registration",
+        conditionsRows: [
+          { field: "Registration:PaymentReceived", op: "equals", value: "Yes" },
+          { field: "Registration:WaiverReceived", op: "equals", value: "Yes" },
+          { field: "Registration:ShirtSize", op: "isBlank", value: "" },
+        ],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<and>");
+    expect(xml).toContain('field="Record:Registration:PaymentReceived"');
+    expect(xml).toContain('field="Record:Registration:WaiverReceived"');
+    expect(xml).toContain("<isBlank field=\"Record:Registration:ShirtSize\"/>");
+    // Binary nest: outer and wraps first op + inner and of the rest
+    expect(xml).toMatch(/<and><equals field="Record:Registration:PaymentReceived">[\s\S]*<and>/);
+  });
+});
+
 describe("documentHtmlToXml nested function tokens", () => {
   it("keeps display-mcq when the token sits inside a styled span (palette face/size)", () => {
     const cfg =
@@ -337,5 +395,25 @@ describe("documentHtmlToXml placed vertical gaps (DISPLAY MCQ spacing)", () => {
     // Leading unmarked husk omitted; only the MCQ paragraph remains as content.
     expect(xml.match(/<paragraph\b/g)?.length).toBe(1);
     expect(xml).toContain("display-mcq-label");
+  });
+
+  it("sorts placed lines by absolute top (not DOM order) for Deploy", () => {
+    // Simulate drag: Form Count DOM-first but visually below Second One.
+    const html =
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 200pt">Form Count</p>` +
+      placedMcq(40, "Form 1:MCQ1", "label_only") +
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 100pt">Second One</p>` +
+      placedMcq(120, "Form 1:MCQ2", "all_choices");
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    const iMcq1 = xml.indexOf("MCQ1");
+    const iSecond = xml.indexOf("Second One");
+    const iMcq2 = xml.indexOf("MCQ2");
+    const iCount = xml.indexOf("Form Count");
+    expect(iMcq1).toBeGreaterThanOrEqual(0);
+    expect(iSecond).toBeGreaterThan(iMcq1);
+    expect(iMcq2).toBeGreaterThan(iSecond);
+    expect(iCount).toBeGreaterThan(iMcq2);
+    expect(xml).toContain('label_only');
+    expect(xml).toContain('all_choices');
   });
 });

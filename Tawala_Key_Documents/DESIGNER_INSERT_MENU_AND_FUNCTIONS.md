@@ -310,9 +310,11 @@ Screenshot: [`assets/Function_-_Display_MCQ_Responses.png`](assets/Function_-_Di
 
 ### Browser gaps
 
-Catalog + Configure present. Document **and Form Text** HTML→XML: **emits** `<display-mcq-label>` (Jul 13). Runtime shows labels only after that MCQ has answers in the submission (typically a later page or Document after Submit — blank / all “Not selected” on the unanswered form).
+Catalog + Configure present. Document **and Form Text** HTML→XML: **emits** `<display-mcq-label>` (Jul 13). Runtime shows labels only after that MCQ has answers in the submission (typically a later page or Document after Submit — blank / all “Not selected” on the unanswered form). **Owner smoke Jul 18: Passed.**
 
-**Deploy spacing (Jul 18):** Design canvas gaps between placed DISPLAY MCQ chips are absolute `top` positions; Java lays Document paragraphs in flow and previously **collapsed** that whitespace (two chips stacked flush). Export now (a) keeps intentional Double-Return blanks (`data-doc-blank`) as spacer paragraphs and (b) injects blank paragraphs from large `top` gaps between consecutive placed content lines. **Restart the Designer API** (`npm run keep`) after pulling so Deploy uses the new exporter, then Redeploy.
+**Deploy spacing (Jul 18):** Design canvas gaps between placed DISPLAY MCQ chips are absolute `top` positions; Java lays Document paragraphs in flow. Export (a) **sorts placed lines by `top`/`left`** so drag-reordered chips keep Design order on Deploy, (b) keeps intentional Double-Return blanks (`data-doc-blank`) as spacer paragraphs, and (c) injects blank paragraphs from large `top` gaps. **Restart the Designer API** (`npm run keep`) after pulling so Deploy uses the new exporter, then Redeploy.
+
+**`label_only` vs `all_choices`:** Java `label_only` prints selected choice **text** (e.g. `Dog`); `all_choices` uses the question’s checkbox layout. If Deploy shows checkboxes under a `label_only` chip, the lines were likely out of DOM order before the sort fix — Redeploy after API restart.
 
 **`all_choices` Deploy:** Java emits `/images/checkbox_on.gif` and `/images/checkbox_off.gif`. Those assets were missing from local Tomcat (404 → broken-image icons + overlapping alt text). Patched into `docker/tomcat/images/` + Dockerfile (Jul 16); hot-copied into running `tawala-tomcat`. Rebuild image for permanence. **Smoke:** open `http://localhost:8080/images/checkbox_on.gif` — must be 200 before Redeploy.
 
@@ -362,7 +364,9 @@ Screenshot: [`assets/Function_-_Form_Record_Count.png`](assets/Function_-_Form_R
 
 ### Browser gaps
 
-Configure matches (Form + conditions). XML export: **yes**. Node Preview (Jul 16): shows filtered session count (`richHtmlPreview`).
+Configure matches (Form + conditions). XML export: **yes** (Where fields as `Record:Form:Field`; multi-row nested `<and>`/`<or>`; **Jul 18:** `FIB1:a`-style blanks qualify as `Record:Form 1:FIB1:a`). Preview: filtered session count — Where ops + FIB Item:blank lookup fixed Jul 18.
+
+**Where field drop (Jul 18):** Configure Where field box uses **replace** (bare `Form:Field`), not insert-at-caret — dropping a new field no longer appends onto the previous one (which broke matching and confused Document Deploy). Focus selects the whole field for easy overwrite.
 
 ---
 
@@ -662,9 +666,9 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 |---|----------|-----|----------|---------------------|
 | 1 | CATEGORIZER | `categorizer` | **Deferred stub** | No sample need |
 | 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Passed** — owner Jul 18 (Configure URL → Design token → Preview placeholder → Deploy live image) |
-| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Deploy fix Jul 16** — `checkbox_on/off.gif` for `all_choices`; Preview stub; smoke after Redeploy / hard refresh |
+| 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Passed** — owner Jul 18 (Configure + Deploy; spacing between stacked chips fixed same day) |
 | 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
-| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Preview wired Jul 16** (session record count); Deploy XML yes; owner smoke |
+| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Preview + Where ops fixed Jul 18** (`isNotBlank` etc.); Deploy XML `Record:` fields; owner smoke |
 | 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | Hosted My Tawala |
 | 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16 |
 | 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | Payment integration |
