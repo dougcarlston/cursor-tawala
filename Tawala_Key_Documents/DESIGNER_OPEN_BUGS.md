@@ -71,6 +71,20 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). **Do not dig now** — park for final Designer run-through. See also `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § RESPONSE TOTALS.
 
+### Full build / TypeScript (`npm run build`) — inventory Jul 17
+
+`cd designer-web && npm run build` (`tsc -b`) fails with **14 errors in 6 files**. Day-to-day Design via Vite still works; this blocks a clean production build. **Inventory only — do not dig mid-feature;** fix in a short dedicated green-build pass (or near final Designer run-through).
+
+| Category | Count | Files | Notes |
+|----------|-------|--------|--------|
+| **Real live-code** | 1 | `src/components/RichTextEditor.tsx` | Calls `reflowPlacedLinesBelow` but does not import it (function exists in `documentCanvas.ts`). Likely missing import / rename slip. |
+| **Unused locals** | 2 | `src/lib/paletteCommands.ts` | Dead `CARET_ZWSP`; unused `root` param — safe cleanup. |
+| **Test typing only** | ~10 | `documentCanvas.align.dom.test.ts`, `shellCommands.download.dom.test.ts` | `Element` vs `HTMLElement` / form mocks — tests, not product logic. |
+| **Shell typing** | 1 | `src/lib/shellCommands.ts` | Keyboard pick missing `shiftKey` in a type. |
+| **Table cast** | 1 | `src/lib/documentCanvas.ts` | `Element` → `HTMLTableElement` without cast. |
+
+**Verdict:** Small set — one real missing import, rest mostly casts/unused. Not a multi-day detritus purge.
+
 ### Skip Instructions (parked — fix when Skip is reopened)
 
 - **Skip dialog re-open does not restore insertion point.** **Real bug; parked with Skip.** (Smoke: Skip dialog itself felt solid July 10.)
