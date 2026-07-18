@@ -10,10 +10,24 @@ Browser-based replacement for the legacy **C# WinForms Tawala Designer**, with d
 
 ## Run locally
 
+**Recommended (leave Terminal open):**
+
+```bash
+cd ~/Projects/AI-Tawala/designer-web
+npm run keep
+```
+
+Or double-click `scripts/Keep-Designer-Dev.command` in Finder. That keeps Vite + the API alive, **restarts either if it crashes**, and survives idle — so Deploy should not hit “Failed to fetch” from a dead `:3001`. **Ctrl+C** in that Terminal stops the stack.
+
+Node-only Deploy (no Tomcat): `npm run keep:local`.
+
+Short form (same restart behavior, less banner): `npm run dev`.
+
 ```bash
 cd designer-web
 npm install
-npm run dev
+npm run keep   # preferred
+# or: npm run dev
 ```
 
 This starts **both**:
@@ -37,26 +51,25 @@ Open those links to exercise the dev runtime HTML forms.
 
 ### Preview / Deploy “failed to fetch”
 
-Vite (`:5173`) can stay up while the Express API (`:3001`) dies (common when a tool shell exits and SIGTERMs the API). Check and restart:
+Almost always means the Express API on `:3001` is down (often because the stack was started from an ephemeral agent/IDE shell that later exited). Prefer **`npm run keep` in a Terminal you leave open**.
+
+Quick check / revive API only:
 
 ```bash
 curl -s http://localhost:3001/api/health
 cd designer-web && bash scripts/ensure-dev-api.sh
 ```
 
-Prefer starting Designer from a **terminal you leave open**: `cd designer-web && npm run dev` (or `npm run dev:local` for Node-only Deploy).
-
 ### Java Deploy (Tomcat `:8080`)
 
 1. Start containers from the repo root: `docker compose up -d`
 2. Wait until `http://localhost:8080` responds.
-3. Restart the Designer API **without** `TAWALA_DEV_ONLY` so it can discover Java:
+3. In your keep-alive Terminal (or restart it):
    ```bash
    cd designer-web
-   # stop old API/Vite if needed, then:
    unset TAWALA_DEV_ONLY
    export TAWALA_JAVA_URL=http://localhost:8080
-   npm run dev
+   npm run keep
    ```
 4. Confirm `/api/health` shows `"javaProxy": true`, then **File → Deploy** again — start URLs will target Tomcat.
 

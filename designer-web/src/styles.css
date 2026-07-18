@@ -1206,6 +1206,8 @@ textarea {
   position: relative;
   width: 100%;
   max-width: 100%;
+  /* Batch 6: tall tables scroll inside the Text chrome instead of stretching the row. */
+  max-height: min(50vh, 28rem);
   overflow: auto;
 }
 
@@ -1219,7 +1221,7 @@ textarea {
   font-size: 13px;
   line-height: 1.4;
   min-height: 24px;
-  overflow: auto;
+  overflow: visible;
 }
 
 /* Insert → Image → From your PC (Approach A): keep Design canvas from blowing layout. */
@@ -1313,6 +1315,9 @@ textarea {
   white-space: pre-wrap;
   word-break: break-word;
   border: 1px solid transparent;
+  max-width: 100%;
+  max-height: min(50vh, 28rem);
+  overflow: auto;
 }
 
 .text-rendered img.tawala-embedded-image {
@@ -3872,6 +3877,7 @@ button.font-color-picker-recent-slot:hover {
   position: relative;
   width: 100%;
   max-width: 100%;
+  max-height: min(50vh, 28rem);
   overflow: auto;
 }
 

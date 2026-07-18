@@ -10,7 +10,7 @@ import {
 } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { renderDocumentsPage } from "./documentRenderer.mjs";
-import { fibRowFields, fibRowLabel, fibUsesLeftLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
+import { fibRowLabel, fibUsesLeftLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
 import { renderItemizationTableHtml, blankAliasesFromForm } from "./itemizationPreview.mjs";
 import { renderChoiceTallyTableHtml } from "./choiceTallyPreview.mjs";
 import { BASE_FORM_CSS, resolveTheme as resolveThemeCss, themeBodyClass } from "./themes/index.mjs";
@@ -141,29 +141,34 @@ function renderFib(item, ctx) {
   const rowHtml = rows
     .map((row) => {
       const label = fibRowLabel(row.segments);
-      const fields = fibRowFields(row.segments);
-      const trailing = row.segments.filter((s) => s.type === "text").slice(1);
 
-      const fieldHtml = fields
-        .map((f) => {
-          const hint = f.hint ? `<em class="fib-hint">${esc(f.hint)}</em>` : "";
-          return `<span class="fib-field">${hint}${blankInput(item, f.blank, ctx)}</span>`;
-        })
-        .join("");
-
-      const trailHtml = trailing
-        .map((t) => {
-          const text = String(t.text ?? "").replace(/_+/g, "");
-          if (!text) return "";
-          return `<span class="fib-inline-text">${esc(text)}</span>`;
-        })
-        .join("");
+      /** Ordered blank + interstitial text after the leading label (Batch 3 leftAlign). */
+      const fieldsAfterLabelHtml = () => {
+        let seenBlank = false;
+        return row.segments
+          .map((seg) => {
+            if (seg.type === "text") {
+              // Skip the leading label text (first text before any blank).
+              if (!seenBlank) return "";
+              const text = String(seg.text ?? "").replace(/_+/g, "");
+              if (!text) return "";
+              return `<span class="fib-inline-text">${esc(text)}</span>`;
+            }
+            if (seg.type === "blank") {
+              seenBlank = true;
+              const hint = seg.hint ? `<em class="fib-hint">${esc(seg.hint)}</em>` : "";
+              return `<span class="fib-field">${hint}${blankInput(item, seg.blank, ctx)}</span>`;
+            }
+            return "";
+          })
+          .join("");
+      };
 
       if (left && label) {
         const cleanLabel = String(label).replace(/_+/g, "");
         return `<div class="fib-row">
           <span class="fib-label">${esc(cleanLabel)}:</span>
-          <span class="fib-fields">${fieldHtml}${trailHtml}</span>
+          <span class="fib-fields">${fieldsAfterLabelHtml()}</span>
         </div>`;
       }
 

@@ -3,6 +3,7 @@
  * so duplicates always invoke the same handlers.
  */
 
+import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import { useProjectStore } from "@/store/projectStore";
 
 export type ShellEditCommand = "cut" | "copy" | "paste" | "undo" | "redo";
@@ -476,14 +477,160 @@ export function runShellDelete(): void {
   confirmAndDeleteProjectEntity();
 }
 
-/** Prefer rich-text / contenteditable commands when focus is in an editor. */
+/**
+ * Prefer rich-text / contenteditable commands when a Form/Document editor is active.
+ *
+ * Browsers block `document.execCommand("paste")` from toolbar/menu clicks (not a
+ * trusted paste gesture). Paste therefore restores the palette editor caret and
+ * inserts via the Clipboard API; Cut/Copy/Undo/Redo restore selection then use
+ * execCommand so focus stolen by the button does not empty the range.
+ */
 export function runShellEditCommand(command: ShellEditCommand): boolean {
   if (!shellEditContextActive()) return false;
+  const handle = getActivePaletteEditor();
+  if (handle) {
+    handle.el.focus();
+    handle.restoreSelection();
+  }
+  if (command === "paste") {
+    void pasteIntoActiveEditor();
+    return true;
+  }
   try {
-    return document.execCommand(command);
+    const ok = document.execCommand(command);
+    if (ok && handle) {
+      handle.commit();
+      handle.saveSelection();
+    }
+    return ok;
   } catch {
     return false;
   }
+}
+
+/** Insert clipboard text/HTML at the active palette editor caret (or focused input). */
+export async function pasteIntoActiveEditor(): Promise<boolean> {
+  const handle = getActivePaletteEditor();
+  if (handle) {
+    handle.el.focus();
+    handle.restoreSelection();
+  }
+
+  const target =
+    handle?.el ??
+    (document.activeElement instanceof HTMLElement &&
+    (document.activeElement.isContentEditable ||
+      document.activeElement instanceof HTMLInputElement ||
+      document.activeElement instanceof HTMLTextAreaElement)
+      ? document.activeElement
+      : null);
+
+  if (!target) {
+    useProjectStore.getState().setStatus("Paste: click in text first, then use Paste or ⌘V / Ctrl+V");
+    return false;
+  }
+
+  const afterInsert = () => {
+    handle?.commit();
+    handle?.saveSelection();
+  };
+
+  const refocus = () => {
+    if (!handle) return;
+    handle.el.focus();
+    handle.restoreSelection();
+  };
+
+  try {
+    const html = await readClipboardHtml();
+    if (html != null && target.isContentEditable) {
+      refocus();
+      if (insertHtmlAtSelection(html) || document.execCommand("insertHTML", false, html)) {
+        afterInsert();
+        return true;
+      }
+    }
+
+    const text = await navigator.clipboard.readText();
+    refocus();
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      const start = target.selectionStart ?? target.value.length;
+      const end = target.selectionEnd ?? start;
+      target.setRangeText(text, start, end, "end");
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+      return true;
+    }
+    if (insertTextAtSelection(text) || document.execCommand("insertText", false, text)) {
+      afterInsert();
+      return true;
+    }
+  } catch {
+    /* permission denied or clipboard unavailable */
+  }
+
+  // Last resort — usually still blocked from a button click.
+  try {
+    if (document.execCommand("paste")) {
+      afterInsert();
+      return true;
+    }
+  } catch {
+    /* ignore */
+  }
+
+  useProjectStore
+    .getState()
+    .setStatus("Paste blocked by the browser — click in the text and press ⌘V / Ctrl+V");
+  return false;
+}
+
+async function readClipboardHtml(): Promise<string | null> {
+  if (!navigator.clipboard || typeof navigator.clipboard.read !== "function") return null;
+  try {
+    const items = await navigator.clipboard.read();
+    for (const item of items) {
+      if (!item.types.includes("text/html")) continue;
+      const blob = await item.getType("text/html");
+      return blob.text();
+    }
+  } catch {
+    /* read() unsupported or denied — fall through to readText */
+  }
+  return null;
+}
+
+/** Range-based insert when execCommand is unavailable (e.g. happy-dom tests). */
+function insertTextAtSelection(text: string): boolean {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const node = document.createTextNode(text);
+  range.insertNode(node);
+  range.setStartAfter(node);
+  range.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(range);
+  return true;
+}
+
+function insertHtmlAtSelection(html: string): boolean {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0) return false;
+  const range = sel.getRangeAt(0);
+  range.deleteContents();
+  const template = document.createElement("template");
+  template.innerHTML = html;
+  const frag = template.content;
+  const last = frag.lastChild;
+  range.insertNode(frag);
+  if (last) {
+    range.setStartAfter(last);
+    range.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+  return true;
 }
 
 export function openProjectManagerLocal(): void {

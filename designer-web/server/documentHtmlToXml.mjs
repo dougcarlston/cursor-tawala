@@ -3,6 +3,10 @@
  * Handles paragraphs, tables, field/function tokens, and basic inline formatting.
  */
 
+/** Empty paragraph used as a Deploy spacer (matches Form Text / response-totals habit). */
+const BLANK_PARAGRAPH_XML =
+  `<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>`;
+
 function ptToTwips(pt) {
   const n = Number.parseFloat(String(pt).replace(/pt$/i, ""));
   return Number.isFinite(n) ? Math.round(n * 20) : 0;
@@ -757,28 +761,62 @@ function blockHtmlToXml(blockHtml, escAttr, escText) {
     const align = parseAlignFromTag(open.attrs);
     const inner = extractTagInner(blockHtml, open.name);
     const body = inlineHtmlToXml(inner, escAttr, escText);
+    const isPlaced = classes.includes("doc-placed-text") || style.position === "absolute";
+    const meaningful = String(body ?? "")
+      .replace(/<sp\s*\/>/gi, "")
+      .replace(/\s+/g, "")
+      .trim();
 
-    if (classes.includes("doc-placed-text") || style.position === "absolute") {
-      // Drop empty canvas husks — they become blank gaps on Deploy (Java ignores absolute top
-      // and lays paragraphs out in flow, so leftover empty lines stack vertically).
-      const meaningful = String(body ?? "")
-        .replace(/<sp\s*\/>/gi, "")
-        .replace(/\s+/g, "")
-        .trim();
-      if (!meaningful) return "";
+    if (isPlaced) {
+      // Drop leftover empty husks (select-all delete debris). Keep intentional
+      // Double-Return blanks (`data-doc-blank`) so Deploy retains vertical gaps —
+      // Java ignores absolute `top` and lays paragraphs in document order.
+      if (!meaningful) {
+        return /\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs) ? BLANK_PARAGRAPH_XML : "";
+      }
       // Do NOT wrap in <division left/top> — Document Paragraph FACTORY has no "division".
       // Do NOT wrap again in <font> — inlineHtmlToXml already wraps function tokens in <font>,
       // and Java Font FACTORY cannot nest <font> (drops the inner itemization).
       return `<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`;
     }
 
-    if (!String(body ?? "").replace(/<sp\s*\/>/gi, "").replace(/\s+/g, "").trim()) {
+    if (!meaningful) {
       return "";
     }
     return `<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`;
   }
 
   return `<paragraph indent="0" align="left">${inlineHtmlToXml(blockHtml, escAttr, escText)}</paragraph>`;
+}
+
+/** Absolute `top` in pt for a placed Document block, or null. */
+function placedTopPt(blockHtml) {
+  const open = extractOpenTag(blockHtml);
+  if (!open) return null;
+  const classes = parseClassAttr(open.attrs);
+  const style = parseStyleAttr(open.attrs);
+  if (!classes.includes("doc-placed-text") && style.position !== "absolute") return null;
+  const raw = style.top;
+  if (!raw) return null;
+  const n = Number.parseFloat(String(raw).replace(/pt$/i, ""));
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Design canvas gaps are absolute `top` deltas; Deploy is flow layout. When two
+ * content lines are clearly separated on the canvas (e.g. two DISPLAY MCQ chips
+ * with white space between), emit blank paragraphs so the gap is not collapsed.
+ */
+function spacerXmlForPlacedGap(prevTopPt, nextTopPt) {
+  if (prevTopPt == null || nextTopPt == null) return [];
+  const gap = nextTopPt - prevTopPt;
+  // One chip/line ~20–24pt; anything beyond that is intentional whitespace.
+  const NOMINAL_LINE_PT = 22;
+  const extra = gap - NOMINAL_LINE_PT;
+  if (extra < 14) return [];
+  if (extra < 60) return [BLANK_PARAGRAPH_XML];
+  if (extra < 120) return [BLANK_PARAGRAPH_XML, BLANK_PARAGRAPH_XML];
+  return [BLANK_PARAGRAPH_XML, BLANK_PARAGRAPH_XML, BLANK_PARAGRAPH_XML];
 }
 
 /** Convert document editor HTML string to legacy xmlData body markup. */
@@ -789,12 +827,23 @@ export function documentHtmlToXml(html, escAttr, escText) {
   }
 
   const parts = [];
+  let lastContentTop = null;
   let rest = source;
   while (rest.trim()) {
     const block = nextTopLevelBlock(rest);
     if (!block) break;
+    const top = placedTopPt(block.html);
     const xml = blockHtmlToXml(block.html, escAttr, escText);
-    if (xml) parts.push(xml);
+    if (xml) {
+      const isBlankOnly = xml === BLANK_PARAGRAPH_XML;
+      if (!isBlankOnly && top != null && lastContentTop != null) {
+        for (const spacer of spacerXmlForPlacedGap(lastContentTop, top)) {
+          parts.push(spacer);
+        }
+      }
+      parts.push(xml);
+      if (!isBlankOnly && top != null) lastContentTop = top;
+    }
     rest = block.rest;
   }
 

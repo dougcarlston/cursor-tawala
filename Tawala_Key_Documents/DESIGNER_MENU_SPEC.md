@@ -658,6 +658,8 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 
 `designer-web` should use **local save/export** instead of www.tawala.com deploy; undo/redo should be implemented for canvas editors even if legacy build lacked them.
 
+**Paste (browser — Jul 18):** Toolbar / Edit → Paste cannot use `document.execCommand("paste")` (browsers block it from menu/button clicks). Shell paste restores the active Formatting Palette editor caret and inserts via the Clipboard API (`navigator.clipboard`). Prefer clicking in Form Text / Document first so a palette editor is registered. Native **⌘V / Ctrl+V** in the editor still works as a fallback. If the browser denies clipboard read, status explains to use the keyboard shortcut.
+
 **Save / dirty (browser — July 2026):**
 - **File → Save**, floppy toolbar, and **⌘S / Ctrl+S** are **always enabled** (never greyed on clean/dirty). Dirty only drives status `· modified`, File menu “Save · modified”, and a red-tint floppy highlight.
 - Grey accelerator text alone is **not** a disabled Save — do not confuse `.menu-accel` with `:disabled`.

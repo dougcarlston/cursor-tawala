@@ -58,7 +58,7 @@ Opened from **Format → Styles →** cascade (legacy) or **Project → Styles�
 - **Apply to Selected** — same one-item contract; always available in the dialog (you opened it from a matching selection).
 - **Apply to All** — **enabled** when the active form has ≥1 item of that kind; updates **every matching item on this form only** (not other forms / not project-wide). Safer than legacy project-wide `SetAll*Styles`.
 - Note copy explains Selected vs All and the form-only scope.
-- Design canvas may not yet *visually* reflect every layout token (Deploy/runtime do for many); canvas visual parity is a follow-up.
+- Design canvas does not paint FIB/MCQ layout tokens (owner Jul 18: won't do — interferes with editing; Preview is immediate). **Text** Instructional/Error Style **is** shown on Forms → Text.
 
 ---
 
@@ -139,7 +139,7 @@ Maps to item `style` `vertical` / `horizontal` / `multicolumn` (+ optional `colu
 1. **Vertical** — stacked radios; labels clear of the control (OK in owner smoke).
 2. **Horizontal** — choices in one row; radios must not overlap choice text (fixed: CSS now targets plain `<label>`, not only `label.choice`).
 3. **Multi-column** — table cells have a readable gutter (~2em) between columns (was flush in default theme).
-4. Design canvas still shows a vertical list for all three — layout paint is a follow-up; check layouts on Deploy.
+4. Design canvas shows a vertical list for all three — **layout paint won't be added** (owner Jul 18: interferes with editing; Preview is immediate). Check layouts on Deploy/Preview.
 
 #### Screenshots (owner Jul 17, 2026)
 
@@ -196,7 +196,7 @@ Tokens under **Project → Styles**. Dialog chrome aligned to owner screenshots:
 | MCQ/Text stacked radio + three simultaneous lavender previews | Done |
 | Apply to Selected **hidden** when no matching item; button order Apply to Selected · Apply to All · Cancel | Done |
 | **Apply to All** = all matching items on **active form only** | Done (Jul 17) |
-| Design canvas visual layout for each style token | **Follow-up** — paint FIB/MCQ layout styles on Design the way Deploy already shows (underscores / vertical·horizontal·multicolumn); not started |
+| Design canvas visual layout for each style token | **FIB/MCQ layout paint: won't do (owner Jul 18)** — would interfere with editing those rows, and Preview is immediate for Forms. **Text Style paint (Instructional/Error) on Forms → Text: kept** — canvas already shows blue bold-italic (Instructional) / red bold-italic (Error) so authors can tell the style apart. |
 | Deploy left/right Align: one blank per table row; no Name/Email auto-bold | Done (Jul 17) |
 | Deploy label column: content-sized (not fixed 380px gutter) | Done (Jul 17; DirtBowl reg forms keep `--reg-label-width`) |
 
@@ -265,8 +265,8 @@ Form Text tables share Document table behaviors: **Tab** / **Shift+Tab** cell na
 - **Project → Tabs…**: **removed** (Jul 17). Legacy dialog documented; compatibility fields/converters retained for imported projects.
 - **Page Header / Themes**: **stubs** on Project for **8080 / CSS** track.
 - Styles **visual** dialog parity: **Jul 17**.
-- **Follow-up:** Design-canvas paint of FIB/MCQ layout style tokens (Deploy already correct).
+- **Design-canvas Style paint (owner Jul 18):** **Text** Instructional/Error **shown** on Forms → Text (can't otherwise tell them apart). **FIB/MCQ layout paint = won't do** — would interfere with editing; Preview is immediate for Forms and Documents mostly show it already.
 
 ---
 
-*Last updated: July 17, 2026 — Tabs documented and removed from browser UI; Design FIB/MCQ layout paint deferred.*
+*Last updated: July 18, 2026 — Design Text Style paint kept (Forms → Text); FIB/MCQ Design layout paint dropped per owner (interferes with editing; Preview immediate).*

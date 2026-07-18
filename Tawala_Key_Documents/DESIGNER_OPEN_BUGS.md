@@ -63,13 +63,30 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Form canvas (UX backlog)
 
-- **Design-mode FIB blanks are editable** — should be placeholders / length lines only. **UX bug; deferred.**
+- **Design-mode FIB blanks are editable** — should be placeholders / length lines only while editing? **UX bug; deferred.** (Idle Design correctly keeps literal `_` — Batch 2 hold-list Jul 18; boxes only in Preview/Deploy.)
 
 - **Design-mode checkboxes and radios change state** on the canvas. **UX bug; deferred.**
+
+### Hold-list (Jul 18 gated pass)
+
+| Batch | Item | Status |
+|-------|------|--------|
+| 1 | Form DnD vs text selection (#1 + #10) | **Done** — badge-only reorder (`formItemReorder.ts`); Alt Label `select()` on focus |
+| 2 | Design FIB idle keeps `_` (#3) | **Done** — idle paints prompt HTML with underscores |
+| 3 | Preview FIB (#4 + #9) | **Done** — `fibPrompt` + runtime; leftAlign keeps interstitial text order |
+| 4 | FIB insert highlight (#2) | **Done** — placeholder selected; trailing `_` not |
+| 5 | Text indent face/size (#7, #8) | **Done** — `margin-left` indent (no `execCommand("indent")`) |
+| 6 | Tables multi-select + overflow (#5, #6) | **Done** — cell selection center; Text wrap `max-height` + scroll |
 
 ### Functions (final Designer run-through)
 
 - **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). **Do not dig now** — park for final Designer run-through. See also `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § RESPONSE TOTALS.
+
+### Edit / Undo (main toolbar smoke Jul 18)
+
+- **Undo/Redo stack is per-item only** — Undo (icon bar, Edit → Undo, ⌘Z/Ctrl+Z) uses the browser’s `document.execCommand("undo")`, whose history lives on the **focused contenteditable**. Clicking out of one Form item into another blurs/unmounts that editor, so Chromium discards its undo stack; the next item starts empty. **No cross-item / project-level undo.** Owner Jul 18: acceptable for now if recorded. **Future:** store-level undo history (text commits, item move/delete) that survives focus changes — larger feature, not a toolbar wiring fix. (Legacy Jan 2011 build often had Undo/Redo always greyed anyway.)
+
+- **Paste required a one-time browser permission prompt** — expected, not a bug: toolbar/menu Paste reads the system clipboard via `navigator.clipboard` (`clipboard-read`), which browsers gate; Cut/Copy write the current selection and are allowed silently. After **Allow**, Paste and ⌘V work without re-prompting. (Fixed Jul 18: Paste now uses the Clipboard API since `execCommand("paste")` is blocked from button clicks.)
 
 ### Full build / TypeScript (`npm run build`) — inventory Jul 17
 

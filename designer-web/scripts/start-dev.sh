@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 # Start Designer (Vite + API). Deploy targets Tomcat on :8080 unless TAWALA_DEV_ONLY=1.
+#
+# Prefer `npm run keep` (scripts/keep-dev.sh) in a Terminal you leave open —
+# that path restarts crashed children independently. This script is the short
+# `npm run dev` entry and now also auto-restarts children.
 set -euo pipefail
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 cd "$ROOT"
@@ -9,6 +13,7 @@ for port in 3001 5173; do
   pids=$(lsof -ti:"$port" 2>/dev/null || true)
   if [ -n "$pids" ]; then
     echo "Stopping process on port $port..."
+    # shellcheck disable=SC2086
     kill $pids 2>/dev/null || true
     sleep 1
   fi
@@ -28,4 +33,11 @@ else
   echo "Deploy target: $TAWALA_JAVA_URL"
 fi
 
-exec npx concurrently -n web,api -c blue,green "vite" "node server/index.mjs"
+# Independent forever-restart so one crash does not strand the other as "Failed to fetch".
+exec npx concurrently \
+  -n web,api \
+  -c blue,green \
+  --restart-tries -1 \
+  --restart-after 1000 \
+  "vite" \
+  "node server/index.mjs"

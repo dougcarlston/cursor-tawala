@@ -359,4 +359,4 @@ Example (SportsDashboards template in test fixtures):
 
 ---
 
-*Last updated: July 2026 — FIB underscore smoke + dual-pipeline tests; idle blank inputs restored; Preview `fibPrompt` strips `_` runs; regression-prevention Cursor rule.*
+*Last updated: July 18, 2026 — Hold-list Batch 2: Design idle keeps `_` (boxes only Preview/Deploy); smoke + dual-pipeline tests; Preview `fibPrompt` strips `_` runs.*

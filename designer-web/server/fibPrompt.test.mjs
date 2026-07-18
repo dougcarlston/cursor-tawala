@@ -95,4 +95,11 @@ describe("FIB underscore → blanks (Preview / fibPrompt)", () => {
       "Tel",
     ]);
   });
+
+  it("keeps text segments in prompt order for multi-blank left-style rows", () => {
+    const rows = parseFibPrompt("Name ________ Email ________", blanks.slice(0, 2));
+    expect(rows[0].segments.map((s) => s.type)).toEqual(["text", "blank", "text", "blank"]);
+    expect(rows[0].segments[0].text).toMatch(/Name/);
+    expect(rows[0].segments[2].text).toMatch(/Email/);
+  });
 });

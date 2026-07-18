@@ -285,6 +285,52 @@ describe("signup clear + append", () => {
     expect(html).toContain('name="Q1:FirstName"');
     expect(html).not.toContain("readonly");
   });
+
+  it("leftAlign Preview keeps interstitial text between blanks (Batch 3)", () => {
+    const project = {
+      name: "Hold List",
+      themePath: "default",
+      forms: [
+        {
+          name: "Form 1",
+          themePath: "default",
+          items: [
+            {
+              type: "fib",
+              label: "FIB1",
+              style: "leftAlignLabels",
+              prompt: "Name ________ Email ________",
+              blanks: [
+                { name: "a", length: 8 },
+                { name: "b", length: 8 },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const html = renderFormPage(
+      project,
+      "Form 1",
+      "http://localhost:5173",
+      "uid-left",
+      createSession(project),
+    );
+    expect(html).toContain("fib-label");
+    expect(html).toContain("Name");
+    // Email must appear between the two inputs, not dumped after both.
+    const fieldsStart = html.indexOf('<span class="fib-fields">');
+    expect(fieldsStart).toBeGreaterThan(-1);
+    const after = html.slice(fieldsStart);
+    const emailAt = after.indexOf("Email");
+    const inputs = [...after.matchAll(/<input\b/g)].map((m) => m.index ?? -1);
+    expect(emailAt).toBeGreaterThan(-1);
+    expect(inputs.length).toBeGreaterThanOrEqual(2);
+    expect(emailAt).toBeGreaterThan(inputs[0]);
+    expect(emailAt).toBeLessThan(inputs[1]);
+    expect(html).not.toContain("&nbsp;");
+    expect(html).not.toMatch(/fib-inline-text[^>]*>[^<]*_/);
+  });
 });
 
 describe("form item spacing CSS in runtime page", () => {

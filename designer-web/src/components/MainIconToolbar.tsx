@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import {
   canDeleteSelection,
@@ -54,6 +54,10 @@ export function MainIconToolbar({
   const edit = (cmd: ShellEditCommand) => () => {
     runShellEditCommand(cmd);
   };
+  /** Keep caret in the canvas editor (Formatting Palette pattern). */
+  const keepEditorFocus = (e: ReactMouseEvent) => {
+    e.preventDefault();
+  };
 
   return (
     <div
@@ -83,23 +87,23 @@ export function MainIconToolbar({
         <DeployIcon />
       </ToolIcon>
       <span className="main-icon-toolbar-sep" aria-hidden />
-      <ToolIcon tip="Cut" onClick={edit("cut")} disabled={!editActive}>
+      <ToolIcon tip="Cut" onClick={edit("cut")} disabled={!editActive} onMouseDown={keepEditorFocus}>
         <CutIcon />
       </ToolIcon>
-      <ToolIcon tip="Copy" onClick={edit("copy")} disabled={!editActive}>
+      <ToolIcon tip="Copy" onClick={edit("copy")} disabled={!editActive} onMouseDown={keepEditorFocus}>
         <CopyIcon />
       </ToolIcon>
-      <ToolIcon tip="Paste" onClick={edit("paste")} disabled={!editActive}>
+      <ToolIcon tip="Paste" onClick={edit("paste")} disabled={!editActive} onMouseDown={keepEditorFocus}>
         <PasteIcon />
       </ToolIcon>
       <ToolIcon tip="Delete" onClick={onDelete} disabled={!canDelete}>
         <DeleteIcon />
       </ToolIcon>
       <span className="main-icon-toolbar-sep" aria-hidden />
-      <ToolIcon tip="Undo" onClick={edit("undo")} disabled={!editActive}>
+      <ToolIcon tip="Undo" onClick={edit("undo")} disabled={!editActive} onMouseDown={keepEditorFocus}>
         <UndoIcon />
       </ToolIcon>
-      <ToolIcon tip="Redo" onClick={edit("redo")} disabled={!editActive}>
+      <ToolIcon tip="Redo" onClick={edit("redo")} disabled={!editActive} onMouseDown={keepEditorFocus}>
         <RedoIcon />
       </ToolIcon>
       <span className="main-icon-toolbar-sep" aria-hidden />
@@ -115,6 +119,7 @@ function ToolIcon({
   disabled,
   emphasis,
   onClick,
+  onMouseDown,
   children,
 }: {
   tip: string;
@@ -122,6 +127,7 @@ function ToolIcon({
   /** Highlight when action is needed (e.g. unsaved changes) — never used to disable. */
   emphasis?: boolean;
   onClick: () => void;
+  onMouseDown?: (e: ReactMouseEvent) => void;
   children: ReactNode;
 }) {
   // Same pattern as Project Explorer: custom tip on a wrapper so greyed icons still show labels.
@@ -132,6 +138,7 @@ function ToolIcon({
         className={`main-icon-tool-btn${emphasis ? " main-icon-tool-btn-emphasis" : ""}`}
         aria-label={tip}
         disabled={disabled}
+        onMouseDown={onMouseDown}
         onClick={onClick}
       >
         {children}

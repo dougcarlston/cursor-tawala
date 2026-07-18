@@ -291,7 +291,7 @@ Screenshot: [`assets/Function_-_Display_Image.png`](assets/Function_-_Display_Im
 
 ### Browser gaps
 
-Configure fields match (Display height hidden — width-only so Deploy keeps aspect ratio). Document **and Form Text** HTML→XML: **emits** `<display-image>` (Jul 13). Empty Document canvas husks are omitted from Deploy XML (Jul 13) so they don’t stack as blank lines. Design mode is token-only. Form Preview: sized name-centered placeholder box (Jul 13; Design/Preview only — not Deploy). Deploy: live image.
+Configure fields match (Display height hidden — width-only so Deploy keeps aspect ratio). Document **and Form Text** HTML→XML: **emits** `<display-image>` (Jul 13). Empty Document canvas husks are omitted from Deploy XML (Jul 13) so they don’t stack as blank lines. Design mode is token-only. Form Preview: sized name-centered placeholder box (Jul 13; Design/Preview only — not Deploy). Deploy: live image. **Owner smoke Jul 18: Passed.**
 
 ---
 
@@ -311,6 +311,8 @@ Screenshot: [`assets/Function_-_Display_MCQ_Responses.png`](assets/Function_-_Di
 ### Browser gaps
 
 Catalog + Configure present. Document **and Form Text** HTML→XML: **emits** `<display-mcq-label>` (Jul 13). Runtime shows labels only after that MCQ has answers in the submission (typically a later page or Document after Submit — blank / all “Not selected” on the unanswered form).
+
+**Deploy spacing (Jul 18):** Design canvas gaps between placed DISPLAY MCQ chips are absolute `top` positions; Java lays Document paragraphs in flow and previously **collapsed** that whitespace (two chips stacked flush). Export now (a) keeps intentional Double-Return blanks (`data-doc-blank`) as spacer paragraphs and (b) injects blank paragraphs from large `top` gaps between consecutive placed content lines. **Restart the Designer API** (`npm run keep`) after pulling so Deploy uses the new exporter, then Redeploy.
 
 **`all_choices` Deploy:** Java emits `/images/checkbox_on.gif` and `/images/checkbox_off.gif`. Those assets were missing from local Tomcat (404 → broken-image icons + overlapping alt text). Patched into `docker/tomcat/images/` + Dockerfile (Jul 16); hot-copied into running `tawala-tomcat`. Rebuild image for permanence. **Smoke:** open `http://localhost:8080/images/checkbox_on.gif` — must be 200 before Redeploy.
 
@@ -659,7 +661,7 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 | # | Function | id | XML emit | Owner smoke / notes |
 |---|----------|-----|----------|---------------------|
 | 1 | CATEGORIZER | `categorizer` | **Deferred stub** | No sample need |
-| 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Code ready** — Preview placeholder + Deploy XML; owner Deploy smoke (URL image) |
+| 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Passed** — owner Jul 18 (Configure URL → Design token → Preview placeholder → Deploy live image) |
 | 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Deploy fix Jul 16** — `checkbox_on/off.gif` for `all_choices`; Preview stub; smoke after Redeploy / hard refresh |
 | 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
 | 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Preview wired Jul 16** (session record count); Deploy XML yes; owner smoke |

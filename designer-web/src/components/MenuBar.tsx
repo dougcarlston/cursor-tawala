@@ -121,6 +121,10 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const edit = (cmd: ShellEditCommand) => () => {
     runShellEditCommand(cmd);
   };
+  /** Keep caret in the canvas editor when opening Edit items (same as Formatting Palette). */
+  const keepEditorFocus = (e: ReactMouseEvent) => {
+    e.preventDefault();
+  };
 
   return (
     <nav className="menu-bar">
@@ -161,15 +165,15 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         </button>
       </MenuDrop>
       <MenuDrop label="Edit">
-        <button type="button" disabled={!editActive} onClick={edit("cut")}>
+        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("cut")}>
           Cut
           <span className="menu-accel">{cutAccel}</span>
         </button>
-        <button type="button" disabled={!editActive} onClick={edit("copy")}>
+        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("copy")}>
           Copy
           <span className="menu-accel">{copyAccel}</span>
         </button>
-        <button type="button" disabled={!editActive} onClick={edit("paste")}>
+        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("paste")}>
           Paste
           <span className="menu-accel">{pasteAccel}</span>
         </button>
@@ -178,11 +182,11 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           <span className="menu-accel">{deleteAccel}</span>
         </button>
         <div className="menu-separator" />
-        <button type="button" disabled={!editActive} onClick={edit("undo")}>
+        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("undo")}>
           Undo
           <span className="menu-accel">{undoAccel}</span>
         </button>
-        <button type="button" disabled={!editActive} onClick={edit("redo")}>
+        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("redo")}>
           Redo
           <span className="menu-accel">{redoAccel}</span>
         </button>

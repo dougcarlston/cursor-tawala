@@ -290,3 +290,52 @@ describe("documentHtmlToXml embedded local image", () => {
     expect(xml).not.toContain("<image ");
   });
 });
+
+describe("documentHtmlToXml placed vertical gaps (DISPLAY MCQ spacing)", () => {
+  const mcqCfg = (field, display) =>
+    JSON.stringify({ "field-name": field, display })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+  function placedMcq(topPt, field, display) {
+    return (
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: ${topPt}pt">` +
+      `<span class="function-token" data-function-id="display-mcq-label" ` +
+      `data-function-config="${mcqCfg(field, display)}">fx</span></p>`
+    );
+  }
+
+  it("injects blank paragraph(s) when two placed MCQ chips have a large top gap", () => {
+    const html = placedMcq(40, "Form 1:MCQ1", "label_only") + placedMcq(200, "Form 1:MCQ2", "all_choices");
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain("<display-mcq-label");
+    expect(xml).toMatch(/MCQ1[\s\S]*MCQ2/);
+    // At least one blank spacer between the two content paragraphs.
+    expect(xml).toMatch(
+      /<\/display-mcq-label>[\s\S]*?<\/paragraph>\s*<paragraph indent="0" align="left"><tabPositions>/,
+    );
+  });
+
+  it("keeps data-doc-blank placed lines as Deploy spacer paragraphs", () => {
+    const html =
+      placedMcq(40, "Form 1:MCQ1", "label_only") +
+      `<p class="doc-placed-text" data-doc-blank="1" style="position: absolute; left: 36pt; top: 70pt"><br></p>` +
+      placedMcq(100, "Form 1:MCQ2", "all_choices");
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<paragraph indent="0" align="left"><tabPositions>');
+    expect(xml).toContain("MCQ1");
+    expect(xml).toContain("MCQ2");
+  });
+
+  it("still drops unmarked empty husks (no content above+below blank mark)", () => {
+    const html =
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 0pt"><br></p>` +
+      placedMcq(40, "Form 1:MCQ1", "label_only");
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    // Leading unmarked husk omitted; only the MCQ paragraph remains as content.
+    expect(xml.match(/<paragraph\b/g)?.length).toBe(1);
+    expect(xml).toContain("display-mcq-label");
+  });
+});
