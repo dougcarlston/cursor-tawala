@@ -202,6 +202,10 @@ export function SendStatementBuilder({
             {submitLabel}
           </button>
         </div>
+        <p className="send-delivery-note hint">
+          On Deploy (:8080), the server&apos;s verified From is used for SMTP; this From address
+          becomes Reply-To. Configure via Project → Email Delivery…
+        </p>
       </div>
     </div>
   );

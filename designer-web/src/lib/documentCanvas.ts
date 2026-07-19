@@ -165,20 +165,7 @@ export function rangeIntersectsExistingDocumentText(
 
 /** True when the editor has loose text/nodes outside `.doc-placed-text`. */
 export function hasOrphanDocumentContent(editor: HTMLElement): boolean {
-  for (const child of Array.from(editor.childNodes)) {
-    if (child instanceof HTMLElement) {
-      if (child.classList.contains(PLACED_TEXT_CLASS)) continue;
-      if (child.matches("table.user") || child.closest("table.user")) continue;
-      if (child.classList.contains("table-handles-overlay")) continue;
-      return true;
-    }
-    if (child.nodeType === Node.TEXT_NODE) {
-      if (meaningfulText(child.textContent) || (child.textContent ?? "").includes("\u200b")) {
-        return true;
-      }
-    }
-  }
-  return false;
+  return listOrphanDocumentNodes(editor).length > 0;
 }
 
 /** True when the click should create a new free-positioned text block. */
@@ -1471,28 +1458,94 @@ export function focusDocumentDropTarget(
   return focusPlacedBlock(target);
 }
 
-/**
- * Re-home loose document content (text / inline nodes outside `.doc-placed-text`)
- * into placed paragraphs so mid-text clicks do not invent a second anchor on top.
- * Returns true when the DOM changed.
- */
-export function adoptOrphanDocumentContent(editor: HTMLElement): boolean {
-  const toWrap: Node[] = [];
+/** Loose editor children that are not placed prose / user tables / overlays. */
+function listOrphanDocumentNodes(editor: HTMLElement): Node[] {
+  const orphans: Node[] = [];
   for (const child of Array.from(editor.childNodes)) {
     if (child instanceof HTMLElement) {
       if (child.classList.contains(PLACED_TEXT_CLASS)) continue;
       if (child.closest("table.user") || child.matches("table.user")) continue;
       if (child.classList.contains("table-handles-overlay")) continue;
-      toWrap.push(child);
+      orphans.push(child);
       continue;
     }
     if (child.nodeType === Node.TEXT_NODE) {
       if (!meaningfulText(child.textContent) && !(child.textContent ?? "").includes("\u200b")) {
         continue;
       }
-      toWrap.push(child);
+      orphans.push(child);
     }
   }
+  return orphans;
+}
+
+/**
+ * Drop loose editor-root glyphs left by contenteditable delete/cut.
+ * Prefer this after delete — `adoptOrphanDocumentContent` would re-wrap them into
+ * new `.doc-placed-text` lines and resurrect text the designer just removed.
+ * Returns true when the DOM changed.
+ */
+export function discardOrphanDocumentContent(editor: HTMLElement): boolean {
+  const orphans = listOrphanDocumentNodes(editor);
+  if (!orphans.length) return false;
+  for (const node of orphans) {
+    node.parentNode?.removeChild(node);
+  }
+  return true;
+}
+
+/**
+ * Remove stacked duplicate placed lines (same glyphs, nearly same top, same column).
+ * Classic ghost: invent/adopt leaves a second "Form Count" under the visible label.
+ * Returns true when any block was removed.
+ */
+export function pruneDuplicateOverlappingPlacedBlocks(editor: HTMLElement): boolean {
+  const blocks = listPlacedBlocksSorted(editor);
+  if (blocks.length < 2) return false;
+
+  const sel = window.getSelection();
+  const caretBlock =
+    sel?.rangeCount && sel.anchorNode && editor.contains(sel.anchorNode)
+      ? findPlacedTextBlock(sel.anchorNode, editor)
+      : null;
+
+  const remove = new Set<HTMLElement>();
+  for (let i = 0; i < blocks.length; i++) {
+    const a = blocks[i];
+    if (remove.has(a)) continue;
+    const textA = (a.textContent ?? "").replace(/\u00a0|\u200b/g, "").trim();
+    if (!textA) continue;
+    const boxA = layoutItemBoxPt(a);
+    for (let j = i + 1; j < blocks.length; j++) {
+      const b = blocks[j];
+      if (remove.has(b)) continue;
+      const textB = (b.textContent ?? "").replace(/\u00a0|\u200b/g, "").trim();
+      if (textA !== textB) continue;
+      const boxB = layoutItemBoxPt(b);
+      if (Math.abs(boxA.top - boxB.top) > LINE_TOLERANCE_PT * 2) continue;
+      if (!layoutBoxesHorizontallyOverlap(boxA, boxB)) continue;
+      // Keep the caret’s line when it is one of the duplicates; else keep the earlier.
+      if (caretBlock === b) remove.add(a);
+      else remove.add(b);
+    }
+  }
+  if (!remove.size) return false;
+  for (const block of remove) {
+    block.remove();
+  }
+  if (listPlacedBlocksSorted(editor).length) {
+    reflowAllPlacedLines(editor);
+  }
+  return true;
+}
+
+/**
+ * Re-home loose document content (text / inline nodes outside `.doc-placed-text`)
+ * into placed paragraphs so mid-text clicks do not invent a second anchor on top.
+ * Returns true when the DOM changed.
+ */
+export function adoptOrphanDocumentContent(editor: HTMLElement): boolean {
+  const toWrap = listOrphanDocumentNodes(editor);
   if (!toWrap.length) return false;
 
   // Group contiguous orphans into one placed line each run.

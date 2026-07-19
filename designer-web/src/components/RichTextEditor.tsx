@@ -44,14 +44,17 @@ import {
   handleDocumentDeleteBoundary,
   clampDocumentSelectionToLayoutIsland,
   adoptOrphanDocumentContent,
+  discardOrphanDocumentContent,
   placeDocumentTextAtPoint,
   PLACED_TEXT_CLASS,
   reflowAllPlacedLines,
+  reflowPlacedLinesBelow,
   reflowDocumentLayout,
   ensureDocumentTableLayout,
   syncTypingFormatFromCaret,
   resolveDocumentFieldDropTarget,
   pruneEmptyPlacedTextBlocks,
+  pruneDuplicateOverlappingPlacedBlocks,
   preserveBlankPlacedLines,
   clearBlankPlacedBlockIfContent,
   selectParagraphAtPoint,
@@ -600,11 +603,15 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               const deleted = typeof ie.inputType === "string" && ie.inputType.startsWith("delete");
               if (deleted) {
                 pruneEmptyPlacedTextBlocks(target);
+                // Delete often ejects glyphs to the editor root. Re-wrapping those
+                // orphans resurrects the deleted line (ghost "Form Count", etc.).
+                discardOrphanDocumentContent(target);
+              } else {
+                // Chromium can escape absolute `.doc-placed-text` while typing —
+                // re-home orphans so the next click does not invent a second anchor.
+                adoptOrphanDocumentContent(target);
               }
-              // Chromium can escape absolute `.doc-placed-text` and leave orphan glyphs
-              // as direct children — re-home them before wrap/reflow so the next click
-              // does not invent a second paragraph anchor mid-text.
-              adoptOrphanDocumentContent(target);
+              pruneDuplicateOverlappingPlacedBlocks(target);
               // Keep Double-Return blank lines from collapsing when editing the next para.
               preserveBlankPlacedLines(target);
               const placed = findPlacedTextBlockAtCaret(target);
@@ -636,8 +643,12 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
             const el = surfaceRef.current;
             if (el && formattingKind === "document") {
-              // Unused invent anchors (click blank, type nothing) go away when focus leaves.
-              if (pruneEmptyPlacedTextBlocks(el)) {
+              // Unused invent anchors / delete ghosts go away when focus leaves.
+              const pruned =
+                pruneEmptyPlacedTextBlocks(el) ||
+                discardOrphanDocumentContent(el) ||
+                pruneDuplicateOverlappingPlacedBlocks(el);
+              if (pruned) {
                 commitFromSurface(el);
               }
             }

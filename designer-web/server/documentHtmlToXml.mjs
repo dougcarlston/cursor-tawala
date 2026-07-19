@@ -565,9 +565,9 @@ function functionTokenToXml(attrs, escAttr, escText) {
     case "question-correlation-table": {
       return (
         `<question-correlation-table version="1">` +
-        `<question-field-name>${escText(bareField(config["question-field-name"]))}</question-field-name>` +
-        `<display-field-name>${escText(bareField(config["display-field-name"]))}</display-field-name>` +
-        `<preferred-choice-field-name>${escText(bareField(config["preferred-choice-field-name"]))}</preferred-choice-field-name>` +
+        `<question-field-name>${escText(itemizationContentsField(config["question-field-name"]))}</question-field-name>` +
+        `<display-field-name>${escText(itemizationContentsField(config["display-field-name"]))}</display-field-name>` +
+        `<preferred-choice-field-name>${escText(itemizationContentsField(config["preferred-choice-field-name"]))}</preferred-choice-field-name>` +
         conditionsXml(config, escAttr) +
         `</question-correlation-table>`
       );
@@ -576,7 +576,7 @@ function functionTokenToXml(attrs, escAttr, escText) {
       return (
         `<popular-choice-display version="1">` +
         `<rank>${escText(config.rank ?? "1")}</rank>` +
-        `<popular-choice-field-name>${escText(bareField(config["popular-choice-field-name"]))}</popular-choice-field-name>` +
+        `<popular-choice-field-name>${escText(itemizationContentsField(config["popular-choice-field-name"]))}</popular-choice-field-name>` +
         conditionsXml(config, escAttr) +
         `</popular-choice-display>`
       );
@@ -585,26 +585,28 @@ function functionTokenToXml(attrs, escAttr, escText) {
       return (
         `<popular-choice-count version="1">` +
         `<rank>${escText(config.rank ?? "1")}</rank>` +
-        `<popular-choice-field-name>${escText(bareField(config["popular-choice-field-name"]))}</popular-choice-field-name>` +
+        `<popular-choice-field-name>${escText(itemizationContentsField(config["popular-choice-field-name"]))}</popular-choice-field-name>` +
         conditionsXml(config, escAttr) +
         `</popular-choice-count>`
       );
     }
     case "popular-choice-correlation-table": {
+      // Legacy Designer emits Record:Form:Field (see FunctionInTextItemTest2163).
       return (
         `<popular-choice-correlation-table version="1">` +
         `<rank>${escText(config.rank ?? "1")}</rank>` +
-        `<choice-available-field-name>${escText(bareField(config["choice-available-field-name"]))}</choice-available-field-name>` +
-        `<choice-preferred-field-name>${escText(bareField(config["choice-preferred-field-name"]))}</choice-preferred-field-name>` +
-        `<popular-choice-display-field-name>${escText(bareField(config["popular-choice-display-field-name"]))}</popular-choice-display-field-name>` +
+        `<choice-available-field-name>${escText(itemizationContentsField(config["choice-available-field-name"]))}</choice-available-field-name>` +
+        `<choice-preferred-field-name>${escText(itemizationContentsField(config["choice-preferred-field-name"]))}</choice-preferred-field-name>` +
+        `<popular-choice-display-field-name>${escText(itemizationContentsField(config["popular-choice-display-field-name"]))}</popular-choice-display-field-name>` +
         conditionsXml(config, escAttr) +
         `</popular-choice-correlation-table>`
       );
     }
     case "simple-list": {
+      // Java SimpleList.RuntimeProcessor requires version == 2 (not "earlier than 2").
       return (
-        `<simple-list version="1">` +
-        `<simple-list-field>${escText(bareField(config["simple-list-field"]))}</simple-list-field>` +
+        `<simple-list version="2">` +
+        `<simple-list-field>${escText(itemizationContentsField(config["simple-list-field"]))}</simple-list-field>` +
         conditionsXml(config, escAttr) +
         `</simple-list>`
       );

@@ -11,6 +11,11 @@ import {
   uniqueIdFromStartpoints,
 } from "./deployParse.mjs";
 import { clearFormAnswers, getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
+import {
+  buildQueryEmailStatusXml,
+  buildSendTestEmailXml,
+  parseEmailStatusXml,
+} from "./emailStatus.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
 let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
@@ -329,6 +334,119 @@ app.get("/api/health", (_req, res) => {
     host: HOST,
     runtime: JAVA_URL ? "java" : "dev",
   });
+});
+
+/** Server-owned outbound email status (no secrets returned). */
+app.post("/api/email/status", async (req, res) => {
+  const { credentials } = req.body ?? {};
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required", mode: "offline" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed", mode: "offline" });
+    return;
+  }
+  if (!JAVA_URL) {
+    res.json({
+      available: false,
+      mode: "dev",
+      enabled: false,
+      configured: false,
+      host: "",
+      port: 0,
+      auth: false,
+      starttls: false,
+      fromAddress: "",
+      fromName: "",
+      workerEnabled: false,
+      readyCount: 0,
+      sendingCount: 0,
+      sentCount: 0,
+      errorCount: 0,
+      lastError: "",
+      lastErrorAt: 0,
+      lastSuccessAt: 0,
+      lastWorkerRunAt: 0,
+      error: "Java/Tomcat is not connected — email delivery only runs on :8080",
+    });
+    return;
+  }
+  try {
+    const javaResponse = await forwardToJava(buildQueryEmailStatusXml(credentials));
+    const parsed = parseEmailStatusXml(javaResponse, "java");
+    if (parsed.error && !parsed.available) {
+      res.status(502).json(parsed);
+      return;
+    }
+    res.json(parsed);
+  } catch (e) {
+    res.status(502).json({
+      available: false,
+      mode: "offline",
+      enabled: false,
+      configured: false,
+      host: "",
+      port: 0,
+      auth: false,
+      starttls: false,
+      fromAddress: "",
+      fromName: "",
+      workerEnabled: false,
+      readyCount: 0,
+      sendingCount: 0,
+      sentCount: 0,
+      errorCount: 0,
+      lastError: "",
+      lastErrorAt: 0,
+      lastSuccessAt: 0,
+      lastWorkerRunAt: 0,
+      error: String(e.message ?? e),
+    });
+  }
+});
+
+/** Rate-limited test send via Java Client API. */
+app.post("/api/email/test", async (req, res) => {
+  const { credentials, to } = req.body ?? {};
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required", mode: "offline" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed", mode: "offline" });
+    return;
+  }
+  if (!to || typeof to !== "string" || !to.includes("@")) {
+    res.status(400).json({ status: "failure", error: "valid to address required", mode: JAVA_URL ? "java" : "dev" });
+    return;
+  }
+  if (!JAVA_URL) {
+    res.status(503).json({
+      status: "failure",
+      mode: "dev",
+      error: "Java/Tomcat is not connected — cannot send test email",
+    });
+    return;
+  }
+  try {
+    const javaResponse = await forwardToJava(buildSendTestEmailXml(credentials, to.trim()));
+    const parsed = parseEmailStatusXml(javaResponse, "java");
+    if (javaResponse.includes('status="failure"') || parsed.error) {
+      res.status(502).json({
+        ...parsed,
+        error: parsed.error ?? "Test email failed",
+      });
+      return;
+    }
+    res.json(parsed);
+  } catch (e) {
+    res.status(502).json({
+      status: "failure",
+      mode: "offline",
+      error: String(e.message ?? e),
+    });
+  }
 });
 
 /**

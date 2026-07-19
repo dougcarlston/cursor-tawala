@@ -9,6 +9,8 @@
 		<property name="locations">
 			<list>
 				<value>WEB-INF/mail.properties</value>
+				<!-- Docker/entrypoint override (later wins). Never commit real secrets here. -->
+				<value>classpath:mail.properties</value>
 				<value>WEB-INF/emailmessage.properties</value>
 				<value>classpath:emailmessage.properties</value>
 				<value>classpath:userproject.properties</value>

@@ -189,11 +189,19 @@ abstract public class Email {
 					"Both to and cc addresses are empty.");
 		}
 
-        InternetAddress tawalaSender = new InternetAddress("sportsdashboards@tawala.com", from);
-		InternetAddress fromAddress = new InternetAddress(from);
-        //mimeMessage.setSender(tawalaSender);
-		mimeMessage.setFrom(tawalaSender);
-        mimeMessage.setReplyTo(new Address[] {fromAddress});
+		// Server-owned verified From (SMTP / visible sender). Process "From" is Reply-To.
+		EmailRuntimeConfig mailConfig = EmailRuntimeConfig.get();
+		InternetAddress replyTo = new InternetAddress(from);
+		String personal = replyTo.getPersonal();
+		if (personal == null || personal.trim().length() == 0) {
+			personal = mailConfig.getFromName();
+			if (from != null && from.indexOf('@') < 0 && from.trim().length() > 0) {
+				personal = from.trim();
+			}
+		}
+		InternetAddress smtpFrom = new InternetAddress(mailConfig.getFromAddress(), personal);
+		mimeMessage.setFrom(smtpFrom);
+		mimeMessage.setReplyTo(new Address[] { replyTo });
 
 		if (to != null) {
 			mimeMessage.setRecipients(MimeMessage.RecipientType.TO, to);

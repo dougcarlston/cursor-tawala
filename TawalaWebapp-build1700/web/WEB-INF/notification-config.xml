@@ -3,13 +3,20 @@
 
 <beans>
 	<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-		<property name="host">
-			<value>${mail.host}</value>
-		</property>
+		<property name="host" value="${mail.host}" />
+		<property name="port" value="${mail.port}" />
+		<property name="username" value="${mail.username}" />
+		<property name="password" value="${mail.password}" />
 		<property name="javaMailProperties">
 			<props>
-				<prop key="mail.smtp.timeout">5000</prop>
-				<prop key="mail.smtp.connectiontimeout">5000</prop>
+				<prop key="mail.smtp.auth">${mail.smtp.auth}</prop>
+				<prop key="mail.smtp.starttls.enable">${mail.smtp.starttls}</prop>
+				<!-- JDK8 + modern relays (Resend): without this, STARTTLS fails with
+				     SSLHandshakeException: No appropriate protocol -->
+				<prop key="mail.smtp.ssl.protocols">${mail.smtp.ssl.protocols}</prop>
+				<prop key="mail.smtp.starttls.required">${mail.smtp.starttls.required}</prop>
+				<prop key="mail.smtp.timeout">${mail.smtp.timeout}</prop>
+				<prop key="mail.smtp.connectiontimeout">${mail.smtp.connectiontimeout}</prop>
 			</props>
 		</property>
 	</bean>
@@ -17,7 +24,25 @@
 	<bean id="emailer" class="com.tawala.email.Emailer" lazy-init="false">
 		<property name="sender" ref="mailSender" />
 	</bean>
-	
+
+	<bean id="emailRuntimeConfig" class="com.tawala.email.EmailRuntimeConfig" init-method="setAsActive" lazy-init="false">
+		<property name="enabled" value="${mail.enabled}" />
+		<property name="host" value="${mail.host}" />
+		<property name="port" value="${mail.port}" />
+		<property name="username" value="${mail.username}" />
+		<property name="smtpAuth" value="${mail.smtp.auth}" />
+		<property name="startTls" value="${mail.smtp.starttls}" />
+		<property name="fromAddress" value="${mail.from.address}" />
+		<property name="fromName" value="${mail.from.name}" />
+		<property name="workerEnabled" value="${mail.worker.enabled}" />
+		<property name="workerIntervalSeconds" value="${mail.worker.intervalSeconds}" />
+		<property name="workerBatchSize" value="${mail.worker.batchSize}" />
+		<property name="workerMaxSecondsPerRun" value="${mail.worker.maxSecondsPerRun}" />
+		<property name="staleSendingMinutes" value="${mail.worker.staleSendingMinutes}" />
+	</bean>
+
+	<bean id="emailQueueWorker" class="com.tawala.batch.email.EmailQueueWorker" lazy-init="false" />
+
 	<bean id="emailVerificationMessage" class="com.tawala.domain.notification.EmailVerificationMessage$StaticParameters" lazy-init="false">
 		<property name="messageTemplate" value="/WEB-INF/emailtemplates/emailVerificationMessageBody.txt" />
 		<property name="logoImage" value="/images/template/tawala-logo.gif" />

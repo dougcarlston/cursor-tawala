@@ -116,6 +116,39 @@ describe("documentHtmlToXml function emit matrix", () => {
     });
   }
 
+  it("emits simple-list version 2 (Java rejects version 1)", () => {
+    const xml = documentHtmlToXml(
+      tokenHtml("simple-list", { "simple-list-field": "<<Form 1:Name>>" }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('<simple-list version="2">');
+    expect(xml).not.toContain('<simple-list version="1">');
+  });
+
+  it("emits Record:Form:Field for popular-choice-correlation-table", () => {
+    const xml = documentHtmlToXml(
+      tokenHtml("popular-choice-correlation-table", {
+        rank: "1",
+        "choice-available-field-name": "Form 1:MCQ1",
+        "choice-preferred-field-name": "Form 1:MCQ2",
+        "popular-choice-display-field-name": "Form 1:FIB1:a",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<popular-choice-correlation-table");
+    expect(xml).toContain(
+      "<choice-available-field-name>Record:Form 1:MCQ1</choice-available-field-name>",
+    );
+    expect(xml).toContain(
+      "<choice-preferred-field-name>Record:Form 1:MCQ2</choice-preferred-field-name>",
+    );
+    expect(xml).toContain(
+      "<popular-choice-display-field-name>Record:Form 1:FIB1:a</popular-choice-display-field-name>",
+    );
+  });
+
   for (const id of [
     "categorizer",
     "export-team-roster",

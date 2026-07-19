@@ -683,6 +683,11 @@ textarea {
   bottom: -2px;
 }
 
+.tree-icon-gear-overlay-top {
+  top: -2px;
+  bottom: auto;
+}
+
 .tree-label {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -4302,6 +4307,60 @@ button.font-color-picker-recent-slot:hover {
   margin-top: 8px;
 }
 
+.send-delivery-note {
+  margin: 8px 0 0;
+  font-size: 11px;
+}
+
+.email-delivery-dialog .email-delivery-dl {
+  display: grid;
+  gap: 6px 12px;
+  margin: 12px 0;
+  font-size: 12px;
+}
+
+.email-delivery-dialog .email-delivery-dl > div {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 8px;
+}
+
+.email-delivery-dialog .email-delivery-dl dt {
+  margin: 0;
+  color: var(--muted);
+  font-weight: 600;
+}
+
+.email-delivery-dialog .email-delivery-dl dd {
+  margin: 0;
+}
+
+.email-delivery-dialog .email-delivery-error {
+  color: #a40000;
+  word-break: break-word;
+}
+
+.email-delivery-test {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.email-delivery-test label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  flex: 1 1 220px;
+}
+
+.email-delivery-test input {
+  font-size: 12px;
+  padding: 4px 6px;
+}
+
 .append-statement-panel-body {
   padding-top: 8px;
 }
@@ -5233,16 +5292,22 @@ button.font-color-picker-recent-slot:hover {
   margin-top: 18px;
 }
 
-/* Insert Function dialog — legacy `InsertFunctionDialog` */
+/* Insert Function dialog — legacy `InsertFunctionDialog` FixedDialog 366×336 */
 .insert-function-backdrop {
   pointer-events: auto;
   /* Above menu bar (400) and palette menus (200); match color-picker stacking. */
   z-index: 1100;
 }
 
-.insert-function-dialog {
-  min-width: 520px;
-  max-width: min(640px, 92vw);
+.insert-function-dialog,
+.modal.insert-function-dialog {
+  /* Fixed size so changing the selected function (description pane) does not
+     resize the window — that looked like a second “Configure” dialog.
+     Beat `.modal { max-width: 90vw }` which appears later in this file. */
+  width: 380px;
+  min-width: 380px;
+  max-width: min(380px, 92vw);
+  box-sizing: border-box;
   padding: 14px 18px 12px;
   background: var(--panel);
   border: 1px solid var(--border-dark);
@@ -5270,6 +5335,7 @@ button.font-color-picker-recent-slot:hover {
 
 .insert-function-category select {
   min-width: 180px;
+  max-width: 100%;
   font-size: 12px;
 }
 
@@ -5309,21 +5375,28 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .insert-function-description {
-  min-height: 72px;
+  /* Legacy description label is fixed 333×83 — keep height stable across selections. */
+  height: 88px;
+  min-height: 88px;
+  max-height: 88px;
+  overflow: auto;
   padding: 8px;
   border: 1px solid var(--border);
   background: #fafafa;
   font-size: 12px;
+  box-sizing: border-box;
 }
 
 .insert-function-description strong {
   display: block;
   margin-bottom: 4px;
+  overflow-wrap: anywhere;
 }
 
 .insert-function-description p {
   margin: 0;
   color: var(--muted);
+  overflow-wrap: anywhere;
 }
 
 .insert-function-dialog .modal-actions {
@@ -5838,6 +5911,20 @@ button.font-color-picker-recent-slot:hover {
 
 .configure-function-overlay .configure-function-dialog {
   pointer-events: auto;
+}
+
+/*
+ * Block click-through onto **fx** / menus when Insert unmounts under the cursor.
+ * Fields column is raised above the overlay via body.configure-function-open.
+ */
+.configure-function-overlay.configure-function-blocks-chrome {
+  pointer-events: auto;
+}
+
+body.configure-function-open .designer-right,
+body.configure-function-open .designer-right-splitter {
+  position: relative;
+  z-index: 1200;
 }
 
 /* Skip dialog: portaled to body; dimmed overlay but Fields column stays interactive. */

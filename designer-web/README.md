@@ -75,6 +75,10 @@ cd designer-web && bash scripts/ensure-dev-api.sh
 
 Until Tomcat is up, Deploy stays on the Node runtime (`:5173`/`:3001`).
 
+### Outbound email (Send / PROJECT EMAIL COUNT)
+
+Compose includes **Mailpit** (SMTP `:1025`, UI http://localhost:8025). Tomcat uses server-owned SMTP — see [`docs/EMAIL_DELIVERY_OPS.md`](../docs/EMAIL_DELIVERY_OPS.md). In Designer: **Project → Email Delivery…** for status and test send. Preview never sends mail.
+
 ## Load DirtBowl (advanced)
 
 DirtBowl is no longer on **File** menu — use **Open Project…** with `public/samples/dirtbowl_definition_v3.json`, or deploy via `node scripts/deploy-dirtbowl-java.mjs` from the repo root. It will move to the website **Library** as an advanced sample.

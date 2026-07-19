@@ -10,6 +10,7 @@ import {
   saveAsAcceleratorLabel,
   saveProjectAs,
   suggestedProjectFileName,
+  projectDisplayNameFromFileName,
 } from "@/lib/shellCommands";
 
 describe("Save chord helpers", () => {
@@ -102,6 +103,14 @@ describe("suggestedProjectFileName", () => {
 
   it("strips reserved filename characters", () => {
     expect(suggestedProjectFileName('a/b:c*"')).toBe("a_b_c_.json");
+  });
+});
+
+describe("projectDisplayNameFromFileName / syncProjectNameFromFileName", () => {
+  it("strips .json and path for the Explorer display name", () => {
+    expect(projectDisplayNameFromFileName("Demo.json")).toBe("Demo");
+    expect(projectDisplayNameFromFileName("/tmp/Foo Bar.json")).toBe("Foo Bar");
+    expect(projectDisplayNameFromFileName("Untitled.json")).toBe("Untitled");
   });
 });
 

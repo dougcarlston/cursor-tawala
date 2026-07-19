@@ -14,6 +14,7 @@ COPY docker/tomcat/jbpm.hibernate.properties /tmp/patch/jbpm.hibernate.propertie
 COPY docker/tomcat/lucene-local-setup.properties /tmp/patch/lucene-local-setup.properties
 COPY docker/tomcat/userproject.properties /tmp/patch/userproject.properties
 COPY docker/tomcat/sports-dashboard.properties /tmp/patch/sports-dashboard.properties
+COPY docker/tomcat/mail.properties /tmp/patch/mail.properties
 COPY docker/tomcat/css /tmp/patch/css
 COPY docker/tomcat/images /tmp/patch/images
 

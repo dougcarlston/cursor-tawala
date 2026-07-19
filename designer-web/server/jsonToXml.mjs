@@ -385,15 +385,43 @@ function addressToXml(tag, addr) {
   if (Array.isArray(addr)) {
     return addr.map((a) => addressToXml(tag, a)).join("");
   }
+  if (typeof addr === "string") {
+    const trimmed = addr.trim();
+    if (!trimmed) return "";
+    if (trimmed.includes(":")) {
+      return `<${tag} addressField="${escAttr(trimmed)}"/>`;
+    }
+    return `<${tag} addressLiteral="${escAttr(trimmed)}"/>`;
+  }
   if (addr.fieldRef) {
     const aliasField = addr.aliasField ? ` aliasField="${escAttr(addr.aliasField)}"` : "";
     const aliasLiteral = addr.aliasLiteral ? ` aliasLiteral="${escAttr(addr.aliasLiteral)}"` : "";
     return `<${tag} addressField="${escAttr(addr.fieldRef)}"${aliasField}${aliasLiteral}/>`;
   }
-  if (addr.literal != null) {
-    return `<${tag} address="${escAttr(addr.literal)}"/>`;
+  if (addr.literal != null && String(addr.literal).length > 0) {
+    const aliasField = addr.aliasField ? ` aliasField="${escAttr(addr.aliasField)}"` : "";
+    const aliasLiteral = addr.aliasLiteral ? ` aliasLiteral="${escAttr(addr.aliasLiteral)}"` : "";
+    return `<${tag} addressLiteral="${escAttr(addr.literal)}"${aliasField}${aliasLiteral}/>`;
   }
   return "";
+}
+
+/** Subject may mix literals and <<Field>> tokens (legacy subject chunks). */
+function subjectToXml(subject) {
+  if (subject == null || subject === "") return "";
+  const raw = String(subject);
+  const parts = raw.split(/(<<[^<>]+>>)/).filter((p) => p.length > 0);
+  if (parts.length === 1 && !parts[0].startsWith("<<")) {
+    return `<subject>${escText(parts[0])}</subject>`;
+  }
+  const chunks = parts
+    .map((part) => {
+      const m = part.match(/^<<([^<>]+)>>$/);
+      if (m) return `<field name="${escAttr(m[1].trim())}"/>`;
+      return escText(part);
+    })
+    .join("");
+  return `<subject>${chunks}</subject>`;
 }
 
 const SEND_DOC_DEFAULTS = {
@@ -431,15 +459,15 @@ function sendToXml(cmd, ctx = {}) {
   const to = addressToXml("to", toAddr);
   const from = addressToXml("from", fromAddr);
   const cc = addressToXml("cc", cmd.cc);
-  const bcc = addressToXml("bcc", cmd.bcc);
-  const subject = cmd.subject != null ? `<subject>${escText(cmd.subject)}</subject>` : "";
+  // Java Send only registers to/cc — do not emit unsupported <bcc>.
+  const subject = subjectToXml(cmd.subject);
   const body = cmd.body?.document
     ? `<body document="${escAttr(cmd.body.document)}" reset="${cmd.body.reset === true ? "true" : "false"}" showHeader="${cmd.body.showHeader === false ? "false" : "true"}"/>`
     : "";
   if (!to && !from && !subject && !body) {
     return `<!-- incomplete send command -->`;
   }
-  return `<send>${to}${from}${cc}${bcc}${subject}${body}</send>`;
+  return `<send>${to}${from}${cc}${subject}${body}</send>`;
 }
 
 function showToXml(cmd) {

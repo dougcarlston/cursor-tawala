@@ -52,7 +52,7 @@ node scripts/deploy-tawala-template.mjs "Simple Survey Template"
 | Signup Sheet Template w Email | OK | See matrix | FIB + table OK; **Send** needs SMTP | **Blocked** — outbound mail deferred (see Backlog) |
 | Get Together Template | OK | See matrix | Survey → Report correlation table | **Passed** (owner, July 2026) — Preview + Deploy both passed; no template-specific errors found |
 | Multiple Question Survey Template | OK | See matrix | Multi MCQ → Report tallies + table | **Passed** (owner, July 2026) |
-| Potluck Template | OK | See matrix | Organizer → Details + thank-you doc | **Passed w/ caveats** (owner, July 2026) |
+| Potluck Template | Starter stub only | See matrix | Legacy Organizer → Details + thank-you doc | **Legacy `.tawala` direct deploy passed w/ caveats**; separate Browser Designer SUM smoke **passed Jul 19** (Potluck remains a starter stub) |
 | Empty Project | — | — | N/A | — |
 
 Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
@@ -146,7 +146,7 @@ See `designer-web/README.md` for MVP scope and runtime gaps.
 | Item | Context | Notes |
 |------|---------|--------|
 | **Designer architecture (browser vs legacy)** | DirtBowl stress test (July 2026) | Five structural gaps: MDI multi-window, Forms↔Processes transparency, collapsible Explorer, properties popups, multiple menu bars. Full detail: [`docs/DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md). Cross-refs: `Tawala_Key_Documents/DESIGNER_MENU_SPEC.md`, `DESIGNER_STARTUP_AND_FORM_CANVAS.md`, `DESIGNER_UI_REFERENCE.md`, `DESIGNER_DOCUMENT_EDITOR.md`. |
-| **Outbound email (8080)** | Sign-up Sheet w Email template; any `Send` process | Legacy stack already uses Spring **`JavaMailSender`** (`WEB-INF/notification-config.xml`, `mail.properties` → `mail.host`). Docker has no SMTP today. **Owner (July 2026):** prefer extending **JavaMailSender** (real SMTP host / relay) over a Resend-specific adapter — but **decision deferred**; revisit in a dedicated session. Owner also has a Resend account if we compare options later. Unblocks: Sign-up Sheet w Email end-to-end smoke test. |
+| Outbound email (8080) | Sign-up Sheet w Email template; any `Send` process | **In progress / local ready (Jul 19):** server-owned provider-neutral SMTP via Spring `JavaMailSender` + in-process queue worker; Compose **Mailpit**; Designer **Project → Email Delivery…**. Secrets stay in Tomcat env/secret files — never project JSON. Ops: [`EMAIL_DELIVERY_OPS.md`](EMAIL_DELIVERY_OPS.md). Production Brevo/Postmark cutover still needs owner DNS + credentials. |
 
 ---
 

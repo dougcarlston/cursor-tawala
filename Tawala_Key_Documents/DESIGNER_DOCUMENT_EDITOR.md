@@ -257,6 +257,8 @@ Same structure as global Tables menu — **Insert** (Table, Column Before/After,
 
 Field tokens update when form items are renamed or processes change **Set** / arithmetic statements (`DocumentEditor.updateFieldsAndFunctions`).
 
+**Browser (Jul 19):** `updateFormItem` → `cascadeFieldRenameInProject` rewrites Document/Form Text function chips + field tokens and Process field refs when a Hidden Field / FIB blank / MCQ Fields name changes.
+
 ---
 
 ## Display functions (`fx`)

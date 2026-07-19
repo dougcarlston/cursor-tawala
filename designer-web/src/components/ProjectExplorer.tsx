@@ -32,8 +32,8 @@ export function ProjectExplorer() {
   const renameProcess = useProjectStore((s) => s.renameProcess);
   const renameDocument = useProjectStore((s) => s.renameDocument);
 
-  // Inline rename state. A renamable node enters edit mode after a click-and-hold
-  // (long press) on the already-selected row — see TreeNode's press timer.
+  // Inline rename state. Entered by F2, or by clicking an already-selected
+  // Form/Process/Document row (legacy BeginEdit). Long-press still works as a fallback.
   const [editing, setEditing] = useState<EditingNode | null>(null);
 
   // Commit (or cancel) an inline rename. `next === null` cancels (Escape / empty).
@@ -56,6 +56,44 @@ export function ProjectExplorer() {
       );
     }
   };
+
+  // F2 renames the Explorer selection (Form / Process / Document leaf).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "F2" || e.ctrlKey || e.metaKey || e.altKey) return;
+      if (editing) return;
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+      let node: EditingNode | null = null;
+      if (selection.kind === "form" && selection.name) {
+        node = { key: `form:${selection.name}`, kind: "form", name: selection.name };
+      } else if (selection.kind === "process" && selection.name) {
+        node = {
+          key: `process:${selection.name}`,
+          kind: "process",
+          name: selection.name,
+        };
+      } else if (selection.kind === "document" && selection.name) {
+        node = {
+          key: `document:${selection.name}`,
+          kind: "document",
+          name: selection.name,
+        };
+      }
+      if (!node) return;
+      e.preventDefault();
+      setEditing(node);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [editing, selection.kind, selection.name]);
 
   const [expanded, setExpanded] = useState({
     forms: true,
@@ -202,7 +240,7 @@ export function ProjectExplorer() {
                           leaf={links.length === 0}
                           dragKind="form"
                           dragName={form.name}
-                          editing={editing?.key === formKey}
+                          editing={editing?.kind === "form" && editing.name === form.name}
                           onBeginRename={() =>
                             setEditing({ key: formKey, kind: "form", name: form.name })
                           }
@@ -232,7 +270,9 @@ export function ProjectExplorer() {
                                     leaf
                                     dragKind="process"
                                     dragName={link.name}
-                                    editing={editing?.key === linkKey}
+                                    editing={
+                                      editing?.kind === "process" && editing.name === link.name
+                                    }
                                     onBeginRename={() =>
                                       setEditing({
                                         key: linkKey,
@@ -289,7 +329,9 @@ export function ProjectExplorer() {
                           leaf
                           dragKind="process"
                           dragName={proc.name}
-                          editing={editing?.key === procKey}
+                          editing={
+                            editing?.kind === "process" && editing.name === proc.name
+                          }
                           onBeginRename={() =>
                             setEditing({ key: procKey, kind: "process", name: proc.name })
                           }
@@ -299,7 +341,7 @@ export function ProjectExplorer() {
                               next,
                             )
                           }
-                          icon={<PreProcessIcon />}
+                          icon={<StandaloneProcessIcon />}
                         />
                       </li>
                     );
@@ -331,7 +373,9 @@ export function ProjectExplorer() {
                           leaf
                           dragKind="document"
                           dragName={doc.name}
-                          editing={editing?.key === docKey}
+                          editing={
+                            editing?.kind === "document" && editing.name === doc.name
+                          }
                           onBeginRename={() =>
                             setEditing({ key: docKey, kind: "document", name: doc.name })
                           }
@@ -377,7 +421,7 @@ function ToolbarButton({
   );
 }
 
-/** Long-press threshold (ms) for click-and-hold rename (legacy BeginEdit). */
+/** Long-press threshold (ms) for click-and-hold rename (fallback). */
 const RENAME_HOLD_MS = 500;
 /** Pointer movement (px) that cancels a pending long press (treats it as a drag). */
 const RENAME_MOVE_TOLERANCE = 4;
@@ -413,6 +457,8 @@ function TreeNode({
   const renamable = !!onBeginRename;
   const holdTimer = useRef<number | null>(null);
   const pressOrigin = useRef<{ x: number; y: number } | null>(null);
+  /** True when this press started a drag — suppress click→rename. */
+  const didDrag = useRef(false);
   const canDrag = !!dragKind && !!dragName && !editing;
 
   const clearHold = () => {
@@ -425,9 +471,10 @@ function TreeNode({
 
   useEffect(() => clearHold, []);
 
-  // Click-and-hold on an already-selected renamable row starts inline edit.
+  // Click-and-hold on an already-selected renamable row starts inline edit (fallback).
   const handleMouseDown = (e: React.MouseEvent) => {
     if (e.button !== 0 || !renamable || !selected || editing) return;
+    didDrag.current = false;
     pressOrigin.current = { x: e.clientX, y: e.clientY };
     holdTimer.current = window.setTimeout(() => {
       onBeginRename?.();
@@ -442,6 +489,19 @@ function TreeNode({
     if (dx > RENAME_MOVE_TOLERANCE || dy > RENAME_MOVE_TOLERANCE) clearHold();
   };
 
+  const handleClick = () => {
+    if (editing) return;
+    // Spec: single-click when already highlighted → inline rename.
+    // Skip if this gesture was a canvas drag onto the MDI surface.
+    if (selected && renamable && !didDrag.current) {
+      clearHold();
+      onBeginRename?.();
+      return;
+    }
+    didDrag.current = false;
+    onSelect();
+  };
+
   return (
     <div
       className={`tree-node${selected ? " selected" : ""}`}
@@ -451,10 +511,11 @@ function TreeNode({
           e.preventDefault();
           return;
         }
+        didDrag.current = true;
         clearHold();
         setExplorerEntityDrag(e.dataTransfer, dragKind, dragName);
       }}
-      onClick={editing ? undefined : onSelect}
+      onClick={handleClick}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={clearHold}
@@ -750,8 +811,8 @@ function BlockBackIcon() {
 const GEAR_PATH =
   "M19.14 12.94c.04-.3.06-.61.06-.94 0-.32-.02-.64-.07-.94l2.03-1.58a.49.49 0 0 0 .12-.61l-1.92-3.32a.488.488 0 0 0-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54a.484.484 0 0 0-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.05.3-.09.63-.09.94s.02.64.07.94l-2.03 1.58a.49.49 0 0 0-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z";
 
-/** Linked Pre-process (or standalone process) — solid purple gear (legacy `Form_PreProcess`). */
-function PreProcessIcon() {
+/** Processes-folder leaf — solid purple gear (not linked to a form). */
+function StandaloneProcessIcon() {
   return (
     <svg width="16" height="16" viewBox="0 0 24 24" aria-hidden focusable="false">
       <path d={GEAR_PATH} fill="#8a2be2" />
@@ -759,13 +820,17 @@ function PreProcessIcon() {
   );
 }
 
-/** Linked Post-process — form icon with a small purple gear overlaid (legacy `Form_PostProcess`). */
-function PostProcessIcon() {
+/** Form icon + small purple gear overlay (linked Pre/Post under a form). */
+function FormProcessOverlayIcon({ gearCorner }: { gearCorner: "top-right" | "bottom-right" }) {
   return (
     <span className="tree-icon-overlay">
       <FormNodeIcon />
       <svg
-        className="tree-icon-gear-overlay"
+        className={
+          gearCorner === "top-right"
+            ? "tree-icon-gear-overlay tree-icon-gear-overlay-top"
+            : "tree-icon-gear-overlay"
+        }
         width="10"
         height="10"
         viewBox="0 0 24 24"
@@ -777,6 +842,16 @@ function PostProcessIcon() {
       </svg>
     </span>
   );
+}
+
+/** Linked Pre-process — form + gear upper-right (legacy `Form_PreProcess`). */
+function PreProcessIcon() {
+  return <FormProcessOverlayIcon gearCorner="top-right" />;
+}
+
+/** Linked Post-process — form + gear lower-right (legacy `Form_PostProcess`). */
+function PostProcessIcon() {
+  return <FormProcessOverlayIcon gearCorner="bottom-right" />;
 }
 
 /** Document node. */

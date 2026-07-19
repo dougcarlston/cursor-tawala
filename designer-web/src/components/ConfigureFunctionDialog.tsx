@@ -61,7 +61,11 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
 
   useEffect(() => {
     setConfigureFunctionFieldLock(true);
-    return () => setConfigureFunctionFieldLock(false);
+    document.body.classList.add("configure-function-open");
+    return () => {
+      setConfigureFunctionFieldLock(false);
+      document.body.classList.remove("configure-function-open");
+    };
   }, []);
 
   useEffect(() => {
@@ -114,7 +118,10 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
   };
 
   return (
-    <div className="modal-overlay configure-function-overlay" role="presentation">
+    <div
+      className="modal-overlay configure-function-overlay configure-function-blocks-chrome"
+      role="presentation"
+    >
       <div
         className="modal-dialog fib-validation-dialog configure-function-dialog"
         role="dialog"

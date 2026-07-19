@@ -1,9 +1,10 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { ConfigureFunctionDialog } from "./ConfigureFunctionDialog";
 import { InsertFunctionDialog } from "./InsertFunctionDialog";
 import {
   clearFunctionPickerRequest,
   getFunctionPickerRequest,
+  requestFunctionPicker,
   subscribeFunctionPicker,
 } from "@/lib/functionPicker";
 import { getFunctionDef, type FunctionConfig, type FunctionDef } from "@/lib/functionCatalog";
@@ -18,8 +19,11 @@ import { useProjectStore } from "@/store/projectStore";
  * Orchestrates Insert Function → Configure Function and commits tokens into the
  * active palette editor. Mounted once in `App.tsx`.
  *
- * UI is derived from the current request on every render so we never paint a blank
- * frame while useEffect catches up (that looked like fx “doing nothing”).
+ * Insert → Configure advances by writing `configureFunctionId` onto the pending
+ * request (not local React state). Local `picked` was cleared whenever `request`
+ * changed or the host remounted, which resurfaced the Insert list after OK —
+ * especially for no-parameter functions where Configure is small and the OK
+ * click falls through onto **fx**.
  */
 export function FunctionPickerHost() {
   const request = useSyncExternalStore(
@@ -27,16 +31,6 @@ export function FunctionPickerHost() {
     getFunctionPickerRequest,
     () => null,
   );
-  /** Set when the user picks a function from the Insert list (insert flow only). */
-  const [picked, setPicked] = useState<{
-    def: FunctionDef;
-    config?: FunctionConfig;
-    editRef: FunctionTokenRef | null;
-  } | null>(null);
-
-  useEffect(() => {
-    setPicked(null);
-  }, [request]);
 
   const close = () => clearFunctionPickerRequest();
 
@@ -71,7 +65,7 @@ export function FunctionPickerHost() {
   if (!request) return null;
 
   const editDef =
-    request.mode === "edit" && request.existing
+    request.mode === "edit" && request.existing && !request.configureFunctionId
       ? getFunctionDef(request.existing.functionId)
       : undefined;
   const skipListDef = request.configureFunctionId
@@ -79,12 +73,19 @@ export function FunctionPickerHost() {
     : undefined;
 
   const configure =
-    picked ??
     (editDef && request.existing
       ? { def: editDef, config: request.existing.config, editRef: request.existing }
       : null) ??
     (skipListDef
-      ? { def: skipListDef, config: undefined, editRef: null as FunctionTokenRef | null }
+      ? {
+          def: skipListDef,
+          config:
+            request.existing?.functionId === skipListDef.id
+              ? request.existing.config
+              : undefined,
+          editRef:
+            request.mode === "edit" && request.existing ? request.existing : null,
+        }
       : null);
 
   if (configure) {
@@ -103,10 +104,14 @@ export function FunctionPickerHost() {
       initialFunctionId={request.existing?.functionId}
       onCancel={close}
       onSelect={(def) => {
-        setPicked({
-          def,
-          config: request.existing?.config,
-          editRef: request.existing ?? null,
+        // Persist the choice on the request so a remount / **fx** ghost-click
+        // cannot wipe it and reopen the Insert list.
+        requestFunctionPicker({
+          mode: request.mode,
+          existing: request.existing,
+          editor: request.editor,
+          commitConfig: request.commitConfig,
+          configureFunctionId: def.id,
         });
       }}
     />

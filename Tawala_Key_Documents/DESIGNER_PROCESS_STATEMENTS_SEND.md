@@ -1,6 +1,7 @@
 # Designer process statements — Send
 
 Captured from legacy **Tawala Project Designer #251 (DEV)** screenshots and owner notes (June 2026).
+Outbound delivery wiring: July 2026 (`docs/EMAIL_DELIVERY_OPS.md`).
 
 Related: `DESIGNER_PROCESS_STATEMENTS_SHOW.md`, `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` (email validation on FIB).
 
@@ -20,7 +21,7 @@ Select **Send** in the Statements palette. **Add** inserts at the blue-arrow ins
 |-------|---------|----------|
 | **To:** | Field text box | **Addressee** — owner: **must be a field** from Fields palette (drag or double-click). Example: `Start:UserEmail` (green highlight when field-bound). |
 | **Cc:** | Field text box | Optional; field drag/double-click or typed literal — **not validated** in Designer (owner: probably should be, like **From**). |
-| **From (Address):** | Field text box | **Addressor** — may be **typed directly** (e.g. `doug@carlston.net`); **not validated** in Designer (owner: probably should be). May also accept a dragged field. |
+| **From (Address):** | Field text box | **Addressor** — may be **typed directly** (e.g. `doug@carlston.net`); **not validated** in Designer (owner: probably should be). May also accept a dragged field. On **Deploy (:8080)** with server-owned SMTP, this becomes **Reply-To**; the verified server From is the SMTP/visible sender. |
 | **(Name):** | Field text box | Optional display name for From; literal or field. |
 | **Subject:** | Expression text box | Free text; may embed field references. Example: `A test Message`. |
 | **Document to be used as Body text:** | Dropdown | Project document used as email body (e.g. Document 2). |
@@ -98,13 +99,24 @@ Send Document Document 2 to Start:UserEmail
 
 ---
 
-## Browser Designer (`designer-web`) gaps
+## Browser Designer (`designer-web`)
 
 | Feature | Legacy | Browser today |
 |---------|--------|----------------|
-| Send email statement | Email tab | Not implemented |
-| Document as body | Yes | N/A |
-| To / From / Cc / Subject | Yes | N/A |
+| Send email statement | Email tab | **Yes** — `SendStatementBuilder` + process palette |
+| Document as body | Yes | **Yes** |
+| To / From / Cc / Subject | Yes | **Yes** (email validation on To/From literals) |
+| Deploy XML | `addressLiteral` / `addressField` | **Yes** (Jul 19) |
+| Live SMTP delivery | Java queue + JavaMailSender | **Yes on :8080** when configured; Preview does **not** send |
+| Server email status | — | Project → **Email Delivery…** |
+
+### Smoke — Send + count (8080)
+
+1. Configure Mailpit (Compose) or a real SMTP relay — see `docs/EMAIL_DELIVERY_OPS.md`.
+2. Form with email FIB + Process Send Document → recipient field.
+3. Document with `<<PROJECT EMAIL COUNT>>`.
+4. Deploy → submit once → Mailpit (`:8025`) shows one message; count Document increments after refresh.
+5. Project → Email Delivery… → Send Test → appears in Mailpit.
 
 ---
 
@@ -115,15 +127,18 @@ Send Document Document 2 to Start:UserEmail
 | Send UI | `TawalaDesigner/Code/TAWALA/Processes/SendStatementView.cs` |
 | Send model / XML | `…/Projects/Processes/SendStatement.cs` |
 | Document body | `…/Projects/Processes/SendBody.cs` (`SendDocumentBody`) |
+| Runtime Send | `TawalaWebapp-build1700/src/com/tawala/project/commands/Send.java` |
+| Queue worker | `…/batch/email/EmailQueueWorker.java` |
+| Ops | `docs/EMAIL_DELIVERY_OPS.md` |
 
 ---
 
 ## Open questions
 
-1. Runtime: is **To** enforced as field-only, or can literals work if typed?
+1. Runtime: is **To** enforced as field-only, or can literals work if typed? *(Literals work in Java when exported as `addressLiteral`.)*
 2. **Include Page Header** — what header content is included?
-3. Should **browser Designer** add email validation for **From** and **Cc** even if legacy did not?
+3. Should **browser Designer** add email validation for **From** and **Cc** even if legacy did not? *(From/To literals are validated in browser today.)*
 
 ---
 
-*Last updated: June 2026.*
+*Last updated: July 19, 2026.*

@@ -6,6 +6,7 @@ import {
   clearFunctionPickerRequest,
   getFunctionPickerRequest,
   openFunctionPickerFromEditor,
+  requestFunctionPicker,
 } from "./functionPicker";
 import {
   clearActivePaletteEditor,
@@ -83,5 +84,68 @@ describe("openFunctionPickerFromEditor", () => {
     const req = getFunctionPickerRequest();
     expect(req?.mode).toBe("edit");
     expect(req?.existing?.functionId).toBe("display-mcq-label");
+  });
+
+  it("does not reopen Insert while a picker request is already active", () => {
+    const editor = document.createElement("div");
+    editor.contentEditable = "true";
+    editor.append(document.createTextNode("hello"));
+    document.body.append(editor);
+    editor.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(true);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+
+    setActivePaletteEditor({
+      el: editor,
+      commit: () => {},
+      saveSelection: () => {},
+      restoreSelection: () => {},
+    });
+
+    openFunctionPickerFromEditor();
+    const first = getFunctionPickerRequest();
+    expect(first?.mode).toBe("insert");
+
+    openFunctionPickerFromEditor();
+    expect(getFunctionPickerRequest()).toBe(first);
+  });
+
+  it("advancing to Configure keeps the request active so fx cannot reopen Insert", () => {
+    const editor = document.createElement("div");
+    editor.contentEditable = "true";
+    editor.append(document.createTextNode("hello"));
+    document.body.append(editor);
+    editor.focus();
+    const range = document.createRange();
+    range.selectNodeContents(editor);
+    range.collapse(true);
+    const sel = window.getSelection();
+    sel?.removeAllRanges();
+    sel?.addRange(range);
+
+    setActivePaletteEditor({
+      el: editor,
+      commit: () => {},
+      saveSelection: () => {},
+      restoreSelection: () => {},
+    });
+
+    openFunctionPickerFromEditor();
+    expect(getFunctionPickerRequest()?.mode).toBe("insert");
+
+    // Simulate Insert OK → request-phase advance (FunctionPickerHost).
+    requestFunctionPicker({
+      mode: "insert",
+      editor: getFunctionPickerRequest()?.editor,
+      configureFunctionId: "project-email-count",
+    });
+    expect(getFunctionPickerRequest()?.configureFunctionId).toBe("project-email-count");
+
+    openFunctionPickerFromEditor();
+    expect(getFunctionPickerRequest()?.configureFunctionId).toBe("project-email-count");
   });
 });

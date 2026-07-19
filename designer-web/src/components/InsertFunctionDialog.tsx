@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type MouseEvent } from "react";
 import {
   FUNCTION_CATEGORIES,
   getFunctionDef,
@@ -43,7 +43,9 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
 
   const selected = getFunctionDef(selectedId);
 
-  const confirm = () => {
+  const confirm = (e?: MouseEvent) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     if (!selected) return;
     onSelect(selected);
   };
@@ -90,7 +92,7 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
                   aria-selected={fn.id === selectedId}
                   className={`insert-function-item${fn.id === selectedId ? " selected" : ""}`}
                   onClick={() => setSelectedId(fn.id)}
-                  onDoubleClick={() => onSelect(fn)}
+                  onDoubleClick={(e) => confirm(e)}
                 >
                   {fn.name}
                 </button>
@@ -106,7 +108,17 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
           <button type="button" onClick={onCancel}>
             Cancel
           </button>
-          <button type="button" onClick={confirm} disabled={!selected}>
+          <button
+            type="button"
+            disabled={!selected}
+            // preventDefault on mousedown so the OK click is not retargeted onto
+            // **fx** / chrome when Insert unmounts and Configure mounts underneath.
+            onMouseDown={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+            }}
+            onClick={(e) => confirm(e)}
+          >
             OK
           </button>
         </div>

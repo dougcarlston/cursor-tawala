@@ -411,7 +411,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "popular-choice-correlation-table",
     name: "RANKED MULTIQUESTION RESPONSE LIST",
     description:
-      "Most common MCQ response plus associated field list; correlates two MCQs.",
+      "Used by the Get Together sample to find the most popular event choice, list the people who chose it, and mark whether their second choice matches it. The two MCQs should use the same choice values.",
     parameters: [
       RANK_PARAM,
       {
@@ -419,21 +419,24 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
         type: "tawala-mcq",
         name: "Main Question",
         required: true,
-        description: "MCQ for popular choice information.",
+        description:
+          "Primary MCQ whose first, second, or third most popular choice drives the list. In Get Together, this is the attendee's available event date/time.",
       },
       {
         id: "choice-preferred-field-name",
         type: "tawala-mcq",
         name: "Second Question",
         required: true,
-        description: "MCQ to correlate with the main question.",
+        description:
+          "Second MCQ with the same choices as Main Question. Column 2 shows a tick when that record selected the ranked Main answer here too; it does not display this answer as text.",
       },
       {
         id: "popular-choice-display-field-name",
         type: "tawala-blank",
         name: "Column One Contents",
         required: true,
-        description: "Field shown in the first column.",
+        description:
+          "FIB blank / text field listed for each matching record — typically the attendee's name in Get Together. Do not use an MCQ here; an MCQ shows only its stored choice letter.",
       },
       {
         id: "conditions",

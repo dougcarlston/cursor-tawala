@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from "react";
 import { FormItemStylesDialog } from "./FormItemStylesDialog";
+import { EmailDeliveryDialog } from "./EmailDeliveryDialog";
 import {
   applyStyleToAllFormItems,
   clearFormItemStylesRequest,
@@ -12,15 +13,24 @@ import {
   type McStyleDraft,
   type TextStyleDraft,
 } from "@/lib/formItemStyles";
+import {
+  getEmailDeliveryOpen,
+  subscribeEmailDelivery,
+} from "@/lib/emailDelivery";
 import { useProjectStore } from "@/store/projectStore";
 import type { FibItem, McItem, TextItem } from "@/types/tawala";
 
-/** Hosts Project → Styles… dialogs. */
+/** Hosts Project → Styles… and Email Delivery… dialogs. */
 export function ProjectChromeHost() {
   const stylesKind = useSyncExternalStore(
     subscribeFormItemStyles,
     getFormItemStylesRequest,
     () => null,
+  );
+  const emailOpen = useSyncExternalStore(
+    subscribeEmailDelivery,
+    getEmailDeliveryOpen,
+    () => false,
   );
   const project = useProjectStore((s) => s.project);
   const selection = useProjectStore((s) => s.selection);
@@ -75,6 +85,10 @@ export function ProjectChromeHost() {
         }}
       />
     );
+  }
+
+  if (emailOpen) {
+    return <EmailDeliveryDialog />;
   }
 
   return null;

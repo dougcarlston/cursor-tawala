@@ -49,6 +49,7 @@ import {
   undoAcceleratorLabel,
   type ShellEditCommand,
 } from "@/lib/shellCommands";
+import { openEmailDeliveryDialog } from "@/lib/emailDelivery";
 import {
   PROCESS_PANEL_LABELS,
   PROCESS_STATEMENT_PALETTE,
@@ -235,6 +236,13 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         </button>
         <button type="button" onClick={openProjectManagerLocal}>
           Project Manager…
+        </button>
+        <button
+          type="button"
+          title="Server-owned SMTP status and test send (credentials stay on Tomcat)"
+          onClick={() => openEmailDeliveryDialog()}
+        >
+          Email Delivery…
         </button>
         <div className="menu-separator" />
         {/* 8080 / CSS track — stubs until that agent owns page chrome */}

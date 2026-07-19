@@ -65,8 +65,8 @@ Top-level folders under the project root: **Forms**, **Processes**, **Documents*
 | Node | Icon | Collapse |
 |------|------|----------|
 | Form name | Small window with internal grid lines (`Form_InTree`; overlays for ★ start point, pre-populate, block-back) | **`[-]`** when expanded and has linked processes (or always expandable); **`[+]`** when collapsed |
-| Linked **Pre-process** (child) | **Solid purple gear** (`Form_PreProcess`) | Leaf — no collapse box |
-| Linked **Post-process** (child) | **Form icon + small purple gear** overlaid bottom-right (`Form_PostProcess`) | Leaf — no collapse box |
+| Linked **Pre-process** (child) | **Form icon + small purple gear** upper-right (`Form_PreProcess`) | Leaf — no collapse box |
+| Linked **Post-process** (child) | **Form icon + small purple gear** lower-right (`Form_PostProcess`) | Leaf — no collapse box |
 
 **Child order under a form:** Pre-process first (if any), then Post-process (if any). A form may have only a Post-process, only a Pre-process, or both.
 
@@ -85,8 +85,8 @@ The designer **may rename** the process to **any** name — they **do not have t
 
 | Role | Icon (placement semantics) |
 |------|----------------------------|
-| Pre-process | Solid purple **gear** (top / top-associated child position) |
-| Post-process | **Form + gear** overlay (bottom / bottom-associated child position) |
+| Pre-process | **Form + gear** overlay (upper-right) |
+| Post-process | **Form + gear** overlay (lower-right) |
 
 **Do not infer** Pre vs Post from the process **name** alone (e.g. `RetrieveAdminSetupVariables` has no `Pre-` prefix but is a Pre-process under `NavigationToPaymentByCheck`).
 
@@ -94,7 +94,7 @@ The designer **may rename** the process to **any** name — they **do not have t
 |--------------|---------|-------|
 | Auto-name on attach | `Pre-Process1`, `Post-Process2` | Default when linking; designer may rename immediately |
 | `Pre-{FormName}` | `Pre-ParentCoaches`, `Pre-ShowAllRosters` | Common after rename or legacy projects |
-| Descriptive (no prefix) | `RetrieveAdminSetupVariables` | Pre-process under `NavigationToPaymentByCheck` — **gear** icon, not name, marks role |
+| Descriptive (no prefix) | `RetrieveAdminSetupVariables` | Pre-process under `NavigationToPaymentByCheck` — **form+gear (upper-right)** icon, not name, marks role |
 | `Post-{FormName}` | `Post-ParentCoaches`, `Post-NavigationToPaymentByCheck` | Common Post-process label |
 | Post only | `Post-DuplicateRegistrationCheck` | Under `DuplicateRegistrationCheck`; no Pre-process child |
 
@@ -103,23 +103,23 @@ The designer **may rename** the process to **any** name — they **do not have t
 ```
 Forms  [-]
   ParentCoaches  [-]
-    (gear) Pre-ParentCoaches
-    (form+gear) Post-ParentCoaches
+    (form+gear UR) Pre-ParentCoaches
+    (form+gear LR) Post-ParentCoaches
   NavigationToPaymentByCheck  [-]
-    (gear) RetrieveAdminSetupVariables
-    (form+gear) Post-NavigationToPaymentByCheck
+    (form+gear UR) RetrieveAdminSetupVariables
+    (form+gear LR) Post-NavigationToPaymentByCheck
   RefreshAdminDash  [-]
-    (form+gear) Post-RefreshAdminDash
+    (form+gear LR) Post-RefreshAdminDash
   UtilityToSetPlayerAges  [-]
-    (form+gear) Post-UtilityToSetPlayerAges
+    (form+gear LR) Post-UtilityToSetPlayerAges
   ShowAllRosters  [-]
-    (gear) Pre-ShowAllRosters
-    (form+gear) Post-ShowAllRosters
+    (form+gear UR) Pre-ShowAllRosters
+    (form+gear LR) Post-ShowAllRosters
   PlayerCommunicator  [-]
-    (gear) Pre-PlayerCommunicator
-    (form+gear) Post-PlayerCommunicator
+    (form+gear UR) Pre-PlayerCommunicator
+    (form+gear LR) Post-PlayerCommunicator
   DuplicateRegistrationCheck  [-]
-    (form+gear) Post-DuplicateRegistrationCheck
+    (form+gear LR) Post-DuplicateRegistrationCheck
 Processes  [-]
   … (flat list of all processes — same names as under forms)
 Documents  [-]
@@ -666,6 +666,7 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 - Shell guards install from `main.tsx` (not only App `useEffect`) so Vite HMR cannot drop the shortcut / leave warning.
 - **Leave warning** (`beforeunload`) fires **only when `dirty` / status `· modified`**. Soft refresh (**Cmd+R**) and hard refresh (**Cmd+Shift+R**) both navigate — neither skips the warning. Quiet refresh: **Save first** (clears dirty) then Cmd+R, or choose Reload/Leave to discard.
 - First Save (no remembered file handle) uses the File System Access **native Save** dialog with suggested name **`{project.name}.json`** (empty template → `Untitled.json`). Later Saves rewrite that file quietly. Download fallback uses the same suggested name.
+- **After Save / Save As / Open**, the Project Explorer **tree root** and JSON `name` follow the **file leaf name** (`MyDemo.json` → root label **MyDemo**). That fixes Save As leaving the tree stuck on **Untitled** while the file on disk had another name.
 - **File → Save As…** / **⇧⌘S** / **Shift+Ctrl+S** opens an **in-app name dialog** (default = `{project.name}.json`, ensures a single `.json` suffix). **Cancel** aborts. **Save As** then:
   - **Chromium (`showSaveFilePicker`):** clears any remembered handle and opens the native folder/file picker with `suggestedName` = the chosen name; that location becomes the quiet re-Save target. The picker must open **before** `exportJson()` (large projects with embedded images can burn Chrome’s user-gesture window if stringify runs first).
   - **Safari / no picker:** force-downloads via form POST `/api/download-project` (Content-Disposition) as `{chosenName}.json` into **Downloads** (Safari has **no** OS folder picker — WebKit limitation). Status: `Saved to Downloads: {name}.json (Safari has no Save As folder picker)`.
@@ -675,7 +676,7 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 1. Soft-refresh Designer once after a pull (`Cmd+R` / soft restart of Vite if needed) — should be **quiet** when status has no `· modified`.
 2. Edit a Document or Form → status shows **`· modified`**; floppy tip **Save Project (modified)** with red-tint highlight; File → **Save · modified**.
 3. **⌘S / Ctrl+S** (with caret in contenteditable) or File → Save or floppy → one picker/download named from the project (e.g. `Untitled.json` or `MyProject.json`); `· modified` clears. A second Save should **not** re-open the picker (Chromium with a stored handle).
-4. **File → Save As…** (or **⇧⌘S** / **Shift+Ctrl+S**) → **in-app Save As** dialog with default file name from the project (not always `Untitled`). Confirm → Chromium native picker (new quiet-Save target) **or** Safari download to `~/Downloads` under that name. Status on Safari: `Saved to Downloads: ….json …`. Ordinary Save / ⌘S must still rewrite quietly afterward on Chromium.
+4. **File → Save As…** (or **⇧⌘S** / **Shift+Ctrl+S**) → **in-app Save As** dialog with default file name from the project (not always `Untitled`). Confirm → Chromium native picker (new quiet-Save target) **or** Safari download to `~/Downloads` under that name. Status on Safari: `Saved to Downloads: ….json …`. Ordinary Save / ⌘S must still rewrite quietly afterward on Chromium. **Project Explorer root** must show the new name (not stay **Untitled**).
 5. Edit again → **Cmd+R** *or* hard refresh (`Cmd+Shift+R`) → browser **leave warning** appears (both navigate; “soft” does not skip it). Save → `· modified` clears → Cmd+R is quiet again.
 
 ---
@@ -704,7 +705,7 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Gaps:** auto-name on attach when Connect Pre/Post UI exists; `[-]`/`[+]` chrome, dotted lines, toolbar icons 4–7, rename/reorder, default-expanded forms on first open |
+| Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Rename (Jul 19):** click selected name or **F2** → inline edit. **Gaps:** auto-name on attach when Connect Pre/Post UI exists; dotted lines polish |
 | Middle column | Items / Statements / empty | Form items palette only; always visible |
 | Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; **Phase 2 (July 2026):** drag **and** double-click insert `<<name>>` into item property editors, rich-text surface, and process JSON (Records/RecordSet drop context deferred) |
 | Insert | Context-sensitive Form / Process / Document menus | **Mostly wired (Jul 2026):** Form top-7 + Image/Invitation/Hyperlink/Function; Process statements; Document Image/Invitation/Hyperlink/Function + **Field** (Jul 17 — Fields palette selection). Menu before View (owner OK) |

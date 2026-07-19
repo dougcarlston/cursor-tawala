@@ -50,7 +50,7 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 | 5 | **Sign-up Sheet w Email** | **Unmarked** | FIB submit + table; Send may need mail config |
 | 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
 | 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026 — see reference below) | Multi tally sections + itemization on Report |
-| 8 | **Potluck** | **Passed w/ caveats** | See matrix (first-run NotComing glitch; Q5 optional) |
+| 8 | **Potluck (legacy direct deploy)** | **Passed w/ caveats** | Deployed from `.tawala`, not imported through Browser Designer; New Project Potluck JSON is only a starter stub |
 
 Update this table when each passes owner click-test. Function-level status: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
 
@@ -119,7 +119,9 @@ Good first deploy target — small XML, no documents, one process statement.
 - **Report:** organizer view of responses.
 - Processes: Send Thanks, Show Results, Delete Name; documents Details, Thank you.
 
-**Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Potluck"`
+**Legacy direct Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Potluck"`. This deployed `Potluck Template.tawala` directly to Java. It did **not** test Browser Designer import, Configure, or export; the New Project Potluck JSON is only a starter stub.
+
+**Browser Designer SUM smoke (owner passed Jul 19):** The separate `public/samples/sum-smoke-test.json` project passed Configure, export, and live Deploy total. This validates Browser Designer SUM independently; it does not make the Potluck starter stub a full template.
 
 | Form | URL |
 |------|-----|

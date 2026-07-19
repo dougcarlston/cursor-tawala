@@ -14,6 +14,11 @@ import {
 } from "@/types/tawala";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { nextHiddenFieldName } from "@/lib/fieldNames";
+import {
+  cascadeFieldRenameInProject,
+  detectFormItemFieldRenames,
+} from "@/lib/fieldRenameCascade";
+import { cascadeDocumentRenameInProject } from "@/lib/documentRenameCascade";
 import { nextLinkedProcessName } from "@/lib/projectModel";
 import { addOrReuseImage } from "@/lib/projectImages";
 import {
@@ -1328,11 +1333,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const nextDocuments = documents.map((d) =>
       d.name === oldName ? { ...d, name: trimmed } : d,
     );
+    // Show / Send / Append (and nested If / ForEach) store document names as
+    // plain strings — cascade so Process canvas lines stay in sync.
+    const cascaded = cascadeDocumentRenameInProject(
+      { ...project, documents: nextDocuments },
+      oldName,
+      trimmed,
+    );
     const selectionMoved =
       selection.kind === "document" && selection.name === oldName;
     const oldWinId = windowId("document", oldName);
     set({
-      project: { ...project, documents: nextDocuments },
+      project: cascaded,
       dirty: true,
       selection: selectionMoved ? { kind: "document", name: trimmed } : selection,
       statusMessage: `Renamed document to ${trimmed}`,
@@ -1398,13 +1410,24 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   updateFormItem: (formName, index, item) => {
     const { project } = get();
-    const forms = project.forms.map((f) => {
-      if (f.name !== formName) return f;
-      const items = [...f.items];
-      items[index] = item;
-      return { ...f, items };
-    });
-    set({ project: { ...project, forms }, dirty: true });
+    const prev = project.forms.find((f) => f.name === formName)?.items[index];
+    let nextProject: TawalaProject = {
+      ...project,
+      forms: project.forms.map((f) => {
+        if (f.name !== formName) return f;
+        const items = [...f.items];
+        items[index] = item;
+        return { ...f, items };
+      }),
+    };
+    // Legacy FormItemChanged → DocumentEditor.updateFieldsAndFunctions: keep
+    // function chips / field tokens / Process refs in sync with Fields renames.
+    if (prev) {
+      for (const { oldName, newName } of detectFormItemFieldRenames(prev, item)) {
+        nextProject = cascadeFieldRenameInProject(nextProject, formName, oldName, newName);
+      }
+    }
+    set({ project: nextProject, dirty: true });
   },
 
   updateForm: (formName, patch) => {

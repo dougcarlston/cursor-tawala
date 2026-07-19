@@ -152,12 +152,27 @@ public class EmailService {
 	}
 
 	public static void sendAndStoreEmail(Email email) {
+		EmailRuntimeConfig config = EmailRuntimeConfig.get();
+		if (!config.isDeliveryReady()) {
+			email.setState(Email.State.ERROR);
+			email.setCustomerErrorReason("Outbound email is disabled on this server.");
+			email.setErrorReason("mail.enabled=false or mail.host is empty");
+			config.recordError(email.getErrorReason());
+			try {
+				saveEmail(email);
+			} catch (Throwable lastOne) {
+				Log.error(EmailService.class,
+						"Error persisting email to the database: ", lastOne);
+			}
+			return;
+		}
 		try {
 			JavaMailSender sender = Emailer.getSender();
 			try {
 				MimeMessage message = sender.createMimeMessage();
 				sender.send(email.toMimeMessage(message));
 				email.markAsSent();
+				config.recordSuccess();
 				try {
 					saveEmail(email);
 				} catch (Throwable e) {
@@ -170,11 +185,16 @@ public class EmailService {
 						e);
 				StringWriter writer = new StringWriter();
 				e.printStackTrace(new PrintWriter(writer));
+				String stack = writer.toString();
+				if (stack.length() > Email.MAX_ERROR_LENGTH) {
+					stack = stack.substring(0, Email.MAX_ERROR_LENGTH);
+				}
 
 				email.setState(Email.State.ERROR);
-				email.setErrorReason(writer.toString().substring(0, 1000));
+				email.setErrorReason(stack);
 				email
 						.setCustomerErrorReason("Server error occurred during the delivery.");
+				config.recordError(e.getMessage());
 				try {
 					saveEmail(email);
 				} catch (Throwable lastOne) {
@@ -186,6 +206,7 @@ public class EmailService {
 			}
 		} catch (Throwable e) {
 			Log.warn(EmailService.class, "Failed to send email", e);
+			config.recordError(e.getMessage());
 		}
 	}
 
@@ -397,6 +418,18 @@ public class EmailService {
 			email.setState(Email.State.READY);
 			saveEmail(email);
 		}
+	}
+
+	/** Counts by delivery state for the status/test API (no secrets). */
+	@SuppressWarnings("unchecked")
+	public static long countEmailsByState(final Email.State state) {
+		List result = TawalaSessionFactory.MAIN.getHibernateTemplate().find(
+				"select count(*) from " + Email.class.getName()
+						+ " email where email.state = ?", state);
+		if (result == null || result.isEmpty() || result.get(0) == null) {
+			return 0L;
+		}
+		return ((Number) result.get(0)).longValue();
 	}
 
 	public static void storeAsFailed(Email email) {

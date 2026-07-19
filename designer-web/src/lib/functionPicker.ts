@@ -76,6 +76,7 @@ function functionTokenContainingSelection(root: HTMLElement): FunctionTokenRef |
   let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
   if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
   while (node && node !== root) {
+    if (!root.contains(node)) return null;
     if (
       node instanceof HTMLSpanElement &&
       node.classList.contains(FUNCTION_TOKEN_CLASS) &&
@@ -90,6 +91,11 @@ function functionTokenContainingSelection(root: HTMLElement): FunctionTokenRef |
 
 /** Open the picker from palette **fx** or Insert → Function…. */
 export function openFunctionPickerFromEditor(): void {
+  // Insert OK → Configure writes `configureFunctionId` onto the pending request.
+  // Ignore further **fx** / Insert → Function… opens while that request is live so a
+  // ghost click through the Configure overlay cannot reopen the Insert list.
+  if (pendingRequest) return;
+
   let handle = getActivePaletteEditor();
   if (handle && !handle.el.isConnected) {
     clearActivePaletteEditor(handle.el);

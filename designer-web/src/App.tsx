@@ -25,6 +25,7 @@ import {
   runShellDelete,
   setShellFileActions,
   subscribeSaveAsDialog,
+  syncProjectNameFromFileName,
 } from "@/lib/shellCommands";
 import { getViewChrome, subscribeViewChrome } from "@/lib/viewChrome";
 
@@ -134,6 +135,8 @@ export default function App() {
     reader.onload = () => {
       try {
         importJson(String(reader.result));
+        syncProjectNameFromFileName(file.name);
+        useProjectStore.getState().setStatus(`Opened ${file.name}`);
       } catch {
         alert("Could not parse project JSON.");
       }

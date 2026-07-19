@@ -20,6 +20,10 @@ import com.tawala.project.Form;
 import com.tawala.project.Project;
 import com.tawala.project.UserProject;
 import com.tawala.project.UserProject.EntryPointType;
+import com.tawala.email.EmailRuntimeConfig;
+import com.tawala.email.EmailService;
+import com.tawala.email.UniqueBodyEmail;
+import com.tawala.email.UserProjectEmail;
 import com.tawala.web.ApiErrorResponse;
 import com.tawala.web.ApiRequest;
 import com.tawala.web.ApiResponse;
@@ -31,6 +35,9 @@ import com.tawala.web.Response;
 import com.tawala.web.WorldInitializer;
 
 public class ClientApiController implements Controller {
+
+	private static final long TEST_EMAIL_MIN_INTERVAL_MS = 15000L;
+	private static volatile long lastTestEmailAt = 0L;
 
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -58,6 +65,10 @@ public class ClientApiController implements Controller {
 			response = uploadProject(apiRequest, request, world, user);
 		} else if (apiRequest.getType().equals("previewForm")) {
 			response = previewForm(apiRequest, request, world, user);
+		} else if (apiRequest.getType().equals("queryEmailStatus")) {
+			response = new EmailStatusResponse();
+		} else if (apiRequest.getType().equals("sendTestEmail")) {
+			response = sendTestEmail(apiRequest);
 		} else {
 			response = new ApiErrorResponse("command.unknown",
 					"Unknown command '" + apiRequest.getType() + "'.");
@@ -101,6 +112,67 @@ public class ClientApiController implements Controller {
 				"project"), user);
 		world.domain().formPreviews().put(user.getId(), project);
 		return new FormPreviewResponse(project, apiRequest.getFormName());
+	}
+
+	private ApiResponse sendTestEmail(ApiRequest apiRequest) {
+		long now = System.currentTimeMillis();
+		if (now - lastTestEmailAt < TEST_EMAIL_MIN_INTERVAL_MS) {
+			return new ApiErrorResponse("email.rateLimited",
+					"Wait a few seconds before sending another test email.");
+		}
+		EmailRuntimeConfig config = EmailRuntimeConfig.get();
+		if (!config.isDeliveryReady()) {
+			return new ApiErrorResponse("email.disabled",
+					"Outbound email is not configured on this server.");
+		}
+		String to;
+		try {
+			if (!apiRequest.getXml().hasChild("testEmail")) {
+				return new ApiErrorResponse("email.invalid",
+						"testEmail/@to is required");
+			}
+			to = apiRequest.getXml().child("testEmail").attribute("to").stringValue();
+		} catch (RuntimeException e) {
+			return new ApiErrorResponse("email.invalid",
+					"testEmail/@to is required");
+		}
+		if (to == null || to.trim().length() == 0 || to.indexOf('@') < 0) {
+			return new ApiErrorResponse("email.invalid",
+					"A valid test recipient address is required.");
+		}
+		try {
+			String from = config.getFromName() + " <" + config.getFromAddress() + ">";
+			UserProjectEmail email = new UserProjectEmail(null, from, to.trim(),
+					null, "Tawala email delivery test",
+					UniqueBodyEmail.Type.TEXT,
+					"This is a test message from the Tawala Designer Email Delivery dialog.\n"
+							+ "If you received it, SMTP delivery is working.\n");
+			// Send immediately so the Designer dialog can report success/failure.
+			boolean previous = EmailService.isSendImmediately();
+			EmailService.setSendImmediately(true);
+			try {
+				EmailService.enqueueForDelivery(email);
+			} finally {
+				EmailService.setSendImmediately(previous);
+			}
+			if (email.getState() != com.tawala.email.Email.State.SENT) {
+				String reason = email.getCustomerErrorReason();
+				if (reason == null || reason.length() == 0) {
+					reason = email.getErrorReason();
+				}
+				if (reason == null || reason.length() == 0) {
+					reason = "Test email failed";
+				}
+				return new ApiErrorResponse("email.sendFailed", reason);
+			}
+			lastTestEmailAt = now;
+			return new EmailStatusResponse("Test email sent to " + to.trim());
+		} catch (Exception e) {
+			Log.error(this, "Test email failed", e);
+			config.recordError(e.getMessage());
+			return new ApiErrorResponse("email.sendFailed",
+					e.getMessage() == null ? "Test email failed" : e.getMessage());
+		}
 	}
 
 	private List<UserProject> allProjectsFor(String userId) {

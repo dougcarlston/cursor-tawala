@@ -86,6 +86,30 @@ export function suggestedProjectFileName(projectName?: string): string {
 }
 
 /**
+ * Display / JSON `project.name` from a disk leaf name (`Demo.json` → `Demo`).
+ * Exported for unit tests.
+ */
+export function projectDisplayNameFromFileName(filename: string): string {
+  const leaf = filename.replace(/^.*[\\/]/, "").trim();
+  const withoutExt = leaf.replace(/\.json$/i, "").trim();
+  return withoutExt || "Untitled";
+}
+
+/**
+ * Keep Project Explorer / status / exported JSON aligned with the file being written
+ * or opened. Does not flip `dirty` — callers that are mid-Save clear dirty themselves.
+ * Exported for unit tests.
+ */
+export function syncProjectNameFromFileName(filename: string): void {
+  const next = projectDisplayNameFromFileName(filename);
+  const { project } = useProjectStore.getState();
+  if (project.name === next) return;
+  useProjectStore.setState({
+    project: { ...project, name: next },
+  });
+}
+
+/**
  * Apple Safari (not Chrome / Edge / Firefox / Android WebView).
  * Exported for unit tests.
  */
@@ -240,6 +264,7 @@ async function writeProjectToDisk(
 
     // Safari/Firefox: never enter the File System Access branch.
     if (!canUseSaveFilePicker()) {
+      syncProjectNameFromFileName(filename);
       const json = useProjectStore.getState().exportJson();
       completeDownloadSave(json, filename);
       return;
@@ -258,6 +283,8 @@ async function writeProjectToDisk(
           ],
         });
       }
+      // Explorer root + JSON `name` follow the real leaf (Save As / OS rename in picker).
+      syncProjectNameFromFileName(projectFileHandle.name);
       const json = useProjectStore.getState().exportJson();
       await writeJsonToHandle(projectFileHandle, json);
       useProjectStore.setState({
@@ -276,6 +303,7 @@ async function writeProjectToDisk(
       clearProjectFileHandle();
     }
 
+    syncProjectNameFromFileName(filename);
     const json = useProjectStore.getState().exportJson();
     completeDownloadSave(json, filename);
   } finally {
@@ -317,6 +345,9 @@ export function saveProjectAs(): void {
  */
 export async function confirmSaveAs(chosenName: string): Promise<void> {
   const filename = suggestedProjectFileName(chosenName);
+  // Update Explorer immediately so the root label matches the Save As name even
+  // before the OS picker returns (write path re-syncs from the final leaf name).
+  syncProjectNameFromFileName(filename);
   clearProjectFileHandle();
   try {
     await writeProjectToDisk(filename, { preferExistingHandle: false });
@@ -350,6 +381,9 @@ export async function openProjectFromDisk(): Promise<boolean> {
     const text = await file.text();
     useProjectStore.getState().importJson(text);
     projectFileHandle = handle;
+    // Older saves left JSON `name: "Untitled"` while the file was MyProject.json —
+    // adopt the leaf name so Explorer / next Save As match the file on disk.
+    syncProjectNameFromFileName(handle.name);
     useProjectStore.getState().setStatus(`Opened ${handle.name}`);
     return true;
   } catch (err) {

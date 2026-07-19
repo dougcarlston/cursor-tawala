@@ -29,7 +29,7 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ### File / Save (held — fix later)
 
-- **Save / Save As ignore last-loaded file name** — After **Open…** / load, Save and Save As should default to that file’s name (and Chromium quiet-Save should keep targeting it). **Untitled** (or `Untitled.json`) only for **New Project**. Today suggested name comes from `project.name` only, so Save As has no memory of the path/name last loaded. **Bug; hold until later.**
+- **Save / Save As ignore last-loaded file name** — After **Open…** / load, Save and Save As should default to that file’s name (and Chromium quiet-Save should keep targeting it). **Untitled** (or `Untitled.json`) only for **New Project**. **Partial fix (Jul 19):** Save / Save As / Open now sync JSON + Project Explorer root from the **file leaf name**, so Save As no longer leaves the tree on **Untitled**. Remaining gap: suggested name still comes from `project.name` (now usually aligned with the file); Chromium quiet-Save handle memory was already separate.
 
 - **Many `.json` files greyed out in Open / Save As pickers** — Native Chromium picker marks lots of valid project JSON as the wrong type (greyed), yet they can still be clicked and their names used to overwrite/save. Likely the File System Access `accept: { "application/json": [".json"] }` filter (macOS UTI/MIME mismatch — e.g. files typed as `text/plain`). Should treat normal `.json` project files as selectable without looking “invalid.” **Bug; hold until later.**
 
@@ -43,7 +43,17 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 Owner could not fully test overnight (hooks-order / “too many hooks” error); retested on tip `b48656b` after hard refresh. Font face/size for plain typing OK; remaining Document issues:
 
-- **Multiline / drag-select highlighting buggy** — **Verified July 10:** cross-block drag-select works; multi-line align applies to all intersecting placed lines.
+- **Multiline / drag-select highlighting buggy** — **Verified July 10** for plain text: cross-block drag-select works; multi-line align applies to all intersecting placed lines. **Reopened Jul 19 (owner):** drag highlighting still does **not** work properly when the selection includes **Field tokens** and/or **function labels** (`<<…>>`). **Hold — retest and fix after remaining Insert Function smokes finish** (#11–13, #15–16).
+
+- **Cannot drag Function label onto same line as text** — **Jul 19 (owner):** Function tokens (`<<…>>`) cannot be dragged onto an existing text line (stay separate / won’t join the line). Field drop/snap-to-line was verified Jul 10; function labels need the same mid-line join behavior. **Hold — fix after remaining Insert Function smokes** (#11–13, #15–16).
+
+- **Cannot rename Form / Process / Document in Explorer** — **Fixed Jul 19:** rename was only a 500ms long-press on an already-selected row (easy to miss, and HTML5 drag canceled it). Now: **click a selected** Form/Process/Document name to edit, or press **F2**. Enter commits, Escape cancels.
+
+- **Document rename does not update Process Show / Send / Append** — **Fixed Jul 19:** renaming a Document in Explorer now cascades into Process command refs (`documentRenameCascade.ts` via `renameDocument`), including nested If / ForEach.
+
+- **Field rename does not update Functions / function labels** — **Fixed Jul 19:** renaming a Hidden Field, FIB blank alt label, or MCQ field name cascades into Document/Form Text function chips (`data-function-config` + visible `<<NAME(…)>>`), field tokens, and Process command field refs (`fieldRenameCascade.ts` via `updateFormItem`).
+
+- **Ghost / deleted Document text still visible** — **Jul 19 false alarm (owner):** the unexpected question phrasing on Deploy came from **Form Item** MCQ text (Response Totals injects the Form question), not from deleted Document prose. Separately, Design still got a small hardening Jul 19 (discard orphan glyphs after delete; prune stacked duplicate placed lines; missing `reflowPlacedLinesBelow` import) — keep as regression prevention, not as confirmation of that screenshot.
 
 - **Fields and variables font face/size** — **Face/size match verified July 10** after fix. Placement still broken (below).
 
@@ -94,7 +104,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 | Category | Count | Files | Notes |
 |----------|-------|--------|--------|
-| **Real live-code** | 1 | `src/components/RichTextEditor.tsx` | Calls `reflowPlacedLinesBelow` but does not import it (function exists in `documentCanvas.ts`). Likely missing import / rename slip. |
+| **Real live-code** | 0 | — | Missing `reflowPlacedLinesBelow` import in `RichTextEditor.tsx` **fixed Jul 19**. |
 | **Unused locals** | 2 | `src/lib/paletteCommands.ts` | Dead `CARET_ZWSP`; unused `root` param — safe cleanup. |
 | **Test typing only** | ~10 | `documentCanvas.align.dom.test.ts`, `shellCommands.download.dom.test.ts` | `Element` vs `HTMLElement` / form mocks — tests, not product logic. |
 | **Shell typing** | 1 | `src/lib/shellCommands.ts` | Keyboard pick missing `shiftKey` in a type. |
