@@ -6,17 +6,43 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 
 ---
 
-## ☀️ Jul 20 — Undo closed; next focus
+## ☀️ Jul 20–21 week — green build, then `.tawala` → Designer Open
 
-**Undo policy locked** in `DESIGNER_OPEN_BUGS.md` (best-effort CE only; renames / Moves / Skip·Process / Explorer out of scope). Do **not** spend more sessions on Undo stacks.
+**Undo policy locked** (`DESIGNER_OPEN_BUGS.md`). Document caret epic mostly landed — park invent/chip-select polish unless blocking.
 
-**Document caret epic:** A + C landed; B largely landed (highlight move, chip relocate, middle-line fill — Owner Passed). Park remaining invent-on-click / chip-inclusive drag-select polish unless a hard blocker appears.
+**Owner Jul 20:** Process **Send** works in Browser Designer on :8080 (self-send OK; recipient lists not yet smoked). Close the old “Send no-op / mail unimplemented” deferral for Java Deploy path.
 
-**Suggested next attention (declining Document ROI):**
-1. **Checkpoint** — commit/push Jul 20 Document + Skip re-edit work when ready.
-2. **Deploy / end-user path (#10 leftovers)** — AdminDash → Thank you navigation; email Send / theme only if you reopen them.
-3. **Owner smoke** — Font/Size honesty after chip add/delete (§ 7c / 7j); any remaining #9 function Configure→Deploy gaps you still care about.
-4. **Park** Deferred UX (FIB blanks editable, MDI Pass 2, nested Skip If, look-and-feel, 3-browser) until you explicitly reopen.
+**This week target:** **File → Open** (or Import) a general `.tawala` into Browser Designer → editable JSON project → Save/Deploy. Unlocks owner’s library of full projects (beyond New Project stubs). Groundwork: `TAWALA_XML_TO_JSON_MAPPING.md`, SignupSheets one-off `scripts/convert-signupsheets-xml-to-json.mjs`, `jsonToXml.mjs` export. DirtBowl/Potluck JSON stubs stay non-targets until import works.
+
+**Suggested order:**
+1. **Short `tsc` green-build** (clear ~14 errors) — **first thing tomorrow (Jul 21)**.
+2. **Generalize `.tawala` → format 2.0 JSON** (CLI first, then Open/Import in Designer).
+3. **Owner smoke:** Open Potluck / DirtBowl / Sign-up Sheet `.tawala` → Explorer populated → round-trip Deploy.
+4. **Park:** Deferred UX, 3-browser, look-and-feel until after import smoke.
+
+### End of day Jul 20 — checkpoint (read this first tomorrow)
+
+**Git:** `3fd215f` pushed earlier (Document highlight-move / chips / Skip gaps). Follow-up docs commit tonight for Deploy/Send/Undo policy + week plan. Branch: `cursor/forms-canvas-wysiwyg`.
+
+**Shipped / Owner Passed today (Design canvas + Deploy):**
+- Document highlight-drag: multi-line move, drag-into-blank, no mid-line skip, whole-line only (not double-click word), chip-only relocate, function→text join.
+- Skip re-edit: insert gaps again (`showAllInsertionGaps`); palette tool clears wrong Modify.
+- Undo: **closed policy** — best-effort CE only; renames/Moves/Skip·Process/Explorer out of scope.
+- Legacy Deploy: Potluck + full DirtBowl `.tawala` **flawless** (MQL, themes, AdminDash-scale). AdminDash “bug” was **corrupted JSON** (bare `Show`, blank AdminDashboard).
+- Process **Send** self-mail on :8080 **works**.
+
+**Important distinctions:**
+- **New Project** Sign-up/Potluck JSON = stubs. Healthy smoke = `node scripts/deploy-tawala-template.mjs "…"` or path to `.tawala`.
+- Full DirtBowl source: `designer-web/public/samples/legacy/DirtBowl.tawala`. Do not trust `dirtbowl_definition_v3.json` / open JSON copies.
+- How to deploy `.tawala`: Tomcat on 8080 → `node scripts/deploy-tawala-template.mjs --list` / `"Potluck"` / path.
+
+**Still open / park:**
+- Font/Size mixed-run honesty (owner smoking § 7c/7j); intermittent chip jump after partial Size (workaround: drag back).
+- Chip-inclusive drag-select highlight; long nowrap chips + MDI chrome under Fields.
+- Document invent-on-click / live-caret B leftovers.
+- No general `.tawala` → Designer Open yet (this week’s product goal after green-build).
+
+**Key files touched earlier today:** `documentCanvas.ts`, `RichTextEditor.tsx`, `functionTokens.ts`, `SkipInstructionsDialog.tsx`, `SkipScriptView.gaps.dom.test.ts`, `documentCanvas.multiMove.dom.test.ts`, `functionTokens.move.dom.test.ts`, `DESIGNER_DOCUMENT_EDITOR.md`, `DESIGNER_OPEN_BUGS.md`, `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md`.
 
 ---
 
@@ -89,7 +115,7 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 ## Process editor
 
 - **Edit → Connect / Disconnect Pre/Post-Process** menu actions missing — yellow banner + connection dialog work; menu parity does not. **Deferred.** (Sources: Designer MDI and Heading; Process editor If/Set)
-- **Send does nothing at runtime** (`runtimeEngine.mjs` no-op; no Resend/SES). Designer panel layout OK (smoke July 10); **email validation incomplete**; mail API out of scope. **Deferred.** (Source: Process statement panels)
+- **Send does nothing at runtime** — **Superseded Jul 20.** Browser Designer → Deploy **Send** works on :8080 (owner: self-send OK). Preview still does not send mail. Recipient-list / bulk To not yet owner-smoked. Ops: `docs/EMAIL_DELIVERY_OPS.md`. (Was: `runtimeEngine.mjs` no-op — Java path is the real delivery.)
 - **Get `where` filter not applied in browser preview.** Designer Where UI works; runtime filter not wired. **Deferred.** (Source: Process statement panels)
 - **Append / Show document merge not in browser preview.** Designer panels work; runtime merge not in this track. **Deferred.** (Source: Process statement panels)
 - **Fields palette: no Record List / RecordSet branch after Get** (legacy when Get selected). ForEach record branches landed; Get RecordSet left as polish. **Deferred.** (Source: Process statement panels)
@@ -124,7 +150,7 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
 | 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Jul 20:** TODO #11 MCQ Where **Passed**; TODO #12 Totals vs Bar Graph multi-select **Passed**. Core Configure+Deploy for ladder done earlier Jul 19. |
-| 10 | **Get Deploy working** | **Usable Jul 12–16** on 5173/3001 and 8080 when Tomcat up (`dev`/`dev`). Still: email Send, theme polish, AdminDash→Thank you navigation bug. |
+| 10 | **Get Deploy working** | **Usable Jul 12–16.** **Jul 20:** Potluck + DirtBowl legacy `.tawala` Deploy **Passed**; Process **Send** (self) **Passed**. Next: general `.tawala` → Designer Open this week. |
 | 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner Passed Jul 20.** |
 | 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
 

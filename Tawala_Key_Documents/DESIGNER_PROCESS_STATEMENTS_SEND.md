@@ -118,6 +118,8 @@ Send Document Document 2 to Start:UserEmail
 4. Deploy → submit once → Mailpit (`:8025`) shows one message; count Document increments after refresh.
 5. Project → Email Delivery… → Send Test → appears in Mailpit.
 
+**Owner Jul 20:** Browser Designer Process **Send** worked as expected for self-addressed mail on :8080. Recipient *lists* not yet tried.
+
 ---
 
 ## Source cross-reference

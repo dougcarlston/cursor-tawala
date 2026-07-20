@@ -50,7 +50,8 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 | 5 | **Sign-up Sheet w Email** | **Unmarked** | FIB submit + table; Send may need mail config |
 | 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
 | 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026 — see reference below) | Multi tally sections + itemization on Report |
-| 8 | **Potluck (legacy direct deploy)** | **Passed w/ caveats** | Deployed from `.tawala`, not imported through Browser Designer; New Project Potluck JSON is only a starter stub |
+| 8 | **Potluck (legacy direct deploy)** | **Owner Passed Jul 20** | `node scripts/deploy-tawala-template.mjs "Potluck"` → full app on 8080: forms, MQL, theme CSS; looked good and worked. Still **not** Browser Designer New Project JSON (that remains a stub). |
+| — | **DirtBowl (legacy `.tawala`)** | **Owner Passed Jul 20** | Full project (dozens of Forms/Processes/Documents) via `designer-web/public/samples/legacy/DirtBowl.tawala` — worked flawlessly. Corrupted JSON copies are not a smoke target. |
 
 Update this table when each passes owner click-test. Function-level status: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
 
@@ -120,6 +121,8 @@ Good first deploy target — small XML, no documents, one process statement.
 - Processes: Send Thanks, Show Results, Delete Name; documents Details, Thank you.
 
 **Legacy direct Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Potluck"`. This deployed `Potluck Template.tawala` directly to Java. It did **not** test Browser Designer import, Configure, or export; the New Project Potluck JSON is only a starter stub.
+
+**Owner Passed Jul 20 (legacy `.tawala` path):** Deployed Potluck looked good and worked end-to-end, including **MULTIPLE QUESTION LIST** and a **CSS theme**. Confirms Java Deploy + theme for the full template; does **not** upgrade the Browser Designer New Project Potluck stub.
 
 **Browser Designer SUM smoke (owner passed Jul 19):** The separate `public/samples/sum-smoke-test.json` project passed Configure, export, and live Deploy total. This validates Browser Designer SUM independently; it does not make the Potluck starter stub a full template.
 

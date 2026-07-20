@@ -173,7 +173,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Process statement: edit vs insert mode (legacy arrow)** — **Fixed Jul 16 (v2):** Selecting a script row enters **edit mode** — solid blue highlight and left **▶** on that statement; insert gap arrow is hidden. Clicking an insert gap / setting insert point clears selection (**insert mode** — ▶ on the separator between lines). Insert hit overlays no longer steal statement clicks (narrower hit band; rows above hits). Smoke: click “Show Form …” → arrow on statement + Modify; click between lines → arrow on gap, no statement highlight.
 
-- **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — Process / navigation start-point from DirtBowl stress pass. **Real bug;** separate track from Document/palette work.
+- **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — **Owner Passed Jul 20 (legacy `.tawala`).** Not a Designer navigation bug. The JSON / open DirtBowl copy was **corrupted** (bare `Show`, blank AdminDashboard). Full legacy `designer-web/public/samples/legacy/DirtBowl.tawala` (dozens of Forms / Processes / Documents) **deployed and worked flawlessly** for the owner Jul 20 — including AdminDash-scale navigation. Truncated `dirtbowl_definition_v3.json` / New Project stubs remain unreliable; use legacy `.tawala` + `deploy-tawala-template.mjs` for DirtBowl smoke.
 
 ### Fixed Jul 15 (Signup Sheet smoke — held bugs)
 
