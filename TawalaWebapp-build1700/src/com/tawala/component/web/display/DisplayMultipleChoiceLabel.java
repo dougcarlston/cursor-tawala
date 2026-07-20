@@ -158,7 +158,17 @@ public class DisplayMultipleChoiceLabel extends WebComponentMetadataSupport {
 
 			Set<String> selectedValues = new HashSet<String>();
 			for (Value selection : selections) {
-				selectedValues.add(selection.toString());
+				String s = selection.toString();
+				if (s.indexOf(',') >= 0) {
+					for (String part : s.split(",")) {
+						String trimmed = part.trim();
+						if (trimmed.length() > 0) {
+							selectedValues.add(trimmed);
+						}
+					}
+				} else {
+					selectedValues.add(s);
+				}
 			}
 
 			displayType

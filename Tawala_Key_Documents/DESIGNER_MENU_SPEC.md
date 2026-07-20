@@ -380,7 +380,7 @@ C# source: `FieldsPalette.cs` (`getSortedVariables`, form field leaves); `Projec
 | Edit slim | Cut / Copy / Paste / Delete / Undo / Redo only (+ standard shortcuts; Redo Mac **⇧⌘Z**) |
 | Edit omit | Rename; Connect/Disconnect Pre/Post (use Process banner) |
 | Form toggles | **Starting Point**, **Pre-populate With Last Entry**, and **Block Back** on **Project Explorer** toolbar (form selected). Right-column Properties panel was removed July 2026 (Fields only). |
-| Held bugs | Save/Save As last-loaded name; greyed `.json` in picker — see `DESIGNER_OPEN_BUGS.md` |
+| Held bugs | Save/Save As last-loaded name — see `DESIGNER_OPEN_BUGS.md` (greyed `.json` in Open picker fixed Jul 20) |
 
 ---
 

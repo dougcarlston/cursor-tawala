@@ -68,4 +68,24 @@ describe("MDI-aware field insert targets", () => {
     expect(insertFieldIntoActiveTarget("Form:X")).toBe(false);
     expect(inserted).toEqual([]);
   });
+
+  it("Configure Function field slots accept Fields double-click outside the MDI window", () => {
+    const modal = document.createElement("div");
+    modal.className = "configure-function-dialog";
+    const input = document.createElement("input");
+    modal.appendChild(input);
+    document.body.appendChild(modal);
+
+    setActiveFieldTarget((name) => inserted.push(name), { configureDialog: true }, input);
+    expect(fieldLeafAcceptedByActiveTarget("Form 1:MCQ4")).toBe(true);
+    expect(insertFieldIntoActiveTarget("Form 1:MCQ4")).toBe(true);
+    expect(inserted).toEqual(["Form 1:MCQ4"]);
+
+    // MDI switch must not clear a Configure modal target.
+    winA.classList.remove("active");
+    winB.classList.add("active");
+    syncDesignerTargetsToActiveMdiWindow();
+    expect(insertFieldIntoActiveTarget("Form 1:Name")).toBe(true);
+    expect(inserted).toEqual(["Form 1:MCQ4", "Form 1:Name"]);
+  });
 });

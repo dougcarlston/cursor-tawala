@@ -27,11 +27,17 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
+### Document functions (Jul 20)
+
+- **Two identical MQL on Document 2 — different Deploy results** — One block showed `<>` (no table); the other rendered a table but the multi-select MCQ column (“All possibilities”) was blank. **Root cause (1):** formatting toolbar / styled wrapper `<span style="font-size…">` around a function token exported as nested `<font><font><itemization-table>…` — Java Font FACTORY drops the inner table. **Fixed:** `documentHtmlToXml.mjs` detects font-wrapped display components and skips the outer wrap. **Root cause (2):** multi-select MCQ values sometimes stored as one comma-separated string; Java `displayLabelsOnly` did not split them. **Fixed:** `DisplayMultipleChoiceLabel.java` splits comma-separated selections; Preview MQL uses `formatMcqCellValue` in `itemizationPreview.mjs`. **Owner OK Jul 20** after Tomcat WAR rebuild + Redeploy (re-entered one MQL manually).
+
+- **Configure Function field target: Fields palette double-click does not replace** — **Fixed Jul 20.** Two causes: (1) Configure inputs live outside `.mdi-window.active`, so Fields double-click was refused as a “stale MDI target”; (2) column Contents / expression boxes appended at caret instead of replacing. Fix: `configureDialog` targets stay usable outside MDI + replace whole value on drop/double-click. **Smoke:** focus Contents or Where field → double-click a Fields leaf → prior value replaced (not appended / not no-op).
+
 ### File / Save (held — fix later)
 
 - **Save / Save As ignore last-loaded file name** — After **Open…** / load, Save and Save As should default to that file’s name (and Chromium quiet-Save should keep targeting it). **Untitled** (or `Untitled.json`) only for **New Project**. **Partial fix (Jul 19):** Save / Save As / Open now sync JSON + Project Explorer root from the **file leaf name**, so Save As no longer leaves the tree on **Untitled**. Remaining gap: suggested name still comes from `project.name` (now usually aligned with the file); Chromium quiet-Save handle memory was already separate.
 
-- **Many `.json` files greyed out in Open / Save As pickers** — Native Chromium picker marks lots of valid project JSON as the wrong type (greyed), yet they can still be clicked and their names used to overwrite/save. Likely the File System Access `accept: { "application/json": [".json"] }` filter (macOS UTI/MIME mismatch — e.g. files typed as `text/plain`). Should treat normal `.json` project files as selectable without looking “invalid.” **Bug; hold until later.**
+- **Many `.json` files greyed out in Open / Save As pickers** — **Fixed Jul 20:** Chromium + macOS often typed fresh saves as `text/plain`, so strict `application/json` filters greyed valid `.json` on the **first** Open after Save; second Open worked after Launch Services caught up. Open picker now shows all files (validate `.json` after pick); Save picker accepts `application/json`, `text/json`, and `text/plain`. Quiet-Save handle is released during Open so the file we just saved is not greyed as “already open.”
 
 ### Palette
 
@@ -43,13 +49,19 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 Owner could not fully test overnight (hooks-order / “too many hooks” error); retested on tip `b48656b` after hard refresh. Font face/size for plain typing OK; remaining Document issues:
 
-- **Multiline / drag-select highlighting buggy** — **Verified July 10** for plain text: cross-block drag-select works; multi-line align applies to all intersecting placed lines. **Reopened Jul 19 (owner):** drag highlighting still does **not** work properly when the selection includes **Field tokens** and/or **function labels** (`<<…>>`). **Hold — retest and fix after remaining Insert Function smokes finish** (#11–13, #15–16).
+- **Backspace deletes function chip then caret vanishes / arrows die** — **Fixed Jul 20.** After Backspace removed a trailing `<<…>>` chip (esp. chip-only placed line), focus often sat after `contenteditable=false` with no ZWSP landing (or selection cleared) → no blinking caret; ArrowLeft appeared dead. Fix: explicit chip Backspace/Delete keeps a live caret landing; `focusPlacedBlock` / `focusPlacedBlockEnd` ensure chip ZWSP pads. **Smoke:** `DESIGNER_DOCUMENT_EDITOR.md` § 22e.
 
-- **Cannot drag Function label onto same line as text** — **Jul 19 (owner):** Function tokens (`<<…>>`) cannot be dragged onto an existing text line (stay separate / won’t join the line). Field drop/snap-to-line was verified Jul 10; function labels need the same mid-line join behavior. **Hold — fix after remaining Insert Function smokes** (#11–13, #15–16).
+- **Multiline / drag-select highlighting buggy** — **Verified July 10** for plain text: cross-block drag-select works; multi-line align applies to all intersecting placed lines. **Reopened Jul 19 (owner):** drag highlighting still does **not** work properly when the selection includes **Field tokens** and/or **function labels** (`<<…>>`). **Jul 20:** folded into Document caret-model epic (live caret + drag of highlighted content) — see `DESIGNER_OPEN_TODOS.md` § Document caret model.
+
+- **Cannot drag Function label onto same line as text** — **Jul 19 (owner):** Function tokens (`<<…>>`) cannot be dragged onto an existing text line (stay separate / won’t join the line). Field drop/snap-to-line was verified Jul 10; function labels need the same mid-line join behavior. **Jul 20:** same epic as caret model / chip traversal.
 
 - **Cannot rename Form / Process / Document in Explorer** — **Fixed Jul 19:** rename was only a 500ms long-press on an already-selected row (easy to miss, and HTML5 drag canceled it). Now: **click a selected** Form/Process/Document name to edit, or press **F2**. Enter commits, Escape cancels.
 
-- **Document rename does not update Process Show / Send / Append** — **Fixed Jul 19:** renaming a Document in Explorer now cascades into Process command refs (`documentRenameCascade.ts` via `renameDocument`), including nested If / ForEach.
+- **Cannot rename Process in Explorer (Forms/Documents OK)** — **Fixed Jul 20:** a linked process appears twice (under the form and under **Processes**). Inline rename matched `kind + name`, so both rows entered edit mode; the second input stole focus and blur-cancelled the first. Now matches the unique render `key` so only one `RenameInput` mounts. **Smoke:** select a Post/Pre (or Processes-folder leaf) → click again or F2 → type new name → Enter; Explorer + open window title update.
+
+- **Document rename does not update Process Show / Send / Append** — **Fixed Jul 19:** renaming a Document in Explorer now cascades into Process command refs (`documentRenameCascade.ts` via `renameDocument`), including nested If / ForEach. **Owner Passed Jul 20.**
+
+- **Form rename resizes Document / Form function chips** — **Fixed Jul 20.** Renaming a Form remounts its MDI window; open Documents’ `ResizeObserver` packed layout and **committed**, and commit stripped chip `font-size: 12pt` so chips inherited a larger parent line. Fix: (1) never strip font-size from `.function-token` / `.field-token`; (2) only persist Document reflow when that surface’s **width** changed. Also added **form rename cascade** (`formRenameCascade.ts`) so `Form:Field` refs / function chips update like legacy. **Smoke:** open Document + Form with MQL chips → rename another Form in Explorer → chip sizes and Document layout stay put; rename a referenced Form → chip labels update without growing.
 
 - **Process Connect dialog blocked multi-form Pre/Post** — **Fixed Jul 19:** legacy allows one process on many forms (checklist; Potluck `Show Results`). Dialog was a single-form dropdown/Attach flow. Now Pre and Post **form checklists** (check several forms); banner uses plural “N Forms” when appropriate. **Also:** drag a Process onto a Form in Explorer attaches as **Post-process** when that form’s Post slot is empty (legacy drop).
 
@@ -77,6 +89,8 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Form canvas (UX backlog)
 
+- **Del/× on selected function chip deletes whole Text row** — **Fixed Jul 20:** highlighting a `<<…>>` function (or field) chip and pressing Del/Backspace, or clicking the row/toolbar **×**, used to remove the entire Text item. Now removes only the selected chip(s); whole-row delete still applies when no chip is highlighted.
+
 - **Design-mode FIB blanks are editable** — should be placeholders / length lines only while editing? **UX bug; deferred.** (Idle Design correctly keeps literal `_` — Batch 2 hold-list Jul 18; boxes only in Preview/Deploy.)
 
 - **Design-mode checkboxes and radios change state** on the canvas. **UX bug; deferred.**
@@ -94,9 +108,9 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Functions (final Designer run-through)
 
-- **Function Where on MCQ fields** — **Implemented Jul 19 (TODO #11).** Function Conditions switches to legacy `mcEquals` / `mcContains` / `mcIsBlank` / … when the left field is an MCQ (`onlyone` → MCOne vs MCMany). Value placeholder = choice letter. FIB Where unchanged. **Owner review tomorrow morning** (smoke: Bar Graph Where `mcContains` + letter `d` on multi MCQ).
+- **Function Where on MCQ fields** — **Implemented Jul 19 (TODO #11).** Function Conditions switches to legacy `mcEquals` / `mcContains` / `mcIsBlank` / … when the left field is an MCQ (`onlyone` → MCOne vs MCMany). Value placeholder = choice letter. FIB Where unchanged. **Owner Passed Jul 20** (non-numeric Where + 2 numeric tests OK).
 
-- **RESPONSE TOTALS multi-select undercount** — **Investigated Jul 19 (TODO #12): no code bug found.** Java + Preview tally both loop all `getValues` / array choices (same as Bar Graph). Added regression tests. Likely comparison to respondent count or wrong (single-select) sibling MCQ. **Owner review tomorrow morning** — same multi MCQ: Totals counts must match Bar Graph.
+- **RESPONSE TOTALS multi-select undercount** — **Investigated Jul 19 (TODO #12): no code bug found.** Java + Preview tally both loop all `getValues` / array choices (same as Bar Graph). Added regression tests. **Owner Passed Jul 20** — Totals and Bar Graph both pick up all choices on the same multi-select MCQ.
 
 - **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). May be the same MCQ/`mcIsNotBlank` gap as above. **Park** with TODO #11.
 

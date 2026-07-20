@@ -24,6 +24,7 @@ import {
   confirmAndDeleteFormItem,
   confirmAndDeleteSelectedFormItem,
 } from "@/lib/shellCommands";
+import { tryDeleteSelectedFormInlineTokens } from "@/lib/inlineTokenDelete";
 
 interface Props {
   formName: string;
@@ -80,6 +81,10 @@ export function FormEditor({ formName }: Props) {
           return;
         }
         if (e.key === "Delete" || e.key === "Backspace") {
+          if (tryDeleteSelectedFormInlineTokens()) {
+            e.preventDefault();
+            return;
+          }
           e.preventDefault();
           confirmAndDeleteSelectedFormItem();
         }
@@ -273,7 +278,10 @@ export function FormEditor({ formName }: Props) {
               type="button"
               className="form-item-delete-btn"
               title="Delete selected item (Del)"
-              onClick={() => confirmAndDeleteSelectedFormItem()}
+              onClick={() => {
+                if (tryDeleteSelectedFormInlineTokens()) return;
+                confirmAndDeleteSelectedFormItem();
+              }}
             >
               ×
             </button>

@@ -25,8 +25,9 @@ import {
   setFormattingFocus,
   selectionHasResettableFormatting,
 } from "@/lib/formattingPaletteContext";
-import { openFunctionTokenForEdit } from "@/lib/functionPicker";
+import { openFunctionTokenForEdit, selectFunctionToken } from "@/lib/functionPicker";
 import { ensureFunctionTokenCaretGaps, FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
+import { tryDeleteInlineTokensInSelection } from "@/lib/inlineTokenDelete";
 import {
   seedBlankBlockTypingFormat,
   selectParagraphAtPoint,
@@ -116,7 +117,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   const wasSelected = useRef(selected);
   /** Face/size captured before native insertParagraph so the new empty block can inherit them. */
   const enterTypingRef = useRef<ReturnType<typeof typingFormatForInsert> | null>(null);
-  const pendingFunctionEditRef = useRef<{
+  const pendingFunctionSelectRef = useRef<{
     instanceId: string | null;
     functionId: string | null;
     config: string | null;
@@ -174,18 +175,19 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
-  // After the editor mounts HTML, open Configure for a function token clicked while idle.
+  // After the editor mounts HTML, select a function token clicked while idle (Configure = dblclick).
   useEffect(() => {
     if (!editing) return;
-    const pending = pendingFunctionEditRef.current;
+    const pending = pendingFunctionSelectRef.current;
     if (!pending) return;
-    pendingFunctionEditRef.current = null;
+    pendingFunctionSelectRef.current = null;
     const el = editorRef.current;
     if (!el) return;
     const token = findPendingFunctionToken(el, pending);
     if (!token) return;
     registerAsPaletteEditor();
-    openFunctionTokenForEdit(token, el, rememberSelection);
+    selectFunctionToken(token, el, rememberSelection);
+    syncPaletteFocus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
@@ -305,10 +307,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
         if (token instanceof HTMLElement) {
           if (editing && editorRef.current) {
             registerAsPaletteEditor();
-            openFunctionTokenForEdit(token, editorRef.current, rememberSelection);
+            selectFunctionToken(token, editorRef.current, rememberSelection);
+            syncPaletteFocus();
             return;
           }
-          pendingFunctionEditRef.current = {
+          pendingFunctionSelectRef.current = {
             instanceId: token.getAttribute("data-function-instance"),
             functionId: token.getAttribute("data-function-id"),
             config: token.getAttribute("data-function-config"),
@@ -404,6 +407,22 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onKeyDown={(e) => {
                 const el = editorRef.current;
+                if (
+                  el &&
+                  (e.key === "Backspace" || e.key === "Delete") &&
+                  !e.ctrlKey &&
+                  !e.metaKey &&
+                  !e.altKey
+                ) {
+                  if (tryDeleteInlineTokensInSelection(el)) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    commit();
+                    rememberSelection();
+                    syncPaletteFocus();
+                    return;
+                  }
+                }
                 if (el && e.key === "Tab" && !e.ctrlKey && !e.metaKey && !e.altKey) {
                   if (navigateTableCellOnTab(el, e.shiftKey)) {
                     e.preventDefault();
@@ -494,6 +513,14 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
               onDoubleClick={(e) => {
                 const el = editorRef.current;
                 if (!el) return;
+                const func = (e.target as HTMLElement).closest(`.${FUNCTION_TOKEN_CLASS}`);
+                if (func instanceof HTMLElement && el.contains(func)) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  registerAsPaletteEditor();
+                  openFunctionTokenForEdit(func, el, rememberSelection);
+                  return;
+                }
                 const field = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);
                 if (field instanceof HTMLElement && el.contains(field)) {
                   e.preventDefault();

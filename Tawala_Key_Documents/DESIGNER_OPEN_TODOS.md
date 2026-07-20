@@ -6,15 +6,9 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 
 ---
 
-## ☀️ Tomorrow morning (Jul 20) — review first
+## ☀️ Jul 20 — Document caret epic next
 
-1. **Review TODO #11 — MCQ-aware Function Where**  
-   Drop an MCQ into Function Where (e.g. RESPONSE BAR GRAPH on multi MCQ4) → operator should be **contains** (stores `mcContains`) → value = choice letter **`d`** (not `Yellow`) → Redeploy → graph filters to rows that include that choice. Single-select MCQ → **equals** / `mcEquals`. FIB Where still uses normal equals/contains.
-
-2. **Review TODO #12 — RESPONSE TOTALS vs Bar Graph on same multi MCQ**  
-   Same multi-select question, no Where: Totals **Count** column and Bar Graph **Count** must match (each selected choice counted). If Totals still looks “low,” note whether you compared to **people** (N) vs **selections** (can be > N).
-
-Then continue from Owner review queue / held Document bugs as desired.
+Morning reviews (**#11**, **#12**) Passed. **Next:** Document **caret model epic** (Backspace across Returns → arrows through chips → live caret / less invent-anchor). Do **before** chip drag-select / mid-line-join bugfixes — those may dissolve after the epic. See § Document caret model below.
 
 ---
 
@@ -40,6 +34,29 @@ Planned pieces (after single-line margin align):
 - **Multi-line highlight** then **multi-line align** — **verified July 10**  
 
 Single-line left/center/right/justify to margins shipped first; selection-only size + grow/shrink packing also landed July 10. Wrap-on-type soft-wraps within the margin box (from line `left` to right margin) and packs lines below when height changes. ResizeObserver re-wraps/packs on editor width change. Drag-select can span placed lines; align applies to all intersecting lines.
+
+### Document caret model (epic — owner Jul 20) — **do first**
+
+Today’s Document canvas is still **absolute placed-line islands** (`.doc-placed-text` + invent anchors). Owner wants **native-document editing** on top of (or instead of) that model.
+
+**Priority (owner Jul 20):** Land this epic **before** further chip drag-select / mid-line-join bugfixes — those may dissolve or change shape once the caret model is flow-like.
+
+| # | Request | Today | Target |
+|---|---------|--------|--------|
+| **A** | **Backspace across lines / Returns** | Backspace is largely confined to the current placed line; empty-line / cross-Return delete is limited or blocked | One Backspace at a time can delete through Returns and prior lines until the Document is empty |
+| **B** | **Click → live caret (not invent anchors)** | Free-space click invents a placed-text anchor (`✥` / new `.doc-placed-text`); drag of a highlight often fails across islands | Click places a blinking caret in the document flow; drag-move of any highlighted run (text + chips) works |
+| **C** | **Arrow keys across Returns, functions, fields** | Up/Down / Left/Right often stop at line boundaries or `contenteditable=false` chips | Caret moves continuously across soft Returns, hard Returns, function placeholders, variables, and field tokens |
+
+**Implication:** A–C are one **caret/selection model** change (flow document + traversable chips), not three unrelated tweaks. Deploy HTML→XML must keep sorting/spacing contracts when the DOM model changes.
+
+**Suggested build order:** A (cross-line Backspace / merge) → C (arrows through Returns + chips) → B (live caret / reduce invent anchors; unlock highlight drag).
+
+**Progress (Jul 20):**
+- **A landed** — Backspace/Delete at a placed-line edge merges the same-column neighbor (Return undo); empty Return husks remove and land on the previous line; table cells and side-by-side columns stay isolated (`handleDocumentDeleteBoundary` + `documentCanvas.deleteBoundary.dom.test.ts`). Smoke: `DESIGNER_DOCUMENT_EDITOR.md` § 22c.
+- **C landed** — ArrowLeft/Right at line edges move to the previous/next same-column line; Left/Right jump over field/function chips; Up/Down prefer same-column neighbors (`handlePlacedTextArrowKey` + `documentCanvas.arrowKeys.dom.test.ts`). Smoke: § 22d.
+- **B next** — click → live caret / reduce invent anchors; unlock highlight drag across chips.
+
+**Related open bugs (expect to re-smoke after epic):** multiline drag-select with field/function chips; function label drag onto same text line (`DESIGNER_OPEN_BUGS.md`).
 
 ## Form items & Fields
 
@@ -96,10 +113,10 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder. **Document blocks — owner smoke Jul 15: pass.** |
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
-| 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Parked follow-ups:** TODO #11 MCQ-aware Where; TODO #12 RESPONSE TOTALS multi-select. Core Configure+Deploy for ladder done earlier Jul 19. |
+| 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Jul 20:** TODO #11 MCQ Where **Passed**; TODO #12 Totals vs Bar Graph multi-select **Passed**. Core Configure+Deploy for ladder done earlier Jul 19. |
 | 10 | **Get Deploy working** | **Usable Jul 12–16** on 5173/3001 and 8080 when Tomcat up (`dev`/`dev`). Still: email Send, theme polish, AdminDash→Thank you navigation bug. |
-| 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner review first thing tomorrow.** |
-| 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner review first thing tomorrow** (side-by-side Totals vs Bar Graph on multi MCQ). |**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
+| 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner Passed Jul 20.** |
+| 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
 
 ---
 

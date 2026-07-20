@@ -67,7 +67,8 @@ import {
   handleTableCellPointerUp,
   navigateTableCellOnTab,
 } from "@/lib/tableCellSelection";
-import { openFunctionTokenForEdit } from "@/lib/functionPicker";
+import { tryDeleteInlineTokensInSelection } from "@/lib/inlineTokenDelete";
+import { openFunctionTokenForEdit, selectFunctionToken } from "@/lib/functionPicker";
 import { FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
 import { isMultiClickSelectionGesture } from "@/lib/wordSelect";
 import { isRedundantDefaultFontSize } from "@/lib/fontSizeStrip";
@@ -135,9 +136,15 @@ function unwrapElement(el: Element) {
  * Drop redundant default (12pt / legacy size 3) markers from saved HTML.
  * Must keep explicit palette stops — especially 10pt and 11pt — which the old
  * legacy 1–7 pixel buckets incorrectly treated as default and stripped.
+ *
+ * Never strip font-size from field/function chips: a chip with inline 12pt that
+ * sits inside a larger placed line must keep 12pt. Stripping makes it inherit the
+ * parent (e.g. 20pt) and looks like a random resize after Document commit / MDI
+ * ResizeObserver (owner Jul 20 — form rename remounted a sibling window).
  */
 function stripFontSizeFormatting(root: ParentNode) {
   root.querySelectorAll("font[size]").forEach((node) => {
+    if ((node as HTMLElement).closest?.(".function-token, .field-token")) return;
     const size = node.getAttribute("size");
     if (!isRedundantDefaultFontSize(size)) return;
 
@@ -148,6 +155,10 @@ function stripFontSizeFormatting(root: ParentNode) {
   });
 
   root.querySelectorAll<HTMLElement>("[style]").forEach((node) => {
+    if (node.classList.contains("function-token") || node.classList.contains("field-token")) {
+      return;
+    }
+    if (node.closest(".function-token, .field-token")) return;
     if (!node.style.fontSize) return;
     if (!isRedundantDefaultFontSize(node.style.fontSize)) return;
 
@@ -381,12 +392,14 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     let settleTimer: number | undefined;
     const pack = () => {
       const width = el.clientWidth;
-      if (Math.abs(width - lastWidth) < 1 && document.visibilityState === "visible") {
-        // Still pack when height/MDI chrome changes without a surface width delta.
-      } else {
-        lastWidth = width;
-      }
+      const widthChanged = Math.abs(width - lastWidth) >= 1;
+      if (widthChanged) lastWidth = width;
       reflowDocumentLayout(el);
+      // Persist only when this Document surface's width changed (user resized
+      // this window). Sibling MDI remounts (e.g. Explorer form rename) can nudge
+      // chrome height and fire ResizeObserver — packing is fine for the session,
+      // but committing would rewrite stored HTML / chip sizes (owner Jul 20).
+      if (!widthChanged) return;
       window.clearTimeout(settleTimer);
       settleTimer = window.setTimeout(() => {
         commitFromSurfaceRef.current(el);
@@ -471,7 +484,22 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     }
   };
 
-  const tryOpenFunctionToken = (target: EventTarget | null): boolean => {
+  const trySelectFunctionToken = (target: EventTarget | null): boolean => {
+    const el = surfaceRef.current;
+    if (!el || !(target instanceof Element)) return false;
+    if (formattingKind !== "text" && formattingKind !== "document") return false;
+
+    const token = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
+    if (!(token instanceof HTMLElement)) return false;
+    registerAsPaletteEditor();
+    selectFunctionToken(token, el, () => {
+      rememberSelection();
+    });
+    syncPaletteFocus();
+    return true;
+  };
+
+  const tryConfigureFunctionToken = (target: EventTarget | null): boolean => {
     const el = surfaceRef.current;
     if (!el || !(target instanceof Element)) return false;
     if (formattingKind !== "text" && formattingKind !== "document") return false;
@@ -672,6 +700,22 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 return;
               }
             }
+            if (formattingKind && formattingKind !== "document" && el) {
+              if (
+                (e.key === "Backspace" || e.key === "Delete") &&
+                !e.ctrlKey &&
+                !e.metaKey &&
+                !e.altKey &&
+                tryDeleteInlineTokensInSelection(el)
+              ) {
+                e.preventDefault();
+                commitFromSurface(el);
+                rememberSelection();
+                syncPaletteFocus();
+                return;
+              }
+              return;
+            }
             if (formattingKind !== "document") return;
             if (!el) return;
 
@@ -844,7 +888,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             documentPointerRef.current = null;
             // Long-press only updates A-bar; skip invent / token-open side effects.
             if (sampled || pointer?.dragged || e.button !== 0) return;
-            if (tryOpenFunctionToken(e.target)) {
+            if (trySelectFunctionToken(e.target)) {
               e.preventDefault();
               e.stopPropagation();
               return;
@@ -855,8 +899,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             handleDocumentCanvasClick(e);
           }}
           onDoubleClick={(e) => {
-            // Function tokens first — they live inside `.doc-placed-text` on Documents.
-            if (tryOpenFunctionToken(e.target)) {
+            // Function / structured tokens: Configure on double-click (legacy parity).
+            if (tryConfigureFunctionToken(e.target)) {
               e.preventDefault();
               e.stopPropagation();
               return;

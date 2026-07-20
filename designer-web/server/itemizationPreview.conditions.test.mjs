@@ -113,3 +113,29 @@ describe("countFormRecordsFromConfig Where", () => {
     }
   });
 });
+
+describe("formatMcqCellValue", () => {
+  it("expands comma-separated multi-select ids to choice labels", async () => {
+    const { formatMcqCellValue } = await import("./itemizationPreview.mjs");
+    const project = {
+      forms: [
+        {
+          name: "Form 1",
+          items: [
+            {
+              type: "mc",
+              label: "MCQ4",
+              onlyone: false,
+              choices: [
+                { label: "a", text: "Blue" },
+                { label: "b", text: "Green" },
+                { label: "c", text: "Yellow" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    expect(formatMcqCellValue("a,c", project, "Form 1", "MCQ4")).toBe("Blue, Yellow");
+  });
+});

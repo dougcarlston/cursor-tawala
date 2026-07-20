@@ -334,7 +334,11 @@ export function syncDesignerTargetsToActiveMdiWindow(): void {
     clearActivePaletteEditor();
     return;
   }
-  if (activeOwnerEl && !activeWin.contains(activeOwnerEl)) {
+  if (
+    activeOwnerEl &&
+    !activeWin.contains(activeOwnerEl) &&
+    !activeTargetContext.configureDialog
+  ) {
     setActiveFieldTarget(null);
   }
   const pe = getActivePaletteEditor();
@@ -385,18 +389,39 @@ export function isValidIfConditionField(
   return knownVariables.has(trimmed);
 }
 
+/**
+ * Configure Function / Invitation / Hyperlink field boxes live in a modal overlay,
+ * not inside `.mdi-window.active`. They must still accept Fields double-click.
+ */
+function activeTargetUsableOutsideMdi(): boolean {
+  return Boolean(activeTargetContext.configureDialog);
+}
+
 /** Whether a Fields-panel leaf may insert into the active target. */
 export function fieldLeafAcceptedByActiveTarget(name: string): boolean {
   if (!activeInserter) return false;
-  if (activeOwnerEl && !isInsideActiveMdiWindow(activeOwnerEl)) return false;
+  if (
+    activeOwnerEl &&
+    !isInsideActiveMdiWindow(activeOwnerEl) &&
+    !activeTargetUsableOutsideMdi()
+  ) {
+    return false;
+  }
   return fieldAcceptedByTarget(name, activeTargetContext);
 }
 
 /** Fire the active editor's inserter (double-click). Returns false when nothing is focused. */
 export function insertFieldIntoActiveTarget(name: string): boolean {
   if (!activeInserter) return false;
-  // Refuse a background-window target even if sync has not run yet.
-  if (activeOwnerEl && !isInsideActiveMdiWindow(activeOwnerEl)) return false;
+  // Refuse a background-window target even if sync has not run yet —
+  // except Configure Function (and similar) modal field slots.
+  if (
+    activeOwnerEl &&
+    !isInsideActiveMdiWindow(activeOwnerEl) &&
+    !activeTargetUsableOutsideMdi()
+  ) {
+    return false;
+  }
   if (!fieldLeafAcceptedByActiveTarget(name)) return false;
   activeInserter(name);
   return true;

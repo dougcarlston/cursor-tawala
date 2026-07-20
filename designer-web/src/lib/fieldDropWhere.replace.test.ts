@@ -30,4 +30,15 @@ describe("Where field insert vs append", () => {
     expect(next).not.toContain(previous);
     expect(`${previous}${dropped}`).toContain("MCQ1"); // shows what append would do
   });
+
+  it("configureDialog insert text uses <<>> and replace overwrites Contents", () => {
+    const previous = "<<Form 1:MCQ1>>";
+    const dropped = fieldInsertText("Form 1:MCQ4", { configureDialog: true });
+    expect(dropped).toBe("<<Form 1:MCQ4>>");
+    // FieldDropInputs: configureDialog ⇒ replaceWhole (not insertTokenAtCaret).
+    const next = dropped;
+    expect(next).toBe("<<Form 1:MCQ4>>");
+    expect(next).not.toContain("MCQ1");
+    expect(`${previous}${dropped}`).toBe("<<Form 1:MCQ1>><<Form 1:MCQ4>>");
+  });
 });

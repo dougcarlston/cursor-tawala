@@ -59,7 +59,8 @@ export function NameTextInput({
 interface FieldDropOptions extends FieldTargetContext {
   /**
    * Replace the whole input value on drop / Fields double-click (do not insert at caret).
-   * Used with or without `bare` — Where field slots must never append a second field.
+   * Used with or without `bare` — Where / Configure field slots must never append a second field.
+   * Also implied by `configureDialog`.
    */
   replaceOnInsert?: boolean;
 }
@@ -79,7 +80,10 @@ function useFieldDropTarget(
 ) {
   const [dragOver, setDragOver] = useState(false);
   const context = targetContext(options);
-  const replaceWhole = Boolean(options.bare || options.replaceOnInsert);
+  // Configure Function field slots are single-field boxes (legacy replaces, never appends).
+  const replaceWhole = Boolean(
+    options.bare || options.replaceOnInsert || options.configureDialog,
+  );
 
   const applyInsert = (el: HTMLInputElement | HTMLTextAreaElement, text: string) => {
     if (replaceWhole) {
@@ -183,7 +187,7 @@ interface FieldTextInputProps
   replaceOnInsert?: boolean;
   formFieldsOnly?: boolean;
   knownVariables?: ReadonlySet<string>;
-  /** Configure Function dialog — wins Fields double-click over the canvas editor. */
+  /** Configure Function dialog — wins Fields double-click over the canvas editor; replaces whole value. */
   configureDialog?: boolean;
 }
 

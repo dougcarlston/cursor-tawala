@@ -4,6 +4,7 @@
  */
 
 import { compareValues } from "./runtimeEngine.mjs";
+import { findMcqItem } from "./choiceTallyPreview.mjs";
 
 function esc(s) {
   return String(s ?? "")
@@ -61,6 +62,30 @@ export function recordCellValue(row, ref, defaultForm, aliases = {}) {
     }
   }
   return "";
+}
+
+function normalizeChoiceValues(raw) {
+  if (raw == null || raw === "") return [];
+  if (Array.isArray(raw)) return raw.map((v) => String(v));
+  const s = String(raw);
+  if (s.includes(",") && !s.includes("<<")) {
+    return s.split(",").map((p) => p.trim()).filter(Boolean);
+  }
+  return [s];
+}
+
+/** Expand MCQ choice ids to comma-separated labels for MQL Preview cells. */
+export function formatMcqCellValue(raw, project, formName, fieldName) {
+  const ids = normalizeChoiceValues(raw);
+  if (ids.length === 0) return raw == null || raw === "" ? "" : String(raw);
+  const mcq = findMcqItem(project, formName, fieldName);
+  if (!mcq) return String(raw);
+  const choices = mcq.choices ?? [];
+  const labels = ids.map((id) => {
+    const c = choices.find((ch) => String(ch.value ?? ch.label ?? ch.name ?? "") === id);
+    return c?.text ?? c?.label ?? id;
+  });
+  return labels.join(", ");
 }
 
 /**
@@ -237,7 +262,12 @@ export function renderItemizationTableHtml(node, ctx = {}) {
             const cells = columns
               .map((col) => {
                 const ref = parseRecordField(col.field);
-                const val = recordCellValue(row, ref, sourceForm, aliases);
+                const raw = recordCellValue(row, ref, sourceForm, aliases);
+                const mcq = findMcqItem(ctx.project, sourceForm, ref.name);
+                const val =
+                  mcq && raw !== "" && raw != null
+                    ? formatMcqCellValue(raw, ctx.project, sourceForm, ref.name)
+                    : raw;
                 return `<td>${esc(val)}</td>`;
               })
               .join("");

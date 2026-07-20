@@ -307,7 +307,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Document MDI editor | Full RTF + toolbar + tables + functions | Rich canvas with placed lines, tables, fx tokens (ongoing parity) |
+| Document MDI editor | Full RTF + toolbar + tables + functions | Rich canvas with placed lines, tables, fx tokens (ongoing parity). **Jul 20 owner epic:** move toward live caret / cross-line Backspace / arrows through chips — `DESIGNER_OPEN_TODOS.md` § Document caret model |
 | Middle column | Empty for documents | Form items palette hidden for Document windows |
 | Fields drag into document | Yes | Drag + double-click insert `<<name>>` field tokens |
 | Format toolbar row 2 | Per-document child toolbar | Shared Formatting Palette (Document + Form Text) |
@@ -391,6 +391,9 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 21. Place / type text **left** of a table when there is room → text stays beside the table (does **not** jump below).
 22. Place / type text **right** of a table when there is room → stays beside.
 22b. **Delete beside table (July 14):** Invent/type a short word (e.g. `Test`) in free space **right** of a table → Backspace/Delete erases **in that placed line** (word must **not** hop into a table cell). Nearby labels (Left / Right side / Bottom) keep their font face. Clicking a cell still edits that cell.
+22c. **Cross-Return Backspace (Jul 20 caret epic A):** Type a line → Return → type a second line → place caret at the **start** of the second line → Backspace → lines merge into one (caret at the join). Empty Return line + Backspace removes the blank and lands on the previous line. Repeat until the Document can be emptied. Side-by-side L/R columns must **not** merge into each other; table cells still must not receive hopped text (22b).
+22d. **Arrows across Returns + chips (Jul 20 caret epic C):** Two stacked lines → ArrowRight at end of first → caret at start of second; ArrowLeft at start of second → end of first. Line with `<<field>>` or function chip → ArrowRight/Left jumps over the chip (does not stick). Side-by-side columns must not steal Left/Right.
+22e. **Backspace function chip caret (Jul 20):** Document line with only a function chip → caret after chip → Backspace removes the chip and leaves a **visible blinking caret** (ArrowLeft still works). Must not leave focus stuck on the ✥ move handle with no caret.
 23. Drag table with ✥ to leave a gap below preceding text (or beside) → after release, table keeps that X/Y (does **not** snap under the text above).
 23b. Soft-refresh. Place several “Text here” lines in the table’s column → drag table ✥ over them (they yield downward) → drag table clear / back → yielded prose snaps back toward prior homes (not left orphaned far down the canvas).
 24. Click blank canvas to invent a text anchor → click away / elsewhere **without typing** → empty anchor is gone (intentional Double-Return blank between paragraphs still kept).
@@ -412,4 +415,4 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 ---
 
-*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7) + widen home-restore (13b2); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; table ✥ yield/restore (23b); empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b).*
+*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7) + widen home-restore (13b2); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; table ✥ yield/restore (23b); empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b); cross-Return Backspace merge (22c); arrows across Returns + chips (22d).*

@@ -67,6 +67,60 @@ describe("documentHtmlToXml itemization", () => {
     expect(xml).toMatch(/<paragraph[^>]*><font><itemization-table/);
     expect(xml).not.toMatch(/<font>\s*<font>/);
   });
+
+  it("does not nest font when a styled wrapper span surrounds a placed MQL token", () => {
+    const config = JSON.stringify({
+      numberOfColumns: 3,
+      column: [
+        { header: "Name", contents: "<<Form 1:Name>>" },
+        { header: "All Possibilities", contents: "<<Form 1:MCQ4>>" },
+        { header: "My Faves", contents: "<<Form 1:MCQ1>>" },
+      ],
+      "show-print-control": "false",
+      "show-export-control": "false",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const html =
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 40pt">` +
+      `<span style="font-size: 12pt; font-family: Arial">` +
+      `<span class="function-token" data-function-id="itemization-table" ` +
+      `data-function-config="${config}">fx</span></span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain("itemization-table");
+    expect(xml).toContain('name="Record:Form 1:MCQ4"');
+    expect(xml).not.toMatch(/<font>\s*<font>/);
+  });
+
+  it("exports two identical placed MQL tokens with the same column XML", () => {
+    const config = JSON.stringify({
+      numberOfColumns: 3,
+      column: [
+        { header: "Name", contents: "<<Form 1:Name>>" },
+        { header: "All Possibilities", contents: "<<Form 1:MCQ4>>" },
+        { header: "My Faves", contents: "<<Form 1:MCQ1>>" },
+      ],
+      "show-print-control": "false",
+      "show-export-control": "false",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const token =
+      `<span class="function-token" data-function-id="itemization-table" ` +
+      `data-function-config="${config}">fx</span>`;
+    const html =
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 40pt">${token}</p>` +
+      `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 120pt">${token}</p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    const matches = xml.match(/<itemization-table[\s\S]*?<\/itemization-table>/g) ?? [];
+    expect(matches).toHaveLength(2);
+    expect(matches[0]).toBe(matches[1]);
+    expect(xml).not.toMatch(/<font>\s*<font>/);
+  });
 });
 
 /** Locks Document HTML→XML emit vs deferred stubs (cleanup Jul 16). */
@@ -276,9 +330,20 @@ describe("documentHtmlToXml nested function tokens", () => {
       `<span class="function-token" data-function-id="display-mcq-label" ` +
       `data-function-config="${cfg}">x</span></span></p>`;
     const xml = documentHtmlToXml(html, escAttr, escText);
-    expect(xml).toContain('color="000000"');
+    // Display components skip the outer styled <font> — nested font would drop the MCQ block.
     expect(xml).not.toContain("rgb(");
     expect(xml).toContain("<display-mcq-label");
+    expect(xml).toMatch(/<font><display-mcq-label/);
+    expect(xml).not.toMatch(/<font[^>]*>\s*<font/);
+  });
+
+  it("converts rgb() on plain text spans to hex for Java Deploy", () => {
+    const html =
+      `<p><span style="font-size: 12pt; font-family: Arial; color: rgb(0, 0, 0)">Hello</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('color="000000"');
+    expect(xml).not.toContain("rgb(");
+    expect(xml).toContain("Hello");
   });
 });
 

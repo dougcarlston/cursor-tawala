@@ -19,6 +19,7 @@ import {
   detectFormItemFieldRenames,
 } from "@/lib/fieldRenameCascade";
 import { cascadeDocumentRenameInProject } from "@/lib/documentRenameCascade";
+import { cascadeFormRenameInProject } from "@/lib/formRenameCascade";
 import { nextLinkedProcessName } from "@/lib/projectModel";
 import { addOrReuseImage } from "@/lib/projectImages";
 import {
@@ -1271,11 +1272,17 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const forms = project.forms.map((f) =>
       f.name === oldName ? { ...f, name: trimmed } : f,
     );
+    // Legacy RenameForm updates Document/Form Text field refs + function chips.
+    const cascaded = cascadeFormRenameInProject(
+      { ...project, forms },
+      oldName,
+      trimmed,
+    );
     const selectionMoved =
       selection.kind === "form" && selection.name === oldName;
     const oldWinId = windowId("form", oldName);
     set({
-      project: { ...project, forms },
+      project: cascaded,
       dirty: true,
       selection: selectionMoved ? { kind: "form", name: trimmed } : selection,
       statusMessage: `Renamed form to ${trimmed}`,

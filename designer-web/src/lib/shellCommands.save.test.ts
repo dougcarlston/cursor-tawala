@@ -1,10 +1,13 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
   applyDirtyBeforeUnload,
+  buildOpenProjectPickerOptions,
+  buildSaveProjectPickerOptions,
   cancelSaveAsDialog,
   eventIsNewProjectChord,
   eventIsOpenProjectChord,
   eventIsSaveChord,
+  isProjectJsonFileName,
   isSaveAsDialogOpen,
   saveAcceleratorLabel,
   saveAsAcceleratorLabel,
@@ -82,6 +85,33 @@ describe("applyDirtyBeforeUnload", () => {
     expect(applyDirtyBeforeUnload(e, true)).toBe(true);
     expect(prevented).toBe(true);
     expect(e.returnValue).toBe("You have unsaved changes.");
+  });
+});
+
+describe("project JSON picker helpers", () => {
+  it("open picker omits strict MIME filter (macOS greyed-json workaround)", () => {
+    expect(buildOpenProjectPickerOptions()).toEqual({ multiple: false });
+  });
+
+  it("save picker accepts common macOS JSON MIME aliases", () => {
+    expect(buildSaveProjectPickerOptions("Demo.json")).toMatchObject({
+      suggestedName: "Demo.json",
+      types: [
+        {
+          description: "Tawala project JSON",
+          accept: expect.objectContaining({
+            "application/json": [".json"],
+            "text/plain": [".json"],
+          }),
+        },
+      ],
+    });
+  });
+
+  it("isProjectJsonFileName checks the leaf extension", () => {
+    expect(isProjectJsonFileName("MyProject.json")).toBe(true);
+    expect(isProjectJsonFileName("/tmp/foo.JSON")).toBe(true);
+    expect(isProjectJsonFileName("notes.txt")).toBe(false);
   });
 });
 

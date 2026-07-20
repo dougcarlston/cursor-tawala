@@ -252,7 +252,7 @@ export function ProjectExplorer() {
                             linkProcessToForm(processName, form.name, "Post");
                             setExpandedForms((prev) => new Set(prev).add(form.name));
                           }}
-                          editing={editing?.kind === "form" && editing.name === form.name}
+                          editing={editing?.key === formKey}
                           onBeginRename={() =>
                             setEditing({ key: formKey, kind: "form", name: form.name })
                           }
@@ -282,9 +282,9 @@ export function ProjectExplorer() {
                                     leaf
                                     dragKind="process"
                                     dragName={link.name}
-                                    editing={
-                                      editing?.kind === "process" && editing.name === link.name
-                                    }
+                                    // Unique key — same process also appears under Processes;
+                                    // kind+name match would mount two inputs and blur-cancel.
+                                    editing={editing?.key === linkKey}
                                     onBeginRename={() =>
                                       setEditing({
                                         key: linkKey,
@@ -341,9 +341,7 @@ export function ProjectExplorer() {
                           leaf
                           dragKind="process"
                           dragName={proc.name}
-                          editing={
-                            editing?.kind === "process" && editing.name === proc.name
-                          }
+                          editing={editing?.key === procKey}
                           onBeginRename={() =>
                             setEditing({ key: procKey, kind: "process", name: proc.name })
                           }
@@ -385,9 +383,7 @@ export function ProjectExplorer() {
                           leaf
                           dragKind="document"
                           dragName={doc.name}
-                          editing={
-                            editing?.kind === "document" && editing.name === doc.name
-                          }
+                          editing={editing?.key === docKey}
                           onBeginRename={() =>
                             setEditing({ key: docKey, kind: "document", name: doc.name })
                           }

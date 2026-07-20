@@ -164,10 +164,10 @@ export function openDisplayImageConfigureFromEditor(): void {
 }
 
 /**
- * Select a function token and open Configure with its saved parameters.
- * Caller must register the palette editor (and saveSelection) so OK can rewrite the token.
+ * Highlight a function chip for delete / format — does not open Configure.
+ * Legacy parity: Configure is on **double-click** (`BrowserControl.body_DoubleClick`).
  */
-export function openFunctionTokenForEdit(
+export function selectFunctionToken(
   token: HTMLElement,
   editor: HTMLElement,
   saveSelection?: () => void,
@@ -176,8 +176,6 @@ export function openFunctionTokenForEdit(
     return false;
   }
   if (!editor.contains(token)) return false;
-  const ref = tokenRefFromElement(token);
-  if (!ref.functionId || !getFunctionDef(ref.functionId)) return false;
 
   editor.focus();
   const range = document.createRange();
@@ -186,6 +184,21 @@ export function openFunctionTokenForEdit(
   sel?.removeAllRanges();
   sel?.addRange(range);
   saveSelection?.();
+  return true;
+}
+
+/**
+ * Select a function token and open Configure with its saved parameters.
+ * Caller must register the palette editor (and saveSelection) so OK can rewrite the token.
+ */
+export function openFunctionTokenForEdit(
+  token: HTMLElement,
+  editor: HTMLElement,
+  saveSelection?: () => void,
+): boolean {
+  if (!selectFunctionToken(token, editor, saveSelection)) return false;
+  const ref = tokenRefFromElement(token as HTMLSpanElement);
+  if (!ref.functionId || !getFunctionDef(ref.functionId)) return false;
 
   const active = getActivePaletteEditor();
   const editorHandle: PaletteEditorHandle =
@@ -196,12 +209,7 @@ export function openFunctionTokenForEdit(
           commit: () => {},
           saveSelection: saveSelection ?? (() => {}),
           restoreSelection: () => {
-            const s = window.getSelection();
-            if (!s) return;
-            const r = document.createRange();
-            r.selectNode(token);
-            s.removeAllRanges();
-            s.addRange(r);
+            selectFunctionToken(token, editor);
           },
         };
 

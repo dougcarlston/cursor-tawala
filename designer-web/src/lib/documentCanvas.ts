@@ -22,6 +22,7 @@ import {
   setLayoutHomeTopPt,
 } from "./tableLayout";
 import { wordBoundsInText } from "./wordSelect";
+import { CARET_ZWSP, ensureTokenCaretLanding, placeCaretAfterToken, placeCaretBeforeToken } from "./tokenCaretLanding";
 
 const PLACED_TEXT_CLASS = "doc-placed-text";
 /** Marks an intentional blank placed line from Double-Return (keep until user deletes it). */
@@ -1387,17 +1388,6 @@ function clearPlacedBlockOverlap(editor: HTMLElement, block: HTMLElement): void 
   reflowPlacedLinesBelow(editor, block);
 }
 
-export function focusPlacedBlock(block: HTMLElement): Range | null {
-  const sel = window.getSelection();
-  if (!sel) return null;
-  const range = document.createRange();
-  range.selectNodeContents(block);
-  range.collapse(true);
-  sel.removeAllRanges();
-  sel.addRange(range);
-  return range;
-}
-
 /**
  * Drop target for a field on the Document canvas — always uses viewport coordinates,
  * not `caretRangeFromPoint` (which snaps beside floats/tables to the wrong corner).
@@ -1855,6 +1845,10 @@ function lastMeaningfulTextIn(block: HTMLElement): Text | null {
   let node = walker.nextNode();
   while (node) {
     const text = node as Text;
+    if (text.parentElement?.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`)) {
+      node = walker.nextNode();
+      continue;
+    }
     if ((text.textContent ?? "").replace(/\u00a0|\u200b/g, "").length) {
       last = text;
     }
@@ -1863,11 +1857,74 @@ function lastMeaningfulTextIn(block: HTMLElement): Text | null {
   return last;
 }
 
-export function focusPlacedBlockEnd(block: HTMLElement): Range | null {
+/**
+ * Last editable text node in a placed line, including ZWSP caret pads beside chips.
+ * Used for focus restore — ZWSP-only landings are valid caret homes.
+ */
+function lastEditableTextIn(block: HTMLElement): Text | null {
+  const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+  let last: Text | null = null;
+  let node = walker.nextNode();
+  while (node) {
+    const text = node as Text;
+    if (text.parentElement?.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`)) {
+      node = walker.nextNode();
+      continue;
+    }
+    if (text.data.length > 0) last = text;
+    node = walker.nextNode();
+  }
+  return last;
+}
+
+/** Ensure every field/function chip in `block` has ZWSP landings for a visible caret. */
+function ensurePlacedBlockTokenLandings(block: HTMLElement): void {
+  block.querySelectorAll(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`).forEach((node) => {
+    if (node instanceof HTMLElement) ensureTokenCaretLanding(node);
+  });
+}
+
+export function focusPlacedBlock(block: HTMLElement): Range | null {
+  ensurePlacedBlockTokenLandings(block);
   const sel = window.getSelection();
   if (!sel) return null;
   const range = document.createRange();
-  const lastText = lastMeaningfulTextIn(block);
+  // Prefer the first editable text (ZWSP before a leading chip) over collapsing
+  // onto a contenteditable=false token (invisible caret).
+  const walker = document.createTreeWalker(block, NodeFilter.SHOW_TEXT);
+  let first: Text | null = null;
+  let node = walker.nextNode();
+  while (node) {
+    const text = node as Text;
+    if (!text.parentElement?.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`) && text.data.length > 0) {
+      first = text;
+      break;
+    }
+    node = walker.nextNode();
+  }
+  if (first) {
+    range.setStart(first, 0);
+    range.collapse(true);
+  } else {
+    range.selectNodeContents(block);
+    range.collapse(true);
+  }
+  sel.removeAllRanges();
+  sel.addRange(range);
+  return range;
+}
+
+/**
+ * Prefer the end of the last editable text (including ZWSP pads after chips).
+ * Without a landing after a trailing contenteditable=false chip, collapse(false)
+ * leaves an invisible caret and arrow keys appear dead.
+ */
+export function focusPlacedBlockEnd(block: HTMLElement): Range | null {
+  ensurePlacedBlockTokenLandings(block);
+  const sel = window.getSelection();
+  if (!sel) return null;
+  const range = document.createRange();
+  const lastText = lastEditableTextIn(block) ?? lastMeaningfulTextIn(block);
   if (lastText) {
     range.setStart(lastText, lastText.data.length);
     range.collapse(true);
@@ -1977,8 +2034,92 @@ function layoutItemHeightPt(item: HTMLElement): number {
   return 12;
 }
 
+function isInlineDocToken(node: Node | null): node is HTMLElement {
+  return (
+    node instanceof HTMLElement &&
+    (node.classList.contains(FIELD_TOKEN_CLASS) ||
+      node.classList.contains(FUNCTION_TOKEN_CLASS))
+  );
+}
+
+function isZwspOnlyTextNode(node: Node | null): node is Text {
+  return node?.nodeType === Node.TEXT_NODE && (node as Text).data === CARET_ZWSP;
+}
+
+/** Walk siblings (skipping ZWSP / empty text) looking for a field/function chip. */
+function nearestTokenSibling(from: Node, direction: "before" | "after"): HTMLElement | null {
+  let sib: Node | null = direction === "after" ? from.nextSibling : from.previousSibling;
+  while (sib) {
+    if (isInlineDocToken(sib)) return sib;
+    if (
+      isZwspOnlyTextNode(sib) ||
+      (sib.nodeType === Node.TEXT_NODE && !meaningfulText(sib.textContent))
+    ) {
+      sib = direction === "after" ? sib.nextSibling : sib.previousSibling;
+      continue;
+    }
+    // Face/Size wrapper that only holds a ZWSP pad — keep walking.
+    if (sib instanceof HTMLElement && !isInlineDocToken(sib)) {
+      const inner = direction === "after" ? sib.firstChild : sib.lastChild;
+      if (
+        isZwspOnlyTextNode(inner) ||
+        (inner?.nodeType === Node.TEXT_NODE && !meaningfulText(inner.textContent))
+      ) {
+        sib = direction === "after" ? sib.nextSibling : sib.previousSibling;
+        continue;
+      }
+    }
+    break;
+  }
+  return null;
+}
+
 /**
- * Keep arrow / Home / End navigation inside Document placed lines (and move Up/Down between lines).
+ * Skip ZWSP pads / empty text to find a field/function chip beside the caret.
+ */
+function findTokenBesideCaret(direction: "before" | "after"): HTMLElement | null {
+  const sel = window.getSelection();
+  if (!sel || !sel.isCollapsed || sel.rangeCount === 0) return null;
+  const range = sel.getRangeAt(0);
+  const node = range.startContainer;
+  const offset = range.startOffset;
+
+  if (node.nodeType === Node.TEXT_NODE) {
+    const text = node as Text;
+    if (direction === "after") {
+      const rest = text.data.slice(offset).replace(/\u200b/g, "");
+      if (rest.length > 0) return null;
+    } else {
+      const lead = text.data.slice(0, offset).replace(/\u200b/g, "");
+      if (lead.length > 0) return null;
+    }
+    return nearestTokenSibling(text, direction);
+  }
+
+  if (node instanceof Element) {
+    if (direction === "after") {
+      const child = node.childNodes[offset] ?? null;
+      if (isInlineDocToken(child)) return child;
+      if (child) return nearestTokenSibling(child, "after") ?? (isInlineDocToken(child) ? child : null);
+      // Past last child — no token after.
+      return null;
+    }
+    if (offset > 0) {
+      const child = node.childNodes[offset - 1] ?? null;
+      if (isInlineDocToken(child)) return child;
+      if (child) return nearestTokenSibling(child, "before");
+      return null;
+    }
+    // Caret before first child of this element.
+    return nearestTokenSibling(node, "before");
+  }
+
+  return null;
+}
+
+/**
+ * Keep arrow / Home / End navigation inside Document placed lines (and move across
+ * same-column Returns). Jump Left/Right over field/function chips.
  * Within a soft-wrapped block, Up/Down move between visual lines until the first/last line.
  * Returns true when the event was handled (caller should preventDefault).
  */
@@ -1988,7 +2129,17 @@ export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): bool
 
   if (key === "ArrowRight") {
     if (rangeAtEdgeOfBlock(placed, "end")) {
+      const next = findAdjacentSameColumnPlaced(editor, placed, "next");
+      if (next) {
+        focusPlacedBlock(next);
+        return true;
+      }
       focusPlacedBlockEnd(placed);
+      return true;
+    }
+    const token = findTokenBesideCaret("after");
+    if (token) {
+      placeCaretAfterToken(token);
       return true;
     }
     return false;
@@ -1999,7 +2150,17 @@ export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): bool
   }
   if (key === "ArrowLeft") {
     if (rangeAtEdgeOfBlock(placed, "start")) {
+      const prev = findAdjacentSameColumnPlaced(editor, placed, "prev");
+      if (prev) {
+        focusPlacedBlockEnd(prev);
+        return true;
+      }
       focusPlacedBlock(placed);
+      return true;
+    }
+    const token = findTokenBesideCaret("before");
+    if (token) {
+      placeCaretBeforeToken(token);
       return true;
     }
     return false;
@@ -2013,15 +2174,13 @@ export function handlePlacedTextArrowKey(editor: HTMLElement, key: string): bool
     if (key === "ArrowUp" && !caretOnVisualLineEdge(placed, "first")) return false;
     if (key === "ArrowDown" && !caretOnVisualLineEdge(placed, "last")) return false;
 
-    const blocks = listPlacedBlocksSorted(editor);
-    const idx = blocks.indexOf(placed);
-    if (idx < 0) return true;
     const next =
       key === "ArrowUp"
-        ? blocks[Math.max(0, idx - 1)]
-        : blocks[Math.min(blocks.length - 1, idx + 1)];
-    if (next && next !== placed) {
-      focusPlacedBlockEnd(next);
+        ? findAdjacentSameColumnPlaced(editor, placed, "prev")
+        : findAdjacentSameColumnPlaced(editor, placed, "next");
+    if (next) {
+      if (key === "ArrowUp") focusPlacedBlockEnd(next);
+      else focusPlacedBlock(next);
     }
     return true;
   }
@@ -2383,12 +2542,106 @@ function deleteRangeWithinIsland(island: HTMLElement, fullRange: Range): void {
 }
 
 /**
- * Stop Chromium contenteditable from merging a `.doc-placed-text` into an adjacent
- * `table.user` (or another island) on Backspace/Delete.
+ * Same-column neighbor used for cross-Return Backspace / Delete merge.
+ * Side-by-side columns (no horizontal overlap) stay independent; tables are never neighbors.
+ */
+function findAdjacentSameColumnPlaced(
+  editor: HTMLElement,
+  placed: HTMLElement,
+  direction: "prev" | "next",
+): HTMLElement | null {
+  const blocks = listPlacedBlocksSorted(editor);
+  const idx = blocks.indexOf(placed);
+  if (idx < 0) return null;
+  const box = layoutItemBoxPt(placed);
+  if (direction === "prev") {
+    for (let i = idx - 1; i >= 0; i--) {
+      if (layoutBoxesHorizontallyOverlap(box, layoutItemBoxPt(blocks[i]))) {
+        return blocks[i];
+      }
+    }
+    return null;
+  }
+  for (let i = idx + 1; i < blocks.length; i++) {
+    if (layoutBoxesHorizontallyOverlap(box, layoutItemBoxPt(blocks[i]))) {
+      return blocks[i];
+    }
+  }
+  return null;
+}
+
+/** Drop empty `<br>` / ZWSP scaffolds so a merge join sits after real glyphs. */
+function stripTrailingPlacedScaffold(block: HTMLElement): void {
+  while (block.lastChild) {
+    const last = block.lastChild;
+    if (last.nodeName === "BR") {
+      block.removeChild(last);
+      continue;
+    }
+    if (
+      last.nodeType === Node.TEXT_NODE &&
+      !meaningfulText(last.textContent)
+    ) {
+      block.removeChild(last);
+      continue;
+    }
+    break;
+  }
+}
+
+/**
+ * Merge `from` into `into` (same-column Return undo). Caret lands at the join.
+ * Never used across table cells — callers only pass `.doc-placed-text` blocks.
+ */
+function mergePlacedTextBlocks(into: HTMLElement, from: HTMLElement): void {
+  stripTrailingPlacedScaffold(into);
+  const join = document.createRange();
+  join.selectNodeContents(into);
+  join.collapse(false);
+  const joinContainer = join.startContainer;
+  const joinOffset = join.startOffset;
+
+  while (from.firstChild) {
+    const child = from.firstChild;
+    // Empty destination: skip a lone `<br>` husk from the source blank line.
+    if (
+      !into.hasChildNodes() &&
+      child.nodeName === "BR" &&
+      from.childNodes.length === 1
+    ) {
+      from.removeChild(child);
+      continue;
+    }
+    into.appendChild(child);
+  }
+  clearBlankPlacedBlockIfContent(into);
+  from.remove();
+
+  const sel = window.getSelection();
+  if (!sel) return;
+  const caret = document.createRange();
+  try {
+    const max =
+      joinContainer.nodeType === Node.TEXT_NODE
+        ? (joinContainer.textContent?.length ?? 0)
+        : joinContainer.childNodes.length;
+    caret.setStart(joinContainer, Math.min(joinOffset, max));
+    caret.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(caret);
+  } catch {
+    focusPlacedBlockEnd(into);
+  }
+}
+
+/**
+ * Backspace / Delete at placed-line edges:
+ * - Chip immediately before/after caret → remove chip and keep a live caret landing.
+ * - Same-column previous/next `.doc-placed-text` → merge (Word-like across Returns).
+ * - No same-column neighbor → swallow the key (never let Chromium hop into a table cell).
  *
- * Classic failure: caret at the start of a short invent to the right of a table +
- * Backspace → the whole word hops into the bottom-right cell; neighboring placed
- * faces can also churn when the selection bled across the table.
+ * Classic failure this still prevents: caret at the start of a short invent to the
+ * right of a table + Backspace → word hops into the bottom-right cell.
  *
  * Returns true when the caller must `preventDefault` (DOM may already be updated).
  */
@@ -2418,16 +2671,67 @@ export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: str
       deleteRangeWithinIsland(focusIsland, range);
       return true;
     }
+    // Selected field/function chip(s): remove and restore a live caret (native often
+    // leaves selection empty → invisible caret + dead arrows).
+    const island = documentLayoutIsland(range.startContainer, editor);
+    if (island?.classList.contains(PLACED_TEXT_CLASS)) {
+      const tokens = [
+        ...island.querySelectorAll(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`),
+      ].filter((t): t is HTMLElement => t instanceof HTMLElement && tokenTouchesSelection(t, range));
+      if (tokens.length) {
+        const host = tokens[0].parentElement ?? island;
+        for (const token of tokens) token.remove();
+        ensurePlacedBlockTokenLandings(island);
+        if (isPlacedTextBlockEmpty(island)) {
+          const prev = findAdjacentSameColumnPlaced(editor, island, "prev");
+          island.remove();
+          if (prev) focusPlacedBlockEnd(prev);
+          else sel.removeAllRanges();
+        } else {
+          focusCaretIn(host, island);
+        }
+        if (listPlacedBlocksSorted(editor).length) reflowAllPlacedLines(editor);
+        return true;
+      }
+    }
     return false;
   }
 
   const placed = findPlacedTextBlock(range.startContainer, editor);
   if (placed) {
-    // Absolute placed lines are islands — never merge out at either edge.
+    // Chip immediately beside caret — delete chip, keep caret in a ZWSP landing.
+    if (isDeleteBackwardInput(inputType)) {
+      const token = findTokenBesideCaret("before");
+      if (token && placed.contains(token)) {
+        deleteInlineTokenKeepCaret(token, placed, "before");
+        return true;
+      }
+    }
+    if (isDeleteForwardInput(inputType)) {
+      const token = findTokenBesideCaret("after");
+      if (token && placed.contains(token)) {
+        deleteInlineTokenKeepCaret(token, placed, "after");
+        return true;
+      }
+    }
+
     if (isDeleteBackwardInput(inputType) && rangeAtEdgeOfBlock(placed, "start")) {
+      const prev = findAdjacentSameColumnPlaced(editor, placed, "prev");
+      if (prev) {
+        if (isPlacedTextBlockEmpty(placed)) {
+          placed.remove();
+          focusPlacedBlockEnd(prev);
+        } else {
+          mergePlacedTextBlocks(prev, placed);
+          ensurePlacedBlockTokenLandings(prev);
+        }
+        if (listPlacedBlocksSorted(editor).length) {
+          reflowAllPlacedLines(editor);
+        }
+        return true;
+      }
       if (isPlacedTextBlockEmpty(placed)) {
-        // Drop the husk yourself. Native Backspace would join into the previous
-        // table cell / placed sibling instead.
+        // No same-column neighbor — drop husk; do not join a table / other column.
         placed.remove();
         sel.removeAllRanges();
         if (listPlacedBlocksSorted(editor).length) {
@@ -2437,6 +2741,20 @@ export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: str
       return true;
     }
     if (isDeleteForwardInput(inputType) && rangeAtEdgeOfBlock(placed, "end")) {
+      const next = findAdjacentSameColumnPlaced(editor, placed, "next");
+      if (next) {
+        if (isPlacedTextBlockEmpty(next)) {
+          next.remove();
+          focusPlacedBlockEnd(placed);
+        } else {
+          mergePlacedTextBlocks(placed, next);
+          ensurePlacedBlockTokenLandings(placed);
+        }
+        if (listPlacedBlocksSorted(editor).length) {
+          reflowAllPlacedLines(editor);
+        }
+      }
+      // Always preventDefault at the edge so Chromium cannot pull a table cell in.
       return true;
     }
     return false;
@@ -2463,5 +2781,94 @@ export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: str
   }
 
   return false;
+}
+
+function tokenTouchesSelection(token: HTMLElement, range: Range): boolean {
+  try {
+    if (range.intersectsNode(token)) return true;
+  } catch {
+    /* ignore */
+  }
+  try {
+    const tr = document.createRange();
+    tr.selectNode(token);
+    return (
+      range.compareBoundaryPoints(Range.END_TO_START, tr) > 0 &&
+      range.compareBoundaryPoints(Range.START_TO_END, tr) < 0
+    );
+  } catch {
+    return false;
+  }
+}
+
+/** Remove one chip and leave a collapsed caret in an editable landing. */
+function deleteInlineTokenKeepCaret(
+  token: HTMLElement,
+  placed: HTMLElement,
+  from: "before" | "after",
+): void {
+  const parent = token.parentNode;
+  const anchor =
+    from === "before" ? token.previousSibling : token.nextSibling;
+  token.remove();
+  ensurePlacedBlockTokenLandings(placed);
+  if (isPlacedTextBlockEmpty(placed)) {
+    // Leave an editable husk so the designer can keep typing / arrowing on this line
+    // until a later Backspace at the start merges/removes it intentionally.
+    placed.innerHTML = "<br>";
+    markBlankPlacedBlock(placed);
+    focusPlacedBlock(placed);
+    return;
+  }
+  const sel = window.getSelection();
+  if (!sel) return;
+  const caret = document.createRange();
+  if (anchor && placed.contains(anchor)) {
+    if (anchor.nodeType === Node.TEXT_NODE) {
+      const text = anchor as Text;
+      const offset = from === "before" ? text.data.length : 0;
+      caret.setStart(text, Math.min(offset, text.data.length));
+    } else if (from === "before") {
+      caret.setStartAfter(anchor);
+    } else {
+      caret.setStartBefore(anchor);
+    }
+    caret.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(caret);
+    return;
+  }
+  if (parent instanceof HTMLElement && placed.contains(parent)) {
+    focusCaretIn(parent, placed);
+  } else {
+    focusPlacedBlockEnd(placed);
+  }
+}
+
+function focusCaretIn(host: Node, fallbackBlock: HTMLElement): void {
+  const sel = window.getSelection();
+  if (!sel) return;
+  if (host.nodeType === Node.TEXT_NODE) {
+    const text = host as Text;
+    const caret = document.createRange();
+    caret.setStart(text, text.data.length);
+    caret.collapse(true);
+    sel.removeAllRanges();
+    sel.addRange(caret);
+    return;
+  }
+  if (host instanceof HTMLElement) {
+    ensurePlacedBlockTokenLandings(fallbackBlock);
+    const text = lastEditableTextIn(host) ?? lastEditableTextIn(fallbackBlock);
+    if (text) {
+      const caret = document.createRange();
+      caret.setStart(text, text.data.length);
+      caret.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(caret);
+      return;
+    }
+  }
+  focusPlacedBlockEnd(fallbackBlock);
 }
 

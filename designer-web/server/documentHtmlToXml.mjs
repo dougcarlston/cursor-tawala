@@ -208,6 +208,17 @@ function unwrapBareFont(xml) {
   return String(xml ?? "").replace(/^<font>([\s\S]*)<\/font>$/i, "$1");
 }
 
+/**
+ * Legacy Java Font FACTORY cannot nest `<font>` — inner display components are dropped.
+ * Function tokens already emit a single `<font><itemization-table|…></font>`.
+ */
+const FONT_WRAPPED_DISPLAY_COMPONENT_RE =
+  /^<font(?:\s[^>]*)?>\s*<(itemization-table|display-mcq-label|record-count|sum|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|project-email-count)\b/i;
+
+function isFontWrappedDisplayComponent(xml) {
+  return FONT_WRAPPED_DISPLAY_COMPONENT_RE.test(String(xml ?? "").trim());
+}
+
 function inlineHtmlToXml(html, escAttr, escText) {
   if (!html) return "";
   let out = "";
@@ -274,6 +285,10 @@ function inlineHtmlToXml(html, escAttr, escText) {
       }
       const style = parseStyleAttr(open.attrs);
       let innerXml = inlineHtmlToXml(inner, escAttr, escText);
+      if (isFontWrappedDisplayComponent(innerXml)) {
+        out += innerXml;
+        continue;
+      }
       if (style["font-size"] || style["font-family"] || style.color) {
         const face = style["font-family"]?.split(",")[0]?.replace(/['"]/g, "") ?? "";
         const size = style["font-size"] ? fontSizeToLegacy(style["font-size"]) : 200;
@@ -301,8 +316,11 @@ function inlineHtmlToXml(html, escAttr, escText) {
       continue;
     }
     if (open.name === "font") {
+      const innerXml = inlineHtmlToXml(inner, escAttr, escText);
       // Flatten nested bare <font> so web components are not dropped by Java.
-      out += `<font>${unwrapBareFont(inlineHtmlToXml(inner, escAttr, escText))}</font>`;
+      out += isFontWrappedDisplayComponent(innerXml)
+        ? innerXml
+        : `<font>${unwrapBareFont(innerXml)}</font>`;
       continue;
     }
 

@@ -4,6 +4,7 @@
  */
 
 import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
+import { tryDeleteSelectedFormInlineTokens } from "@/lib/inlineTokenDelete";
 import { useProjectStore } from "@/store/projectStore";
 
 export type ShellEditCommand = "cut" | "copy" | "paste" | "undo" | "redo";
@@ -214,6 +215,43 @@ export function canUseSaveFilePicker(): boolean {
   return typeof savePickerWindow().showSaveFilePicker === "function";
 }
 
+/**
+ * Broad MIME map for Save pickers. macOS Launch Services often types fresh `.json`
+ * saves as `text/plain` until the second picker open — strict `application/json`
+ * alone greys valid project files (owner: first Open after Save always greyed).
+ */
+export const PROJECT_JSON_PICKER_ACCEPT: Record<string, string[]> = {
+  "application/json": [".json"],
+  "text/json": [".json"],
+  "text/plain": [".json"],
+};
+
+/** Save / Save As native picker options (Chromium). */
+export function buildSaveProjectPickerOptions(suggestedName: string) {
+  return {
+    suggestedName,
+    types: [
+      {
+        description: "Tawala project JSON",
+        accept: PROJECT_JSON_PICKER_ACCEPT,
+      },
+    ],
+  };
+}
+
+/**
+ * Open picker options. Intentionally **no** `types` filter — Chromium + macOS grey
+ * recently saved `.json` when the filter is `application/json` only (UTI/MIME lag).
+ * Callers validate the `.json` leaf name after pick.
+ */
+export function buildOpenProjectPickerOptions() {
+  return { multiple: false as const };
+}
+
+export function isProjectJsonFileName(filename: string): boolean {
+  return filename.trim().toLowerCase().endsWith(".json");
+}
+
 async function writeJsonToHandle(handle: FileSystemFileHandle, json: string): Promise<void> {
   const writable = await handle.createWritable();
   await writable.write(json);
@@ -273,15 +311,9 @@ async function writeProjectToDisk(
     try {
       if (!options.preferExistingHandle || !projectFileHandle) {
         // Must run while the click gesture is still active — before heavy JSON work.
-        projectFileHandle = await win.showSaveFilePicker!({
-          suggestedName: filename,
-          types: [
-            {
-              description: "Tawala project JSON",
-              accept: { "application/json": [".json"] },
-            },
-          ],
-        });
+        projectFileHandle = await win.showSaveFilePicker!(
+          buildSaveProjectPickerOptions(filename),
+        );
       }
       // Explorer root + JSON `name` follow the real leaf (Save As / OS rename in picker).
       syncProjectNameFromFileName(projectFileHandle.name);
@@ -367,16 +399,18 @@ export async function openProjectFromDisk(): Promise<boolean> {
   const win = savePickerWindow();
   if (typeof win.showOpenFilePicker !== "function") return false;
 
+  // Release the quiet-Save handle while the picker is open — Chromium greys the
+  // file we already hold (common right after Save when re-opening the same JSON).
+  const previousHandle = projectFileHandle;
+  projectFileHandle = null;
+
   try {
-    const [handle] = await win.showOpenFilePicker({
-      multiple: false,
-      types: [
-        {
-          description: "Tawala project JSON",
-          accept: { "application/json": [".json"] },
-        },
-      ],
-    });
+    const [handle] = await win.showOpenFilePicker(buildOpenProjectPickerOptions());
+    if (!isProjectJsonFileName(handle.name)) {
+      projectFileHandle = previousHandle;
+      useProjectStore.getState().setStatus("Open cancelled — choose a .json project file");
+      return true;
+    }
     const file = await handle.getFile();
     const text = await file.text();
     useProjectStore.getState().importJson(text);
@@ -387,6 +421,7 @@ export async function openProjectFromDisk(): Promise<boolean> {
     useProjectStore.getState().setStatus(`Opened ${handle.name}`);
     return true;
   } catch (err) {
+    projectFileHandle = previousHandle;
     const name = err instanceof DOMException ? err.name : "";
     if (name === "AbortError") {
       useProjectStore.getState().setStatus("Open cancelled");
@@ -505,6 +540,7 @@ export function confirmAndDeleteProjectEntity(): boolean {
 export function runShellDelete(): void {
   const { selection, selectedItemIndex } = useProjectStore.getState();
   if (selection.kind === "form" && selection.name && selectedItemIndex !== null) {
+    if (tryDeleteSelectedFormInlineTokens()) return;
     confirmAndDeleteSelectedFormItem();
     return;
   }

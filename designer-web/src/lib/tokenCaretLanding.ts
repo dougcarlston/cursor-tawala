@@ -115,6 +115,25 @@ export function ensureTokenCaretLanding(span: HTMLElement): void {
   coalesceAdjacentZwspPads(span);
 }
 
+/** Place the selection inside the editable landing before `span` (same parent paragraph). */
+export function placeCaretBeforeToken(span: HTMLElement): void {
+  ensureTokenCaretLanding(span);
+  const sel = window.getSelection();
+  if (!sel) return;
+  const before = document.createRange();
+  const landing = span.previousSibling;
+  if (landing?.nodeType === 3 /* TEXT_NODE */) {
+    const text = landing as Text;
+    // Sit at the end of the pre-token landing (after real glyphs, on ZWSP if pad-only).
+    before.setStart(text, text.data.length);
+  } else {
+    before.setStartBefore(span);
+  }
+  before.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(before);
+}
+
 /** Place the selection inside the editable landing after `span` (same parent paragraph). */
 export function placeCaretAfterToken(span: HTMLElement): void {
   ensureTokenCaretLanding(span);

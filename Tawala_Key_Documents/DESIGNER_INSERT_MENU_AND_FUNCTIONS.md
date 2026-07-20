@@ -144,7 +144,7 @@ Two-step flow: pick function → **Configure Function** dialog for parameters.
 2. Click into a Text body (not an MCQ question). **fx** and **Insert → Function…** should stay enabled after clicking Project Explorer or Items (row still selected).
 3. Place the caret *after* an existing function chip (not on it) → **fx** / Insert → Function opens the **Insert Function** list (not Configure).
 4. **Jul 19:** Selecting a function in the Insert list must not resize the dialog (long vs short descriptions used to change width/height and looked like a second “Configure” window). Insert Function is a fixed-size dialog like legacy `FixedDialog` 366×336; description pane height is fixed. Separately: Insert OK → Configure advances via `configureFunctionId` on the pending request; Configure overlay blocks chrome click-through onto **fx**.
-4. Click a function chip → Configure opens for that function.
+4. **Single-click** a function chip → selects it (for delete / format). **Double-click** → Configure opens for that function (legacy `BrowserControl` double-click).
 5. New empty Text → Insert → Function still opens the list.
 
 ### Insert Function dialog
@@ -604,7 +604,7 @@ Catalog matches. Document **and Form Text** HTML→XML: **emits** `<choice-tally
 
 **Design / Preview (Jul 16):** Structured Form Text `choiceTallyTable` (Simple Survey Report) was invisible on the Design canvas — now shows a **RESPONSE BAR GRAPH** token (click to Configure). Node Preview renders Choice / Count / Percentage table (+ bar) from session records.
 
-**Owner Jul 19 WHERE:** FIB Where OK. MCQ Where needs **choice letter** + `mcContains`/`mcEquals` (implemented TODO #11 — owner review tomorrow). Multi-select tally matches Bar Graph (TODO #12 — no undercount bug found; review tomorrow).
+**Owner Jul 19 WHERE:** FIB Where OK. **MCQ Where Passed Jul 20** (TODO #11 — choice letter + `mcContains`/`mcEquals`). **Multi-select tally vs Bar Graph Passed Jul 20** (TODO #12).
 
 ---
 
@@ -642,7 +642,7 @@ Catalog matches. Document + Form Text HTML→XML: **emits** `<response-totals-ta
 
 **Parked (owner Jul 17 — final Designer run-through):** Where clause **`<<field>>` is not blank** showed inappropriate list behavior. Capture exact wrong result on retest; see `DESIGNER_OPEN_BUGS.md` § Functions / TODO #11.
 
-**Owner Jul 19:** Multi-select undercount **investigated — no bug** (same `getValues` loop as Bar Graph; Preview regression tests). **Owner review tomorrow** vs Bar Graph on same multi MCQ. MCQ Where → TODO #11 (implemented; review tomorrow).
+**Owner Jul 19:** Multi-select undercount **investigated — no bug** (same `getValues` loop as Bar Graph; Preview regression tests). **Owner Passed Jul 20** — Totals and Bar Graph both pick up all choices on the same multi MCQ (TODO #12). **MCQ Where Passed Jul 20** (TODO #11).
 
 ---
 
@@ -690,7 +690,7 @@ Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: P
 
 Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.mjs` (`default` → XML comment). Form Text structured nodes also export via `jsonToXml.mjs` where noted.
 
-**Jul 19 smoke scope:** core Configure + Deploy finished for the ladder. **WHERE re-smoke complete Jul 19** for condition-bearing functions (FRC, MQL, QCT, RMRL, RANKED RESPONSE COUNTS/NAME, SINGLE QUESTION LIST, SUM; RESPONSE BAR GRAPH / RESPONSE TOTALS **FIB Where OK**). **Parked:** MCQ-aware Where (TODO #11); RESPONSE TOTALS multi-select undercount (TODO #12).
+**Jul 19–20 smoke scope:** core Configure + Deploy finished for the ladder. **WHERE re-smoke complete Jul 19** for condition-bearing functions (FRC, MQL, QCT, RMRL, RANKED RESPONSE COUNTS/NAME, SINGLE QUESTION LIST, SUM; RESPONSE BAR GRAPH / RESPONSE TOTALS **FIB Where OK**). **Jul 20:** TODO #11 MCQ-aware Where **Passed**; TODO #12 RESPONSE TOTALS multi-select vs Bar Graph **Passed**.
 
 
 | # | Function | id | XML emit | Owner smoke / notes |
@@ -708,8 +708,8 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 | 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | **Passed w/ caveats** — Jul 19 (Get Together Configure help; Column One = FIB/name; col2 = tick). **WHERE re-smoke Passed Jul 19** |
 | 12 | RANKED RESPONSE COUNTS | `popular-choice-count` | **Yes** | **Passed** — owner Jul 19. **WHERE re-smoke Passed Jul 19** |
 | 13 | RANKED RESPONSE NAME | `popular-choice-display` | **Yes** | **Passed** — owner Jul 19 (ties included; order among equal counts is arbitrary). **WHERE re-smoke Passed Jul 19** |
-| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | **Design+Preview Jul 16** — Report shows token + tally table; Simple/Multi Survey Deploy passed. **WHERE:** FIB OK Jul 19; MCQ Where → TODO #11 |
-| 15 | RESPONSE TOTALS | `response-totals-table` | **Yes** | **Passed** — owner Jul 19 (Choice/Count + MCQ title above). **WHERE:** FIB OK; multi-select undercount → TODO #12; MCQ Where → TODO #11 |
+| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | **Design+Preview Jul 16** — Report shows token + tally table; Simple/Multi Survey Deploy passed. **WHERE:** FIB OK Jul 19; **MCQ Where Passed Jul 20** (TODO #11) |
+| 15 | RESPONSE TOTALS | `response-totals-table` | **Yes** | **Passed** — owner Jul 19 (Choice/Count + MCQ title above). **WHERE:** FIB OK; **MCQ Where Passed Jul 20** (TODO #11). **Multi-select tally vs Bar Graph: Passed Jul 20** (TODO #12) |
 | 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | **Passed w/ caveats** — owner Jul 19 (`version="2"`; post-process Document is one response behind — legacy persist-after-process). **WHERE re-smoke Passed Jul 19** |
 | 17 | SUM | `sum` | **Yes** | **Passed** — owner Jul 19 (Browser Designer Configure + export + live Deploy total). **WHERE re-smoke Passed Jul 19** |
 
