@@ -51,7 +51,11 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Document rename does not update Process Show / Send / Append** — **Fixed Jul 19:** renaming a Document in Explorer now cascades into Process command refs (`documentRenameCascade.ts` via `renameDocument`), including nested If / ForEach.
 
+- **Process Connect dialog blocked multi-form Pre/Post** — **Fixed Jul 19:** legacy allows one process on many forms (checklist; Potluck `Show Results`). Dialog was a single-form dropdown/Attach flow. Now Pre and Post **form checklists** (check several forms); banner uses plural “N Forms” when appropriate. **Also:** drag a Process onto a Form in Explorer attaches as **Post-process** when that form’s Post slot is empty (legacy drop).
+
 - **Field rename does not update Functions / function labels** — **Fixed Jul 19:** renaming a Hidden Field, FIB blank alt label, or MCQ field name cascades into Document/Form Text function chips (`data-function-config` + visible `<<NAME(…)>>`), field tokens, and Process command field refs (`fieldRenameCascade.ts` via `updateFormItem`).
+
+- **Function chips insert at random sizes / resize nearby text** — **Fixed Jul 19 (regression):** Form Text still used badge `10px` (Document already inherited). Insert also painted sticky size onto the parent line. Now Form Text chips inherit like Document; insert no longer resizes the paragraph; default insert leaves chip size unset so it matches surrounding text.
 
 - **Ghost / deleted Document text still visible** — **Jul 19 false alarm (owner):** the unexpected question phrasing on Deploy came from **Form Item** MCQ text (Response Totals injects the Form question), not from deleted Document prose. Separately, Design still got a small hardening Jul 19 (discard orphan glyphs after delete; prune stacked duplicate placed lines; missing `reflowPlacedLinesBelow` import) — keep as regression prevention, not as confirmation of that screenshot.
 
@@ -90,7 +94,11 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Functions (final Designer run-through)
 
-- **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). **Do not dig now** — park for final Designer run-through. See also `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § RESPONSE TOTALS.
+- **Function Where on MCQ fields** — **Implemented Jul 19 (TODO #11).** Function Conditions switches to legacy `mcEquals` / `mcContains` / `mcIsBlank` / … when the left field is an MCQ (`onlyone` → MCOne vs MCMany). Value placeholder = choice letter. FIB Where unchanged. **Owner review tomorrow morning** (smoke: Bar Graph Where `mcContains` + letter `d` on multi MCQ).
+
+- **RESPONSE TOTALS multi-select undercount** — **Investigated Jul 19 (TODO #12): no code bug found.** Java + Preview tally both loop all `getValues` / array choices (same as Bar Graph). Added regression tests. Likely comparison to respondent count or wrong (single-select) sibling MCQ. **Owner review tomorrow morning** — same multi MCQ: Totals counts must match Bar Graph.
+
+- **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). May be the same MCQ/`mcIsNotBlank` gap as above. **Park** with TODO #11.
 
 ### Edit / Undo (main toolbar smoke Jul 18)
 
@@ -114,7 +122,9 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 ### Skip Instructions (parked — fix when Skip is reopened)
 
-- **Skip dialog re-open does not restore insertion point.** **Real bug; parked with Skip.** (Smoke: Skip dialog itself felt solid July 10.)
+- **Skip dialog: click / edit / delete statement ignored** — **Fixed Jul 19:** Edit Skip Instructions had no select / Modify / line delete (toolbar Delete disabled; Add always appended). Now Process-parity: click a line to edit (Modify), × / toolbar Delete, ↑↓, insert at the arrow (not always append). Also: SkipTo no longer resets the dropdown to the first FIB on open (that made Skip-after-FIB1 look like a no-op).
+
+- **Skip dialog re-open does not restore insertion point.** Soft leftover; session now also stores `insertIndex` + selection. Re-smoke when convenient.
 
 - **Skip modal overlay quirks** (positioning / full-screen dim). Soft / polish; Close-only dismiss is intentional. **Parked with Skip.**
 
@@ -179,6 +189,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 | Properties: Individual Items stay fully expanded | Moved to **TODOs** (UX polish, not broken) |
 | Dev server restart blanks Designer tab | Not a product bug (HMR); dropped |
 | Empty MDI until form clicked in Explorer | By design; dropped |
+| MDI windows slide under Fields (unreachable close/minimize) | **Fixed Jul 19** — drag/resize clamp keeps frame (and title-bar controls) inside `.mdi-surface` |
 
 ---
 

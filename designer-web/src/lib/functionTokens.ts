@@ -11,12 +11,8 @@ import {
   type FunctionDef,
 } from "./functionCatalog";
 import { formatFunctionConditionsDisplay, parseFunctionConditions } from "./functionConditions";
-import {
-  applyTypingFormatToPlacedBlock,
-  applyTypingFormatToToken,
-  findPlacedTextBlockAtCaret,
-} from "./documentCanvas";
-import { isBlankTypingContext, typingFormatForInsert } from "./paletteTypingFormat";
+import { applyTypingFormatToToken } from "./documentCanvas";
+import { typingFormatForInsert } from "./paletteTypingFormat";
 import { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
 
 export { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
@@ -211,11 +207,10 @@ export function insertFunctionTokenAtSelection(
     return;
   }
 
+  // Inherit surrounding text size. Do NOT paint typing format onto the parent
+  // placed block / paragraph — that resized adjacent labels when sticky size
+  // drifted from the palette default (owner Jul 19 regression).
   const typing = typingFormatForInsert(root);
-  const placed = findPlacedTextBlockAtCaret(root);
-  if (placed && isBlankTypingContext(root)) {
-    applyTypingFormatToPlacedBlock(placed, typing);
-  }
   applyTypingFormatToToken(span, typing);
 
   let range: Range | null = sel.rangeCount > 0 ? sel.getRangeAt(0) : null;

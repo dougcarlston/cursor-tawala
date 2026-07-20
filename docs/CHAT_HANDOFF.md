@@ -16,6 +16,34 @@ Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CUR
 
 ---
 
+## ⏱️ Session checkpoint — July 19, 2026 (evening)
+
+**Track:** Browser Designer (`designer-web/`). Branch `cursor/forms-canvas-wysiwyg`.
+
+### Accomplished this session
+
+- **WHERE re-smoke complete** for condition-bearing functions (FRC, MQL, QCT, RMRL, RANKED RESPONSE COUNTS/NAME, SINGLE QUESTION LIST, SUM; Bar Graph / Totals FIB Where OK).
+- **TODO #11 — MCQ-aware Function Where** implemented: `mcConditionOperators.ts`, `lookupFormFieldMcItem`, `FunctionConditionsEditor` switches to `mc*` ops by `onlyone`; export tests for `mcContains`/`mcEquals` + choice letter.
+- **TODO #12 — RESPONSE TOTALS multi-select** investigated: no Totals-specific undercount (same tally as Bar Graph); Preview regression tests for array multi-select.
+- Earlier same day (prior turns): MDI title-bar clamp under Fields; Process/QCT timing guidance; RMRL output semantics; docs for WHERE ladder.
+
+### Tomorrow morning — do first
+
+1. Owner smoke **#11** MCQ Where (letter `d` / `mcContains` on multi).
+2. Owner smoke **#12** Totals vs Bar Graph counts on same multi MCQ.
+3. Then held items as desired: Document drag-select with Field/function tokens; drag Function onto text line; Form rename → Process Show/Get/Delete cascade (optional).
+
+### Key files touched (this evening)
+
+- `designer-web/src/lib/mcConditionOperators.ts` (+ test)
+- `designer-web/src/lib/projectModel.ts` (`lookupFormFieldMcItem`)
+- `designer-web/src/components/FunctionConditionsEditor.tsx`
+- `designer-web/src/lib/functionConditions.ts`
+- `designer-web/server/documentHtmlToXml.test.mjs`, `responseTotalsPreview.test.mjs`, `choiceTallyPreview.test.mjs`
+- Specs: `DESIGNER_OPEN_TODOS.md`, `DESIGNER_OPEN_BUGS.md`, `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`
+
+---
+
 ## ⏱️ Session checkpoint — July 2026
 
 **Track:** Browser Designer (`designer-web/`). **Commit + push** requested by owner (this checkpoint).

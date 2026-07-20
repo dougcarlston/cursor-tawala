@@ -106,18 +106,42 @@ function ProcessConnectionBanner({
     </button>
   );
 
+  const preLinks = links.filter((l) => l.role === "Pre");
+  const postLinks = links.filter((l) => l.role === "Post");
+
   let message: ReactNode;
   if (links.length === 0) {
+    // Legacy Post-centric default when nothing is linked (ViewInfoBarNoConnections).
     message = (
       <>
         Not connected as Pre-Process or Post-Process to any Form. Click {hereLink} to change.
       </>
     );
-  } else if (links.length === 1) {
-    const { role, formName } = links[0];
+  } else if (preLinks.length === 0 && postLinks.length === 1) {
     message = (
       <>
-        Connected as {role}-Process to Form &apos;{formName}&apos;. Click {hereLink} to change.
+        Connected as Post-Process to Form &apos;{postLinks[0].formName}&apos;. Click {hereLink}{" "}
+        to change.
+      </>
+    );
+  } else if (preLinks.length === 0 && postLinks.length > 1) {
+    // Legacy ViewInfoBarManyConnections — same process may post on many forms.
+    message = (
+      <>
+        Connected as Post-Process to {postLinks.length} Forms. Click {hereLink} to change.
+      </>
+    );
+  } else if (postLinks.length === 0 && preLinks.length === 1) {
+    message = (
+      <>
+        Connected as Pre-Process to Form &apos;{preLinks[0].formName}&apos;. Click {hereLink}{" "}
+        to change.
+      </>
+    );
+  } else if (postLinks.length === 0 && preLinks.length > 1) {
+    message = (
+      <>
+        Connected as Pre-Process to {preLinks.length} Forms. Click {hereLink} to change.
       </>
     );
   } else {

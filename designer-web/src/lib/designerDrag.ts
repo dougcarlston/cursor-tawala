@@ -6,6 +6,8 @@ import type { FormItemType } from "@/types/tawala";
 import type { WindowKind } from "@/store/projectStore";
 
 export const EXPLORER_ENTITY_MIME = "application/x-tawala-explorer-entity";
+/** Present in `dataTransfer.types` while dragging a Process (readable during dragover). */
+export const EXPLORER_PROCESS_MIME = "application/x-tawala-explorer-process";
 export const FORM_ITEM_MIME = "application/x-tawala-form-item";
 export const PROCESS_STATEMENT_MIME = "application/x-tawala-process-statement";
 
@@ -22,12 +24,22 @@ export function setExplorerEntityDrag(
   const payload: ExplorerEntityDrag = { kind, name };
   dataTransfer.setData(EXPLORER_ENTITY_MIME, JSON.stringify(payload));
   dataTransfer.setData("text/plain", `${kind}:${name}`);
+  if (kind === "process") {
+    // Kind marker only — value unused; presence lets form rows accept during dragover.
+    dataTransfer.setData(EXPLORER_PROCESS_MIME, name);
+  }
   dataTransfer.effectAllowed = "copy";
 }
 
 export function hasExplorerEntityDrag(dataTransfer: DataTransfer | null): boolean {
   if (!dataTransfer) return false;
   return Array.from(dataTransfer.types).includes(EXPLORER_ENTITY_MIME);
+}
+
+/** True while dragging a Process from Project Explorer (safe to call in dragover). */
+export function hasExplorerProcessDrag(dataTransfer: DataTransfer | null): boolean {
+  if (!dataTransfer) return false;
+  return Array.from(dataTransfer.types).includes(EXPLORER_PROCESS_MIME);
 }
 
 export function readExplorerEntityDrag(

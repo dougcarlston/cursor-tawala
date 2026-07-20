@@ -1,4 +1,4 @@
-import { SKIP_OPERATOR_LABELS, UNARY_SKIP_OPERATORS } from "./skipSummary";
+import { conditionOpLabel, isUnaryConditionOp } from "./mcConditionOperators";
 
 export type FunctionConditionsCombinator = "and" | "or";
 
@@ -52,7 +52,7 @@ export function functionConditionsRowIsEmpty(row: FunctionConditionRow): boolean
 
 export function functionConditionsRowIsComplete(row: FunctionConditionRow): boolean {
   if (!row.field.trim()) return false;
-  if (UNARY_SKIP_OPERATORS.has(row.op)) return true;
+  if (isUnaryConditionOp(row.op)) return true;
   return row.value.trim().length > 0;
 }
 
@@ -73,8 +73,8 @@ export function formatFunctionConditionsDisplay(state: FunctionConditionsState):
   const joiner = state.combinator === "or" ? " OR " : " AND ";
   return filled
     .map((row) => {
-      const opLabel = SKIP_OPERATOR_LABELS[row.op] ?? row.op;
-      if (UNARY_SKIP_OPERATORS.has(row.op)) {
+      const opLabel = conditionOpLabel(row.op);
+      if (isUnaryConditionOp(row.op)) {
         return `${row.field.trim()} ${opLabel}`;
       }
       const val = row.value.trim();

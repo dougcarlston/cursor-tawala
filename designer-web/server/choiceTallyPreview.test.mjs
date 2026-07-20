@@ -43,14 +43,20 @@ describe("renderChoiceTallyTableHtml", () => {
     expect(html).toContain('class="bar"');
   });
 
-  it("shows zero counts when MCQ has choices but no responses yet", () => {
+  it("counts every selected choice on multi-select (array values)", () => {
     const html = renderChoiceTallyTableHtml(
-      { field: "Survey:Q1", form: "Survey" },
-      { project, records: { Survey: [] } },
+      { field: "Record:Survey:Q1", form: "Survey" },
+      {
+        project,
+        records: {
+          Survey: [{ Q1: ["a", "b"] }, { Q1: ["b", "c"] }],
+        },
+      },
     );
-    expect(html).toContain("<table");
-    expect(html).toContain("Yes");
-    expect(html).toContain(">0<");
+    // Four selections total: a=1 (25%), b=2 (50%), c=1 (25%)
+    expect(html).toMatch(/>1</);
+    expect(html).toContain("25%");
+    expect(html).toContain("50%");
   });
 });
 

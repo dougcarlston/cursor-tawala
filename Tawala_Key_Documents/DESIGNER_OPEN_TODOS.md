@@ -6,6 +6,18 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 
 ---
 
+## ☀️ Tomorrow morning (Jul 20) — review first
+
+1. **Review TODO #11 — MCQ-aware Function Where**  
+   Drop an MCQ into Function Where (e.g. RESPONSE BAR GRAPH on multi MCQ4) → operator should be **contains** (stores `mcContains`) → value = choice letter **`d`** (not `Yellow`) → Redeploy → graph filters to rows that include that choice. Single-select MCQ → **equals** / `mcEquals`. FIB Where still uses normal equals/contains.
+
+2. **Review TODO #12 — RESPONSE TOTALS vs Bar Graph on same multi MCQ**  
+   Same multi-select question, no Where: Totals **Count** column and Bar Graph **Count** must match (each selected choice counted). If Totals still looks “low,” note whether you compared to **people** (N) vs **selections** (can be > N).
+
+Then continue from Owner review queue / held Document bugs as desired.
+
+---
+
 ## Document editor & export
 
 - **Document HTML → XML export incomplete** — only some function types emit real XML; others become comments. Tables/placed text improved in `documentHtmlToXml.mjs` but export is still partial. (Sources: Document palette & typewriter; Document WYSIWYG & palette)
@@ -84,12 +96,10 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder. **Document blocks — owner smoke Jul 15: pass.** |
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
-| 9 | **Wire the rest of the functions** | **Active — smoke ladder (Jul 16–18).** Configure for all 17. **Deferred stubs:** categorizer, export-team-roster, link-to-project-details, paypal. **Template smoke done:** itemization (SignupSheet), choice-tally (Simple + Multi Survey), correlation (Get Together caveats), sum (Potluck caveats). **Owner passed Jul 18:** display-image, display-mcq-label. **Emit locked by tests** (`documentHtmlToXml.test.mjs` function emit matrix). **Still smoke-needed:** record-count, project-email-count, response-totals, simple-list, ranked* (3). Full matrix: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`. |
+| 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Parked follow-ups:** TODO #11 MCQ-aware Where; TODO #12 RESPONSE TOTALS multi-select. Core Configure+Deploy for ladder done earlier Jul 19. |
 | 10 | **Get Deploy working** | **Usable Jul 12–16** on 5173/3001 and 8080 when Tomcat up (`dev`/`dev`). Still: email Send, theme polish, AdminDash→Thank you navigation bug. |
-
-**Sequencing note (owner Jul 12):** Finish **#9 (functions)** and **#10 (Deploy)**, then **re-review sample projects** (#7 second pass).
-
-**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
+| 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner review first thing tomorrow.** |
+| 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner review first thing tomorrow** (side-by-side Totals vs Bar Graph on multi MCQ). |**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
 
 ---
 

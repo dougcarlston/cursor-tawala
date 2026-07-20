@@ -36,4 +36,23 @@ describe("renderResponseTotalsTableHtml", () => {
     expect(html).toContain(">Europe</td><td>2</td>");
     expect(html).toContain(">North America</td><td>1</td>");
   });
+
+  it("counts every selected choice on multi-select (array values)", () => {
+    const html = renderResponseTotalsTableHtml(
+      { field: "Record:Form 1:Q1", form: "Form 1" },
+      {
+        project,
+        formName: "Form 1",
+        records: {
+          "Form 1": [
+            { Q1: ["a", "b"] },
+            { Q1: ["b"] },
+          ],
+        },
+      },
+    );
+    // Two people: a once, b twice — not one answer per person.
+    expect(html).toContain(">Europe</td><td>1</td>");
+    expect(html).toContain(">North America</td><td>2</td>");
+  });
 });

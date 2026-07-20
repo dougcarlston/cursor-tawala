@@ -15,6 +15,7 @@ import {
   PROCESS_PANEL_LABELS,
   PROCESS_STATEMENT_PALETTE,
 } from "@/processStatements";
+import { clampMdiWindowBounds, clampMdiWindowOrigin } from "@/lib/mdiWindowClamp";
 
 /** Minimum interactive size so a window never collapses past its chrome. */
 const MIN_W = 320;
@@ -66,10 +67,16 @@ export function CanvasWindow({ win, active }: Props) {
       let nx = origin.x + (ev.clientX - startX);
       let ny = origin.y + (ev.clientY - startY);
       if (parent) {
-        const maxX = Math.max(0, parent.clientWidth - 80);
-        const maxY = Math.max(0, parent.clientHeight - 28);
-        nx = Math.max(0, Math.min(nx, maxX));
-        ny = Math.max(0, Math.min(ny, maxY));
+        const clamped = clampMdiWindowOrigin(
+          nx,
+          ny,
+          win.w,
+          win.h,
+          parent.clientWidth,
+          parent.clientHeight,
+        );
+        nx = clamped.x;
+        ny = clamped.y;
       }
       setWindowBounds(win.id, { x: nx, y: ny });
     };
@@ -83,6 +90,7 @@ export function CanvasWindow({ win, active }: Props) {
     const startX = e.clientX;
     const startY = e.clientY;
     const b = { x: win.x, y: win.y, w: win.w, h: win.h };
+    const parent = parentEl();
     const onMove = (ev: PointerEvent) => {
       const dx = ev.clientX - startX;
       const dy = ev.clientY - startY;
@@ -96,6 +104,15 @@ export function CanvasWindow({ win, active }: Props) {
       if (dir.includes("n")) {
         h = Math.max(MIN_H, b.h - dy);
         y = b.y + (b.h - h);
+      }
+      if (parent) {
+        ({ x, y, w, h } = clampMdiWindowBounds(
+          { x, y, w, h },
+          parent.clientWidth,
+          parent.clientHeight,
+          MIN_W,
+          MIN_H,
+        ));
       }
       setWindowBounds(win.id, { x, y, w, h });
     };

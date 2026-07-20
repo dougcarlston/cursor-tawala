@@ -3,7 +3,11 @@ import { useProjectStore } from "@/store/projectStore";
 import type { Selection } from "@/types/tawala";
 import { linkedProcessesForForm } from "@/lib/projectModel";
 import { fieldDropRejectHandlers } from "./FieldDropInputs";
-import { setExplorerEntityDrag } from "@/lib/designerDrag";
+import {
+  hasExplorerProcessDrag,
+  readExplorerEntityDrag,
+  setExplorerEntityDrag,
+} from "@/lib/designerDrag";
 
 /** Category of a renamable tree leaf. */
 type RenameKind = "form" | "process" | "document";
@@ -31,6 +35,7 @@ export function ProjectExplorer() {
   const renameForm = useProjectStore((s) => s.renameForm);
   const renameProcess = useProjectStore((s) => s.renameProcess);
   const renameDocument = useProjectStore((s) => s.renameDocument);
+  const linkProcessToForm = useProjectStore((s) => s.linkProcessToForm);
 
   // Inline rename state. Entered by F2, or by clicking an already-selected
   // Form/Process/Document row (legacy BeginEdit). Long-press still works as a fallback.
@@ -240,6 +245,13 @@ export function ProjectExplorer() {
                           leaf={links.length === 0}
                           dragKind="form"
                           dragName={form.name}
+                          acceptProcessAsPost={!form.process}
+                          onProcessDropAsPost={(processName) => {
+                            // Legacy: drag process onto form → Post-process when slot empty.
+                            if (form.process && form.process !== processName) return;
+                            linkProcessToForm(processName, form.name, "Post");
+                            setExpandedForms((prev) => new Set(prev).add(form.name));
+                          }}
                           editing={editing?.kind === "form" && editing.name === form.name}
                           onBeginRename={() =>
                             setEditing({ key: formKey, kind: "form", name: form.name })
@@ -439,6 +451,8 @@ function TreeNode({
   onRenameSubmit,
   dragKind,
   dragName,
+  acceptProcessAsPost,
+  onProcessDropAsPost,
 }: {
   label: string;
   expanded: boolean;
@@ -453,12 +467,16 @@ function TreeNode({
   /** When set with dragName, the row can be dragged onto the MDI canvas to open a window. */
   dragKind?: "form" | "process" | "document";
   dragName?: string;
+  /** Form rows: accept a dragged process as Post-process (legacy explorer drop). */
+  acceptProcessAsPost?: boolean;
+  onProcessDropAsPost?: (processName: string) => void;
 }) {
   const renamable = !!onBeginRename;
   const holdTimer = useRef<number | null>(null);
   const pressOrigin = useRef<{ x: number; y: number } | null>(null);
   /** True when this press started a drag — suppress click→rename. */
   const didDrag = useRef(false);
+  const [dropHover, setDropHover] = useState(false);
   const canDrag = !!dragKind && !!dragName && !editing;
 
   const clearHold = () => {
@@ -502,10 +520,17 @@ function TreeNode({
     onSelect();
   };
 
+  const processDropActive = !!onProcessDropAsPost && acceptProcessAsPost !== false;
+
   return (
     <div
-      className={`tree-node${selected ? " selected" : ""}`}
+      className={`tree-node${selected ? " selected" : ""}${dropHover ? " drop-target" : ""}`}
       draggable={canDrag}
+      title={
+        processDropActive
+          ? "Drop a Process here to attach it as Post-process"
+          : undefined
+      }
       onDragStart={(e) => {
         if (!canDrag || !dragKind || !dragName) {
           e.preventDefault();
@@ -514,6 +539,22 @@ function TreeNode({
         didDrag.current = true;
         clearHold();
         setExplorerEntityDrag(e.dataTransfer, dragKind, dragName);
+      }}
+      onDragOver={(e) => {
+        if (!processDropActive || !hasExplorerProcessDrag(e.dataTransfer)) return;
+        e.preventDefault();
+        e.dataTransfer.dropEffect = "copy";
+        setDropHover(true);
+      }}
+      onDragLeave={() => setDropHover(false)}
+      onDrop={(e) => {
+        setDropHover(false);
+        if (!processDropActive) return;
+        const entity = readExplorerEntityDrag(e.dataTransfer);
+        if (!entity || entity.kind !== "process") return;
+        e.preventDefault();
+        e.stopPropagation();
+        onProcessDropAsPost?.(entity.name);
       }}
       onClick={handleClick}
       onMouseDown={handleMouseDown}

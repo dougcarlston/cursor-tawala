@@ -161,10 +161,17 @@ From the full MDI screenshot (`ParentCoaches` example):
 
 | State | Banner text |
 |-------|-------------|
-| Not connected as Post-Process | *Not connected as Post-Process to any Form. Click here to change.* |
-| Connected as Post-Process | *Connected as Post-Process to Form 'ParentCoaches'. Click here to change.* |
+| Not connected | *Not connected as Pre-Process or Post-Process to any Form. Click here to change.* |
+| Connected as Post-Process (one form) | *Connected as Post-Process to Form 'ParentCoaches'. Click here to change.* |
+| Connected as Post-Process (many forms) | *Connected as Post-Process to N Forms. Click here to change.* |
+| Connected as Pre-Process (one / many) | Same wording with **Pre-Process** |
+| Mix Pre + Post | Lists each link; Connect dialog uses form checklists |
 
-Pre-processes that are not Post-processes show the **Not connected** banner text (e.g. `Process - Pre-ParentCoaches` in the screenshot). Full banner behavior: `DESIGNER_PROCESS_STATEMENTS_IF.md` § Process connection.
+**Multi-form:** The same process may be Pre and/or Post on more than one form (checklist in Connect dialog). Each form still has at most one Pre and one Post slot.
+
+**Drag process → form (Jul 19):** Drag a Process from the Processes folder (or a linked child) onto a Form row to attach it as **Post-process** when that form’s Post slot is empty (legacy explorer drop). Use the Connect dialog checklist for Pre, multi-form, or replacing an occupied slot.
+
+Pre-processes that are not Post-processes show Pre-only banner text when linked (e.g. `Process - Pre-ParentCoaches`). Full banner behavior: `DESIGNER_PROCESS_STATEMENTS_IF.md` § Process connection.
 
 ---
 
@@ -705,7 +712,7 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Rename (Jul 19):** click selected name or **F2** → inline edit. **Gaps:** auto-name on attach when Connect Pre/Post UI exists; dotted lines polish |
+| Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Rename (Jul 19):** click selected name or **F2** → inline edit. **Drag process → form (Jul 19):** drop onto Form attaches as Post when slot empty. **Gaps:** auto-name on attach when Connect Pre/Post menu exists; dotted lines polish |
 | Middle column | Items / Statements / empty | Form items palette only; always visible |
 | Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; **Phase 2 (July 2026):** drag **and** double-click insert `<<name>>` into item property editors, rich-text surface, and process JSON (Records/RecordSet drop context deferred) |
 | Insert | Context-sensitive Form / Process / Document menus | **Mostly wired (Jul 2026):** Form top-7 + Image/Invitation/Hyperlink/Function; Process statements; Document Image/Invitation/Hyperlink/Function + **Field** (Jul 17 — Fields palette selection). Menu before View (owner OK) |

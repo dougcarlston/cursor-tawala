@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import type { FormItem, SkipCommand, TawalaForm, TawalaProject } from "@/types/tawala";
 import { IfStatementBuilder } from "@/components/IfStatementBuilder";
@@ -6,8 +6,16 @@ import { SetStatementBuilder } from "@/components/SetStatementBuilder";
 import { FieldTextInput } from "@/components/FieldDropInputs";
 import { SkipScriptView } from "@/components/SkipScriptView";
 import { useDraggableDialog } from "@/hooks/useDraggableDialog";
-import { buildScriptLines, findInsertionLineIndex, formatInsertPathLabel } from "@/lib/skipScript";
-import { getCommandsAtInsertPath } from "@/lib/skipInsertPath";
+import { formatInsertPathLabel } from "@/lib/skipScript";
+import { buildScriptLines } from "@/lib/skipScript";
+import { insertCommandAtPoint } from "@/lib/processInsert";
+import {
+  canMoveProcessCommandAtPath,
+  deleteProcessCommandAtPath,
+  getProcessCommandAtPath,
+  moveProcessCommandAtPath,
+  replaceProcessCommandAtPath,
+} from "@/lib/processScript";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { collectKnownVariables } from "@/lib/projectModel";
 import {
@@ -19,7 +27,9 @@ import {
   EMPTY_CONDITION_ROW,
   EMPTY_IF_BUILDER,
   EMPTY_SET_BUILDER,
+  ifBuilderFromCommand,
   ifBuilderHasDraft,
+  setBuilderFromCommand,
   setBuilderHasDraft,
   setBuilderIsValid,
   type IfBuilderState,
@@ -54,6 +64,8 @@ const SKIP_STATEMENT_BUTTONS = [
 
 type PanelMode = "none" | "if" | "skipTo" | "set" | "comment";
 
+const END_OF_FORM = "__EndOfForm__";
+
 const SKIP_TOOLBAR = [
   { id: "cut", label: "Cut", icon: <CutIcon /> },
   { id: "copy", label: "Copy", icon: <CopyIcon /> },
@@ -63,11 +75,25 @@ const SKIP_TOOLBAR = [
   { id: "redo", label: "Redo", icon: <RedoIcon /> },
 ] as const;
 
+/** Destinations: question/text/heading labels only (not Hidden Field / Break / Skip). */
 function skipDestinations(items: FormItem[]): { value: string; label: string }[] {
   const dests = items
-    .filter((i) => i.type !== "skipInstructions" && i.type !== "break")
-    .map((i) => ({ value: i.label, label: i.label }));
-  dests.push({ value: "__EndOfForm__", label: "End of Form" });
+    .filter(
+      (i) =>
+        i.type !== "skipInstructions" &&
+        i.type !== "break" &&
+        i.type !== "field",
+    )
+    .map((i) => {
+      const alt = String(
+        ("alternateLabel" in i && i.alternateLabel) ||
+          ("name" in i && (i as { name?: string }).name) ||
+          "",
+      ).trim();
+      const value = alt || i.label;
+      return { value, label: alt && alt !== i.label ? `${i.label} (${alt})` : i.label };
+    });
+  dests.push({ value: END_OF_FORM, label: "End of Form" });
   return dests;
 }
 
@@ -90,6 +116,10 @@ export function SkipInstructionsDialog({
       structuredClone(Array.isArray(initialCommands) ? initialCommands : []),
   );
   const [insertPath, setInsertPath] = useState(restored?.insertPath ?? "root");
+  const [insertIndex, setInsertIndex] = useState(restored?.insertIndex ?? 0);
+  const [selectedCommandPath, setSelectedCommandPath] = useState<string | null>(
+    restored?.selectedCommandPath ?? null,
+  );
   const [panel, setPanel] = useState<PanelMode>(restored?.panel ?? "none");
   const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(
     () => restored?.ifBuilder ?? freshIfBuilder(),
@@ -97,7 +127,7 @@ export function SkipInstructionsDialog({
   const [setBuilder, setSetBuilder] = useState<SetBuilderState>(
     () => restored?.setBuilder ?? freshSetBuilder(),
   );
-  const [skipToDest, setSkipToDest] = useState(restored?.skipToDest ?? "__EndOfForm__");
+  const [skipToDest, setSkipToDest] = useState(restored?.skipToDest ?? END_OF_FORM);
   const [commentText, setCommentText] = useState(restored?.commentText ?? "");
 
   const scriptRef = useRef<HTMLDivElement>(null);
@@ -113,6 +143,8 @@ export function SkipInstructionsDialog({
     writeSkipDialogSession(sessionKey, {
       commands,
       insertPath,
+      insertIndex,
+      selectedCommandPath,
       panel,
       ifBuilder,
       setBuilder,
@@ -123,6 +155,8 @@ export function SkipInstructionsDialog({
     sessionKey,
     commands,
     insertPath,
+    insertIndex,
+    selectedCommandPath,
     panel,
     ifBuilder,
     setBuilder,
@@ -140,19 +174,39 @@ export function SkipInstructionsDialog({
     () => collectKnownVariables(project, commands),
     [project, commands],
   );
-  const insertAfterIndex = useMemo(
-    () => findInsertionLineIndex(scriptLines, insertPath),
-    [scriptLines, insertPath],
-  );
   const isEmpty = commands.length === 0;
   const canAddComment = commentText.trim().length > 0;
   const insertPathLabel = formatInsertPathLabel(insertPath);
 
-  const appendToTarget = (cmd: SkipCommand) => {
-    const nextCommands = structuredClone(commands);
-    const target = getCommandsAtInsertPath(nextCommands, insertPath);
-    target.push(structuredClone(cmd));
-    setCommands(nextCommands);
+  const selectedCommand =
+    selectedCommandPath != null
+      ? getProcessCommandAtPath(commands, selectedCommandPath)
+      : null;
+  const isModifyIf =
+    panel === "if" && selectedCommand?.cmd === "if" && selectedCommandPath != null;
+  const isModifySkipTo =
+    panel === "skipTo" &&
+    selectedCommand?.cmd === "skip" &&
+    selectedCommandPath != null;
+  const isModifySet =
+    panel === "set" && selectedCommand?.cmd === "set" && selectedCommandPath != null;
+  const isModifyComment =
+    panel === "comment" &&
+    selectedCommand?.cmd === "comment" &&
+    selectedCommandPath != null;
+
+  const setInsertPoint = (path: string, index: number) => {
+    setSelectedCommandPath(null);
+    setInsertPath(path);
+    setInsertIndex(index);
+  };
+
+  const insertAtArrow = (cmd: SkipCommand) => {
+    const result = insertCommandAtPoint(commands, insertPath, insertIndex, cmd);
+    setCommands(result.commands);
+    setInsertPath(result.insertPath);
+    setInsertIndex(result.insertIndex);
+    setSelectedCommandPath(null);
     requestAnimationFrame(() => {
       scriptRef.current?.scrollTo(0, scriptRef.current.scrollHeight);
     });
@@ -163,25 +217,42 @@ export function SkipInstructionsDialog({
     setActiveFieldTarget(null);
   };
 
-  const addIfBlock = () => {
+  const submitIf = () => {
     const condition = buildConditionFromRows(ifBuilder.combinator, ifBuilder.rows);
+    if (isModifyIf && selectedCommandPath) {
+      const existing = getProcessCommandAtPath(commands, selectedCommandPath);
+      if (existing?.cmd === "if") {
+        const updated: SkipCommand = {
+          cmd: "if",
+          condition,
+          then: (existing.then as SkipCommand[] | undefined) ?? [],
+          ...(ifBuilder.hasElse
+            ? { else: (existing.else as SkipCommand[] | undefined) ?? [] }
+            : {}),
+        };
+        setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, updated));
+        return;
+      }
+    }
     const ifCmd: SkipCommand = {
       cmd: "if",
       condition,
       then: [],
       ...(ifBuilder.hasElse ? { else: [] } : {}),
     };
-    const nextCommands = structuredClone(commands);
-    const target = getCommandsAtInsertPath(nextCommands, insertPath);
-    const ifIndex = target.length;
-    target.push(ifCmd);
-    const thenPath =
-      insertPath === "root" ? `root/${ifIndex}/then` : `${insertPath}/${ifIndex}/then`;
-    setCommands(nextCommands);
-    setInsertPath(thenPath);
+    insertAtArrow(ifCmd);
   };
 
-  const addSet = () => {
+  const submitSkipTo = () => {
+    const cmd: SkipCommand = { cmd: "skip", to: skipToDest };
+    if (isModifySkipTo && selectedCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
+  const submitSet = () => {
     if (!setBuilderIsValid(setBuilder)) return;
     const cmd: SkipCommand = {
       cmd: "set",
@@ -191,13 +262,78 @@ export function SkipInstructionsDialog({
     if (setBuilder.arithmeticAsText) {
       cmd.arithmeticAsText = true;
     }
-    appendToTarget(cmd);
+    if (isModifySet && selectedCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
   };
 
-  const addComment = () => {
+  const submitComment = () => {
     if (!canAddComment) return;
-    appendToTarget({ cmd: "comment", text: commentText.trim() });
+    const cmd: SkipCommand = { cmd: "comment", text: commentText.trim() };
+    if (isModifyComment && selectedCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
   };
+
+  const deleteCommandAtPath = (path: string) => {
+    const next = deleteProcessCommandAtPath(commands, path);
+    setCommands(next);
+    if (selectedCommandPath === path) {
+      setSelectedCommandPath(null);
+    }
+  };
+
+  const moveCommandAtPath = (path: string, direction: "up" | "down") => {
+    const moved = moveProcessCommandAtPath(commands, path, direction);
+    if (!moved) return;
+    setCommands(moved.commands);
+    setSelectedCommandPath(moved.newPath);
+  };
+
+  const canMoveCommand = (path: string, direction: "up" | "down") =>
+    canMoveProcessCommandAtPath(commands, path, direction);
+
+  const selectCommandPath = (path: string) => {
+    setSelectedCommandPath(path);
+    const cmd = getProcessCommandAtPath(commands, path);
+    if (!cmd) return;
+    if (cmd.cmd === "if") {
+      setPanel("if");
+      setIfBuilder(ifBuilderFromCommand(cmd));
+    } else if (cmd.cmd === "skip") {
+      setPanel("skipTo");
+      setSkipToDest(String(cmd.to ?? END_OF_FORM));
+    } else if (cmd.cmd === "set") {
+      setPanel("set");
+      setSetBuilder(setBuilderFromCommand(cmd));
+    } else if (cmd.cmd === "comment") {
+      setPanel("comment");
+      setCommentText(String(cmd.text ?? ""));
+    }
+  };
+
+  // When selection changes while a panel is open, keep builder fields in sync.
+  useLayoutEffect(() => {
+    if (!selectedCommandPath) return;
+    const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
+    if (!cmd) return;
+    if (panel === "if" && cmd.cmd === "if") {
+      setIfBuilder(ifBuilderFromCommand(cmd));
+    }
+    if (panel === "skipTo" && cmd.cmd === "skip") {
+      setSkipToDest(String(cmd.to ?? END_OF_FORM));
+    }
+    if (panel === "set" && cmd.cmd === "set") {
+      setSetBuilder(setBuilderFromCommand(cmd));
+    }
+    if (panel === "comment" && cmd.cmd === "comment") {
+      setCommentText(String(cmd.text ?? ""));
+    }
+  }, [selectedCommandPath, commands, panel]);
 
   const openPanel = (mode: PanelMode) => {
     if (panel === mode) {
@@ -213,10 +349,16 @@ export function SkipInstructionsDialog({
     if (mode === "set") {
       setSetBuilder((prev) => (setBuilderHasDraft(prev) ? prev : freshSetBuilder()));
     }
-    if (mode === "skipTo" && destinations.length) {
-      setSkipToDest(destinations[0].value);
+    if (mode === "skipTo") {
+      // Keep current dest when still valid; otherwise End of Form (not first FIB —
+      // that made Skip after FIB1 look like a no-op when Add used FIB1 by accident).
+      setSkipToDest((prev) =>
+        destinations.some((d) => d.value === prev) ? prev : END_OF_FORM,
+      );
     }
   };
+
+  const toolbarDeleteEnabled = selectedCommandPath != null;
 
   // Portal to document.body so the dialog is not clipped by MDI overflow / PE stacking
   // (Process IF is embedded in ProcessEditor, so it never hit this).
@@ -239,13 +381,27 @@ export function SkipInstructionsDialog({
         </div>
 
         <div className="skip-dialog-toolbar explorer-toolbar" role="toolbar" aria-label="Edit commands">
-          {SKIP_TOOLBAR.map(({ id, label, icon }) => (
-            <span key={id} className="win-tip" data-tip={label}>
-              <button type="button" disabled title={`${label} (not yet)`} aria-label={label}>
-                {icon}
-              </button>
-            </span>
-          ))}
+          {SKIP_TOOLBAR.map(({ id, label, icon }) => {
+            const isDelete = id === "delete";
+            const enabled = isDelete && toolbarDeleteEnabled;
+            return (
+              <span key={id} className="win-tip" data-tip={label}>
+                <button
+                  type="button"
+                  disabled={!enabled}
+                  title={enabled ? label : `${label} (not yet)`}
+                  aria-label={label}
+                  onClick={() => {
+                    if (isDelete && selectedCommandPath) {
+                      deleteCommandAtPath(selectedCommandPath);
+                    }
+                  }}
+                >
+                  {icon}
+                </button>
+              </span>
+            );
+          })}
         </div>
 
         <div className="skip-dialog-body">
@@ -269,8 +425,8 @@ export function SkipInstructionsDialog({
                 knownVariables={knownVariables}
                 state={ifBuilder}
                 onStateChange={setIfBuilder}
-                submitLabel="Add ↓"
-                onSubmit={addIfBlock}
+                submitLabel={isModifyIf ? "Modify" : "Add ↓"}
+                onSubmit={submitIf}
               />
             )}
 
@@ -294,9 +450,9 @@ export function SkipInstructionsDialog({
                   <button
                     type="button"
                     className="skip-add-btn"
-                    onClick={() => appendToTarget({ cmd: "skip", to: skipToDest })}
+                    onClick={submitSkipTo}
                   >
-                    Add ↓
+                    {isModifySkipTo ? "Modify" : "Add ↓"}
                   </button>
                 </div>
               </div>
@@ -306,8 +462,8 @@ export function SkipInstructionsDialog({
               <SetStatementBuilder
                 state={setBuilder}
                 onStateChange={setSetBuilder}
-                submitLabel="Add ↓"
-                onSubmit={addSet}
+                submitLabel={isModifySet ? "Modify" : "Add ↓"}
+                onSubmit={submitSet}
                 knownVariables={knownVariables}
               />
             )}
@@ -327,9 +483,9 @@ export function SkipInstructionsDialog({
                       type="button"
                       className="skip-add-btn"
                       disabled={!canAddComment}
-                      onClick={addComment}
+                      onClick={submitComment}
                     >
-                      Add ↓
+                      {isModifyComment ? "Modify" : "Add ↓"}
                     </button>
                   </div>
                 </div>
@@ -344,15 +500,30 @@ export function SkipInstructionsDialog({
               )}
               {!isEmpty && (
                 <p className="skip-insert-path-hint">
-                  Insertion point: <strong>{insertPathLabel}</strong> — click inside{" "}
-                  <code>( )</code>, <em>Otherwise</em>, or a line to move it.
+                  {selectedCommandPath ? (
+                    <>
+                      Editing selected statement — change the builder and click{" "}
+                      <strong>Modify</strong>, or click an insert gap to add a new line.
+                    </>
+                  ) : (
+                    <>
+                      Insertion point: <strong>{insertPathLabel}</strong> — click inside{" "}
+                      <code>( )</code>, <em>Otherwise</em>, or a line to move it.
+                    </>
+                  )}
                 </p>
               )}
               <SkipScriptView
                 lines={scriptLines}
                 insertPath={insertPath}
-                insertAfterIndex={insertAfterIndex}
-                onSelectInsertPath={setInsertPath}
+                insertIndex={insertIndex}
+                onSelectInsertPoint={setInsertPoint}
+                selectedCommandPath={selectedCommandPath}
+                onSelectCommandPath={selectCommandPath}
+                showLineControls
+                onMoveCommand={moveCommandAtPath}
+                onDeleteCommand={deleteCommandAtPath}
+                canMoveCommand={canMoveCommand}
               />
             </div>
           </div>

@@ -205,8 +205,8 @@ flowchart TD
 |---------|--------|----------------|
 | Hidden field item | Yes | Not implemented |
 | Page break | Yes | Not implemented |
-| Skip instructions editor | Full If/SkipTo/Set/Comment | Not implemented |
-| Skip summary on canvas | Yes | N/A |
+| Skip instructions editor | Full If/SkipTo/Set/Comment | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow parity with Process |
+| Skip summary on canvas | Yes | Yes (`May skip to` / `Skips to End of Form`) |
 | Form post-process Set → hidden field | Yes | Partial / JSON only |
 
 ---

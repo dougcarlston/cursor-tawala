@@ -307,8 +307,21 @@ export function typingFormatForInsert(editor: HTMLElement): TypingFormat {
   if (block.classList.contains("doc-placed-text") && !explicitPt && block.style.fontSize) {
     explicitPt = parseCssPt(block.style.fontSize);
   }
-  const pt = explicitPt > 0 ? explicitPt : sizePt;
-  const rounded = String(Math.max(1, Math.round(pt)));
+  // No explicit size → prefer sticky / default. Computed editor CSS (e.g. Form Text
+  // 13px ≈ 10pt) must not invent a non-default chip size that diverges from labels.
+  const stickyPt = Number.parseFloat(sticky.fontSize);
+  let rounded: string;
+  if (explicitPt > 0) {
+    rounded = String(Math.max(1, Math.round(explicitPt)));
+  } else if (
+    Math.abs(sizePt - DEFAULT_PALETTE_FONT_SIZE_PT) <= 1.5 ||
+    (Number.isFinite(stickyPt) && Math.abs(sizePt - stickyPt) <= 1.5)
+  ) {
+    rounded = sticky.fontSize;
+  } else {
+    // Explicitly sized run via computed style only when far from sticky/default.
+    rounded = String(Math.max(1, Math.round(sizePt)));
+  }
 
   let face = matchFontFace(cs.fontFamily);
   el = probe;

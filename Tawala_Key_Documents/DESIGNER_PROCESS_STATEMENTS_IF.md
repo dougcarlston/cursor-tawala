@@ -36,16 +36,21 @@ Same order as **Insert → Process**:
 
 Clicking a statement button selects that statement type and opens its **property panel** in the upper part of the process window. The lower part shows the **process script** (pseudo-code lines) with a blue arrow marking the **insertion point**.
 
-### Post-process banner
+### Post-process / Pre-process banner
 
-Yellow bar at top of process window:
+Yellow bar at top of process window (click opens Connect dialog):
 
 | State | Text |
 |-------|------|
-| Not connected | *Not connected as Post-Process to any Form. Click here to change.* |
-| Connected | *Connected as Post-Process to Form 'Start'. Click here to change.* |
+| Not connected | *Not connected as Pre-Process or Post-Process to any Form. Click here to change.* |
+| One Post form | *Connected as Post-Process to Form 'Start'. Click here to change.* |
+| Several Post forms | *Connected as Post-Process to N Forms. Click here to change.* (legacy `ViewInfoBarManyConnections`) |
+| One / several Pre only | Same pattern with **Pre-Process** |
+| Mix of Pre + Post | *Connected: Pre-Process to 'A'; Post-Process to 'B'; …* |
 
-Post-process runs after the connected form is submitted.
+**Multi-form (Jul 19):** One process may be Pre and/or Post on **many** forms (Potluck `Show Results` is `preProcess` on both Organizer and Report). Connect dialog is a **checklist** of forms per role — check each form to attach; a slot already used by another process is disabled. **Shortcut:** drag a Process onto a Form in Project Explorer to attach as **Post-process** when the form’s Post slot is empty.
+
+Post-process runs after the connected form is submitted; Pre-process runs when the form loads.
 
 ### Empty process
 

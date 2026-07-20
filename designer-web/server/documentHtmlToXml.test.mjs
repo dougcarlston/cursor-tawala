@@ -218,6 +218,38 @@ describe("documentHtmlToXml record-count Where conditions", () => {
     // Binary nest: outer and wraps first op + inner and of the rest
     expect(xml).toMatch(/<and><equals field="Record:Registration:PaymentReceived">[\s\S]*<and>/);
   });
+
+  it("emits mcContains / mcEquals for MCQ Where (choice letter, not label)", () => {
+    const multi = documentHtmlToXml(
+      tokenHtml("choice-tally-table", {
+        field: "<<Form 1:MCQ4>>",
+        conditionsRows: [
+          { field: "Form 1:MCQ4", op: "mcContains", value: "d" },
+        ],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(multi).toContain("<mcContains field=\"Record:Form 1:MCQ4\">");
+    expect(multi).toContain('<string value="d"/>');
+    expect(multi).not.toContain("<equals ");
+
+    const single = documentHtmlToXml(
+      tokenHtml("response-totals-table", {
+        field: "<<Form 1:MCQ1>>",
+        "layout-type": "vertical",
+        conditionsRows: [
+          { field: "Form 1:MCQ1", op: "mcEquals", value: "d" },
+        ],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(single).toContain("<mcEquals field=\"Record:Form 1:MCQ1\">");
+    expect(single).toContain('<string value="d"/>');
+  });
 });
 
 describe("documentHtmlToXml nested function tokens", () => {

@@ -1,3 +1,7 @@
+/**
+ * Mid-edit draft for Edit Skip Instructions — survives accidental remounts
+ * (form canvas re-key) until Close saves and clears.
+ */
 import type { SkipCommand } from "@/types/tawala";
 import type { IfBuilderState, SetBuilderState } from "@/lib/statementBuilders";
 
@@ -6,6 +10,8 @@ type PanelMode = "none" | "if" | "skipTo" | "set" | "comment";
 export interface SkipDialogSession {
   commands: SkipCommand[];
   insertPath: string;
+  insertIndex: number;
+  selectedCommandPath: string | null;
   panel: PanelMode;
   ifBuilder: IfBuilderState;
   setBuilder: SetBuilderState;

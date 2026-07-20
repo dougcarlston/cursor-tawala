@@ -4,13 +4,9 @@
  */
 
 import { fieldToken } from "./fieldInsertion";
-import {
-  applyTypingFormatToPlacedBlock,
-  applyTypingFormatToToken,
-  findPlacedTextBlockAtCaret,
-} from "./documentCanvas";
+import { applyTypingFormatToToken } from "./documentCanvas";
 import { getActivePaletteEditor } from "./formattingPaletteContext";
-import { isBlankTypingContext, typingFormatForInsert } from "./paletteTypingFormat";
+import { typingFormatForInsert } from "./paletteTypingFormat";
 import { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
 
 export const FIELD_TOKEN_CLASS = "field-token";
@@ -72,11 +68,9 @@ export function insertFieldTokenAtSelection(name: string): void {
 
   const handle = getActivePaletteEditor();
   if (handle) {
+    // Same contract as function chips: inherit line format; do not resize the
+    // parent paragraph when inserting (avoids label text jumping size).
     const typing = typingFormatForInsert(handle.el);
-    const placed = findPlacedTextBlockAtCaret(handle.el);
-    if (placed && isBlankTypingContext(handle.el)) {
-      applyTypingFormatToPlacedBlock(placed, typing);
-    }
     applyTypingFormatToToken(span, typing);
   }
 

@@ -369,6 +369,8 @@ Configure matches (Form + conditions). XML export: **yes** (Where fields as `Rec
 
 **Where field drop (Jul 18):** Configure Where field box uses **replace** (bare `Form:Field`), not insert-at-caret — dropping a new field no longer appends onto the previous one (which broke matching and confused Document Deploy). Focus selects the whole field for easy overwrite.
 
+**Owner WHERE smoke Jul 19: Passed** — every Where condition exercised, including numeric comparisons.
+
 ---
 
 ## Configure Function: LINK TO PROJECT DETAILS IN MY TAWALA (`link-to-project-details`)
@@ -438,6 +440,8 @@ Owner (July 10): browser Configure is **functionally the same** for the core par
 | Yellow help + REQUIRED | Yes (with duplicate label bug) | Help pane present; REQUIRED styling may differ |
 | Document HTML → XML | Real `<itemization-table>` | **Yes** — SignupSheet owner-passed Jul 16 |
 
+**Owner WHERE smoke Jul 19: Passed** (full Where conditions, same bar as FORM RECORD COUNT).
+
 ---
 
 ## Configure Function: PAYPAL SINGLE ITEM PURCHASE BUTTON (`paypal-single-item-button`)
@@ -500,6 +504,8 @@ Screenshot: [`assets/Function_-_Question_Correlation_Table.png`](assets/Function
 
 Catalog + Configure present. Form Text with embedded `questionCorrelationTable` (e.g. Get Together **Report**) supports canvas rich-edit around the token and click-to-Configure (same path as Multiple Question List). Document **and Form Text** HTML→XML: **emits** `<question-correlation-table>` (Jul 13+). Template Deploy smoke: Get Together **Passed w/ caveats**.
 
+**Owner WHERE smoke Jul 19: Passed** — multiple Where conditions exercised.
+
 ---
 
 ## Configure Function: RANKED MULTIQUESTION RESPONSE LIST (`popular-choice-correlation-table`)
@@ -528,6 +534,8 @@ Screenshot: [`assets/Function_-_Ranked_Multiquestion_Response_List.png`](assets/
 
 Catalog matches. Document HTML→XML: **emits** `<popular-choice-correlation-table>` with legacy `Record:Form:Field` refs (Jul 19).
 
+**Owner WHERE smoke Jul 19: Passed** (Where conditions; output semantics verified — col2 = tick when Second matches ranked Main choice).
+
 ### Deploy smoke (Jul 19)
 
 1. Form: FIB Name blank + MCQ1 (Main) + MCQ2 (Second) with overlapping choice letters if you want ticks.
@@ -553,7 +561,7 @@ Screenshot: [`assets/Function_-_Ranked_Response_Counts.png`](assets/Function_-_R
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **emits** `<popular-choice-count>`. **Owner smoke Jul 19: Passed.** **WHERE re-smoke pending.**
+Catalog matches. Document HTML→XML: **emits** `<popular-choice-count>`. **Owner smoke Jul 19: Passed.** **WHERE re-smoke Passed Jul 19.**
 
 ---
 
@@ -573,7 +581,7 @@ Screenshot: [`assets/Function_-_Ranked_Response_Name.png`](assets/Function_-_Ran
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **emits** `<popular-choice-display>`. **Owner smoke Jul 19: Passed** (ties among equal counts included; order among ties arbitrary). **WHERE re-smoke pending.**
+Catalog matches. Document HTML→XML: **emits** `<popular-choice-display>`. **Owner smoke Jul 19: Passed** (ties among equal counts included; order among ties arbitrary). **WHERE re-smoke Passed Jul 19.**
 
 ---
 
@@ -595,6 +603,8 @@ Screenshot: [`assets/Function_-_Response_Bar_Graph.png`](assets/Function_-_Respo
 Catalog matches. Document **and Form Text** HTML→XML: **emits** `<choice-tally-table>`. Template Deploy smoke: Simple Survey **Passed**; Multiple Question Survey **Passed** (owner Jul 2026).
 
 **Design / Preview (Jul 16):** Structured Form Text `choiceTallyTable` (Simple Survey Report) was invisible on the Design canvas — now shows a **RESPONSE BAR GRAPH** token (click to Configure). Node Preview renders Choice / Count / Percentage table (+ bar) from session records.
+
+**Owner Jul 19 WHERE:** FIB Where OK. MCQ Where needs **choice letter** + `mcContains`/`mcEquals` (implemented TODO #11 — owner review tomorrow). Multi-select tally matches Bar Graph (TODO #12 — no undercount bug found; review tomorrow).
 
 ---
 
@@ -628,9 +638,11 @@ Screenshot: [`assets/Function_-_Response_Totals.png`](assets/Function_-_Response
 
 ### Browser gaps
 
-Catalog matches. Document + Form Text HTML→XML: **emits** `<response-totals-table>` with question title paragraphs + spacers. Preview renders the same title above Choice/Count. **Owner smoke Jul 19: Passed** (core Configure + Deploy; no WHERE this pass).
+Catalog matches. Document + Form Text HTML→XML: **emits** `<response-totals-table>` with question title paragraphs + spacers. Preview renders the same title above Choice/Count. **Owner smoke Jul 19: Passed** (core Configure + Deploy; FIB Where OK when tested via related tables).
 
-**Parked (owner Jul 17 — final Designer run-through):** Where clause **`<<field>>` is not blank** showed inappropriate list behavior. Capture exact wrong result on retest; see `DESIGNER_OPEN_BUGS.md` § Functions.
+**Parked (owner Jul 17 — final Designer run-through):** Where clause **`<<field>>` is not blank** showed inappropriate list behavior. Capture exact wrong result on retest; see `DESIGNER_OPEN_BUGS.md` § Functions / TODO #11.
+
+**Owner Jul 19:** Multi-select undercount **investigated — no bug** (same `getValues` loop as Bar Graph; Preview regression tests). **Owner review tomorrow** vs Bar Graph on same multi MCQ. MCQ Where → TODO #11 (implemented; review tomorrow).
 
 ---
 
@@ -651,7 +663,7 @@ Screenshot: [`assets/Function_-_Single_Question_List.png`](assets/Function_-_Sin
 
 Catalog matches. Document HTML→XML: **emits** `<simple-list version="2">` (Jul 19: was `version="1"` — Tomcat rejected Deploy with `IllegalStateException: This component is not supporting versions earlier than 2`). **Owner smoke Jul 19: Passed** (list works).
 
-**Caveat (legacy Java timing — not a Designer bug):** On Deploy, form **post-process** runs **before** the current submission is written to stored responses (`DataCollectingProjectController`: `executeProcess` then `storedData().record`). SINGLE QUESTION LIST / MQL / similar functions read **already-stored** rows only, so a Document shown from that post-process is typically **one response behind** (missing the answer just typed). Same pattern as Signup MQL. **Workarounds:** put the list on a Form after Submit (stock Signup stacks blank Form under Document), or refresh / open the Document on a later visit after the row is persisted. **WHERE re-smoke pending.**
+**Caveat (legacy Java timing — not a Designer bug):** On Deploy, form **post-process** runs **before** the current submission is written to stored responses (`DataCollectingProjectController`: `executeProcess` then `storedData().record`). SINGLE QUESTION LIST / MQL / similar functions read **already-stored** rows only, so a Document shown from that post-process is typically **one response behind** (missing the answer just typed). Same pattern as Signup MQL. **Workarounds:** put the list on a Form after Submit (stock Signup stacks blank Form under Document), or refresh / open the Document on a later visit after the row is persisted. **WHERE re-smoke Passed Jul 19.**
 
 ---
 
@@ -670,7 +682,7 @@ Screenshot: [`assets/Function_-_Sum.png`](assets/Function_-_Sum.png)
 
 ### Browser gaps
 
-Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: Passed** using the Browser Designer SUM smoke project (Configure + export + live Deploy total). The earlier Potluck result remains a separate direct deploy of the legacy `.tawala` template. **WHERE re-smoke pending.**
+Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: Passed** using the Browser Designer SUM smoke project (Configure + export + live Deploy total). The earlier Potluck result remains a separate direct deploy of the legacy `.tawala` template. **WHERE re-smoke Passed Jul 19.**
 
 ---
 
@@ -678,7 +690,8 @@ Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: P
 
 Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.mjs` (`default` → XML comment). Form Text structured nodes also export via `jsonToXml.mjs` where noted.
 
-**Jul 19 smoke scope:** core Configure + Deploy output only. **WHERE / conditions rows are not exercised on this pass.** After the remaining untested functions finish, **re-smoke every condition-bearing function with WHERE limits filled** (FORM RECORD COUNT, RMRL, RANKED RESPONSE COUNTS/NAME, RESPONSE TOTALS, SINGLE QUESTION LIST, SUM, MQL, RESPONSE BAR GRAPH, QUESTION CORRELATION, etc.).
+**Jul 19 smoke scope:** core Configure + Deploy finished for the ladder. **WHERE re-smoke complete Jul 19** for condition-bearing functions (FRC, MQL, QCT, RMRL, RANKED RESPONSE COUNTS/NAME, SINGLE QUESTION LIST, SUM; RESPONSE BAR GRAPH / RESPONSE TOTALS **FIB Where OK**). **Parked:** MCQ-aware Where (TODO #11); RESPONSE TOTALS multi-select undercount (TODO #12).
+
 
 | # | Function | id | XML emit | Owner smoke / notes |
 |---|----------|-----|----------|---------------------|
@@ -686,19 +699,19 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 | 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Passed** — owner Jul 18 (Configure URL → Design token → Preview placeholder → Deploy live image) |
 | 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Passed** — owner Jul 18 (Configure + Deploy; spacing between stacked chips fixed same day) |
 | 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
-| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Passed** — owner Jul 19 (live Deploy count; Where ops fixed Jul 18). **WHERE re-smoke pending** |
+| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Passed** — owner Jul 19 (core Deploy + **WHERE re-smoke Passed** — all conditions incl. numeric) |
 | 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | Hosted My Tawala |
-| 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16. **WHERE re-smoke pending** |
+| 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16. **WHERE re-smoke Passed Jul 19** |
 | 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | Payment integration |
 | 9 | PROJECT EMAIL COUNT | `project-email-count` | **Yes** | **Passed** — owner Jul 19 (UI/export + live :8080 count after Process Send / Resend) |
-| 10 | QUESTION CORRELATION TABLE | `question-correlation-table` | **Yes** | Get Together **Passed w/ caveats**. **WHERE re-smoke pending** |
-| 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | **Passed w/ caveats** — Jul 19 (Get Together Configure help; Column One = FIB/name; col2 = tick). **WHERE re-smoke pending** |
-| 12 | RANKED RESPONSE COUNTS | `popular-choice-count` | **Yes** | **Passed** — owner Jul 19. **WHERE re-smoke pending** |
-| 13 | RANKED RESPONSE NAME | `popular-choice-display` | **Yes** | **Passed** — owner Jul 19 (ties included; order among equal counts is arbitrary). **WHERE re-smoke pending** |
-| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | **Design+Preview Jul 16** — Report shows token + tally table; Simple/Multi Survey Deploy passed. **WHERE re-smoke pending** |
-| 15 | RESPONSE TOTALS | `response-totals-table` | **Yes** | **Passed** — owner Jul 19 (Choice/Count + MCQ title above). **WHERE re-smoke pending** |
-| 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | **Passed w/ caveats** — owner Jul 19 (`version="2"`; post-process Document is one response behind — legacy persist-after-process). **WHERE re-smoke pending** |
-| 17 | SUM | `sum` | **Yes** | **Passed** — owner Jul 19 (Browser Designer Configure + export + live Deploy total). **WHERE re-smoke pending** |
+| 10 | QUESTION CORRELATION TABLE | `question-correlation-table` | **Yes** | Get Together **Passed w/ caveats**. **WHERE re-smoke Passed Jul 19** (multiple conditions) |
+| 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | **Passed w/ caveats** — Jul 19 (Get Together Configure help; Column One = FIB/name; col2 = tick). **WHERE re-smoke Passed Jul 19** |
+| 12 | RANKED RESPONSE COUNTS | `popular-choice-count` | **Yes** | **Passed** — owner Jul 19. **WHERE re-smoke Passed Jul 19** |
+| 13 | RANKED RESPONSE NAME | `popular-choice-display` | **Yes** | **Passed** — owner Jul 19 (ties included; order among equal counts is arbitrary). **WHERE re-smoke Passed Jul 19** |
+| 14 | RESPONSE BAR GRAPH | `choice-tally-table` | **Yes** | **Design+Preview Jul 16** — Report shows token + tally table; Simple/Multi Survey Deploy passed. **WHERE:** FIB OK Jul 19; MCQ Where → TODO #11 |
+| 15 | RESPONSE TOTALS | `response-totals-table` | **Yes** | **Passed** — owner Jul 19 (Choice/Count + MCQ title above). **WHERE:** FIB OK; multi-select undercount → TODO #12; MCQ Where → TODO #11 |
+| 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | **Passed w/ caveats** — owner Jul 19 (`version="2"`; post-process Document is one response behind — legacy persist-after-process). **WHERE re-smoke Passed Jul 19** |
+| 17 | SUM | `sum` | **Yes** | **Passed** — owner Jul 19 (Browser Designer Configure + export + live Deploy total). **WHERE re-smoke Passed Jul 19** |
 
 **Insert siblings (not in the 17):** Invitation…, Hyperlink… — **wired Jul 16** (dialogs + Design tokens + Deploy XML). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
 

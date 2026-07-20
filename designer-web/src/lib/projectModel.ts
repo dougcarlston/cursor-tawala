@@ -92,6 +92,47 @@ export function lookupFormFieldBlank(
   return null;
 }
 
+/** Strip `<<…>>` and optional `Record:` prefix; return Form + field leaf. */
+export function parseFormFieldRef(raw: string): { form: string; field: string } | null {
+  let s = String(raw ?? "").trim();
+  if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  if (/^Record:/i.test(s)) s = s.slice("Record:".length).trim();
+  const colon = s.indexOf(":");
+  if (colon < 0) return null;
+  const form = s.slice(0, colon).trim();
+  const field = s.slice(colon + 1).trim();
+  if (!form || !field) return null;
+  return { form, field };
+}
+
+/**
+ * Resolve a Where / Fields ref to an MCQ item (`type: "mc"`).
+ * Accepts `Form:MCQ4`, `Record:Form:MCQ4`, or `<<Form:MCQ4>>`.
+ */
+export function lookupFormFieldMcItem(
+  project: TawalaProject,
+  qualifiedRef: string,
+): Extract<FormItem, { type: "mc" }> | null {
+  const parsed = parseFormFieldRef(qualifiedRef);
+  if (!parsed) return null;
+  const form = project.forms.find((f) => f.name === parsed.form);
+  if (!form) return null;
+  for (const item of form.items) {
+    if (item.type !== "mc") continue;
+    const keys = [item.name, item.alternateLabel, item.label]
+      .map((k) => String(k ?? "").trim())
+      .filter(Boolean);
+    if (
+      keys.some(
+        (k) => k.localeCompare(parsed.field, undefined, { sensitivity: "accent" }) === 0,
+      )
+    ) {
+      return item;
+    }
+  }
+  return null;
+}
+
 function isPlainVariableName(value: unknown): value is string {
   return (
     typeof value === "string" &&
