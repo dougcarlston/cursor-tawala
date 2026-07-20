@@ -5005,7 +5005,29 @@ button.font-color-picker-recent-slot:hover {
   min-width: 2em;
   min-height: 1.2em;
   white-space: normal;
-  overflow-wrap: break-word;
+  /* Wrap at spaces only — break-word mid-broke glued words after space delete. */
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+/* Highlight-drag move (no ✥ anchors): hand cursor while grabbing selected lines. */
+.document-editor .rich-surface.is-placed-grab {
+  cursor: grab;
+}
+.document-editor .rich-surface.is-placed-grab * {
+  cursor: grab;
+}
+.document-editor .rich-surface.is-placed-moving {
+  cursor: grabbing !important;
+  user-select: none;
+}
+.document-editor .rich-surface.is-placed-moving * {
+  cursor: grabbing !important;
+}
+
+/* Placed-line ✥ overlay retired Jul 20 — move via highlight + hand cursor. */
+.document-editor .placed-text-handles-overlay {
+  display: none !important;
 }
 
 .document-editor .rich-surface::after {
@@ -5764,8 +5786,13 @@ button.font-color-picker-recent-slot:hover {
   line-height: inherit;
 }
 
-.rich-surface .field-token:active {
+.rich-surface .field-token:active,
+.rich-surface .function-token:active {
   cursor: grabbing;
+}
+
+.rich-surface .function-token {
+  cursor: grab;
 }
 
 .function-token {

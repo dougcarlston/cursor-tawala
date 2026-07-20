@@ -212,7 +212,7 @@ describe("Document cross-Return Backspace / Delete (caret epic A)", () => {
 
     expect(editor.contains(second)).toBe(false);
     expect(editor.contains(first)).toBe(true);
-    expect(first.textContent).toBe("HelloWorld");
+    expect(first.textContent).toBe("Hello World");
     const sel = window.getSelection();
     expect(sel?.isCollapsed).toBe(true);
     expect(first.contains(sel!.anchorNode!)).toBe(true);
@@ -244,7 +244,7 @@ describe("Document cross-Return Backspace / Delete (caret epic A)", () => {
     expect(handleDocumentDeleteBoundary(editor, "deleteContentForward")).toBe(true);
 
     expect(editor.contains(second)).toBe(false);
-    expect(first.textContent).toBe("HelloWorld");
+    expect(first.textContent).toBe("Hello World");
 
     editor.remove();
   });
@@ -258,16 +258,16 @@ describe("Document cross-Return Backspace / Delete (caret epic A)", () => {
     caretAtStart(c);
     expect(handleDocumentDeleteBoundary(editor, "deleteContentBackward")).toBe(true);
     expect(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).length).toBe(2);
-    expect(b.textContent).toBe("BC");
+    expect(b.textContent).toBe("B C");
 
     // Re-query after reflow — do not assume the same node is still the lower line.
     const lines = Array.from(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`)) as HTMLElement[];
-    expect(lines.map((el) => el.textContent)).toEqual(["A", "BC"]);
+    expect(lines.map((el) => el.textContent)).toEqual(["A", "B C"]);
     const lower = lines[1];
     caretAtStart(lower);
     expect(handleDocumentDeleteBoundary(editor, "deleteContentBackward")).toBe(true);
     expect(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).length).toBe(1);
-    expect(a.textContent).toBe("ABC");
+    expect(a.textContent).toBe("A B C");
 
     // Empty the merged line via native deletes (not boundary); then husk Backspace.
     a.textContent = "";
@@ -275,6 +275,36 @@ describe("Document cross-Return Backspace / Delete (caret epic A)", () => {
     caretAtStart(a);
     handleDocumentDeleteBoundary(editor, "deleteContentBackward");
     expect(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`).length).toBe(0);
+
+    editor.remove();
+  });
+
+  it("Backspace at start with a blank above removes only that blank", () => {
+    const editor = makeDocEditor();
+    const first = makePlaced(editor, "Hello", { left: 36, top: 40 });
+    const blank = makePlaced(editor, "", { left: 36, top: 60 });
+    const second = makePlaced(editor, "World", { left: 36, top: 80 });
+
+    caretAtStart(second);
+    expect(handleDocumentDeleteBoundary(editor, "deleteContentBackward")).toBe(true);
+    expect(editor.contains(blank)).toBe(false);
+    expect(editor.contains(first)).toBe(true);
+    expect(editor.contains(second)).toBe(true);
+    expect(second.textContent).toBe("World");
+    expect(first.textContent).toBe("Hello");
+
+    editor.remove();
+  });
+
+  it("merging two content lines inserts a space between word runs", () => {
+    const editor = makeDocEditor();
+    const first = makePlaced(editor, "fashioned", { left: 36, top: 40 });
+    const second = makePlaced(editor, "names", { left: 36, top: 60 });
+
+    caretAtStart(second);
+    expect(handleDocumentDeleteBoundary(editor, "deleteContentBackward")).toBe(true);
+    expect(first.textContent).toBe("fashioned names");
+    expect(editor.contains(second)).toBe(false);
 
     editor.remove();
   });

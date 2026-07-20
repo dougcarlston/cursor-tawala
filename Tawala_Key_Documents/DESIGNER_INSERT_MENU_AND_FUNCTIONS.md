@@ -640,7 +640,7 @@ Screenshot: [`assets/Function_-_Response_Totals.png`](assets/Function_-_Response
 
 Catalog matches. Document + Form Text HTML→XML: **emits** `<response-totals-table>` with question title paragraphs + spacers. Preview renders the same title above Choice/Count. **Owner smoke Jul 19: Passed** (core Configure + Deploy; FIB Where OK when tested via related tables).
 
-**Parked (owner Jul 17 — final Designer run-through):** Where clause **`<<field>>` is not blank** showed inappropriate list behavior. Capture exact wrong result on retest; see `DESIGNER_OPEN_BUGS.md` § Functions / TODO #11.
+**Owner Jul 20:** Where **`<<field>>` is not blank** inappropriate-list report from Jul 17 **could not be recreated** — removed from open bugs.
 
 **Owner Jul 19:** Multi-select undercount **investigated — no bug** (same `getValues` loop as Bar Graph; Preview regression tests). **Owner Passed Jul 20** — Totals and Bar Graph both pick up all choices on the same multi MCQ (TODO #12). **MCQ Where Passed Jul 20** (TODO #11).
 

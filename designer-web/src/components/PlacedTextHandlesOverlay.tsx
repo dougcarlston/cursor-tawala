@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { PLACED_TEXT_CLASS, reflowAllPlacedLines } from "@/lib/documentCanvas";
+import {
+  listPlacedBlocksInSelection,
+  PLACED_TEXT_CLASS,
+  reflowAllPlacedLines,
+} from "@/lib/documentCanvas";
 import {
   formatPt,
   getAbsolutePositionPt,
@@ -11,20 +15,6 @@ import {
 interface Props {
   editorRef: React.RefObject<HTMLElement | null>;
   onCommit: () => void;
-}
-
-function findActivePlacedBlock(editor: HTMLElement): HTMLElement | null {
-  const sel = window.getSelection();
-  if (!sel || sel.rangeCount === 0) return null;
-  let node: Node | null = sel.getRangeAt(0).commonAncestorContainer;
-  if (node.nodeType === Node.TEXT_NODE) node = node.parentNode;
-  while (node && node !== editor) {
-    if (node instanceof HTMLElement && node.classList.contains(PLACED_TEXT_CLASS)) {
-      return node;
-    }
-    node = node.parentNode;
-  }
-  return null;
 }
 
 function blockBoxInContainer(
@@ -39,6 +29,26 @@ function blockBoxInContainer(
     width: blockRect.width,
     height: blockRect.height,
   };
+}
+
+/** Union of one or more placed-line boxes (multi-paragraph selection). */
+function unionBoxes(
+  blocks: HTMLElement[],
+  container: HTMLElement,
+): { top: number; left: number; width: number; height: number } | null {
+  if (!blocks.length) return null;
+  let top = Infinity;
+  let left = Infinity;
+  let right = -Infinity;
+  let bottom = -Infinity;
+  for (const block of blocks) {
+    const box = blockBoxInContainer(block, container);
+    top = Math.min(top, box.top);
+    left = Math.min(left, box.left);
+    right = Math.max(right, box.left + box.width);
+    bottom = Math.max(bottom, box.top + box.height);
+  }
+  return { top, left, width: Math.max(0, right - left), height: Math.max(0, bottom - top) };
 }
 
 function attachPointerDrag(
@@ -63,33 +73,41 @@ function attachPointerDrag(
   window.addEventListener("pointerup", up);
 }
 
-/** Move handle (✥) for absolutely positioned `.doc-placed-text` blocks on the Document canvas. */
+/**
+ * Move handle (✥) for absolutely positioned `.doc-placed-text` blocks.
+ * When the selection spans multiple placed lines, drag moves **all** of them together.
+ */
 export function PlacedTextHandlesOverlay({ editorRef, onCommit }: Props) {
-  const [block, setBlock] = useState<HTMLElement | null>(null);
+  const [blocks, setBlocks] = useState<HTMLElement[]>([]);
   const [box, setBox] = useState<{ top: number; left: number; width: number; height: number } | null>(
     null,
   );
   const dragRef = useRef(false);
-  const blockRef = useRef<HTMLElement | null>(null);
+  const blocksRef = useRef<HTMLElement[]>([]);
+  const originsRef = useRef<Array<{ left: number; top: number }>>([]);
 
   const sync = useCallback(() => {
     const editor = editorRef.current;
     const container = editor?.parentElement;
     if (!editor || !container) {
-      setBlock(null);
+      setBlocks([]);
       setBox(null);
       return;
     }
-    const active = blockRef.current ?? findActivePlacedBlock(editor);
-    if (!active || !editor.contains(active)) {
+    const active = dragRef.current
+      ? blocksRef.current.filter((b) => editor.contains(b))
+      : listPlacedBlocksInSelection(editor).filter(
+          (b) => b instanceof HTMLElement && b.classList.contains(PLACED_TEXT_CLASS),
+        );
+    if (!active.length) {
       if (!dragRef.current) {
-        setBlock(null);
+        setBlocks([]);
         setBox(null);
       }
       return;
     }
-    setBlock(active);
-    setBox(blockBoxInContainer(active, container));
+    setBlocks(active);
+    setBox(unionBoxes(active, container));
   }, [editorRef]);
 
   useEffect(() => {
@@ -108,29 +126,36 @@ export function PlacedTextHandlesOverlay({ editorRef, onCommit }: Props) {
     };
   }, [editorRef, sync]);
 
-  if (!block || !box) return null;
+  if (!blocks.length || !box) return null;
+
+  const primary = blocks[0];
 
   const startMove = (e: React.PointerEvent) => {
-    blockRef.current = block;
+    blocksRef.current = blocks.slice();
+    originsRef.current = blocks.map((b) => getAbsolutePositionPt(b));
     dragRef.current = true;
     document.body.style.cursor = "move";
-    const { left, top } = getAbsolutePositionPt(block);
     attachPointerDrag(
       e,
       (dxPx, dyPx) => {
-        const b = blockRef.current;
-        if (!b) return;
-        setAbsolutePositionPt(b, left + pxToPt(dxPx), top + pxToPt(dyPx));
+        const moving = blocksRef.current;
+        const origins = originsRef.current;
+        const dx = pxToPt(dxPx);
+        const dy = pxToPt(dyPx);
+        moving.forEach((b, i) => {
+          const origin = origins[i];
+          if (!origin) return;
+          setAbsolutePositionPt(b, origin.left + dx, origin.top + dy);
+        });
         const container = editorRef.current?.parentElement;
-        if (b && container) setBox(blockBoxInContainer(b, container));
+        if (container) setBox(unionBoxes(moving, container));
       },
       () => {
-        const b = blockRef.current;
         const editor = editorRef.current;
         dragRef.current = false;
-        blockRef.current = null;
-        // Same packing as table ✥ — restore neighbors toward home when space frees.
-        if (b && editor) {
+        blocksRef.current = [];
+        originsRef.current = [];
+        if (editor) {
           reflowAllPlacedLines(editor);
         }
         onCommit();
@@ -138,6 +163,11 @@ export function PlacedTextHandlesOverlay({ editorRef, onCommit }: Props) {
       },
     );
   };
+
+  const label =
+    blocks.length > 1
+      ? `${blocks.length} lines`
+      : `${formatPt(parseCssPt(primary.style.left))} × ${formatPt(parseCssPt(primary.style.top))}`;
 
   return (
     <div
@@ -148,14 +178,14 @@ export function PlacedTextHandlesOverlay({ editorRef, onCommit }: Props) {
       <button
         type="button"
         className="table-handle table-handle-move"
-        title="Move"
+        title={blocks.length > 1 ? "Move selected lines" : "Move"}
         style={{ top: -10, left: -10 }}
         onPointerDown={startMove}
       >
         ✥
       </button>
       <span className="placed-text-handle-label" style={{ top: -10, left: 14 }}>
-        {formatPt(parseCssPt(block.style.left))} × {formatPt(parseCssPt(block.style.top))}
+        {label}
       </span>
     </div>
   );

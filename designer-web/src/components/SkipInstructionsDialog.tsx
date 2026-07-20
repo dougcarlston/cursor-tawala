@@ -341,6 +341,17 @@ export function SkipInstructionsDialog({
       return;
     }
     setPanel(mode);
+    // Palette tool that does not match the selected line → leave edit/Modify mode
+    // so Add ↓ + insert gaps work (otherwise re-open felt stuck on Modify only).
+    if (selectedCommandPath) {
+      const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
+      const matches =
+        (mode === "if" && cmd?.cmd === "if") ||
+        (mode === "skipTo" && cmd?.cmd === "skip") ||
+        (mode === "set" && cmd?.cmd === "set") ||
+        (mode === "comment" && cmd?.cmd === "comment");
+      if (!matches) setSelectedCommandPath(null);
+    }
     // Match Process IF/Set: keep in-progress drafts when re-opening the same panel
     // (clicking away must not wipe a complex If before Add ↓).
     if (mode === "if") {
@@ -521,6 +532,7 @@ export function SkipInstructionsDialog({
                 selectedCommandPath={selectedCommandPath}
                 onSelectCommandPath={selectCommandPath}
                 showLineControls
+                showAllInsertionGaps
                 onMoveCommand={moveCommandAtPath}
                 onDeleteCommand={deleteCommandAtPath}
                 canMoveCommand={canMoveCommand}

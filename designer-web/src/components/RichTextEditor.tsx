@@ -17,6 +17,15 @@ import {
   FIELD_TOKEN_CLASS,
 } from "@/lib/fieldTokens";
 import {
+  beginFunctionTokenMove,
+  clearMovingFunctionToken,
+  ensureFunctionTokensDraggable,
+  isFunctionTokenMoveDrag,
+  moveFunctionTokenToSelection,
+  takeMovingFunctionToken,
+  FUNCTION_TOKEN_CLASS,
+} from "@/lib/functionTokens";
+import {
   clearActivePaletteEditor,
   clearFormattingFocus,
   selectionCursorInTable,
@@ -26,7 +35,6 @@ import {
   type FormattingFocusKind,
 } from "@/lib/formattingPaletteContext";
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
-import { PlacedTextHandlesOverlay } from "./PlacedTextHandlesOverlay";
 import { EmbeddedImageHandlesOverlay } from "./EmbeddedImageHandlesOverlay";
 import {
   EMBEDDED_IMAGE_HANDLES_CLASS,
@@ -59,7 +67,13 @@ import {
   clearBlankPlacedBlockIfContent,
   selectParagraphAtPoint,
   selectWordOrTokenAtPoint,
+  listPlacedBlocksForHighlightMove,
+  clientPointInDocumentSelection,
+  isDocumentInlineTokenTarget,
+  movePlacedBlocksByDelta,
+  finalizePlacedBlocksMove,
 } from "@/lib/documentCanvas";
+import { getAbsolutePositionPt, pxToPt } from "@/lib/tableLayout";
 import {
   clearTableCellSelection,
   handleTableCellPointerDown,
@@ -69,7 +83,6 @@ import {
 } from "@/lib/tableCellSelection";
 import { tryDeleteInlineTokensInSelection } from "@/lib/inlineTokenDelete";
 import { openFunctionTokenForEdit, selectFunctionToken } from "@/lib/functionPicker";
-import { FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
 import { isMultiClickSelectionGesture } from "@/lib/wordSelect";
 import { isRedundantDefaultFontSize } from "@/lib/fontSizeStrip";
 import {
@@ -183,8 +196,18 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   /** Text-offset bookmark survives Face/Size DOM rewrites and focus-steal Range nudges. */
   const savedBookmarkRef = useRef<TextOffsetBookmark | null>(null);
   const [fieldDragOver, setFieldDragOver] = useState(false);
-  /** Document canvas: distinguish click (place/focus block) from drag (text selection). */
-  const documentPointerRef = useRef<{ x: number; y: number; dragged: boolean } | null>(null);
+  /** Document canvas: distinguish click (place/focus block) from drag (text selection / move). */
+  const documentPointerRef = useRef<{
+    x: number;
+    y: number;
+    dragged: boolean;
+    mode: "select" | "move";
+  } | null>(null);
+  /** Highlight-drag move: blocks + origins captured on mousedown inside selection. */
+  const placedMoveRef = useRef<{
+    blocks: HTMLElement[];
+    origins: Array<{ left: number; top: number }>;
+  } | null>(null);
   /** Anchor range for cross-block Document drag-select. */
   const selectAnchorRef = useRef<Range | null>(null);
   const commitFromSurfaceRef = useRef<(target: HTMLDivElement) => void>(() => {});
@@ -312,6 +335,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (!el || !html) return;
     normalizeFieldTokenSpans(el);
     ensureFieldTokensDraggable(el);
+    ensureFunctionTokensDraggable(el);
     if (formattingKind === "document") {
       ensureDocumentTableLayout(el);
     }
@@ -326,6 +350,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       el.innerHTML = html;
       normalizeFieldTokenSpans(el);
       ensureFieldTokensDraggable(el);
+      ensureFunctionTokensDraggable(el);
       if (formattingKind === "document") {
         ensureDocumentTableLayout(el);
       }
@@ -376,6 +401,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     stripFontSizeFormatting(target);
     normalizeFieldTokenSpans(target);
     ensureFieldTokensDraggable(target);
+    ensureFunctionTokensDraggable(target);
     const next = target.innerHTML;
     lastHtml.current = next;
     onChange(next);
@@ -391,6 +417,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     let lastWidth = el.clientWidth;
     let settleTimer: number | undefined;
     const pack = () => {
+      // Highlight-drag updates tops every mousemove; ResizeObserver must not
+      // collision-pack mid-drag (that snapped lines back under blank husks).
+      if (el.classList.contains("is-placed-moving")) return;
       const width = el.clientWidth;
       const widthChanged = Math.abs(width - lastWidth) >= 1;
       if (widthChanged) lastWidth = width;
@@ -402,6 +431,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       if (!widthChanged) return;
       window.clearTimeout(settleTimer);
       settleTimer = window.setTimeout(() => {
+        if (el.classList.contains("is-placed-moving")) return;
         commitFromSurfaceRef.current(el);
       }, 120);
     };
@@ -434,7 +464,22 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
           return;
         }
         pointer.dragged = true;
+        clearColorSampleHold();
       }
+
+      if (pointer.mode === "move" && placedMoveRef.current) {
+        e.preventDefault();
+        el.classList.add("is-placed-moving");
+        el.classList.remove("is-placed-grab");
+        movePlacedBlocksByDelta(
+          placedMoveRef.current.blocks,
+          placedMoveRef.current.origins,
+          pxToPt(e.clientX - pointer.x),
+          pxToPt(e.clientY - pointer.y),
+        );
+        return;
+      }
+
       if (!selectAnchorRef.current) {
         const sel = window.getSelection();
         if (sel?.rangeCount) selectAnchorRef.current = sel.getRangeAt(0).cloneRange();
@@ -447,7 +492,23 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       }
     };
 
-    const onUp = () => {
+    const onUp = (e: MouseEvent) => {
+      const el = surfaceRef.current;
+      const pointer = documentPointerRef.current;
+      const move = placedMoveRef.current;
+      if (el && pointer?.mode === "move") {
+        if (pointer.dragged && move) {
+          finalizePlacedBlocksMove(el, move.blocks);
+          el.classList.remove("is-placed-moving", "is-placed-grab");
+          commitFromSurfaceRef.current(el);
+        } else {
+          el.classList.remove("is-placed-moving", "is-placed-grab");
+        }
+        placedMoveRef.current = null;
+        documentPointerRef.current = null;
+        selectAnchorRef.current = null;
+        return;
+      }
       selectAnchorRef.current = null;
       // pointer cleared by surface onMouseUp; keep as safety if mouseup is outside
       if (documentPointerRef.current?.dragged) {
@@ -523,11 +584,14 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
   const handleFieldDrop = (e: React.DragEvent<HTMLDivElement>) => {
     setFieldDragOver(false);
-    const moving = takeMovingFieldToken();
+    const movingFunction = takeMovingFunctionToken();
+    const moving = movingFunction ? null : takeMovingFieldToken();
     const name = moving
       ? readFieldNameFromToken(moving) ?? readFieldDragName(e.dataTransfer)
-      : readFieldDragName(e.dataTransfer);
-    if (!name && !moving) return;
+      : movingFunction
+        ? null
+        : readFieldDragName(e.dataTransfer);
+    if (!name && !moving && !movingFunction) return;
     e.preventDefault();
     e.stopPropagation();
     const el = surfaceRef.current;
@@ -541,7 +605,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
         savedRangeRef.current = range.cloneRange();
         savedBookmarkRef.current = null;
       }
-      if (moving) {
+      if (movingFunction) {
+        moveFunctionTokenToSelection(movingFunction);
+      } else if (moving) {
         moveFieldTokenToSelection(moving);
       } else if (name) {
         insertFieldTokenAtSelection(name);
@@ -563,7 +629,10 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       savedRangeRef.current = range.cloneRange();
       savedBookmarkRef.current = null;
     }
-    if (moving) {
+    if (movingFunction) {
+      moveFunctionTokenToSelection(movingFunction);
+      commitFromSurface(el);
+    } else if (moving) {
       moveFieldTokenToSelection(moving);
       commitFromSurface(el);
     } else if (name) {
@@ -585,7 +654,14 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
           suppressContentEditableWarning
           data-placeholder={placeholder}
           onDragStart={(e) => {
-            const token = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);
+            const target = e.target as HTMLElement;
+            const functionToken = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
+            if (functionToken instanceof HTMLElement && surfaceRef.current?.contains(functionToken)) {
+              beginFunctionTokenMove(functionToken, e.dataTransfer);
+              if (documentPointerRef.current) documentPointerRef.current.dragged = true;
+              return;
+            }
+            const token = target.closest(`.${FIELD_TOKEN_CLASS}`);
             if (!(token instanceof HTMLElement) || !surfaceRef.current?.contains(token)) return;
             const name = readFieldNameFromToken(token);
             if (!name) {
@@ -597,11 +673,15 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
           }}
           onDragEnd={() => {
             clearMovingFieldToken();
+            clearMovingFunctionToken();
           }}
           onDragOver={(e) => {
-            if (!hasFieldDrag(e.dataTransfer)) return;
+            if (!hasFieldDrag(e.dataTransfer) && !isFunctionTokenMoveDrag(e.dataTransfer)) return;
             e.preventDefault();
-            e.dataTransfer.dropEffect = isFieldTokenMoveDrag(e.dataTransfer) ? "move" : "copy";
+            e.dataTransfer.dropEffect =
+              isFieldTokenMoveDrag(e.dataTransfer) || isFunctionTokenMoveDrag(e.dataTransfer)
+                ? "move"
+                : "copy";
             if (!fieldDragOver) setFieldDragOver(true);
           }}
           onDragLeave={() => {
@@ -630,7 +710,9 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               const ie = e.nativeEvent as InputEvent;
               const deleted = typeof ie.inputType === "string" && ie.inputType.startsWith("delete");
               if (deleted) {
-                pruneEmptyPlacedTextBlocks(target);
+                // One delete should not wipe every trailing blank invent — only the
+                // empty line that held the caret (blur still prunes unused husks).
+                pruneEmptyPlacedTextBlocks(target, { onlyCaretBlock: true });
                 // Delete often ejects glyphs to the editor root. Re-wrapping those
                 // orphans resurrects the deleted line (ghost "Form Count", etc.).
                 discardOrphanDocumentContent(target);
@@ -796,6 +878,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
                 x: e.clientX,
                 y: e.clientY,
                 dragged: false,
+                mode: "select",
               };
               selectAnchorRef.current = null;
               rememberSelection();
@@ -808,10 +891,46 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               const target = e.target as HTMLElement;
               if (target.closest(".table-handles-overlay")) return;
               if (target.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
+
+              // Mousedown inside an existing highlight → move those lines (hand cursor)
+              // only when the selection is a whole line or spans multiple lines.
+              // Double-click word / partial runs must not steal drag (whole paragraph jump).
+              // Chips: grabbing a field/function placeholder relocates only that token.
+              if (isDocumentInlineTokenTarget(target)) {
+                placedMoveRef.current = null;
+                documentPointerRef.current = null;
+                selectAnchorRef.current = null;
+                return;
+              }
+              if (
+                clientPointInDocumentSelection(e.clientX, e.clientY) &&
+                !e.shiftKey
+              ) {
+                const blocks = listPlacedBlocksForHighlightMove(el);
+                if (blocks.length) {
+                  e.preventDefault();
+                  placedMoveRef.current = {
+                    blocks,
+                    origins: blocks.map((b) => getAbsolutePositionPt(b)),
+                  };
+                  documentPointerRef.current = {
+                    x: e.clientX,
+                    y: e.clientY,
+                    dragged: false,
+                    mode: "move",
+                  };
+                  selectAnchorRef.current = null;
+                  el.classList.add("is-placed-grab");
+                  return;
+                }
+              }
+
+              placedMoveRef.current = null;
               documentPointerRef.current = {
                 x: e.clientX,
                 y: e.clientY,
                 dragged: false,
+                mode: "select",
               };
               el?.focus();
               const anchor = caretRangeAtPoint(e.clientX, e.clientY);
@@ -855,6 +974,22 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
             if (formattingKind !== "document") return;
             if (!el) return;
+
+            if (pointer.mode === "move" && placedMoveRef.current) {
+              e.preventDefault();
+              el.classList.add("is-placed-moving");
+              el.classList.remove("is-placed-grab");
+              const dx = pxToPt(e.clientX - pointer.x);
+              const dy = pxToPt(e.clientY - pointer.y);
+              movePlacedBlocksByDelta(
+                placedMoveRef.current.blocks,
+                placedMoveRef.current.origins,
+                dx,
+                dy,
+              );
+              return;
+            }
+
             if (!selectAnchorRef.current) {
               const sel = window.getSelection();
               if (sel?.rangeCount) {
@@ -873,6 +1008,39 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             clearColorSampleHold();
             const el = surfaceRef.current;
             if (el) handleTableCellPointerUp(el);
+            const pointer = documentPointerRef.current;
+            const move = placedMoveRef.current;
+
+            if (el && formattingKind === "document" && pointer?.mode === "move") {
+              el.classList.remove("is-placed-moving", "is-placed-grab");
+              if (pointer.dragged && move) {
+                // Consume blank husks the move landed on; keep intentional gaps —
+                // do not pack-to-tight (that felt like snap-back).
+                finalizePlacedBlocksMove(el, move.blocks);
+                commitFromSurface(el);
+                rememberSelection();
+                syncPaletteFocus();
+                placedMoveRef.current = null;
+                documentPointerRef.current = null;
+                selectAnchorRef.current = null;
+                return;
+              }
+              // Click without drag inside highlight → place caret (collapse).
+              placedMoveRef.current = null;
+              documentPointerRef.current = null;
+              selectAnchorRef.current = null;
+              if (!sampled && e.button === 0) {
+                handleDocumentCanvasClick(e);
+                rememberSelection();
+                registerAsPaletteEditor();
+                syncPaletteFocus();
+              }
+              return;
+            }
+
+            placedMoveRef.current = null;
+            if (el) el.classList.remove("is-placed-moving", "is-placed-grab");
+
             if (el && formattingKind === "document") {
               // Native drag can bridge absolute placed text and a table cell — clamp
               // before Face/Size / delete see a cross-island range.
@@ -884,7 +1052,6 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
             }
             syncPaletteFocus();
             selectAnchorRef.current = null;
-            const pointer = documentPointerRef.current;
             documentPointerRef.current = null;
             // Long-press only updates A-bar; skip invent / token-open side effects.
             if (sampled || pointer?.dragged || e.button !== 0) return;
@@ -959,9 +1126,6 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
         )}
         {(formattingKind === "document" || formattingKind === "text") && (
           <EmbeddedImageHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
-        )}
-        {formattingKind === "document" && (
-          <PlacedTextHandlesOverlay editorRef={surfaceRef} onCommit={commitPalette} />
         )}
       </div>
     </div>

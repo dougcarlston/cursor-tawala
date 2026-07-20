@@ -33,9 +33,9 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 - **Configure Function field target: Fields palette double-click does not replace** — **Fixed Jul 20.** Two causes: (1) Configure inputs live outside `.mdi-window.active`, so Fields double-click was refused as a “stale MDI target”; (2) column Contents / expression boxes appended at caret instead of replacing. Fix: `configureDialog` targets stay usable outside MDI + replace whole value on drop/double-click. **Smoke:** focus Contents or Where field → double-click a Fields leaf → prior value replaced (not appended / not no-op).
 
-### File / Save (held — fix later)
+### File / Save
 
-- **Save / Save As ignore last-loaded file name** — After **Open…** / load, Save and Save As should default to that file’s name (and Chromium quiet-Save should keep targeting it). **Untitled** (or `Untitled.json`) only for **New Project**. **Partial fix (Jul 19):** Save / Save As / Open now sync JSON + Project Explorer root from the **file leaf name**, so Save As no longer leaves the tree on **Untitled**. Remaining gap: suggested name still comes from `project.name` (now usually aligned with the file); Chromium quiet-Save handle memory was already separate.
+- **Save / Save As ignore last-loaded file name** — **Owner Passed Jul 20** (no longer seeing project-naming bugs on Save). After **Open…** / load, Save and Save As default from the file leaf / aligned `project.name`; **Untitled** only for **New Project**. Explorer root tracks the file name after Save As.
 
 - **Many `.json` files greyed out in Open / Save As pickers** — **Fixed Jul 20:** Chromium + macOS often typed fresh saves as `text/plain`, so strict `application/json` filters greyed valid `.json` on the **first** Open after Save; second Open worked after Launch Services caught up. Open picker now shows all files (validate `.json` after pick); Save picker accepts `application/json`, `text/json`, and `text/plain`. Quiet-Save handle is released during Open so the file we just saved is not greyed as “already open.”
 
@@ -43,7 +43,9 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 - **Reset Formatting broken** — **Removed July 10** (control deleted from Formatting Palette; was always greyed and unreliable).
 
-- **Font/size dropdown on mixed-format runs** — may still show Default Font/Size when the selection mixes faces/sizes. Single-run caret sync and Document typing persistence verified OK July 10 (after hard refresh; earlier “regression” was a stale tab).
+- **Font/size dropdown on mixed-format runs** — **Owner smoking Jul 20** (especially after adding or deleting function/field chips in a run). May still show Default Font/Size when the selection mixes faces/sizes, or go false-Mixed / false-default after chip insert/delete. Single-run caret sync and Document typing persistence verified OK July 10. **Smoke focus:** `DESIGNER_DOCUMENT_EDITOR.md` § 7c, 7j (uniform + chip runs; Face→Size with chips; re-drag after click-away).
+
+- **Function placeholder jumps after partial Size change (Jul 20 owner, intermittent)** — Changing font size on **some words** in a paragraph (mixed-size run) can occasionally move a function chip to the wrong place in the same line/paragraph. Easy workaround: drag the chip back (§ 22h). Likely related to Size wrapper split around `contenteditable=false` tokens. Not blocking; track until a reliable repro for fix.
 
 ### Document canvas & palette (smoke test July 10)
 
@@ -51,9 +53,17 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Backspace deletes function chip then caret vanishes / arrows die** — **Fixed Jul 20.** After Backspace removed a trailing `<<…>>` chip (esp. chip-only placed line), focus often sat after `contenteditable=false` with no ZWSP landing (or selection cleared) → no blinking caret; ArrowLeft appeared dead. Fix: explicit chip Backspace/Delete keeps a live caret landing; `focusPlacedBlock` / `focusPlacedBlockEnd` ensure chip ZWSP pads. **Smoke:** `DESIGNER_DOCUMENT_EDITOR.md` § 22e.
 
-- **Multiline / drag-select highlighting buggy** — **Verified July 10** for plain text: cross-block drag-select works; multi-line align applies to all intersecting placed lines. **Reopened Jul 19 (owner):** drag highlighting still does **not** work properly when the selection includes **Field tokens** and/or **function labels** (`<<…>>`). **Jul 20:** folded into Document caret-model epic (live caret + drag of highlighted content) — see `DESIGNER_OPEN_TODOS.md` § Document caret model.
+- **Space delete → mid-word wrap; Backspace between paragraphs eats many lines** — **Fixed Jul 20.** (1) `overflow-wrap: break-word` mid-broke glued words after deleting a space (“fashioned” / “names” with room on the line); switched to wrap-at-spaces only. (2) Backspace at start with a blank above now removes **only that blank**; content+content still merges (with a joining space); onInput prune no longer clears every trailing blank invent in one keystroke. **Smoke:** § 22f.
 
-- **Cannot drag Function label onto same line as text** — **Jul 19 (owner):** Function tokens (`<<…>>`) cannot be dragged onto an existing text line (stay separate / won’t join the line). Field drop/snap-to-line was verified Jul 10; function labels need the same mid-line join behavior. **Jul 20:** same epic as caret model / chip traversal.
+- **✥ drag moves only the first of several selected paragraphs** — **Fixed Jul 20 (superseded):** ✥ anchors **removed** — they snapped back, blocked highlight sizing, and were redundant. Move is **highlight + hand cursor**: select line(s) → grab/grabbing drag moves all selected `.doc-placed-text` together (no pack-to-tight snap-back). **Also Jul 20:** drag into a blank gap above used to bounce back (reflow mid-drag + blank husk collision); now skip pack while `.is-placed-moving` and `finalizePlacedBlocksMove` removes overlapping same-column blanks (parity with Backspace on the blank). **Also Jul 20:** drag-select/move no longer skips a visually middle line that is later in the DOM (fill same-column span + expand Range). **Owner Passed Jul 20.** **Also Jul 20:** double-click / partial word highlight must **not** move the whole paragraph — only whole-line or multi-line selections start highlight-move (`listPlacedBlocksForHighlightMove`). **Smoke:** § 22g.
+
+- **Dragging a placeholder moves the whole paragraph** — **Fixed Jul 20.** Highlight-drag treated a selected field/function chip as a placed-line move (`preventDefault` blocked HTML5 chip drag). Mousedown on a chip no longer starts paragraph move; function chips are relocatable like field tokens. **Owner Passed Jul 20.** **Smoke:** § 22h.
+
+- **Multiline / drag-select highlighting buggy** — **Verified July 10** for plain text: cross-block drag-select works; multi-line align applies to all intersecting placed lines. **Reopened Jul 19 (owner):** drag highlighting still does **not** work properly when the selection includes **Field tokens** and/or **function labels** (`<<…>>`). **Jul 20:** folded into Document caret-model epic (live caret + drag of highlighted content) — see `DESIGNER_OPEN_TODOS.md` § Document caret model. **Related Jul 20:** middle-line skip on plain multi-line select/move fixed (DOM order ≠ visual tops) — **Owner Passed**; chip-inclusive drag-select still open.
+
+- **Cannot drag Function label onto same line as text** — **Owner Passed Jul 20.** Function chips HTML5-relocate like field tokens; drop onto a text line joins it. **Smoke:** § 22h.
+
+- **Long function chips + unreachable MDI chrome (Jul 20 owner)** — Function labels use `white-space: nowrap`, so a long `<<DISPLAY…>>` / MQL chip may **look** wrapped to the next visual line until the Document/Form window is widened (then it snaps back onto its line). Widening (or leaving a wide window) can push **minimize / close** so far right that they are hard or impossible to reach: MDI children **cannot** slide behind **Project Explorer** or **Items/Statements**, but **can** still slide behind **Fields**. Workarounds today: **View** → hide Explorer / Items / Fields, or **Windows → Cascade**. Prior Jul 19 clamp (“keep frame inside `.mdi-surface`”) did not fully solve Fields underlap or title-bar reach after wide chip layout.
 
 - **Cannot rename Form / Process / Document in Explorer** — **Fixed Jul 19:** rename was only a 500ms long-press on an already-selected row (easy to miss, and HTML5 drag canceled it). Now: **click a selected** Form/Process/Document name to edit, or press **F2**. Enter commits, Escape cancels.
 
@@ -112,11 +122,26 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **RESPONSE TOTALS multi-select undercount** — **Investigated Jul 19 (TODO #12): no code bug found.** Java + Preview tally both loop all `getValues` / array choices (same as Bar Graph). Added regression tests. **Owner Passed Jul 20** — Totals and Bar Graph both pick up all choices on the same multi-select MCQ.
 
-- **RESPONSE TOTALS → Include only the records where: `<<field>>` is not blank** — Owner Jul 17 spotted **inappropriate list behavior** when that Where mode is used (exact wrong result TBD on retest). May be the same MCQ/`mcIsNotBlank` gap as above. **Park** with TODO #11.
+### Edit / Undo — **closed policy (owner Jul 20)**
 
-### Edit / Undo (main toolbar smoke Jul 18)
+**Contract (do not reopen without discussion):** Undo/Redo is **best-effort browser `execCommand`** on the focused contenteditable only. We accept declining returns and will **not** build project-level or full-canvas history now.
 
-- **Undo/Redo stack is per-item only** — Undo (icon bar, Edit → Undo, ⌘Z/Ctrl+Z) uses the browser’s `document.execCommand("undo")`, whose history lives on the **focused contenteditable**. Clicking out of one Form item into another blurs/unmounts that editor, so Chromium discards its undo stack; the next item starts empty. **No cross-item / project-level undo.** Owner Jul 18: acceptable for now if recorded. **Future:** store-level undo history (text commits, item move/delete) that survives focus changes — larger feature, not a toolbar wiring fix. (Legacy Jan 2011 build often had Undo/Redo always greyed anyway.)
+| In scope (best effort) | Out of scope (will not undo) |
+|------------------------|------------------------------|
+| Glyph / format edits while focus stays in **one** Form rich region (Text / FIB / MCQ) or **one** Document surface, if the browser still has a stack | Field name / FIB blank / MCQ name renames |
+| | Form item **Label** renames |
+| | Document highlight-drag **Moves** of placed lines |
+| | Skip / Process statement Add · Modify · delete · reorder |
+| | Explorer Form / Process / Document rename; insert/delete items; Save |
+| | Cross-item or cross-window Undo; single-MDI-window history stacks |
+
+**Known limits (not bugs to chase):**
+- **Document:** placed-line remount / commit churn often leaves Undo empty or useless even for typing.
+- **Form:** Undo is **per-item**; leaving that row clears its stack.
+- **Skip toolbar** Cut/Copy/Paste/Undo icons remain **stubs** (`DESIGNER_OPEN_TODOS.md` — Deferred UX).
+- Legacy Jan 2011 build often had Undo/Redo **always greyed** anyway.
+
+**Past notes (superseded by policy above):** Document Undo “does not work”; field/Label/Moves not on the stack — expected under this contract, not open fix items.
 
 - **Paste required a one-time browser permission prompt** — expected, not a bug: toolbar/menu Paste reads the system clipboard via `navigator.clipboard` (`clipboard-read`), which browsers gate; Cut/Copy write the current selection and are allowed silently. After **Allow**, Paste and ⌘V work without re-prompting. (Fixed Jul 18: Paste now uses the Clipboard API since `execCommand("paste")` is blocked from button clicks.)
 
@@ -134,13 +159,15 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 **Verdict:** Small set — one real missing import, rest mostly casts/unused. Not a multi-day detritus purge.
 
-### Skip Instructions (parked — fix when Skip is reopened)
+### Skip Instructions
 
 - **Skip dialog: click / edit / delete statement ignored** — **Fixed Jul 19:** Edit Skip Instructions had no select / Modify / line delete (toolbar Delete disabled; Add always appended). Now Process-parity: click a line to edit (Modify), × / toolbar Delete, ↑↓, insert at the arrow (not always append). Also: SkipTo no longer resets the dropdown to the first FIB on open (that made Skip-after-FIB1 look like a no-op).
 
+- **Skip re-edit stuck in Modify-only / cannot add inside If (Jul 20)** — **Fixed Jul 20.** After Close and **Edit** again, selecting a line entered edit mode but the dialog never passed `showAllInsertionGaps`, so the single legacy insert arrow hid and there were **no** clickable gaps — could only Modify existing lines (e.g. could not place a Set inside the If `then` without rebuilding). Now: all insert gaps stay available; clicking a gap clears selection (insert mode); choosing a different Statements palette tool also leaves Modify when it does not match the selected line. **Smoke:** `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` § Skip re-edit.
+
 - **Skip dialog re-open does not restore insertion point.** Soft leftover; session now also stores `insertIndex` + selection. Re-smoke when convenient.
 
-- **Skip modal overlay quirks** (positioning / full-screen dim). Soft / polish; Close-only dismiss is intentional. **Parked with Skip.**
+- **Skip modal overlay quirks** (positioning / full-screen dim). Soft / polish; Close-only dismiss is intentional.
 
 ### Process / runtime navigation
 
@@ -203,7 +230,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 | Properties: Individual Items stay fully expanded | Moved to **TODOs** (UX polish, not broken) |
 | Dev server restart blanks Designer tab | Not a product bug (HMR); dropped |
 | Empty MDI until form clicked in Explorer | By design; dropped |
-| MDI windows slide under Fields (unreachable close/minimize) | **Fixed Jul 19** — drag/resize clamp keeps frame (and title-bar controls) inside `.mdi-surface` |
+| MDI windows slide under Fields (unreachable close/minimize) | **Partial Jul 19** — drag/resize clamp inside `.mdi-surface`; **reopened Jul 20** — long nowrap chips force wide windows; chrome can still sit under **Fields** / off-reach while Explorer/Items block sliding (see open bugs) |
 
 ---
 

@@ -116,8 +116,66 @@ export function createFunctionTokenElement(
   span.setAttribute("data-function-instance", String(id));
   span.setAttribute(FUNCTION_CONFIG_ATTR, serializeFunctionConfig(config));
   span.setAttribute("title", def.name);
+  span.draggable = true;
   span.textContent = display;
   return span;
+}
+
+/** In-editor HTML5 drag of an existing function chip (move, not Insert→Function). */
+export const FUNCTION_TOKEN_MOVE_MIME = "application/x-tawala-function-token-move";
+
+let movingFunctionToken: HTMLElement | null = null;
+
+/** Start relocating an existing function token already in the editor. */
+export function beginFunctionTokenMove(token: HTMLElement, dataTransfer: DataTransfer): void {
+  movingFunctionToken = token;
+  dataTransfer.setData(FUNCTION_TOKEN_MOVE_MIME, "1");
+  dataTransfer.setData("text/plain", token.textContent ?? "");
+  dataTransfer.effectAllowed = "move";
+  try {
+    dataTransfer.setDragImage(
+      token,
+      Math.min(12, token.offsetWidth / 2),
+      Math.min(8, token.offsetHeight / 2),
+    );
+  } catch {
+    /* some browsers reject setDragImage on detached/odd nodes */
+  }
+}
+
+export function isFunctionTokenMoveDrag(dataTransfer: DataTransfer | null): boolean {
+  if (movingFunctionToken) return true;
+  if (!dataTransfer) return false;
+  return Array.from(dataTransfer.types).includes(FUNCTION_TOKEN_MOVE_MIME);
+}
+
+export function takeMovingFunctionToken(): HTMLElement | null {
+  const token = movingFunctionToken;
+  movingFunctionToken = null;
+  return token;
+}
+
+export function clearMovingFunctionToken(): void {
+  movingFunctionToken = null;
+}
+
+/** Relocate an existing function chip to the current selection (preserves the same node). */
+export function moveFunctionTokenToSelection(token: HTMLElement): void {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  const range = sel.getRangeAt(0);
+  if (token.contains(range.commonAncestorContainer)) return;
+  if (!range.collapsed) {
+    const probe = range.cloneRange();
+    try {
+      if (probe.intersectsNode(token)) return;
+    } catch {
+      /* intersectsNode can throw on detached nodes */
+    }
+    range.deleteContents();
+  }
+  range.insertNode(token);
+  placeCaretAfterToken(token);
 }
 
 /** Walk an editor and add caret landings around every function token. */
@@ -125,6 +183,18 @@ export function ensureFunctionTokenCaretGaps(root: HTMLElement): void {
   root.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`).forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
     // Drop stale insert-time line-height:1 (same contract as field chips).
+    node.style.removeProperty("line-height");
+    node.style.verticalAlign = "baseline";
+    node.draggable = true;
+    ensureTokenCaretLanding(node);
+  });
+}
+
+/** Ensure loaded / upgraded function chips are draggable for in-editor move. */
+export function ensureFunctionTokensDraggable(root: ParentNode): void {
+  root.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`).forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    node.draggable = true;
     node.style.removeProperty("line-height");
     node.style.verticalAlign = "baseline";
     ensureTokenCaretLanding(node);

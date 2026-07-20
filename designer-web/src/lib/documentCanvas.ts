@@ -19,6 +19,7 @@ import {
   getLayoutHomeTopPt,
   parseCssPt,
   pxToPt,
+  setAbsolutePositionPt,
   setLayoutHomeTopPt,
 } from "./tableLayout";
 import { wordBoundsInText } from "./wordSelect";
@@ -331,6 +332,8 @@ export function preserveBlankPlacedLines(editor: HTMLElement): void {
  * (used while the designer is still focused in an unused invent anchor).
  * `restoreFocus` — when false, never steal/clear the selection (table clicks / place finish).
  * Default true only repositions when the caret’s placed line was among the removals.
+ * `onlyCaretBlock` — when true, remove at most the empty block that held the caret (one
+ * Backspace should not clear every trailing blank invent in the Document).
  */
 export function pruneEmptyPlacedTextBlocks(
   editor: HTMLElement,
@@ -338,6 +341,7 @@ export function pruneEmptyPlacedTextBlocks(
     except?: HTMLElement | HTMLElement[] | null;
     keepCaretEmpty?: boolean;
     restoreFocus?: boolean;
+    onlyCaretBlock?: boolean;
   },
 ): boolean {
   const all = listPlacedBlocksSorted(editor);
@@ -360,10 +364,13 @@ export function pruneEmptyPlacedTextBlocks(
   if (options?.keepCaretEmpty && caretBlock) exceptSet.add(caretBlock);
 
   const emptySet = new Set(empties);
-  const toRemove = empties.filter(
+  let toRemove = empties.filter(
     (empty) =>
       !exceptSet.has(empty) && !isIntentionalBlankPlacedBlock(empty, all, emptySet),
   );
+  if (options?.onlyCaretBlock) {
+    toRemove = caretBlock && toRemove.includes(caretBlock) ? [caretBlock] : [];
+  }
   if (!toRemove.length) {
     // Still repair scaffolds on kept blanks (delete may have stripped `<br>`).
     for (const empty of empties) {
@@ -740,7 +747,10 @@ export function ensurePlacedBlockWrapWidth(editor: HTMLElement, block: HTMLEleme
 
 function applyPlacedBlockWrapStyles(block: HTMLElement): void {
   block.style.whiteSpace = "normal";
-  block.style.overflowWrap = "break-word";
+  // Do NOT use overflow-wrap:break-word — deleting a space glues words into one
+  // long token that mid-breaks ("fashioned" / "names"), then re-spacing cannot
+  // undo the visual wrap. Wrap only at real spaces; long chips may overflow.
+  block.style.overflowWrap = "normal";
   block.style.wordBreak = "normal";
   block.dataset.docWrap = "1";
 }
@@ -1036,9 +1046,189 @@ export function listPlacedBlocksInSelection(editor: HTMLElement): HTMLElement[] 
       return false;
     }
   });
-  if (hit.length) return hit;
+  if (hit.length) {
+    // Absolute lines can be out of DOM order vs painted tops — fill same-column
+    // gaps so a middle line is not left behind on highlight-move.
+    return fillSameColumnPlacedBlocksInVisualSpan(editor, hit);
+  }
   const one = findPlacedTextBlockAtCaret(editor);
   return one ? [one] : [];
+}
+
+/**
+ * True when the current selection covers essentially all content of a placed line
+ * (triple-click / select-all on that line), not a partial word or mid-line run.
+ */
+export function selectionFullyCoversPlacedBlock(block: HTMLElement): boolean {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  const blockRange = document.createRange();
+  try {
+    blockRange.selectNodeContents(block);
+  } catch {
+    return false;
+  }
+  // Allow tiny ZWSP / caret-pad slack at the edges of chip landings.
+  const startsAtOrBefore =
+    range.compareBoundaryPoints(Range.START_TO_START, blockRange) <= 0;
+  const endsAtOrAfter = range.compareBoundaryPoints(Range.END_TO_END, blockRange) >= 0;
+  if (startsAtOrBefore && endsAtOrAfter) return true;
+
+  // Double-click word / partial run: selection is strictly inside the block.
+  const startsAfter = range.compareBoundaryPoints(Range.START_TO_START, blockRange) > 0;
+  const endsBefore = range.compareBoundaryPoints(Range.END_TO_END, blockRange) < 0;
+  if (startsAfter || endsBefore) return false;
+
+  return startsAtOrBefore && endsAtOrAfter;
+}
+
+/**
+ * Placed lines to move on highlight-drag. Partial selections (double-click word,
+ * mid-line drag) return [] so native text editing / word drag is not stolen.
+ * Multi-line spans and whole-line selects still move those `.doc-placed-text` blocks.
+ */
+export function listPlacedBlocksForHighlightMove(editor: HTMLElement): HTMLElement[] {
+  const blocks = listPlacedBlocksInSelection(editor);
+  if (blocks.length >= 2) return blocks;
+  if (blocks.length === 1 && selectionFullyCoversPlacedBlock(blocks[0])) {
+    return blocks;
+  }
+  return [];
+}
+
+/**
+ * Given selected placed lines, also include same-column siblings whose `top` lies
+ * between the uppermost and lowermost hit (DOM order ≠ visual order after invent/move).
+ */
+export function fillSameColumnPlacedBlocksInVisualSpan(
+  editor: HTMLElement,
+  hit: HTMLElement[],
+): HTMLElement[] {
+  if (hit.length < 2) return hit;
+  const hitSet = new Set(hit);
+  const hitBoxes = hit.map((b) => layoutItemBoxPt(b));
+  const minTop = Math.min(...hitBoxes.map((b) => b.top));
+  const maxTop = Math.max(...hitBoxes.map((b) => b.top));
+  const all = listPlacedBlocksSorted(editor);
+  const filled: HTMLElement[] = [];
+  for (const block of all) {
+    if (hitSet.has(block)) {
+      filled.push(block);
+      continue;
+    }
+    const box = layoutItemBoxPt(block);
+    if (box.top < minTop - 0.5 || box.top > maxTop + 0.5) continue;
+    const sameColumn = hitBoxes.some((h) => layoutBoxesHorizontallyOverlap(box, h));
+    if (sameColumn) filled.push(block);
+  }
+  return filled.length ? filled : hit;
+}
+
+/**
+ * Extend a Range so every placed block in `blocks` is covered (needed when a
+ * visually middle line is later in the DOM than the drag endpoints).
+ */
+export function expandRangeToIncludePlacedBlocks(range: Range, blocks: HTMLElement[]): Range {
+  const next = range.cloneRange();
+  for (const block of blocks) {
+    let already = false;
+    try {
+      already = next.intersectsNode(block);
+    } catch {
+      already = false;
+    }
+    if (already) continue;
+    const blockRange = document.createRange();
+    try {
+      blockRange.selectNodeContents(block);
+    } catch {
+      continue;
+    }
+    if (next.compareBoundaryPoints(Range.START_TO_START, blockRange) > 0) {
+      next.setStart(blockRange.startContainer, blockRange.startOffset);
+    }
+    if (next.compareBoundaryPoints(Range.END_TO_END, blockRange) < 0) {
+      next.setEnd(blockRange.endContainer, blockRange.endOffset);
+    }
+  }
+  return next;
+}
+
+/**
+ * True when the event target is a field/function chip. Highlight-drag must not
+ * move the whole `.doc-placed-text` when the user is grabbing a placeholder.
+ */
+export function isDocumentInlineTokenTarget(target: EventTarget | null): boolean {
+  if (!(target instanceof Element)) return false;
+  return !!target.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`);
+}
+
+/** True when (clientX, clientY) lies inside the current non-collapsed selection’s painted rects. */
+export function clientPointInDocumentSelection(clientX: number, clientY: number): boolean {
+  const sel = window.getSelection();
+  if (!sel || !sel.rangeCount || sel.isCollapsed) return false;
+  const range = sel.getRangeAt(0);
+  const rects = range.getClientRects();
+  for (let i = 0; i < rects.length; i++) {
+    const r = rects[i];
+    if (r.width < 1 && r.height < 1) continue;
+    if (clientX >= r.left && clientX <= r.right && clientY >= r.top && clientY <= r.bottom) {
+      return true;
+    }
+  }
+  return false;
+}
+
+/** Move placed lines by a shared pt delta (highlight drag — no ✥ anchors). */
+export function movePlacedBlocksByDelta(
+  blocks: HTMLElement[],
+  origins: Array<{ left: number; top: number }>,
+  deltaLeftPt: number,
+  deltaTopPt: number,
+): void {
+  blocks.forEach((block, i) => {
+    const origin = origins[i];
+    if (!origin) return;
+    setAbsolutePositionPt(block, origin.left + deltaLeftPt, origin.top + deltaTopPt);
+  });
+}
+
+/**
+ * After highlight-drag: drop empty same-column blank husks that the moved lines now
+ * occupy (so dragging “c)” up into the gap above works — same as Backspace on the blank).
+ * Does **not** run full collision pack (that snapped lines back under blanks).
+ */
+export function finalizePlacedBlocksMove(editor: HTMLElement, moved: HTMLElement[]): void {
+  if (!moved.length) return;
+  const movedSet = new Set(moved.filter((b) => editor.contains(b)));
+  if (!movedSet.size) return;
+
+  const empties = listPlacedBlocksSorted(editor).filter(
+    (b) => !movedSet.has(b) && isPlacedTextBlockEmpty(b),
+  );
+  for (const blank of empties) {
+    const blankBox = layoutItemBoxPt(blank);
+    let overlapsMoved = false;
+    for (const block of movedSet) {
+      const box = layoutItemBoxPt(block);
+      if (!layoutBoxesHorizontallyOverlap(box, blankBox)) continue;
+      // Vertical overlap (or blank sandwiched in the band the move covered).
+      if (rangesOverlap1d(box.top, box.height, blankBox.top, blankBox.height, 4)) {
+        overlapsMoved = true;
+        break;
+      }
+    }
+    if (overlapsMoved) blank.remove();
+  }
+
+  // Refresh homes to the painted tops so a later resize reflow does not restore
+  // the pre-drag slot under a (now removed) blank.
+  for (const block of movedSet) {
+    if (!editor.contains(block)) continue;
+    const { left, top } = getAbsolutePositionPt(block);
+    setAbsolutePositionPt(block, left, top);
+  }
 }
 
 /**
@@ -1098,8 +1288,30 @@ export function extendDocumentSelectionToPoint(
       next.setStart(focusRange.startContainer, focusRange.startOffset);
       next.setEnd(anchor.startContainer, anchor.startOffset);
     }
+
+    // Seed hits from endpoints + intersects, then fill visual-column gaps and
+    // expand the Range so a DOM-out-of-order middle line paints as selected too.
+    const endpointBlocks: HTMLElement[] = [];
+    for (const node of [next.startContainer, next.endContainer]) {
+      const el = node instanceof Element ? node : node.parentElement;
+      const placed = el?.closest?.(`.${PLACED_TEXT_CLASS}`);
+      if (placed instanceof HTMLElement && editor.contains(placed)) {
+        endpointBlocks.push(placed);
+      }
+    }
+    const intersectHits = listPlacedBlocksSorted(editor).filter((block) => {
+      try {
+        return next.intersectsNode(block);
+      } catch {
+        return false;
+      }
+    });
+    const seed = [...new Set([...endpointBlocks, ...intersectHits])];
+    const filled = fillSameColumnPlacedBlocksInVisualSpan(editor, seed);
+    const expanded = expandRangeToIncludePlacedBlocks(next, filled);
+
     sel.removeAllRanges();
-    sel.addRange(next);
+    sel.addRange(expanded);
     return true;
   } catch {
     return false;
@@ -2595,6 +2807,15 @@ function stripTrailingPlacedScaffold(block: HTMLElement): void {
  */
 function mergePlacedTextBlocks(into: HTMLElement, from: HTMLElement): void {
   stripTrailingPlacedScaffold(into);
+  // Avoid "fashionednames" when joining two word runs across a Return.
+  const intoText = (into.textContent ?? "").replace(/\u00a0|\u200b/g, "");
+  const fromText = (from.textContent ?? "").replace(/\u00a0|\u200b/g, "");
+  const intoEndsWord = /[A-Za-z0-9)]$/.test(intoText);
+  const fromStartsWord = /^[A-Za-z0-9(]/.test(fromText);
+  if (intoEndsWord && fromStartsWord) {
+    into.appendChild(document.createTextNode(" "));
+  }
+
   const join = document.createRange();
   join.selectNodeContents(into);
   join.collapse(false);
@@ -2718,7 +2939,12 @@ export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: str
     if (isDeleteBackwardInput(inputType) && rangeAtEdgeOfBlock(placed, "start")) {
       const prev = findAdjacentSameColumnPlaced(editor, placed, "prev");
       if (prev) {
-        if (isPlacedTextBlockEmpty(placed)) {
+        // Blank line above + content here: delete only the blank (one Backspace =
+        // one Return). Do not merge content up into the husk.
+        if (isPlacedTextBlockEmpty(prev) && !isPlacedTextBlockEmpty(placed)) {
+          prev.remove();
+          focusPlacedBlock(placed);
+        } else if (isPlacedTextBlockEmpty(placed)) {
           placed.remove();
           focusPlacedBlockEnd(prev);
         } else {
@@ -2744,6 +2970,7 @@ export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: str
       const next = findAdjacentSameColumnPlaced(editor, placed, "next");
       if (next) {
         if (isPlacedTextBlockEmpty(next)) {
+          // Drop only the blank below (one Delete = one Return).
           next.remove();
           focusPlacedBlockEnd(placed);
         } else {

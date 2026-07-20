@@ -6,9 +6,17 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 
 ---
 
-## ☀️ Jul 20 — Document caret epic next
+## ☀️ Jul 20 — Undo closed; next focus
 
-Morning reviews (**#11**, **#12**) Passed. **Next:** Document **caret model epic** (Backspace across Returns → arrows through chips → live caret / less invent-anchor). Do **before** chip drag-select / mid-line-join bugfixes — those may dissolve after the epic. See § Document caret model below.
+**Undo policy locked** in `DESIGNER_OPEN_BUGS.md` (best-effort CE only; renames / Moves / Skip·Process / Explorer out of scope). Do **not** spend more sessions on Undo stacks.
+
+**Document caret epic:** A + C landed; B largely landed (highlight move, chip relocate, middle-line fill — Owner Passed). Park remaining invent-on-click / chip-inclusive drag-select polish unless a hard blocker appears.
+
+**Suggested next attention (declining Document ROI):**
+1. **Checkpoint** — commit/push Jul 20 Document + Skip re-edit work when ready.
+2. **Deploy / end-user path (#10 leftovers)** — AdminDash → Thank you navigation; email Send / theme only if you reopen them.
+3. **Owner smoke** — Font/Size honesty after chip add/delete (§ 7c / 7j); any remaining #9 function Configure→Deploy gaps you still care about.
+4. **Park** Deferred UX (FIB blanks editable, MDI Pass 2, nested Skip If, look-and-feel, 3-browser) until you explicitly reopen.
 
 ---
 
@@ -54,9 +62,10 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 **Progress (Jul 20):**
 - **A landed** — Backspace/Delete at a placed-line edge merges the same-column neighbor (Return undo); empty Return husks remove and land on the previous line; table cells and side-by-side columns stay isolated (`handleDocumentDeleteBoundary` + `documentCanvas.deleteBoundary.dom.test.ts`). Smoke: `DESIGNER_DOCUMENT_EDITOR.md` § 22c.
 - **C landed** — ArrowLeft/Right at line edges move to the previous/next same-column line; Left/Right jump over field/function chips; Up/Down prefer same-column neighbors (`handlePlacedTextArrowKey` + `documentCanvas.arrowKeys.dom.test.ts`). Smoke: § 22d.
-- **B next** — click → live caret / reduce invent anchors; unlock highlight drag across chips.
+- **B in progress** — ✥ invent-move anchors **removed** (Jul 20); highlight + hand-cursor drag moves selected placed lines (middle-line fill **Owner Passed Jul 20**). Still open: less invent-on-click / live caret flow; chip-inclusive drag-select highlight quirks.
+- **Function chip mid-line join** — **Owner Passed Jul 20** (§ 22h).
 
-**Related open bugs (expect to re-smoke after epic):** multiline drag-select with field/function chips; function label drag onto same text line (`DESIGNER_OPEN_BUGS.md`).
+**Related open bugs (expect to re-smoke after epic):** multiline drag-select highlight when the run includes field/function chips; long nowrap chips + unreachable MDI minimize/close (`DESIGNER_OPEN_BUGS.md`).
 
 ## Form items & Fields
 
@@ -75,7 +84,7 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 
 - **Nested If inside then/else `( )` not supported.** **Deferred** (Skip parked). (Source: Forms canvas & Skip)
 - **Modify on existing Skip script line missing** (legacy Add/Modify). **Deferred.** (Source: Forms canvas & Skip)
-- **Skip toolbar Cut/Copy/Paste/Undo stubs** — icons present, not functional. **Deferred.** (Source: Forms canvas & Skip)
+- **Skip toolbar Cut/Copy/Paste/Undo stubs** — icons present, not functional. **Deferred.** Covered by Undo closed policy (Jul 20) — not a separate Undo epic. (Source: Forms canvas & Skip)
 
 ## Process editor
 
@@ -88,6 +97,7 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 ## Shell / MDI / chrome
 
 - **MDI Pass 2** — no Windows menu; Design/Preview and selected item still global across form windows; no layout persistence; no maximize/tile/snap. **Deferred.** (Sources: Designer MDI and Heading; Document WYSIWYG & palette)
+- **Long nowrap function chips push MDI chrome off-reach** — see open bug (Jul 20); workarounds Cascade / hide panels. Related to panel docking + title-bar clamp.
 - **Panel docking** — Items/Statements cannot be resized or moved independently of Project Explorer. **Deferred.** (Source: Designer MDI and Heading)
 - **Main icon toolbar (“frequently used”)** — legacy `mainToolStrip` below the menu bar, above Project Explorer, left of the Formatting Palette. **Done Jul 12** (`MainIconToolbar` + `shellCommands.ts`; shared with File/Edit/Project menus). Spec: `DESIGNER_MENU_SPEC.md`. Remaining: full home-page control audit (Owner review queue #2).
 - **Processes palette, Project Explorer chrome, canvas item windows** not restyled to legacy look-and-feel. **Deferred** (Items palette only was Choice A). (Source: Designer Forms foundation)

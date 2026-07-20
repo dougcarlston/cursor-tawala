@@ -205,7 +205,7 @@ flowchart TD
 |---------|--------|----------------|
 | Hidden field item | Yes | Not implemented |
 | Page break | Yes | Not implemented |
-| Skip instructions editor | Full If/SkipTo/Set/Comment | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow parity with Process |
+| Skip instructions editor | Full If/SkipTo/Set/Comment | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow; **Jul 20:** re-edit keeps insert gaps (`showAllInsertionGaps`) so new lines can be added inside If/Otherwise without rebuilding |
 | Skip summary on canvas | Yes | Yes (`May skip to` / `Skips to End of Form`) |
 | Form post-process Set → hidden field | Yes | Partial / JSON only |
 
@@ -219,4 +219,14 @@ flowchart TD
 
 ---
 
-*Last updated: June 2026.*
+## Smoke — Skip re-edit (Jul 20)
+
+1. Build an If with then (Set + SkipTo) and Otherwise (Comment) → **Close**.
+2. Open **Edit** again → click the Comment → builder shows **Modify** (edit mode).
+3. Hover between lines in the If `then` block → faint insert gaps; **click** a gap inside `(` … `)` → selection clears, ▶ on that gap (**Add ↓** mode).
+4. **Set** → enter field/value → **Add ↓** → statement appears in the If branch (not only Modify existing lines).
+5. Alternate: with Comment still selected, click **Set** in Statements → leaves Modify → insert at current gap; move gap into If if needed, then Add.
+
+---
+
+*Last updated: July 2026 — Skip re-edit insert gaps (Jul 20).*
