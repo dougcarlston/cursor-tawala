@@ -69,6 +69,7 @@ describe("cascadeFormRenameInProject", () => {
 
     const project: TawalaProject = {
       name: "T",
+      format: "2.0",
       forms: [
         {
           name: "Form 1",
@@ -86,7 +87,11 @@ describe("cascadeFormRenameInProject", () => {
 
     const next = cascadeFormRenameInProject(project, "Form 1", "Survey");
     expect(next.forms[0].name).toBe("Form 1"); // caller renames the form object
-    expect(String(next.forms[0].items[0].content)).toContain("Survey:Name");
+    const textItem = next.forms[0].items[0];
+    expect(textItem.type).toBe("text");
+    if (textItem.type === "text") {
+      expect(String(textItem.content)).toContain("Survey:Name");
+    }
     expect(String(next.documents?.[0].content)).toContain("Survey:Name");
     expect(next.processes?.[0].commands?.[0]).toMatchObject({ form: "Survey" });
   });

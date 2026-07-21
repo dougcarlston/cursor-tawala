@@ -771,7 +771,7 @@ export function setShellFileActions(actions: ShellFileActions): void {
   shellFileActions = actions;
 }
 
-function isSaveChord(e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "code" | "key" | "shiftKey">): boolean {
+function isSaveChord(e: Pick<KeyboardEvent, "ctrlKey" | "metaKey" | "altKey" | "code" | "key">): boolean {
   if (!(e.ctrlKey || e.metaKey) || e.altKey) return false;
   if (e.code === "KeyS") return true;
   return e.key.toLowerCase() === "s";

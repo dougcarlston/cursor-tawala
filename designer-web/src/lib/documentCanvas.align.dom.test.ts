@@ -92,7 +92,9 @@ describe("Document placed-text alignment (#6)", () => {
     sel.addRange(range);
 
     expect(documentEnterInPlacedText(editor)).toBe(true);
-    const lines = Array.from(editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`));
+    const lines = Array.from(
+      editor.querySelectorAll(`.${PLACED_TEXT_CLASS}`),
+    ) as HTMLElement[];
     expect(lines.length).toBe(2);
     expect(readPlacedTextAlign(lines[1]!)).toBe("center");
     expect(lines[1]!.style.fontFamily).toContain("Trebuchet");

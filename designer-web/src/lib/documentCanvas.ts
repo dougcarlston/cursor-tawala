@@ -2246,7 +2246,9 @@ function layoutItemHeightPt(item: HTMLElement): number {
   return 12;
 }
 
-function isInlineDocToken(node: Node | null): node is HTMLElement {
+/** True for field/function chips. Returns boolean (not `node is HTMLElement`) so
+ * a false result does not erase HTMLElement from control-flow narrowing. */
+function isInlineDocToken(node: Node | null): boolean {
   return (
     node instanceof HTMLElement &&
     (node.classList.contains(FIELD_TOKEN_CLASS) ||
@@ -2262,7 +2264,7 @@ function isZwspOnlyTextNode(node: Node | null): node is Text {
 function nearestTokenSibling(from: Node, direction: "before" | "after"): HTMLElement | null {
   let sib: Node | null = direction === "after" ? from.nextSibling : from.previousSibling;
   while (sib) {
-    if (isInlineDocToken(sib)) return sib;
+    if (isInlineDocToken(sib) && sib instanceof HTMLElement) return sib;
     if (
       isZwspOnlyTextNode(sib) ||
       (sib.nodeType === Node.TEXT_NODE && !meaningfulText(sib.textContent))
@@ -2311,14 +2313,19 @@ function findTokenBesideCaret(direction: "before" | "after"): HTMLElement | null
   if (node instanceof Element) {
     if (direction === "after") {
       const child = node.childNodes[offset] ?? null;
-      if (isInlineDocToken(child)) return child;
-      if (child) return nearestTokenSibling(child, "after") ?? (isInlineDocToken(child) ? child : null);
+      if (isInlineDocToken(child) && child instanceof HTMLElement) return child;
+      if (child) {
+        return (
+          nearestTokenSibling(child, "after") ??
+          (isInlineDocToken(child) && child instanceof HTMLElement ? child : null)
+        );
+      }
       // Past last child — no token after.
       return null;
     }
     if (offset > 0) {
       const child = node.childNodes[offset - 1] ?? null;
-      if (isInlineDocToken(child)) return child;
+      if (isInlineDocToken(child) && child instanceof HTMLElement) return child;
       if (child) return nearestTokenSibling(child, "before");
       return null;
     }
@@ -2991,7 +2998,7 @@ export function handleDocumentDeleteBoundary(editor: HTMLElement, inputType: str
   const cell = documentLayoutIsland(range.startContainer, editor);
   if (cell instanceof HTMLTableCellElement) {
     const table = cell.closest("table.user");
-    if (!table || !editor.contains(table)) return false;
+    if (!(table instanceof HTMLTableElement) || !editor.contains(table)) return false;
     const cells = listUserTableCells(table);
     const idx = cells.indexOf(cell);
     if (idx < 0) return false;

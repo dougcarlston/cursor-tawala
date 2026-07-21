@@ -26,7 +26,7 @@ export function clampMdiWindowOrigin(
   x: number,
   y: number,
   w: number,
-  h: number,
+  _h: number,
   parentW: number,
   parentH: number,
 ): { x: number; y: number } {

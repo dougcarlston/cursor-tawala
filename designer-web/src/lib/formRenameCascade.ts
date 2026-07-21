@@ -14,10 +14,13 @@ import {
   serializeFunctionConfig,
 } from "@/lib/functionTokens";
 import { getFunctionDef } from "@/lib/functionCatalog";
+import type { FunctionConfig } from "@/lib/functionCatalog";
 import { FIELD_NAME_ATTR, FIELD_TOKEN_CLASS } from "@/lib/fieldTokens";
 import type {
+  FormItem,
   RichContentBlock,
   RichTextNode,
+  TawalaForm,
   TawalaProcessCommand,
   TawalaProject,
 } from "@/types/tawala";
@@ -102,7 +105,7 @@ export function rewriteFormNameInHtml(
       config as Record<string, unknown>,
       oldForm,
       newForm,
-    ) as Record<string, unknown>;
+    ) as FunctionConfig;
     const before = serializeFunctionConfig(config);
     const after = serializeFunctionConfig(nextConfig);
     if (before === after) return;
@@ -212,15 +215,23 @@ export function cascadeFormRenameInProject(
 ): TawalaProject {
   if (!oldForm || !newForm || oldForm === newForm) return project;
 
-  const forms = project.forms.map((form) => ({
+  const forms: TawalaForm[] = project.forms.map((form) => ({
     ...form,
-    items: form.items.map((item) => {
-      if (item.type === "text" || item.type === "heading") {
+    items: form.items.map((item): FormItem => {
+      if (item.type === "text") {
         const content = rewriteDocumentOrItemContent(
           item.content,
           oldForm,
           newForm,
         );
+        return content === item.content ? item : { ...item, content };
+      }
+      if (item.type === "heading") {
+        const content = rewriteDocumentOrItemContent(
+          item.content,
+          oldForm,
+          newForm,
+        ) as string | undefined;
         return content === item.content ? item : { ...item, content };
       }
       return item;

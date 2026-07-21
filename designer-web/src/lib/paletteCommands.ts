@@ -65,8 +65,6 @@ import {
 } from "./selectionBookmark";
 import { ensureFieldTokenCaretGaps } from "./fieldTokens";
 import { ensureFunctionTokenCaretGaps } from "./functionTokens";
-import { CARET_ZWSP } from "./tokenCaretLanding";
-
 export interface PaletteActiveState {
   bold: boolean;
   italic: boolean;
@@ -1540,7 +1538,7 @@ function tokenHasInlineMark(
 }
 
 /** True when the highlight has editable text outside field/function chips. */
-function selectionHasNonTokenText(root: HTMLElement, range: Range): boolean {
+function selectionHasNonTokenText(_root: HTMLElement, range: Range): boolean {
   if (range.collapsed) return false;
   try {
     const frag = range.cloneContents();

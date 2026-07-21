@@ -145,19 +145,11 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Paste required a one-time browser permission prompt** — expected, not a bug: toolbar/menu Paste reads the system clipboard via `navigator.clipboard` (`clipboard-read`), which browsers gate; Cut/Copy write the current selection and are allowed silently. After **Allow**, Paste and ⌘V work without re-prompting. (Fixed Jul 18: Paste now uses the Clipboard API since `execCommand("paste")` is blocked from button clicks.)
 
-### Full build / TypeScript (`npm run build`) — inventory Jul 17
+### Full build / TypeScript (`npm run build`) — **green Jul 21**
 
-`cd designer-web && npm run build` (`tsc -b`) fails with **14 errors in 6 files**. Day-to-day Design via Vite still works; this blocks a clean production build. **Inventory only — do not dig mid-feature;** fix in a short dedicated green-build pass (or near final Designer run-through).
+`cd designer-web && npm run build` (`tsc -b` + `vite build`) **passes** as of Jul 21. Cleared unused locals, null/`Element` casts, rename-cascade `FormItem`/`FunctionConfig` typing, and Save-chord `shiftKey` mismatch. No product behavior change intended — typing/cleanup only.
 
-| Category | Count | Files | Notes |
-|----------|-------|--------|--------|
-| **Real live-code** | 0 | — | Missing `reflowPlacedLinesBelow` import in `RichTextEditor.tsx` **fixed Jul 19**. |
-| **Unused locals** | 2 | `src/lib/paletteCommands.ts` | Dead `CARET_ZWSP`; unused `root` param — safe cleanup. |
-| **Test typing only** | ~10 | `documentCanvas.align.dom.test.ts`, `shellCommands.download.dom.test.ts` | `Element` vs `HTMLElement` / form mocks — tests, not product logic. |
-| **Shell typing** | 1 | `src/lib/shellCommands.ts` | Keyboard pick missing `shiftKey` in a type. |
-| **Table cast** | 1 | `src/lib/documentCanvas.ts` | `Element` → `HTMLTableElement` without cast. |
-
-**Verdict:** Small set — one real missing import, rest mostly casts/unused. Not a multi-day detritus purge.
+*(Prior inventory Jul 17 had ~14–25 errors across live code + tests; day-to-day Vite still worked throughout.)*
 
 ### Skip Instructions
 

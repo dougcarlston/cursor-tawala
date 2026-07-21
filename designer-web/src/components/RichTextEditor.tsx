@@ -492,7 +492,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       }
     };
 
-    const onUp = (e: MouseEvent) => {
+    const onUp = (_e: MouseEvent) => {
       const el = surfaceRef.current;
       const pointer = documentPointerRef.current;
       const move = placedMoveRef.current;
@@ -886,7 +886,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               return;
             }
             if (el) clearTableCellSelection(el);
-            if (formattingKind === "document") {
+            if (formattingKind === "document" && el) {
               if (e.button !== 0) return;
               const target = e.target as HTMLElement;
               if (target.closest(".table-handles-overlay")) return;

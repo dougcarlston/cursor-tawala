@@ -42,11 +42,12 @@ describe("Safari / no-picker Save As download fallback", () => {
     vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
       const el = realCreate(tag);
       if (tag.toLowerCase() === "form") {
-        el.submit = () => {
+        const form = el as HTMLFormElement;
+        form.submit = () => {
           const filename =
-            el.querySelector<HTMLInputElement>('input[name="filename"]')?.value ?? "";
-          const json = el.querySelector<HTMLTextAreaElement>('textarea[name="json"]')?.value ?? "";
-          submitted.push({ action: el.action, target: el.target, filename, json });
+            form.querySelector<HTMLInputElement>('input[name="filename"]')?.value ?? "";
+          const json = form.querySelector<HTMLTextAreaElement>('textarea[name="json"]')?.value ?? "";
+          submitted.push({ action: form.action, target: form.target, filename, json });
         };
       }
       return el;
@@ -71,8 +72,8 @@ describe("Safari / no-picker Save As download fallback", () => {
     let attachedWhenClicked = false;
     const realCreateNS = document.createElementNS.bind(document);
     vi.spyOn(document, "createElementNS").mockImplementation(
-      (ns: string, tag: string) => {
-        const el = realCreateNS(ns, tag);
+      (ns: string | null, tag: string) => {
+        const el = realCreateNS(ns as string, tag);
         if (tag.toLowerCase() === "a") {
           el.dispatchEvent = ((evt: Event) => {
             if (evt.type === "click") {
@@ -102,8 +103,8 @@ describe("Safari / no-picker Save As download fallback", () => {
     let clicked = false;
     const realCreateNS = document.createElementNS.bind(document);
     vi.spyOn(document, "createElementNS").mockImplementation(
-      (ns: string, tag: string) => {
-        const el = realCreateNS(ns, tag);
+      (ns: string | null, tag: string) => {
+        const el = realCreateNS(ns as string, tag);
         if (tag.toLowerCase() === "a") {
           el.dispatchEvent = ((evt: Event) => {
             if (evt.type === "click") clicked = true;
@@ -133,7 +134,7 @@ describe("Safari / no-picker Save As download fallback", () => {
     vi.spyOn(document, "createElement").mockImplementation((tag: string) => {
       const el = realCreate(tag);
       if (tag.toLowerCase() === "form") {
-        el.submit = () => {
+        (el as HTMLFormElement).submit = () => {
           submitted = true;
         };
       }

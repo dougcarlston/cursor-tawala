@@ -15,8 +15,8 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 **This week target:** **File → Open** (or Import) a general `.tawala` into Browser Designer → editable JSON project → Save/Deploy. Unlocks owner’s library of full projects (beyond New Project stubs). Groundwork: `TAWALA_XML_TO_JSON_MAPPING.md`, SignupSheets one-off `scripts/convert-signupsheets-xml-to-json.mjs`, `jsonToXml.mjs` export. DirtBowl/Potluck JSON stubs stay non-targets until import works.
 
 **Suggested order:**
-1. **Short `tsc` green-build** (clear ~14 errors) — **first thing tomorrow (Jul 21)**.
-2. **Generalize `.tawala` → format 2.0 JSON** (CLI first, then Open/Import in Designer).
+1. **Short `tsc` green-build** (clear ~14 errors) — **Done Jul 21** (`npm run build` green).
+2. **Generalize `.tawala` → format 2.0 JSON** (CLI first, then Open/Import in Designer) — **next**.
 3. **Owner smoke:** Open Potluck / DirtBowl / Sign-up Sheet `.tawala` → Explorer populated → round-trip Deploy.
 4. **Park:** Deferred UX, 3-browser, look-and-feel until after import smoke.
 
