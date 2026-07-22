@@ -22,4 +22,11 @@ describe("resolveTheme", () => {
     expect(BASE_FORM_CSS).toContain("fieldset.mc");
     expect(BASE_FORM_CSS).toContain("input[type=submit]");
   });
+
+  it("includes Text Instructional / Error styles for Preview + Documents", () => {
+    expect(BASE_FORM_CSS).toContain("div.text.instructional");
+    expect(BASE_FORM_CSS).toContain("div.text.text-item-error");
+    expect(BASE_FORM_CSS).toContain("color: #000080");
+    expect(BASE_FORM_CSS).toContain("color: #c00000");
+  });
 });

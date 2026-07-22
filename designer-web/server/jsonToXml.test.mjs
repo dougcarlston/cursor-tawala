@@ -254,6 +254,24 @@ describe("Text item Styles colors on export", () => {
     expect(applyTextItemStyleToXml(green, "instructional")).toContain('color="00FF00"');
   });
 
+  it("does not orphan </font> when nested fonts wrap an image (Potluck Deploy)", () => {
+    const nested =
+      `<paragraph indent="0" align="left">Then (` +
+      `<font face="Arial" size="200" color="000000">` +
+      `<font face="Arial" size="200" color="000000">` +
+      `<image id="image1" width="22" height="23"></image>` +
+      `</font></font>)</paragraph>`;
+    const xml = applyTextItemStyleToXml(nested, "instructional");
+    const opens = (xml.match(/<font\b/gi) || []).length;
+    const closes = (xml.match(/<\/font>/gi) || []).length;
+    expect(opens).toBe(closes);
+    expect(xml).toContain('<image id="image1"');
+    // Emphasis wraps the image inside the innermost font (not closed before </i></b>).
+    expect(xml).toMatch(/<b><i><image id="image1"[^>]*><\/image><\/i><\/b>/);
+    // Old bug left an unclosed inner <font> before </i></b>.
+    expect(xml).not.toMatch(/<font[^>]*>\s*<image[^>]*>\s*<\/image>\s*<\/i>/);
+  });
+
   it("projectToXml HTML Text instructional emits blue font color", () => {
     const xml = projectToXml({
       name: "Styles",

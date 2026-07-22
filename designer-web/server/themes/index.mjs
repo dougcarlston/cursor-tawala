@@ -54,6 +54,49 @@ input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
 .preview-itemization-controls { margin: 0.35rem 0 0.5rem; font-size: 13px; }
 .preview-itemization-controls a { color: #000080; margin-right: 12px; }
 .validation-error { background: #fdecea; border: 1px solid #e74c3c; color: #922; padding: 8px 12px; margin: 0 0 1rem; }
+
+/* Text item Styles (Format → Styles → Text…) — Design + Deploy parity for Form
+   Preview and Document runtime pages. More specific than bare .error (validation
+   pink fill). Non-default palette colors on runs still win via inline / <font>. */
+div.text.instructional,
+.text-block.instructional {
+  font-weight: bold;
+  font-style: italic;
+  color: #000080;
+  background: transparent !important;
+}
+div.text.error,
+div.text.text-item-error,
+.text-block.error {
+  font-weight: bold;
+  font-style: italic;
+  color: #c00000;
+  background: transparent !important;
+}
+/* Default black from Design export must not block item Style (same as canvas). */
+div.text.instructional font[color="000000"],
+div.text.instructional font[color="#000000"],
+div.text.instructional font[color="#000"],
+div.text.error font[color="000000"],
+div.text.error font[color="#000000"],
+div.text.error font[color="#000"],
+div.text.text-item-error font[color="000000"],
+div.text.text-item-error font[color="#000000"],
+div.text.text-item-error font[color="#000"],
+div.text.instructional [style*="color: rgb(0, 0, 0)"],
+div.text.instructional [style*="color:rgb(0, 0, 0)"],
+div.text.instructional [style*="color: #000"],
+div.text.instructional [style*="color:#000"],
+div.text.error [style*="color: rgb(0, 0, 0)"],
+div.text.error [style*="color:rgb(0, 0, 0)"],
+div.text.error [style*="color: #000"],
+div.text.error [style*="color:#000"],
+div.text.text-item-error [style*="color: rgb(0, 0, 0)"],
+div.text.text-item-error [style*="color:rgb(0, 0, 0)"],
+div.text.text-item-error [style*="color: #000"],
+div.text.text-item-error [style*="color:#000"] {
+  color: inherit !important;
+}
 `;
 
 const BUILTIN = {

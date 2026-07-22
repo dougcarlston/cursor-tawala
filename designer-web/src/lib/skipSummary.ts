@@ -1,11 +1,12 @@
 import type { SkipCommand } from "@/types/tawala";
+import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
 
 export const EMPTY_SKIP_SUMMARY =
   "(No instructions. Click edit link on left to add instructions.)";
 
 const END_OF_FORM = "__EndOfForm__";
 
-/** Human-readable operator labels (legacy ComparisonOperator). */
+/** Human-readable operator labels (legacy ComparisonOperator) — Hybrid / FIB list for builders. */
 export const SKIP_OPERATOR_LABELS: Record<string, string> = {
   equals: "equals",
   doesNotEqual: "does not equal",
@@ -24,6 +25,11 @@ export const SKIP_OPERATOR_LABELS: Record<string, string> = {
 export const SKIP_OPERATORS = Object.keys(SKIP_OPERATOR_LABELS);
 
 export const UNARY_SKIP_OPERATORS = new Set(["isBlank", "isNotBlank"]);
+
+/** Label for script / summary lines — Hybrid + mc* (imported MCQ conditions). */
+export function skipOperatorDisplayLabel(op: string): string {
+  return conditionOpLabel(op);
+}
 
 export interface SkipTargetInfo {
   targets: string[];
@@ -94,8 +100,8 @@ function formatConditionClause(cond: ConditionShape): string {
   }
   const field = cond.field ?? "?";
   const op = cond.op ?? "equals";
-  const opLabel = SKIP_OPERATOR_LABELS[op] ?? op;
-  if (UNARY_SKIP_OPERATORS.has(op)) {
+  const opLabel = conditionOpLabel(op);
+  if (isUnaryConditionOp(op)) {
     return `${field} ${opLabel}`;
   }
   const value =

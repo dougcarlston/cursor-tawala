@@ -26,16 +26,19 @@
   "themePath": "dirtbowl2",
   "forms": [ ... ],
   "processes": [ ... ],
-  "documents": [ ... ]
+  "documents": [ ... ],
+  "images": [ { "id": "…", "imageFormat": "PNG", "data": "…" } ]
 }
 ```
+
+**Import (Jul 21):** Shared converter `designer-web/src/lib/tawalaXmlToJson.mjs` — CLI `node scripts/tawala-to-json.mjs <input.tawala> [out.json]` and Designer **File → Open** (`.tawala` / `.tawala.xml`). Lossy-with-warnings; next Save after Open is Save As `.json` (does not overwrite the legacy file).
 
 **Mapping notes:**
 - `format` — XML had separate `format` (Designer authoring version, e.g. `"1.11"`) and `designerBuild` (integer build number). JSON uses a single `format` field representing the JSON schema version. Set to `"2.0"` for all new projects.
 - `_originalFormat` — preserved as a non-functional annotation on projects converted from XML (e.g. `"_originalFormat": "1.10"`). Ignored by the runtime.
-- `<pageHeader>` — page-level styling metadata. Not represented in JSON (absorbed into `themePath`).
-- `<styles>` — global default item styles (`fibItemStyle`, `mcItemStyle`, `textItemStyle`). Not currently in JSON schema; treat as implicit defaults if needed.
-- `<imagedef>` elements — image asset library. Not yet represented in JSON schema.
+- `<pageHeader>` — page-level styling metadata. Not represented in JSON (absorbed into `themePath`). Dropped with a conversion warning.
+- `<styles>` — global default item styles (`fibItemStyle`, `mcItemStyle`, `textItemStyle`). Not currently in JSON schema; dropped with a warning.
+- `<imagedef>` / `<images><imagedef>` — mapped to `project.images[]` (`id`, `imageFormat` PNG|GIF|JPEG, base64 `data`). Export via `jsonToXml.mjs` emits `<imagedef>` again.
 
 ---
 
@@ -234,14 +237,14 @@ XML note: `<data-provider>` is a **direct child of `<mc>`**, not nested under `<
 
 #### JSON
 ```json
-{ "type": "heading",    "label": "H1", "content": "Player Registration" }
-{ "type": "subheading", "label": "H1", "content": "Step 2" }
+{ "type": "heading", "label": "H1", "level": "main", "content": "Player Registration" }
+{ "type": "heading", "label": "H2", "level": "sub", "content": "Step 2" }
 ```
 
 **Mapping notes:**
-- XML `style="main"` → JSON `type: "heading"`.
-- XML `style="sub"` → JSON `type: "subheading"`.
-- `content` — plain text string. XML may contain inline formatting; JSON is plain text.
+- XML Main / `style="main"` / `type="Main"` → JSON `type: "heading"` with `level: "main"` (or omit `level`).
+- XML Sub / `style="sub"` / `type="Sub"` → JSON `type: "heading"` with `level: "sub"` (not a separate `subheading` type).
+- `content` — plain text string for headings (inline size markup may appear for Main/Sub runs). Full rich HTML is Form Text / Document, not Heading.
 
 ---
 
@@ -706,11 +709,22 @@ Navigates to a form in edit mode, pre-populated with an existing record. `submit
 ```json
 {
   "name": "ConfirmationLetter",
-  "_rawSummary": "Dear [FirstName], ..."
+  "content": [
+    {
+      "type": "paragraph",
+      "align": "left",
+      "indent": 0,
+      "nodes": [
+        { "type": "text", "text": "Dear " },
+        { "type": "field", "name": "Registration:FirstName" },
+        { "type": "text", "text": "," }
+      ]
+    }
+  ]
 }
 ```
 
-**Current state:** JSON documents are currently stored with only a `_rawSummary` (plain-text preview). The full rich-text content from `<xmlData>` is not yet represented in JSON. This is the largest gap in the current JSON schema.
+**Current state (Jul 21):** Import converts `<xmlData>` paragraphs/tables into rich `content` blocks (fields, fonts, itemization, invitations approximated). Document Design canvas still has known lossy round-trips (invitations / some tables). Old `_rawSummary`-only docs are obsolete for new imports.
 
 **Design for full document content in JSON:**
 ```json

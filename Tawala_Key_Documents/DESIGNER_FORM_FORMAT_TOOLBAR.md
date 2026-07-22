@@ -164,9 +164,9 @@ Maps to item `style` `vertical` / `horizontal` / `multicolumn` (+ optional `colu
 | **Instructional** | This is instructional text | **Bold italic blue** (legacy dialog: `SystemColors.Desktop`; browser/Deploy use navy `#000080`) |
 | **Error** | This is error text | **Bold italic red** type (`#C00000`) — **no** red/pink background (lavender panel is dialog chrome only) |
 
-**Browser Design + Deploy:** Text canvas rows and Deploy CSS follow that type contract. Error must not pick up form-validation `.error` pink fill. DirtBowl Registration may still wrap instructional copy in a light banner; the type itself stays blue bold italic.
+**Browser Design + Preview + Deploy:** Text canvas rows and runtime CSS (`BASE_FORM_CSS` / Tomcat `default.css`) follow that type contract. Error must not pick up form-validation `.error` pink fill. DirtBowl Registration may still wrap instructional copy in a light banner; the type itself stays blue bold italic.
 
-**Style vs local formatting (owner Jul 17):** Item Style is the default look. Palette / character formatting on the text (bold, italic, color, face, size) **wins** when present — same as Word style vs direct formatting. To see Instructional or Error from Styles, leave runs at **Default** (or use **Reset Formatting**). Applying Styles does not strip local formatting.
+**Style vs local formatting (owner Jul 17):** Item Style is the default look. Palette / character formatting on the text (bold, italic, color, face, size) **wins** when present — same as Word style vs direct formatting. To see Instructional or Error from Styles, leave runs at **Default** (or use **Reset Formatting**). Applying Styles does not strip local formatting. **Smoke (Jul 21):** Instructional Text → select a word → Bold and/or Italic toggles still apply (and can clear) on that run; Style color remains unless Color is changed. Do not reintroduce `* { font-weight/font-style: inherit !important }` under `.text-style-instructional` / `.text-style-error`.
 
 **Deploy note (Jul 17):** Designer API must be running code that includes Text Style color export (`applyTextItemStyleToXml`). If the API process predates that change, re-Deploy will still drop colors — restart `node server/index.mjs` (port 3001), then Deploy again.
 

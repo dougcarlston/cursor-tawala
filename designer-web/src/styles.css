@@ -3779,14 +3779,10 @@ button.font-color-picker-recent-slot:hover {
   background: transparent;
 }
 
-/* Default black / normal weight in the editor must not block item Style. */
-.text-canvas-row.text-style-instructional .text-rendered *,
-.text-canvas-row.text-style-instructional .text-rich-editor *,
-.text-canvas-row.text-style-error .text-rendered *,
-.text-canvas-row.text-style-error .text-rich-editor * {
-  font-weight: inherit !important;
-  font-style: inherit !important;
-}
+/* Do NOT force font-weight/font-style: inherit !important on all descendants —
+   that blocked palette Bold/Italic (and “not bold / not italic”) from overriding
+   Instructional/Error. Item Style paints on the editor root; bare runs inherit.
+   Local marks (`<b>`/`<i>` or inline font-weight/font-style) win per Styles contract. */
 
 .text-canvas-row.text-style-instructional .text-rendered font[color="000000"],
 .text-canvas-row.text-style-instructional .text-rendered font[color="#000000"],

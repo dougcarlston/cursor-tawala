@@ -1,5 +1,6 @@
 import type { SkipCommand } from "@/types/tawala";
-import { SKIP_OPERATOR_LABELS, UNARY_SKIP_OPERATORS, skipDestinationLabel } from "@/lib/skipSummary";
+import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
+import { skipDestinationLabel } from "@/lib/skipSummary";
 
 export type ScriptLineType =
   | "if-header"
@@ -45,8 +46,8 @@ function formatConditionClause(cond: ConditionShape): string {
   }
   const field = cond.field ?? "?";
   const op = cond.op ?? "equals";
-  const opLabel = SKIP_OPERATOR_LABELS[op] ?? op;
-  if (UNARY_SKIP_OPERATORS.has(op)) {
+  const opLabel = conditionOpLabel(op);
+  if (isUnaryConditionOp(op)) {
     return `${field} ${opLabel}`;
   }
   const value =

@@ -456,6 +456,36 @@ describe("documentHtmlToXml invitation / hyperlink", () => {
   });
 });
 
+describe("documentHtmlToXml Form Text confirmation table (Potluck T6)", () => {
+  it("keeps table inside data-doc-blank div and turns <<fields>> into <field/>", () => {
+    const html =
+      `You entered the following information:` +
+      `<div data-doc-blank="1" style="min-height: 13.7pt;">` +
+      `<table class="user user-border-2"><tbody>` +
+      `<tr><td style="width: 108pt;">Name&nbsp;</td>` +
+      `<td style="width: 108pt;">&nbsp;&lt;&lt;attendeeName&gt;&gt;</td></tr>` +
+      `<tr><td>Dish&nbsp;</td><td>&lt;&lt;contribution&gt;&gt;</td></tr>` +
+      `</tbody></table></div>`;
+    const xml = documentHtmlToXml(html, escAttr, escText, {
+      formName: "Potluck Organizer",
+    });
+    expect(xml).toContain("<table indent=");
+    expect(xml).toContain('<field name="Potluck Organizer:attendeeName"/>');
+    expect(xml).toContain('<field name="Potluck Organizer:contribution"/>');
+    expect(xml).toContain("You entered the following information:");
+    expect(xml).not.toMatch(/Name\s*&lt;&lt;attendeeName/);
+  });
+
+  it("leaves already-qualified Form:Field tokens alone", () => {
+    const html = `<p>&lt;&lt;Potluck Organizer:attendeeName&gt;&gt;</p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText, {
+      formName: "Potluck Organizer",
+    });
+    expect(xml).toContain('<field name="Potluck Organizer:attendeeName"/>');
+    expect(xml).not.toContain("Potluck Organizer:Potluck Organizer:");
+  });
+});
+
 describe("documentHtmlToXml embedded local image", () => {
   it("exports data-tawala-image-id img as <image id width height/>", () => {
     const html =
@@ -467,6 +497,22 @@ describe("documentHtmlToXml embedded local image", () => {
     expect(xml).toContain('<font face="Arial" size="200" color="000000">');
     expect(xml).not.toContain("data:image");
     expect(xml).not.toContain("display-image");
+  });
+
+  it("does not nest font when styled span wraps an embedded image (Potluck T1)", () => {
+    const html =
+      `<p>Deploy (` +
+      `<span style="font-family:Arial;font-size:10pt;color:#000000">` +
+      `<img class="tawala-embedded-image" data-tawala-image-id="image1" ` +
+      `data-image-width="22" data-image-height="23" width="22" height="23" ` +
+      `src="data:image/png;base64,AAAA" alt=""/></span>)</p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<image id="image1" width="22" height="23"></image>');
+    // One font around the image — not <font><font><image/></font></font>
+    expect(xml).not.toMatch(/<font[^>]*>\s*<font\b/);
+    const opens = (xml.match(/<font\b/gi) || []).length;
+    const closes = (xml.match(/<\/font>/gi) || []).length;
+    expect(opens).toBe(closes);
   });
 
   it("ignores img without data-tawala-image-id", () => {

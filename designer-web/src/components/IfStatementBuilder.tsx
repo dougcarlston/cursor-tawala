@@ -1,10 +1,10 @@
 import { QualifiedFieldInput, FieldTextInput } from "@/components/FieldDropInputs";
 import type { ConditionCombinator, ConditionRow, IfBuilderState } from "@/lib/statementBuilders";
 import { rowsAreValid } from "@/lib/statementBuilders";
+import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
 import {
   SKIP_OPERATORS,
   SKIP_OPERATOR_LABELS,
-  UNARY_SKIP_OPERATORS,
 } from "@/lib/skipSummary";
 
 export interface IfStatementBuilderProps {
@@ -94,13 +94,16 @@ export function IfStatementBuilder({
               aria-label="Operator"
               className="skip-if-operator"
             >
+              {!SKIP_OPERATORS.includes(row.op) ? (
+                <option value={row.op}>{conditionOpLabel(row.op)}</option>
+              ) : null}
               {SKIP_OPERATORS.map((op) => (
                 <option key={op} value={op}>
                   {SKIP_OPERATOR_LABELS[op]}
                 </option>
               ))}
             </select>
-            {!UNARY_SKIP_OPERATORS.has(row.op) ? (
+            {!isUnaryConditionOp(row.op) ? (
               <FieldTextInput
                 className="skip-if-value"
                 placeholder="Value"

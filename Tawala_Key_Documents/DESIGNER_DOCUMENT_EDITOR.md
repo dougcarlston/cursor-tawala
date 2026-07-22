@@ -176,7 +176,7 @@ Toolbar icon updates to match current paragraph alignment.
 
 **Tab navigation:** Inside a table, **Tab** moves the caret to the next cell (end of row → first cell of next row). **Shift+Tab** moves to the previous cell. At the last/first cell, caret stays in the table (no leave / no auto-insert row).
 
-**Table chrome:** When the caret is in a table: **one** top-left ✥ **move** handle (anchor corner — drag repositions the table; absolute X/Y is kept — no forced pack under preceding text), plus resize (edges / SE corner) and column/row dividers. **No** float wrap toggles (left/block/right). Prose above/beside/below stays editable via normal click/type + Indent/Outdent.
+**Table chrome:** When the caret is in a table: **one** top-left ✥ **move** handle (anchor corner — drag repositions the table; absolute X/Y is kept — no forced pack under preceding text), plus resize (edges / SE corner) and column/row dividers. **No** float wrap toggles (left/block/right). Prose above/beside/below stays editable via normal click/type + Indent/Outdent. Multi-select that includes a table → Indent/Outdent also nudges the table left edge (same 36 pt steps as placed lines).
 
 **Document table layout:** Tables and `.doc-placed-text` share absolute positions. Packing is **collision-aware** (same horizontal column only): side-by-side L/R prose is allowed; intentional drag gaps are not closed; same-column overlaps still clear so leave/return never layers text under a table. Unused empty invent anchors prune on leave/other click (intentional Double-Return `data-doc-blank` gaps are kept). **Click/drop hit-test:** inside `.doc-placed-text` → edit that line; inside a `table.user` cell → caret/highlight that cell; otherwise invent in free space (including L/R of tables). Left-edge invent may use a tiny inset so the caret is visible — mid-canvas / free-space invents keep the click X. Blank-canvas / prose clicks must not stay trapped in the table when `caretRangeFromPoint` false-positives into an absolute table.
 
@@ -331,7 +331,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 **Field tokens**
 
 4. Insert `<<Form:Field>>` into a 20 pt line → chip sits on the text baseline and matches surrounding face/size (not tiny mono badge or sticky wrong size). **Hard-refresh first.**
-5. Double-click an existing field token → selects that token only; does **not** spawn a second `<<…>>` elsewhere.
+5. Double-click an existing field token → selects that token only; does **not** spawn a second `<<…>>` elsewhere. **With that chip selected** (or caret in a plain `<<Field>>` run), Fields drop / double-click **replaces** the chip — never nests `<<A<<B>>…>>` mid-token (table cells included).
 6. Mid-sentence continuity: type `The player of the week was ` → insert field → type `, who rallied…` → stays **one** placed line/paragraph with the same face/size/margin (does **not** open a new block after the chip).
 7. Select a run that includes field chips (or select-all on the placed line) → choose **20 pt** → chips resize to **20 pt** to match body text (not stuck at insert-time 12/16). Same for Font Face.
 7b. Field chip baseline (16→20 pt): place `<<FIB1:a>>` / `b` / `c` mid-sentence at **16 pt Trebuchet**, select the placed line → **20 pt** → chips stay on the same baseline as body glyphs; selection highlight is a smooth block (no stepped/taller line through chips; no vertical drop after `<<FIB1:c>>`). **Hard-refresh first.**
@@ -349,6 +349,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 **Indent (Batch 5 — keep face/size)**
 
 8. Indent a Document placed line → left edge steps in; wrap width to right margin; lines below **do not overlap**; face/size on the indented run stay unchanged.
+8a. Drag-select placed lines **and** a Document table together → **Indent** / **Outdent** moves the table’s left edge in the same 36 pt steps as the lines (table stays aligned with the chips/prose). Caret alone inside a cell must **not** move the table.
 9. Form Text indent via margin-left / soft-line wrap → keeps face/size (no `blockquote` rewrite).
 
 **Mid-text caret (must not invent a second paragraph)**

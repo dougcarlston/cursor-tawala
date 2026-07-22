@@ -1534,9 +1534,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   exportJson: () => JSON.stringify(get().project, null, 2),
 
   importJson: (raw) => {
-    const project = JSON.parse(raw) as TawalaProject;
+    const parsed = JSON.parse(raw) as TawalaProject | { project: TawalaProject };
+    // Deploy/API previews sometimes wrap as `{ project: {...} }`; Designer Save is flat.
+    const project =
+      parsed &&
+      typeof parsed === "object" &&
+      "project" in parsed &&
+      parsed.project &&
+      typeof parsed.project === "object" &&
+      Array.isArray((parsed as { project: TawalaProject }).project.forms) &&
+      !Array.isArray((parsed as TawalaProject).forms)
+        ? (parsed as { project: TawalaProject }).project
+        : (parsed as TawalaProject);
     // Prefer first form; if none, highlight first process/document when present.
-    const firstForm = project.forms[0]?.name;
+    const firstForm = project.forms?.[0]?.name;
     const firstProcess = project.processes?.[0]?.name;
     const firstDocument = project.documents?.[0]?.name;
     const selection: Selection = firstForm

@@ -139,6 +139,14 @@ First item dropped from **Items → Heading**:
 
 Legacy Preview POSTs to Tawala’s hosted preview API. **Workaround:** deploy to local 8080 (`scripts/deploy-tawala-template.mjs`) and open the start URL in a browser. Browser Designer should use **local runtime** (5173/8080) for Preview instead.
 
+### Browser Designer Preview (`designer-web`)
+
+- Local runtime (`/preview/…`); no www.tawala.com.
+- **Submit is disabled** (review-only). Multi-page forms show every segment with a “Page N (after Submit)” divider so authors can scroll the full form without posting.
+- **Text Styles:** Instructional (bold italic navy) and Error (bold italic red) match Design / Deploy via `BASE_FORM_CSS` (same rules apply on Document runtime pages).
+- **Deploy** keeps a live Submit for end-to-end checks.
+- Smoke: Potluck Organizer → Preview → instructional intro is navy bold italic; images keep `alt=""`; confirmation table renders; Submit greyed with hint.
+
 ---
 
 ## Startup paths (summary)

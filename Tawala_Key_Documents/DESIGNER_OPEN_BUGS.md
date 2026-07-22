@@ -151,6 +151,10 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 *(Prior inventory Jul 17 had ~14–25 errors across live code + tests; day-to-day Vite still worked throughout.)*
 
+### `.tawala` File → Open — **landed Jul 21**
+
+Legacy projects open via shared `tawalaXmlToJson` (CLI + Designer). Accepts `.json` / `.tawala` / `.tawala.xml`. Import is lossy-with-warnings (pageHeader, styles, rich FIB, invitations, etc.) — see `DESIGNER_OPEN_TODOS.md` week banner and `TAWALA_XML_TO_JSON_MAPPING.md`. After `.tawala` Open, Save As writes format 2.0 `.json` (does not overwrite the legacy file). Prefer imported DirtBowl over corrupted `dirtbowl_definition_v3.json`.
+
 ### Skip Instructions
 
 - **Skip dialog: click / edit / delete statement ignored** — **Fixed Jul 19:** Edit Skip Instructions had no select / Modify / line delete (toolbar Delete disabled; Add always appended). Now Process-parity: click a line to edit (Modify), × / toolbar Delete, ↑↓, insert at the arrow (not always append). Also: SkipTo no longer resets the dropdown to the first FIB on open (that made Skip-after-FIB1 look like a no-op).
@@ -182,7 +186,62 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 - **Show Form after Document left prior answers** — `clearFormAnswers` cleared `a`/`b` but not alternateLabel keys (`First`/`Last`), so `blankInput` refilled. Fixed: clear aliases + Form stacks blank.
 - **Email/Phone accepted garbage on Signup** — Node Preview skipped validators unless `blank.validation` set. Fixed: infer Email/Tel from name/alternateLabel; reject `..` emails.
 
-**Smoke (SignupSheet Preview/Deploy):** Fill Form 1 → Submit → Document table shows the new row (plus prior rows) **above** a **blank** Form 1; no `Continue →`. Bad email/phone shows error and stays on Form. Soft-refresh 5173 after API restart.
+---
+
+## DirtBowl / Registration leftover watchlist (Jul 21 sweep)
+
+Structured pass over `designer-web/` for hard-coded DirtBowl / Registration behavior that can leak into other projects (Potluck, Signup, templates).
+
+### Buckets
+
+| | Meaning |
+|---|---|
+| **A** | Intentional product support (theme, samples, Registration-only paths) — keep |
+| **B** | Registration helpers correctly gated by `formName === "Registration"` / `project.name === "DirtBowl"` / `theme === "dirtbowl2"` — keep; spot-check gates |
+| **C** | Runs (or defaults) for **every** project — fix or tighten |
+
+### A — keep
+
+| Location | Notes |
+|----------|--------|
+| `server/themes/dirtbowl2.css` | Theme CSS |
+| `sessionStore.seedDefaultRecords` | Gated `project.name === "DirtBowl"` |
+| `registrationLayout.mjs` / `registrationTextToXml.mjs` / `registrationFibToXml.mjs` / `registrationReview*.mjs` | Deploy/Preview Registration chrome; text/FIB XML gated on Registration |
+| `jsonToXml` FIB/text paths calling those modules | `formName === "Registration"` |
+| Samples / tests / comments mentioning DirtBowl | Docs & fixtures only |
+| UI copy (“not DirtBowl participant login”) | Harmless |
+
+### B — keep (gated); light review only
+
+| Location | Gate |
+|----------|------|
+| Most `runtime.mjs` Registration branches | `isRegistrationForm` (= name `"Registration"`) |
+| `Submit →` label | `theme === "dirtbowl2"` |
+| `RegStep2` fee rewrite | Form name `RegStep2` |
+| Injected `__page2footer__` | Registration + segment 1 |
+| `SEND_DOC_DEFAULTS` in `jsonToXml.mjs` | Only when Send body document is a DirtBowl letter name (e.g. `AdminRegNotification`) |
+
+### C — worth fixing (recommended order)
+
+| Pri | Issue | Why | Suggested fix | Status |
+|-----|--------|-----|----------------|--------|
+| **1** | `applyLegacyPlainTextLeaguePlaceholder` still replaces `""` → `League \|\| "Dirt Bowl"` on **all** plain-text Form items | Any template with literal `""` in Normal text shows “Dirt Bowl”; already burned us on rich HTML | Gate: only Registration **or** only when `League` field exists; else leave `""` alone. Prefer empty/`«League»` over hard-coded Dirt Bowl | **Done Jul 21** — Registration or non-empty `League` only; no hard-coded Dirt Bowl fallback (`runtime.mjs` + Preview tests) |
+| **2** | `scrubRegistrationBlankCollisions(session)` runs on **every** `getOrCreateSession` with default form `"Registration"`, and **always deletes** `session.fields.a/b/c` | Signup / any FIB using blank labels `a`/`b`/`c` can lose aliases on session touch | Call scrub only when project has a Registration form (or `project.name === "DirtBowl"`); never wipe bare `a/b/c` for other projects | **Done Jul 21** — `getOrCreateSession` gates on Registration / DirtBowl (`sessionStore.mjs` + scrub tests) |
+| **3** | `registrationLayout` fallback `\|\| "Dirt Bowl"` / hard-coded **April 28, 2008** | Only hit for Registration Preview — wrong defaults for a renamed league | Use field value or neutral placeholder (`League` / blank date); leave dated copy in template XML only | Open |
+| **4** | `SEND_DOC_DEFAULTS.AdminRegNotification` alias `"Dirt Bowl Automated Email Server"` | Only if that document name is used — still brand-locked | Prefer `aliasField: "AdminName"` or project/League field; or omit aliasLiteral | Open |
+| **5** | Error string “still see DirtBowl URLs” in `index.mjs` | Confusing for Potluck deploy failures | Generic “stale Java start URLs” wording | Open |
+
+### Not C (do not “fix” away)
+
+- Comment-only / shape notes (`documentHtmlToXml`, FIB tab stops, Where `Record:Form:Field`).
+- Tomcat CSS under `docker/tomcat/css/project/` for dirtbowl2 — Deploy theme, not Designer global.
+
+### Regression rule
+
+Any future Registration-only helper must be gated. Add a **non-DirtBowl** test (Potluck or Signup) when touching Preview/session/XML defaults.
+
+---
+
 
 ### Pickup Jul 16 — MULTIPLE QUESTION LIST / SignupSheet (owner resume)
 

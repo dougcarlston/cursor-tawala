@@ -82,6 +82,12 @@ function seedDefaultRecords(project, session) {
   session.fields.From = session.fields.From ?? "";
 }
 
+function projectHasRegistrationForm(project) {
+  if (!project) return false;
+  if (project.name === "DirtBowl") return true;
+  return (project.forms ?? []).some((f) => f?.name === "Registration");
+}
+
 export function getOrCreateSession(uniqueId, project) {
   let session = getSession(uniqueId);
   if (!session) {
@@ -90,7 +96,10 @@ export function getOrCreateSession(uniqueId, project) {
   } else {
     seedDefaultRecords(project, session);
   }
-  scrubRegistrationBlankCollisions(session);
+  // Never wipe bare a/b/c on Signup/Potluck — only Registration blank-collision scrub.
+  if (projectHasRegistrationForm(project)) {
+    scrubRegistrationBlankCollisions(session);
+  }
   return session;
 }
 

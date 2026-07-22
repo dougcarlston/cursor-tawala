@@ -7,14 +7,17 @@ import {
   eventIsNewProjectChord,
   eventIsOpenProjectChord,
   eventIsSaveChord,
+  importProjectFileText,
+  isOpenableProjectFileName,
   isProjectJsonFileName,
   isSaveAsDialogOpen,
+  projectDisplayNameFromFileName,
   saveAcceleratorLabel,
   saveAsAcceleratorLabel,
   saveProjectAs,
   suggestedProjectFileName,
-  projectDisplayNameFromFileName,
 } from "@/lib/shellCommands";
+import { useProjectStore } from "@/store/projectStore";
 
 describe("Save chord helpers", () => {
   it("reports a non-empty Save accelerator label", () => {
@@ -112,6 +115,76 @@ describe("project JSON picker helpers", () => {
     expect(isProjectJsonFileName("MyProject.json")).toBe(true);
     expect(isProjectJsonFileName("/tmp/foo.JSON")).toBe(true);
     expect(isProjectJsonFileName("notes.txt")).toBe(false);
+  });
+
+  it("isOpenableProjectFileName accepts JSON and .tawala", () => {
+    expect(isOpenableProjectFileName("MyProject.json")).toBe(true);
+    expect(isOpenableProjectFileName("DirtBowl.tawala")).toBe(true);
+    expect(isOpenableProjectFileName("SignupSheets.tawala.xml")).toBe(true);
+    expect(isOpenableProjectFileName("notes.txt")).toBe(false);
+  });
+
+  it("projectDisplayNameFromFileName strips .tawala / .json", () => {
+    expect(projectDisplayNameFromFileName("DirtBowl.tawala")).toBe("DirtBowl");
+    expect(projectDisplayNameFromFileName("SignupSheets.tawala.xml")).toBe("SignupSheets");
+    expect(projectDisplayNameFromFileName("Demo.json")).toBe("Demo");
+  });
+});
+
+describe("importProjectFileText (.tawala)", () => {
+  afterEach(() => {
+    useProjectStore.getState().newProject({ empty: true });
+  });
+
+  it("converts minimal .tawala XML into the store", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="OpenMe" themePath="default" format="1.9">
+  <forms>
+    <form name="Form 1" startPoint="true">
+      <items>
+        <heading type="Main" label="H1">
+          <paragraph align="left" indent="0">Hi</paragraph>
+        </heading>
+      </items>
+    </form>
+  </forms>
+  <processes><process name="P1"><show form="Form 1"/></process></processes>
+  <documents></documents>
+</project>`;
+    const result = importProjectFileText(xml, "OpenMe.tawala");
+    expect(result.kind).toBe("tawala");
+    const { project } = useProjectStore.getState();
+    expect(project.name).toBe("OpenMe");
+    expect(project.forms[0].name).toBe("Form 1");
+    expect(project.processes?.[0].commands?.[0]).toMatchObject({
+      cmd: "show",
+      form: "Form 1",
+    });
+  });
+
+  it("unwraps Deploy-style { project: {...} } JSON so forms appear", () => {
+    const wrapped = JSON.stringify({
+      project: {
+        name: "potluck",
+        format: "2.0",
+        forms: [
+          {
+            name: "Potluck Organizer",
+            items: [{ type: "text", label: "T1", content: "You entered the following information" }],
+          },
+        ],
+        processes: [],
+        documents: [],
+      },
+    });
+    const result = importProjectFileText(wrapped, "potluck.json");
+    expect(result.kind).toBe("json");
+    const { project, openWindows } = useProjectStore.getState();
+    expect(project.name).toBe("potluck");
+    expect(project.forms).toHaveLength(1);
+    expect(project.forms[0].name).toBe("Potluck Organizer");
+    expect(project.forms[0].items[0]).toMatchObject({ label: "T1" });
+    expect(openWindows.some((w) => w.name === "Potluck Organizer")).toBe(true);
   });
 });
 

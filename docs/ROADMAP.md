@@ -98,7 +98,7 @@ Serve: `cd website-mock && python3 -m http.server 5500` → http://localhost:550
 | DirtBowl off File menu | **Done** — open via **Open Project…** or `deploy-dirtbowl-java.mjs` |
 | DirtBowl → website Library | Backlog — then no “master menu” of all dev-user start points |
 | Full Potluck / email templates | Deferred |
-| `.tawala` → JSON import | Backlog |
+| `.tawala` → JSON import | **Done Jul 21** — CLI `scripts/tawala-to-json.mjs` + File → Open; lossy-with-warnings; owner smoke Open/Deploy next |
 | FIB canvas layout (mix text + blanks freely) | Backlog — owner July 2026; current block layout is MVP |
 | Fields palette drag into text/docs/process | Partial — drag source wired; drop targets backlog |
 | DirtBowl authoring as a browser-Designer test | **Blocked** — browser Designer lacks the legacy multi-window / MDI flow and Pre/Post process visibility needed for meaningful large-project authoring |

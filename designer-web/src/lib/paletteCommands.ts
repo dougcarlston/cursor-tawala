@@ -37,11 +37,13 @@ import {
   applyTypingFormatToPlacedBlock,
   applyTypingFormatToToken,
   adjustPlacedTextIndent,
+  adjustUserTableIndent,
   alignPlacedTextBlock,
   DOC_INDENT_STEP_PT,
   findPlacedTextBlockAtCaret,
   insertDocumentUserTable,
   listPlacedBlocksInSelection,
+  listUserTablesInSelection,
   PLACED_TEXT_CLASS,
   readPlacedTextAlign,
   reflowAllPlacedLines,
@@ -1647,17 +1649,22 @@ export function paletteOutdent(): void {
 }
 
 /**
- * Document placed lines or Form paragraph margin.
+ * Document placed lines / user tables, or Form paragraph margin.
  * Never uses execCommand("indent") — that wraps blockquotes and drops face/size on siblings.
  */
 function indentSelection(editor: HTMLElement, delta: 1 | -1): boolean {
   const blocks = listPlacedBlocksInSelection(editor);
-  if (blocks.length > 0) {
+  const tables = listUserTablesInSelection(editor);
+  if (blocks.length > 0 || tables.length > 0) {
     for (const block of blocks) {
       adjustPlacedTextIndent(editor, block, delta);
     }
+    for (const table of tables) {
+      adjustUserTableIndent(editor, table, delta);
+    }
     // Full stack pack — indent narrows a line and can grow its height; packing only
     // from the indented block would leave an overlapping sibling above or below.
+    // Table X moves also need a pack so same-column prose clears the new left edge.
     reflowAllPlacedLines(editor);
     return true;
   }

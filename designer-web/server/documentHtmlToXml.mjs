@@ -66,6 +66,37 @@ function stripTags(html) {
     .replace(/&amp;/g, "&");
 }
 
+/**
+ * Legacy Form Text / Document fields use `Form:Field` (e.g. `Potluck Organizer:attendeeName`).
+ * Design may store bare `<<attendeeName>>` from the Fields panel — qualify on Deploy.
+ */
+function qualifyFieldRef(name, formName) {
+  const s = String(name ?? "").trim();
+  if (!s || !formName) return s;
+  if (s.includes(":")) return s;
+  return `${formName}:${s}`;
+}
+
+/**
+ * Plain text that may include `<<Field>>` (or entity-decoded from `&lt;&lt;Field&gt;&gt;`)
+ * → mix of escaped text and `<field name="…"/>` for Deploy.
+ */
+function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
+  const s = String(plain ?? "");
+  if (!s) return "";
+  return s
+    .split(/(<<[^<>]+>>)/g)
+    .map((part) => {
+      const m = /^<<\s*([^<>]+?)\s*>>$/.exec(part);
+      if (m) {
+        const ref = qualifyFieldRef(m[1].trim(), opts.formName);
+        return `<field name="${escAttr(ref)}"/>`;
+      }
+      return escText(part);
+    })
+    .join("");
+}
+
 function extractTagInner(html, tagName) {
   const re = new RegExp(`^<${tagName}\\b[^>]*>([\\s\\S]*)<\\/${tagName}>`, "i");
   const m = html.trim().match(re);
@@ -209,6 +240,34 @@ function unwrapBareFont(xml) {
 }
 
 /**
+ * Unwrap one outer `<font…>…</font>` that spans the whole string (attrs OK).
+ * Used so a styled `<span>` does not nest another `<font>` around
+ * `embeddedImageToXml`’s already-wrapped `<image>` (breaks Deploy XML).
+ */
+export function unwrapOuterFont(xml) {
+  const s = String(xml ?? "").trim();
+  const openMatch = s.match(/^<font\b[^>]*>/i);
+  if (!openMatch) return String(xml ?? "");
+  let depth = 0;
+  const re = /<\/?font\b[^>]*>/gi;
+  let m;
+  while ((m = re.exec(s))) {
+    if (/^<\/font/i.test(m[0])) {
+      depth -= 1;
+      if (depth === 0) {
+        if (m.index + m[0].length === s.length) {
+          return s.slice(openMatch[0].length, m.index);
+        }
+        return String(xml ?? "");
+      }
+    } else {
+      depth += 1;
+    }
+  }
+  return String(xml ?? "");
+}
+
+/**
  * Legacy Java Font FACTORY cannot nest `<font>` — inner display components are dropped.
  * Function tokens already emit a single `<font><itemization-table|…></font>`.
  */
@@ -219,7 +278,7 @@ function isFontWrappedDisplayComponent(xml) {
   return FONT_WRAPPED_DISPLAY_COMPONENT_RE.test(String(xml ?? "").trim());
 }
 
-function inlineHtmlToXml(html, escAttr, escText) {
+function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
   if (!html) return "";
   let out = "";
   let rest = html;
@@ -228,19 +287,19 @@ function inlineHtmlToXml(html, escAttr, escText) {
     const tagIdx = rest.search(/<[a-z][a-z0-9]*\b/i);
     if (tagIdx < 0) {
       const plain = stripTags(rest);
-      if (plain) out += escText(plain);
+      if (plain) out += textWithFieldTokensToXml(plain, escAttr, escText, opts);
       break;
     }
     if (tagIdx > 0) {
       const plain = stripTags(rest.slice(0, tagIdx));
-      if (plain) out += escText(plain);
+      if (plain) out += textWithFieldTokensToXml(plain, escAttr, escText, opts);
       rest = rest.slice(tagIdx);
     }
 
     const open = extractOpenTag(rest);
     if (!open) {
       const plain = stripTags(rest);
-      if (plain) out += escText(plain);
+      if (plain) out += textWithFieldTokensToXml(plain, escAttr, escText, opts);
       break;
     }
 
@@ -256,7 +315,7 @@ function inlineHtmlToXml(html, escAttr, escText) {
     const matched = sliceMatchingElement(rest, open);
     if (!matched) {
       const plain = stripTags(rest);
-      if (plain) out += escText(plain);
+      if (plain) out += textWithFieldTokensToXml(plain, escAttr, escText, opts);
       break;
     }
     const { inner } = matched;
@@ -267,7 +326,10 @@ function inlineHtmlToXml(html, escAttr, escText) {
       if (classes.includes("field-token")) {
         const nameM = open.attrs.match(/data-field-name="([^"]*)"/i);
         const name = nameM?.[1] ?? stripTags(inner).replace(/^<<|>>$/g, "");
-        if (name) out += `<field name="${escAttr(name)}"/>`;
+        if (name) {
+          const ref = qualifyFieldRef(name, opts.formName);
+          out += `<field name="${escAttr(ref)}"/>`;
+        }
         continue;
       }
       if (classes.includes("function-token")) {
@@ -284,7 +346,7 @@ function inlineHtmlToXml(html, escAttr, escText) {
         continue;
       }
       const style = parseStyleAttr(open.attrs);
-      let innerXml = inlineHtmlToXml(inner, escAttr, escText);
+      let innerXml = inlineHtmlToXml(inner, escAttr, escText, opts);
       if (isFontWrappedDisplayComponent(innerXml)) {
         out += innerXml;
         continue;
@@ -293,8 +355,9 @@ function inlineHtmlToXml(html, escAttr, escText) {
         const face = style["font-family"]?.split(",")[0]?.replace(/['"]/g, "") ?? "";
         const size = style["font-size"] ? fontSizeToLegacy(style["font-size"]) : 200;
         const color = cssColorToLegacyHex(style.color);
-        // Avoid nested <font> — Java Font FACTORY does not register "font" (drops children).
-        const unwrapped = unwrapBareFont(innerXml);
+        // Avoid nested <font> — Java Font FACTORY does not register "font" (drops children),
+        // and Style post-process non-greedy </font> matching corrupts nested wraps.
+        const unwrapped = unwrapOuterFont(unwrapBareFont(innerXml));
         innerXml =
           `<font${face ? ` face="${escAttr(face)}"` : ""} size="${size}" color="${escAttr(color)}">` +
           `${unwrapped}</font>`;
@@ -304,19 +367,19 @@ function inlineHtmlToXml(html, escAttr, escText) {
     }
 
     if (open.name === "strong" || open.name === "b") {
-      out += `<b>${inlineHtmlToXml(inner, escAttr, escText)}</b>`;
+      out += `<b>${inlineHtmlToXml(inner, escAttr, escText, opts)}</b>`;
       continue;
     }
     if (open.name === "em" || open.name === "i") {
-      out += `<i>${inlineHtmlToXml(inner, escAttr, escText)}</i>`;
+      out += `<i>${inlineHtmlToXml(inner, escAttr, escText, opts)}</i>`;
       continue;
     }
     if (open.name === "u") {
-      out += `<u>${inlineHtmlToXml(inner, escAttr, escText)}</u>`;
+      out += `<u>${inlineHtmlToXml(inner, escAttr, escText, opts)}</u>`;
       continue;
     }
     if (open.name === "font") {
-      const innerXml = inlineHtmlToXml(inner, escAttr, escText);
+      const innerXml = inlineHtmlToXml(inner, escAttr, escText, opts);
       // Flatten nested bare <font> so web components are not dropped by Java.
       out += isFontWrappedDisplayComponent(innerXml)
         ? innerXml
@@ -324,7 +387,7 @@ function inlineHtmlToXml(html, escAttr, escText) {
       continue;
     }
 
-    out += inlineHtmlToXml(inner, escAttr, escText);
+    out += inlineHtmlToXml(inner, escAttr, escText, opts);
   }
   return out;
 }
@@ -785,7 +848,7 @@ function conditionFieldForXml(raw, defaultForm) {
   return s;
 }
 
-function tableHtmlToXml(tableHtml, escAttr, escText) {
+function tableHtmlToXml(tableHtml, escAttr, escText, opts = {}) {
   const rows = [];
   const rowRe = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
   let rowMatch;
@@ -797,7 +860,7 @@ function tableHtmlToXml(tableHtml, escAttr, escText) {
       const openTag = cellMatch[0].match(/^<t[dh]\b([^>]*)>/i)?.[1] ?? "";
       const widthPt = parseStyleAttr(`<x ${openTag}>`).width ?? "";
       const width = ptToTwips(widthPt) || 2160;
-      const inner = inlineHtmlToXml(cellMatch[1], escAttr, escText);
+      const inner = inlineHtmlToXml(cellMatch[1], escAttr, escText, opts);
       cells.push({ width, inner });
     }
     if (cells.length) rows.push(cells);
@@ -817,15 +880,69 @@ function tableHtmlToXml(tableHtml, escAttr, escText) {
   return `<table indent="0">${rowXml}</table>`;
 }
 
-function blockHtmlToXml(blockHtml, escAttr, escText) {
+/**
+ * Form Text often wraps a table in `<div data-doc-blank>` (or mixes prose + table).
+ * inlineHtmlToXml would flatten `<table>` — split and emit real table XML (Potluck T6).
+ */
+function mixedFlowInnerToXml(innerHtml, escAttr, escText, align = "left", opts = {}) {
+  const parts = [];
+  let rest = String(innerHtml ?? "");
+  while (rest.trim()) {
+    const tableIdx = rest.search(/<table\b/i);
+    if (tableIdx < 0) {
+      const body = inlineHtmlToXml(rest, escAttr, escText, opts);
+      const meaningful = String(body ?? "")
+        .replace(/<sp\s*\/>/gi, "")
+        .replace(/\s+/g, "")
+        .trim();
+      if (meaningful) {
+        parts.push(`<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`);
+      }
+      break;
+    }
+    if (tableIdx > 0) {
+      const before = rest.slice(0, tableIdx);
+      const body = inlineHtmlToXml(before, escAttr, escText, opts);
+      const meaningful = String(body ?? "")
+        .replace(/<sp\s*\/>/gi, "")
+        .replace(/\s+/g, "")
+        .trim();
+      if (meaningful) {
+        parts.push(`<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`);
+      }
+      rest = rest.slice(tableIdx);
+    }
+    const open = extractOpenTag(rest);
+    if (!open || open.name !== "table") {
+      const body = inlineHtmlToXml(rest, escAttr, escText, opts);
+      if (body.trim()) {
+        parts.push(`<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`);
+      }
+      break;
+    }
+    const matched = sliceMatchingElement(rest, open);
+    if (!matched) {
+      const body = inlineHtmlToXml(rest, escAttr, escText, opts);
+      if (body.trim()) {
+        parts.push(`<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`);
+      }
+      break;
+    }
+    parts.push(tableHtmlToXml(matched.block, escAttr, escText, opts));
+    rest = matched.rest;
+  }
+  return parts.join("");
+}
+
+function blockHtmlToXml(blockHtml, escAttr, escText, opts = {}) {
   const open = extractOpenTag(blockHtml);
   if (!open) {
-    const text = inlineHtmlToXml(blockHtml, escAttr, escText);
+    const text = inlineHtmlToXml(blockHtml, escAttr, escText, opts);
     return text ? `<paragraph indent="0" align="left">${text}</paragraph>` : "";
   }
 
   if (open.name === "table") {
-    return tableHtmlToXml(blockHtml, escAttr, escText);
+    return tableHtmlToXml(blockHtml, escAttr, escText, opts);
   }
 
   if (open.name === "p" || open.name === "div") {
@@ -833,8 +950,17 @@ function blockHtmlToXml(blockHtml, escAttr, escText) {
     const style = parseStyleAttr(open.attrs);
     const align = parseAlignFromTag(open.attrs);
     const inner = extractTagInner(blockHtml, open.name);
-    const body = inlineHtmlToXml(inner, escAttr, escText);
     const isPlaced = classes.includes("doc-placed-text") || style.position === "absolute";
+
+    // Nested / wrapper tables (Form Text confirmation grids) must stay tables.
+    if (/<table\b/i.test(inner)) {
+      const mixed = mixedFlowInnerToXml(inner, escAttr, escText, align, opts);
+      if (mixed) return mixed;
+      // Empty wrapper around blank table only — keep intentional blank if marked.
+      return /\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs) ? BLANK_PARAGRAPH_XML : "";
+    }
+
+    const body = inlineHtmlToXml(inner, escAttr, escText, opts);
     const meaningful = String(body ?? "")
       .replace(/<sp\s*\/>/gi, "")
       .replace(/\s+/g, "")
@@ -859,7 +985,7 @@ function blockHtmlToXml(blockHtml, escAttr, escText) {
     return `<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`;
   }
 
-  return `<paragraph indent="0" align="left">${inlineHtmlToXml(blockHtml, escAttr, escText)}</paragraph>`;
+  return `<paragraph indent="0" align="left">${inlineHtmlToXml(blockHtml, escAttr, escText, opts)}</paragraph>`;
 }
 
 /** Absolute `top` in pt for a placed Document block, or null. */
@@ -936,8 +1062,12 @@ function collectBlocksInDeployOrder(html) {
   return indexed.map((x) => x.html);
 }
 
-/** Convert document editor HTML string to legacy xmlData body markup. */
-export function documentHtmlToXml(html, escAttr, escText) {
+/** Convert document editor HTML string to legacy xmlData body markup.
+ * @param {{ formName?: string }} [options] — when set (Form Text Deploy), bare
+ *   `<<attendeeName>>` becomes `<field name="Form:attendeeName"/>` (legacy Potluck).
+ */
+export function documentHtmlToXml(html, escAttr, escText, options = {}) {
+  const opts = { formName: options.formName ?? "" };
   const source = String(html ?? "").trim();
   if (!source) {
     return `<paragraph indent="0" align="left"></paragraph>`;
@@ -947,7 +1077,7 @@ export function documentHtmlToXml(html, escAttr, escText) {
   let lastContentTop = null;
   for (const blockHtml of collectBlocksInDeployOrder(source)) {
     const top = placedTopPt(blockHtml);
-    const xml = blockHtmlToXml(blockHtml, escAttr, escText);
+    const xml = blockHtmlToXml(blockHtml, escAttr, escText, opts);
     if (xml) {
       const isBlankOnly = xml === BLANK_PARAGRAPH_XML;
       if (!isBlankOnly && top != null && lastContentTop != null) {

@@ -196,19 +196,28 @@ function renderFib(item, ctx) {
   return `<div class="fib fib-style-${esc(item.style || "default")}" id="item-${esc(itemKey(item))}">${rowHtml}</div>`;
 }
 
-const RICH_TEXT_HTML_TAG_RE = /<\/?(?:p|div|span|strong|b|em|i|u|font|br)(?:\s[^>]*)*\/?>/i;
+const RICH_TEXT_HTML_TAG_RE = /<\/?(?:p|div|span|strong|b|em|i|u|font|br|img)(?:\s[^>]*)*\/?>/i;
 
-function applyLegacyTextSubstitutions(content, ctx) {
+/**
+ * Legacy Registration plain-text used `""` as a League placeholder.
+ * Never run this on rich HTML — empty attributes like `class=""` would become
+ * `class=Dirt Bowl` and corrupt tables (Potluck confirmation page).
+ * Only Registration (or when League already has a value); never invent "Dirt Bowl"
+ * for Signup/Potluck/templates that happen to contain literal `""`.
+ */
+function applyLegacyPlainTextLeaguePlaceholder(content, ctx) {
   let text = String(content ?? "");
-  if (text.includes('""')) {
-    const league = getFieldValue(ctx, "League") || "Dirt Bowl";
-    text = text.replace(/""/g, league);
-  }
-  return text;
+  if (!text.includes('""')) return text;
+  const league = getFieldValue(ctx, "League");
+  const allow =
+    isRegistrationForm(ctx.formName) || (league != null && String(league).length > 0);
+  if (!allow) return text;
+  if (!league) return text;
+  return text.replace(/""/g, String(league));
 }
 
 function enhancePlainText(content, ctx, item) {
-  const text = applyLegacyTextSubstitutions(content, ctx);
+  const text = applyLegacyPlainTextLeaguePlaceholder(content, ctx);
   return resolveTemplate(text, ctx);
 }
 
@@ -217,8 +226,8 @@ function containsRichTextHtml(content) {
 }
 
 function enhanceRichTextHtml(content, ctx) {
-  const html = applyLegacyTextSubstitutions(content, ctx);
-  return enhanceRichHtmlShared(html, (ref) => getFieldValue(ctx, ref), {
+  // Rich HTML only — do not apply `""`→League (breaks empty attrs).
+  return enhanceRichHtmlShared(content, (ref) => getFieldValue(ctx, ref), {
     records: ctx.records,
     formName: ctx.formName,
     blankAliases: ctx.blankAliases,
@@ -433,6 +442,59 @@ const FORM_ITEM_SPACING_CSS = `
 .tawala-form > h3 { margin-bottom: 0.55rem; }
 .tawala-form > fieldset.mc { margin-top: 0.25rem; margin-bottom: 0.85rem; }
 .tawala-form > .fib { margin-bottom: 0.75rem; }
+/* Form Text may carry Design table chrome (absolute left/top, selection). Flow layout only. */
+.tawala-form table.user {
+  position: static !important;
+  left: auto !important;
+  top: auto !important;
+  right: auto !important;
+  float: none !important;
+  margin: 0.5rem 0;
+  max-width: 100%;
+}
+.tawala-form [data-doc-blank] {
+  min-height: 0 !important;
+  display: block;
+}
+.tawala-form .table-cell-selected {
+  outline: none;
+  background: transparent;
+}
+.tawala-form table.user td,
+.tawala-form table.user th {
+  border: 1px solid #333;
+  padding: 2px 6px;
+  vertical-align: top;
+}
+.tawala-form table.user.user-border-2 td,
+.tawala-form table.user.user-border-2 th {
+  border-width: 2px;
+}
+.form-footer-preview {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem 1rem;
+  margin-top: 1rem;
+}
+.form-footer-preview input[type=submit]:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+.preview-only-hint {
+  font-size: 13px;
+  color: #555;
+}
+.preview-segment-rule {
+  border: 0;
+  border-top: 1px dashed #bbb;
+  margin: 1.25rem 0;
+}
+.preview-segment-label {
+  font-size: 12px;
+  color: #666;
+  margin: -0.5rem 0 0.75rem;
+}
 `;
 
 /** Form Preview stand-in for DISPLAY IMAGE — sized box, image name centered (not live URL fetch). */
@@ -505,9 +567,30 @@ export function prepareFormContext(project, form, session) {
   return ctx;
 }
 
-function getSegmentItems(form, session) {
+function getSegmentItems(form, session, options = {}) {
   const { segments } = buildFormSegments(form);
   const state = formState(session, form.name);
+
+  // Designer Preview: show every segment so authors can review the full form
+  // without Submit / skip paging (Submit is disabled in that mode).
+  if (options.designerPreview && segments.length > 1) {
+    const items = [];
+    for (let i = 0; i < segments.length; i++) {
+      const segItems = segments[i].items ?? [];
+      if (!segItems.length) continue;
+      if (i > 0) {
+        items.push({
+          type: "text",
+          label: `__preview_seg_${i}`,
+          style: "instructional",
+          content: `__preview_segment__${i + 1}__`,
+        });
+      }
+      items.push(...segItems);
+    }
+    return { segments, seg: segments[0], items, state };
+  }
+
   const seg = segments[state.segmentIndex] ?? segments[0];
   let items = segmentVisibleItems(seg, state.skipStartLabel);
 
@@ -544,11 +627,15 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
     state.skipStartLabel = dest.startLabel;
   }
 
-  const { segments, state, items } = getSegmentItems(form, session);
+  const { segments, state, items } = getSegmentItems(form, session, options);
 
   const itemHtml = items
     .map((item) => {
       if (item.content === "__page2footer__") return registrationPage2Footer();
+      if (typeof item.content === "string" && item.content.startsWith("__preview_segment__")) {
+        const n = item.content.replace(/^__preview_segment__|__$/g, "");
+        return `<hr class="preview-segment-rule" /><p class="preview-segment-label">Page ${esc(n)} (after Submit)</p>`;
+      }
       return renderItem(item, ctx, project);
     })
     .join("\n");
@@ -556,9 +643,10 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
   const action = `${baseUrl}/p/${uniqueId}/${encodeURIComponent(formName)}`;
   const submitLabel = theme === "dirtbowl2" ? "Submit →" : "Submit";
   const resetUrl = `${action}?reset=1`;
-  const startOver = isRegistrationForm(formName)
-    ? `<p class="reg-start-over"><a href="${resetUrl}">Start over with a blank form</a></p>`
-    : "";
+  const startOver =
+    !options.designerPreview && isRegistrationForm(formName)
+      ? `<p class="reg-start-over"><a href="${resetUrl}">Start over with a blank form</a></p>`
+      : "";
   const formAttrs = isRegistrationForm(formName) ? ' autocomplete="off"' : "";
   const bannerExtra = isRegistrationForm(formName)
     ? ` · <a href="${resetUrl}">Start over</a> · runtime 2026-06-28`
@@ -567,20 +655,29 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
   const showPageChrome = !options.designerPreview && !options.embedded;
   const message = String(session.fields?.Message ?? "").trim();
   const messageHtml =
-    message && message !== " "
+    !options.designerPreview && message && message !== " "
       ? `<div class="validation-error" role="alert">${esc(message)}</div>`
       : "";
+  const formFooter = options.designerPreview
+    ? `<div class="form-footer form-footer-preview">
+      <input type="submit" name="submit" value="${esc(submitLabel)}" disabled title="Submit is disabled in Design Preview" />
+      <span class="preview-only-hint">Preview only — Submit disabled so you can review the full form. Use Deploy to run it live.</span>
+    </div>`
+    : `<div class="form-footer">
+      <input type="submit" name="submit" value="${esc(submitLabel)}" />
+      ${startOver}
+    </div>`;
+  const formTagAttrs = options.designerPreview
+    ? `${formAttrs} onsubmit="return false;"`
+    : formAttrs;
   const body = `
   ${showPageChrome && !isRegistrationForm(formName) ? `<div class="project-title">${esc(project.name)}</div>` : ""}
   ${showPageChrome ? `<h1 class="form-title">${esc(formName)}</h1>` : ""}
   ${messageHtml}
-  <form class="tawala-form" method="post" action="${action}"${formAttrs}>
+  <form class="tawala-form" method="post" action="${action}"${formTagAttrs}>
     <input type="hidden" name="segmentId" value="${state.segmentIndex}" />
     ${itemHtml}
-    <div class="form-footer">
-      <input type="submit" name="submit" value="${esc(submitLabel)}" />
-      ${startOver}
-    </div>
+    ${formFooter}
   </form>`;
 
   const banner = options.designerPreview

@@ -676,6 +676,53 @@ export function adjustPlacedTextIndent(
   void block.offsetHeight;
 }
 
+/**
+ * Top-level Document `table.user` that intersect a non-collapsed selection.
+ * Collapsed caret inside a cell is excluded — Indent must not move the table on
+ * every keystroke / accidental palette click while editing cells.
+ */
+export function listUserTablesInSelection(editor: HTMLElement): HTMLTableElement[] {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return [];
+  const range = sel.getRangeAt(0);
+  const root = range.commonAncestorContainer;
+  if (root !== editor && !editor.contains(root)) return [];
+  return listDocumentUserTables(editor).filter((table) => {
+    try {
+      return range.intersectsNode(table);
+    } catch {
+      return false;
+    }
+  });
+}
+
+/**
+ * Nudge an absolute Document table’s left edge by one indent step (same 36 pt
+ * steps as placed lines). Width is unchanged — only X moves.
+ */
+export function adjustUserTableIndent(
+  editor: HTMLElement,
+  table: HTMLTableElement,
+  delta: 1 | -1,
+): void {
+  const { marginPt, contentWidthPt } = getDocumentContentMetrics(editor);
+  const rightEdge = contentWidthPt - marginPt;
+  const { left, top } = getAbsolutePositionPt(table);
+
+  let level = readPlacedIndentLevel(table);
+  if (table.dataset.docIndent == null || table.dataset.docIndent === "") {
+    level = Math.max(0, Math.round((left - marginPt) / DOC_INDENT_STEP_PT));
+  }
+  level = Math.max(0, Math.min(MAX_DOC_INDENT_LEVEL, level + delta));
+  table.dataset.docIndent = String(level);
+
+  const maxLeft = Math.max(marginPt, rightEdge - 24);
+  const nextLeft = Math.max(marginPt, Math.min(maxLeft, marginPt + level * DOC_INDENT_STEP_PT));
+  table.style.position = "absolute";
+  setAbsolutePositionPt(table, nextLeft, top);
+  void table.offsetHeight;
+}
+
 /** Apply left/width from indent level (+ optional align) between document margins. */
 function applyPlacedIndentLayout(editor: HTMLElement, block: HTMLElement): void {
   const { top } = getAbsolutePositionPt(block);

@@ -4,7 +4,7 @@ import {
   formatSetLineText,
   type ScriptLine,
 } from "@/lib/skipScript";
-import { SKIP_OPERATOR_LABELS, UNARY_SKIP_OPERATORS } from "@/lib/skipSummary";
+import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
 import { getCommandsAtInsertPath, parentInsertPath } from "@/lib/skipInsertPath";
 
 interface ConditionShape {
@@ -27,8 +27,8 @@ function formatConditionClause(cond: ConditionShape): string {
   }
   const field = cond.field ?? "?";
   const op = cond.op ?? "equals";
-  const opLabel = SKIP_OPERATOR_LABELS[op] ?? op;
-  if (UNARY_SKIP_OPERATORS.has(op)) {
+  const opLabel = conditionOpLabel(op);
+  if (isUnaryConditionOp(op)) {
     return `${field} ${opLabel}`;
   }
   const value =

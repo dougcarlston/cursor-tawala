@@ -6,21 +6,38 @@ Items marked **Deferred** were consciously postponed. Verify in the app before s
 
 ---
 
-## ☀️ Jul 20–21 week — green build, then `.tawala` → Designer Open
+## ☀️ Jul 21 — `.tawala` → Designer Open **landed**
 
-**Undo policy locked** (`DESIGNER_OPEN_BUGS.md`). Document caret epic mostly landed — park invent/chip-select polish unless blocking.
+**Green-build:** Done Jul 21 (`npm run build` green).
 
-**Owner Jul 20:** Process **Send** works in Browser Designer on :8080 (self-send OK; recipient lists not yet smoked). Close the old “Send no-op / mail unimplemented” deferral for Java Deploy path.
+**Import:** Shared converter [`designer-web/src/lib/tawalaXmlToJson.mjs`](../designer-web/src/lib/tawalaXmlToJson.mjs).
 
-**This week target:** **File → Open** (or Import) a general `.tawala` into Browser Designer → editable JSON project → Save/Deploy. Unlocks owner’s library of full projects (beyond New Project stubs). Groundwork: `TAWALA_XML_TO_JSON_MAPPING.md`, SignupSheets one-off `scripts/convert-signupsheets-xml-to-json.mjs`, `jsonToXml.mjs` export. DirtBowl/Potluck JSON stubs stay non-targets until import works.
+```bash
+# CLI (repo root)
+node scripts/tawala-to-json.mjs path/to/Project.tawala [out.json]
 
-**Suggested order:**
-1. **Short `tsc` green-build** (clear ~14 errors) — **Done Jul 21** (`npm run build` green).
-2. **Generalize `.tawala` → format 2.0 JSON** (CLI first, then Open/Import in Designer) — **next**.
-3. **Owner smoke:** Open Potluck / DirtBowl / Sign-up Sheet `.tawala` → Explorer populated → round-trip Deploy.
-4. **Park:** Deferred UX, 3-browser, look-and-feel until after import smoke.
+# Designer
+File → Open → choose .json or .tawala (or .tawala.xml)
+```
 
-### End of day Jul 20 — checkpoint (read this first tomorrow)
+After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save handle is **cleared** — next Save is Save As `.json` (does not overwrite the legacy file).
+
+**CLI smoke Jul 21:**
+| Source | Forms | Processes | Documents | Images |
+|--------|------:|----------:|----------:|-------:|
+| SignupSheets.tawala.xml | 9 | 12 | 8 | 0 |
+| Potluck Template.tawala | 2 | 3 | 3 | 2 |
+| DirtBowl.tawala | 69 | 79 | 44 | 2 |
+
+**Known lossy warnings (expected):** pageHeader / styles dropped; invitations / multi-form itemization limited; dynamic MCQ Configure UI deferred; Send subject notes; Document table→paragraph approximations. SportsDashboards deep parity still out of scope.
+
+**Jul 21 import follow-ups (fixed same day):** FIB import now emits Design underscore runs from `<blank length>`; Form Text inline `<image id>` embeds as `data-tawala-image-id` imgs with data-URLs from `project.images`; Form Text `<table>` with `<division>` cells → editable HTML (Name / `<<fields>>`); structured-content fallback now shows badge + × delete. Re-run CLI / re-Open `.tawala` to pick up. Skip script shows friendly `equals` for imported `mcEquals`.
+
+**Owner smoke next:** File → Open Potluck / DirtBowl `.tawala` → Explorer populated → optional Deploy. New Project JSON stubs remain stubs — prefer import for real apps.
+
+**Park:** Deferred UX, 3-browser, look-and-feel; Document invent/chip polish unless blocking.
+
+### End of day Jul 20 — checkpoint (historical)
 
 **Git:** `3fd215f` pushed earlier (Document highlight-move / chips / Skip gaps). Follow-up docs commit tonight for Deploy/Send/Undo policy + week plan. Branch: `cursor/forms-canvas-wysiwyg`.
 
@@ -150,7 +167,7 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
 | 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Jul 20:** TODO #11 MCQ Where **Passed**; TODO #12 Totals vs Bar Graph multi-select **Passed**. Core Configure+Deploy for ladder done earlier Jul 19. |
-| 10 | **Get Deploy working** | **Usable Jul 12–16.** **Jul 20:** Potluck + DirtBowl legacy `.tawala` Deploy **Passed**; Process **Send** (self) **Passed**. Next: general `.tawala` → Designer Open this week. |
+| 10 | **Get Deploy working** | **Usable Jul 12–16.** **Jul 20:** Potluck + DirtBowl legacy Deploy **Passed**; Send (self) **Passed**. **Jul 21:** general `.tawala` → Designer Open / CLI **landed** — owner smoke Open + Deploy next. |
 | 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner Passed Jul 20.** |
 | 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
 

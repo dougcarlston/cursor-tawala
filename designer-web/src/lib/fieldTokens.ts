@@ -8,6 +8,7 @@ import { applyTypingFormatToToken } from "./documentCanvas";
 import { getActivePaletteEditor } from "./formattingPaletteContext";
 import { typingFormatForInsert } from "./paletteTypingFormat";
 import { ensureTokenCaretLanding, placeCaretAfterToken } from "./tokenCaretLanding";
+import { FUNCTION_TOKEN_CLASS } from "./functionTokens";
 
 export const FIELD_TOKEN_CLASS = "field-token";
 export const FIELD_NAME_ATTR = "data-field-name";
@@ -21,6 +22,87 @@ export function createFieldTokenElement(name: string): HTMLSpanElement {
   span.draggable = true;
   span.textContent = fieldToken(name);
   return span;
+}
+
+/** Live field-token under / intersecting the selection (incl. selectNode on the chip). */
+export function fieldTokenFromSelection(sel: Selection | null): HTMLElement | null {
+  if (!sel?.rangeCount) return null;
+  const range = sel.getRangeAt(0);
+  for (const container of [range.startContainer, range.endContainer]) {
+    const el = container instanceof Element ? container : container.parentElement;
+    const hit = el?.closest?.(`.${FIELD_TOKEN_CLASS}`);
+    if (hit instanceof HTMLElement) return hit;
+  }
+  const root =
+    range.commonAncestorContainer instanceof Element
+      ? range.commonAncestorContainer
+      : range.commonAncestorContainer.parentElement;
+  if (!root) return null;
+  const scope = root.querySelectorAll
+    ? root
+    : root.parentElement;
+  if (!scope?.querySelectorAll) return null;
+  for (const token of scope.querySelectorAll(`.${FIELD_TOKEN_CLASS}`)) {
+    if (!(token instanceof HTMLElement)) continue;
+    try {
+      if (range.intersectsNode(token)) return token;
+    } catch {
+      /* detached */
+    }
+  }
+  return null;
+}
+
+/** Function chip under / intersecting the selection — insert must not nest inside it. */
+function functionTokenFromSelection(sel: Selection | null): HTMLElement | null {
+  if (!sel?.rangeCount) return null;
+  const range = sel.getRangeAt(0);
+  for (const container of [range.startContainer, range.endContainer]) {
+    const el = container instanceof Element ? container : container.parentElement;
+    const hit = el?.closest?.(`.${FUNCTION_TOKEN_CLASS}`);
+    if (hit instanceof HTMLElement) return hit;
+  }
+  const root =
+    range.commonAncestorContainer instanceof Element
+      ? range.commonAncestorContainer
+      : range.commonAncestorContainer.parentElement;
+  if (!root?.querySelectorAll) return null;
+  for (const token of root.querySelectorAll(`.${FUNCTION_TOKEN_CLASS}`)) {
+    if (!(token instanceof HTMLElement)) continue;
+    try {
+      if (range.intersectsNode(token)) return token;
+    } catch {
+      /* detached */
+    }
+  }
+  return null;
+}
+
+/**
+ * Plain `<<Field>>` text run containing the caret (not yet a field-token span).
+ * Used so replace does not nest a chip mid-token (`<<Na<<Other>>me>>`).
+ */
+export function plainFieldRunAtRange(
+  range: Range,
+): { node: Text; start: number; end: number; name: string } | null {
+  if (!range.collapsed && range.startContainer !== range.endContainer) return null;
+  const node = range.startContainer;
+  if (node.nodeType !== Node.TEXT_NODE) return null;
+  const parent = node.parentElement;
+  if (!parent) return null;
+  if (parent.closest(`.${FIELD_TOKEN_CLASS}, .${FUNCTION_TOKEN_CLASS}`)) return null;
+  const text = node.textContent ?? "";
+  const caret = range.startOffset;
+  const re = /<<([^<>]+)>>/g;
+  let match: RegExpExecArray | null;
+  while ((match = re.exec(text))) {
+    const start = match.index;
+    const end = start + match[0].length;
+    if (caret >= start && caret <= end) {
+      return { node: node as Text, start, end, name: match[1].trim() };
+    }
+  }
+  return null;
 }
 
 function placeTokenAtSelection(span: HTMLElement): void {
@@ -47,20 +129,54 @@ function placeTokenAtSelection(span: HTMLElement): void {
 /** Insert a field token span at the current selection, replacing any selected content. */
 export function insertFieldTokenAtSelection(name: string): void {
   const sel = window.getSelection();
-  // Double-click / accidental insert while a field token is selected: keep that token.
+  const existing = fieldTokenFromSelection(sel);
+  if (existing) {
+    // Selected / caret-in chip: replace the whole token (never nest mid-label).
+    const span = createFieldTokenElement(name);
+    const handle = getActivePaletteEditor();
+    if (handle) {
+      const typing = typingFormatForInsert(handle.el);
+      applyTypingFormatToToken(span, typing);
+    } else {
+      // Keep face/size from the chip being replaced when palette context is gone.
+      for (const key of ["fontSize", "fontFamily", "fontWeight", "fontStyle", "textDecoration", "color"] as const) {
+        const v = existing.style[key];
+        if (v) span.style[key] = v;
+      }
+    }
+    existing.replaceWith(span);
+    placeCaretAfterToken(span);
+    return;
+  }
+
   if (sel?.rangeCount) {
     const range = sel.getRangeAt(0);
-    const anchor =
-      range.commonAncestorContainer instanceof Element
-        ? range.commonAncestorContainer
-        : range.commonAncestorContainer.parentElement;
-    const existing = anchor?.closest?.(`.${FIELD_TOKEN_CLASS}`);
-    if (existing instanceof HTMLElement) {
-      const keep = document.createRange();
-      keep.selectNode(existing);
+    // Caret inside a function chip (browser quirk): do not nest — place after the chip.
+    const fn = functionTokenFromSelection(sel);
+    if (fn) {
+      const after = document.createRange();
+      after.setStartAfter(fn);
+      after.collapse(true);
       sel.removeAllRanges();
-      sel.addRange(keep);
-      return;
+      sel.addRange(after);
+    } else {
+      // Caret mid plain `<<Field>>` text → replace that whole run.
+      const plain = plainFieldRunAtRange(range);
+      if (plain) {
+        const span = createFieldTokenElement(name);
+        const handle = getActivePaletteEditor();
+        if (handle) {
+          const typing = typingFormatForInsert(handle.el);
+          applyTypingFormatToToken(span, typing);
+        }
+        const replace = document.createRange();
+        replace.setStart(plain.node, plain.start);
+        replace.setEnd(plain.node, plain.end);
+        replace.deleteContents();
+        replace.insertNode(span);
+        placeCaretAfterToken(span);
+        return;
+      }
     }
   }
 

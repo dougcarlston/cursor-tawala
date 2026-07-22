@@ -19,6 +19,7 @@ import { SaveAsDialog } from "./components/SaveAsDialog";
 import type { TemplateEntry } from "@/templates/catalog";
 import {
   clearProjectFileHandle,
+  importProjectFileText,
   installDesignerShellGuards,
   isSaveAsDialogOpen,
   openProjectFromDisk,
@@ -63,7 +64,6 @@ function savePanelWidths(left: number, right: number): void {
 export default function App() {
   const openWindows = useProjectStore((s) => s.openWindows);
   const activeWindowId = useProjectStore((s) => s.activeWindowId);
-  const importJson = useProjectStore((s) => s.importJson);
   const loadTemplate = useProjectStore((s) => s.loadTemplate);
   const deploy = useProjectStore((s) => s.deploy);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -134,11 +134,18 @@ export default function App() {
     const reader = new FileReader();
     reader.onload = () => {
       try {
-        importJson(String(reader.result));
+        const result = importProjectFileText(String(reader.result), file.name);
         syncProjectNameFromFileName(file.name);
-        useProjectStore.getState().setStatus(`Opened ${file.name}`);
-      } catch {
-        alert("Could not parse project JSON.");
+        if (result.kind === "tawala") {
+          const warnPart =
+            result.warningCount > 0 ? ` (${result.warningCount} warnings)` : "";
+          useProjectStore.getState().setStatus(`Imported ${file.name}${warnPart}`);
+        } else {
+          useProjectStore.getState().setStatus(`Opened ${file.name}`);
+        }
+      } catch (err) {
+        const msg = err instanceof Error ? err.message : "Could not open project file.";
+        alert(msg);
       }
     };
     reader.readAsText(file);
@@ -212,7 +219,7 @@ export default function App() {
       <input
         ref={fileRef}
         type="file"
-        accept=".json,application/json"
+        accept=".json,.tawala,.xml,application/json,text/xml,application/xml"
         hidden
         onChange={onOpenFile}
       />

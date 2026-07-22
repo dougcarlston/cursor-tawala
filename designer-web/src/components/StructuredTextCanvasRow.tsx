@@ -51,9 +51,49 @@ export function StructuredTextCanvasRow({ item, index, formName, selected }: Pro
 
   if (!table) {
     return (
-      <div className={`text-canvas-row idle${selected ? " selected" : ""}`}>
+      <div
+        className={`text-canvas-row idle structured-text-fallback${selected ? " selected" : ""}`}
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedItemIndex(index);
+        }}
+      >
+        <FormItemDeleteButton formName={formName} index={index} visible={selected} />
+        {editingLabel ? (
+          <input
+            ref={labelInputRef}
+            className="text-badge-input"
+            defaultValue={item.label}
+            maxLength={12}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLabel(e.currentTarget.value);
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setEditingLabel(false);
+              }
+            }}
+            onBlur={(e) => commitLabel(e.currentTarget.value)}
+          />
+        ) : (
+          <div
+            className="text-badge"
+            title={selected ? "Click to rename, or use × to delete" : "Click to select"}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedItemIndex(index);
+              if (selected) setEditingLabel(true);
+            }}
+          >
+            {item.label}
+          </div>
+        )}
         <p className="hint">
           This text item has structured content that cannot be edited on the canvas yet.
+          Select it and press Delete (or click ×) to remove, or re-import after converter
+          updates.
         </p>
       </div>
     );

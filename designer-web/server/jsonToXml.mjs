@@ -163,6 +163,10 @@ function fontXml(text, { bold = false, italic = false, size = 200, color = "0000
  * Canvas Text is almost always HTML. documentHtmlToXml either emits color="000000"
  * on <font> (beats Deploy CSS color) or bare paragraph text (no color at all).
  * Put Styles-dialog colors + bold/italic onto default runs; leave non-default author colors.
+ *
+ * Must rewrite fonts with balanced nesting — a non-greedy `([\s\S]*?)</font>` stops at the
+ * first close and leaves orphan `</font>` when images nest `<font><font><image/></font></font>`
+ * (Potluck instructional T1/T3 Deploy failure).
  */
 export function applyTextItemStyleToXml(bodyXml, style) {
   if (style !== "instructional" && style !== "error") return bodyXml;
@@ -178,7 +182,7 @@ export function applyTextItemStyleToXml(bodyXml, style) {
     return next;
   };
 
-  let xml = String(bodyXml ?? "").replace(/<font\b([^>]*)>([\s\S]*?)<\/font>/gi, (full, attrs, inner) => {
+  const rewriteOneFont = (attrs, inner) => {
     const colorMatch = attrs.match(/\bcolor="([^"]*)"/i);
     const current = (colorMatch?.[1] ?? "000000").replace(/^#/, "").toUpperCase();
     const isDefault =
@@ -188,10 +192,57 @@ export function applyTextItemStyleToXml(bodyXml, style) {
       if (colorMatch) a = a.replace(/\bcolor="[^"]*"/i, `color="${color}"`);
       else a = `${a} color="${color}"`;
     }
-    // Style emphasis only when the run still looks like Default (black / no color).
     const body = isDefault ? wrapEmphasis(inner) : inner;
     return `<font${a}>${body}</font>`;
-  });
+  };
+
+  const rewriteFontsBalanced = (xml) => {
+    let out = "";
+    let rest = String(xml ?? "");
+    while (rest.length) {
+      const idx = rest.search(/<font\b/i);
+      if (idx < 0) {
+        out += rest;
+        break;
+      }
+      out += rest.slice(0, idx);
+      rest = rest.slice(idx);
+      const openMatch = rest.match(/^<font\b([^>]*)>/i);
+      if (!openMatch) {
+        out += rest[0];
+        rest = rest.slice(1);
+        continue;
+      }
+      let depth = 0;
+      const tagRe = /<\/?font\b[^>]*>/gi;
+      let m;
+      let closeStart = -1;
+      let closeLen = 0;
+      while ((m = tagRe.exec(rest))) {
+        if (/^<\/font/i.test(m[0])) {
+          depth -= 1;
+          if (depth === 0) {
+            closeStart = m.index;
+            closeLen = m[0].length;
+            break;
+          }
+        } else {
+          depth += 1;
+        }
+      }
+      if (closeStart < 0) {
+        out += rest;
+        break;
+      }
+      const innerRaw = rest.slice(openMatch[0].length, closeStart);
+      const inner = rewriteFontsBalanced(innerRaw);
+      out += rewriteOneFont(openMatch[1], inner);
+      rest = rest.slice(closeStart + closeLen);
+    }
+    return out;
+  };
+
+  let xml = rewriteFontsBalanced(bodyXml);
 
   // Bare paragraph body (no <font>): wrap so Deploy does not rely on CSS alone.
   xml = xml.replace(/<paragraph\b([^>]*)>([\s\S]*?)<\/paragraph>/gi, (full, attrs, inner) => {
@@ -205,7 +256,7 @@ export function applyTextItemStyleToXml(bodyXml, style) {
   return xml;
 }
 
-function textContentToXml(content, style, project = null) {
+function textContentToXml(content, style, project = null, formName = "") {
   if (typeof content === "string") {
     if (!content) {
       return `<paragraph indent="0" align="left">${TAB_MC}</paragraph>`;
@@ -213,7 +264,7 @@ function textContentToXml(content, style, project = null) {
     // Canvas Text items store WYSIWYG HTML (field/function tokens). Escape-as-text
     // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
     if (/<[a-z][\s\S]*>/i.test(content)) {
-      const xml = documentHtmlToXml(content, escAttr, escText);
+      const xml = documentHtmlToXml(content, escAttr, escText, { formName });
       const styled = applyTextItemStyleToXml(xml, style);
       return injectResponseTotalsQuestionTitles(styled, project);
     }
@@ -625,7 +676,7 @@ function itemToXml(item, formName = "", project = null) {
       return `<heading label="${escAttr(item.label)}" type="Sub">${escText(headingPlainText(item.content))}</heading>`;
     case "text": {
       const legacy = registrationTextToXml(item, formName);
-      const body = legacy ?? textContentToXml(item.content, item.style, project);
+      const body = legacy ?? textContentToXml(item.content, item.style, project, formName);
       const padAttr = item.paddingBottom === false ? ` paddingBottom="false"` : "";
       return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}"${padAttr}>${body}</text>`;
     }

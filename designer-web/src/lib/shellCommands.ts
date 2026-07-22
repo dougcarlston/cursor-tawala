@@ -5,6 +5,10 @@
 
 import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import { tryDeleteSelectedFormInlineTokens } from "@/lib/inlineTokenDelete";
+import {
+  convertTawalaXmlToProject,
+  isTawalaProjectFileName,
+} from "@/lib/tawalaXmlToJson.mjs";
 import { useProjectStore } from "@/store/projectStore";
 
 export type ShellEditCommand = "cut" | "copy" | "paste" | "undo" | "redo";
@@ -92,8 +96,15 @@ export function suggestedProjectFileName(projectName?: string): string {
  */
 export function projectDisplayNameFromFileName(filename: string): string {
   const leaf = filename.replace(/^.*[\\/]/, "").trim();
-  const withoutExt = leaf.replace(/\.json$/i, "").trim();
-  return withoutExt || "Untitled";
+  let withoutExt = leaf;
+  if (/\.tawala\.xml$/i.test(withoutExt)) {
+    withoutExt = withoutExt.replace(/\.tawala\.xml$/i, "");
+  } else if (/\.tawala$/i.test(withoutExt)) {
+    withoutExt = withoutExt.replace(/\.tawala$/i, "");
+  } else {
+    withoutExt = withoutExt.replace(/\.json$/i, "");
+  }
+  return withoutExt.trim() || "Untitled";
 }
 
 /**
@@ -252,6 +263,36 @@ export function isProjectJsonFileName(filename: string): boolean {
   return filename.trim().toLowerCase().endsWith(".json");
 }
 
+/** True when File → Open should accept this leaf name (JSON or legacy `.tawala`). */
+export function isOpenableProjectFileName(filename: string): boolean {
+  return isProjectJsonFileName(filename) || isTawalaProjectFileName(filename);
+}
+
+export type ImportProjectFileResult = {
+  kind: "json" | "tawala";
+  warningCount: number;
+};
+
+/**
+ * Parse file text into the project store. JSON keeps quiet-Save semantics for the caller;
+ * `.tawala` / XML is converted (lossy-with-warnings) and must not bind a writable handle
+ * to the legacy file (next Save → Save As `.json`).
+ */
+export function importProjectFileText(
+  text: string,
+  filename: string,
+): ImportProjectFileResult {
+  if (isTawalaProjectFileName(filename)) {
+    const { project, warnings } = convertTawalaXmlToProject(text, {
+      sourceLabel: filename.replace(/^.*[\\/]/, ""),
+    });
+    useProjectStore.getState().importJson(JSON.stringify(project));
+    return { kind: "tawala", warningCount: warnings.length };
+  }
+  useProjectStore.getState().importJson(text);
+  return { kind: "json", warningCount: 0 };
+}
+
 async function writeJsonToHandle(handle: FileSystemFileHandle, json: string): Promise<void> {
   const writable = await handle.createWritable();
   await writable.write(json);
@@ -392,8 +433,9 @@ export async function confirmSaveAs(chosenName: string): Promise<void> {
 }
 
 /**
- * Open a project JSON via the File System Access API when possible so later Save
- * can rewrite the same file. Returns true if a file was opened.
+ * Open a project JSON or legacy `.tawala` via the File System Access API when possible.
+ * JSON opens keep a writable handle for quiet Save; `.tawala` imports clear the handle
+ * so the next Save is Save As `.json`. Returns true if a file was opened / handled.
  */
 export async function openProjectFromDisk(): Promise<boolean> {
   const win = savePickerWindow();
@@ -406,20 +448,38 @@ export async function openProjectFromDisk(): Promise<boolean> {
 
   try {
     const [handle] = await win.showOpenFilePicker(buildOpenProjectPickerOptions());
-    if (!isProjectJsonFileName(handle.name)) {
+    if (!isOpenableProjectFileName(handle.name)) {
       projectFileHandle = previousHandle;
-      useProjectStore.getState().setStatus("Open cancelled — choose a .json project file");
+      useProjectStore
+        .getState()
+        .setStatus("Open cancelled — choose a .json or .tawala project file");
       return true;
     }
     const file = await handle.getFile();
     const text = await file.text();
-    useProjectStore.getState().importJson(text);
-    projectFileHandle = handle;
-    // Older saves left JSON `name: "Untitled"` while the file was MyProject.json —
-    // adopt the leaf name so Explorer / next Save As match the file on disk.
-    syncProjectNameFromFileName(handle.name);
-    useProjectStore.getState().setStatus(`Opened ${handle.name}`);
-    return true;
+    try {
+      const result = importProjectFileText(text, handle.name);
+      if (result.kind === "json") {
+        projectFileHandle = handle;
+        syncProjectNameFromFileName(handle.name);
+        useProjectStore.getState().setStatus(`Opened ${handle.name}`);
+      } else {
+        // Do not bind Save to the .tawala — Save As writes format 2.0 JSON.
+        projectFileHandle = null;
+        syncProjectNameFromFileName(handle.name);
+        const warnPart =
+          result.warningCount > 0 ? ` (${result.warningCount} warnings)` : "";
+        useProjectStore
+          .getState()
+          .setStatus(`Imported ${handle.name}${warnPart}`);
+      }
+      return true;
+    } catch (err) {
+      projectFileHandle = previousHandle;
+      const msg = err instanceof Error ? err.message : "Could not open project file";
+      useProjectStore.getState().setStatus(msg);
+      return true;
+    }
   } catch (err) {
     projectFileHandle = previousHandle;
     const name = err instanceof DOMException ? err.name : "";
