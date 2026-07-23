@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { TextItem, TEXT_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
-  fieldToken,
   hasFieldDrag,
   readFieldDragName,
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { FIELD_TOKEN_CLASS, insertFieldTokenAtSelection, selectFieldDropTarget } from "@/lib/fieldTokens";
 import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
 import { EmbeddedImageHandlesOverlay } from "./EmbeddedImageHandlesOverlay";
@@ -40,7 +40,6 @@ import {
   handleTableCellPointerUp,
   navigateTableCellOnTab,
 } from "@/lib/tableCellSelection";
-import { FIELD_TOKEN_CLASS } from "@/lib/fieldTokens";
 import {
   setTypingFormat,
   typingFormatForInsert,
@@ -256,7 +255,8 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     if (!el) return;
     el.focus();
     restoreSelection();
-    document.execCommand("insertText", false, fieldToken(name));
+    // Chip insert/replace — never insertText mid-`<<Field>>` (splits placeholders).
+    insertFieldTokenAtSelection(name);
     commit();
   };
 
@@ -566,15 +566,16 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                 e.preventDefault();
                 e.stopPropagation();
                 const el = editorRef.current;
-                const range = caretRangeAtPoint(e.clientX, e.clientY);
-                const sel = window.getSelection();
-                if (el && range && sel && el.contains(range.commonAncestorContainer)) {
-                  sel.removeAllRanges();
-                  sel.addRange(range);
-                  savedRangeRef.current = range.cloneRange();
-                } else if (el) {
+                if (el) {
                   el.focus();
-                  restoreSelection();
+                  const range = selectFieldDropTarget(
+                    el,
+                    e.clientX,
+                    e.clientY,
+                    caretRangeAtPoint,
+                  );
+                  if (range) savedRangeRef.current = range.cloneRange();
+                  else restoreSelection();
                 }
                 insertFieldToken(name);
               }}

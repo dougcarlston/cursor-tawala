@@ -24,6 +24,50 @@ export function createFieldTokenElement(name: string): HTMLSpanElement {
   return span;
 }
 
+/** Field chip under a viewport point (Fields drop onto an existing placeholder). */
+export function fieldTokenAtPoint(
+  clientX: number,
+  clientY: number,
+  root?: ParentNode | null,
+): HTMLElement | null {
+  const hit = document.elementFromPoint(clientX, clientY);
+  if (!(hit instanceof Element)) return null;
+  const token = hit.closest(`.${FIELD_TOKEN_CLASS}`);
+  if (!(token instanceof HTMLElement)) return null;
+  if (root && !root.contains(token)) return null;
+  return token;
+}
+
+/**
+ * Prefer selecting the field chip under the pointer so insert/replace swaps the
+ * whole placeholder — never nests mid-label (`<<attende<<Other>>eName>>`).
+ * Falls back to caret-at-point when the hit is ordinary text (incl. plain `<<Field>>`).
+ */
+export function selectFieldDropTarget(
+  editor: HTMLElement,
+  clientX: number,
+  clientY: number,
+  caretAtPoint: (x: number, y: number) => Range | null,
+): Range | null {
+  const sel = window.getSelection();
+  if (!sel) return null;
+  const token = fieldTokenAtPoint(clientX, clientY, editor);
+  if (token) {
+    const range = document.createRange();
+    range.selectNode(token);
+    sel.removeAllRanges();
+    sel.addRange(range);
+    return range;
+  }
+  const range = caretAtPoint(clientX, clientY);
+  if (range && editor.contains(range.commonAncestorContainer)) {
+    sel.removeAllRanges();
+    sel.addRange(range);
+    return range;
+  }
+  return null;
+}
+
 /** Live field-token under / intersecting the selection (incl. selectNode on the chip). */
 export function fieldTokenFromSelection(sel: Selection | null): HTMLElement | null {
   if (!sel?.rangeCount) return null;

@@ -164,6 +164,13 @@ export function SkipInstructionsDialog({
     commentText,
   ]);
 
+  // Legacy: selecting Statements → Comment (or a comment line) focuses the text box.
+  useLayoutEffect(() => {
+    if (panel !== "comment") return;
+    const el = dialogRef.current?.querySelector<HTMLInputElement>(".skip-comment-input");
+    el?.focus();
+  }, [panel, selectedCommandPath]);
+
   const finish = (nextCommands: SkipCommand[]) => {
     clearSkipDialogSession(sessionKey);
     onSave(nextCommands);
@@ -488,6 +495,7 @@ export function SkipInstructionsDialog({
                     placeholder="Comment text"
                     value={commentText}
                     onValueChange={setCommentText}
+                    aria-label="Comment text"
                   />
                   <div className="skip-comment-add-row">
                     <button

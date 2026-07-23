@@ -1,0 +1,14 @@
+{
+  "name": "Untitled",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": []
+    }
+  ],
+  "processes": [],
+  "documents": []
+}

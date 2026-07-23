@@ -16,6 +16,7 @@ import {
   type FunctionParamDef,
 } from "@/lib/functionCatalog";
 import { setConfigureFunctionFieldLock } from "@/lib/fieldInsertion";
+import { setFieldsPaletteConditionsForm } from "@/lib/fieldsPaletteContext";
 
 interface Props {
   def: FunctionDef;
@@ -65,8 +66,21 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
     return () => {
       setConfigureFunctionFieldLock(false);
       document.body.classList.remove("configure-function-open");
+      setFieldsPaletteConditionsForm(null);
     };
   }, []);
+
+  // DYNAMIC MCQ / Document record functions: when Form is chosen, Fields shows a
+  // `Record:` branch (same cue as Show Stored Record / Get Where / ForEach).
+  const conditionsForm = String(config["form-name"] ?? "").trim();
+  useEffect(() => {
+    if (conditionsForm) {
+      setFieldsPaletteConditionsForm(conditionsForm);
+      return () => setFieldsPaletteConditionsForm(null);
+    }
+    setFieldsPaletteConditionsForm(null);
+    return () => setFieldsPaletteConditionsForm(null);
+  }, [conditionsForm]);
 
   useEffect(() => {
     if (selectedColumn >= columns.length) {

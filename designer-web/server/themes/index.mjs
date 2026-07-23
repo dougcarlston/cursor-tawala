@@ -4,15 +4,21 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-/** Base form readability — always included; theme CSS layers on top. */
-export const BASE_FORM_CSS = `body { font-family: Arial, Helvetica, sans-serif; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; color: #222; }
+/**
+ * Base form readability — always included; theme CSS layers on top.
+ * Body 13px matches Design canvas (`.text-rich-editor` / `.text-rendered`) so
+ * Form Preview is not browser-default ~16px. text-size-adjust stops Safari from
+ * inflating text vs Chrome/Edge. Inputs inherit so blanks match labels.
+ */
+export const BASE_FORM_CSS = `html { font-size: 13px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; color: #222; }
 h1 { font-size: 1.25rem; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
 .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }
 fieldset.mc { margin: 1rem 0; border: 1px solid #ccc; padding: 8px 12px; }
 .preview-mc-choice { display: block; margin: 4px 0; }
 .fib label { display: inline-block; margin: 4px 8px 4px 0; }
-input[type=text], input[type=submit], select, textarea { font-family: inherit; font-size: 14px; }
-input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
+input[type=text], input[type=submit], select, textarea { font-family: inherit; font-size: 100%; }
+input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 100%; }
 .text-block p, .text p { margin: 0.5rem 0; }
 /* Horizontal FIB layout (default/baseball fallback — dirtbowl2 layers its own).
    Mirror Deploy form-layout-core contracts (Preview-only; Design canvas unchanged). */
@@ -93,7 +99,7 @@ input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
   table-layout: auto;
   border-collapse: collapse;
   margin: 0.75em 0 1em;
-  font-size: 14px;
+  font-size: 100%;
 }
 .preview-itemization-table th {
   background: #555;

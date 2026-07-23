@@ -39,6 +39,8 @@ export interface FunctionDef {
   name: string;
   description: string;
   parameters: FunctionParamDef[];
+  /** When true, not listed under Insert → Function (Form MCQ Edit only). */
+  formOnly?: boolean;
 }
 
 export interface FunctionCategory {
@@ -568,13 +570,63 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
       CONDITIONS_PARAM,
     ],
   },
+  /**
+   * Form MCQ only — opened from Choice source → Edit (not Insert → Function).
+   * Mirrors display-component-repository.xml `dynamic-mcq`.
+   */
+  {
+    id: "dynamic-mcq",
+    name: "DYNAMIC MCQ",
+    description: "Populate choices from stored data.",
+    formOnly: true,
+    parameters: [
+      {
+        id: "form-name",
+        type: "tawala-form",
+        name: "Form",
+        required: true,
+        description: "Form whose stored responses supply the choice list.",
+      },
+      {
+        id: "display-expression",
+        type: "expression",
+        name: "Display text",
+        required: true,
+        description:
+          "Field containing the text that will be displayed as the choices for this multiple choice question.",
+      },
+      {
+        id: "value-expression",
+        type: "expression",
+        name: "Value",
+        required: true,
+        description:
+          "Field containing a value associated with selecting a choice (unique ID, price, etc.).",
+      },
+      {
+        id: "sort-expression",
+        type: "expression",
+        name: "Sort by",
+        required: false,
+        description: "The choices will be sorted by this field in ascending order.",
+      },
+      {
+        id: "conditions",
+        type: "tawala-conditions",
+        name: "Only display choices meeting the specified conditions",
+        required: false,
+        description:
+          "Only the records that match these conditions will be offered as choices. Leave blank to include all records from the selected form.",
+      },
+    ],
+  },
 ];
 
 export const FUNCTION_CATEGORIES: FunctionCategory[] = [
   {
     id: "all",
     label: "All",
-    functionIds: FUNCTION_CATALOG.map((f) => f.id),
+    functionIds: FUNCTION_CATALOG.filter((f) => !f.formOnly).map((f) => f.id),
   },
   {
     id: "database",

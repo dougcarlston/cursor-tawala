@@ -139,6 +139,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 
 1. Set **Trebuchet MS** + **20 pt** on a Form Text body → type a line → **Return** → type again → second paragraph stays **Trebuchet 20**; palette Face/Size still shows that pair (not Arial / default 12). Cross-check Document smoke #12 in `DESIGNER_DOCUMENT_EDITOR.md`.
 2. Insert a function (`fx`) into Form Text → **single-click** the `<<…>>` chip to select it → **Del** or **Backspace** removes **only** the chip (Text row stays). **Double-click** opens Configure (legacy parity). Same when the row is idle (border click) but the chip is highlighted. Row/toolbar **×** with a highlighted chip also removes the chip, not the whole Text item.
+3. **Fields replace (Jul 23):** In a Text table cell with `<<attendeeName>>` (chip selected or not) → drop another field onto it → cell becomes the new `<<…>>` only — never `<<attende<<…>>eName>>`. Same for Heading / FIB prompt / MCQ question.
 
 ---
 
@@ -201,10 +202,11 @@ Run before merging FIB canvas, `fibBlanks`, `fibPrompt`, or Form Preview/runtime
 2. Design: place caret in an underscore run while editing → Alternate Label / Height / Required still target that blank.
 3. Preview: same item shows **Name** + one input — **no** leftover `________` beside the box. Input width tracks underscore count (`size=` / `ch`), not a full-row stretch. (Restart `designer-web` API on `:3001` after `server/runtime.mjs` / `fibPrompt.mjs` edits — Node does not HMR those.)
 4. Deploy: a Design soft-row with two underscore blanks (e.g. `First ____ Last ____` or `Email ____ Email (again) ____`) must stay **one line** with both boxes — including Left/Right justified (+ Align right side). Only a soft-row break (Enter) starts a new Deploy row (`fibToXml` / Redeploy). Hard-refresh after CSS updates for row gaps.
-5. Deploy: B/I/U (and face/size/color when set) on FIB prompt labels in Design must appear on the Java form after Redeploy (`fibRichPromptToXml` / `fibToXml`).
-6. Design + Deploy: FIB prompt with a variable token `Your <<ContactType1>>: ____` shows the full `<<ContactType1>>` chip on Design idle (not `<>` / `>:`), and Deploy XML contains `<field name="ContactType1"/>` (not literal `Your >:`). Full-feature Signup Sheet Questionnaire Q2–Q4.
-7. Deploy: intro soft-row + later `Name:____` (e.g. after Enter in Design) must keep the input on the **Name** line — not an empty box under the intro and `Name:` orphaned below (`fibPrompt` must not let intro steal the blank).
-8. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata, Preview prompt parse, and field-token protection).
+5. Deploy/Preview: form with a **FIB before the first MCQ** → caret lands in the first FIB blank on load (`default.js` / Preview page shell). If an MCQ appears first, focus is left alone.
+6. Deploy: B/I/U (and face/size/color when set) on FIB prompt labels in Design must appear on the Java form after Redeploy (`fibRichPromptToXml` / `fibToXml`).
+7. Design + Deploy: FIB prompt with a variable token `Your <<ContactType1>>: ____` shows the full `<<ContactType1>>` chip on Design idle (not `<>` / `>:`), and Deploy XML contains `<field name="ContactType1"/>` (not literal `Your >:`). Full-feature Signup Sheet Questionnaire Q2–Q4.
+8. Deploy: intro soft-row + later `Name:____` (e.g. after Enter in Design) must keep the input on the **Name** line — not an empty box under the intro and `Name:` orphaned below (`fibPrompt` must not let intro steal the blank).
+9. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata, Preview prompt parse, and field-token protection).
 
 ### Backlog parity note (July 2026)
 
@@ -266,6 +268,16 @@ Opened via **Edit** when using stored data.
 **Buttons:** OK, Cancel
 
 Right panel shows context help for the focused field.
+
+### MCQ stored-data must-not-break smoke
+
+1. MCQ → **Choice source** → **Choices are from stored data** → Configure Function (DYNAMIC MCQ) opens.
+2. Set **Form**, **Display text**, **Value** (Fields drop OK) → **OK** → note “Choices come from stored data”; **Edit** reopens the same values.
+3. After **Form** is chosen, Fields shows a **`Record:`** branch (`Record:Form:Field`) — prefer those drops for Display/Value/Sort/Conditions.
+4. Display/Value must resolve as **`Record:FormName:Field`** (Deploy/runtime). Palette `FormName:Field` is also auto-prefixed on OK/Deploy — without `Record:` Java skips every choice (blank MCQ).
+5. Do **not** attach a Post-process of **Show Form** (same form) on the source form — that loops submit → Processing forever.
+6. Switch back to **Choices are entered above** → manual a/b/c rows return.
+7. Deploy / unit: `<data-provider><dynamic-mcq>` with form + display/value (+ conditions when set). `cd designer-web && npm test -- --run src/lib/mcDynamicConfig.test.ts server/mcToXml.test.mjs`
 
 ### Fields panel
 
@@ -349,7 +361,7 @@ Example (SportsDashboards template in test fixtures):
 | FIB validation types | Yes | Not exposed |
 | MCQ inline choice entry | Yes | JSON choices array |
 | MCQ multi-select / required | Yes | Partial in JSON |
-| Dynamic MCQ + Configure Function | Yes | `dynamic` choices in JSON only |
+| Dynamic MCQ + Configure Function | Yes | **Done Jul 23** — Choice source → stored opens Configure Function (DYNAMIC MCQ); Edit reopens; Deploy via `mcToXml` `<data-provider><dynamic-mcq>` |
 | Rename item label on canvas | Yes | Uses `item.label` only |
 | Default design labels for FIB / MCQ | Often **Qn** for both | **FIB**n / **MCQ**n on insert (`insertFormItem`) so lists distinguish types |
 
@@ -368,4 +380,4 @@ Example (SportsDashboards template in test fixtures):
 
 ---
 
-*Last updated: July 18, 2026 — Hold-list Batch 2: Design idle keeps `_` (boxes only Preview/Deploy); smoke + dual-pipeline tests; Preview `fibPrompt` strips `_` runs.*
+*Last updated: July 23, 2026 — Deploy/Preview focus first FIB when it precedes first MCQ; MCQ Configure Function wired earlier same day.*

@@ -1683,6 +1683,27 @@ export function focusDocumentDropTarget(
   clientX: number,
   clientY: number,
 ): Range | null {
+  // Dropping onto an existing field chip must select the whole chip (replace), not
+  // land a caret mid-label (which used to nest <<A<<B>>…>> via insertText paths).
+  const hit = document.elementFromPoint(clientX, clientY);
+  const chip =
+    hit instanceof Element ? hit.closest(".field-token, .function-token") : null;
+  if (chip instanceof HTMLElement && target.contains(chip)) {
+    const sel = window.getSelection();
+    if (sel) {
+      const range = document.createRange();
+      if (chip.classList.contains("field-token")) {
+        range.selectNode(chip);
+      } else {
+        // Function chips: place after — field insert must not nest inside SUM/etc.
+        range.setStartAfter(chip);
+        range.collapse(true);
+      }
+      sel.removeAllRanges();
+      sel.addRange(range);
+      return range;
+    }
+  }
   if (target instanceof HTMLTableCellElement) {
     const range = caretRangeAtPoint(clientX, clientY);
     const sel = window.getSelection();

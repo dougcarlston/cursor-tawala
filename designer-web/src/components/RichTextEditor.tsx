@@ -14,6 +14,7 @@ import {
   moveFieldTokenToSelection,
   normalizeFieldTokenSpans,
   readFieldNameFromToken,
+  selectFieldDropTarget,
   FIELD_TOKEN_CLASS,
 } from "@/lib/fieldTokens";
 import {
@@ -621,11 +622,8 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       return;
     }
 
-    const range = caretRangeAtPoint(e.clientX, e.clientY);
-    const selection = window.getSelection();
-    if (range && selection && el.contains(range.commonAncestorContainer)) {
-      selection.removeAllRanges();
-      selection.addRange(range);
+    const range = selectFieldDropTarget(el, e.clientX, e.clientY, caretRangeAtPoint);
+    if (range) {
       savedRangeRef.current = range.cloneRange();
       savedBookmarkRef.current = null;
     }

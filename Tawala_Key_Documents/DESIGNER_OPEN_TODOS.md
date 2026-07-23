@@ -29,7 +29,7 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 | Potluck Template.tawala | 2 | 3 | 3 | 2 |
 | DirtBowl.tawala | 69 | 79 | 44 | 2 |
 
-**Known lossy warnings (expected):** pageHeader / styles dropped; invitations / multi-form itemization limited; dynamic MCQ Configure UI deferred; Send subject notes; Document table→paragraph approximations. SportsDashboards deep parity still out of scope.
+**Known lossy warnings (expected):** pageHeader / styles dropped; invitations / multi-form itemization limited; Send subject notes; Document table→paragraph approximations. SportsDashboards deep parity still out of scope. Dynamic MCQ imports open in Configure Function (Edit); nested `where` trees may need a re-save of conditions.
 
 **Jul 21 import follow-ups (fixed same day):** FIB import now emits Design underscore runs from `<blank length>`; Form Text inline `<image id>` embeds as `data-tawala-image-id` imgs with data-URLs from `project.images`; Form Text `<table>` with `<division>` cells → editable HTML (Name / `<<fields>>`); structured-content fallback now shows badge + × delete. Re-run CLI / re-Open `.tawala` to pick up. Skip script shows friendly `equals` for imported `mcEquals`.
 
@@ -120,7 +120,7 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 - **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — **superseded July 10:** right-column Properties panel removed; Fields owns the column. Per-item Properties popups remain a separate deferred item.
 - **File Uploader** — **Omitted from Items palette (owner Jul 17).** Never wired in 2011 reference build or browser Designer. Spec only: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`. Use **Insert → Image → From your PC…** / **From the Web…** for images.
 - **Items palette icons** are Unicode/CSS placeholders, not legacy assets. **Deferred.** (Source: Designer Forms foundation)
-- **MCQ dynamic choice source** (“from stored data” + Configure Function). **Deferred.** (Source: Forms canvas & Skip)
+- **MCQ dynamic choice source** (“from stored data” + Configure Function). **Done Jul 23** — Choice source / Edit → `ConfigureFunctionDialog` (`dynamic-mcq`); Deploy `mcToXml`. Preview expands rows from session records (condition filter still Preview-only soft). (Source: Forms canvas & Skip)
 - **Rich text HTML → legacy XML export incomplete** for Heading/Text/FIB prompt/MCQ question formatting (MCQ question still stripped to plain text). Unfinished. (Source: Forms canvas & Skip)
 
 ## Skip Instructions
@@ -139,6 +139,7 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 
 ## Shell / MDI / chrome
 
+- **Help → About Tawala Designer** — **Stub (disabled).** Menu item exists; no copyright / notices / build dialog yet. **Owner Jul 23: legal implications — do not ship / do not drop from the queue.** Owner will supply About text (copyright, trademarks, third-party notices as needed). Spec: `DESIGNER_MENU_SPEC.md` § Help. Tracked as Owner review queue **#13**.
 - **MDI Pass 2** — no Windows menu; Design/Preview and selected item still global across form windows; no layout persistence; no maximize/tile/snap. **Deferred.** (Sources: Designer MDI and Heading; Document WYSIWYG & palette)
 - **Long nowrap function chips push MDI chrome off-reach** — see open bug (Jul 20); workarounds Cascade / hide panels. Related to panel docking + title-bar clamp.
 - **Panel docking** — Items/Statements cannot be resized or moved independently of Project Explorer. **Deferred.** (Source: Designer MDI and Heading)
@@ -158,9 +159,9 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | # | Task | Notes / sequencing |
 |---|------|-------------------|
 | 1 | **Wire Main icon toolbar** (“frequently used” strip) | **Done Jul 12** — `MainIconToolbar` shares handlers with File/Edit via `shellCommands.ts`. |
-| 2 | **Home-page control audit — menus, tabs, and toolbars** | **Jul 17:** File/Edit/Insert/View/Project/Windows/Help. **View toggles wired.** Format removed (palette); Tables skipped; Project Tabs/Styles wired; Page Header/Themes = 8080 stubs; Help → About stub. |
+| 2 | **Home-page control audit — menus, tabs, and toolbars** | **Jul 17:** File/Edit/Insert/View/Project/Windows/Help. **View toggles wired.** Format removed (palette); Tables skipped; Project Tabs/Styles wired; Page Header/Themes = 8080 stubs. **Help → About** split out to queue **#13** (legal). |
 | 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. **Do not start during #9 smoke.** |
-| 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | Priority for SignupSheets-class apps; still **Deferred** in Form items until scheduled. |
+| 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | **Done Jul 23** — Design Configure + Deploy XML. Owner smoke SignupSheets-class apps still useful. |
 | — | **Design-canvas Style paint** | **Owner Jul 18:** **Text** Instructional/Error shown on Forms → Text (already implemented). **FIB/MCQ layout paint = won't do** — interferes with editing; Preview immediate. See `DESIGNER_FORM_FORMAT_TOOLBAR.md`. |
 | 5 | **HTML→XML export for functions we already Configure** | **Mostly done Jul 13–16** — 13 of 17 emit real XML; 4 deferred stubs. Remaining work is **owner smoke**, not emit. See function status matrix in `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`. |
 | 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder. **Document blocks — owner smoke Jul 15: pass.** |
@@ -169,7 +170,10 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Jul 20:** TODO #11 MCQ Where **Passed**; TODO #12 Totals vs Bar Graph multi-select **Passed**. Core Configure+Deploy for ladder done earlier Jul 19. |
 | 10 | **Get Deploy working** | **Usable Jul 12–16.** **Jul 20:** Potluck + DirtBowl legacy Deploy **Passed**; Send (self) **Passed**. **Jul 21:** general `.tawala` → Designer Open / CLI **landed** — owner smoke Open + Deploy next. |
 | 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner Passed Jul 20.** |
-| 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion.
+| 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |
+| 13 | **Help → About Tawala Designer** | **Stub — keep open (legal).** Copyright / notices / build dialog not implemented (`MenuBar` disabled). Owner supplies final About text. Not optional polish — required before any public/shipped Designer build. Spec: `DESIGNER_MENU_SPEC.md` § Help. |
+
+**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion. **Exception:** queue **#13 About** may be scheduled whenever the owner has the legal text — do not wait for #9.
 
 ---
 
@@ -181,7 +185,7 @@ Owner (July 12, 2026): park these until the browser Designer is considered **bas
 
 1. **Big smoke test on three different browsers** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on three browsers; capture browser-specific defects. *(Also listed in Owner review queue #3.)*
 2. **Conform Look and Feel** of the Designer shell and its windows to the legacy Designer application **without breaking** underlying behavior already shipped (layout, chrome, typography/colors — visual parity pass only after functional freeze). *(Also listed in Owner review queue #3.)*
-3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit. **Jul 17:** View menu stubs restored (all five); **wire View chrome toggles after menu review completes** (Owner review queue #2). Also parks Help stubs, Page Header/Themes, File↔toolbar parity.
+3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit. **Jul 17:** View menu stubs restored (all five); **wire View chrome toggles after menu review completes** (Owner review queue #2). Also parks Page Header/Themes, File↔toolbar parity. **Help → About is not parked here** — see Owner review queue **#13** (legal).
 
 ---
 

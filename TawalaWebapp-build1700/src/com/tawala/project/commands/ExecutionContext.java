@@ -417,12 +417,17 @@ public class ExecutionContext {
 	 * Storage attribute is going to be different for different cases. The main
 	 * reason is the customization process where several page flows get started
 	 * at the same time and we need to preserve the states of different flows.
-	 * 
+	 *
+	 * Also include userProjectId so concurrent Deploy tabs on localhost (same
+	 * JSESSIONID, path=/) do not thrash one shared StoredContextInfo — that can
+	 * make form UI / in-progress edits from one app appear in another (Safari
+	 * multi-tab smoke is an easy trigger).
 	 */
 	private String getStorageAttribute() {
 		return (includeCustomizationMarkers ? TAWALA_STORED_CONTEXT_INFO_FOR_PREVIEW
 				: TAWALA_STORED_CONTEXT_INFO)
-				+ getEntryPointType().toString();
+				+ getEntryPointType().toString()
+				+ "." + project.getId();
 	}
 
 	public void storeExecutionContextSnapshot() {

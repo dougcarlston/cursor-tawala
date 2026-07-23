@@ -795,13 +795,43 @@ function convertDynamicMcq(dataProviderNode, mcLabel) {
   if (sortExpr) choice.sortExpr = sortExpr;
   if (where) {
     choice.where = where;
-    warn(
-      `Dynamic MCQ ${mcLabel} has record-selector filter (Designer Configure Function UI deferred): ${JSON.stringify(where)}`,
-    );
-  } else {
-    warn(`Dynamic MCQ ${mcLabel} from form "${sourceForm}" — choiceSource=stored; Configure Function UI deferred`);
+    // Prefer flat condition rows when the filter is a simple and/or list so
+    // Configure Function (Edit) can reopen them; nested trees stay in `where`.
+    const flat = flattenWhereToConditionRows(where);
+    if (flat) {
+      choice.conditionsRows = flat.rows;
+      choice.conditionsCombinator = flat.combinator;
+    } else {
+      warn(
+        `Dynamic MCQ ${mcLabel} has a nested record-selector filter; Edit shows Form/Display/Value — reopen conditions manually if needed: ${JSON.stringify(where)}`,
+      );
+    }
   }
   return choice;
+}
+
+/** Simple and/or / single-op where → Configure Function rows (shared with mcDynamicConfig). */
+function flattenWhereToConditionRows(where) {
+  if (!where || typeof where !== "object") return null;
+  if (typeof where.field === "string" && typeof where.op === "string") {
+    return {
+      rows: [{ field: where.field, op: where.op, value: String(where.value ?? "") }],
+      combinator: "and",
+    };
+  }
+  for (const combinator of ["and", "or"]) {
+    const list = where[combinator];
+    if (!Array.isArray(list) || !list.length) continue;
+    const rows = [];
+    for (const item of list) {
+      if (!item || typeof item !== "object") return null;
+      if (typeof item.field !== "string" || typeof item.op !== "string") return null;
+      if ("and" in item || "or" in item) return null;
+      rows.push({ field: item.field, op: item.op, value: String(item.value ?? "") });
+    }
+    return { rows, combinator };
+  }
+  return null;
 }
 
 function convertMc(itemNode) {

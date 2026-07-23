@@ -529,6 +529,36 @@ function pageShell(title, body, banner, themePath) {
   const bodyClass = themeBodyClass(themeName);
   const bannerHtml = banner ? `<div class="dev-banner">${banner}</div>` : "";
 
+  // Match Deploy default.js: if a FIB text blank precedes the first MCQ, focus it.
+  const focusScript = `<script>
+(function () {
+  function focusFirstFibIfBeforeMcq() {
+    var root = document.querySelector("form.tawala-form") || document.body;
+    var inputs = root.querySelectorAll("input, textarea, select");
+    for (var i = 0; i < inputs.length; i++) {
+      var el = inputs[i];
+      if (el.disabled) continue;
+      var tag = el.tagName.toLowerCase();
+      var type = (el.type || "").toLowerCase();
+      if (type === "hidden" || type === "submit" || type === "button" ||
+          type === "image" || type === "reset" || type === "file") continue;
+      if (type === "radio" || type === "checkbox") return;
+      if (type === "text" || type === "password" || type === "email" ||
+          type === "tel" || type === "number" || type === "search" ||
+          type === "url" || tag === "textarea") {
+        try { el.focus(); } catch (e) {}
+        return;
+      }
+    }
+  }
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", focusFirstFibIfBeforeMcq);
+  } else {
+    focusFirstFibIfBeforeMcq();
+  }
+})();
+</script>`;
+
   return `<!doctype html>
 <html lang="en">
 <head>
@@ -546,6 +576,7 @@ function pageShell(title, body, banner, themePath) {
 <body class="${bodyClass}">
   ${bannerHtml}
   ${body}
+  ${focusScript}
 </body>
 </html>`;
 }

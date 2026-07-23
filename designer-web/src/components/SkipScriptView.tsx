@@ -22,12 +22,19 @@ function SkipInsertionLine({
   insertPath?: string;
   insertIndex?: number;
 }) {
+  const dataAttrs =
+    insertPath != null && insertIndex != null
+      ? {
+          "data-process-insert-path": insertPath,
+          "data-process-insert-index": String(insertIndex),
+        }
+      : {};
+
   if (hitOnly) {
     return (
       <div
         className={`process-insert-hit${active ? " active" : ""}`}
-        data-process-insert-path={insertPath}
-        data-process-insert-index={insertIndex}
+        {...dataAttrs}
         role="presentation"
         onClick={onClick}
       />
@@ -41,6 +48,7 @@ function SkipInsertionLine({
       onClick={onClick}
       disabled={!onClick}
       aria-hidden={!onClick ? true : undefined}
+      {...dataAttrs}
     >
       <span className="skip-insertion-arrow">▶</span>
       <span className="skip-insertion-rule" />
@@ -249,12 +257,27 @@ function emitGap(ctx: RenderCtx, path: string, index: number, key: string): Reac
     ctx.highlightInsertPath === path && ctx.highlightInsertIndex === index;
   // Edit mode: no insert-gap arrow (arrow sits on the selected statement instead).
   const editMode = ctx.selectedCommandPath != null;
-  const active = ctx.hitTargets ? dragActive : !editMode && storedActive;
+
+  // Indexed gaps (Skip + Process click-to-place): visible ▶ / faint hover lines.
+  // Hit-only mode is for Process drag when indexed gaps are off.
+  if (ctx.indexedMode) {
+    const active = (!editMode && storedActive) || dragActive;
+    return (
+      <SkipInsertionLine
+        key={key}
+        active={active}
+        insertPath={path}
+        insertIndex={index}
+        onClick={() => ctx.selectPoint(path, index)}
+      />
+    );
+  }
+
   return (
     <SkipInsertionLine
       key={key}
-      active={active}
-      hitOnly={ctx.hitTargets}
+      active={dragActive}
+      hitOnly
       insertPath={path}
       insertIndex={index}
       onClick={() => ctx.selectPoint(path, index)}
@@ -284,17 +307,24 @@ function renderLineAt(ctx: RenderCtx, i: number): { nodes: ReactNode[]; nextInde
     );
 
     if (empty) {
-      nodes.push(
-        <div key={`interior-${i}`} className="skip-script-line skip-block-interior-row">
-          <span className="skip-script-pad">{pad}</span>
-          <SkipBlockInterior
-            zone={zone}
-            active={active}
-            showArrow={active}
-            onSelect={() => ctx.selectPoint(zone, 0)}
-          />
-        </div>,
-      );
+      // Process drag-reorder / indexed gaps need data-process-insert-* hit targets.
+      // SkipBlockInterior alone is click-only and invisible to nearestProcessInsertHit.
+      if (ctx.indexedMode || ctx.hitTargets) {
+        const gap = emitGap(ctx, zone, 0, `gap-${zone}-0-empty`);
+        if (gap) nodes.push(gap);
+      } else {
+        nodes.push(
+          <div key={`interior-${i}`} className="skip-script-line skip-block-interior-row">
+            <span className="skip-script-pad">{pad}</span>
+            <SkipBlockInterior
+              zone={zone}
+              active={active}
+              showArrow={active}
+              onSelect={() => ctx.selectPoint(zone, 0)}
+            />
+          </div>,
+        );
+      }
       const closeLine = ctx.lines[i + 1];
       const closePad = "    ".repeat(closeLine.indent);
       nodes.push(
@@ -440,6 +470,66 @@ function renderWithLegacyArrow(ctx: RenderCtx, i: number, nodes: ReactNode[]) {
 }
 
 /**
+ * Render lines [start, endInclusive], walking nested If/ForEach as units so the
+ * sibling insert gap sits after each block's closing `)` (including ForEach
+ * nested inside If — the slot between those two closing parens).
+ */
+function renderScriptRange(
+  ctx: RenderCtx,
+  start: number,
+  endInclusive: number,
+): ReactNode[] {
+  const elements: ReactNode[] = [];
+  let i = start;
+  while (i <= endInclusive) {
+    const line = ctx.lines[i];
+    // Skip re-wrapping the block we are already inside (shadedHeaderPath).
+    const nestedSpan =
+      line.path &&
+      line.path !== ctx.shadedHeaderPath &&
+      (line.lineType === "if-header" || line.lineType === "foreach-header")
+        ? blockSpanForHeader(ctx.lines, line.path)
+        : null;
+
+    if (nestedSpan && nestedSpan.end <= endInclusive) {
+      const headerPath = line.path!;
+      const nestedCtx: RenderCtx = { ...ctx, shadedHeaderPath: headerPath };
+      const nestedChildren = renderScriptRange(
+        nestedCtx,
+        nestedSpan.start,
+        nestedSpan.end,
+      );
+      const selectedBlock = ctx.selectedCommandPath === headerPath;
+      if (selectedBlock) {
+        elements.push(
+          <div key={`shade-${nestedSpan.start}`} className="skip-if-block-shade">
+            {nestedChildren}
+          </div>,
+        );
+      } else {
+        elements.push(...nestedChildren);
+      }
+      const { parentPath, childIndex } = parentPathAndChildIndex(headerPath);
+      const postBlockGap = emitGap(
+        ctx,
+        parentPath,
+        childIndex + 1,
+        `gap-after-block-${headerPath}`,
+      );
+      if (postBlockGap) elements.push(postBlockGap);
+      i = nestedSpan.end + 1;
+      continue;
+    }
+
+    const { nodes, nextIndex } = renderLineAt(ctx, i);
+    elements.push(...nodes);
+    renderWithLegacyArrow(ctx, i, elements);
+    i = nextIndex;
+  }
+  return elements;
+}
+
+/**
  * Structured skip script with clickable insertion zones inside `( )` blocks.
  */
 export function SkipScriptView({
@@ -529,44 +619,7 @@ export function SkipScriptView({
     if (rootGap) elements.push(rootGap);
   }
 
-  let i = 0;
-  while (i < lines.length) {
-    if (ifBlockSpan && i === ifBlockSpan.start) {
-      const headerLine = ctx.lines[ifBlockSpan.start];
-      const headerPath = headerLine.path;
-      const shadeCtx: RenderCtx = { ...ctx, shadedHeaderPath: headerPath };
-      const shadeChildren: ReactNode[] = [];
-      let j = ifBlockSpan.start;
-      while (j <= ifBlockSpan.end) {
-        const { nodes, nextIndex } = renderLineAt(shadeCtx, j);
-        shadeChildren.push(...nodes);
-        renderWithLegacyArrow(ctx, j, shadeChildren);
-        j = nextIndex;
-      }
-      elements.push(
-        <div key={`shade-${ifBlockSpan.start}`} className="skip-if-block-shade">
-          {shadeChildren}
-        </div>,
-      );
-      if (headerPath) {
-        const { parentPath, childIndex } = parentPathAndChildIndex(headerPath);
-        const postBlockGap = emitGap(
-          ctx,
-          parentPath,
-          childIndex + 1,
-          `gap-after-block-${headerPath}`,
-        );
-        if (postBlockGap) elements.push(postBlockGap);
-      }
-      i = ifBlockSpan.end + 1;
-      continue;
-    }
-
-    const { nodes, nextIndex } = renderLineAt(ctx, i);
-    elements.push(...nodes);
-    renderWithLegacyArrow(ctx, i, elements);
-    i = nextIndex;
-  }
+  elements.push(...renderScriptRange(ctx, 0, lines.length - 1));
 
   if (!indexedMode && selectedCommandPath == null && resolvedInsertAfterIndex < 0 && insertPath === "root") {
     elements.unshift(

@@ -23,6 +23,15 @@ describe("resolveTheme", () => {
     expect(BASE_FORM_CSS).toContain("input[type=submit]");
   });
 
+  it("matches Design canvas 13px body size (not browser-default 16px)", () => {
+    expect(BASE_FORM_CSS).toMatch(/html\s*\{[^}]*font-size:\s*13px/);
+    expect(BASE_FORM_CSS).toMatch(/body\s*\{[^}]*font-size:\s*13px/);
+    expect(BASE_FORM_CSS).toContain("text-size-adjust: 100%");
+    expect(BASE_FORM_CSS).toMatch(
+      /input\[type=text\][^}]*font-size:\s*100%/,
+    );
+  });
+
   it("stacks justified FIB items and fills the shared field column (Deploy parity)", () => {
     expect(BASE_FORM_CSS).toContain("display: block");
     expect(BASE_FORM_CSS).toContain("fib-style-leftAlignLabelsJustified");

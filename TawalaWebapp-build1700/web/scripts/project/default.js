@@ -1390,6 +1390,44 @@ Event.onDOMReady(Tawala.Tables.init);
 Event.onDOMReady(Tawala.fixTemplates);
 Event.onDOMReady(Tawala.fixTableWidth);
 
+/**
+ * When a FIB blank appears before the first MCQ control on the form, put the
+ * caret in that blank on load (Deploy). If an MCQ comes first, leave focus alone.
+ */
+Tawala.focusFirstFibIfBeforeMcq = function() {
+	var root = document.getElementById("tawalaProjectContainer") || document.body;
+	if (!root || !root.querySelectorAll) {
+		return;
+	}
+	var inputs = root.querySelectorAll("input, textarea, select");
+	var i, el, tag, type;
+	for (i = 0; i < inputs.length; i++) {
+		el = inputs[i];
+		if (el.disabled) {
+			continue;
+		}
+		tag = el.tagName.toLowerCase();
+		type = (el.type || "").toLowerCase();
+		if (type === "hidden" || type === "submit" || type === "button" ||
+				type === "image" || type === "reset" || type === "file") {
+			continue;
+		}
+		if (type === "radio" || type === "checkbox") {
+			return;
+		}
+		if (type === "text" || type === "password" || type === "email" ||
+				type === "tel" || type === "number" || type === "search" ||
+				type === "url" || tag === "textarea") {
+			try {
+				el.focus();
+			} catch (ignore) {
+			}
+			return;
+		}
+	}
+};
+Event.onDOMReady(Tawala.focusFirstFibIfBeforeMcq);
+
 Event.onDOMReady(setupCategorizer);
 Event.onDOMReady(Tawala.DataTables.init);
 

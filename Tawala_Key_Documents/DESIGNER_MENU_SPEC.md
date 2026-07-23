@@ -610,11 +610,11 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 |------|
 | About |
 
-### Browser (`designer-web`) — Jul 17, 2026
+### Browser (`designer-web`) — Jul 17 / Jul Jul 23, 2026
 
 | Decision | Notes |
 |----------|--------|
-| About Tawala Designer | **Stub** (disabled). Legacy popup = copyright + build status; owner will paste text later |
+| About Tawala Designer | **Stub** (disabled in `MenuBar`). Legacy popup = copyright + build status. **Legal — do not forget / do not ship without:** owner will paste final About text (copyright, trademarks, notices). Tracked as `DESIGNER_OPEN_TODOS.md` Owner review queue **#13**. |
 | Other Help items | None on reference build |
 
 ---

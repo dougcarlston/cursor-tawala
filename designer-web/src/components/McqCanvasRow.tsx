@@ -2,18 +2,27 @@ import { useEffect, useRef, useState } from "react";
 import { McItem, MCQ_PLACEHOLDER, TawalaChoice } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
-  fieldToken,
   hasFieldDrag,
   readFieldDragName,
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { insertFieldTokenAtSelection, selectFieldDropTarget } from "@/lib/fieldTokens";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
   setActivePaletteEditor,
   setFormattingFocus,
 } from "@/lib/formattingPaletteContext";
+import { ConfigureFunctionDialog } from "./ConfigureFunctionDialog";
+import {
+  configFromDynamicChoice,
+  dynamicChoiceFromConfig,
+  emptyDynamicChoice,
+  findDynamicChoice,
+  getDynamicMcqDef,
+} from "@/lib/mcDynamicConfig";
+import type { FunctionConfig } from "@/lib/functionCatalog";
 
 interface Props {
   item: McItem;
@@ -62,6 +71,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
   const [editing, setEditing] = useState(selected);
   const [editingLabel, setEditingLabel] = useState(false);
   const [dragOver, setDragOver] = useState(false);
+  const [showDynamicConfig, setShowDynamicConfig] = useState(false);
   const editorRef = useRef<HTMLDivElement>(null);
   const labelInputRef = useRef<HTMLInputElement>(null);
   const choiceRefs = useRef<(HTMLInputElement | null)[]>([]);
@@ -76,6 +86,34 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
 
   const update = (patch: Partial<McItem>) =>
     updateFormItem(formName, index, { ...item, ...patch });
+
+  const openDynamicConfig = () => setShowDynamicConfig(true);
+
+  const saveDynamicConfig = (config: FunctionConfig) => {
+    const dyn = dynamicChoiceFromConfig(config);
+    update({
+      choiceSource: "stored",
+      choices: [dyn],
+    });
+    setShowDynamicConfig(false);
+  };
+
+  const setChoiceSource = (next: "manual" | "stored") => {
+    if (next === "stored") {
+      const existing = findDynamicChoice(choices);
+      update({
+        choiceSource: "stored",
+        choices: [existing ?? emptyDynamicChoice()],
+      });
+      setShowDynamicConfig(true);
+      return;
+    }
+    const manual = (choices as TawalaChoice[]).filter((c) => c.type !== "dynamic");
+    update({
+      choiceSource: "manual",
+      choices: manual.length ? manual : [{ name: "a", text: "" }],
+    });
+  };
 
   // Expand when selected; collapse only when selection leaves (not on blur).
   // Blur alone must not shrink the row — HTML5 reorder drag blurs contentEditable
@@ -191,7 +229,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     if (!el) return;
     el.focus();
     restoreSelection();
-    document.execCommand("insertText", false, fieldToken(name));
+    insertFieldTokenAtSelection(name);
     commitQuestion();
   };
 
@@ -247,7 +285,9 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
 
   /** Drop empty choices when leaving edit mode (also clears the trailing blank Enter adds). */
   const pruneEmptyChoices = () => {
-    const kept = choices.filter((c) => c.text.trim() !== "");
+    // Stored-data MCQs keep a single dynamic choice (no manual text rows).
+    if (choiceSource === "stored") return;
+    const kept = choices.filter((c) => (c.text ?? "").trim() !== "");
     if (kept.length !== choices.length) update({ choices: withLetters(kept) });
   };
 
@@ -344,12 +384,15 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
                 if (!name) return;
                 e.preventDefault();
                 const el = editorRef.current;
-                const range = caretRangeAtPoint(e.clientX, e.clientY);
-                const sel = window.getSelection();
-                if (el && range && sel && el.contains(range.commonAncestorContainer)) {
-                  sel.removeAllRanges();
-                  sel.addRange(range);
-                  savedRangeRef.current = range.cloneRange();
+                if (el) {
+                  el.focus();
+                  const range = selectFieldDropTarget(
+                    el,
+                    e.clientX,
+                    e.clientY,
+                    caretRangeAtPoint,
+                  );
+                  if (range) savedRangeRef.current = range.cloneRange();
                 }
                 insertFieldToken(name);
               }}
@@ -413,7 +456,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
                 <select
                   value={choiceSource}
                   onChange={(e) =>
-                    update({ choiceSource: e.target.value as "manual" | "stored" })
+                    setChoiceSource(e.target.value as "manual" | "stored")
                   }
                 >
                   <option value="manual">Choices are entered above</option>
@@ -425,10 +468,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
                 className="fib-validation-edit"
                 disabled={choiceSource !== "stored"}
                 title="Configure the stored-data source"
-                onClick={() => {
-                  // Configure Function (dynamic MCQ) dialog — deferred (spec: SportsDashboards
-                  // dynamic choices). Manual choices are the supported path today.
-                }}
+                onClick={openDynamicConfig}
               >
                 Edit
               </button>
@@ -456,6 +496,14 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
           </div>
         )}
       </div>
+      {showDynamicConfig && (
+        <ConfigureFunctionDialog
+          def={getDynamicMcqDef()}
+          initialConfig={configFromDynamicChoice(findDynamicChoice(choices))}
+          onCancel={() => setShowDynamicConfig(false)}
+          onSave={saveDynamicConfig}
+        />
+      )}
     </div>
   );
 }

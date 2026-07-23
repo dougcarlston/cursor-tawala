@@ -4,7 +4,95 @@ const TAB_MC_DEFAULT = '<tabPositions><tabStop position="2880"/></tabPositions>'
 
 function templateToField(expr) {
   const m = String(expr ?? "").match(/<<([^>]+)>>/);
-  return m ? m[1] : String(expr ?? "");
+  return m ? m[1] : String(expr ?? "").trim();
+}
+
+/**
+ * Dynamic MCQ expressions evaluate inside a record mapping.
+ * Palette drops often look like `Form:Field`; Java needs `Record:Form:Field`
+ * or display/value come back blank and choices are skipped.
+ */
+function normalizeDynamicMcqFieldName(field, sourceForm) {
+  const raw = String(field ?? "").trim();
+  if (!raw) return "";
+  if (/^Record:/i.test(raw)) {
+    return raw.startsWith("Record:") ? raw : `Record:${raw.slice(raw.indexOf(":") + 1)}`;
+  }
+  if (raw.includes(":")) return `Record:${raw}`;
+  if (sourceForm) return `Record:${sourceForm}:${raw}`;
+  return `Record:${raw}`;
+}
+
+function expressionFieldXml(expr, sourceForm) {
+  const field = normalizeDynamicMcqFieldName(templateToField(expr), sourceForm);
+  if (!field) return "";
+  return `<field name="${field}"/>\n`;
+}
+
+function normalizeXmlConditionOp(op) {
+  const raw = String(op ?? "equals").trim() || "equals";
+  const fromLabel = {
+    "does not equal": "doesNotEqual",
+    "does not contain": "doesNotContain",
+    "begins with": "beginsWith",
+    "ends with": "endsWith",
+    "is less than": "isLessThan",
+    "is less than or equal to": "isLessThanOrEqualTo",
+    "is greater than": "isGreaterThan",
+    "is greater than or equal to": "isGreaterThanOrEqualTo",
+    "is blank": "isBlank",
+    "is not blank": "isNotBlank",
+  };
+  return fromLabel[raw.toLowerCase()] ?? raw;
+}
+
+function nestConditionOps(parts, combinator) {
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0];
+  let nested = parts[parts.length - 1];
+  for (let i = parts.length - 2; i >= 0; i--) {
+    nested = `<${combinator}>${parts[i]}${nested}</${combinator}>`;
+  }
+  return nested;
+}
+
+/** Emit record-selector form + optional Configure Function condition rows. */
+function recordSelectorXml(choice, escAttr) {
+  const sourceForm = choice.sourceForm ?? "";
+  const formTag = sourceForm ? `<form name="${escAttr(sourceForm)}" />` : "";
+  const rows = Array.isArray(choice.conditionsRows) ? choice.conditionsRows : [];
+  const filled = rows.filter((r) => String(r?.field ?? "").trim());
+  if (!filled.length) {
+    return `<record-selector>${formTag}</record-selector>`;
+  }
+  const combinator = choice.conditionsCombinator === "or" ? "or" : "and";
+  const parts = filled.map((row) => {
+    const op = normalizeXmlConditionOp(row.op);
+    const field = escAttr(
+      normalizeDynamicMcqFieldName(String(row.field ?? "").trim(), sourceForm),
+    );
+    if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
+      return `<${op} field="${field}"/>`;
+    }
+    return `<${op} field="${field}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+  });
+  const body = nestConditionOps(parts, combinator);
+  return `<record-selector>${formTag}<conditions>${body}</conditions></record-selector>`;
+}
+
+function dynamicMcBody(choice, escAttr) {
+  const sourceForm = choice.sourceForm ?? "";
+  const displayXml = expressionFieldXml(choice.displayExpr, sourceForm);
+  const valueXml = expressionFieldXml(choice.valueExpr, sourceForm);
+  const sortXml = expressionFieldXml(choice.sortExpr, sourceForm);
+  return (
+    `<data-provider><dynamic-mcq version="1">` +
+    `<display-expression>${displayXml}</display-expression>` +
+    `<value-expression>${valueXml}</value-expression>` +
+    `<sort-expression>${sortXml}</sort-expression>` +
+    `${recordSelectorXml(choice, escAttr)}` +
+    `</dynamic-mcq></data-provider>`
+  );
 }
 
 function fontXml(text, escText, { bold = false, italic = false } = {}) {
@@ -36,15 +124,6 @@ function questionParagraph(question, escText, tabsXml) {
     return `<paragraph indent="0" align="left">${tabsXml}</paragraph>`;
   }
   return `<paragraph indent="0" align="left">${tabsXml}${fontXml(q, escText, { bold: true })}</paragraph>`;
-}
-
-function dynamicMcBody(choice) {
-  const displayField = templateToField(choice.displayExpr);
-  const valueField = templateToField(choice.valueExpr);
-  const sourceForm = choice.sourceForm ?? "";
-  return `<data-provider><dynamic-mcq version="1"><display-expression><field name="${displayField}"/>
-</display-expression><value-expression><field name="${valueField}"/>
-</value-expression><sort-expression></sort-expression><record-selector><form name="${sourceForm}" /></record-selector></dynamic-mcq></data-provider>`;
 }
 
 function staticChoicesXml(choices, escAttr, escText, tabsXml) {
@@ -83,7 +162,7 @@ export function mcToXml(item, escAttr, escText) {
   const padAttr = item.paddingBottom === false ? ` paddingBottom="false"` : "";
   const tabsXml = tabsFor(item);
   const body = dynamic
-    ? dynamicMcBody(dynamic)
+    ? dynamicMcBody(dynamic, escAttr)
     : staticChoicesXml(choices, escAttr, escText, tabsXml);
 
   return `<mc label="${escAttr(item.label)}"${altLabel} onlyone="${item.onlyone !== false ? "true" : "false"}" required="${item.required ? "true" : "false"}"${styleAttr}${colAttr}${padAttr}><question>${questionParagraph(item.question, escText, tabsXml)}</question>${body}</mc>`;

@@ -88,3 +88,92 @@ describe("mcToXml style export", () => {
     expect(xml).toContain('style="horizontal"');
   });
 });
+
+describe("mcToXml dynamic MCQ", () => {
+  it("exports data-provider with form, display, value, sort", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "MCQ1",
+        choiceSource: "stored",
+        onlyone: true,
+        question: "Pick a sheet",
+        choices: [
+          {
+            type: "dynamic",
+            sourceForm: "Sheet",
+            displayExpr: "<<Record:Sheet:SheetName>>",
+            valueExpr: "<<Record:Sheet:SheetName>>",
+            sortExpr: "<<Record:Sheet:Count>>",
+          },
+        ],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<data-provider><dynamic-mcq");
+    expect(xml).toContain('<form name="Sheet"');
+    expect(xml).toContain('<display-expression><field name="Record:Sheet:SheetName"/>');
+    expect(xml).toContain('<value-expression><field name="Record:Sheet:SheetName"/>');
+    expect(xml).toContain('<sort-expression><field name="Record:Sheet:Count"/>');
+    expect(xml).toContain('style="multicolumn"');
+  });
+
+  it("exports Configure Function condition rows under record-selector", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "MCQ2",
+        choiceSource: "stored",
+        onlyone: true,
+        question: "Divisions",
+        choices: [
+          {
+            type: "dynamic",
+            sourceForm: "Division",
+            displayExpr: "<<Record:Division:Name>>",
+            valueExpr: "<<Record:Division:Id>>",
+            conditionsRows: [
+              { field: "Record:Division:Active", op: "equals", value: "yes" },
+              { field: "Record:Division:Count", op: "isLessThan", value: "20" },
+            ],
+            conditionsCombinator: "and",
+          },
+        ],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('<form name="Division"');
+    expect(xml).toContain("<conditions>");
+    expect(xml).toContain('<equals field="Record:Division:Active"><string value="yes"/></equals>');
+    expect(xml).toContain('<isLessThan field="Record:Division:Count"><string value="20"/></isLessThan>');
+    expect(xml).toContain("<and>");
+  });
+
+  it("normalizes Form:Field palette refs to Record:Form:Field on Deploy", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "MCQ1",
+        choiceSource: "stored",
+        onlyone: true,
+        question: "Pick a team",
+        choices: [
+          {
+            type: "dynamic",
+            sourceForm: "Form 1",
+            displayExpr: "<<Form 1:ChoiceName>>",
+            valueExpr: "Form 1:ChoiceName",
+            sortExpr: "ChoiceName",
+          },
+        ],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('<field name="Record:Form 1:ChoiceName"/>');
+    expect(xml).not.toContain('<field name="Form 1:ChoiceName"/>');
+    expect(xml).not.toContain('<field name="ChoiceName"/>');
+  });
+});

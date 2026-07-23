@@ -802,14 +802,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     }
     const proc = project.processes?.find((p) => p.name === selection.name);
     const cmd = proc ? getProcessCommandAtPath(proc.commands ?? [], path) : null;
-    let nextPanel = processStatementPanel;
-    if (cmd) {
-      const panelForCmd = processPanelKeyForCommand(cmd);
-      // If panel stays open when selecting nested Show/Set inside an If block (legacy).
-      if (panelForCmd && !(processStatementPanel === "if" && cmd.cmd !== "if")) {
-        nextPanel = panelForCmd;
-      }
-    }
+    // Clicking a script line enters Modify for that statement — always open its panel
+    // (including Show/Set nested inside If). Keeping If open applies only when the
+    // Statements palette stays on If and the insert point moves (no line selected).
+    const nextPanel = (cmd && processPanelKeyForCommand(cmd)) || processStatementPanel;
     const { parentPath, childIndex } = parentPathAndChildIndex(path);
     set({
       selectedProcessCommandPath: path,

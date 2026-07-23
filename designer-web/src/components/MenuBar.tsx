@@ -372,7 +372,11 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
       </MenuDrop>
       <MenuDrop label="Help">
         {/* Stub — owner will paste legacy copyright + build status text later. */}
-        <button type="button" disabled title="About dialog stub — copyright / build text TBD">
+        <button
+          type="button"
+          disabled
+          title="About dialog stub — copyright / legal notices TBD (Owner review queue #13; do not ship without)"
+        >
           About Tawala Designer
         </button>
       </MenuDrop>

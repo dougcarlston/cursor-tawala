@@ -4063,7 +4063,7 @@ button.font-color-picker-recent-slot:hover {
 
 .skip-if-block-shade .skip-script-line-row:first-child,
 .skip-if-block-shade .skip-if-block-shade-header {
-  background: #7aa7e0;
+  background: #c5d8f5;
   border-radius: 1px 1px 0 0;
 }
 
@@ -4082,23 +4082,33 @@ button.font-color-picker-recent-slot:hover {
   background: transparent;
 }
 
-/* Clickable insertion gaps between statements (inactive gaps are subtle). */
+/* Clickable insertion gaps — inactive are hit-targets only (one ▶ at a time). */
 .skip-insertion-line:not(.active) {
   min-height: 6px;
-  opacity: 0.12;
+  opacity: 1;
 }
 
 .skip-insertion-line:not(.active):hover {
   opacity: 1;
-  background: #f0f6ff;
+  background: #e8f0fc;
 }
 
 .skip-insertion-line:not(.active) .skip-insertion-arrow {
   visibility: hidden;
 }
 
+.skip-insertion-line:not(.active):hover .skip-insertion-arrow {
+  visibility: visible;
+  opacity: 0.85;
+  color: #0040c0;
+}
+
 .skip-insertion-line:not(.active) .skip-insertion-rule {
-  border-top-color: #b8c8e0;
+  border-top-color: transparent;
+}
+
+.skip-insertion-line:not(.active):hover .skip-insertion-rule {
+  border-top-color: #7aa7e0;
 }
 
 .process-editor {
@@ -4664,12 +4674,47 @@ button.font-color-picker-recent-slot:hover {
   flex: 1;
   min-height: 0;
   overflow: auto;
-  padding: 0 2px 2px 20px;
+  padding: 0 2px 2px 0;
   position: relative;
 }
 
+.process-script-body {
+  display: flex;
+  align-items: stretch;
+  min-height: 100%;
+}
+
+/* Full-height left gutter: click Y only to place ▶ (primary easy target). */
+.process-script-insert-rail {
+  flex: 0 0 32px;
+  align-self: stretch;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-right: 1px solid #b8c8e0;
+  border-radius: 0;
+  background: linear-gradient(90deg, #e4ebf6 0%, #eef2f8 70%, #f5f7fb 100%);
+  cursor: cell;
+  z-index: 4;
+}
+
+.process-script-insert-rail:hover {
+  background: linear-gradient(90deg, #d4e0f4 0%, #e4ecf8 70%, #eef4fb 100%);
+}
+
+.process-script-insert-rail:focus-visible {
+  outline: 2px solid #5a88c8;
+  outline-offset: -2px;
+}
+
+.process-script-lines {
+  flex: 1;
+  min-width: 0;
+  padding-left: 2px;
+}
+
 .process-script-insert-caret {
-  left: 2px;
+  left: 34px;
   right: 8px;
 }
 
@@ -4726,11 +4771,11 @@ button.font-color-picker-recent-slot:hover {
   align-items: center;
 }
 
-/* Edit mode: solid highlight + left arrow pointing at the statement (legacy). */
+/* Edit mode: selected statement — light blue so script text stays readable. */
 .skip-script-area.process-script-area .skip-script-line-row.selected {
   cursor: grab;
-  background: #7aa7e0;
-  outline: none;
+  background: #c5d8f5;
+  outline: 1px solid #7aa7e0;
 }
 
 .skip-script-area.process-script-area .skip-script-line-row.selected .skip-script-line {
@@ -4741,7 +4786,7 @@ button.font-color-picker-recent-slot:hover {
 
 .skip-script-area.process-script-area .skip-script-edit-arrow {
   position: absolute;
-  left: -14px;
+  left: -2px;
   top: 50%;
   transform: translateY(-50%);
   color: #0040c0;
@@ -4771,29 +4816,66 @@ button.font-color-picker-recent-slot:hover {
   z-index: 3;
 }
 
+/* Process script — tight line density; easy hits via left rail + overflow hit box. */
 .skip-script-area.process-script-area .skip-insertion-line {
   min-height: 0;
   height: 2px;
   position: relative;
   z-index: 1;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Expand click area without stretching the script (absolute; no layout height). */
+.skip-script-area.process-script-area .skip-insertion-line::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -7px;
+  bottom: -7px;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line:not(.active) {
   min-height: 0;
   height: 1px;
   margin: 0;
-  opacity: 0.1;
+  opacity: 1;
+  background: transparent;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line:not(.active) .skip-insertion-arrow {
+  visibility: hidden;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line:not(.active) .skip-insertion-rule {
+  border-top-width: 1px;
+  border-top-color: transparent;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line:not(.active):hover {
   min-height: 0;
-  height: 5px;
+  height: 2px;
   opacity: 1;
+  background: #dbe8fb;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line:not(.active):hover .skip-insertion-arrow {
+  visibility: visible;
+  opacity: 1;
+  color: #0040c0;
+}
+
+.skip-script-area.process-script-area .skip-insertion-line:not(.active):hover .skip-insertion-rule {
+  border-top-color: #5a88c8;
 }
 
 .skip-script-area.process-script-area .skip-insertion-line.active {
   min-height: 0;
-  height: 5px;
+  height: 4px;
+  padding: 0;
+  background: #d0e0f8;
 }
 
 .skip-script-area.process-script-area .skip-block-interior-row {

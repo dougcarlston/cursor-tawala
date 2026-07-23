@@ -58,7 +58,7 @@ Concrete gaps vs editing / round-tripping this project in `designer-web`:
 
 2. **Item `displayCondition` not editable in UI** — SignupSheet Q2–Q10 hide fields based on setup flags. JSON keeps `displayCondition`, but there is no property-panel control (`designer-web/src` has no `displayCondition` usage). Export via `jsonToXml.mjs` also does not emit `<displayConditions>` today.
 
-3. **Dynamic MCQ “Configure Function” deferred** — five stored choice lists (filters on SignUp Q1, Administrator Q4, ShowSignups Q3, etc.). Canvas supports `choiceSource: "stored"` but the configure dialog is stubbed (`McqCanvasRow.tsx`). Filters on `where` are not editable.
+3. **Dynamic MCQ Configure Function** — **Done Jul 23** in Design (`McqCanvasRow` → Edit). Imported filters flatten to `conditionsRows` when simple; nested `where` may need re-entry. Deploy emits `<dynamic-mcq>` via `mcToXml`.
 
 4. **Itemization column display-conditions & table `where`** — ViewSheet / PlayerData columns gate Parent/Email/… and filter by sheet/player. Form Text badges edit header/field/form (`FunctionTableBadge.tsx`, `structuredItemizationEdit.ts`) but not per-column conditions or record filters in the UI. **Jul 13:** `jsonToXml.mjs` now emits nested `<conditions>` filters and column `<display-conditions>` (fixes “name appears in every sheet” on Deploy). UI editing of those filters still deferred.
 

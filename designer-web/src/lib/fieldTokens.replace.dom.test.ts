@@ -7,8 +7,10 @@
 import { afterEach, describe, expect, it } from "vitest";
 import {
   createFieldTokenElement,
+  fieldTokenFromSelection,
   insertFieldTokenAtSelection,
   plainFieldRunAtRange,
+  selectFieldDropTarget,
 } from "@/lib/fieldTokens";
 
 afterEach(() => {
@@ -111,5 +113,31 @@ describe("insertFieldTokenAtSelection replace", () => {
     expect(p.querySelector(".field-token")?.getAttribute("data-field-name")).toBe(
       "Potluck Organizer:numKids",
     );
+  });
+
+  it("selectFieldDropTarget selects the chip under the point (table cell)", () => {
+    const td = document.createElement("td");
+    td.style.position = "fixed";
+    td.style.left = "0";
+    td.style.top = "0";
+    const old = createFieldTokenElement("Potluck Organizer:attendeeName");
+    td.appendChild(old);
+    document.body.appendChild(td);
+    // happy-dom elementFromPoint may not hit-test; stub it.
+    const orig = document.elementFromPoint.bind(document);
+    document.elementFromPoint = () => old;
+
+    const range = selectFieldDropTarget(td, 1, 1, () => null);
+    expect(range).toBeTruthy();
+    expect(fieldTokenFromSelection(window.getSelection())).toBe(old);
+
+    insertFieldTokenAtSelection("Potluck Organizer:contribution");
+    expect(td.querySelectorAll(".field-token")).toHaveLength(1);
+    expect(td.textContent?.replace(/\u200b/g, "")).toBe(
+      "<<Potluck Organizer:contribution>>",
+    );
+    expect(td.textContent).not.toMatch(/attende.*attendeeName/);
+
+    document.elementFromPoint = orig;
   });
 });

@@ -37,7 +37,8 @@ export interface ProcessRecordPaletteContext {
 /**
  * Right-hand Fields tree (legacy `FieldsPalette.cs` parity):
  * form branches, ForEach record branches (when insertion is inside a loop),
- * Show Stored Record `Record:` branch, and Variables.
+ * `Record:` branch for Show Stored Record / Get / Delete Where / DYNAMIC MCQ
+ * (and other Configure Function dialogs with a Form), and Variables.
  */
 export function FieldsPalette({
   project,
@@ -84,7 +85,7 @@ export function FieldsPalette({
   const defaultCollapsed = () => {
     const initial = new Set<string>();
     for (const form of project.forms) initial.add(`form:${form.name}`);
-    for (const branch of recordBranches) initial.add(`record:${branch.recordName}`);
+    // Leave Record / ForEach branches expanded — author needs the prefixed list.
     initial.add("node:Variables");
     return initial;
   };

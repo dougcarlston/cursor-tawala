@@ -723,23 +723,40 @@ export function ProcessEditor({ processName }: Props) {
               />
             </div>
           ) : null}
-          <div className="skip-script-area process-script-area">
-            <SkipScriptView
-              lines={scriptLines}
-              insertPath={processInsertPath}
-              insertIndex={processInsertIndex}
-              onSelectInsertPoint={setProcessInsertPoint}
-              selectedCommandPath={selectedProcessCommandPath}
-              onSelectCommandPath={setSelectedProcessCommandPath}
-              showLineControls
-              insertHitTargets
-              highlightInsertPath={dragInsertPath}
-              highlightInsertIndex={dragInsertIndex}
-              onMoveCommand={moveCommandAtPath}
-              onDeleteCommand={deleteCommandAtPath}
-              canMoveCommand={canMoveCommand}
-              onReorderDragStart={(path, dt) => setProcessStatementReorderDrag(dt, path)}
+          <div className="process-script-body">
+            <button
+              type="button"
+              className="process-script-insert-rail"
+              aria-label="Click vertically in this margin to set the insertion point"
+              title="Click in this left margin to place ▶ (aim vertically only)"
+              onClick={(e) => {
+                const scroll = scriptRef.current;
+                if (!scroll) return;
+                const hit = nearestProcessInsertHit(scroll, e.clientY);
+                if (hit) setProcessInsertPoint(hit.path, hit.index);
+              }}
             />
+            <div className="process-script-lines">
+              <div className="skip-script-area process-script-area">
+                <SkipScriptView
+                  lines={scriptLines}
+                  insertPath={processInsertPath}
+                  insertIndex={processInsertIndex}
+                  onSelectInsertPoint={setProcessInsertPoint}
+                  selectedCommandPath={selectedProcessCommandPath}
+                  onSelectCommandPath={setSelectedProcessCommandPath}
+                  showLineControls
+                  showAllInsertionGaps
+                  insertHitTargets
+                  highlightInsertPath={dragInsertPath}
+                  highlightInsertIndex={dragInsertIndex}
+                  onMoveCommand={moveCommandAtPath}
+                  onDeleteCommand={deleteCommandAtPath}
+                  canMoveCommand={canMoveCommand}
+                  onReorderDragStart={(path, dt) => setProcessStatementReorderDrag(dt, path)}
+                />
+              </div>
+            </div>
           </div>
         </div>
       </div>

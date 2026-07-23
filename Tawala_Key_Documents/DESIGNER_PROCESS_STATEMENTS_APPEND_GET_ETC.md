@@ -71,6 +71,8 @@ Adds a **Record List 1** (or chosen name) branch with qualified fields, e.g.:
 - `Start:UserEmail`
 - `Start:Q3`
 
+While editing Get (source form selected), Fields also shows a **`Record:`** branch for **Where** drops (`Record:Admin:Teams`, …) — same cue as Delete / Show Stored Record / ForEach loop variables.
+
 ### Script
 
 ```

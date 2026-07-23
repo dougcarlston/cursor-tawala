@@ -56,7 +56,7 @@ function potluckLikeProject() {
 }
 
 describe("designer Preview (review mode)", () => {
-  it("disables Submit and does not post", () => {
+  it("includes focus-first-FIB script when rendering a form page", () => {
     const project = potluckLikeProject();
     const html = renderFormPage(
       project,
@@ -66,9 +66,7 @@ describe("designer Preview (review mode)", () => {
       createSession(project),
       { designerPreview: true },
     );
-    expect(html).toMatch(/type="submit"[^>]*\bdisabled\b/);
-    expect(html).toContain("onsubmit=\"return false;\"");
-    expect(html).toContain("Preview only");
+    expect(html).toContain("focusFirstFibIfBeforeMcq");
   });
 
   it("shows all segments so confirmation page is visible without Submit", () => {

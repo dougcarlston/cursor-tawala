@@ -36,8 +36,19 @@ export interface TawalaBlank {
 }
 
 export interface TawalaChoice {
-  name: string;
-  text: string;
+  name?: string;
+  label?: string;
+  text?: string;
+  /** Dynamic MCQ — choices loaded from another form’s stored responses. */
+  type?: "dynamic";
+  sourceForm?: string;
+  displayExpr?: string;
+  valueExpr?: string;
+  sortExpr?: string;
+  /** Imported legacy filter tree (complex OR/AND). Prefer conditionsRows when editing. */
+  where?: unknown;
+  conditionsRows?: { field: string; op: string; value: string }[];
+  conditionsCombinator?: "and" | "or";
 }
 
 export interface FormItemBase {

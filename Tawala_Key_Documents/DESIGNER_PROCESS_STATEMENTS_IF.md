@@ -220,7 +220,9 @@ See **`DESIGNER_PROCESS_STATEMENTS_SHOW.md`** for full Document / Form / Stored 
 
 ## If panel vs other statements (owner clarification)
 
-The **If** property panel stays visible in the **top** details area while **If** is selected in the Statements palette — even when the insertion point in the **script** (lower pane) has moved on to another statement type. This can look like being “stuck inside If” when you are actually configuring or viewing a different statement.
+The **If** property panel stays visible in the **top** details area while **If** is selected in the Statements palette — even when the **insertion point** in the script (lower pane) has moved on (e.g. inside an If `(…)` to Add a nested statement). This can look like being “stuck inside If” when you are only placing the insert ▶.
+
+**Clicking a script line is different:** that enters **Modify** for that statement and **must** open that statement’s property panel (Show, Set, ForEach, …), including when the line is nested inside an If. (**Fixed Jul 23** — selecting nested Show no longer left the If builder stuck on screen.)
 
 **Not a bug (June 2026):** Owner confirmed that a greyed **Add** button in this situation was due to misreading the UI — the process had only one command at that point, not an unfinished If block.
 
@@ -229,10 +231,20 @@ The **If** property panel stays visible in the **top** details area while **If**
 | Cue | Meaning |
 |-----|---------|
 | **Orange/highlighted button** in Statements palette | Which statement type’s property panel is shown on top |
-| **Blue arrow** in lower script pane | **Insert mode:** ▶ points at the gap between lines (where **Add** inserts). **Edit mode:** ▶ points at the highlighted statement (**Modify**). Never both at once (legacy). |
+| **Blue arrow** in lower script pane | **Insert mode:** one ▶ at the active gap. **Edit mode:** ▶ on the selected statement. Script stays **tight** (legacy density). Prefer the **left margin rail** to place ▶ (vertical aim only); gap rows stay 1–2px tall with an invisible overflow hit box. |
 | **Add** vs **Modify** on the button | Add = new line at insertion point; Modify = editing the selected script line (click that line) |
 
-Click another statement button (**Show**, **Set**, …) or click in the script to move the insertion point when leaving If configuration.
+Click another statement button (**Show**, **Set**, …) or click a script insert gap to move the insertion point when leaving If configuration. Click a script line to edit that line.
+
+### Smoke — insert below existing process lines (Jul 23)
+
+1. Process with `Set …` then an **If** block (as in Admin Post-Process).
+2. With a statement selected (edit ▶ on that line), click the **left margin** next to the gap **below** the If’s closing `)` (or click the gap itself) → selection clears, ▶ at that gap.
+3. Statements → **Set** (or other) → **Add** → new line appears after the If, not stuck unable to place a cursor in the white space.
+4. Nested **ForEach** inside **If**: click the left margin (or gap) **between** the ForEach’s closing `)` and the If’s closing `)` → ▶ there; **Add** inserts a sibling after the ForEach still inside the If.
+5. Click a nested **Show Document** (or Set, …) line → top panel switches to that statement with **Modify** (not stuck on If).
+6. Drag a statement into an **empty** If/ForEach `(…)` (insert ▶ inside) → drop succeeds; statement becomes the first line in that branch.
+7. **Show Document** (or Set) **above** an empty **ForEach**, drag into the ForEach `(…)` → statement lands **inside** the loop (must not vanish / reappear at root). Same for a statement **below** the ForEach.
 
 ---
 
@@ -256,4 +268,4 @@ Click another statement button (**Show**, **Set**, …) or click in the script t
 
 ---
 
-*Last updated: June 2026.*
+*Last updated: July 23, 2026 — Drag earlier sibling into ForEach (path rewrite); empty If/ForEach drop; nested Show Modify panel; left-margin rail.*

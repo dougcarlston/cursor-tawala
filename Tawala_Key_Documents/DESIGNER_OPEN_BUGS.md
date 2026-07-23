@@ -27,6 +27,22 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
+### Deploy data isolation (Jul 22 Safari smoke)
+
+- **Symptom:** Safari multi-app smoke looked like “projects sharing data” (signups / form UI from one app showing up in another).
+- **Findings:**
+  1. **DB rows are per `Project` id** — emails did **not** cross uniqueIds in a scrape of Signup / Survey / Potluck lists.
+  2. **`Simple Survey` Deploy (`qyzju5cyuagbidj`) is contaminated** — page heading / form is **Sign-up Sheet Template**, while the MQL still lists older Form 1 survey-style rows. Classic **Redeploy-by-name**: Java `ProjectsHibernateImpl.put` reuses `UserProject` when **name** matches and **keeps submissions**.
+  3. **Shared `JSESSIONID` on `localhost:8080`** — session `StoredContextInfo` key omitted `userProjectId`, so **concurrent Deploy tabs** could thrash in-progress edits across apps (Safari multi-tab is an easy trigger).
+  4. **Main Menu template JSON was deleted** in the Jul 22 commit — Vite returned SPA HTML for `/samples/templates/*.json` (broken New Project starters). **Restored** under `designer-web/public/samples/templates/`.
+- **Fixed (session):** `ExecutionContext.getStorageAttribute()` now appends `userProjectId`; class hot-copied into Tomcat Jul 22 evening.
+- **Ops clean-up (Jul 22 evening):** Deleted contaminated Tomcat Deploy **`Simple Survey`** (`qyzju5cyuagbidj`) + its 7 submissions; see `CONTAMINATED_SIMPLE_SURVEY_JUL22.md`. Prefer **New Project** (not overwrite) between featured apps; Redeploy under a fresh name if lists look wrong.
+
+### Preview / Deploy font size vs Design (Jul 23)
+
+- **Symptom:** In Chrome / Safari / Edge, Form **Preview** and **Deploy** body text often looked larger than Design canvas (toolbar default **12 pt**; canvas unstyled text is **13px**).
+- **Cause:** Preview `BASE_FORM_CSS` had **no** body `font-size` (browser default ~16px); Deploy `default.css` used **11pt** (~14.7px); Safari could also inflate via text-size-adjust. Starter templates often have **no** inline `font-size`, so they inherit the page base.
+- **Fixed:** Preview + Deploy body/html **13px** + `text-size-adjust: 100%`; Preview inputs inherit. DirtBowl theme still uses its own 16px registration CSS. **Smoke:** hard-refresh Deploy (`default.css`); reopen Form Preview — instructional text / MQL should match Design size.
 ### Document functions (Jul 20)
 
 - **Two identical MQL on Document 2 — different Deploy results** — One block showed `<>` (no table); the other rendered a table but the multi-select MCQ column (“All possibilities”) was blank. **Root cause (1):** formatting toolbar / styled wrapper `<span style="font-size…">` around a function token exported as nested `<font><font><itemization-table>…` — Java Font FACTORY drops the inner table. **Fixed:** `documentHtmlToXml.mjs` detects font-wrapped display components and skips the outer wrap. **Root cause (2):** multi-select MCQ values sometimes stored as one comma-separated string; Java `displayLabelsOnly` did not split them. **Fixed:** `DisplayMultipleChoiceLabel.java` splits comma-separated selections; Preview MQL uses `formatMcqCellValue` in `itemizationPreview.mjs`. **Owner OK Jul 20** after Tomcat WAR rebuild + Redeploy (re-entered one MQL manually).

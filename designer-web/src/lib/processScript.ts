@@ -5,7 +5,10 @@ import {
   type ScriptLine,
 } from "@/lib/skipScript";
 import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
-import { getCommandsAtInsertPath, parentInsertPath } from "@/lib/skipInsertPath";
+import {
+  adjustPathAfterCommandRemoval,
+  resolveCommandsAtInsertPath,
+} from "@/lib/skipInsertPath";
 
 interface ConditionShape {
   op?: string;
@@ -345,6 +348,11 @@ export function moveProcessCommandAtPath(
 /**
  * Move a statement to `destParentPath` at `destIndex` (0 = first in that branch).
  * Forbids dropping a block into its own then/else/do subtree.
+ *
+ * When the source sits *before* the destination’s ancestor (e.g. Show at `root/0`
+ * dragged into ForEach at `root/1/do`), removing the source shifts sibling indices —
+ * destination must be rewritten (`root/1/do` → `root/0/do`) or the move resolves to
+ * the wrong place / looks like the statement vanished.
  */
 export function moveProcessCommandBefore(
   commands: TawalaProcessCommand[],
@@ -358,6 +366,9 @@ export function moveProcessCommandBefore(
   ) {
     return null;
   }
+  const adjustedDest = adjustPathAfterCommandRemoval(fromPath, destParentPath);
+  if (adjustedDest == null) return null;
+
   const next = structuredClone(commands);
   const fromLoc = locateProcessCommand(next, fromPath);
   if (!fromLoc) return null;
@@ -365,7 +376,15 @@ export function moveProcessCommandBefore(
   const fromIndex = fromLoc.index;
   const [moved] = fromParent.splice(fromIndex, 1);
 
-  const destArr = getCommandsAtInsertPath(next, destParentPath) as TawalaProcessCommand[];
+  const destArr = resolveCommandsAtInsertPath(
+    next,
+    adjustedDest,
+  ) as TawalaProcessCommand[] | null;
+  if (!destArr) {
+    // Restore so a bad target never drops the statement on the floor.
+    fromParent.splice(fromIndex, 0, moved);
+    return null;
+  }
 
   let idx = destIndex;
   // After removal, same-parent targets after fromIndex shift left.
@@ -374,7 +393,7 @@ export function moveProcessCommandBefore(
   destArr.splice(idx, 0, moved);
 
   const newPath =
-    destParentPath === "root" ? `root/${idx}` : `${destParentPath}/${idx}`;
+    adjustedDest === "root" ? `root/${idx}` : `${adjustedDest}/${idx}`;
   return { commands: next, newPath };
 }
 

@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { NameTextInput, QualifiedFieldInput, FieldTextInput } from "@/components/FieldDropInputs";
 import type { ConditionCombinator, ConditionRow, GetBuilderState } from "@/lib/statementBuilders";
 import { EMPTY_CONDITION_ROW, getBuilderIsValid, getWhereIsValid } from "@/lib/statementBuilders";
@@ -6,6 +7,7 @@ import {
   SKIP_OPERATOR_LABELS,
   UNARY_SKIP_OPERATORS,
 } from "@/lib/skipSummary";
+import { setFieldsPaletteConditionsForm } from "@/lib/fieldsPaletteContext";
 
 export interface GetStatementBuilderProps {
   state: GetBuilderState;
@@ -20,6 +22,8 @@ export interface GetStatementBuilderProps {
 /**
  * Get statement property panel per `DESIGNER_PROCESS_STATEMENTS_APPEND_GET_ETC.md`.
  * Record list name + from form + optional Where rows (same controls as If).
+ * When a source form is selected, Fields shows a `Record:` branch for Where drops
+ * (same pattern as Delete / Show Stored Record).
  */
 export function GetStatementBuilder({
   state,
@@ -32,6 +36,16 @@ export function GetStatementBuilder({
 }: GetStatementBuilderProps) {
   const whereValid = getWhereIsValid(state.whereRows, knownVariables);
   const canSubmit = getBuilderIsValid(state, formNames, knownVariables) && whereValid;
+
+  useEffect(() => {
+    if (!embedded) return;
+    if (state.sourceForm.trim()) {
+      setFieldsPaletteConditionsForm(state.sourceForm);
+      return () => setFieldsPaletteConditionsForm(null);
+    }
+    setFieldsPaletteConditionsForm(null);
+    return () => setFieldsPaletteConditionsForm(null);
+  }, [embedded, state.sourceForm]);
 
   const updateWhereRow = (index: number, patch: Partial<ConditionRow>) => {
     onStateChange({
@@ -112,7 +126,7 @@ export function GetStatementBuilder({
             <div key={i} className="skip-if-row">
               <QualifiedFieldInput
                 className="skip-if-field"
-                placeholder="Form:Field"
+                placeholder="Record:Form:Field"
                 knownVariables={knownVariables}
                 value={row.field}
                 onValueChange={(v) => updateWhereRow(i, { field: v })}

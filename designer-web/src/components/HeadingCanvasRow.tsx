@@ -2,12 +2,12 @@ import { useEffect, useRef, useState } from "react";
 import { HeadingItem, HEADING_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
-  fieldToken,
   hasFieldDrag,
   readFieldDragName,
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { insertFieldTokenAtSelection, selectFieldDropTarget } from "@/lib/fieldTokens";
 import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import { clearFormattingFocus, setFormattingFocus } from "@/lib/formattingPaletteContext";
 
@@ -333,7 +333,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     if (!el) return;
     el.focus();
     restoreSelection();
-    document.execCommand("insertText", false, fieldToken(name));
+    insertFieldTokenAtSelection(name);
     commit();
   };
 
@@ -448,15 +448,16 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
                 e.preventDefault();
                 e.stopPropagation();
                 const el = editorRef.current;
-                const range = caretRangeAtPoint(e.clientX, e.clientY);
-                const sel = window.getSelection();
-                if (el && range && sel && el.contains(range.commonAncestorContainer)) {
-                  sel.removeAllRanges();
-                  sel.addRange(range);
-                  savedRangeRef.current = range.cloneRange();
-                } else if (el) {
+                if (el) {
                   el.focus();
-                  restoreSelection();
+                  const range = selectFieldDropTarget(
+                    el,
+                    e.clientX,
+                    e.clientY,
+                    caretRangeAtPoint,
+                  );
+                  if (range) savedRangeRef.current = range.cloneRange();
+                  else restoreSelection();
                 }
                 insertFieldToken(name);
               }}

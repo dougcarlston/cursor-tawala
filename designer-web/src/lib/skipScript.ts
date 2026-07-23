@@ -310,15 +310,8 @@ export function blockSpanForHeader(
   for (let i = start + 1; i < lines.length; i++) {
     const line = lines[i];
     if (line.indent < baseIndent) break;
-    if (
-      line.indent === baseIndent &&
-      line.path != null &&
-      line.path !== headerPath &&
-      (line.lineType === "if-header" ||
-        line.lineType === "foreach-header" ||
-        line.lineType === "command" ||
-        line.lineType === "comment")
-    ) {
+    // Next sibling command at this indent ends the block (Set/Skip/Comment/If/…).
+    if (line.indent === baseIndent && line.path != null && line.path !== headerPath) {
       break;
     }
     if (line.indent === baseIndent && line.lineType === "block-close") {

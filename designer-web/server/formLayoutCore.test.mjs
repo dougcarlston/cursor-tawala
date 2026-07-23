@@ -23,11 +23,14 @@ const DEFAULT_OVERLAY = resolve(
   "docker/tomcat/css/project/default/project.css",
 );
 
+const DEFAULT_CSS = resolve(ROOT, "docker/tomcat/css/project/default.css");
+
 describe("form-layout-core.css (Deploy layout lock)", () => {
   const css = readFileSync(CORE, "utf8");
   const commonTheme = readFileSync(COMMON_THEME, "utf8");
   const userTheme = readFileSync(USER_THEME, "utf8");
   const overlay = readFileSync(DEFAULT_OVERLAY, "utf8");
+  const defaultCss = readFileSync(DEFAULT_CSS, "utf8");
 
   it("exists and documents the product contract", () => {
     expect(css).toMatch(/form-layout-core|Layout contracts/i);
@@ -85,5 +88,11 @@ describe("form-layout-core.css (Deploy layout lock)", () => {
     expect(withoutComments).not.toMatch(/form\s+table\.fib/);
     expect(withoutComments).not.toMatch(/table\.remainder/);
     expect(overlay).toMatch(/form-layout-core/);
+  });
+
+  it("sets Deploy body to Design canvas 13px (not legacy 11pt)", () => {
+    expect(defaultCss).toMatch(/html\s*\{[^}]*font-size:\s*13px/s);
+    expect(defaultCss).toMatch(/body\s*\{[^}]*font-size:\s*13px/s);
+    expect(defaultCss).toContain("text-size-adjust: 100%");
   });
 });
