@@ -139,3 +139,43 @@ describe("formatMcqCellValue", () => {
     expect(formatMcqCellValue("a,c", project, "Form 1", "MCQ4")).toBe("Blue, Yellow");
   });
 });
+describe("renderItemizationTableHtml empty state", () => {
+  it("shows No records were found (Deploy parity)", async () => {
+    const { renderItemizationTableHtml } = await import("./itemizationPreview.mjs");
+    const html = renderItemizationTableHtml(
+      {
+        type: "itemizationTable",
+        columns: [
+          { header: "First", field: "<<Form 1:First>>" },
+          { header: "Last", field: "<<Form 1:Last>>" },
+        ],
+      },
+      { records: { "Form 1": [] }, project: { forms: [{ name: "Form 1", items: [] }] } },
+    );
+    expect(html).toContain("No records were found.");
+    expect(html).toContain("<th>First</th>");
+  });
+
+  it("stays content-sized even with more than 3 columns (no empty right box)", async () => {
+    const { renderItemizationTableHtml } = await import("./itemizationPreview.mjs");
+    const html = renderItemizationTableHtml(
+      {
+        type: "itemizationTable",
+        columns: [
+          { header: "Name", field: "<<Form 1:Name>>" },
+          { header: "Adults", field: "<<Form 1:Adults>>" },
+          { header: "Kids", field: "<<Form 1:Kids>>" },
+          { header: "Dish", field: "<<Form 1:Dish>>" },
+        ],
+      },
+      {
+        records: {
+          "Form 1": [{ Name: "Ada", Adults: "1", Kids: "", Dish: "Salad" }],
+        },
+        project: { forms: [{ name: "Form 1", items: [] }] },
+      },
+    );
+    expect(html).toContain('class="preview-itemization-table"');
+    expect(html).not.toContain("dtFixTableWidth");
+  });
+});

@@ -67,30 +67,62 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(xml).toContain(">Label</font>");
   });
 
-  it("leftAlign multi-blank soft-row becomes one paragraph per blank (Java table layout)", () => {
+  it("leftAlign keeps multi-blank soft-row as one paragraph (remainder on same line)", () => {
     const item = {
       type: "fib",
       label: "FIB1",
       style: "leftAlignLabels",
-      prompt: "Name ________ Email ________ Phone ________",
+      prompt: "Email ________ Email (again) ________",
       blanks: [
-        { name: "a", alternateLabel: "Name", length: 8 },
-        { name: "b", alternateLabel: "Email", length: 8 },
-        { name: "c", alternateLabel: "Phone", length: 8 },
+        { name: "a", alternateLabel: "Email", length: 8 },
+        { name: "b", alternateLabel: "EmailAgain", length: 8 },
       ],
     };
     const xml = fibToXml(item, escAttr, escText);
-    expect(xml.match(/<paragraph\b/g)?.length).toBe(3);
-    expect(xml.match(/<blank\b/g)?.length).toBe(3);
-    // Each paragraph has exactly one blank (no Name+Email collapsed into label cell).
     const paras = xml.match(/<paragraph[\s\S]*?<\/paragraph>/g) ?? [];
-    for (const p of paras) {
-      expect(p.match(/<blank\b/g)?.length).toBe(1);
-    }
-    expect(paras[0]).toContain("Name:");
-    expect(paras[0]).toContain('alternateLabel="Name"');
-    expect(paras[1]).toContain("Email:");
-    expect(paras[2]).toContain("Phone:");
+    expect(paras.length).toBe(1);
+    expect(paras[0].match(/<blank\b/g)?.length).toBe(2);
+    expect(paras[0]).toMatch(/Email/);
+    expect(paras[0]).toMatch(/Email \(again\)|Email \(again\)/);
+  });
+
+  it("rightAlignJustified keeps First Name + Last Name on one soft-row as one paragraph", () => {
+    const item = {
+      type: "fib",
+      label: "FIB1",
+      style: "rightAlignLabelsJustified",
+      prompt: "First Name ________ Last Name ________",
+      blanks: [
+        { name: "a", alternateLabel: "First", length: 8 },
+        { name: "b", alternateLabel: "Last", length: 8 },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    const paras = xml.match(/<paragraph[\s\S]*?<\/paragraph>/g) ?? [];
+    expect(paras.length).toBe(1);
+    expect(paras[0].match(/<blank\b/g)?.length).toBe(2);
+  });
+
+  it("rightAlignJustified keeps Full Name + (first)/(last) as one paragraph (not split)", () => {
+    const item = {
+      type: "fib",
+      label: "FIB3",
+      style: "rightAlignLabelsJustified",
+      prompt: "Full Name: ____________________ (first) ____________________ (last)",
+      blanks: [
+        { name: "a", alternateLabel: "firstName", length: 20 },
+        { name: "b", alternateLabel: "lastName", length: 20 },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    const paras = xml.match(/<paragraph[\s\S]*?<\/paragraph>/g) ?? [];
+    expect(paras.length).toBe(1);
+    expect(paras[0].match(/<blank\b/g)?.length).toBe(2);
+    expect(paras[0]).toMatch(/Full Name:/);
+    expect(paras[0]).toMatch(/\(first\)/);
+    expect(paras[0]).toMatch(/\(last\)/);
+    // Must not promote (first) to its own label-only first paragraph.
+    expect(paras[0].indexOf("Full Name:")).toBeLessThan(paras[0].indexOf("<blank"));
   });
 
   it("leftAlign does not auto-bold Name/Email/Phone labels", () => {
@@ -119,5 +151,41 @@ describe("fibToXml WYSIWYG rows", () => {
     const xml = fibToXml(item, escAttr, escText);
     expect(xml).not.toMatch(/<b>Name/);
     expect(xml).not.toMatch(/<b>Email/);
+  });
+
+  it("emits <field/> for <<ContactType>> labels (Signup Set→FIB), not Your >:", () => {
+    const item = {
+      type: "fib",
+      label: "Q3",
+      prompt:
+        "Your <<ContactType1>>:_________________________________________Your <<ContactType2>>:_________________________________________",
+      blanks: [
+        { name: "a", length: 41 },
+        { name: "b", length: 41 },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain('<field name="ContactType1"/>');
+    expect(xml).toContain('<field name="ContactType2"/>');
+    expect(xml).not.toMatch(/Your\s*&gt;:/);
+    expect(xml).not.toMatch(/Your\s*>:/);
+  });
+
+  it("keeps blank with Name:____ after intro soft-row (not input then Name: below)", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      style: "topLabels",
+      prompt:
+        'Add your name to the list:<div><br><div><span>Name:__________________________________________</span></div></div>',
+      blanks: [{ name: "a", length: 42, alternateLabel: "Name" }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    const paras = [...xml.matchAll(/<paragraph[\s\S]*?<\/paragraph>/g)].map((m) => m[0]);
+    expect(paras.length).toBeGreaterThanOrEqual(2);
+    expect(paras[0]).toMatch(/Add your name/);
+    expect(paras[0]).not.toMatch(/<blank\b/);
+    expect(paras[1]).toMatch(/Name:/);
+    expect(paras[1]).toMatch(/<blank\b/);
   });
 });

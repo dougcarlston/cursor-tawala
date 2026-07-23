@@ -255,7 +255,7 @@ export function renderItemizationTableHtml(node, ctx = {}) {
 
   const bodyRows =
     records.length === 0
-      ? ""
+      ? `<tr><td colspan="${columns.length}">No records were found.</td></tr>`
       : records
           .map((row, i) => {
             const cls = i % 2 === 0 ? "even" : "odd";
@@ -275,10 +275,9 @@ export function renderItemizationTableHtml(node, ctx = {}) {
           })
           .join("\n");
 
-  const fixWidth = columns.length > 3;
-  const containerClass = fixWidth
-    ? ' class="tawalaDataTable dtFixTableWidth preview-itemization-table"'
-    : ' class="preview-itemization-table"';
+  // Content-sized (no dtFixTableWidth empty frame). Deploy column drag-resize
+  // still works without forcing the table to container width.
+  const containerClass = ' class="preview-itemization-table"';
 
   const controls = [];
   if (truthyFlag(node.showPrint ?? node["show-print-control"])) {

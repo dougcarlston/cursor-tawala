@@ -486,6 +486,40 @@ describe("documentHtmlToXml Form Text confirmation table (Potluck T6)", () => {
   });
 });
 
+describe("documentHtmlToXml Potluck Details SUM in table", () => {
+  it("emits single-font <sum> with Record:Form:Field (no nested font drop)", () => {
+    const config = (field) =>
+      JSON.stringify({
+        field,
+        conditionsRows: [{ field: "", op: "equals", value: "" }],
+        conditionsCombinator: "and",
+      })
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    const sumToken = (field, inst) =>
+      `<span class="function-token function-table-token" contenteditable="false" ` +
+      `data-function-id="sum" data-function-instance="${inst}" ` +
+      `data-function-config="${config(field)}" title="SUM">` +
+      `&lt;&lt;SUM(${field})&gt;&gt;</span>`;
+    const html =
+      `<p>Totals:</p>` +
+      `<table class="user user-border-1"><tbody>` +
+      `<tr><td style="width: 108pt;">Adults</td><td style="width: 108pt;">Kids</td></tr>` +
+      `<tr><td style="width: 108pt;">&nbsp;${sumToken("Potluck Organizer:numAdults", 2)}</td>` +
+      `<td style="width: 108pt;">&nbsp;${sumToken("Potluck Organizer:numKids", 3)}</td></tr>` +
+      `</tbody></table>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml.match(/<sum\b/g)?.length).toBe(2);
+    expect(xml).toContain("<field>Record:Potluck Organizer:numAdults</field>");
+    expect(xml).toContain("<field>Record:Potluck Organizer:numKids</field>");
+    // Nested font around sum is dropped by Java Font FACTORY on Deploy.
+    expect(xml).not.toMatch(/<font>\s*<font>\s*<sum\b/);
+    expect(xml).toMatch(/<font><sum version="1">/);
+  });
+});
+
 describe("documentHtmlToXml embedded local image", () => {
   it("exports data-tawala-image-id img as <image id width height/>", () => {
     const html =

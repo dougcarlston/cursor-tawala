@@ -20,6 +20,7 @@ import {
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { embedPlainFieldTokensAsHtml } from "@/lib/fieldTokens";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -103,7 +104,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     }
     const el = editorRef.current;
     if (!el) return;
-    el.innerHTML = prompt;
+    el.innerHTML = embedPlainFieldTokensAsHtml(prompt);
     el.focus();
     // Register with the palette immediately so B/I/U work on the first click, without
     // waiting for a later focus event (fixes formatting being dead until the editor is
@@ -555,7 +556,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
             key="fib-rendered"
             className={`fib-rendered${isEmpty ? " placeholder" : ""}`}
             dangerouslySetInnerHTML={{
-              __html: isEmpty ? FIB_PLACEHOLDER : prompt,
+              __html: isEmpty ? FIB_PLACEHOLDER : embedPlainFieldTokensAsHtml(prompt),
             }}
           />
         )}

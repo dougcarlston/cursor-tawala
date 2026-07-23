@@ -223,7 +223,10 @@ public class ItemizationTable extends WebComponentMetadataSupport {
 			StringBuilder result = new StringBuilder();
 			boolean needsPaginations = records != null && records.size() > 100;
 			boolean fixTableHeight = records != null && records.size() > 16;
-			boolean fixTableWidth = displayableColumns.size() > 3;
+			// Content-sized by default (no empty full-width frame). Authors still
+			// widen columns via YUI "Drag column heading border to resize column".
+			// Legacy used displayableColumns.size() > 3 → dtFixTableWidth → 97%.
+			boolean fixTableWidth = false;
 			boolean presetColumnWidth = records != null && records.size() > 150;
 
 			boolean useSimpleTableFormatting = context

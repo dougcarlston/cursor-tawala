@@ -46,6 +46,8 @@ public class CommonTheme implements ProjectTheme {
 	private static final Map<String, String> cachedCSS = new HashMap<String, String>();
 	private static String cachedCSSAttributes = null;
 
+	public static final String FORM_LAYOUT_CORE_CSS = "/css/project/form-layout-core.css";
+
 	private String path;
 	private String name;
 	private Image headerImage;
@@ -58,9 +60,11 @@ public class CommonTheme implements ProjectTheme {
 	public CommonTheme(String path, String name) {
 		this.path = path;
 		this.name = name;
-		screenStylesheetURLs = new ArrayList<String>(2);
+		screenStylesheetURLs = new ArrayList<String>(3);
 		screenStylesheetURLs.add("/css/project/default.css");
 		screenStylesheetURLs.add("/css/project/" + path + "/project.css");
+		/* Layout contracts always last — themes must not override FIB geometry. */
+		screenStylesheetURLs.add(FORM_LAYOUT_CORE_CSS);
 		screenStylesheetURLs = Collections
 				.unmodifiableList(screenStylesheetURLs);
 
@@ -159,8 +163,9 @@ public class CommonTheme implements ProjectTheme {
 				request);
 		String themeSpecificCSS = retrieveCSS("/css/project/" + path
 				+ "/project.css", request);
+		String layoutCoreCSS = retrieveCSS(FORM_LAYOUT_CORE_CSS, request);
 
-		return defaultThemeCSS + "\n" + themeSpecificCSS;
+		return defaultThemeCSS + "\n" + themeSpecificCSS + "\n" + layoutCoreCSS;
 	}
 
 	private String retrieveCSS(String cssPath, HttpServletRequest request) {

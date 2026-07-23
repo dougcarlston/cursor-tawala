@@ -95,7 +95,51 @@ export function applyTextStyle(item: TextItem, draft: TextStyleDraft): TextItem 
   const next: TextItem = { ...item, style: draft.style };
   if (draft.noPaddingBottom) next.paddingBottom = false;
   else delete next.paddingBottom;
+  // Re-applying Instructional/Error: drop default-black chrome on image wrappers so
+  // Style color/weight show on the whole paragraph (Potluck T1/T3 graphic lines).
+  if (
+    (draft.style === "instructional" || draft.style === "error") &&
+    typeof next.content === "string" &&
+    next.content
+  ) {
+    next.content = stripDefaultBlackAroundEmbeddedImages(next.content);
+  }
   return next;
+}
+
+/**
+ * Embedded images often sit in `<span style="font-size:10pt; color:#000000">`.
+ * That default black blocks Instructional/Error navy on Design and leaves the
+ * graphic line looking “not fully switched” when Style is re-applied.
+ */
+export function stripDefaultBlackAroundEmbeddedImages(html: string): string {
+  return String(html).replace(/<span\b([^>]*)>/gi, (full, attrs: string) => {
+    if (!/\bstyle="/i.test(attrs)) return full;
+    // Only touch spans that wrap (or immediately precede) an embedded image in practice
+    // — we strip default black from any span whose style is only size/face + default black.
+    const styleM = attrs.match(/\bstyle="([^"]*)"/i);
+    if (!styleM) return full;
+    const style = styleM[1];
+    const colorM = style.match(/(?:^|;)\s*color\s*:\s*([^;]+)/i);
+    if (!colorM) return full;
+    const raw = colorM[1].trim().toLowerCase().replace(/\s+/g, "");
+    const isDefaultBlack =
+      raw === "#000" ||
+      raw === "#000000" ||
+      raw === "black" ||
+      raw === "rgb(0,0,0)" ||
+      raw === "rgba(0,0,0,1)";
+    if (!isDefaultBlack) return full;
+    const nextStyle = style
+      .replace(/(?:^|;)\s*color\s*:\s*[^;]+/i, "")
+      .replace(/^;\s*|;\s*$/g, "")
+      .replace(/;;+/g, ";")
+      .trim();
+    if (!nextStyle) {
+      return full.replace(/\s*style="[^"]*"/i, "");
+    }
+    return full.replace(/\bstyle="[^"]*"/i, `style="${nextStyle}"`);
+  });
 }
 
 /** How many form items of this Styles dialog kind exist on the form. */

@@ -12,10 +12,11 @@ import {
 import { EMBEDDED_IMAGE_HEIGHT_ATTR, EMBEDDED_IMAGE_WIDTH_ATTR } from "@/lib/projectImages";
 
 describe("fitEmbeddedImageSize", () => {
-  it("leaves small images alone", () => {
-    expect(fitEmbeddedImageSize(200, 100, DEFAULT_MAX_INSERT_WIDTH_PX)).toEqual({
+  it("leaves mid-size photos alone when under max width", () => {
+    // Taller than the icon heuristic band (h0 > 160) so we don't auto-shrink chrome.
+    expect(fitEmbeddedImageSize(200, 200, DEFAULT_MAX_INSERT_WIDTH_PX)).toEqual({
       width: 200,
-      height: 100,
+      height: 200,
     });
   });
 
@@ -23,6 +24,13 @@ describe("fitEmbeddedImageSize", () => {
     expect(fitEmbeddedImageSize(2000, 1000, 480)).toEqual({
       width: 480,
       height: 240,
+    });
+  });
+
+  it("shrinks small UI screenshots to text-ish height", () => {
+    expect(fitEmbeddedImageSize(88, 72, DEFAULT_MAX_INSERT_WIDTH_PX)).toEqual({
+      width: 22,
+      height: 18,
     });
   });
 });

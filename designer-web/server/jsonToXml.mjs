@@ -164,21 +164,32 @@ function fontXml(text, { bold = false, italic = false, size = 200, color = "0000
  * on <font> (beats Deploy CSS color) or bare paragraph text (no color at all).
  * Put Styles-dialog colors + bold/italic onto default runs; leave non-default author colors.
  *
+ * Local formatting wins (owner Jul 17 / Jul Jul 22): if the Design HTML cleared bold via
+ * `font-weight: normal` (or 400), do not re-wrap those runs in `<b>`. Same for
+ * `font-style: normal` vs Style italic. Image-only fonts never get bold/italic wraps.
+ *
  * Must rewrite fonts with balanced nesting — a non-greedy `([\s\S]*?)</font>` stops at the
  * first close and leaves orphan `</font>` when images nest `<font><font><image/></font></font>`
  * (Potluck instructional T1/T3 Deploy failure).
  */
-export function applyTextItemStyleToXml(bodyXml, style) {
+export function applyTextItemStyleToXml(bodyXml, style, opts = {}) {
   if (style !== "instructional" && style !== "error") return bodyXml;
   const color = style === "error" ? "C00000" : "000080";
+  const sourceHtml = String(opts.sourceHtml ?? "");
+  // Design "unbold" / "unitalic" typically leaves span style=font-weight/font-style normal.
+  const preferNormalWeight = /font-weight\s*:\s*(normal|400)\b/i.test(sourceHtml);
+  const preferNormalStyle = /font-style\s*:\s*normal\b/i.test(sourceHtml);
+
+  const isImageOnly = (inner) =>
+    /^\s*<image\b[^>]*>(?:\s*<\/image>)?\s*$/i.test(String(inner ?? "").trim());
 
   const wrapEmphasis = (inner) => {
-    let next = inner;
-    // Avoid double-wrapping if author already bolded/italicized the whole run.
+    let next = String(inner ?? "");
+    if (isImageOnly(next)) return next;
     const hasI = /<(?:i|em)\b/i.test(next);
     const hasB = /<(?:b|strong)\b/i.test(next);
-    if (!hasI) next = `<i>${next}</i>`;
-    if (!hasB) next = `<b>${next}</b>`;
+    if (!preferNormalStyle && !hasI) next = `<i>${next}</i>`;
+    if (!preferNormalWeight && !hasB) next = `<b>${next}</b>`;
     return next;
   };
 
@@ -244,9 +255,53 @@ export function applyTextItemStyleToXml(bodyXml, style) {
 
   let xml = rewriteFontsBalanced(bodyXml);
 
+  /**
+   * Style loose text in paragraphs that already contain <font> (e.g. image wrappers).
+   * Previously we only wrapped font-less paragraphs — Potluck T1/T3 “Deploy button (img)”
+   * lines kept surrounding text unstyled on Deploy.
+   */
+  const wrapLooseTextAroundFonts = (inner) => {
+    const tabs = inner.match(/<tabPositions\b[\s\S]*?<\/tabPositions>/i)?.[0] ?? "";
+    let rest = inner.replace(/<tabPositions\b[\s\S]*?<\/tabPositions>/i, "");
+    if (!rest.trim()) return inner;
+
+    const pieces = [];
+    const re = /<font\b[\s\S]*?<\/font>/gi;
+    let last = 0;
+    let m;
+    while ((m = re.exec(rest))) {
+      const before = rest.slice(last, m.index);
+      if (before) {
+        if (before.trim()) {
+          pieces.push(
+            `<font face="Arial" size="200" color="${color}">${wrapEmphasis(before)}</font>`,
+          );
+        } else {
+          pieces.push(before);
+        }
+      }
+      pieces.push(m[0]);
+      last = m.index + m[0].length;
+    }
+    const after = rest.slice(last);
+    if (after) {
+      if (after.trim()) {
+        pieces.push(
+          `<font face="Arial" size="200" color="${color}">${wrapEmphasis(after)}</font>`,
+        );
+      } else {
+        pieces.push(after);
+      }
+    }
+    return tabs + pieces.join("");
+  };
+
   // Bare paragraph body (no <font>): wrap so Deploy does not rely on CSS alone.
+  // Mixed paragraph (text + image font): style the loose text runs too.
   xml = xml.replace(/<paragraph\b([^>]*)>([\s\S]*?)<\/paragraph>/gi, (full, attrs, inner) => {
-    if (/<font\b/i.test(inner)) return full;
+    if (/<font\b/i.test(inner)) {
+      return `<paragraph${attrs}>${wrapLooseTextAroundFonts(inner)}</paragraph>`;
+    }
     const tabs = inner.match(/<tabPositions\b[\s\S]*?<\/tabPositions>/i)?.[0] ?? "";
     const rest = inner.replace(/<tabPositions\b[\s\S]*?<\/tabPositions>/i, "").trim();
     if (!rest) return full;
@@ -265,7 +320,7 @@ function textContentToXml(content, style, project = null, formName = "") {
     // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
     if (/<[a-z][\s\S]*>/i.test(content)) {
       const xml = documentHtmlToXml(content, escAttr, escText, { formName });
-      const styled = applyTextItemStyleToXml(xml, style);
+      const styled = applyTextItemStyleToXml(xml, style, { sourceHtml: content });
       return injectResponseTotalsQuestionTitles(styled, project);
     }
     // Styles dialog: Instructional = bold italic blue; Error = bold italic red (type only).

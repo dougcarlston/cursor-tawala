@@ -249,6 +249,44 @@ describe("Text item Styles colors on export", () => {
     expect(xml).toContain("Hi");
   });
 
+  it("does not re-bold when Design HTML cleared weight (font-weight: normal)", () => {
+    const base = `<paragraph>Get Together helps.</paragraph>`;
+    const xml = applyTextItemStyleToXml(base, "instructional", {
+      sourceHtml: `<p><span style="font-weight: normal;">Get Together helps.</span></p>`,
+    });
+    expect(xml).toContain('color="000080"');
+    expect(xml).toContain("<i>");
+    expect(xml).not.toContain("<b>");
+  });
+
+  it("does not wrap image-only fonts in bold/italic", () => {
+    const nested =
+      `<paragraph indent="0" align="left">Then (` +
+      `<font face="Arial" size="200" color="000000">` +
+      `<image id="image1" width="22" height="23"></image>` +
+      `</font>)</paragraph>`;
+    const xml = applyTextItemStyleToXml(nested, "instructional", {
+      sourceHtml: `<p><span style="font-weight: normal;">Then ( <img data-tawala-image-id="image1"/> )</span></p>`,
+    });
+    expect(xml).toContain('<image id="image1"');
+    expect(xml).toContain('color="000080"');
+    expect(xml).not.toMatch(/<b>\s*<i>\s*<image/i);
+    expect(xml).not.toMatch(/<i>\s*<image/i);
+  });
+
+  it("styles loose text around an image font (Potluck Deploy button line)", () => {
+    const mixed =
+      `<paragraph indent="0" align="left">Then click on the Deploy button ( ` +
+      `<font face="Arial" size="200" color="000000">` +
+      `<image id="image1" width="22" height="23"></image>` +
+      `</font>) up above.</paragraph>`;
+    const xml = applyTextItemStyleToXml(mixed, "instructional");
+    expect(xml).toContain('<image id="image1"');
+    expect(xml).toContain("<b><i>Then click on the Deploy button ( ");
+    expect(xml).toContain("<b><i>) up above.</i></b>");
+    expect(xml).toContain('color="000080"');
+  });
+
   it("keeps non-default author colors", () => {
     const green = `<paragraph><font color="00FF00">Hi</font></paragraph>`;
     expect(applyTextItemStyleToXml(green, "instructional")).toContain('color="00FF00"');
@@ -266,8 +304,9 @@ describe("Text item Styles colors on export", () => {
     const closes = (xml.match(/<\/font>/gi) || []).length;
     expect(opens).toBe(closes);
     expect(xml).toContain('<image id="image1"');
-    // Emphasis wraps the image inside the innermost font (not closed before </i></b>).
-    expect(xml).toMatch(/<b><i><image id="image1"[^>]*><\/image><\/i><\/b>/);
+    // Image-only fonts keep color rewrite but are not wrapped in <b>/<i>.
+    expect(xml).toContain('color="000080"');
+    expect(xml).not.toMatch(/<b><i><image id="image1"/);
     // Old bug left an unclosed inner <font> before </i></b>.
     expect(xml).not.toMatch(/<font[^>]*>\s*<image[^>]*>\s*<\/image>\s*<\/i>/);
   });

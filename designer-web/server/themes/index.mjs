@@ -14,17 +14,47 @@ fieldset.mc { margin: 1rem 0; border: 1px solid #ccc; padding: 8px 12px; }
 input[type=text], input[type=submit], select, textarea { font-family: inherit; font-size: 14px; }
 input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
 .text-block p, .text p { margin: 0.5rem 0; }
-/* Horizontal FIB layout (default/baseball fallback — dirtbowl2 layers its own) */
-.fib-row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 8px 12px; margin-bottom: 0.45rem; }
-.fib-row .fib-label { flex: 0 0 160px; min-width: 120px; padding-top: 4px; }
-.fib-row .fib-fields { flex: 1 1 240px; display: flex; flex-wrap: wrap; align-items: flex-end; gap: 8px 16px; }
-/* Underscore-prompt FIB: one group, left+right edges align across rows (like Design).
-   Labels/boxes keep natural spacing (~2 spaces); do not force equal columns. */
+/* Horizontal FIB layout (default/baseball fallback — dirtbowl2 layers its own).
+   Mirror Deploy form-layout-core contracts (Preview-only; Design canvas unchanged). */
+.fib-row { display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 8px 12px; margin-bottom: 0; }
+/* Shared label slot so field boxes left-align across FIB rows (owner Jul 22). */
+.fib-row .fib-label { flex: 0 0 var(--tawala-fib-label-width, 9.5em); min-width: var(--tawala-fib-label-width, 9.5em); max-width: var(--tawala-fib-label-width, 9.5em); padding-top: 0; padding-bottom: 4px; box-sizing: border-box; text-align: left; }
+.fib-style-rightAlignLabels .fib-row .fib-label,
+.fib-style-rightAlignLabelsJustified .fib-row .fib-label { text-align: right; }
+.fib-row .fib-fields { flex: 1 1 auto; display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 8px 12px; min-width: 0; }
+.fib-row .fib-fields .fib-field { flex: 0 1 auto; min-width: 0; }
+.fib-row .fib-fields input[type=text] { max-width: 100%; min-width: 3ch; box-sizing: content-box; }
+/* Stack FIB items (do not sit Email | Address side-by-side). */
 .fib:not(.fib-style-topLabels) {
-  display: inline-block;
-  max-width: 100%;
-  vertical-align: top;
+  display: block;
+  width: 100%;
+  max-width: var(--tawala-fib-table-max-width, 36em);
+  margin: 0 0 0.75em 0;
   box-sizing: border-box;
+}
+/* Align right side (…Justified): shared field-column right edge = farthest blank or trailing text. */
+.fib-style-leftAlignLabelsJustified .fib-fields,
+.fib-style-rightAlignLabelsJustified .fib-fields {
+  flex: 1 1 0;
+  width: auto;
+  gap: 0.35em;
+}
+.fib-style-leftAlignLabelsJustified .fib-fields > .fib-field,
+.fib-style-rightAlignLabelsJustified .fib-fields > .fib-field {
+  flex: 1 1 0;
+  min-width: 8ch;
+}
+.fib-style-leftAlignLabelsJustified .fib-fields > .fib-field input[type=text],
+.fib-style-rightAlignLabelsJustified .fib-fields > .fib-field input[type=text] {
+  width: 100%;
+  max-width: 100%;
+  min-width: 8ch;
+  box-sizing: border-box;
+}
+.fib-style-leftAlignLabelsJustified .fib-fields > .fib-inline-text,
+.fib-style-rightAlignLabelsJustified .fib-fields > .fib-inline-text {
+  flex: 0 0 auto;
+  white-space: nowrap;
 }
 .fib-row.fib-row-stacked {
   display: flex;
@@ -43,7 +73,6 @@ input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
   vertical-align: baseline;
   margin: 0 0.15em;
   font: inherit;
-  /* Honor size=/ch from blank length — do not stretch to fill a grid cell */
   max-width: 100%;
   box-sizing: content-box;
 }
@@ -53,25 +82,67 @@ input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 14px; }
 .fib-top-label-field input { box-sizing: content-box; }
 .preview-itemization-controls { margin: 0.35rem 0 0.5rem; font-size: 13px; }
 .preview-itemization-controls a { color: #000080; margin-right: 12px; }
+.preview-itemization-table {
+  width: fit-content;
+  max-width: min(var(--tawala-list-table-max-width, 6in), 100%);
+  overflow-x: auto;
+}
+.preview-itemization-table table {
+  width: max-content;
+  max-width: min(var(--tawala-list-table-max-width, 6in), 100%);
+  table-layout: auto;
+  border-collapse: collapse;
+  margin: 0.75em 0 1em;
+  font-size: 14px;
+}
+.preview-itemization-table th {
+  background: #555;
+  color: #fff;
+  font-weight: normal;
+  text-align: left;
+  padding: 4px 10px;
+  border: 1px solid #444;
+  white-space: nowrap;
+}
+.preview-itemization-table td {
+  border: 1px solid #ccc;
+  padding: 6px 10px;
+  background: #fff;
+  white-space: nowrap;
+}
 .validation-error { background: #fdecea; border: 1px solid #e74c3c; color: #922; padding: 8px 12px; margin: 0 0 1rem; }
 
 /* Text item Styles (Format → Styles → Text…) — Design + Deploy parity for Form
-   Preview and Document runtime pages. More specific than bare .error (validation
-   pink fill). Non-default palette colors on runs still win via inline / <font>. */
+   Preview and Document runtime pages. Bold/italic defaults come from export XML;
+   container keeps italic+color so Design “unbold” survives Deploy. */
 div.text.instructional,
 .text-block.instructional {
-  font-weight: bold;
+  font-weight: normal;
   font-style: italic;
   color: #000080;
   background: transparent !important;
 }
+div.text.instructional b,
+div.text.instructional strong,
+.text-block.instructional b,
+.text-block.instructional strong {
+  font-weight: bold;
+}
 div.text.error,
 div.text.text-item-error,
 .text-block.error {
-  font-weight: bold;
+  font-weight: normal;
   font-style: italic;
   color: #c00000;
   background: transparent !important;
+}
+div.text.error b,
+div.text.error strong,
+div.text.text-item-error b,
+div.text.text-item-error strong,
+.text-block.error b,
+.text-block.error strong {
+  font-weight: bold;
 }
 /* Default black from Design export must not block item Style (same as canvas). */
 div.text.instructional font[color="000000"],

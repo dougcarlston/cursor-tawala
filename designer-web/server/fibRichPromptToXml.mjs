@@ -74,6 +74,7 @@ function decodeEntities(s) {
 
 /**
  * Emit one formatted text run as legacy <font>…</font> (with optional b/i/u).
+ * Mid-string `<<Field>>` becomes `<field name="…"/>` (Signup ContactType labels).
  * @param {string} text
  * @param {FibFormat} fmt
  * @param {(s: string) => string} escAttr
@@ -81,7 +82,29 @@ function decodeEntities(s) {
  */
 export function formattedTextToFontXml(text, fmt, escAttr, escText) {
   if (!text) return "";
-  let inner = escText(text);
+  if (!String(text).includes("<<")) {
+    return formatEscapedRun(escText(text), fmt, escAttr);
+  }
+  const re = /<<([^<>]+)>>/g;
+  let last = 0;
+  let m;
+  let out = "";
+  while ((m = re.exec(text)) !== null) {
+    if (m.index > last) {
+      out += formatEscapedRun(escText(text.slice(last, m.index)), fmt, escAttr);
+    }
+    // Field substitution ignores surrounding B/I/U in legacy FIB prompts.
+    out += `<font face="${escAttr(fmt.face || "Arial")}" size="${fmt.size || 200}" color="${escAttr((fmt.color || "000000").replace(/^#/, ""))}"><field name="${escAttr(m[1].trim())}"/></font>`;
+    last = m.index + m[0].length;
+  }
+  if (last < text.length) {
+    out += formatEscapedRun(escText(text.slice(last)), fmt, escAttr);
+  }
+  return out;
+}
+
+function formatEscapedRun(inner, fmt, escAttr) {
+  if (!inner) return "";
   if (fmt.underline) inner = `<u>${inner}</u>`;
   if (fmt.italic) inner = `<i>${inner}</i>`;
   if (fmt.bold) inner = `<b>${inner}</b>`;
@@ -139,6 +162,14 @@ export function richFibRowHtmlToXml(rowHtml, blanks, startIdx, escAttr, escText,
       continue;
     }
 
+    // Plain `<<Field>>` before any HTML tag parse (otherwise `<ContactType1>` is eaten).
+    const fieldPlain = src.slice(i).match(/^<<([^<>]+)>>/);
+    if (fieldPlain) {
+      body += formattedTextToFontXml(fieldPlain[0], fmt(), escAttr, escText);
+      i += fieldPlain[0].length;
+      continue;
+    }
+
     const end = src.indexOf(">", i);
     if (end < 0) {
       emitText(src.slice(i));
@@ -147,9 +178,22 @@ export function richFibRowHtmlToXml(rowHtml, blanks, startIdx, escAttr, escText,
     const tag = src.slice(i + 1, end);
     i = end + 1;
     const isClose = tag.startsWith("/");
-    const nameMatch = tag.match(/^\/?\s*([a-z0-9]+)/i);
+    const nameMatch = tag.match(/^\/?\s*([a-z0-9:-]+)/i);
     const name = (nameMatch?.[1] ?? "").toLowerCase();
     if (!name || name === "br") continue;
+
+    // Field chip from Design: <span class="field-token" data-field-name="…">
+    if (!isClose && name === "span" && /\bfield-token\b/i.test(tag)) {
+      const nameAttr = tag.match(/\bdata-field-name\s*=\s*("([^"]*)"|'([^']*)')/i);
+      const fieldName = (nameAttr?.[2] ?? nameAttr?.[3] ?? "").trim();
+      if (fieldName) {
+        body += formattedTextToFontXml(`<<${fieldName}>>`, fmt(), escAttr, escText);
+      }
+      // Skip until matching </span>
+      const close = src.slice(i).match(/^[\s\S]*?<\/span>/i);
+      if (close) i += close[0].length;
+      continue;
+    }
 
     if (isClose) {
       if (pushedFormat.pop()) stack.pop();

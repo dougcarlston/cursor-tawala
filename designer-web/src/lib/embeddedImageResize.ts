@@ -12,9 +12,11 @@ import {
 
 export const EMBEDDED_IMAGE_SELECTED_CLASS = "tawala-embedded-image-selected";
 export const EMBEDDED_IMAGE_HANDLES_CLASS = "embedded-image-handles-overlay";
-export const MIN_EMBEDDED_IMAGE_PX = 24;
+export const MIN_EMBEDDED_IMAGE_PX = 12;
 /** Soft cap when inserting so huge photos don't blow the Text / Document canvas. */
 export const DEFAULT_MAX_INSERT_WIDTH_PX = 480;
+/** Prefer this height for small UI/chrome screenshots (Deploy button icons, etc.). */
+export const INLINE_ICON_MAX_HEIGHT_PX = 18;
 
 export function isEmbeddedImageElement(node: Node | null): node is HTMLImageElement {
   return (
@@ -36,7 +38,8 @@ export function selectEmbeddedImage(editor: HTMLElement, img: HTMLImageElement):
   img.classList.add(EMBEDDED_IMAGE_SELECTED_CLASS);
 }
 
-/** Scale natural size to fit maxWidth (aspect preserved). */
+/** Scale natural size to fit maxWidth (aspect preserved). Small chrome/icons also
+ *  cap height so Deploy-button screenshots don't dominate the line. */
 export function fitEmbeddedImageSize(
   naturalW: number,
   naturalH: number,
@@ -45,12 +48,20 @@ export function fitEmbeddedImageSize(
   const w0 = Math.max(1, Math.round(naturalW));
   const h0 = Math.max(1, Math.round(naturalH));
   const maxW = Math.max(MIN_EMBEDDED_IMAGE_PX, Math.round(maxWidth));
-  if (w0 <= maxW) return { width: w0, height: h0 };
-  const scale = maxW / w0;
-  return {
-    width: Math.max(1, Math.round(w0 * scale)),
-    height: Math.max(1, Math.round(h0 * scale)),
-  };
+  let width = w0;
+  let height = h0;
+  if (w0 > maxW) {
+    const scale = maxW / w0;
+    width = Math.max(1, Math.round(w0 * scale));
+    height = Math.max(1, Math.round(h0 * scale));
+  }
+  // Compact UI captures (toolbar icons, check buttons) — shrink to text-ish height.
+  if (height > INLINE_ICON_MAX_HEIGHT_PX && h0 <= 160 && w0 <= 240) {
+    const scale = INLINE_ICON_MAX_HEIGHT_PX / height;
+    width = Math.max(MIN_EMBEDDED_IMAGE_PX, Math.round(width * scale));
+    height = Math.max(MIN_EMBEDDED_IMAGE_PX, Math.round(height * scale));
+  }
+  return { width, height };
 }
 
 export function readEmbeddedImageSize(img: HTMLImageElement): {

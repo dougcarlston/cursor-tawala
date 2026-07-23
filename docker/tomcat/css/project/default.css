@@ -145,20 +145,34 @@ table {
 /* Text item Styles (Designer Format/Project → Styles → Text…).
    Item Style sets the container look; author palette/local formatting on runs wins
    (inline styles / <b>/<i>/<font>) — leave formatting at Default to see Style.
+   Bold/italic defaults come from Deploy XML (`applyTextItemStyleToXml`); container
+   does not force font-weight so Design “unbold” (font-weight:normal) survives.
    More specific than bare `.error` so Text style=error is not validation pink fill. */
 div.text.instructional {
-	font-weight: bold;
+	font-weight: normal;
 	font-style: italic;
 	color: #000080;
 	background: transparent !important;
 }
 
+div.text.instructional b,
+div.text.instructional strong {
+	font-weight: bold;
+}
+
 div.text.error,
 div.text.text-item-error {
-	font-weight: bold;
+	font-weight: normal;
 	font-style: italic;
 	color: #c00000;
 	background: transparent !important;
+}
+
+div.text.error b,
+div.text.error strong,
+div.text.text-item-error b,
+div.text.text-item-error strong {
+	font-weight: bold;
 }
 
 /* default.js adds class validateError to invalid inputs (“outlined in red”) */
@@ -218,51 +232,12 @@ form {
 		color: #cc2222;
 	}
 	
-	form table.fib tr td {
-		padding-bottom: 1em;
-	}
-	
-    form table.fib tr td.label,
-	form table.fib tr td.blank,
-	form table.fib tr td.remainder {
-		vertical-align: top;
-		padding-right: .5em;
-	}
-	
-    /* Column width = longest label (table layout), not a fixed 380px gutter. */
-    form table.fib tr td.label {
-		width: 1%;
-		white-space: nowrap;
-		padding-right: 0.5em;
-	}
-
-		form table.fib tr td.label.left {
-			text-align: left;
-		}
-		
-	    form table.fib tr td.label.right {
-			text-align: right;
-		}
-
-	/* Styles → Align right side (…Justified): stretch blanks so right edges share a margin. */
-	form table.fib.justified {
-		width: 100%;
-		max-width: 36em;
-	}
-
-	form table.fib.justified td.blank,
-	form table.fib.justified td.remainder {
-		width: 99%;
-	}
-
-	form table.fib.justified td.blank input,
-	form table.fib.justified td.remainder input,
-	form table.fib.justified td.blank input.text,
-	form table.fib.justified td.remainder input.text {
-		width: 100%;
-		max-width: 100%;
-		box-sizing: border-box;
-	}
+	/*
+	 * FIB layout contracts (shared label column, Align right side, even gaps)
+	 * live in form-layout-core.css — loaded last by CommonTheme. Do not
+	 * reintroduce geometry rules here; themes only set chrome / gutters via
+	 * --tawala-fib-label-width / --tawala-fib-table-max-width.
+	 */
 	
     form div.fib label {
 		padding-right: 1em;

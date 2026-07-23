@@ -442,6 +442,25 @@ Owner (July 10): browser Configure is **functionally the same** for the core par
 
 **Owner WHERE smoke Jul 19: Passed** (full Where conditions, same bar as FORM RECORD COUNT).
 
+### Deploy table width (Jul 22)
+
+Legacy auto-applied `dtFixTableWidth` when an MQL had **more than 3 columns**, stretching the YUI table to ~97% of the page and leaving an empty “blank box” to the right of the last column (e.g. Get Together “Who is coming” vs compact “Who can't come”).
+
+**Product contract:**
+1. Tables are **content-sized** and hug the **left** — no empty full-width frame.
+2. Cell text stays on **one line** (`white-space: nowrap`) so names/values do not wrap to a second line while columns shrink.
+3. Overall table width grows with content up to **`--tawala-list-table-max-width` (default 6in)** or 100% of the form, whichever is smaller; wider content scrolls horizontally inside the table wrapper.
+4. Authors may still **widen columns** by dragging the heading border when Print/Export controls are shown.
+
+| Surface | Change |
+|---------|--------|
+| Java `ItemizationTable` | no longer emits `dtFixTableWidth` from column count |
+| `default.js` | ignores `dtFixTableWidth`; `fitTableToContent()` after YUI render |
+| `form-layout-core.css` | `max-content` + nowrap + 6in cap |
+| Preview | same content-fit / nowrap / 6in cap |
+
+**Smoke:** Redeploy / hard-refresh a Document with a 4-column MQL → table hugs columns (no empty right box); long first+last names stay on one line until ~6in; drag a heading border → column still widens when Print/Export is on.
+
 ---
 
 ## Configure Function: PAYPAL SINGLE ITEM PURCHASE BUTTON (`paypal-single-item-button`)
@@ -683,6 +702,8 @@ Screenshot: [`assets/Function_-_Sum.png`](assets/Function_-_Sum.png)
 ### Browser gaps
 
 Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: Passed** using the Browser Designer SUM smoke project (Configure + export + live Deploy total). The earlier Potluck result remains a separate direct deploy of the legacy `.tawala` template. **WHERE re-smoke Passed Jul 19.**
+
+**Potluck Details SUM blank (Jul 22):** Browser Redeploy put SUM chips inside a Document table cell; export wrapped them as nested `<font><font><sum>…` and Java’s Font FACTORY dropped the sum (empty Adults/Kids cells). Fixed: table cells no longer double-wrap display components; SUM field emits `Record:Form:Field`. **Smoke:** open Potluck Details → Redeploy → Report/Details shows numeric Adults/Kids totals again.
 
 ---
 

@@ -22,6 +22,10 @@ public class ThemeTest extends AcceptanceTestCase {
 
         assertContains("/css/project/default.css", bot.getPageText());
         assertContains("/css/project/default/project.css", bot.getPageText());
+        assertContains("/css/project/form-layout-core.css", bot.getPageText());
+        assertTrue("form-layout-core must load after theme project.css",
+                bot.getPageText().indexOf("/css/project/default/project.css")
+                        < bot.getPageText().indexOf("/css/project/form-layout-core.css"));
     }
 
     public void testAlternateStyle() throws RobotException {
@@ -38,6 +42,10 @@ public class ThemeTest extends AcceptanceTestCase {
 
         assertContains("/css/project/default.css", bot.getPageText());
         assertContains("/css/project/style2/project.css", bot.getPageText());
+        assertContains("/css/project/form-layout-core.css", bot.getPageText());
+        assertTrue("form-layout-core must load after theme project.css",
+                bot.getPageText().indexOf("/css/project/style2/project.css")
+                        < bot.getPageText().indexOf("/css/project/form-layout-core.css"));
     }
 
 }

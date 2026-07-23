@@ -100,9 +100,17 @@ export interface UnderscoreRun {
 
 /** Plain text of an HTML fragment (underscore positions ignore markup). */
 export function htmlToPlainText(html: string): string {
+  const tokens: string[] = [];
+  // Shield `<<Field>>` before innerHTML — otherwise `<ContactType1>` is parsed as a tag.
+  const shielded = String(html ?? "").replace(/<<([^<>]+)>>/g, (_, name) => {
+    const i = tokens.length;
+    tokens.push(`<<${String(name).trim()}>>`);
+    return `\u0000FIELD${i}\u0000`;
+  });
   const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-  return tmp.textContent ?? "";
+  tmp.innerHTML = shielded;
+  const plain = tmp.textContent ?? "";
+  return plain.replace(/\u0000FIELD(\d+)\u0000/g, (_, i) => tokens[Number(i)] ?? "");
 }
 
 /** Find every underscore run in plain prompt text (legacy `Regex.Matches(rawText, "_+")`). */

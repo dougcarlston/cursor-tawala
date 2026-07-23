@@ -1,1 +1,5 @@
-/* Default theme — no overrides beyond shared default.css */
+/*
+ * Default theme overlay — chrome only.
+ * FIB layout contracts: /css/project/form-layout-core.css (loaded last by CommonTheme).
+ * Do not put form table.fib geometry here; it will lose to core and confuse maintainers.
+ */

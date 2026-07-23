@@ -588,7 +588,7 @@ function functionTokenToXml(attrs, escAttr, escText) {
     case "sum":
       return (
         `<sum version="1">` +
-        `<field>${escText(config.field ?? "")}</field>` +
+        `<field>${escText(itemizationContentsField(config.field ?? ""))}</field>` +
         conditionsXml(config, escAttr) +
         `</sum>`
       );
@@ -872,12 +872,46 @@ function tableHtmlToXml(tableHtml, escAttr, escText, opts = {}) {
         `<row>${cells
           .map(
             (c) =>
-              `<cell width="${c.width}"><division indent="0" align="left"><font>${c.inner || "<sp/>"}</font></division></cell>`,
+              `<cell width="${c.width}"><division indent="0" align="left">${wrapTableCellDivision(
+                c.inner,
+              )}</division></cell>`,
           )
           .join("")}</row>`,
     )
     .join("");
   return `<table indent="0">${rowXml}</table>`;
+}
+
+/**
+ * Table cells always need a `<font>` for plain text, but function tokens already
+ * emit `<font><sum|itemization-table|…>`. Nesting another `<font>` makes Java’s
+ * Font FACTORY drop the inner component (Potluck Details SUM → blank cells).
+ */
+function wrapTableCellDivision(inner) {
+  let body = String(inner ?? "").trim() || "<sp/>";
+  // Collapse accidental nested fonts around display components.
+  for (let i = 0; i < 4; i++) {
+    if (!/^<font\b/i.test(body)) break;
+    const unwrapped = unwrapOuterFont(body);
+    if (unwrapped === body) break;
+    const looksLikeDisplay =
+      isFontWrappedDisplayComponent(unwrapped) ||
+      isFontWrappedDisplayComponent(`<font>${unwrapped}</font>`) ||
+      /^<(sum|itemization-table|record-count|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|display-mcq-label|project-email-count)\b/i.test(
+        unwrapped.trim(),
+      );
+    if (!looksLikeDisplay) break;
+    body = unwrapped;
+  }
+  if (isFontWrappedDisplayComponent(body) || /^<font\b/i.test(body)) {
+    return body;
+  }
+  if (/^<(sum|itemization-table|record-count|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|display-mcq-label|project-email-count)\b/i.test(
+    body,
+  )) {
+    return `<font>${body}</font>`;
+  }
+  return `<font>${body}</font>`;
 }
 
 /**

@@ -220,6 +220,8 @@ interface ProjectState {
   ) => void;
   closeAllWindows: () => void;
   setProject: (project: TawalaProject) => void;
+  /** Format/Project → Themes: set project + form themePath (legacy Project.ThemePath). */
+  setProjectTheme: (themePath: string) => void;
   setSelection: (selection: Selection) => void;
   setEditorTab: (tab: EditorTab) => void;
   setStatus: (message: string) => void;
@@ -684,6 +686,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       activeWindowId: null,
       cascadeIndex: 0,
     }),
+
+  setProjectTheme: (themePath) => {
+    const path = String(themePath || "default").trim() || "default";
+    const { project } = get();
+    const forms = (project.forms ?? []).map((f) => ({ ...f, themePath: path }));
+    set({
+      project: { ...project, themePath: path, forms },
+      dirty: true,
+      statusMessage: `Project theme: ${path}`,
+    });
+  },
+
   setSelection: (selection) => {
     const s = get();
     const sameEntity =
@@ -1534,18 +1548,22 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   exportJson: () => JSON.stringify(get().project, null, 2),
 
   importJson: (raw) => {
-    const parsed = JSON.parse(raw) as TawalaProject | { project: TawalaProject };
+    const parsed: unknown = JSON.parse(raw);
     // Deploy/API previews sometimes wrap as `{ project: {...} }`; Designer Save is flat.
-    const project =
+    let project: TawalaProject;
+    if (
       parsed &&
       typeof parsed === "object" &&
       "project" in parsed &&
-      parsed.project &&
-      typeof parsed.project === "object" &&
+      (parsed as { project: unknown }).project &&
+      typeof (parsed as { project: unknown }).project === "object" &&
       Array.isArray((parsed as { project: TawalaProject }).project.forms) &&
-      !Array.isArray((parsed as TawalaProject).forms)
-        ? (parsed as { project: TawalaProject }).project
-        : (parsed as TawalaProject);
+      !Array.isArray((parsed as { forms?: unknown }).forms)
+    ) {
+      project = (parsed as { project: TawalaProject }).project;
+    } else {
+      project = parsed as TawalaProject;
+    }
     // Prefer first form; if none, highlight first process/document when present.
     const firstForm = project.forms?.[0]?.name;
     const firstProcess = project.processes?.[0]?.name;

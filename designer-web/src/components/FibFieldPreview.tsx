@@ -5,7 +5,8 @@ function blankDisplayLabel(blank: { name: string; displayLabel?: string }): stri
 }
 
 function plainPromptText(prompt: string): string {
-  return String(prompt ?? "")
+  const tokens: string[] = [];
+  const shielded = String(prompt ?? "")
     .replace(/\r\n/g, "\n")
     .replace(/&nbsp;/gi, " ")
     .replace(/&#160;/g, " ")
@@ -15,9 +16,15 @@ function plainPromptText(prompt: string): string {
     .replace(/&quot;/gi, '"')
     .replace(/&#39;/g, "'")
     .replace(/\u00a0/g, " ")
+    .replace(/<<([^<>]+)>>/g, (_, name) => {
+      const i = tokens.length;
+      tokens.push(`<<${String(name).trim()}>>`);
+      return `\u0000FIELD${i}\u0000`;
+    })
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
     .replace(/<[^>]+>/g, "");
+  return shielded.replace(/\u0000FIELD(\d+)\u0000/g, (_, i) => tokens[Number(i)] ?? "");
 }
 
 type PreviewSeg =

@@ -370,6 +370,29 @@ textarea {
   color: #999;
 }
 
+/* Project Themes: blue = local Tomcat CSS present; grey = stub path only */
+.menu-submenu-dropdown button.menu-theme-available {
+  color: #0000aa;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu-submenu-dropdown button.menu-theme-stub {
+  color: #888;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.menu-theme-check {
+  display: inline-block;
+  width: 1em;
+  flex: 0 0 1em;
+  text-align: center;
+  font-size: 12px;
+}
+
 .menu-separator {
   height: 1px;
   background: var(--border);
@@ -1219,6 +1242,14 @@ textarea {
   /* Batch 6: tall tables scroll inside the Text chrome instead of stretching the row. */
   max-height: min(50vh, 28rem);
   overflow: auto;
+  /* Room for SE resize handle below a bottom-of-line image. */
+  padding-bottom: 10px;
+}
+
+.text-canvas-row.editing .text-rich-wrap {
+  /* Keep scroll for tall content, but don't clip the image resize handle. */
+  overflow: auto;
+  padding-bottom: 14px;
 }
 
 .text-rich-editor {
@@ -3773,10 +3804,22 @@ button.font-color-picker-recent-slot:hover {
 
 .text-canvas-row.text-style-instructional .text-rendered,
 .text-canvas-row.text-style-instructional .text-rich-editor {
-  font-weight: 700 !important;
-  font-style: italic !important;
+  font-weight: 700;
+  font-style: italic;
   color: #000080 !important;
   background: transparent;
+}
+
+/* Local unbold/unitalic wins over Style (same as Deploy export contract). */
+.text-canvas-row.text-style-instructional .text-rendered [style*="font-weight: normal"],
+.text-canvas-row.text-style-instructional .text-rendered [style*="font-weight:normal"],
+.text-canvas-row.text-style-instructional .text-rich-editor [style*="font-weight: normal"],
+.text-canvas-row.text-style-instructional .text-rich-editor [style*="font-weight:normal"],
+.text-canvas-row.text-style-error .text-rendered [style*="font-weight: normal"],
+.text-canvas-row.text-style-error .text-rendered [style*="font-weight:normal"],
+.text-canvas-row.text-style-error .text-rich-editor [style*="font-weight: normal"],
+.text-canvas-row.text-style-error .text-rich-editor [style*="font-weight:normal"] {
+  font-weight: normal !important;
 }
 
 /* Do NOT force font-weight/font-style: inherit !important on all descendants —
@@ -3800,10 +3843,18 @@ button.font-color-picker-recent-slot:hover {
 .text-canvas-row.text-style-instructional .text-rendered [style*="color:rgb(0, 0, 0)"],
 .text-canvas-row.text-style-instructional .text-rich-editor [style*="color: rgb(0, 0, 0)"],
 .text-canvas-row.text-style-instructional .text-rich-editor [style*="color:rgb(0, 0, 0)"],
+.text-canvas-row.text-style-instructional .text-rendered [style*="color: #000"],
+.text-canvas-row.text-style-instructional .text-rendered [style*="color:#000"],
+.text-canvas-row.text-style-instructional .text-rich-editor [style*="color: #000"],
+.text-canvas-row.text-style-instructional .text-rich-editor [style*="color:#000"],
 .text-canvas-row.text-style-error .text-rendered [style*="color: rgb(0, 0, 0)"],
 .text-canvas-row.text-style-error .text-rendered [style*="color:rgb(0, 0, 0)"],
 .text-canvas-row.text-style-error .text-rich-editor [style*="color: rgb(0, 0, 0)"],
-.text-canvas-row.text-style-error .text-rich-editor [style*="color:rgb(0, 0, 0)"] {
+.text-canvas-row.text-style-error .text-rich-editor [style*="color:rgb(0, 0, 0)"],
+.text-canvas-row.text-style-error .text-rendered [style*="color: #000"],
+.text-canvas-row.text-style-error .text-rendered [style*="color:#000"],
+.text-canvas-row.text-style-error .text-rich-editor [style*="color: #000"],
+.text-canvas-row.text-style-error .text-rich-editor [style*="color:#000"] {
   color: inherit !important;
 }
 

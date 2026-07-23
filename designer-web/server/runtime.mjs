@@ -10,7 +10,7 @@ import {
 } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { renderDocumentsPage } from "./documentRenderer.mjs";
-import { fibRowLabel, fibUsesLeftLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
+import { fibRowLabel, fibUsesLeftLabels, fibUsesRightAlignLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
 import { renderItemizationTableHtml, blankAliasesFromForm } from "./itemizationPreview.mjs";
 import { renderChoiceTallyTableHtml } from "./choiceTallyPreview.mjs";
 import { BASE_FORM_CSS, resolveTheme as resolveThemeCss, themeBodyClass } from "./themes/index.mjs";
@@ -99,6 +99,7 @@ function renderFib(item, ctx) {
   const blanks = item.blanks ?? [];
   const rows = parseFibPrompt(prompt, blanks);
   const left = fibUsesLeftLabels(item.style);
+  const sideLabel = left || fibUsesRightAlignLabels(item.style);
 
   // Legacy topLabels (SignupSheets): label text + separate inputs, no Design `_` runs.
   // Design-authored prompts with `_` must use parseFibPrompt below — never dump
@@ -164,7 +165,7 @@ function renderFib(item, ctx) {
           .join("");
       };
 
-      if (left && label) {
+      if (sideLabel && label) {
         const cleanLabel = String(label).replace(/_+/g, "");
         return `<div class="fib-row">
           <span class="fib-label">${esc(cleanLabel)}:</span>

@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   normalizeFibPromptSource,
   parseFibPrompt,
+  plainForUnderscores,
   segmentsFromUnderscorePrompt,
 } from "./fibPrompt.mjs";
 
@@ -101,5 +102,27 @@ describe("FIB underscore → blanks (Preview / fibPrompt)", () => {
     expect(rows[0].segments.map((s) => s.type)).toEqual(["text", "blank", "text", "blank"]);
     expect(rows[0].segments[0].text).toMatch(/Name/);
     expect(rows[0].segments[2].text).toMatch(/Email/);
+  });
+
+  it("preserves <<Field>> tokens (Signup ContactType labels — not HTML tags)", () => {
+    expect(plainForUnderscores("Your <<ContactType1>>:")).toBe("Your <<ContactType1>>:");
+    const rows = parseFibPrompt(
+      "Please provide your <<ContactType1>>:_________________________________________",
+      [{ name: "a", length: 41 }],
+    );
+    expect(rows[0].segments[0].text).toBe("Please provide your <<ContactType1>>:");
+    expect(rows[0].segments[0].text).not.toMatch(/^Please provide your >:$/);
+  });
+
+  it("does not let an intro soft-row steal the blank from a later Name:____ line", () => {
+    const prompt =
+      'Add your name to the list:<div><br><div><span style="font-family: inherit">Name:__________________________________________</span></div></div>';
+    const blanks = [{ name: "a", length: 42, alternateLabel: "Name" }];
+    const rows = parseFibPrompt(prompt, blanks);
+    expect(rows.length).toBe(2);
+    expect(rows[0].segments.map((s) => s.type)).toEqual(["text"]);
+    expect(rows[0].segments[0].text).toMatch(/Add your name/);
+    expect(rows[1].segments.map((s) => s.type)).toEqual(["text", "blank"]);
+    expect(rows[1].segments[0].text).toMatch(/^Name:\s*$/);
   });
 });

@@ -14,10 +14,13 @@ export function parseFibPrompt(prompt, blanks) {
   if (!prompt || !blanks?.length) return [];
   const normalized = normalizeFibPromptSource(prompt);
   const rows = splitFibPromptRows(normalized);
+  // When any soft-row has `_` blanks, do not invent blanks on plain intro lines
+  // (Signup Q1: "Add your name…\nName:____" — intro must not steal the blank).
+  const anyUnderscoreBlanks = rows.some((r) => /_+/.test(plainForUnderscores(r)));
   let bi = 0;
   const parsed = [];
   for (const rowStr of rows) {
-    const row = parseFibRow(rowStr, blanks, bi);
+    const row = parseFibRow(rowStr, blanks, bi, { allowAutoBlank: !anyUnderscoreBlanks });
     bi = row.nextIdx;
     if (row.segments.length) parsed.push(row);
   }
@@ -56,13 +59,34 @@ function isDesignPlaceholderOnly(rowStr) {
   return plain === FIB_DESIGN_PLACEHOLDER || plain === FIB_DESIGN_PLACEHOLDER.slice(1, -1);
 }
 
+/**
+ * Shield `<<Field>>` tokens so HTML tag strippers cannot eat them.
+ * `/<[^>]+>/` matches `<<ContactType1>` (because `[^>]+` includes `<`), leaving a lone `>` —
+ * that is the Signup Sheet “Your >:” Deploy bug. Call `restoreFieldTokenPlaceholders` after.
+ */
+export function shieldFieldTokens(text) {
+  const tokens = [];
+  const shielded = String(text ?? "").replace(/<<([^<>]+)>>/g, (_, name) => {
+    const i = tokens.length;
+    tokens.push(`<<${String(name).trim()}>>`);
+    return `\u0000FIELD${i}\u0000`;
+  });
+  return { shielded, tokens };
+}
+
+export function restoreFieldTokenPlaceholders(text, tokens) {
+  return String(text ?? "").replace(/\u0000FIELD(\d+)\u0000/g, (_, i) => tokens[Number(i)] ?? "");
+}
+
 /** Plain text for underscore matching (rich Design prompts may carry light HTML). */
 export function plainForUnderscores(rowStr) {
-  return normalizeFibPromptSource(rowStr)
+  const { shielded, tokens } = shieldFieldTokens(normalizeFibPromptSource(rowStr));
+  const plain = shielded
     .replace(/<br\s*\/?>/gi, "\n")
     .replace(/<\/p>/gi, "\n")
     .replace(/<[^>]+>/g, "")
     .replace(/\u00a0/g, " ");
+  return restoreFieldTokenPlaceholders(plain, tokens);
 }
 
 /**
@@ -103,7 +127,7 @@ function isLegacyHintBracket(inner) {
   return true;
 }
 
-function parseFibRow(rowStr, blanks, bi) {
+function parseFibRow(rowStr, blanks, bi, { allowAutoBlank = true } = {}) {
   const hints = [];
   let s = rowStr;
   while (s.trimStart().startsWith("[")) {
@@ -179,9 +203,13 @@ function parseFibRow(rowStr, blanks, bi) {
       bi++;
     }
     segments.push({ type: "text", text: trailing });
-  } else if (bi < blanks.length && segments.some((seg) => seg.type === "text")) {
+  } else if (
+    allowAutoBlank &&
+    bi < blanks.length &&
+    segments.some((seg) => seg.type === "text")
+  ) {
     // Slash-less label-only row without underscores: one blank after the label text.
-    // Do not invent blanks for empty/placeholder-only rows (avoids stray Preview boxes).
+    // Disabled when other soft-rows use `_` so intro lines do not steal blanks.
     segments.push({ type: "blank", blank: blanks[bi], hint: null });
     bi++;
   }

@@ -54,6 +54,7 @@ public class PreviewFormTest extends AcceptanceTestCase {
 
 		assertContains("Hello, World!", bot.getPageText());
 		assertContains("/css/project/default/project.css", bot.getPageText());
+		assertContains("/css/project/form-layout-core.css", bot.getPageText());
 
 	}
 

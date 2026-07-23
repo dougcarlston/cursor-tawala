@@ -867,7 +867,9 @@ Tawala.DataTables = function() {
 				dt.enablePrint = YAHOO.util.Dom.hasClass(dt.container, "enablePrint");
 				dt.enableExport = YAHOO.util.Dom.hasClass(dt.container, "enableExport");
 				dt.exportTemplateId = dt.container.getAttribute('exportTemplateId');
-				dt.fixTableWidth = YAHOO.util.Dom.hasClass(dt.container, "dtFixTableWidth");
+				// Never force 97% container width (empty “blank box” right of last
+				// column). Columns stay resizeable via heading-border drag.
+				dt.fixTableWidth = false;
 				dt.fixTableHeight = YAHOO.util.Dom.hasClass(dt.container, "dtFixTableHeight");
 				dt.presetColumnWidth = YAHOO.util.Dom.hasClass(dt.container, "presetColumnWidth");
 				dt.sourceElement = dt.container.getElementsByTagName("table")[0];
@@ -974,9 +976,26 @@ Tawala.DataTable = function() {
 			this.dataTable = new YAHOO.widget.DataTable( this.container, this.columnDefs, 
 															this.dataSource, dataTableOptions, {renderLoopSize: 100});
 			
+			// Content-fit: clear YUI’s stretch widths so columns hug text (CSS caps at ~6in).
+			if(!this.fixTableWidth) {
+				this.fitTableToContent();
+			}
+
 			if(this.enablePrint || this.enableExport) {
 				this.addPrintAndExportControls();
 			}			
+		},
+
+		fitTableToContent: function() {
+			try {
+				if(!this.container) { return; }
+				YAHOO.util.Dom.setStyle(this.container, "width", "auto");
+				YAHOO.util.Dom.setStyle(this.container, "maxWidth", "");
+				var tables = this.container.getElementsByTagName("table");
+				for(var ti = 0; ti < tables.length; ti++) {
+					YAHOO.util.Dom.setStyle(tables[ti], "width", "auto");
+				}
+			} catch(ignore) {}
 		},
 		
 		addPrintAndExportControls: function() {			

@@ -97,6 +97,9 @@ public class ViewProjectTest extends AcceptanceTestCase {
 				+ "<link rel=\"stylesheet\" href=\"/css/project/default/project.css?x="
 				+ buildNumber
 				+ "\" type=\"text/css\" media=\"screen\" />\n"
+				+ "<link rel=\"stylesheet\" href=\"/css/project/form-layout-core.css?x="
+				+ buildNumber
+				+ "\" type=\"text/css\" media=\"screen\" />\n"
 				+ "<script type=\"text/javascript\" src=\"/scripts/yui-2.9.0/build/utilities/utilities.js?x="
 				+ buildNumber
 				+ "\" ></script>\n"

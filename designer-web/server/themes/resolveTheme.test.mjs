@@ -23,6 +23,16 @@ describe("resolveTheme", () => {
     expect(BASE_FORM_CSS).toContain("input[type=submit]");
   });
 
+  it("stacks justified FIB items and fills the shared field column (Deploy parity)", () => {
+    expect(BASE_FORM_CSS).toContain("display: block");
+    expect(BASE_FORM_CSS).toContain("fib-style-leftAlignLabelsJustified");
+    expect(BASE_FORM_CSS).toContain("preview-itemization-table table");
+    expect(BASE_FORM_CSS).toMatch(
+      /\.preview-itemization-table table\s*\{[^}]*width:\s*max-content/,
+    );
+    expect(BASE_FORM_CSS).toContain("--tawala-list-table-max-width");
+  });
+
   it("includes Text Instructional / Error styles for Preview + Documents", () => {
     expect(BASE_FORM_CSS).toContain("div.text.instructional");
     expect(BASE_FORM_CSS).toContain("div.text.text-item-error");

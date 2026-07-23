@@ -12,6 +12,7 @@ import {
   countFormItemsOfKind,
   fibStyleToken,
   parseFibStyle,
+  stripDefaultBlackAroundEmbeddedImages,
   stylesKindForFormItem,
 } from "./formItemStyles";
 import type { FormItem } from "@/types/tawala";
@@ -54,6 +55,26 @@ describe("formItemStyles", () => {
     );
     expect(withPad.style).toBe("instructional");
     expect(withPad.paddingBottom).toBeUndefined();
+  });
+
+  it("strips default black on spans when applying Instructional (graphic lines)", () => {
+    const html =
+      `Then ( <span style="font-size: 10pt; color: rgb(0, 0, 0);"><img class="tawala-embedded-image"/></span> )`;
+    expect(stripDefaultBlackAroundEmbeddedImages(html)).toContain('style="font-size: 10pt"');
+    expect(stripDefaultBlackAroundEmbeddedImages(html)).not.toMatch(/color:\s*rgb/);
+
+    const applied = applyTextStyle(
+      {
+        type: "text",
+        label: "T3",
+        style: "normal",
+        content: `<p><span style="font-family:Arial;font-size:10pt;color:#000000"><img/></span></p>`,
+      },
+      { style: "instructional", noPaddingBottom: false },
+    );
+    expect(applied.style).toBe("instructional");
+    expect(String(applied.content)).toContain("font-size:10pt");
+    expect(String(applied.content)).not.toMatch(/color:#000000/i);
   });
 
   it("applyStyleToAllFormItems patches only matching kinds on one form", () => {

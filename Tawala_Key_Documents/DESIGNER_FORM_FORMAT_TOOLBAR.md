@@ -87,18 +87,22 @@ Opened from **Format → Styles →** cascade (legacy) or **Project → Styles�
 
 Preview labels are **dark blue**; blanks are disabled textboxes (inset). Labels in the Styles preview are **not** auto-bolded; Deploy must not bold Name/Email/Phone by heuristic either (author B/I/U only).
 
-**Deploy smoke (left/right Align, Jul 17):**
+**Deploy smoke (left/right Align, Jul 17 / Jul Jul 22):**
 
 1. Multi-blank FIB (Name / Email / Phone on separate soft-rows or one soft-row) → Deploy shows **one label + one field per row** (not “Name: Email” with two boxes).
-2. Label column hugs the longest label — fields sit close to labels (not a ~380px gutter). DirtBowl Registration themes may still use a wider `--reg-label-width`.
-3. No unintended bold on Email/Phone/Name unless the Design prompt used Bold.
-4. **Align right side** (`…Justified`): blanks stretch so right edges share a margin within that FIB table (CSS on `table.fib.justified`). Freeform does not offer Align right side.
+2. **Field boxes left-align** across FIB items (shared label column ~9.5em) — short labels must not pull fields left. Not a ~380px DirtBowl gutter; Registration themes may still use `--reg-label-width`. Label **bottoms** align with field **bottoms** (not tops).
+3. Blank **preferred** width follows underscore count (`size=`). Same-line blanks stay proportionate; if tight, they shorten equally.
+4. No unintended bold on Email/Phone/Name unless the Design prompt used Bold.
+5. **Align right side** (`…Justified`): justified FIB table + shared field column; **right boundary = farthest right content** in that column (blank **or** trailing text like `(last)`). Single blanks fill to that edge; nothing sticks past it. Same-line blanks share the column equally (min-width so none collapse to a sliver). Freeform does not offer Align right side.
+6. Even **vertical spacing** between FIB items (use `margin` on `table.fib` — Java sets `padding-bottom: 0` on multi-blank remainder wrappers).
+7. `Full Name: ____ (first) ____ (last)` stays **one** Deploy row (both blanks + hints). Hard-refresh after CSS changes.
+8. **Layout lock:** Deploy geometry lives in `/css/project/form-layout-core.css`, loaded **last** by `CommonTheme` (and re-appended after user-defined themes). Themes may set `--tawala-fib-label-width` / `--tawala-fib-table-max-width` only. Do not put FIB geometry in `{theme}/project.css`. Bake via `docker/tomcat/css/` into the image — do not rely on ephemeral `docker cp`. Unit: `formLayoutCore.test.mjs`.
 
 #### Blanks
 
 | Control | Rules |
 |---------|--------|
-| **Align right side** | Checkbox. **Enabled** only when **Left justified** or **Right justified** is selected; **greyed** for Above / Freeform (may retain checked appearance while disabled). When checked with Left/Right justified, blank **right edges** align and style token gains `…Justified`. |
+| **Align right side** | Checkbox. **Enabled** only when **Left justified** or **Right justified** is selected; **greyed** for Above / Freeform. When checked, style token gains `…Justified`. Field boxes **left-align** in a shared column; the **right boundary** is the farthest right content in that column (**blank or text**). Single blanks stretch to that edge; trailing hints stay inside it (Jul 22). |
 
 #### Screenshots (owner Jul 17, 2026)
 
@@ -166,11 +170,12 @@ Maps to item `style` `vertical` / `horizontal` / `multicolumn` (+ optional `colu
 
 **Browser Design + Preview + Deploy:** Text canvas rows and runtime CSS (`BASE_FORM_CSS` / Tomcat `default.css`) follow that type contract. Error must not pick up form-validation `.error` pink fill. DirtBowl Registration may still wrap instructional copy in a light banner; the type itself stays blue bold italic.
 
-**Style vs local formatting (owner Jul 17):** Item Style is the default look. Palette / character formatting on the text (bold, italic, color, face, size) **wins** when present — same as Word style vs direct formatting. To see Instructional or Error from Styles, leave runs at **Default** (or use **Reset Formatting**). Applying Styles does not strip local formatting. **Smoke (Jul 21):** Instructional Text → select a word → Bold and/or Italic toggles still apply (and can clear) on that run; Style color remains unless Color is changed. Do not reintroduce `* { font-weight/font-style: inherit !important }` under `.text-style-instructional` / `.text-style-error`.
+**Style vs local formatting (owner Jul 17):** Item Style is the default look. Palette / character formatting on the text (bold, italic, color, face, size) **wins** when present — same as Word style vs direct formatting. To see Instructional or Error from Styles, leave runs at **Default** (or use **Reset Formatting**). Applying Styles does not strip local formatting. **Smoke (Jul 21):** Instructional Text → select a word → Bold and/or Italic toggles still apply (and can clear) on that run; Style color remains unless Color is changed. Do not reintroduce `* { font-weight/font-style: inherit !important }` under `.text-style-instructional` / `.text-style-error`. **Deploy (Jul 22):** Clearing bold (`font-weight: normal` spans) must not come back as `<b>` on 8080; image-only fonts are not wrap-bolded. **Paragraphs with an inline image** must still style the surrounding text (Potluck T1/T3 Deploy-button lines). Re-applying Instructional/Error strips default-black chrome on image wrapper spans so Design matches. Redeploy after API restart.
 
+**Inline images (Jul 22):** Click the image to select → drag the SE handle to resize (min ~12px). Small UI screenshots auto-fit to ~18px tall on insert.
 **Deploy note (Jul 17):** Designer API must be running code that includes Text Style color export (`applyTextItemStyleToXml`). If the API process predates that change, re-Deploy will still drop colors — restart `node server/index.mjs` (port 3001), then Deploy again.
 
-**FIB multi-blank + Align right side:** Freeform is required for “Name ____ Email ____ Phone ____” on one line. Left/Right justified (+ Align right side) turn each blank into its own table row; do not Apply All justified styles onto a freeform multi-blank FIB.
+**FIB multi-blank on one Design soft-row:** Left/Right justified (+ Align right side) keep the soft-row as **one** Deploy table row — label = text before the first blank; later blanks and text (`Email (again)`, `(first)`/`(last)`) sit in the remainder on the same line. Separate soft-rows (Enter) become separate rows. Freeform also preserves soft-rows. Do not reintroduce exporters that split `Email ____ Email (again) ____` into two rows (owner Jul 22).
 
 | Group | Control |
 |-------|---------|

@@ -1,0 +1,221 @@
+/*
+ * Tawala form layout contracts — product CSS, not theme chrome.
+ *
+ * Loaded LAST by CommonTheme (after default.css and {theme}/project.css).
+ * UserDefinedTheme re-appends this after custom theme CSS so authors cannot
+ * override these rules via theme stylesheets.
+ *
+ * Intentional layout changes: Format → Styles on a FIB / MCQ / Text item
+ * (HTML classes such as leftAlignLabelsJustified). Character formatting
+ * (B/I/U/color) is orthogonal.
+ *
+ * Theme gutters: set --tawala-fib-label-width / --tawala-fib-table-max-width
+ * (e.g. dirtbowl2 → --reg-label-width). Defaults suit the Default theme.
+ *
+ * Spec: Tawala_Key_Documents/DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md
+ *       Tawala_Key_Documents/DESIGNER_FORM_FORMAT_TOOLBAR.md
+ */
+
+/* --- Shared FIB table geometry ------------------------------------------- */
+
+form table.fib {
+	width: 100% !important;
+	max-width: var(--tawala-fib-table-max-width, 36em) !important;
+	table-layout: fixed !important;
+	border-collapse: collapse !important;
+	/* Even gap between separate FIB items. */
+	margin: 0 0 0.75em 0 !important;
+}
+
+/*
+ * Multi-row left/right Align tables (one blank per <tr>): give each row breathing
+ * room. Java often zeroes padding on remainder wrappers — do not collapse ALL
+ * td padding or Signup-style 4-row FIBs glue into one block.
+ */
+form table.fib > tbody > tr > td,
+form table.fib > tr > td {
+	vertical-align: middle !important;
+	padding-top: 0.45em !important;
+	padding-bottom: 0.45em !important;
+	padding-right: 0.5em;
+}
+
+form table.fib td.label {
+	width: var(--tawala-fib-label-width, 9.5em) !important;
+	min-width: var(--tawala-fib-label-width, 9.5em) !important;
+	max-width: var(--tawala-fib-label-width, 9.5em) !important;
+	white-space: nowrap !important;
+	padding-right: 0.5em;
+}
+
+form table.fib td.label.left {
+	text-align: left !important;
+}
+
+form table.fib td.label.right {
+	text-align: right !important;
+}
+
+form table.fib td.blank,
+form table.fib > tbody > tr > td:not(.label),
+form table.fib > tr > td:not(.label) {
+	width: auto;
+}
+
+/* Nested remainder = same visual row as its label — keep tight. */
+form table.fib table.remainder td {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	vertical-align: middle !important;
+}
+
+/* --- Without Align right side: honor HTML size= (underscore length) ------ */
+
+form table.fib:not(.justified) td.blank input.text,
+form table.fib:not(.justified) td.blank input[type="text"] {
+	width: auto !important;
+	max-width: 100%;
+	min-width: 4ch;
+	box-sizing: content-box !important;
+}
+
+/*
+ * Align right side (…Justified):
+ * Shared field-column right boundary = farthest blank OR trailing text
+ * (e.g. "(last)"). Single blanks fill that edge; nothing sticks past it.
+ * Java HTML: td.label + td > table.remainder (not td.remainder).
+ */
+
+form table.fib.justified > tbody > tr > td.blank input.text,
+form table.fib.justified > tr > td.blank input.text,
+form table.fib.justified > tbody > tr > td.blank input[type="text"],
+form table.fib.justified > tr > td.blank input[type="text"] {
+	width: 100% !important;
+	max-width: 100%;
+	min-width: 4ch;
+	box-sizing: border-box !important;
+}
+
+form table.fib.justified table.remainder {
+	width: 100% !important;
+	max-width: 100% !important;
+	border-collapse: collapse !important;
+	table-layout: fixed !important;
+}
+
+form table.fib.justified table.remainder tr {
+	display: flex !important;
+	flex-wrap: nowrap !important;
+	align-items: flex-end !important;
+	width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+form table.fib.justified table.remainder td {
+	display: block !important;
+	vertical-align: bottom !important;
+	padding: 0 0.35em 0 0 !important;
+	border: none !important;
+	min-width: 0;
+}
+
+/* Equal flex on blanks — min-width prevents the 2nd blank collapsing to a sliver. */
+form table.fib.justified table.remainder td.blank,
+form table.fib.justified table.remainder td.right:has(input) {
+	flex: 1 1 0 !important;
+	min-width: 8ch !important;
+}
+
+form table.fib.justified table.remainder td.right:not(:has(input)),
+form table.fib.justified table.remainder td.left {
+	flex: 0 0 auto !important;
+	width: auto !important;
+	white-space: nowrap !important;
+}
+
+form table.fib.justified table.remainder input.text,
+form table.fib.justified table.remainder input[type="text"] {
+	width: 100% !important;
+	max-width: 100% !important;
+	min-width: 8ch !important;
+	box-sizing: border-box !important;
+}
+
+/*
+ * Freeform / Default layout (Java DefaultLayout → div.fib, one div per Design soft-row).
+ * Preview uses .fib-row-stacked (flex + line-height). Without these rules, Deploy soft-rows
+ * sit flush (0 gap) while instructional text + div.fib padding-bottom look uneven — and
+ * baseline-aligned inputs can look vertically “stair-stepped” vs labels.
+ */
+form div.fib:not(.vertical) {
+	margin: 0 0 0.75em 0 !important;
+	padding-bottom: 0 !important;
+	line-height: 1.7 !important;
+}
+
+form div.fib:not(.vertical) > div {
+	display: flex !important;
+	flex-wrap: wrap !important;
+	align-items: center !important;
+	gap: 0.35em 0.65em !important;
+	margin: 0 0 0.85em 0 !important;
+	line-height: 1.7 !important;
+	box-sizing: border-box !important;
+}
+
+form div.fib:not(.vertical) > div:last-child {
+	margin-bottom: 0 !important;
+}
+
+form div.fib:not(.vertical) input.text,
+form div.fib:not(.vertical) input[type="text"] {
+	vertical-align: middle !important;
+	margin: 0 !important;
+}
+
+/* Validation scripts must not become flex items that shove Phone/Last onto a lower line. */
+form div.fib:not(.vertical) > div > script {
+	display: none !important;
+}
+
+/*
+ * List tables (MQL / Response Totals / similar table.component):
+ * - Expand columns so cell text stays on one line (no wrap / “doubled” lines).
+ * - Cap overall width at ~6in (or 100% of the form if narrower).
+ * - Shrink to content and hug the left — no empty full-width frame.
+ * Manual column drag-resize (YUI) still allowed when Print/Export is on.
+ */
+:root {
+	--tawala-list-table-max-width: 6in;
+}
+
+form table.component,
+div.document table.component,
+div.tawalaDocument table.component,
+div.tawalaDataTable table,
+.preview-itemization-table table {
+	width: max-content !important;
+	max-width: min(var(--tawala-list-table-max-width, 6in), 100%) !important;
+	table-layout: auto !important;
+}
+
+form table.component th,
+form table.component td,
+div.document table.component th,
+div.document table.component td,
+div.tawalaDocument table.component th,
+div.tawalaDocument table.component td,
+div.tawalaDataTable th,
+div.tawalaDataTable td,
+div.tawalaDataTable .yui-dt-liner,
+.preview-itemization-table th,
+.preview-itemization-table td {
+	white-space: nowrap !important;
+}
+
+div.tawalaDataTable,
+.preview-itemization-table {
+	width: fit-content !important;
+	max-width: min(var(--tawala-list-table-max-width, 6in), 100%) !important;
+	overflow-x: auto;
+}

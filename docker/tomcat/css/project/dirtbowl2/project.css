@@ -21,6 +21,9 @@
   );
   --reg-field-area-width: var(--reg-name-pair-width);
   --reg-q4-row-gap: 0.5rem;
+  /* form-layout-core.css reads these (loads after this file). */
+  --tawala-fib-label-width: var(--reg-label-width);
+  --tawala-fib-table-max-width: calc(var(--reg-label-width) + var(--reg-field-width) + 0.75rem);
 }
 
 body {

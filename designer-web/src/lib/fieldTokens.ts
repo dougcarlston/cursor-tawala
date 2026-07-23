@@ -38,10 +38,7 @@ export function fieldTokenFromSelection(sel: Selection | null): HTMLElement | nu
       ? range.commonAncestorContainer
       : range.commonAncestorContainer.parentElement;
   if (!root) return null;
-  const scope = root.querySelectorAll
-    ? root
-    : root.parentElement;
-  if (!scope?.querySelectorAll) return null;
+  const scope: ParentNode = root;
   for (const token of scope.querySelectorAll(`.${FIELD_TOKEN_CLASS}`)) {
     if (!(token instanceof HTMLElement)) continue;
     try {
@@ -262,6 +259,29 @@ export function normalizeFieldTokenSpans(root: ParentNode): void {
   }
 
   ensureFieldTokenCaretGaps(root);
+}
+
+/**
+ * Safe HTML for FIB idle/edit `innerHTML`: turn plain `<<Field>>` into chips first so the
+ * browser does not treat `<ContactType1>` as an unknown tag (Signup “Your <>:” idle bug).
+ * Existing field-token spans are left intact.
+ */
+export function embedPlainFieldTokensAsHtml(source: string): string {
+  const chips: string[] = [];
+  let s = String(source ?? "").replace(
+    /<span\b[^>]*\bfield-token\b[^>]*>[\s\S]*?<\/span>/gi,
+    (chip) => {
+      const i = chips.length;
+      chips.push(chip);
+      return `\u0000CHIP${i}\u0000`;
+    },
+  );
+  s = s.replace(/<<([^<>]+)>>/g, (_, name) => {
+    const n = String(name).trim();
+    if (!n) return "";
+    return createFieldTokenElement(n).outerHTML;
+  });
+  return s.replace(/\u0000CHIP(\d+)\u0000/g, (_, i) => chips[Number(i)] ?? "");
 }
 
 export function readFieldNameFromToken(el: HTMLElement): string | null {

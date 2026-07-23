@@ -134,8 +134,11 @@ public class UserDefinedTheme implements ProjectTheme {
 	public List<String> getScreenStylesheetURLs() {
 		List<String> result = new ArrayList<String>(getParentTheme()
 				.getScreenStylesheetURLs());
+		/* Parent already ends with form-layout-core; custom theme must not sit after it. */
+		result.remove(CommonTheme.FORM_LAYOUT_CORE_CSS);
 		result.add(WellKnown.urls.getRenderUserDefinedTheme() + '?'
 				+ RenderThemeController.THEME_ID + '=' + id);
+		result.add(CommonTheme.FORM_LAYOUT_CORE_CSS);
 		return result;
 	}
 

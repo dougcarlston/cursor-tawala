@@ -182,9 +182,15 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 
 ### Notes
 
-- Blank length can be adjusted by **more/fewer underscores** and/or **Height**.
+- **Blank width (first rule):** Without **Align right side**, Deploy/Preview input width follows the **underscore run** (`blank.length` → HTML `size=`). Longer `_` → wider; shorter → narrower. Height is line count only.
+- **Field left edge (second rule):** Blank boxes **left-align with each other** across FIB rows, regardless of label length (shared label column). “Email:” must not pull its box left of “Full Name:”. Label text may be left- or right-justified *within* that column (Styles).
+- **Align right side (Justified):** A shared field-column **right boundary** — the farthest right content in that column (**blank or trailing text** such as `(last)`). Single-blank rows stretch to that edge; nothing sticks past it.
+- **Vertical spacing:** Even gap between stacked FIB rows/items. `table.fib` multi-row Align layouts use `0.45em` cell padding per row (not zero — that glued Signup Sheet justified rows). Nested `table.remainder` stays tight. Freeform `div.fib` soft-rows use `0.85em` margin between Design lines (Jul 22).
+- **Deploy layout lock:** Geometry is in `docker/tomcat/css/project/form-layout-core.css`, linked last by Java `CommonTheme.FORM_LAYOUT_CORE_CSS`. Themes/chrome must not override it; per-item Styles remain the intentional escape hatch.
+- **Label/field vertical align:** Align tables use `vertical-align: middle` on row cells so labels track inputs when rows are spaced.
+- **Same-line blanks (third rule):** Two or more blanks on one line stay **proportionate** / share space equally; if the row is too narrow, they **shorten equally** (shared flex-shrink + min-width), not one stub and one giant.
 - Visible prompt text and alternate label are **independent** (important for export/runtime field names).
-- **Multiple blanks** in one FIB item: **each blank** has its own Alternate Label (default `Qn:a`, `Qn:b`, …).
+- **Multiple blanks** in one FIB item: **each blank** has its own Alternate Label (default `Qn:a`, `Qn:b`, …) and its own underscore-derived preferred width.
 - **Edit vs idle:** while editing, underscore characters are typed literally. When the FIB row is **idle** on Design, underscore runs stay as `_` (length still drives blank metadata). **Preview** and **Deploy** convert `_` runs into input boxes.
 
 ### FIB must-not-break smoke (browser Designer)
@@ -193,10 +199,12 @@ Run before merging FIB canvas, `fibBlanks`, `fibPrompt`, or Form Preview/runtime
 
 1. Design: insert FIB, type `Name ________` in the prompt, blur/deselect so the row is idle → underscores remain visible `_` (not Design-canvas text boxes).
 2. Design: place caret in an underscore run while editing → Alternate Label / Height / Required still target that blank.
-3. Preview: same item shows **Name** + one input — **no** leftover `________` beside the box. (Restart `designer-web` API on `:3001` after `server/runtime.mjs` / `fibPrompt.mjs` edits — Node does not HMR those.)
-4. Deploy: a Design soft-row with two underscore blanks (e.g. `First ____ Last ____`) must stay **one line** with both boxes — not one blank per line (`fibToXml` / Redeploy to Java).
+3. Preview: same item shows **Name** + one input — **no** leftover `________` beside the box. Input width tracks underscore count (`size=` / `ch`), not a full-row stretch. (Restart `designer-web` API on `:3001` after `server/runtime.mjs` / `fibPrompt.mjs` edits — Node does not HMR those.)
+4. Deploy: a Design soft-row with two underscore blanks (e.g. `First ____ Last ____` or `Email ____ Email (again) ____`) must stay **one line** with both boxes — including Left/Right justified (+ Align right side). Only a soft-row break (Enter) starts a new Deploy row (`fibToXml` / Redeploy). Hard-refresh after CSS updates for row gaps.
 5. Deploy: B/I/U (and face/size/color when set) on FIB prompt labels in Design must appear on the Java form after Redeploy (`fibRichPromptToXml` / `fibToXml`).
-5. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata and Preview prompt parse).
+6. Design + Deploy: FIB prompt with a variable token `Your <<ContactType1>>: ____` shows the full `<<ContactType1>>` chip on Design idle (not `<>` / `>:`), and Deploy XML contains `<field name="ContactType1"/>` (not literal `Your >:`). Full-feature Signup Sheet Questionnaire Q2–Q4.
+7. Deploy: intro soft-row + later `Name:____` (e.g. after Enter in Design) must keep the input on the **Name** line — not an empty box under the intro and `Name:` orphaned below (`fibPrompt` must not let intro steal the blank).
+8. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata, Preview prompt parse, and field-token protection).
 
 ### Backlog parity note (July 2026)
 

@@ -34,14 +34,49 @@ function fontXml(text, escText, { bold = false, italic = false, size = 200 } = {
   return `<font face="Arial" size="${size}" color="000000">${inner}</font>`;
 }
 
+/** One `<field name="…"/>` wrapped in the default FIB font. */
+function fieldRefXml(name, escAttr) {
+  return `<font face="Arial" size="200" color="000000"><field name="${escAttr(String(name).trim())}"/></font>`;
+}
+
+/**
+ * Text that may embed `<<Field>>` mid-string (Signup ContactType labels).
+ * Emits real `<field/>` nodes — never escaped `<<…>>` text (Java would not substitute).
+ */
+function textWithFieldRefsXml(text, escAttr, escText, fontOpts) {
+  const raw = String(text ?? "");
+  if (!raw.includes("<<")) {
+    return fontOpts ? fontXml(raw, escText, fontOpts) : fontXml(raw, escText);
+  }
+  const re = /<<([^<>]+)>>/g;
+  let last = 0;
+  let m;
+  let out = "";
+  while ((m = re.exec(raw)) !== null) {
+    if (m.index > last) {
+      const chunk = raw.slice(last, m.index);
+      out += fontOpts ? fontXml(chunk, escText, fontOpts) : fontXml(chunk, escText);
+    }
+    out += fieldRefXml(m[1], escAttr);
+    last = m.index + m[0].length;
+  }
+  if (last < raw.length) {
+    const chunk = raw.slice(last);
+    out += fontOpts ? fontXml(chunk, escText, fontOpts) : fontXml(chunk, escText);
+  }
+  return out;
+}
+
 /** Prompt like `<<Custom>>:` → field token + trailing punctuation (SignupSheets Q10). */
 function promptRunXml(text, escAttr, escText) {
   const m = String(text).trim().match(/^<<([^<>]+)>>(.*)$/);
   if (!m) {
     const t = text.trim();
-    return fontXml(t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `, escText);
+    const shown =
+      t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `;
+    return textWithFieldRefsXml(shown, escAttr, escText);
   }
-  const field = `<font face="Arial" size="200" color="000000"><field name="${escAttr(m[1].trim())}"/></font>`;
+  const field = fieldRefXml(m[1], escAttr);
   const rest = m[2].trim();
   if (!rest) return field;
   const trailing = rest.startsWith(":") ? `: ` : `${rest} `;
@@ -95,11 +130,11 @@ function blankXml(blank, letter, escAttr, escText) {
   return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${heightAttr}/>`;
 }
 
-function labelFont(text, escText, { bold = false } = {}) {
+function labelFont(text, escAttr, escText, { bold = false } = {}) {
   const t = text.trim();
   if (!t) return "";
   const withColon = t.endsWith(":") ? `${t} ` : `${t}: `;
-  return fontXml(withColon, escText, { bold });
+  return textWithFieldRefsXml(withColon, escAttr, escText, { bold });
 }
 
 function hintParagraph(hints, escText) {
@@ -124,33 +159,17 @@ function isDobRow(row) {
 }
 
 /**
- * Java AlignedLabelsLayout / JustifiedInputsLayout only treat text before the *first*
- * blank as the label; later blanks land in the remainder cell (e.g. "Name: Email" + two boxes).
- * Split multi-blank Design soft-rows into one blank per paragraph before export.
+ * Java AlignedLabelsLayout / JustifiedInputsLayout: text before the *first* blank is
+ * the label cell; everything after (more blanks, “Email (again)”, `(first)`/`(last)`)
+ * stays in the remainder on the **same row**.
+ *
+ * Preserve each Design soft-row as one Deploy paragraph. Do **not** split
+ * `Email ____ Email (again) ____` or `First Name ____ Last Name ____` into multiple
+ * rows — legacy shows those on one line (owner Jul 22). Separate soft-rows (Enter)
+ * still become separate table rows.
  */
-function splitRowIntoSingleBlankRows(row) {
-  const blankCount = row.segments.filter((s) => s.type === "blank").length;
-  if (blankCount <= 1) return [row];
-
-  const out = [];
-  let leading = [];
-  for (const seg of row.segments) {
-    if (seg.type === "text") {
-      leading.push(seg);
-      continue;
-    }
-    out.push({ segments: [...leading, seg] });
-    leading = [];
-  }
-  if (leading.length > 0) {
-    if (out.length > 0) {
-      const last = out[out.length - 1];
-      out[out.length - 1] = { segments: [...last.segments, ...leading] };
-    } else {
-      out.push({ segments: leading });
-    }
-  }
-  return out;
+function paragraphsForAlignedRow(row) {
+  return [row];
 }
 
 /** Date of Birth row — label + inline (mm/dd/yyyy) hint, then mo/day/year (5173 layout). */
@@ -160,7 +179,7 @@ function dobRowsXml(row, letters, escAttr, escText) {
   const label = texts[0]?.text ?? "Date of Birth:";
   const trailing = texts[texts.length - 1]?.text ?? "(mm/dd/yyyy)";
 
-  let body = labelFont(label, escText, { bold: true });
+  let body = labelFont(label, escAttr, escText, { bold: true });
   body += fontXml(trailing, escText, { italic: true });
   body += "<tab/>";
   body += blankXml(fields[0].blank, letters.get(fields[0].blank), escAttr, escText);
@@ -174,7 +193,7 @@ function dobRowsXml(row, letters, escAttr, escText) {
 
 /**
  * leftAlignLabels: no <tab/> — Java only reads labels from simple paragraphs.
- * Walk text/blank in order (one blank expected after splitRowIntoSingleBlankRows).
+ * Walk text/blank in order. Multi-blank soft-rows stay one paragraph (remainder).
  * Do not force bold — Styles dialog labels are regular weight unless the author bolds them.
  */
 function leftAlignRowXml(row, letters, escAttr, escText) {
@@ -185,11 +204,11 @@ function leftAlignRowXml(row, letters, escAttr, escText) {
       const t = (seg.text ?? "").trim();
       if (!t) continue;
       if (t.startsWith("(")) {
-        body += fontXml(t, escText, { italic: true });
+        body += textWithFieldRefsXml(t, escAttr, escText, { italic: true });
       } else if (!seenBlank) {
-        body += labelFont(t, escText, { bold: false });
+        body += labelFont(t, escAttr, escText, { bold: false });
       } else {
-        body += fontXml(t, escText);
+        body += textWithFieldRefsXml(t, escAttr, escText);
       }
       continue;
     }
@@ -211,11 +230,11 @@ function rightAlignRowXml(row, letters, escAttr, escText) {
       const t = (seg.text ?? "").trim();
       if (!t) continue;
       if (t.startsWith("(")) {
-        body += fontXml(t, escText, { italic: true });
+        body += textWithFieldRefsXml(t, escAttr, escText, { italic: true });
       } else if (!seenBlank) {
         body += promptRunXml(seg.text, escAttr, escText);
       } else {
-        body += fontXml(t, escText);
+        body += textWithFieldRefsXml(t, escAttr, escText);
       }
       continue;
     }
@@ -271,17 +290,17 @@ function defaultRowXml(row, letters, escAttr, escText) {
       const raw = seg.text ?? "";
       const trimmed = raw.trim();
       if (!trimmed) {
-        if (raw) body += fontXml(raw, escText);
+        if (raw) body += textWithFieldRefsXml(raw, escAttr, escText);
         continue;
       }
       if (trimmed.startsWith("(")) {
-        body += fontXml(raw, escText, { italic: true });
+        body += textWithFieldRefsXml(raw, escAttr, escText, { italic: true });
       } else {
         // Keep Design spacing; add a trailing space after bare labels ending in ":"
         // Do not auto-bold Name/Email/Phone — only Design B/I/U (rich path) should bold.
         let shown = raw;
         if (trimmed.endsWith(":") && !/\s$/.test(raw)) shown = `${raw} `;
-        body += fontXml(shown, escText);
+        body += textWithFieldRefsXml(shown, escAttr, escText);
       }
       continue;
     }
@@ -372,7 +391,7 @@ export function fibToXml(item, escAttr, escText) {
       if (right || left) {
         const rows = parseFibPrompt(prompt, blanks);
         for (const row of rows) {
-          for (const sub of splitRowIntoSingleBlankRows(row)) {
+          for (const sub of paragraphsForAlignedRow(row)) {
             if (right) {
               parts.push(rightAlignRowXml(sub, letters, escAttr, escText));
             } else {

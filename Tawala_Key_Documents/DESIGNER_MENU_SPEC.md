@@ -505,7 +505,7 @@ Insert uses internal `*StatementView` names; palette uses short names:
 | Reset Formatting | | → Formatting Palette |
 | *(separator)* | | |
 | **Page Header…** | → **Project** (8080 stub) — `DESIGNER_PAGE_HEADER.md` |
-| Project Themes | → **Project → Themes…** (8080 stub) |
+| Project Themes | → **Project → Project Themes** submenu (Jul 22) — full legacy list; **blue** = local Tomcat CSS under `docker/tomcat/css/project/`; grey = stub (still sets `themePath`) |
 | Color | → Formatting Palette |
 | Tabs... | → **Project → Tabs…** (wired) |
 | **Styles** → | → **Project → Styles** (wired) — `DESIGNER_FORM_FORMAT_TOOLBAR.md` |
@@ -519,12 +519,13 @@ Insert uses internal `*StatementView` names; palette uses short names:
 | *(separator)* | |
 | Choose... | Standard Windows **Color** dialog |
 
-### Format → Project Themes → (legacy list; browser stub on Project)
+### Format → Project Themes → (legacy list; browser: **Project → Project Themes**)
 
-Checklist; one theme active (✓). Themes observed:
+Checklist; one theme active (✓). Alphabetical (legacy SortedDictionary). **Jul 22:** submenu live — blue = local CSS under `docker/tomcat/css/project/`; grey = stub (still writes `themePath`).
 
 Baseball, Basic Blue, Basic Green, Basic Pink, Basic Yellow, Big Q, Blue Lined Paper, Chocolate, Dark, **Default**, Dirtbowl, Dirtbowl - Variable Width, Full Moon, Green Lined Paper, Green Tea, Light Green, Lime, MVSC, Orange Swirl, Plain, Purple Haze, Red, Red Rays, Salzburg, Soup's On, Tennis, Tin Car Bell, Yellow
 
+**Local CSS today:** Default, Baseball, Big Q (`style2`), Green Tea, Dirtbowl - Variable Width (`dirtbowl2`), MVSC, Red Rays.
 ### Format → Tabs... dialog (legacy; browser: Project → Tabs…)
 
 Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / twips on export).
@@ -546,7 +547,7 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Tables menu | **Skipped** — tables stay on Formatting Palette |
 | Live formatting | Formatting Palette |
 | When returning | Optional palette↔legacy Format label consistency pass |
-| **8080 / CSS stubs** | **Page Header…**, **Themes…** on Project (Deployed page chrome) |
+| **8080 / CSS stubs** | **Page Header…** still stub. **Project Themes** wired Jul 22 (blue = local CSS). |
 | **Wired on Project** | **Tabs…**; **Styles…** (selection-routed FIB/MCQ/Text dialog; Apply Selected / form-scoped Apply All) |
 
 ---
@@ -559,7 +560,7 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Project Manager… | Live |
 | *(separator)* | |
 | Page Header… | **Stub** — 8080 / Tomcat / CSS track |
-| Themes… | **Stub** — 8080 / Tomcat / CSS track |
+| Themes… | **Project Themes** fly-out (Jul 22) — checklist ✓ on current `themePath`; blue labels for CSS present locally (`default`, `baseball`, `greentea`, `dirtbowl2`, `mvsc`, `redrays`, `style2`/Big Q); grey stubs for the rest |
 | *(separator)* | |
 | Tabs… | **Wired** — Form window; selected Heading/Text/FIB/MCQ |
 | Styles… | **Wired** — Form window; opens dialog for selected FIB / MCQ / Text only |

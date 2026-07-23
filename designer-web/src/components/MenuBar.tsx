@@ -29,6 +29,7 @@ import {
 } from "@/lib/fieldsPaletteSelection";
 import { insertFieldIntoActiveTarget, isInsideActiveMdiWindow } from "@/lib/fieldInsertion";
 import { insertFieldTokenAtSelection } from "@/lib/fieldTokens";
+import { PROJECT_THEMES } from "@/lib/projectThemes";
 import {
   canDeleteSelection,
   canDeployProject,
@@ -79,6 +80,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
   const selection = useProjectStore((s) => s.selection);
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
   const setStatus = useProjectStore((s) => s.setStatus);
+  const setProjectTheme = useProjectStore((s) => s.setProjectTheme);
   const dirty = useProjectStore((s) => s.dirty);
   const focus = useSyncExternalStore(
     subscribeFormattingFocus,
@@ -253,13 +255,39 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         >
           Page Header…
         </button>
-        <button
-          type="button"
-          disabled
-          title="Deployed theme CSS — park for 8080 / Tomcat / CSS track"
-        >
-          Themes…
-        </button>
+        <MenuSubmenu label="Project Themes">
+          {PROJECT_THEMES.map((theme) => {
+            const current = (project.themePath || "default").trim() || "default";
+            const checked = current === theme.path;
+            return (
+              <button
+                key={theme.path}
+                type="button"
+                className={
+                  theme.hasLocalCss ? "menu-theme-available" : "menu-theme-stub"
+                }
+                title={
+                  theme.hasLocalCss
+                    ? `Set themePath to "${theme.path}" (local Deploy CSS available)`
+                    : `Stub — sets themePath to "${theme.path}" (no local CSS yet; Deploy may still find it on Tomcat)`
+                }
+                onClick={() => {
+                  setProjectTheme(theme.path);
+                  setStatus(
+                    theme.hasLocalCss
+                      ? `Theme: ${theme.label} (${theme.path}) — Deploy uses local CSS`
+                      : `Theme: ${theme.label} (${theme.path}) — stub; Redeploy when CSS is installed`,
+                  );
+                }}
+              >
+                <span className="menu-theme-check" aria-hidden>
+                  {checked ? "✓" : ""}
+                </span>
+                {theme.label}
+              </button>
+            );
+          })}
+        </MenuSubmenu>
         <div className="menu-separator" />
         <button
           type="button"
