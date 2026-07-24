@@ -1,4 +1,5 @@
 import { tabPositionsXmlFromInches } from "./tabPositionsXml.mjs";
+import { richHtmlFragmentToFontXml } from "./fibRichPromptToXml.mjs";
 
 const TAB_MC_DEFAULT = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
@@ -102,17 +103,49 @@ function fontXml(text, escText, { bold = false, italic = false } = {}) {
   return `<font face="Arial" size="200" color="000000">${inner}</font>`;
 }
 
-/** MCQ question may be canvas-inline HTML; export/runtime use plain text (formatting parity TBD). */
+/** True when Design stored canvas HTML (or field chips) rather than a plain string. */
+function questionLooksRich(question) {
+  const q = String(question ?? "");
+  if (/<[a-z/!]/i.test(q)) return true;
+  if (/<<[^<>]+>>/.test(q) || /&lt;&lt;/.test(q)) return true;
+  return false;
+}
+
+/** Strip tags for plain-text fallback / parenthetical heuristic. */
 function questionPlainText(question) {
-  return String(question ?? "").replace(/<[^>]+>/g, "");
+  return String(question ?? "")
+    .replace(/<[^>]+>/g, "")
+    .replace(/&nbsp;/gi, " ")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&amp;/g, "&")
+    .replace(/\u200b/g, "")
+    .trim();
 }
 
 function tabsFor(item) {
   return tabPositionsXmlFromInches(item.tabPositions, TAB_MC_DEFAULT);
 }
 
-function questionParagraph(question, escText, tabsXml) {
-  const q = questionPlainText(question);
+/**
+ * MCQ `<question>` paragraph.
+ * Rich Design HTML → font/b/i/u (FIB walker). Plain strings keep legacy bold +
+ * trailing `(note)` italic heuristic for older JSON without markup.
+ */
+function questionParagraph(question, escAttr, escText, tabsXml) {
+  const raw = String(question ?? "");
+  if (!raw.trim()) {
+    return `<paragraph indent="0" align="left">${tabsXml}</paragraph>`;
+  }
+
+  if (questionLooksRich(raw)) {
+    const inner = richHtmlFragmentToFontXml(raw, escAttr, escText);
+    if (inner) {
+      return `<paragraph indent="0" align="left">${tabsXml}${inner}</paragraph>`;
+    }
+  }
+
+  const q = questionPlainText(raw);
   const italicMatch = q.match(/^(.*?)(\([^)]+\))\s*$/);
   if (italicMatch) {
     const main = italicMatch[1].trim();
@@ -165,5 +198,5 @@ export function mcToXml(item, escAttr, escText) {
     ? dynamicMcBody(dynamic, escAttr)
     : staticChoicesXml(choices, escAttr, escText, tabsXml);
 
-  return `<mc label="${escAttr(item.label)}"${altLabel} onlyone="${item.onlyone !== false ? "true" : "false"}" required="${item.required ? "true" : "false"}"${styleAttr}${colAttr}${padAttr}><question>${questionParagraph(item.question, escText, tabsXml)}</question>${body}</mc>`;
+  return `<mc label="${escAttr(item.label)}"${altLabel} onlyone="${item.onlyone !== false ? "true" : "false"}" required="${item.required ? "true" : "false"}"${styleAttr}${colAttr}${padAttr}><question>${questionParagraph(item.question, escAttr, escText, tabsXml)}</question>${body}</mc>`;
 }

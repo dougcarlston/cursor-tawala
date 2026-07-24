@@ -16,6 +16,7 @@ import {
   openInvitationInsertFromEditor,
 } from "@/lib/linkInsert";
 import { openFormItemStylesDialog, stylesKindForFormItem } from "@/lib/formItemStyles";
+import { openPageHeaderDialog } from "@/lib/pageHeaderDialog";
 import { windowMenuLabel } from "@/lib/mdiWindowLayout";
 import {
   getViewChrome,
@@ -61,9 +62,10 @@ interface Props {
   onOpen: () => void;
   onDeploy: () => void;
   onDelete: () => void;
+  onAbout: () => void;
 }
 
-export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
+export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: Props) {
   const insertFormItem = useProjectStore((s) => s.insertFormItem);
   const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
   const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
@@ -247,11 +249,10 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
           Email Delivery…
         </button>
         <div className="menu-separator" />
-        {/* 8080 / CSS track — stubs until that agent owns page chrome */}
         <button
           type="button"
-          disabled
-          title="Deployed page banner — park for 8080 / Tomcat / CSS track"
+          title="Project-wide banner text and optional image on deployed pages"
+          onClick={() => openPageHeaderDialog()}
         >
           Page Header…
         </button>
@@ -371,12 +372,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete }: Props) {
         })}
       </MenuDrop>
       <MenuDrop label="Help">
-        {/* Stub — owner will paste legacy copyright + build status text later. */}
-        <button
-          type="button"
-          disabled
-          title="About dialog stub — copyright / legal notices TBD (Owner review queue #13; do not ship without)"
-        >
+        <button type="button" onClick={onAbout}>
           About Tawala Designer
         </button>
       </MenuDrop>

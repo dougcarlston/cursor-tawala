@@ -9,6 +9,7 @@ import {
   takeMovingFieldToken,
 } from "@/lib/fieldInsertion";
 import {
+  embedPlainFieldTokensAsHtml,
   ensureFieldTokensDraggable,
   insertFieldTokenAtSelection,
   moveFieldTokenToSelection,
@@ -322,7 +323,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (document.activeElement === el) return;
     const next = html || "";
     if (next !== lastHtml.current) {
-      el.innerHTML = next;
+      el.innerHTML = embedPlainFieldTokensAsHtml(next);
       lastHtml.current = next;
       if (formattingKind === "document") {
         ensureDocumentTableLayout(el);
@@ -348,7 +349,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
   useEffect(() => {
     const el = surfaceRef.current;
     if (el && !el.innerHTML && html) {
-      el.innerHTML = html;
+      el.innerHTML = embedPlainFieldTokensAsHtml(html);
       normalizeFieldTokenSpans(el);
       ensureFieldTokensDraggable(el);
       ensureFunctionTokensDraggable(el);
@@ -644,7 +645,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       onMouseDown={(e) => e.stopPropagation()}
       onClick={(e) => e.stopPropagation()}
     >
-      <div className="rich-surface-wrap">
+      <div className="rich-surface-wrap legacy-scrollbar">
         <div
           ref={surfaceRef}
           className={`rich-surface${fieldDragOver ? " field-drop-active" : ""}`}

@@ -47,5 +47,7 @@ describe("resolveTheme", () => {
     expect(BASE_FORM_CSS).toContain("div.text.text-item-error");
     expect(BASE_FORM_CSS).toContain("color: #000080");
     expect(BASE_FORM_CSS).toContain("color: #c00000");
+    expect(BASE_FORM_CSS).toMatch(/b,\s*strong\s*\{\s*font-weight:\s*bold/);
+    expect(BASE_FORM_CSS).toMatch(/i,\s*em\s*\{\s*font-style:\s*italic/);
   });
 });

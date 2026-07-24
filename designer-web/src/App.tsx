@@ -15,6 +15,7 @@ import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { LinkInsertHost } from "./components/LinkInsertHost";
 import { ProjectChromeHost } from "./components/ProjectChromeHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
+import { AboutDialog } from "./components/AboutDialog";
 import { SaveAsDialog } from "./components/SaveAsDialog";
 import type { TemplateEntry } from "@/templates/catalog";
 import {
@@ -68,6 +69,7 @@ export default function App() {
   const deploy = useProjectStore((s) => s.deploy);
   const fileRef = useRef<HTMLInputElement>(null);
   const [showNewProject, setShowNewProject] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const showSaveAs = useSyncExternalStore(
     subscribeSaveAsDialog,
     isSaveAsDialogOpen,
@@ -212,6 +214,7 @@ export default function App() {
       if (showNewProject) return;
       runShellDelete();
     },
+    onAbout: () => setShowAbout(true),
   };
 
   return (
@@ -287,6 +290,7 @@ export default function App() {
         onClose={() => setShowNewProject(false)}
         onSelect={(t) => void onPickTemplate(t)}
       />
+      <AboutDialog open={showAbout} onClose={() => setShowAbout(false)} />
       <SaveAsDialog open={showSaveAs} />
       <FunctionPickerHost />
       <LinkInsertHost />

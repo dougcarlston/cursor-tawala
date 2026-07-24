@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { FormItemStylesDialog } from "./FormItemStylesDialog";
 import { EmailDeliveryDialog } from "./EmailDeliveryDialog";
+import { PageHeaderDialog } from "./PageHeaderDialog";
 import {
   applyStyleToAllFormItems,
   clearFormItemStylesRequest,
@@ -17,10 +18,15 @@ import {
   getEmailDeliveryOpen,
   subscribeEmailDelivery,
 } from "@/lib/emailDelivery";
+import {
+  clearPageHeaderDialog,
+  getPageHeaderDialogOpen,
+  subscribePageHeaderDialog,
+} from "@/lib/pageHeaderDialog";
 import { useProjectStore } from "@/store/projectStore";
 import type { FibItem, McItem, TextItem } from "@/types/tawala";
 
-/** Hosts Project → Styles… and Email Delivery… dialogs. */
+/** Hosts Project → Styles… / Email Delivery… / Page Header… dialogs. */
 export function ProjectChromeHost() {
   const stylesKind = useSyncExternalStore(
     subscribeFormItemStyles,
@@ -30,6 +36,11 @@ export function ProjectChromeHost() {
   const emailOpen = useSyncExternalStore(
     subscribeEmailDelivery,
     getEmailDeliveryOpen,
+    () => false,
+  );
+  const pageHeaderOpen = useSyncExternalStore(
+    subscribePageHeaderDialog,
+    getPageHeaderDialogOpen,
     () => false,
   );
   const project = useProjectStore((s) => s.project);
@@ -45,6 +56,7 @@ export function ProjectChromeHost() {
   const selectedItem =
     selectedItemIndex != null ? formItems[selectedItemIndex] ?? null : null;
 
+  let stylesDialog = null;
   if (stylesKind) {
     const selectedOfKind =
       selectedItem && itemMatchesStylesKind(selectedItem, stylesKind)
@@ -53,7 +65,7 @@ export function ProjectChromeHost() {
     const formItemCount = countFormItemsOfKind(formItems, stylesKind);
     const kindLabel = stylesKindLabel(stylesKind);
 
-    return (
+    stylesDialog = (
       <FormItemStylesDialog
         kind={stylesKind}
         selectedItems={selectedOfKind}
@@ -87,9 +99,11 @@ export function ProjectChromeHost() {
     );
   }
 
-  if (emailOpen) {
-    return <EmailDeliveryDialog />;
-  }
-
-  return null;
+  return (
+    <>
+      {stylesDialog}
+      {emailOpen ? <EmailDeliveryDialog /> : null}
+      <PageHeaderDialog open={pageHeaderOpen} onClose={() => clearPageHeaderDialog()} />
+    </>
+  );
 }

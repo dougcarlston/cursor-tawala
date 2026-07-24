@@ -53,12 +53,14 @@ export function InspectorPanel() {
   return (
     <div className="inspector-panel inspector-panel-fields-only">
       <div className="panel-title">Fields</div>
-      <FieldsPalette
-        project={project}
-        activeFormName={formName}
-        processRecordContext={processRecordContext}
-        conditionsRecordForm={conditionsRecordForm}
-      />
+      <div className="fields-palette">
+        <FieldsPalette
+          project={project}
+          activeFormName={formName}
+          processRecordContext={processRecordContext}
+          conditionsRecordForm={conditionsRecordForm}
+        />
+      </div>
     </div>
   );
 }

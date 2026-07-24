@@ -1,5 +1,6 @@
 /**
- * Insert → Function picker visibility (deferred stubs hidden).
+ * Insert → Function picker visibility — four stubs parked (Owner Jul 24)
+ * until after the other AI-Tawala project branches; payment later = generic API.
  */
 import { describe, expect, it } from "vitest";
 import {

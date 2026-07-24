@@ -139,7 +139,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 
 1. Set **Trebuchet MS** + **20 pt** on a Form Text body → type a line → **Return** → type again → second paragraph stays **Trebuchet 20**; palette Face/Size still shows that pair (not Arial / default 12). Cross-check Document smoke #12 in `DESIGNER_DOCUMENT_EDITOR.md`.
 2. Insert a function (`fx`) into Form Text → **single-click** the `<<…>>` chip to select it → **Del** or **Backspace** removes **only** the chip (Text row stays). **Double-click** opens Configure (legacy parity). Same when the row is idle (border click) but the chip is highlighted. Row/toolbar **×** with a highlighted chip also removes the chip, not the whole Text item.
-3. **Bold on Report / structured Text** (e.g. Multiple Question Survey “Age:” beside RESPONSE TOTALS): select the word → Formatting Palette **Bold**. Must stay bold after blur/save (not only while selected). Smoke (Jul 23): styleWithCSS spans and `<b>` both round-trip.
+3. **Bold on Report / structured Text** (e.g. Multiple Question Survey “Age:” beside RESPONSE TOTALS): select the word → Formatting Palette **Bold**. Must stay bold after blur/save (not only while selected). Smoke (Jul 23): styleWithCSS spans and `<b>` both round-trip. **Deploy (Jul 24):** Tomcat `default.css` Yahoo reset zeroes `strong`/`em`; Java Bold emits `<strong>` — restore `b, strong { font-weight: bold }` after the reset or Age: looks normal on 8080 while Design/Preview stay bold.
 3. **Fields replace (Jul 23):** In a Text table cell with `<<attendeeName>>` (chip selected or not) → drop another field onto it → cell becomes the new `<<…>>` only — never `<<attende<<…>>eName>>`. Same for Heading / FIB prompt / MCQ question.
 
 ---
@@ -270,6 +270,14 @@ Opened via **Edit** when using stored data.
 
 Right panel shows context help for the focused field.
 
+### MCQ question rich-text Deploy smoke (Jul 24)
+
+1. MCQ question → select a word → Formatting Palette **Bold** (and optionally **Italic** / underline).
+2. Soft-blur the row → Design still shows the formatting.
+3. **Redeploy** → Java form question keeps **B/I/U** (not plain). Palette `font-weight: bold` spans must export as `<b>` too (`mcToXml` / `richHtmlFragmentToFontXml`).
+4. Design: after **Italic** (and Bold / underline), the word stays highlighted so a second palette click undoes without reselecting.
+5. Unit: `cd designer-web && npm test -- --run server/mcToXml.test.mjs src/lib/paletteCommands.inlineMarkSelection.dom.test.ts`
+
 ### MCQ stored-data must-not-break smoke
 
 1. MCQ → **Choice source** → **Choices are from stored data** → Configure Function (DYNAMIC MCQ) opens.
@@ -381,4 +389,4 @@ Example (SportsDashboards template in test fixtures):
 
 ---
 
-*Last updated: July 23, 2026 — Deploy/Preview focus first FIB when it precedes first MCQ; MCQ Configure Function wired earlier same day.*
+*Last updated: July 24, 2026 — MCQ question rich-text Deploy (`mcToXml`); earlier Jul 23 Deploy/Preview focus first FIB when it precedes first MCQ; MCQ Configure Function.*

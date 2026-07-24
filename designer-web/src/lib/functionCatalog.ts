@@ -43,7 +43,13 @@ export interface FunctionDef {
   formOnly?: boolean;
   /**
    * When true, omitted from Insert → Function… categories (catalog + Configure
-   * remain for import / future work). Used for Document HTML→XML deferred stubs.
+   * remain for import / future work).
+   *
+   * **Owner Jul 24:** the four Document HTML→XML stubs (`categorizer`,
+   * `export-team-roster`, `link-to-project-details`, `paypal-single-item-button`)
+   * stay picker-hidden for this Designer build. Revisit **after** the other two
+   * AI-Tawala project branches finish. Payment must return as a **generic**
+   * third-party checkout API — not a PayPal-only mode.
    */
   pickerHidden?: boolean;
 }
@@ -102,7 +108,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     name: "CATEGORIZER",
     description:
       "Provides an interactive (drag and drop) method for grouping stored records into categories.",
-    pickerHidden: true,
+    pickerHidden: true, // Jul 24: parked until other project branches finish
     parameters: [
       {
         id: "category-names",
@@ -213,7 +219,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "export-team-roster",
     name: "EXPORT TEAM ROSTER",
     description: "Exports a team roster table (legacy All-category function).",
-    pickerHidden: true,
+    pickerHidden: true, // Jul 24: parked until other project branches finish
     parameters: [],
   },
   {
@@ -241,7 +247,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "link-to-project-details",
     name: "LINK TO PROJECT DETAILS IN MY TAWALA",
     description: "Creates a link to navigate to the project details of the current project.",
-    pickerHidden: true,
+    pickerHidden: true, // Jul 24: parked until other project branches finish
     parameters: [
       {
         id: "description",
@@ -307,8 +313,8 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "paypal-single-item-button",
     name: "PAYPAL SINGLE ITEM PURCHASE BUTTON",
     description:
-      "Creates a button to sell a single item, request payment, or receive a donation. Requires Tawala online payment support.",
-    pickerHidden: true,
+      "Legacy PayPal single-item button. Parked Jul 24 — future payment support will be a generic third-party checkout API, not PayPal-only. Requires online payment arrangement when revived.",
+    pickerHidden: true, // Jul 24: parked; revisit as generic payment after other branches
     parameters: [
       {
         id: "button-type",

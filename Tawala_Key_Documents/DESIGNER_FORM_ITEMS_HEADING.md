@@ -56,7 +56,7 @@ Transitions:
 |----------|--------------|-----------------|
 | **Label** | Orange (or light gray when collapsed) square, bold **`H1`**, **`H2`**, … — **click the badge to edit it inline** (browser Designer, July 2026) | XML `label` attribute; `H` = Heading, digit = sequence among headings on the form. Trimmed; empty rejected. **Not** editable from the Properties panel. |
 | **Content** | Inline rich-text field (editing) or styled heading text (collapsed) | RTF in legacy; browser Designer stores minimal inline markup with **per-run** size spans (`<span class="heading-size-main\|sub">`); bare text = Main |
-| **Heading Type** | Label **Heading Type:** + dropdown **below** text — visible **only while editing** | XML `type` = `Main` or `Sub`; maps to theme heading styles (36pt Main in default RTF). **Browser Designer, July 2026: applies to the highlighted selection only** (per-run), so one heading box can mix Main and Sub runs — not a whole-box level. |
+| **Heading Type** | Label **Heading Type:** + dropdown **below** text — visible **only while editing** | XML `type` = `Main` or `Sub`; maps to theme heading styles (Java: Main → `<h1 class="heading">`, Sub → `<h2 class="subheading">`). **Browser Designer:** Type applies to the **selection** (or pends at the caret). Mixed Main+Sub lines in one box export as **multiple** `<heading>` elements so Preview/Deploy keep both sizes and line breaks. |
 
 Default placeholder on insert: **`[Replace this with heading of your own.]`** (`Resources.HeadingItemDefaultRTF`).
 
@@ -172,12 +172,20 @@ Heading styling is controlled by **Heading Type** (Main/Sub) and theme/global he
 
 **Deferred this pass:** Full rich-text WYSIWYG toolbar, RTF round-trip, per-character formatting (bold/italic/color) in Heading text.
 
-**Per-selection sizing + badge label (IMPLEMENTED, July 2026):** `HeadingCanvasRow` is a contenteditable inline editor.
+**Per-selection sizing + badge label (IMPLEMENTED July 2026; export split Jul 24):** `HeadingCanvasRow` is a contenteditable inline editor.
 
-- **Heading Type applies to the highlighted selection only** (per-run), stored as inline `<span class="heading-size-main|sub">` markup in `content`; bare (unwrapped) text = Main. A heading box may mix Main and Sub runs. With no selection, choosing a size "pends" it for the next typed characters (standard rich-text behavior). Only these two size classes are kept — any pasted/other formatting is stripped on commit.
+- **Heading Type applies to the selection** (or pends at the caret for the next typed characters). Select line 1 → Main, line 2 → Sub to get two sizes in one Design box.
 - **Label is edited in the badge** (click → inline input; Enter/blur commits, Esc cancels; trimmed, empty rejected). Removed from the Properties panel.
-- **Migration:** legacy headings that stored a single whole-box `level` render the entire content at that size until re-edited; the first edit converts them to per-run markup and clears `level`.
-- **Export/runtime (`jsonToXml.mjs`, `runtime.mjs`):** the legacy single-`type` `<heading>` XML and the `<h2>/<h3>` runtime can't express per-run sizes, so heading content is reduced to plain text on export/render (size spans stripped). Per-run parity there is deferred.
+- **Migration:** legacy headings that stored a single whole-box `level` render the entire content at that size until re-edited; the first edit converts them to size markup and clears `level`.
+- **Export/runtime (`jsonToXml.mjs`, `runtime.mjs`, `headingExport.mjs`):** each Design line/size segment → its own Deploy `<heading type="Main|Sub">` / Preview `h1.heading` / `h2.subheading`. Same-size multi-line keeps `\n` (Java renders `<br />`). `<br>` is never stripped to glue sentences together.
+
+### Heading Deploy smoke (Jul 24)
+
+1. Heading → type a Main line, Enter, type a Sub line → select each line and set **Heading Type** Main / Sub → Design shows two sizes.
+2. Preview → two lines, Main large + Sub smaller (not one glued line like `hotelWe`).
+3. Redeploy → same on 8080 (`h1.heading` then `h2.subheading`); text is bold and sized. Stacked Main→Sub use ~2.25rem gap (Design blank line / `<br><br>`), not glued glyphs.
+4. Edge: Main+Sub as adjacent spans with **no** `<br>` (wrap-looking Design) still splits on export.
+5. Unit: `cd designer-web && npm test -- --run server/headingExport.test.mjs`
 
 ---
 

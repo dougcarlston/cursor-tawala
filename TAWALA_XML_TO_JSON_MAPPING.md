@@ -36,7 +36,7 @@
 **Mapping notes:**
 - `format` — XML had separate `format` (Designer authoring version, e.g. `"1.11"`) and `designerBuild` (integer build number). JSON uses a single `format` field representing the JSON schema version. Set to `"2.0"` for all new projects.
 - `_originalFormat` — preserved as a non-functional annotation on projects converted from XML (e.g. `"_originalFormat": "1.10"`). Ignored by the runtime.
-- `<pageHeader>` — page-level styling metadata. Not represented in JSON (absorbed into `themePath`). Dropped with a conversion warning.
+- `<pageHeader>` — project banner text + optional image. JSON: `pageHeader` + imagedef in `images` (Jul 24).
 - `<styles>` — global default item styles (`fibItemStyle`, `mcItemStyle`, `textItemStyle`). Not currently in JSON schema; dropped with a warning.
 - `<imagedef>` / `<images><imagedef>` — mapped to `project.images[]` (`id`, `imageFormat` PNG|GIF|JPEG, base64 `data`). Export via `jsonToXml.mjs` emits `<imagedef>` again.
 

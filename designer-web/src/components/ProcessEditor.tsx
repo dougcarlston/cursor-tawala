@@ -449,7 +449,10 @@ export function ProcessEditor({ processName }: Props) {
   };
 
   const submitSend = () => {
-    const cmd = buildSendCommand(sendBuilder, knownVariables, false);
+    const hasPageHeaderContent = !!(
+      project.pageHeader?.text?.trim() || project.pageHeader?.imageId
+    );
+    const cmd = buildSendCommand(sendBuilder, knownVariables, hasPageHeaderContent);
     if (isModifySend && selectedProcessCommandPath) {
       setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
       return;
@@ -586,6 +589,12 @@ export function ProcessEditor({ processName }: Props) {
                   project={project}
                   documentNames={documentNames}
                   knownVariables={knownVariables}
+                  hasPageHeaderContent={
+                    !!(
+                      project.pageHeader?.text?.trim() ||
+                      project.pageHeader?.imageId
+                    )
+                  }
                 />
               )}
               {processStatementPanel === "append" && (
@@ -645,7 +654,7 @@ export function ProcessEditor({ processName }: Props) {
           </>
         )}
         <div
-          className={`process-script-scroll${dragInsertPath != null ? " process-script-dragging" : ""}`}
+          className={`process-script-scroll legacy-scrollbar${dragInsertPath != null ? " process-script-dragging" : ""}`}
           ref={scriptRef}
           onDragOver={(e) => {
             const isPalette = hasProcessStatementDrag(e.dataTransfer);

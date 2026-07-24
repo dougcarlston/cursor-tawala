@@ -66,7 +66,7 @@ export function NewProjectDialog({ open, onClose, onSelect }: Props) {
 
         <div className="new-project-templates-pane">
           <div className="new-project-templates-label">Templates:</div>
-          <div className="new-project-list">
+          <div className="new-project-list legacy-scrollbar">
             {TEMPLATE_CATEGORIES.map((category) => {
               const entries = byCategory.get(category) ?? [];
               if (!entries.length) return null;

@@ -22,7 +22,7 @@ export function ProcessStatementsPalette() {
   return (
     <>
       <div className="items-palette-title">Statements</div>
-      <div className="items-palette-body statements-palette-body">
+      <div className="items-palette-body statements-palette-body legacy-scrollbar">
         <div className="form-insert-buttons statements-palette-buttons">
           {PROCESS_STATEMENT_PALETTE.map((def, i) => {
             const prev = PROCESS_STATEMENT_PALETTE[i - 1];

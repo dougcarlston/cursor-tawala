@@ -12,7 +12,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
  */
 export const BASE_FORM_CSS = `html { font-size: 13px; -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
 body { font-family: Arial, Helvetica, sans-serif; font-size: 13px; max-width: 800px; margin: 2rem auto; padding: 0 1rem; line-height: 1.4; color: #222; }
-h1 { font-size: 1.25rem; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+/* Form window title only — do not style Main headings (Java uses h1.heading). */
+h1.form-title { font-size: 1.25rem; color: #333; border-bottom: 1px solid #ccc; padding-bottom: 0.5rem; }
+/* Match Deploy theme defaults: Main = h1.heading, Sub = h2.subheading (HeadingItem / SubheadingItem). */
+h1.heading { font-size: 2.4em; font-weight: bold; color: #222; margin: 0.3em 0; border: none; padding: 0; }
+h2.subheading { font-size: 1.6em; font-weight: bold; color: #222; margin: 0.3em 0; }
+/* Project Page Header banner (Java PageHeader → h1.pageHeading).
+   Text overlays the image; phone-size photos are cropped to a short banner. */
+h1.pageHeading { position: relative; margin: 0 0 0.75rem; padding: 0.5em 1em; font-size: 1.6em; font-weight: bold; color: #222; border: none; overflow: hidden; box-sizing: border-box; }
+h1.pageHeading:has(img),
+h1.pageHeading.pageHeading-withImage { padding: 0; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.75); max-height: 160px; }
+h1.pageHeading:has(img) img,
+h1.pageHeading.pageHeading-withImage img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; border: 0; }
+h1.pageHeading:has(img) > div,
+h1.pageHeading.pageHeading-withImage div { position: relative; z-index: 1; margin: 0; padding: 0.75em 1em; }
 .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }
 fieldset.mc { margin: 1rem 0; border: 1px solid #ccc; padding: 8px 12px; }
 .preview-mc-choice { display: block; margin: 4px 0; }
@@ -20,6 +33,9 @@ fieldset.mc { margin: 1rem 0; border: 1px solid #ccc; padding: 8px 12px; }
 input[type=text], input[type=submit], select, textarea { font-family: inherit; font-size: 100%; }
 input[type=submit] { margin-top: 1rem; padding: 8px 24px; font-size: 100%; }
 .text-block p, .text p { margin: 0.5rem 0; }
+/* Match Deploy: Yahoo reset zeroes strong/em; Java Bold emits <strong>. */
+b, strong { font-weight: bold; }
+i, em { font-style: italic; }
 /* Horizontal FIB layout (default/baseball fallback — dirtbowl2 layers its own).
    Mirror Deploy form-layout-core contracts (Preview-only; Design canvas unchanged). */
 .fib-row { display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 8px 12px; margin-bottom: 0; }

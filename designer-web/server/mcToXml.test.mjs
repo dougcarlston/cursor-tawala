@@ -177,3 +177,74 @@ describe("mcToXml dynamic MCQ", () => {
     expect(xml).not.toContain('<field name="ChoiceName"/>');
   });
 });
+
+describe("mcToXml question rich text", () => {
+  it("exports Design B/I/U markup into font/b/i/u (not stripped plain text)", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "MCQ1",
+        onlyone: true,
+        question: `<b>Where is Greenland?</b> <i>(choose one)</i>`,
+        choices: [
+          { label: "a", text: "Europe" },
+          { label: "b", text: "North America" },
+        ],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<question>");
+    expect(xml).toContain("<b>Where is Greenland?</b>");
+    expect(xml).toContain("<i>(choose one)</i>");
+    expect(xml).not.toMatch(/<question>[^<]*Where is Greenland/);
+  });
+
+  it("maps span font-weight:bold to <b> (palette styleWithCSS path)", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "Q1",
+        onlyone: true,
+        question: `<span style="font-weight: bold;">Age group</span>`,
+        choices: [{ label: "a", text: "Under 18" }],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<b>Age group</b>");
+    expect(xml).toContain("<font");
+  });
+
+  it("keeps plain-string questions bold (legacy JSON without HTML)", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "Q2",
+        onlyone: true,
+        question: "Favorite color",
+        choices: [{ label: "a", text: "Blue" }],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<b>Favorite color</b>");
+  });
+
+  it("keeps trailing (note) italic heuristic for plain questions", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "Q3",
+        onlyone: true,
+        question: "Pick a day (optional)",
+        choices: [{ label: "a", text: "Mon" }],
+      },
+      escAttr,
+      escText,
+    );
+    // Legacy plain path: main run normal, trailing (note) italic — not whole-string bold.
+    expect(xml).toContain("Pick a day");
+    expect(xml).toContain("<i>(optional)</i>");
+  });
+});

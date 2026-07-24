@@ -118,9 +118,26 @@ function formatEscapedRun(inner, fmt, escAttr) {
  * Walk one soft-row of Design FIB HTML → XML body + blanks consumed.
  * Underscore runs become blanks from `blanks` starting at `startIdx`.
  *
+ * @param {string} rowHtml
+ * @param {unknown[]} blanks
+ * @param {number} startIdx
+ * @param {(s: string) => string} escAttr
+ * @param {(s: string) => string} escText
+ * @param {(blank: unknown, index: number) => string} blankXmlFn
+ * @param {{ underscoreAsBlanks?: boolean }} [options] — set `underscoreAsBlanks: false`
+ *   for MCQ questions / other non-FIB rich HTML (underscores stay as text).
  * @returns {{ body: string, nextIdx: number }}
  */
-export function richFibRowHtmlToXml(rowHtml, blanks, startIdx, escAttr, escText, blankXmlFn) {
+export function richFibRowHtmlToXml(
+  rowHtml,
+  blanks,
+  startIdx,
+  escAttr,
+  escText,
+  blankXmlFn,
+  options = {},
+) {
+  const underscoreAsBlanks = options.underscoreAsBlanks !== false;
   const src = decodeEntities(rowHtml);
   let i = 0;
   let bi = startIdx;
@@ -135,6 +152,10 @@ export function richFibRowHtmlToXml(rowHtml, blanks, startIdx, escAttr, escText,
   const emitText = (raw) => {
     if (!raw) return;
     const text = raw.replace(/\u00a0/g, " ");
+    if (!underscoreAsBlanks) {
+      body += formattedTextToFontXml(text, fmt(), escAttr, escText);
+      return;
+    }
     const re = /_+/g;
     let last = 0;
     let m;
@@ -246,4 +267,21 @@ export function richFibRowHtmlToXml(rowHtml, blanks, startIdx, escAttr, escText,
   }
 
   return { body, nextIdx: bi };
+}
+
+/**
+ * Design Form rich HTML (MCQ question, etc.) → legacy `<font>` / b/i/u XML fragment.
+ * Same walker as FIB prompts, but underscores stay as literal text.
+ */
+export function richHtmlFragmentToFontXml(html, escAttr, escText) {
+  const { body } = richFibRowHtmlToXml(
+    String(html ?? ""),
+    [],
+    0,
+    escAttr,
+    escText,
+    () => "",
+    { underscoreAsBlanks: false },
+  );
+  return body;
 }

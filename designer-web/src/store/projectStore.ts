@@ -11,6 +11,8 @@ import {
   TawalaProcessCommand,
   RichContentBlock,
   type TawalaImageFormat,
+  type TawalaImageDef,
+  type TawalaPageHeader,
 } from "@/types/tawala";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { nextHiddenFieldName } from "@/lib/fieldNames";
@@ -222,6 +224,11 @@ interface ProjectState {
   setProject: (project: TawalaProject) => void;
   /** Format/Project → Themes: set project + form themePath (legacy Project.ThemePath). */
   setProjectTheme: (themePath: string) => void;
+  /** Project → Page Header… — banner text + optional image (and imagedef list). */
+  setPageHeader: (
+    pageHeader: TawalaPageHeader | undefined,
+    images: TawalaImageDef[],
+  ) => void;
   setSelection: (selection: Selection) => void;
   setEditorTab: (tab: EditorTab) => void;
   setStatus: (message: string) => void;
@@ -695,6 +702,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       project: { ...project, themePath: path, forms },
       dirty: true,
       statusMessage: `Project theme: ${path}`,
+    });
+  },
+
+  setPageHeader: (pageHeader, images) => {
+    const { project } = get();
+    set({
+      project: {
+        ...project,
+        pageHeader,
+        images,
+      },
+      dirty: true,
     });
   },
 

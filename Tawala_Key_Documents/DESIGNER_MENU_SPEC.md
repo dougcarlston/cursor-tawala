@@ -559,7 +559,7 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 | Deploy | Live |
 | Project Manager… | Live |
 | *(separator)* | |
-| Page Header… | **Stub** — 8080 / Tomcat / CSS track |
+| Page Header… | **Wired Jul 24** — text + Browse/Remove image; Deploy/Preview `h1.pageHeading` |
 | Themes… | **Project Themes** fly-out (Jul 22) — checklist ✓ on current `themePath`; blue labels for CSS present locally (`default`, `baseball`, `greentea`, `dirtbowl2`, `mvsc`, `redrays`, `style2`/Big Q); grey stubs for the rest |
 | *(separator)* | |
 | Tabs… | **Wired** — Form window; selected Heading/Text/FIB/MCQ |
@@ -610,12 +610,14 @@ Tab stops in **inches** for paragraph/FIB layout (maps to XML `tabPositions` / t
 |------|
 | About |
 
-### Browser (`designer-web`) — Jul 17 / Jul Jul 23, 2026
+### Browser (`designer-web`) — Jul 17 / Update Jul 24, 2026
 
 | Decision | Notes |
 |----------|--------|
-| About Tawala Designer | **Stub** (disabled in `MenuBar`). Legacy popup = copyright + build status. **Legal — do not forget / do not ship without:** owner will paste final About text (copyright, trademarks, notices). Tracked as `DESIGNER_OPEN_TODOS.md` Owner review queue **#13**. |
+| About Tawala Designer | **Wired** (`AboutDialog`). Banner from legacy `about.png`; upper right **Beta Version** (Arial bold italic). Two separate copyrights (intentional — different eras / parties / codebase): `Copyright © 2005 - 2009 Tawala Systems, Inc.` then `Copyright © 2026 Douglas G. Carlston. All rights reserved.` No .NET / OS / memory / File Versions. Short third-party line: React, Vite, Express, Node.js, Apache Tomcat + trademark note. Attorney-guided copy Jul 24. Owner review queue **#13**. |
 | Other Help items | None on reference build |
+
+**Smoke:** Help → About Tawala Designer → dialog opens → OK / Esc / click-outside closes.
 
 ---
 
@@ -714,7 +716,7 @@ On fresh document open: **Reset Formatting**, **Delete Table**, and **Insert or 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
 | Project Explorer | 7 toolbar icons; `[-]`/`[+]` folders and per-form expand; form grid + gear / form+gear icons on linked processes; process **name** labels (role from icons + JSON, not name prefix); **auto-name on attach** (`Pre-ProcessN` / `Post-ProcessN`); **forms expanded on first open**; rename, reorder, start point, block back | **Phase 1 (July 2026):** collapsible Forms/Processes/Documents; linked Pre/Post under each form via `preProcess`/`process` JSON; process name labels + Pre/Post **gear** icons (role from linkage, not name); ▼/▶ toggles; F/P/D text toolbar only. **Rename (Jul 19):** click selected name or **F2** → inline edit. **Drag process → form (Jul 19):** drop onto Form attaches as Post when slot empty. **Gaps:** auto-name on attach when Connect Pre/Post menu exists; dotted lines polish |
-| Middle column | Items / Statements / empty | Form items palette only; always visible |
+| Middle column | Items / Statements / empty | Form Items + Process Statements palettes — legacy blue header, light-blue buttons, exact `Form_Item*.png` icons (Jul 23); classic Win32 scrollbars on Form/Process/Document canvases |
 | Fields | All forms + Variables; flat field-name **leaves**; `[-]`/`[+]` collapse; **all collapsed on first open**; `_InviteeID` first; left-margin resize; drag `<<…>>` | **Phase 1 (July 2026):** all forms + Variables; flat leaves; `[-]`/`[+]`; active form expanded on load (Q3 gap); plain alpha sort (Q4 gap); variable scan set/append only (Q2 gap); fixed column width; **Phase 2 (July 2026):** drag **and** double-click insert `<<name>>` into item property editors, rich-text surface, and process JSON (Records/RecordSet drop context deferred) |
 | Insert | Context-sensitive Form / Process / Document menus | **Mostly wired (Jul 2026):** Form top-7 + Image/Invitation/Hyperlink/Function; Process statements; Document Image/Invitation/Hyperlink/Function + **Field** (Jul 17 — Fields palette selection). Menu before View (owner OK) |
 | Format / Themes / Tabs | Full Format menu + Styles | **Jul 17:** Format menu **removed**. Palette owns typing chrome. **Project:** Tabs + Styles wired; Page Header + Themes **8080 stubs** |

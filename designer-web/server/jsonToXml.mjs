@@ -5,6 +5,7 @@ import { registrationFibToXml } from "./registrationFibToXml.mjs";
 import { registrationTextToXml } from "./registrationTextToXml.mjs";
 import { mcToXml } from "./mcToXml.mjs";
 import { documentHtmlToXml } from "./documentHtmlToXml.mjs";
+import { headingToXml } from "./headingExport.mjs";
 
 const TAB_MC = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
@@ -20,21 +21,6 @@ function escText(s) {
     .replace(/&/g, "&amp;")
     .replace(/</g, "&lt;")
     .replace(/>/g, "&gt;");
-}
-
-/**
- * Heading content may carry inline per-run size markup (`<span class="heading-size-*">`).
- * The legacy `<heading>` XML has a single whole-item `type`, so per-run sizes can't be
- * expressed here — reduce to plain text (decoding the entities the editor introduced) so we
- * emit the heading text, never escaped `<span>` tags. Full per-run parity is deferred.
- */
-function headingPlainText(content) {
-  return String(content ?? "")
-    .replace(/\u200b/g, "")
-    .replace(/<[^>]*>/g, "")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
 }
 
 /** JSON `{ field, op, value }` → legacy `<displayConditions>` (inside form items). */
@@ -726,9 +712,9 @@ function itemToXml(item, formName = "", project = null) {
 
   switch (item.type) {
     case "heading":
-      return `<heading label="${escAttr(item.label)}" type="Main">${escText(headingPlainText(item.content))}</heading>`;
     case "subheading":
-      return `<heading label="${escAttr(item.label)}" type="Sub">${escText(headingPlainText(item.content))}</heading>`;
+      // Mixed Main/Sub lines → multiple `<heading>` elements (Java one type each).
+      return headingToXml(item, escAttr, escText);
     case "text": {
       const legacy = registrationTextToXml(item, formName);
       const body = legacy ?? textContentToXml(item.content, item.style, project, formName);
@@ -799,8 +785,31 @@ export function projectToXml(project) {
   // Merge project.images with any data-URL embeds still only present in HTML
   // (Design/Preview show src=data:…; Deploy needs <imagedef> or Java 404s).
   const imagesXml = imagesToXml(collectProjectImages(project));
+  const pageHeaderXml = pageHeaderToXml(project);
 
-  return `<project name="${escAttr(project.name)}" themePath="${escAttr(project.themePath ?? "default")}" format="1.11" designerBuild="204"><forms>${forms}</forms><processes>${processes}</processes><documents>${documents}</documents>${imagesXml}</project>`;
+  return `<project name="${escAttr(project.name)}" themePath="${escAttr(project.themePath ?? "default")}" format="1.11" designerBuild="204">${pageHeaderXml}<forms>${forms}</forms><processes>${processes}</processes><documents>${documents}</documents>${imagesXml}</project>`;
+}
+
+/** Legacy `<pageHeader><text>…</text><image id width height/></pageHeader>`. */
+export function pageHeaderToXml(project) {
+  const ph = project?.pageHeader;
+  if (!ph) return "";
+  const text = String(ph.text ?? "");
+  const imageId = String(ph.imageId ?? "").trim();
+  const hasText = text.length > 0;
+  const hasImage = !!imageId;
+  if (!hasText && !hasImage) return "";
+
+  let inner = "";
+  if (hasText) inner += `<text>${escText(text)}</text>`;
+  if (hasImage) {
+    const w = Number(ph.width);
+    const h = Number(ph.height);
+    const widthAttr = Number.isFinite(w) && w > 0 ? ` width="${Math.round(w)}"` : "";
+    const heightAttr = Number.isFinite(h) && h > 0 ? ` height="${Math.round(h)}"` : "";
+    inner += `<image id="${escAttr(imageId)}"${widthAttr}${heightAttr}/>`;
+  }
+  return `<pageHeader>${inner}</pageHeader>`;
 }
 
 /**

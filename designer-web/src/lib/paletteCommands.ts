@@ -1591,6 +1591,12 @@ function paletteToggleInlineMark(command: "bold" | "italic" | "underline"): void
 
     const live = currentRangeInEditor(handle.el);
     const applyRange = live ? live.cloneRange() : null;
+    const hadHighlight = !!(applyRange && !applyRange.collapsed);
+    // WebKit/Blink often collapse the live range after italic (bold/underline usually
+    // keep it). Bookmark offsets survive the <i>/<em> wrap so Undo-style toggle works
+    // without re-dragging the highlight.
+    const bookmark =
+      hadHighlight && applyRange ? bookmarkTextOffsets(handle.el, applyRange) : null;
     const tokens = applyRange ? collectTokensForFontCommand(handle.el, applyRange) : [];
     const chipsOnly =
       !!applyRange &&
@@ -1604,6 +1610,10 @@ function paletteToggleInlineMark(command: "bold" | "italic" | "underline"): void
       next = !tokens.every((t) => tokenHasInlineMark(t, command));
     } else {
       document.execCommand(command);
+      // Restore before reading marks — collapsed caret after italic mis-reports state.
+      if (hadHighlight && bookmark) {
+        restoreSelectionFromBookmark(handle.el, bookmark);
+      }
       next = readInlineMarksAtCaret(handle.el)[command];
     }
 
@@ -1611,6 +1621,10 @@ function paletteToggleInlineMark(command: "bold" | "italic" | "underline"): void
     if (tokens.length > 0) {
       const typing = getTypingFormat(handle.el);
       styleTokensList(tokens, { ...typing, [command]: next });
+    }
+
+    if (hadHighlight && bookmark) {
+      restoreSelectionFromBookmark(handle.el, bookmark);
     }
   }, false);
 }

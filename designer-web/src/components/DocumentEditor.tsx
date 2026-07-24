@@ -42,17 +42,52 @@ function documentContentToHtml(content: string | RichContentBlock[] | undefined)
   return blocksToHtml(content);
 }
 
-function nodesToHtml(nodes: { type: string; text?: string; nodes?: unknown[] }[]): string {
-  return nodes
+type RichNode = {
+  type: string;
+  text?: string;
+  name?: string;
+  field?: string;
+  face?: string;
+  size?: number;
+  color?: string;
+  id?: string;
+  width?: number;
+  height?: number;
+  nodes?: RichNode[];
+  form?: string;
+  rows?: { cells: { width?: number; content?: RichContentBlock[] }[] }[];
+};
+
+function nodesToHtml(nodes: RichNode[] | undefined): string {
+  return (nodes ?? [])
     .map((n) => {
-      if (n.type === "text") return n.text ?? "";
-      if (n.type === "bold") return `<strong>${nodesToHtml((n.nodes as typeof nodes) ?? [])}</strong>`;
-      if (n.type === "italic") return `<em>${nodesToHtml((n.nodes as typeof nodes) ?? [])}</em>`;
-      if (n.type === "underline") return `<u>${nodesToHtml((n.nodes as typeof nodes) ?? [])}</u>`;
-      if (n.type === "field") {
-        const name = (n as { name?: string; field?: string }).name ?? (n as { field?: string }).field;
-        return name ? `&lt;&lt;${name}&gt;&gt;` : "";
+      if (n.type === "text") return escapeHtml(n.text ?? "");
+      if (n.type === "bold") return `<b>${nodesToHtml(n.nodes)}</b>`;
+      if (n.type === "italic") return `<i>${nodesToHtml(n.nodes)}</i>`;
+      if (n.type === "underline") return `<u>${nodesToHtml(n.nodes)}</u>`;
+      if (n.type === "font") {
+        const styles: string[] = [];
+        if (n.face) styles.push(`font-family:${n.face}`);
+        if (n.size != null) styles.push(`font-size:${n.size}pt`);
+        if (n.color) styles.push(`color:${n.color}`);
+        const styleAttr = styles.length ? ` style="${escapeAttr(styles.join(";"))}"` : "";
+        return `<span${styleAttr}>${nodesToHtml(n.nodes)}</span>`;
       }
+      if (n.type === "field") {
+        const name = n.name ?? n.field;
+        if (!name) return "";
+        return (
+          `<span class="field-token function-table-token" contenteditable="false" ` +
+          `data-field-name="${escapeAttr(name)}" title="${escapeAttr(name)}" draggable="true">` +
+          `&lt;&lt;${escapeHtml(name)}&gt;&gt;</span>`
+        );
+      }
+      if (n.type === "image" && n.id) {
+        return (
+          `<img class="tawala-embedded-image" data-tawala-image-id="${escapeAttr(n.id)}" alt="" />`
+        );
+      }
+      if (n.nodes) return nodesToHtml(n.nodes);
       return "";
     })
     .join("");
@@ -64,14 +99,32 @@ function blocksToHtml(blocks: RichContentBlock[]): string {
       if (b.type === "paragraph") {
         const align =
           b.align && b.align !== "left" ? ` style="text-align:${escapeAttr(b.align)}"` : "";
-        return `<p${align}>${nodesToHtml(b.nodes ?? [])}</p>`;
+        return `<p${align}>${nodesToHtml((b.nodes as RichNode[] | undefined) ?? [])}</p>`;
       }
       if (b.type === "text") return b.text ?? "";
+      if (b.type === "table" && Array.isArray(b.rows)) {
+        const rows = b.rows
+          .map((row) => {
+            const cells = (row.cells ?? [])
+              .map((cell) => {
+                const inner = blocksToHtml((cell.content as RichContentBlock[]) ?? []);
+                return `<td>${inner || "<br>"}</td>`;
+              })
+              .join("");
+            return `<tr>${cells}</tr>`;
+          })
+          .join("");
+        return `<table class="user" border="1" cellpadding="4" cellspacing="0">${rows}</table>`;
+      }
       return "";
     })
     .join("");
 }
 
 function escapeAttr(value: string): string {
-  return value.replace(/"/g, "&quot;");
+  return value.replace(/&/g, "&amp;").replace(/"/g, "&quot;").replace(/</g, "&lt;");
+}
+
+function escapeHtml(value: string): string {
+  return value.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 }

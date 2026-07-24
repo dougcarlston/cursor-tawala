@@ -15,6 +15,14 @@ h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}
 q:before,q:after{content:'';}
 abbr,acronym {border:0;}
 
+/*
+ * Yahoo reset above zeroes strong/em. Java Bold/Italic emit <strong>/<em>
+ * (oldhtml.Bold / Italic), so Design B/I would vanish on Deploy without this.
+ * Author local formatting must win (Multiple Question Survey Report “Age:”).
+ */
+b, strong { font-weight: bold; }
+i, em { font-style: italic; }
+
 
 /*
  *	Tawala project defaults
@@ -76,16 +84,43 @@ h1, h2, h3, h4, h5, h6 {
 	margin-bottom: .3em;
 }
 
-h1 {
+/* Yahoo reset above zeroes heading weight/size/margins; restore Main/Sub look.
+ * Java HeadingItem → h1.heading, SubheadingItem → h2.subheading.
+ * Margins match Form Preview (`FORM_ITEM_SPACING_CSS`) so Main then Sub
+ * (one Design box → two Deploy headings) keep a line of space between them. */
+h1, h1.heading {
 	font-size: 2.4em;
+	font-weight: bold;
+}
+
+h1.heading {
+	margin-top: 0;
+	margin-bottom: 0.35rem;
+	line-height: 1.25;
 }
 
 	h1.pageHeading {
 		padding-left: 1em;
 	}
 
-h2 {
+h2, h2.subheading {
 	font-size: 1.6em;
+	font-weight: bold;
+}
+
+h2.subheading {
+	margin-top: 0;
+	margin-bottom: 0.55rem;
+	line-height: 1.25;
+}
+
+/* One Design box → Main then Sub: restore ~one blank line (Design often uses <br><br>).
+ * 0.65rem was only ~8px and looked glued under large heading glyphs. */
+h1.heading + h2.subheading,
+h2.subheading + h1.heading,
+h1.heading + h1.heading,
+h2.subheading + h2.subheading {
+	margin-top: 2.25rem;
 }
 
 h3 {

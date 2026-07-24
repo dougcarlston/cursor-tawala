@@ -35,6 +35,376 @@ textarea {
   font: inherit;
 }
 
+/*
+ * Classic Win32 scrollbar (arrows + shaded thumb + 3 grip lines).
+ *
+ * Important (macOS Chrome/Safari): do NOT set scrollbar-width / scrollbar-color here —
+ * those force the modern overlay/slim thumb and hide ::-webkit-scrollbar-button arrows.
+ * Explicit ::-webkit-scrollbar width opts into classic (always-visible) chrome.
+ * System Settings → Appearance → Show scroll bars → Always also helps.
+ */
+.legacy-scrollbar::-webkit-scrollbar,
+.form-canvas::-webkit-scrollbar,
+.mdi-body::-webkit-scrollbar,
+.process-script-scroll::-webkit-scrollbar,
+.fields-palette::-webkit-scrollbar,
+.fields-tree::-webkit-scrollbar,
+.designer-left .tree::-webkit-scrollbar,
+.items-palette-body::-webkit-scrollbar,
+.new-project-list::-webkit-scrollbar {
+  width: 17px;
+  height: 17px;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-track,
+.form-canvas::-webkit-scrollbar-track,
+.mdi-body::-webkit-scrollbar-track,
+.process-script-scroll::-webkit-scrollbar-track,
+.fields-palette::-webkit-scrollbar-track,
+.fields-tree::-webkit-scrollbar-track,
+.designer-left .tree::-webkit-scrollbar-track,
+.items-palette-body::-webkit-scrollbar-track,
+.new-project-list::-webkit-scrollbar-track {
+  background-color: #f0f0f0;
+  background-image: linear-gradient(90deg, #e4e4e4 0%, #f5f5f5 40%, #ececec 100%);
+  border-left: 1px solid #a0a0a0;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-track:horizontal,
+.form-canvas::-webkit-scrollbar-track:horizontal,
+.mdi-body::-webkit-scrollbar-track:horizontal,
+.process-script-scroll::-webkit-scrollbar-track:horizontal,
+.fields-palette::-webkit-scrollbar-track:horizontal,
+.fields-tree::-webkit-scrollbar-track:horizontal,
+.designer-left .tree::-webkit-scrollbar-track:horizontal,
+.items-palette-body::-webkit-scrollbar-track:horizontal,
+.new-project-list::-webkit-scrollbar-track:horizontal {
+  background-image: linear-gradient(180deg, #e4e4e4 0%, #f5f5f5 40%, #ececec 100%);
+  border-left: none;
+  border-top: 1px solid #a0a0a0;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-thumb,
+.form-canvas::-webkit-scrollbar-thumb,
+.mdi-body::-webkit-scrollbar-thumb,
+.process-script-scroll::-webkit-scrollbar-thumb,
+.fields-palette::-webkit-scrollbar-thumb,
+.fields-tree::-webkit-scrollbar-thumb,
+.designer-left .tree::-webkit-scrollbar-thumb,
+.items-palette-body::-webkit-scrollbar-thumb,
+.new-project-list::-webkit-scrollbar-thumb {
+  min-height: 36px;
+  min-width: 36px;
+  border: 1px solid #888;
+  border-radius: 0;
+  background-color: #d0d0d4;
+  background-image:
+    linear-gradient(
+      180deg,
+      transparent 0%,
+      transparent calc(50% - 5px),
+      #6e6e72 calc(50% - 5px),
+      #6e6e72 calc(50% - 4px),
+      transparent calc(50% - 4px),
+      transparent calc(50% - 1px),
+      #6e6e72 calc(50% - 1px),
+      #6e6e72 calc(50%),
+      transparent calc(50%),
+      transparent calc(50% + 3px),
+      #6e6e72 calc(50% + 3px),
+      #6e6e72 calc(50% + 4px),
+      transparent calc(50% + 4px),
+      transparent 100%
+    ),
+    linear-gradient(90deg, #fafafa 0%, #e4e4e8 22%, #c4c4c8 55%, #b0b0b4 100%);
+  background-clip: padding-box;
+  box-shadow: inset 1px 0 0 #fff, inset -1px 0 0 rgba(0, 0, 0, 0.12);
+}
+
+.legacy-scrollbar::-webkit-scrollbar-thumb:horizontal,
+.form-canvas::-webkit-scrollbar-thumb:horizontal,
+.mdi-body::-webkit-scrollbar-thumb:horizontal,
+.process-script-scroll::-webkit-scrollbar-thumb:horizontal,
+.fields-palette::-webkit-scrollbar-thumb:horizontal,
+.fields-tree::-webkit-scrollbar-thumb:horizontal,
+.designer-left .tree::-webkit-scrollbar-thumb:horizontal,
+.items-palette-body::-webkit-scrollbar-thumb:horizontal,
+.new-project-list::-webkit-scrollbar-thumb:horizontal {
+  background-image:
+    linear-gradient(
+      90deg,
+      transparent 0%,
+      transparent calc(50% - 5px),
+      #6e6e72 calc(50% - 5px),
+      #6e6e72 calc(50% - 4px),
+      transparent calc(50% - 4px),
+      transparent calc(50% - 1px),
+      #6e6e72 calc(50% - 1px),
+      #6e6e72 calc(50%),
+      transparent calc(50%),
+      transparent calc(50% + 3px),
+      #6e6e72 calc(50% + 3px),
+      #6e6e72 calc(50% + 4px),
+      transparent calc(50% + 4px),
+      transparent 100%
+    ),
+    linear-gradient(180deg, #fafafa 0%, #e4e4e8 22%, #c4c4c8 55%, #b0b0b4 100%);
+}
+
+.legacy-scrollbar::-webkit-scrollbar-thumb:hover,
+.form-canvas::-webkit-scrollbar-thumb:hover,
+.mdi-body::-webkit-scrollbar-thumb:hover,
+.process-script-scroll::-webkit-scrollbar-thumb:hover,
+.fields-palette::-webkit-scrollbar-thumb:hover,
+.fields-tree::-webkit-scrollbar-thumb:hover,
+.designer-left .tree::-webkit-scrollbar-thumb:hover,
+.items-palette-body::-webkit-scrollbar-thumb:hover,
+.new-project-list::-webkit-scrollbar-thumb:hover {
+  background-color: #c4c4c8;
+}
+
+/* macOS needs :start/:end; :single-button alone often draws nothing. */
+.legacy-scrollbar::-webkit-scrollbar-button,
+.form-canvas::-webkit-scrollbar-button,
+.mdi-body::-webkit-scrollbar-button,
+.process-script-scroll::-webkit-scrollbar-button,
+.fields-palette::-webkit-scrollbar-button,
+.fields-tree::-webkit-scrollbar-button,
+.designer-left .tree::-webkit-scrollbar-button,
+.items-palette-body::-webkit-scrollbar-button,
+.new-project-list::-webkit-scrollbar-button {
+  display: block;
+  border: 1px solid #a0a0a0;
+  background-color: #e8e8e8;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-button:vertical:start:decrement,
+.form-canvas::-webkit-scrollbar-button:vertical:start:decrement,
+.mdi-body::-webkit-scrollbar-button:vertical:start:decrement,
+.process-script-scroll::-webkit-scrollbar-button:vertical:start:decrement,
+.fields-palette::-webkit-scrollbar-button:vertical:start:decrement,
+.fields-tree::-webkit-scrollbar-button:vertical:start:decrement,
+.designer-left .tree::-webkit-scrollbar-button:vertical:start:decrement,
+.items-palette-body::-webkit-scrollbar-button:vertical:start:decrement,
+.new-project-list::-webkit-scrollbar-button:vertical:start:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:vertical:end:increment,
+.form-canvas::-webkit-scrollbar-button:vertical:end:increment,
+.mdi-body::-webkit-scrollbar-button:vertical:end:increment,
+.process-script-scroll::-webkit-scrollbar-button:vertical:end:increment,
+.fields-palette::-webkit-scrollbar-button:vertical:end:increment,
+.fields-tree::-webkit-scrollbar-button:vertical:end:increment,
+.designer-left .tree::-webkit-scrollbar-button:vertical:end:increment,
+.items-palette-body::-webkit-scrollbar-button:vertical:end:increment,
+.new-project-list::-webkit-scrollbar-button:vertical:end:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:horizontal:start:decrement,
+.form-canvas::-webkit-scrollbar-button:horizontal:start:decrement,
+.mdi-body::-webkit-scrollbar-button:horizontal:start:decrement,
+.process-script-scroll::-webkit-scrollbar-button:horizontal:start:decrement,
+.fields-palette::-webkit-scrollbar-button:horizontal:start:decrement,
+.fields-tree::-webkit-scrollbar-button:horizontal:start:decrement,
+.designer-left .tree::-webkit-scrollbar-button:horizontal:start:decrement,
+.items-palette-body::-webkit-scrollbar-button:horizontal:start:decrement,
+.new-project-list::-webkit-scrollbar-button:horizontal:start:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:horizontal:end:increment,
+.form-canvas::-webkit-scrollbar-button:horizontal:end:increment,
+.mdi-body::-webkit-scrollbar-button:horizontal:end:increment,
+.process-script-scroll::-webkit-scrollbar-button:horizontal:end:increment,
+.fields-palette::-webkit-scrollbar-button:horizontal:end:increment,
+.fields-tree::-webkit-scrollbar-button:horizontal:end:increment,
+.designer-left .tree::-webkit-scrollbar-button:horizontal:end:increment,
+.items-palette-body::-webkit-scrollbar-button:horizontal:end:increment,
+.new-project-list::-webkit-scrollbar-button:horizontal:end:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement,
+.form-canvas::-webkit-scrollbar-button:single-button:vertical:decrement,
+.mdi-body::-webkit-scrollbar-button:single-button:vertical:decrement,
+.process-script-scroll::-webkit-scrollbar-button:single-button:vertical:decrement,
+.fields-palette::-webkit-scrollbar-button:single-button:vertical:decrement,
+.fields-tree::-webkit-scrollbar-button:single-button:vertical:decrement,
+.designer-left .tree::-webkit-scrollbar-button:single-button:vertical:decrement,
+.items-palette-body::-webkit-scrollbar-button:single-button:vertical:decrement,
+.new-project-list::-webkit-scrollbar-button:single-button:vertical:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment,
+.form-canvas::-webkit-scrollbar-button:single-button:vertical:increment,
+.mdi-body::-webkit-scrollbar-button:single-button:vertical:increment,
+.process-script-scroll::-webkit-scrollbar-button:single-button:vertical:increment,
+.fields-palette::-webkit-scrollbar-button:single-button:vertical:increment,
+.fields-tree::-webkit-scrollbar-button:single-button:vertical:increment,
+.designer-left .tree::-webkit-scrollbar-button:single-button:vertical:increment,
+.items-palette-body::-webkit-scrollbar-button:single-button:vertical:increment,
+.new-project-list::-webkit-scrollbar-button:single-button:vertical:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.form-canvas::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.mdi-body::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.process-script-scroll::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.fields-palette::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.fields-tree::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.designer-left .tree::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.items-palette-body::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.new-project-list::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment,
+.form-canvas::-webkit-scrollbar-button:single-button:horizontal:increment,
+.mdi-body::-webkit-scrollbar-button:single-button:horizontal:increment,
+.process-script-scroll::-webkit-scrollbar-button:single-button:horizontal:increment,
+.fields-palette::-webkit-scrollbar-button:single-button:horizontal:increment,
+.fields-tree::-webkit-scrollbar-button:single-button:horizontal:increment,
+.designer-left .tree::-webkit-scrollbar-button:single-button:horizontal:increment,
+.items-palette-body::-webkit-scrollbar-button:single-button:horizontal:increment,
+.new-project-list::-webkit-scrollbar-button:single-button:horizontal:increment {
+  display: block;
+  height: 17px;
+  width: 17px;
+}
+
+/* Hide the unused double-button slots (otherwise Mac may show empty stubs). */
+.legacy-scrollbar::-webkit-scrollbar-button:vertical:start:increment,
+.form-canvas::-webkit-scrollbar-button:vertical:start:increment,
+.mdi-body::-webkit-scrollbar-button:vertical:start:increment,
+.process-script-scroll::-webkit-scrollbar-button:vertical:start:increment,
+.fields-palette::-webkit-scrollbar-button:vertical:start:increment,
+.fields-tree::-webkit-scrollbar-button:vertical:start:increment,
+.designer-left .tree::-webkit-scrollbar-button:vertical:start:increment,
+.items-palette-body::-webkit-scrollbar-button:vertical:start:increment,
+.new-project-list::-webkit-scrollbar-button:vertical:start:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:vertical:end:decrement,
+.form-canvas::-webkit-scrollbar-button:vertical:end:decrement,
+.mdi-body::-webkit-scrollbar-button:vertical:end:decrement,
+.process-script-scroll::-webkit-scrollbar-button:vertical:end:decrement,
+.fields-palette::-webkit-scrollbar-button:vertical:end:decrement,
+.fields-tree::-webkit-scrollbar-button:vertical:end:decrement,
+.designer-left .tree::-webkit-scrollbar-button:vertical:end:decrement,
+.items-palette-body::-webkit-scrollbar-button:vertical:end:decrement,
+.new-project-list::-webkit-scrollbar-button:vertical:end:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:horizontal:start:increment,
+.form-canvas::-webkit-scrollbar-button:horizontal:start:increment,
+.mdi-body::-webkit-scrollbar-button:horizontal:start:increment,
+.process-script-scroll::-webkit-scrollbar-button:horizontal:start:increment,
+.fields-palette::-webkit-scrollbar-button:horizontal:start:increment,
+.fields-tree::-webkit-scrollbar-button:horizontal:start:increment,
+.designer-left .tree::-webkit-scrollbar-button:horizontal:start:increment,
+.items-palette-body::-webkit-scrollbar-button:horizontal:start:increment,
+.new-project-list::-webkit-scrollbar-button:horizontal:start:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:horizontal:end:decrement,
+.form-canvas::-webkit-scrollbar-button:horizontal:end:decrement,
+.mdi-body::-webkit-scrollbar-button:horizontal:end:decrement,
+.process-script-scroll::-webkit-scrollbar-button:horizontal:end:decrement,
+.fields-palette::-webkit-scrollbar-button:horizontal:end:decrement,
+.fields-tree::-webkit-scrollbar-button:horizontal:end:decrement,
+.designer-left .tree::-webkit-scrollbar-button:horizontal:end:decrement,
+.items-palette-body::-webkit-scrollbar-button:horizontal:end:decrement,
+.new-project-list::-webkit-scrollbar-button:horizontal:end:decrement {
+  display: none;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-button:vertical:start:decrement,
+.form-canvas::-webkit-scrollbar-button:vertical:start:decrement,
+.mdi-body::-webkit-scrollbar-button:vertical:start:decrement,
+.process-script-scroll::-webkit-scrollbar-button:vertical:start:decrement,
+.fields-palette::-webkit-scrollbar-button:vertical:start:decrement,
+.fields-tree::-webkit-scrollbar-button:vertical:start:decrement,
+.designer-left .tree::-webkit-scrollbar-button:vertical:start:decrement,
+.items-palette-body::-webkit-scrollbar-button:vertical:start:decrement,
+.new-project-list::-webkit-scrollbar-button:vertical:start:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:vertical:decrement,
+.form-canvas::-webkit-scrollbar-button:single-button:vertical:decrement,
+.mdi-body::-webkit-scrollbar-button:single-button:vertical:decrement,
+.process-script-scroll::-webkit-scrollbar-button:single-button:vertical:decrement,
+.fields-palette::-webkit-scrollbar-button:single-button:vertical:decrement,
+.fields-tree::-webkit-scrollbar-button:single-button:vertical:decrement,
+.designer-left .tree::-webkit-scrollbar-button:single-button:vertical:decrement,
+.items-palette-body::-webkit-scrollbar-button:single-button:vertical:decrement,
+.new-project-list::-webkit-scrollbar-button:single-button:vertical:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath fill='%23222222' d='M3.5 1.5L6.5 5.5H0.5z'/%3E%3C/svg%3E"), linear-gradient(180deg, #f8f8f8 0%, #d8d8d8 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, 0 0;
+  background-size: 7px 7px, 100% 100%;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-button:vertical:end:increment,
+.form-canvas::-webkit-scrollbar-button:vertical:end:increment,
+.mdi-body::-webkit-scrollbar-button:vertical:end:increment,
+.process-script-scroll::-webkit-scrollbar-button:vertical:end:increment,
+.fields-palette::-webkit-scrollbar-button:vertical:end:increment,
+.fields-tree::-webkit-scrollbar-button:vertical:end:increment,
+.designer-left .tree::-webkit-scrollbar-button:vertical:end:increment,
+.items-palette-body::-webkit-scrollbar-button:vertical:end:increment,
+.new-project-list::-webkit-scrollbar-button:vertical:end:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:vertical:increment,
+.form-canvas::-webkit-scrollbar-button:single-button:vertical:increment,
+.mdi-body::-webkit-scrollbar-button:single-button:vertical:increment,
+.process-script-scroll::-webkit-scrollbar-button:single-button:vertical:increment,
+.fields-palette::-webkit-scrollbar-button:single-button:vertical:increment,
+.fields-tree::-webkit-scrollbar-button:single-button:vertical:increment,
+.designer-left .tree::-webkit-scrollbar-button:single-button:vertical:increment,
+.items-palette-body::-webkit-scrollbar-button:single-button:vertical:increment,
+.new-project-list::-webkit-scrollbar-button:single-button:vertical:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath fill='%23222222' d='M0.5 1.5h6L3.5 5.5z'/%3E%3C/svg%3E"), linear-gradient(180deg, #f8f8f8 0%, #d8d8d8 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, 0 0;
+  background-size: 7px 7px, 100% 100%;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-button:horizontal:start:decrement,
+.form-canvas::-webkit-scrollbar-button:horizontal:start:decrement,
+.mdi-body::-webkit-scrollbar-button:horizontal:start:decrement,
+.process-script-scroll::-webkit-scrollbar-button:horizontal:start:decrement,
+.fields-palette::-webkit-scrollbar-button:horizontal:start:decrement,
+.fields-tree::-webkit-scrollbar-button:horizontal:start:decrement,
+.designer-left .tree::-webkit-scrollbar-button:horizontal:start:decrement,
+.items-palette-body::-webkit-scrollbar-button:horizontal:start:decrement,
+.new-project-list::-webkit-scrollbar-button:horizontal:start:decrement,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.form-canvas::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.mdi-body::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.process-script-scroll::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.fields-palette::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.fields-tree::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.designer-left .tree::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.items-palette-body::-webkit-scrollbar-button:single-button:horizontal:decrement,
+.new-project-list::-webkit-scrollbar-button:single-button:horizontal:decrement {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath fill='%23222222' d='M5.5 3.5L1.5 6.5V0.5z'/%3E%3C/svg%3E"), linear-gradient(180deg, #f8f8f8 0%, #d8d8d8 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, 0 0;
+  background-size: 7px 7px, 100% 100%;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-button:horizontal:end:increment,
+.form-canvas::-webkit-scrollbar-button:horizontal:end:increment,
+.mdi-body::-webkit-scrollbar-button:horizontal:end:increment,
+.process-script-scroll::-webkit-scrollbar-button:horizontal:end:increment,
+.fields-palette::-webkit-scrollbar-button:horizontal:end:increment,
+.fields-tree::-webkit-scrollbar-button:horizontal:end:increment,
+.designer-left .tree::-webkit-scrollbar-button:horizontal:end:increment,
+.items-palette-body::-webkit-scrollbar-button:horizontal:end:increment,
+.new-project-list::-webkit-scrollbar-button:horizontal:end:increment,
+.legacy-scrollbar::-webkit-scrollbar-button:single-button:horizontal:increment,
+.form-canvas::-webkit-scrollbar-button:single-button:horizontal:increment,
+.mdi-body::-webkit-scrollbar-button:single-button:horizontal:increment,
+.process-script-scroll::-webkit-scrollbar-button:single-button:horizontal:increment,
+.fields-palette::-webkit-scrollbar-button:single-button:horizontal:increment,
+.fields-tree::-webkit-scrollbar-button:single-button:horizontal:increment,
+.designer-left .tree::-webkit-scrollbar-button:single-button:horizontal:increment,
+.items-palette-body::-webkit-scrollbar-button:single-button:horizontal:increment,
+.new-project-list::-webkit-scrollbar-button:single-button:horizontal:increment {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath fill='%23222222' d='M1.5 0.5v6L5.5 3.5z'/%3E%3C/svg%3E"), linear-gradient(180deg, #f8f8f8 0%, #d8d8d8 100%);
+  background-repeat: no-repeat, no-repeat;
+  background-position: center, 0 0;
+  background-size: 7px 7px, 100% 100%;
+}
+
+.legacy-scrollbar::-webkit-scrollbar-corner,
+.form-canvas::-webkit-scrollbar-corner,
+.mdi-body::-webkit-scrollbar-corner,
+.process-script-scroll::-webkit-scrollbar-corner,
+.fields-palette::-webkit-scrollbar-corner,
+.fields-tree::-webkit-scrollbar-corner,
+.designer-left .tree::-webkit-scrollbar-corner,
+.items-palette-body::-webkit-scrollbar-corner,
+.new-project-list::-webkit-scrollbar-corner {
+  background: #f0f0f0;
+}
+
 .designer-app {
   display: flex;
   flex-direction: column;
@@ -76,26 +446,28 @@ textarea {
 /* Docked "Items" / "Statements" palette between Project Explorer and the MDI canvas
    (owner decision D-Items-palette-placement — legacy toolbox column). */
 .designer-items {
-  width: 92px;
-  min-width: 84px;
+  width: 96px;
+  min-width: 90px;
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  border-right: 1px solid var(--border-dark);
-  background: #dfe4ea;
+  border-right: 1px solid #716f64;
+  /* Soft blue-grey column like legacy toolbox chrome */
+  background: linear-gradient(90deg, #c8d6e8 0%, #d7e3f2 45%, #e4ecf6 100%);
 }
 
-/* Legacy Items toolbox: blue header + tall icon-over-label buttons. */
+/* Legacy Items / Statements title bar (Vista-era blue). */
 .items-palette-title {
-  padding: 5px 4px;
+  padding: 4px 4px 5px;
   font-weight: 700;
   text-align: center;
   color: #fff;
-  background: linear-gradient(180deg, #5a9de0 0%, #2f6cb8 48%, #255ea8 100%);
-  border-bottom: 1px solid #1e4f8c;
+  background: linear-gradient(180deg, #6a9ad8 0%, #4877c9 40%, #255ea8 78%, #083d97 100%);
+  border-bottom: 1px solid #062a6a;
   font-size: 11px;
   letter-spacing: 0.02em;
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.28);
+  flex-shrink: 0;
 }
 
 .items-palette-body {
@@ -104,67 +476,64 @@ textarea {
   overflow: auto;
   display: flex;
   flex-direction: column;
-  gap: 5px;
-  padding: 6px 5px;
+  gap: 4px;
+  padding: 6px 5px 8px;
 }
 
+/* Flat light-blue toolbox buttons (legacy Items screenshot). */
 .items-palette-button {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 3px;
+  gap: 2px;
   width: 100%;
-  min-height: 56px;
-  padding: 5px 2px 4px;
+  min-height: 52px;
+  padding: 4px 2px 3px;
   cursor: pointer;
-  border: 1px solid #3a6fb0;
-  border-top-color: #9ec4ec;
-  border-left-color: #9ec4ec;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #f4f8fd 0%, #d7e6f7 55%, #c5daf2 100%);
-  color: #163a66;
+  border: 1px solid #3a5a8c;
+  border-radius: 0;
+  background: #afc7e7;
+  color: #000;
   text-align: center;
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.65);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.55);
 }
 
 .items-palette-button:hover:not(:disabled) {
-  border-color: #255ea8;
-  background: linear-gradient(180deg, #ffffff 0%, #e4f0fc 55%, #cfe3f8 100%);
-  box-shadow: inset 1px 1px 0 #fff, 0 1px 2px rgba(37, 94, 168, 0.28);
+  background: #c5d8f0;
+  border-color: #2a4a7c;
 }
 
 .items-palette-button:active:not(:disabled) {
-  background: linear-gradient(180deg, #c5daf2 0%, #d7e6f7 100%);
-  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.12);
+  background: #9bb6d8;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .items-palette-button:disabled {
   opacity: 0.45;
   cursor: default;
-  color: #6b7683;
+  color: #555;
 }
 
+.items-palette-icon-img {
+  display: block;
+  width: 24px;
+  height: 24px;
+  image-rendering: pixelated;
+  image-rendering: crisp-edges;
+  flex-shrink: 0;
+}
+
+/* Deprecated glyph box — kept harmless if referenced elsewhere. */
 .items-palette-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 28px;
-  height: 28px;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1;
-  border: 1px solid #7aa3d4;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #fff 0%, #eef5fc 100%);
-  color: #255ea8;
+  display: none;
 }
 
 .items-palette-label {
   font-size: 10px;
   font-weight: 600;
-  line-height: 1.15;
-  /* Wrap at spaces only — never hyphenate or split mid-word. */
+  line-height: 1.12;
+  color: #000;
   white-space: normal;
   overflow-wrap: normal;
   word-break: normal;
@@ -172,23 +541,40 @@ textarea {
   -webkit-hyphens: none;
 }
 
+/* Thin rule after Multiple Choice (legacy File Uploader separator position). */
+.items-palette-separator {
+  height: 0;
+  margin: 4px 2px 2px;
+  border: none;
+  border-top: 1px solid #1a1a1a;
+}
+
 .designer-items .form-insert-buttons {
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  align-items: stretch;
+  gap: 0;
 }
 
-/* Statements palette — solid blue beveled buttons (legacy WinForms). */
-.designer-items .form-insert-buttons button,
+/*
+ * Statements palette — light blue beveled text buttons, grouped with gaps
+ * (If | Show/Send | Append | Get/ForEach/Delete | Set | Comment).
+ */
+.designer-items .statements-palette-buttons {
+  gap: 0;
+  padding: 2px 0;
+}
+
 .designer-items .statements-palette-buttons button {
-  border: 1px solid #2a5a9a;
-  border-top-color: #a8c8ec;
-  border-left-color: #a8c8ec;
-  border-radius: 2px;
-  background: linear-gradient(180deg, #8ebae8 0%, #5a96d6 42%, #3f7fc8 100%);
-  color: #0a1e36;
-  padding: 9px 3px;
-  min-height: 30px;
+  border: 1px solid #2a5088;
+  border-top-color: #e8f0fa;
+  border-left-color: #e8f0fa;
+  border-radius: 0;
+  background: linear-gradient(180deg, #e8f0fa 0%, #b8cfe8 55%, #9cbcde 100%);
+  color: #000;
+  padding: 7px 4px;
+  min-height: 26px;
+  margin: 0 1px;
   cursor: pointer;
   text-align: center;
   font-size: 11px;
@@ -199,33 +585,36 @@ textarea {
   word-break: normal;
   hyphens: none;
   -webkit-hyphens: none;
-  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.4);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.7);
 }
 
-.designer-items .form-insert-buttons button:hover:not(:disabled),
+.designer-items .statements-palette-buttons button + button {
+  margin-top: 2px;
+}
+
 .designer-items .statements-palette-buttons button:hover:not(:disabled) {
-  background: linear-gradient(180deg, #a0c8f0 0%, #6aa4de 42%, #4a8ad4 100%);
-  border-color: #1e4f8c;
+  background: linear-gradient(180deg, #f4f8fc 0%, #c8daf0 55%, #a8c4e4 100%);
+  border-color: #1e4080;
 }
 
-.designer-items .form-insert-buttons button.active,
 .designer-items .statements-palette-buttons button.active {
-  background: linear-gradient(180deg, #3f7fc8 0%, #2f63b5 100%);
+  background: linear-gradient(180deg, #7aa8d8 0%, #4a7ec0 55%, #3a6cac 100%);
   color: #fff;
-  border-color: #1e4f8c;
-  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.25);
+  border-color: #1e4080;
+  border-top-color: #1e4080;
+  border-left-color: #1e4080;
+  box-shadow: inset 1px 1px 2px rgba(0, 0, 0, 0.2);
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
 }
 
-.designer-items .form-insert-buttons button:disabled,
 .designer-items .statements-palette-buttons button:disabled {
   opacity: 0.5;
   cursor: default;
 }
 
-/* Small separator between legacy Statements-palette groups (If | Show/Send | Append |
-   Get/ForEach/Delete | Set | Comment). */
+/* Legacy group spacing between Statements clusters. */
 .designer-items .palette-group-gap {
-  height: 8px;
+  height: 12px;
 }
 
 .designer-items .panel-title {
@@ -860,6 +1249,7 @@ textarea {
   flex: 1;
   min-width: 0;
   overflow: auto;
+  overflow-y: scroll;
   /* Left gutter for the floating insert caret during drag. */
   padding: 0 0 0 18px;
   background: #fff;
@@ -874,7 +1264,8 @@ textarea {
 .form-canvas > .hidden-field-canvas-row,
 .form-canvas > .break-canvas-row,
 .form-canvas > .skip-canvas-row,
-.form-canvas > .form-item-slot {
+.form-canvas > .form-item-slot,
+.form-canvas > .form-page-header-banner {
   margin-bottom: 0;
   padding: 0;
   gap: 0;
@@ -1217,7 +1608,14 @@ textarea {
 }
 
 /* Two sizes only (Heading Type: Main / Sub → h1/h2 visual per legacy).
-   Both set an explicit size so nested/overlapping runs resolve to the innermost. */
+   Block display so Main then Sub stack as separate lines (matches Preview/Deploy
+   split); adjacent inline spans used to wrap and look like two lines while export
+   glued them (`hotelWe`). */
+.heading-size-main,
+.heading-size-sub {
+  display: block;
+}
+
 .heading-size-main {
   font-size: 1.9rem;
 }
@@ -6168,6 +6566,273 @@ button.font-color-picker-recent-slot:hover {
   z-index: 1200;
 }
 
+/* Help → About — legacy banner art + attorney-approved notice (Jul 24, 2026). */
+.about-overlay {
+  pointer-events: auto;
+  z-index: 1300;
+}
+
+.page-header-dialog {
+  width: min(420px, 92vw);
+}
+
+.page-header-dialog-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.page-header-dialog-body {
+  padding: 12px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.page-header-text-label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  color: #333;
+}
+
+.page-header-text-input {
+  font-size: 13px;
+  padding: 4px 6px;
+  border: 1px solid #aaa;
+}
+
+.page-header-image-group {
+  margin: 0;
+  padding: 8px 10px 10px;
+  border: 1px solid #bbb;
+}
+
+.page-header-image-group legend {
+  font-size: 12px;
+  padding: 0 4px;
+}
+
+.page-header-image-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+}
+
+.page-header-image-preview {
+  flex: 1 1 auto;
+  min-height: 100px;
+  max-height: 180px;
+  border: 1px solid #ccc;
+  background: #f7f7f7;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: auto;
+}
+
+.page-header-image-preview img {
+  max-width: 100%;
+  max-height: 170px;
+  display: block;
+}
+
+.page-header-image-empty {
+  color: #888;
+  font-size: 12px;
+  font-style: italic;
+}
+
+.page-header-image-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 0 0 auto;
+}
+
+.page-header-image-actions button {
+  font-size: 12px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.page-header-remove:disabled {
+  opacity: 0.45;
+}
+
+/* Design canvas: project Page Header stand-in (not a Form Heading item). */
+.form-page-header-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 36px;
+  padding: 6px 10px !important;
+  box-sizing: border-box;
+  background: linear-gradient(90deg, #e8f0fa 0%, #f5f8fc 55%, #fff 100%);
+  cursor: pointer;
+}
+
+.form-page-header-banner:hover {
+  background: linear-gradient(90deg, #dce8f6 0%, #eef3f9 55%, #f8fafc 100%);
+}
+
+.form-page-header-banner:focus {
+  outline: 2px solid var(--accent, #2a6db0);
+  outline-offset: -2px;
+}
+
+.form-page-header-banner-thumb {
+  flex: 0 0 56px;
+  width: 56px;
+  height: 28px;
+  border: 1px solid #9ab;
+  border-radius: 2px;
+  background-size: cover;
+  background-position: center;
+  background-color: #c8d4e0;
+}
+
+.form-page-header-banner-chip {
+  flex: 0 0 auto;
+  font: 700 12px/1.2 Consolas, "Courier New", monospace;
+  color: #1a4a7a;
+  background: #dbe8f6;
+  border: 1px solid #7aa0c8;
+  border-radius: 3px;
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+
+.form-page-header-banner-text {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 13px;
+  font-weight: 600;
+  color: #333;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.about-dialog {
+  background: #f0f0f0;
+  border: 1px solid #6b97c5;
+  outline: 1px solid #a9c7e5;
+  box-shadow:
+    0 0 0 1px #5a87b5,
+    2px 2px 10px rgba(40, 70, 110, 0.35);
+  width: min(531px, 94vw);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.about-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 6px 4px 10px;
+  background: linear-gradient(180deg, #e8f0f8 0%, #c5d8ec 100%);
+  border-bottom: 1px solid #8aa8c4;
+  flex-shrink: 0;
+}
+
+.about-titlebar h2 {
+  margin: 0;
+  font: 12px/1.3 "Segoe UI", Tahoma, sans-serif;
+  font-weight: 600;
+  color: #1a1a1a;
+}
+
+.about-close {
+  border: 1px solid transparent;
+  background: transparent;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0 6px;
+  color: #333;
+}
+
+.about-close:hover {
+  background: #e04434;
+  color: #fff;
+  border-color: #a02818;
+}
+
+.about-panel {
+  position: relative;
+  min-height: 220px;
+  background-color: #f7f4fb;
+  background-repeat: no-repeat;
+  background-position: top center;
+  background-size: 531px 404px;
+  padding: 0 14px 16px;
+}
+
+.about-banner {
+  position: relative;
+  height: 72px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.about-brand {
+  font: 700 36px/1 "Arial", "Helvetica Neue", sans-serif;
+  color: #3a3a3a;
+  letter-spacing: -0.5px;
+  /* Leave left icons from banner art visible; center word like legacy. */
+  margin-left: 36px;
+}
+
+.about-edition {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font: italic 700 12px/1.2 Arial, Helvetica, sans-serif;
+  color: #222;
+  text-align: center;
+  max-width: 7.5em;
+}
+
+.about-body {
+  margin-top: 12px;
+  max-width: 505px;
+}
+
+.about-copyright {
+  margin: 0 0 6px;
+  font: 13px/1.35 Arial, Helvetica, sans-serif;
+  color: #111;
+}
+
+.about-third-party {
+  margin: 14px 0 0;
+  font: 12px/1.45 Arial, Helvetica, sans-serif;
+  color: #222;
+  max-width: 48em;
+}
+
+.about-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid #b0b0b0;
+  background: #f0f0f0;
+}
+
+.about-ok {
+  min-width: 72px;
+  padding: 3px 16px;
+  font: 12px/1.3 "Segoe UI", Tahoma, sans-serif;
+  cursor: pointer;
+}
+
 /* Configure Function: dim chrome but keep Fields interactive for double-click fill. */
 .configure-function-overlay {
   pointer-events: none;
@@ -6331,7 +6996,8 @@ body.configure-function-open .designer-right-splitter {
   color: #222;
 }
 
-/* Fixed viewport: Basic + Activities fully; Meetings+ via scrollbar (no partial row 3) */
+/* Fixed viewport: Basic + Activities fully; Meetings+ via scrollbar (no partial row 3).
+ * Classic scrollbar chrome: shared `.legacy-scrollbar` class. */
 .new-project-list {
   overflow-x: hidden;
   overflow-y: scroll;
@@ -6340,97 +7006,6 @@ body.configure-function-open .designer-right-splitter {
   flex: none;
   border: 1px solid #7a7a7a;
   background: #fff;
-  scrollbar-width: auto;
-  scrollbar-color: #c8c8cc #f0f0f0;
-}
-
-/* Classic Win32-style vertical scrollbar (WebKit / Chromium / Safari) */
-.new-project-list::-webkit-scrollbar {
-  width: 17px;
-}
-
-.new-project-list::-webkit-scrollbar-track {
-  background-color: #f0f0f0;
-  background-image: linear-gradient(
-    90deg,
-    #e4e4e4 0%,
-    #f5f5f5 40%,
-    #ececec 100%
-  );
-  border-left: 1px solid #a0a0a0;
-}
-
-.new-project-list::-webkit-scrollbar-thumb {
-  min-height: 36px;
-  border: 1px solid #a8a8a8;
-  border-radius: 2px;
-  background-color: #d4d4d8;
-  /* Shaded thumb + three horizontal grip lines in the middle */
-  background-image:
-    linear-gradient(
-      180deg,
-      transparent 0%,
-      transparent calc(50% - 5px),
-      #9a9a9e calc(50% - 5px),
-      #9a9a9e calc(50% - 4px),
-      transparent calc(50% - 4px),
-      transparent calc(50% - 1px),
-      #9a9a9e calc(50% - 1px),
-      #9a9a9e calc(50%),
-      transparent calc(50%),
-      transparent calc(50% + 3px),
-      #9a9a9e calc(50% + 3px),
-      #9a9a9e calc(50% + 4px),
-      transparent calc(50% + 4px),
-      transparent 100%
-    ),
-    linear-gradient(
-      90deg,
-      #fafafa 0%,
-      #e8e8ec 22%,
-      #c8c8cc 55%,
-      #b8b8bc 100%
-    );
-  background-clip: padding-box;
-  box-shadow: inset 1px 0 0 #fff, inset -1px 0 0 rgba(0, 0, 0, 0.08);
-}
-
-.new-project-list::-webkit-scrollbar-thumb:hover {
-  background-color: #cacace;
-}
-
-.new-project-list::-webkit-scrollbar-button:single-button {
-  display: block;
-  height: 17px;
-  width: 17px;
-  border: 1px solid #a0a0a0;
-  background-color: #e8e8e8;
-  background-repeat: no-repeat;
-  background-position: center;
-}
-
-.new-project-list::-webkit-scrollbar-button:single-button:vertical:decrement {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath fill='%23222222' d='M3.5 1.5L6.5 5.5H0.5z'/%3E%3C/svg%3E"),
-    linear-gradient(180deg, #f8f8f8 0%, #d8d8d8 100%);
-  background-repeat: no-repeat, no-repeat;
-  background-position: center, 0 0;
-  background-size: 7px 7px, 100% 100%;
-}
-
-.new-project-list::-webkit-scrollbar-button:single-button:vertical:increment {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='7' height='7' viewBox='0 0 7 7'%3E%3Cpath fill='%23222222' d='M0.5 1.5h6L3.5 5.5z'/%3E%3C/svg%3E"),
-    linear-gradient(180deg, #f8f8f8 0%, #d8d8d8 100%);
-  background-repeat: no-repeat, no-repeat;
-  background-position: center, 0 0;
-  background-size: 7px 7px, 100% 100%;
-}
-
-.new-project-list::-webkit-scrollbar-button:single-button:hover {
-  background-color: #f0f0f0;
-}
-
-.new-project-list::-webkit-scrollbar-corner {
-  background: #f0f0f0;
 }
 
 .new-project-category {

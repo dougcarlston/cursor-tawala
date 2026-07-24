@@ -339,3 +339,65 @@ describe("Text item Styles colors on export", () => {
     expect(xml).toMatch(/style="error"[\s\S]*color="C00000"/);
   });
 });
+
+describe("projectToXml heading type", () => {
+  it("emits type=Sub for a uniform Sub-size heading box", () => {
+    const xml = projectToXml({
+      name: "H",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "heading",
+              label: "H1",
+              content: '<span class="heading-size-sub">Details</span>',
+            },
+          ],
+        },
+      ],
+    });
+    expect(xml).toContain('<heading label="H1" type="Sub">Details</heading>');
+  });
+
+  it("emits type=Main for mixed Main/Sub runs (legacy single-type limit)", () => {
+    const xml = projectToXml({
+      name: "H",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "heading",
+              label: "H1",
+              content: 'Title <span class="heading-size-sub">sub</span>',
+            },
+          ],
+        },
+      ],
+    });
+    expect(xml).toContain('<heading label="H1" type="Main">Title sub</heading>');
+  });
+});
+
+describe("projectToXml pageHeader", () => {
+  it("emits pageHeader text + image and imagedef", () => {
+    const xml = projectToXml({
+      name: "Banner",
+      forms: [{ name: "Form 1", startPoint: true, items: [] }],
+      pageHeader: {
+        text: "Hello Camp",
+        imageId: "__HEADER__",
+        width: 40,
+        height: 60,
+      },
+      images: [{ id: "__HEADER__", imageFormat: "PNG", data: "QUFB" }],
+    });
+    expect(xml).toContain(
+      '<pageHeader><text>Hello Camp</text><image id="__HEADER__" width="40" height="60"/></pageHeader>',
+    );
+    expect(xml).toContain('<imagedef id="__HEADER__">');
+  });
+});

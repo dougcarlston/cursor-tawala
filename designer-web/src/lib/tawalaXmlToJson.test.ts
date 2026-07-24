@@ -95,7 +95,9 @@ describe("convertTawalaXmlToProject", () => {
 
     expect(project.documents).toHaveLength(1);
     expect(project.documents[0].name).toBe("Thanks");
-    expect(Array.isArray(project.documents[0].content)).toBe(true);
+    expect(typeof project.documents[0].content).toBe("string");
+    expect(String(project.documents[0].content)).toContain("Thanks!");
+    expect(String(project.documents[0].content)).toContain("Arial");
 
     expect(project.images).toHaveLength(1);
     expect(project.images[0]).toMatchObject({
@@ -182,6 +184,60 @@ describe("convertTawalaXmlToProject", () => {
     expect(html).toContain('data-field-name="Form 1:attendeeName"');
     expect(html).toContain('data-field-name="Form 1:contribution"');
     expect(Array.isArray(text.content)).toBe(false);
+  });
+
+  it("imports Document htmlData when xmlData is absent", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="HtmlOnlyDoc" themePath="default" format="1.9">
+  <forms><form name="Form 1" startPoint="true"><items/></form></forms>
+  <processes/>
+  <documents>
+    <document name="Score">
+      <htmlData><![CDATA[<p>Hello &lt;&lt;FirstName&gt;&gt; — score &lt;&lt;Score&gt;&gt;%</p>]]></htmlData>
+      <rawHtmlData><![CDATA[<html><body><p>ignored shell</p></body></html>]]></rawHtmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "htmlOnly.tawala" });
+    const docs = project.documents as Array<{ name: string; content: string }>;
+    expect(docs).toHaveLength(1);
+    expect(docs[0].name).toBe("Score");
+    expect(docs[0].content).toContain("Hello");
+    expect(docs[0].content).toContain('data-field-name="FirstName"');
+    expect(docs[0].content).toContain('data-field-name="Score"');
+    expect(docs[0].content).toContain("&lt;&lt;FirstName&gt;&gt;");
+    expect(docs[0].content).not.toContain("ignored shell");
+  });
+
+  it("imports Document table cells with SUM as function chips and escapes field brackets", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="SumDoc" themePath="default" format="1.9">
+  <forms><form name="Form 1" startPoint="true"><items/></form></forms>
+  <processes/>
+  <documents>
+    <document name="Details">
+      <xmlData>
+        <paragraph align="left" indent="0"><font><b>Title</b></font></paragraph>
+        <table indent="2685">
+          <row>
+            <cell width="1450"><division align="right"><font>Adults:</font></division></cell>
+            <cell width="2700"><division align="left"><font><sum version="1"><field>Record:Potluck Organizer:numAdults</field></sum></font></division></cell>
+          </row>
+        </table>
+        <paragraph align="left" indent="0"><font><field name="Customize_eventHeader"/></font></paragraph>
+      </xmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "sumDoc.tawala" });
+    const html = String((project.documents as Array<{ content: string }>)[0].content);
+    expect(html).toContain("<table");
+    expect(html).toContain("margin-left:134.25pt");
+    expect(html).toContain('data-function-id="sum"');
+    expect(html).toContain("Potluck Organizer:numAdults");
+    expect(html).toContain('data-field-name="Customize_eventHeader"');
+    expect(html).toMatch(/field-token[^>]*>&lt;&lt;Customize_eventHeader&gt;&gt;/);
+    expect(html).not.toMatch(/field-token[^>]*><</);
   });
 });
 

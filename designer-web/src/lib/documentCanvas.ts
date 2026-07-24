@@ -1015,6 +1015,9 @@ export function normalizeDocumentUserTables(editor: HTMLElement): boolean {
  * Side-by-side placement and intentional drag gaps are preserved.
  */
 export function ensureDocumentTableLayout(editor: HTMLElement): void {
+  // Imported / remounted Document HTML often has loose <p> siblings + a table.
+  // Adopt prose into placed lines first so absolute tables do not paint on top of flow text.
+  adoptOrphanDocumentContent(editor);
   normalizeDocumentUserTables(editor);
   if (listDocumentLayoutItemsSorted(editor).length) {
     reflowAllPlacedLines(editor);

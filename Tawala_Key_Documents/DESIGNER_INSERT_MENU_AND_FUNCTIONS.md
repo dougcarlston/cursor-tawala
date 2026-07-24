@@ -267,7 +267,7 @@ Screenshot: [`assets/Function_-_Categorizer.png`](assets/Function_-_Categorizer.
 
 ### Browser gaps
 
-Catalog params present. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Column UI matches Multiple Question List (+/−/↑/↓ toolbar); per-column “always displayed” condition editor still deferred.
+Catalog params present. Document HTML→XML: **not emitted** (comment stub). **Owner Jul 24: parked for this build** — hidden from Insert → Function; revisit after the other two AI-Tawala project branches. Column UI matches Multiple Question List (+/−/↑/↓ toolbar); per-column “always displayed” condition editor still deferred.
 
 ---
 
@@ -344,7 +344,7 @@ Screenshot: [`assets/Function_-_Export_Team_Roster.png`](assets/Function_-_Expor
 
 ### Browser gaps
 
-Catalog entry exists but **`parameters: []`** — Configure shows “no parameters.” Need **Link text** + **Team ID** to match legacy. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Low priority outside SportsDashboards.
+Catalog entry exists but **`parameters: []`** — Configure shows “no parameters.” Need **Link text** + **Team ID** to match legacy. Document HTML→XML: **not emitted** (comment stub). **Owner Jul 24: parked for this build** — hidden from Insert → Function; SportsDashboards-oriented; revisit after the other two project branches.
 
 ---
 
@@ -388,7 +388,7 @@ Screenshot: [`assets/Function_-_Link_to_Project_Details.png`](assets/Function_-_
 
 ### Browser gaps
 
-Configure fields match. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Runtime depends on hosted My Tawala — limited value for local 8080.
+Configure fields match. Document HTML→XML: **not emitted** (comment stub). **Owner Jul 24: parked for this build** — hidden from Insert → Function; hosted My Tawala dependency; revisit after the other two project branches.
 
 ---
 
@@ -484,7 +484,7 @@ Screenshots: [`assets/Function_-_Paypal_Single_Item.png`](assets/Function_-_Payp
 
 ### Browser gaps
 
-Catalog params match. Document HTML→XML: **not emitted** (comment stub) — **Deferred.** Runtime needs payment integration.
+Catalog params match. Document HTML→XML: **not emitted** (comment stub). **Owner Jul 24: parked for this build** — hidden from Insert → Function. **Payment is required later**, but the product needs a **generic third-party checkout API**, not a PayPal-only mode; do not revive this id as-is. Revisit after the other two AI-Tawala project branches.
 
 ---
 
@@ -713,17 +713,29 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 
 **Jul 19–20 smoke scope:** core Configure + Deploy finished for the ladder. **WHERE re-smoke complete Jul 19** for condition-bearing functions (FRC, MQL, QCT, RMRL, RANKED RESPONSE COUNTS/NAME, SINGLE QUESTION LIST, SUM; RESPONSE BAR GRAPH / RESPONSE TOTALS **FIB Where OK**). **Jul 20:** TODO #11 MCQ-aware Where **Passed**; TODO #12 RESPONSE TOTALS multi-select vs Bar Graph **Passed**.
 
+### Parked function stubs (Owner Jul 24)
+
+Ship this Designer build **without** wiring the four HTML→XML stubs below. Catalog entries stay for import / history; Insert → Function hides them (`pickerHidden`).
+
+**Revisit after** the other two AI-Tawala project branches (not during current Designer/Library track). When payment returns, design a **generic** third-party payment/checkout function (API provider TBD) — **do not** treat legacy PayPal-only as the target. Same gate: **device output sizing** (computer / tablet / phone + optional autoswitch) — `DESIGNER_OPEN_TODOS.md` § After the other two project branches.
+
+| id | Legacy name | Park reason |
+|----|-------------|-------------|
+| `categorizer` | CATEGORIZER | No current sample need; export stub |
+| `export-team-roster` | EXPORT TEAM ROSTER | SportsDashboards-oriented; export stub |
+| `link-to-project-details` | LINK TO PROJECT DETAILS | Hosted My Tawala; little local 8080 value |
+| `paypal-single-item-button` | PAYPAL BUTTON | Payment needed later as **generic** API — not PayPal-only |
 
 | # | Function | id | XML emit | Owner smoke / notes |
 |---|----------|-----|----------|---------------------|
-| 1 | CATEGORIZER | `categorizer` | **Deferred stub** | **Hidden from Insert picker Jul 23** — no sample need |
+| 1 | CATEGORIZER | `categorizer` | **Parked stub (Jul 24)** | Hidden from Insert picker; revisit after other project branches |
 | 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Passed** — owner Jul 18 (Configure URL → Design token → Preview placeholder → Deploy live image) |
 | 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Passed** — owner Jul 18 (Configure + Deploy; spacing between stacked chips fixed same day) |
-| 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | **Hidden from Insert picker Jul 23** |
+| 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Parked stub (Jul 24)** | Hidden from Insert picker; revisit after other project branches |
 | 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Passed** — owner Jul 19 (core Deploy + **WHERE re-smoke Passed** — all conditions incl. numeric) |
-| 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | **Hidden from Insert picker Jul 23** — hosted My Tawala |
+| 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Parked stub (Jul 24)** | Hidden from Insert picker; revisit after other project branches |
 | 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16. **WHERE re-smoke Passed Jul 19** |
-| 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | **Hidden from Insert picker Jul 23** — payment integration |
+| 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Parked stub (Jul 24)** | Hidden from Insert picker; **future = generic payment API**, not PayPal-only |
 | 9 | PROJECT EMAIL COUNT | `project-email-count` | **Yes** | **Passed** — owner Jul 19 (UI/export + live :8080 count after Process Send / Resend) |
 | 10 | QUESTION CORRELATION TABLE | `question-correlation-table` | **Yes** | Get Together **Passed w/ caveats**. **WHERE re-smoke Passed Jul 19** (multiple conditions) |
 | 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | **Passed w/ caveats** — Jul 19 (Get Together Configure help; Column One = FIB/name; col2 = tick). **WHERE re-smoke Passed Jul 19** |
@@ -764,7 +776,7 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
 | Image from PC / Web URL | Yes | **From your PC** Approach A (Jul 16); **From the Web…** = DISPLAY IMAGE (Jul 17 rename); File Uploader form item omitted from palette |
 | Insert Field (document) | Yes | **Jul 17:** Insert → Field from Fields selection; **Jul 17 fix:** only active MDI Document (stale prior cleared on window activate); status nudge when no caret |
-| Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — **hidden from Insert → Function picker Jul 23** (catalog kept) |
+| Document HTML → XML for functions | Full set | **13 emit**; **4 parked stubs (Jul 24)** (`categorizer`, roster, link, paypal) — hidden from Insert picker; revisit after other project branches; payment later = generic API |
 
 ---
 

@@ -108,11 +108,21 @@ function unwrap(el: Element) {
  * only" and keeping the read-only collapsed render safe. Caret markers are dropped; empty
  * size spans are omitted.
  */
+function sizeSpanClass(el: HTMLElement): "heading-size-main" | "heading-size-sub" | null {
+  if (el.classList.contains("heading-size-sub")) return "heading-size-sub";
+  if (el.classList.contains("heading-size-main")) return "heading-size-main";
+  return null;
+}
+
 function serializeChildren(node: Node): string {
   let html = "";
+  let lastSizeCls: "heading-size-main" | "heading-size-sub" | null = null;
   node.childNodes.forEach((child) => {
     if (child.nodeType === Node.TEXT_NODE) {
-      html += escapeHtml((child.textContent ?? "").replace(new RegExp(CARET_MARKER, "g"), ""));
+      const raw = (child.textContent ?? "").replace(new RegExp(CARET_MARKER, "g"), "");
+      // Literal newlines from contenteditable → `<br>` so Preview/Deploy keep the break.
+      html += escapeHtml(raw).replace(/\n/g, "<br>");
+      if (raw.replace(/\s/g, "")) lastSizeCls = null;
       return;
     }
     if (child.nodeType !== Node.ELEMENT_NODE) return;
@@ -120,26 +130,28 @@ function serializeChildren(node: Node): string {
     const tag = el.tagName;
     if (tag === "BR") {
       html += "<br>";
+      lastSizeCls = null;
       return;
     }
-    if (
-      tag === "SPAN" &&
-      (el.classList.contains("heading-size-sub") || el.classList.contains("heading-size-main"))
-    ) {
-      const cls = el.classList.contains("heading-size-sub")
-        ? "heading-size-sub"
-        : "heading-size-main";
+    const sizeCls = tag === "SPAN" ? sizeSpanClass(el) : null;
+    if (sizeCls) {
       const inner = serializeChildren(el);
-      if (inner) html += `<span class="${cls}">${inner}</span>`;
+      if (!inner) return;
+      // Persist a break when Main/Sub runs sit adjacent (wrap looks like two lines in Design).
+      if (lastSizeCls && lastSizeCls !== sizeCls && !html.endsWith("<br>")) html += "<br>";
+      html += `<span class="${sizeCls}">${inner}</span>`;
+      lastSizeCls = sizeCls;
       return;
     }
     if (tag === "DIV" || tag === "P") {
       if (html && !html.endsWith("<br>")) html += "<br>";
       html += serializeChildren(el);
+      lastSizeCls = null;
       return;
     }
     // Any other element (formatting/pasted): unwrap to its text content.
     html += serializeChildren(el);
+    lastSizeCls = null;
   });
   return html;
 }
@@ -176,8 +188,13 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   const savedRangeRef = useRef<Range | null>(null);
   const wasSelected = useRef(selected);
 
-  const update = (patch: Partial<HeadingItem>) =>
-    updateFormItem(formName, index, { ...item, ...patch });
+  const update = (patch: Partial<HeadingItem>) => {
+    const next: HeadingItem = { ...item, ...patch };
+    // `level: undefined` must actually remove the key — leftover `level: "main"` from
+    // insert made Preview/Deploy ignore per-run size spans and glue lines together.
+    if ("level" in patch && patch.level === undefined) delete next.level;
+    updateFormItem(formName, index, next);
+  };
 
   // Enter editing when the row becomes selected (insert or re-select from elsewhere);
   // collapse when selection moves away (mirrors HeadingView GotFocus / OnValidated).
@@ -213,6 +230,24 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
+    // Dropdown follows caret / selection size (per-run), not whole-box.
+    if (item.level === "sub") setCurrentSize("sub");
+    else if (item.level === "main") setCurrentSize("main");
+    else {
+      // Will refine on mouseup/keyup via syncCurrentSize; start from end caret.
+      const endSize = (() => {
+        let n: Node | null = range.endContainer;
+        if (n.nodeType === Node.TEXT_NODE) n = n.parentElement;
+        while (n && n !== el) {
+          const cls = (n as HTMLElement).classList;
+          if (cls?.contains(SIZE_CLASS.sub)) return "sub" as const;
+          if (cls?.contains(SIZE_CLASS.main)) return "main" as const;
+          n = (n as HTMLElement).parentElement;
+        }
+        return "main" as const;
+      })();
+      setCurrentSize(endSize);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
@@ -244,9 +279,9 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   };
 
   /**
-   * Read the editor back to storage: keep only text + the two size spans (drop markers,
-   * empty spans, and any stray formatting); "" when blank. Once edited, the heading is fully
-   * per-run, so the legacy whole-box `level` is cleared.
+   * Read the editor back to storage: keep only text + size spans + `<br>`; "" when blank.
+   * Clears legacy whole-box `level` — size lives in content markup. Preview/Deploy split
+   * mixed Main/Sub lines into multiple headings (`headingExport.headingSegments`).
    */
   const commit = () => {
     const el = editorRef.current;
@@ -275,13 +310,15 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     if (!el.contains(range.commonAncestorContainer)) return;
     savedRangeRef.current = range.cloneRange();
     const startSize = sizeOfNode(range.startContainer);
-    // A selection that straddles both sizes shows a neutral "—" so re-picking either size
-    // always fires onChange (native selects skip onChange when the value is unchanged).
+    // Selection straddling both sizes → "—" so re-picking either size always fires onChange.
     const endSize = range.collapsed ? startSize : sizeOfNode(range.endContainer);
     setCurrentSize(startSize === endSize ? startSize : "mixed");
   };
 
-  /** Apply a size to the current selection only, or pend it for the next typed characters. */
+  /**
+   * Apply Main/Sub to the current selection only (or pend at caret for the next typed chars).
+   * Select line 1 → Main, line 2 → Sub; export emits two headings.
+   */
   const applySize = (size: HeadingSize) => {
     const el = editorRef.current;
     if (!el) return;
@@ -294,7 +331,6 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     const cls = SIZE_CLASS[size];
 
     if (range.collapsed) {
-      // No selection → pend the size: type into a fresh span so new characters adopt it.
       const span = document.createElement("span");
       span.className = cls;
       span.appendChild(document.createTextNode(CARET_MARKER));
@@ -477,7 +513,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
                   <option value="sub">Sub</option>
                 </select>
               </label>
-              <span className="heading-type-hint">Applies to highlighted text</span>
+              <span className="heading-type-hint">Applies to selection</span>
             </div>
           </>
         ) : (

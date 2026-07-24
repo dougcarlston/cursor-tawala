@@ -29,6 +29,7 @@ import {
 import { validateRegistrationPage1 } from "./registrationPage1Validation.mjs";
 import { validateFibBlanks } from "./fibBlankValidation.mjs";
 import { appendFormRecord, clearFormAnswers } from "./sessionStore.mjs";
+import { headingToPreviewHtml } from "./headingExport.mjs";
 
 function esc(s) {
   return String(s ?? "")
@@ -38,19 +39,40 @@ function esc(s) {
     .replace(/"/g, "&quot;");
 }
 
-/**
- * Heading content may carry inline per-run size markup (`<span class="heading-size-*">`).
- * The runtime renders headings at a single theme size (`<h2>`/`<h3>`), so reduce to plain
- * text (decoding editor entities) rather than emitting escaped `<span>` tags. Per-run size
- * parity in the runtime is deferred.
- */
-function headingPlainText(content) {
-  return String(content ?? "")
-    .replace(/\u200b/g, "")
-    .replace(/<[^>]*>/g, "")
-    .replace(/&lt;/g, "<")
-    .replace(/&gt;/g, ">")
-    .replace(/&amp;/g, "&");
+/** Match Java PageHeader.toHtml — `<h1 class="pageHeading">` + optional img + text div. */
+function renderPageHeaderHtml(project) {
+  const ph = project?.pageHeader;
+  if (!ph) return "";
+  const text = String(ph.text ?? "");
+  const imageId = String(ph.imageId ?? "").trim();
+  if (!text.trim() && !imageId) return "";
+
+  let imgHtml = "";
+  let styleAttr = "";
+  let hasImageClass = "";
+  if (imageId) {
+    const img = (project.images ?? []).find((i) => i && i.id === imageId);
+    const data = String(img?.data ?? "").replace(/\s+/g, "");
+    if (data) {
+      const fmt = String(img.imageFormat ?? "JPEG").toUpperCase();
+      const mime =
+        fmt === "PNG" ? "image/png" : fmt === "GIF" ? "image/gif" : "image/jpeg";
+      // Cap banner height — legacy assumed short banners; phone photos must not
+      // become multi-screen headers (text then appears far below / off-screen).
+      const BANNER_MAX_PX = 160;
+      const naturalH = Number(ph.height);
+      const displayH =
+        Number.isFinite(naturalH) && naturalH > 0
+          ? Math.min(Math.round(naturalH), BANNER_MAX_PX)
+          : BANNER_MAX_PX;
+      styleAttr = ` style="height: ${displayH}px;"`;
+      hasImageClass = " pageHeading-withImage";
+      // Size via CSS object-fit — do not stamp natural width/height on the img.
+      imgHtml = `<img src="data:${mime};base64,${data}" alt="" />`;
+    }
+  }
+  const textHtml = text ? `<div>${esc(text)}</div>` : "";
+  return `<h1 class="pageHeading${hasImageClass}"${styleAttr}>${imgHtml}${textHtml}</h1>`;
 }
 
 function formState(session, formName) {
@@ -356,9 +378,9 @@ function renderItem(item, ctx, project) {
   switch (item.type) {
     case "heading":
     case "subheading":
-      return item.type === "subheading"
-        ? `<h3>${esc(headingPlainText(item.content))}</h3>`
-        : `<h2>${esc(headingPlainText(item.content))}</h2>`;
+      // Match Java HeadingItem / SubheadingItem (`h1.heading` / `h2.subheading`).
+      // Mixed Main+Sub lines → multiple headings; `<br>` → line breaks.
+      return headingToPreviewHtml(item, esc);
     case "text": {
       if (isRegistrationForm(ctx.formName)) {
         const reg = renderRegistrationText(item, ctx, ctx.formName, project);
@@ -386,15 +408,18 @@ function renderItem(item, ctx, project) {
       return renderFib(item, ctx);
     case "mc": {
       const choices = renderMcChoices(item, ctx);
-      // MCQ question may carry canvas-inline HTML; render plain text in the legend.
-      const q = String(item.question ?? "").replace(/<[^>]+>/g, "");
+      // Prefer Design HTML in the legend (B/I/U); fall back to escaped plain text.
+      const qRaw = String(item.question ?? "");
+      const qLegend = /<[a-z/!]/i.test(qRaw)
+        ? enhanceRichTextHtml(qRaw, ctx)
+        : esc(qRaw.replace(/<[^>]+>/g, ""));
       if (isRegistrationForm(ctx.formName) && (item.label === "Q7" || item.label === "Q8")) {
         return choices;
       }
       if (isRegistrationForm(ctx.formName) && typeof choices === "string" && /^\s*<(fieldset|div)\b/.test(choices)) {
         return choices;
       }
-      return `<fieldset class="mc" id="item-${esc(itemKey(item))}"><legend>${esc(q)}</legend><div class="mc-choices">${choices}</div></fieldset>`;
+      return `<fieldset class="mc" id="item-${esc(itemKey(item))}"><legend>${qLegend}</legend><div class="mc-choices">${choices}</div></fieldset>`;
     }
     case "field": {
       const n = item.name ?? item.fieldName;
@@ -432,15 +457,27 @@ const FORM_ITEM_SPACING_CSS = `
 .tawala-form > .text,
 .tawala-form > .fib,
 .tawala-form > fieldset.mc,
-.tawala-form > h2,
-.tawala-form > h3,
+.tawala-form > h1.heading,
+.tawala-form > h2.subheading,
 .tawala-form > .preview-function-table {
   margin-top: 0;
   margin-bottom: 0.85rem;
 }
 .tawala-form > .text p { margin: 0.35rem 0; }
-.tawala-form > h2 { margin-bottom: 0.65rem; }
-.tawala-form > h3 { margin-bottom: 0.55rem; }
+.tawala-form > h1.heading { margin-bottom: 0.35rem; line-height: 1.25; }
+.tawala-form > h2.subheading { margin-bottom: 0.55rem; line-height: 1.25; }
+/* Stacked Main→Sub (one Design box → two headings); blank line ≈ Design <br><br>. */
+.tawala-form > h1.heading + h2.subheading,
+.tawala-form > h2.subheading + h1.heading,
+.tawala-form > h1.heading + h1.heading,
+.tawala-form > h2.subheading + h2.subheading,
+.tawala-form > .heading-stack,
+.tawala-form > .heading-after-blank {
+  margin-top: 2.25rem;
+}
+.tawala-form > .heading-after-blank {
+  margin-top: 2.25rem;
+}
 .tawala-form > fieldset.mc { margin-top: 0.25rem; margin-bottom: 0.85rem; }
 .tawala-form > .fib { margin-bottom: 0.75rem; }
 /* Form Text may carry Design table chrome (absolute left/top, selection). Flow layout only. */
@@ -702,7 +739,9 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
   const formTagAttrs = options.designerPreview
     ? `${formAttrs} onsubmit="return false;"`
     : formAttrs;
+  const pageHeaderHtml = renderPageHeaderHtml(project);
   const body = `
+  ${pageHeaderHtml}
   ${showPageChrome && !isRegistrationForm(formName) ? `<div class="project-title">${esc(project.name)}</div>` : ""}
   ${showPageChrome ? `<h1 class="form-title">${esc(formName)}</h1>` : ""}
   ${messageHtml}

@@ -73,6 +73,13 @@ describe("form-layout-core.css (Deploy layout lock)", () => {
     expect(css).toMatch(/max-width:\s*min\(var\(--tawala-list-table-max-width/);
   });
 
+  it("locks Main/Sub heading vertical gap (Preview parity for split headings)", () => {
+    expect(css).toMatch(/h1\.heading\s*\+\s*h2\.subheading/);
+    expect(css).toMatch(/margin-top:\s*2\.25rem\s*!important/);
+    expect(defaultCss).toMatch(/h1\.heading\s*\+\s*h2\.subheading/);
+    expect(defaultCss).toMatch(/margin-top:\s*2\.25rem/);
+  });
+
   it("is wired last in CommonTheme and re-appended after user themes", () => {
     expect(commonTheme).toContain('FORM_LAYOUT_CORE_CSS = "/css/project/form-layout-core.css"');
     expect(commonTheme).toContain("screenStylesheetURLs.add(FORM_LAYOUT_CORE_CSS)");
@@ -94,5 +101,13 @@ describe("form-layout-core.css (Deploy layout lock)", () => {
     expect(defaultCss).toMatch(/html\s*\{[^}]*font-size:\s*13px/s);
     expect(defaultCss).toMatch(/body\s*\{[^}]*font-size:\s*13px/s);
     expect(defaultCss).toContain("text-size-adjust: 100%");
+  });
+
+  it("restores strong/em after Yahoo reset (Java Bold → <strong>)", () => {
+    expect(defaultCss).toMatch(
+      /address,caption,cite,code,dfn,em,strong[\s\S]*?font-weight:\s*normal/,
+    );
+    expect(defaultCss).toMatch(/b,\s*strong\s*\{\s*font-weight:\s*bold\s*;?\s*\}/);
+    expect(defaultCss).toMatch(/i,\s*em\s*\{\s*font-style:\s*italic\s*;?\s*\}/);
   });
 });

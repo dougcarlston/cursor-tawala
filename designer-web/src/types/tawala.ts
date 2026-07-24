@@ -73,11 +73,10 @@ export interface HeadingItem extends FormItemBase {
    */
   level?: "main" | "sub";
   /**
-   * Heading text. May be plain text (legacy) or minimal inline markup with per-run
-   * size: `<span class="heading-size-sub">…</span>` / `<span class="heading-size-main">…</span>`.
-   * Bare (unwrapped) text renders at Main size. Only these two size classes are used —
-   * no bold/italic/color (that is the Text item). Rendered per-selection in
-   * `HeadingCanvasRow`.
+   * Heading text. May be plain text (legacy) or size markup wrapping the box:
+   * `<span class="heading-size-sub">…</span>` / `<span class="heading-size-main">…</span>`.
+   * Bare (unwrapped) text = Main. Heading Type is whole-box (legacy / Deploy).
+   * No bold/italic/color (that is the Text item). See `HeadingCanvasRow`.
    */
   content?: string;
 }
@@ -202,6 +201,19 @@ export interface TawalaImageDef {
   fileName?: string;
 }
 
+/**
+ * Project → Page Header… — banner on deployed pages (not the Heading form item).
+ * Legacy XML `<pageHeader><text>…</text><image id width height/></pageHeader>` + imagedef.
+ */
+export interface TawalaPageHeader {
+  /** Plain (unformatted) banner text. */
+  text?: string;
+  /** Id in `project.images` (legacy often `__HEADER__…`). */
+  imageId?: string;
+  width?: number;
+  height?: number;
+}
+
 export interface TawalaProject {
   name: string;
   format: string;
@@ -211,6 +223,8 @@ export interface TawalaProject {
   documents?: TawalaDocument[];
   /** Local images referenced by Form Text / Document `<img data-tawala-image-id>`. */
   images?: TawalaImageDef[];
+  /** Project-wide deployed page banner (Project → Page Header…). */
+  pageHeader?: TawalaPageHeader;
 }
 
 export type EditorTab = "design" | "preview";
@@ -263,7 +277,9 @@ export const MCQ_PLACEHOLDER =
 export function createDefaultItem(type: FormItemType, label: string): FormItem {
   switch (type) {
     case "heading":
-      return { type, label, level: "main", content: HEADING_PLACEHOLDER };
+      // Size lives in content markup (`heading-size-*`); do not set whole-box `level`
+      // or Preview/Deploy will ignore mixed Main/Sub runs.
+      return { type, label, content: HEADING_PLACEHOLDER };
     case "text":
       return { type, label, content: TEXT_PLACEHOLDER };
     case "fib":

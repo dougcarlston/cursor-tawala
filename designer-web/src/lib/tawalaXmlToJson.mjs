@@ -338,6 +338,9 @@ function richNodesFromXml(nodes, ctx = {}) {
       case "itemization-table":
         out.push(convertItemizationTable(n, ctx));
         break;
+      case "sum":
+        out.push(convertSumFunction(n, ctx));
+        break;
       case "link": {
         warn("Hyperlink in rich content — approximated as text");
         out.push({ type: "text", text: flattenPlainText(body) });
@@ -357,6 +360,47 @@ function richNodesFromXml(nodes, ctx = {}) {
     }
   }
   return out;
+}
+
+/** Strip leading `Record:` so Design Configure uses Form:Field like Insert → Function. */
+function designFieldFromRecordPath(raw) {
+  let s = String(raw ?? "").trim();
+  if (!s) return "";
+  s = s.replace(/^<<|>>$/g, "");
+  if (/^Record:/i.test(s)) s = s.slice("Record:".length);
+  return s;
+}
+
+/**
+ * Legacy `<sum><field>Record:Form:Blank</field><conditions>…` → function node for Design chips.
+ */
+function convertSumFunction(sumNode, _ctx = {}) {
+  const body = sumNode.sum ?? [];
+  let fieldRaw = "";
+  let where;
+  for (const c of children(body)) {
+    const t = tagName(c);
+    if (t === "field") {
+      fieldRaw =
+        textOf(c.field ?? []).trim() ||
+        attr(c, "name") ||
+        flattenPlainText(c.field ?? []) ||
+        "";
+    } else if (t === "conditions") {
+      where = parseConditions(c.conditions);
+    }
+  }
+  const field = designFieldFromRecordPath(fieldRaw);
+  const flat = flattenWhereToConditionRows(where);
+  const config = {
+    field,
+    conditionsRows: flat?.rows ?? [{ field: "", op: "equals", value: "" }],
+    conditionsCombinator: flat?.combinator ?? "and",
+  };
+  if (!field) {
+    warn("Document <sum> missing field — placeholder chip still emitted");
+  }
+  return { type: "function", functionId: "sum", config };
 }
 
 function convertItemizationTable(tableNode, ctx = {}) {
@@ -548,6 +592,58 @@ function escHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
+/** Field chip HTML — brackets must be entities or innerHTML parses `<<Name>>` as tags. */
+function fieldTokenHtml(name) {
+  const n = String(name ?? "").trim();
+  if (!n) return "";
+  return (
+    `<span class="field-token function-table-token" contenteditable="false" ` +
+    `data-field-name="${escHtml(n)}" title="${escHtml(n)}" draggable="true">` +
+    `&lt;&lt;${escHtml(n)}&gt;&gt;</span>`
+  );
+}
+
+let nextImportedFunctionInstanceId = 1;
+
+/** Display-function chip HTML (SUM, etc.) with escaped `<<NAME(…)>>` text. */
+function displayFunctionTokenHtml(functionId, config) {
+  const id = String(functionId ?? "").trim() || "sum";
+  const inst = nextImportedFunctionInstanceId++;
+  const confJson = JSON.stringify(config ?? {});
+  const field = String(config?.field ?? "").trim();
+  const label = field ? `<<SUM(${field})>>` : `<<SUM>>`;
+  // Prefer catalog-style label; keep SUM-specific for import path.
+  const display =
+    id === "sum"
+      ? label
+      : `<<${id.toUpperCase()}${field ? `(${field})` : ""}>>`;
+  return (
+    `<span class="function-token function-table-token" contenteditable="false" ` +
+    `data-function-id="${escHtml(id)}" data-function-instance="${inst}" ` +
+    `data-function-config="${escHtml(confJson)}" title="${escHtml(id.toUpperCase())}">` +
+    `${escHtml(display)}</span>`
+  );
+}
+
+/**
+ * Turn plain / entity-encoded `<<Field>>` in imported htmlData into field chips.
+ * Protects existing field-token / function-token spans.
+ */
+function embedFieldsInImportedHtml(source) {
+  const chips = [];
+  let s = String(source ?? "").replace(
+    /<span\b[^>]*\b(?:field-token|function-token|invitation-token)\b[^>]*>[\s\S]*?<\/span>/gi,
+    (chip) => {
+      const i = chips.length;
+      chips.push(chip);
+      return `\u0000CHIP${i}\u0000`;
+    },
+  );
+  s = s.replace(/&lt;&lt;([^&<>]+)&gt;&gt;/g, (_, name) => fieldTokenHtml(String(name).trim()));
+  s = s.replace(/<<([^<>]+)>>/g, (_, name) => fieldTokenHtml(String(name).trim()));
+  return s.replace(/\u0000CHIP(\d+)\u0000/g, (_, i) => chips[Number(i)] ?? "");
+}
+
 function dataUrlForImageDef(img) {
   if (!img?.data) return "";
   const mime =
@@ -583,10 +679,11 @@ function richNodesToFormHtml(nodes, imageById = {}) {
     }
     if (n.type === "field") {
       const name = String(n.name ?? "");
-      out +=
-        `<span class="field-token function-table-token" contenteditable="false" ` +
-        `data-field-name="${escHtml(name)}" title="${escHtml(name)}" draggable="true">` +
-        `<<${escHtml(name)}>></span>`;
+      out += fieldTokenHtml(name);
+      continue;
+    }
+    if (n.type === "function") {
+      out += displayFunctionTokenHtml(n.functionId, n.config ?? {});
       continue;
     }
     if (n.type === "bold") {
@@ -610,6 +707,32 @@ function richNodesToFormHtml(nodes, imageById = {}) {
       out += `<span${styleAttr}>${richNodesToFormHtml(n.nodes, imageById)}</span>`;
       continue;
     }
+    if (n.type === "itemizationTable") {
+      const enc = encodeURIComponent(JSON.stringify(n));
+      const form = String(n.form ?? "");
+      out +=
+        `<span contenteditable="false" class="function-table-inline function-table-token" ` +
+        `data-itemization-token="true" data-itemization-form="${escHtml(form)}" ` +
+        `data-tawala-structured-node="${escHtml(enc)}" title="MULTIPLE QUESTION LIST">` +
+        `{ MULTIPLE QUESTION LIST }</span>`;
+      continue;
+    }
+    if (n.type === "invitation") {
+      const draft = {
+        form: String(n.form ?? ""),
+        project: String(n.project ?? ""),
+        displayText: String(n.text ?? n.form ?? "Invitation"),
+        isPrivate: Boolean(n.private),
+        authToken: String(n.authenticationTokenField ?? ""),
+      };
+      const enc = encodeURIComponent(JSON.stringify(draft));
+      const label = escHtml(draft.displayText || draft.form || "Invitation");
+      out +=
+        `<span contenteditable="false" class="invitation-token" ` +
+        `data-invitation-config="${escHtml(enc)}" ` +
+        `style="color:#000080;text-decoration:underline">${label}</span>`;
+      continue;
+    }
     if (n.nodes) out += richNodesToFormHtml(n.nodes, imageById);
   }
   return out;
@@ -625,6 +748,10 @@ function richBlocksToFormHtml(blocks, imageById = {}) {
       }
       if (b.type === "text") return `<p>${escHtml(b.text ?? "")}</p>`;
       if (b.type === "table") {
+        const indentTwips = b.indent != null ? Number(b.indent) : 0;
+        const indentPt = indentTwips > 0 ? indentTwips / 20 : 0;
+        const margin =
+          indentPt > 0 ? ` style="margin-left:${indentPt}pt"` : "";
         const rows = (b.rows ?? [])
           .map((row) => {
             const cells = (row.cells ?? [])
@@ -640,7 +767,7 @@ function richBlocksToFormHtml(blocks, imageById = {}) {
             return `<tr>${cells}</tr>`;
           })
           .join("");
-        return `<table class="user" border="1" cellpadding="4" cellspacing="0">${rows}</table>`;
+        return `<table class="user" border="1" cellpadding="4" cellspacing="0"${margin}>${rows}</table>`;
       }
       return "";
     })
@@ -1216,7 +1343,14 @@ function convertProcess(procNode) {
   };
 }
 
-function convertDocument(docNode) {
+/**
+ * Document → Design-ready HTML string.
+ *
+ * Prefer `<xmlData>` (rich paragraphs/tables). Fall back to `<htmlData>` CDATA when
+ * xmlData is missing (common in older TX Text docs). `rawHtmlData` is full-page HTML
+ * and is still stripped — Design canvas wants body fragments only.
+ */
+function convertDocument(docNode, imageById = {}) {
   const name = attr(docNode, "name");
   const body = docNode.document ?? [];
   const xmlData = findChild(body, "xmlData");
@@ -1233,15 +1367,38 @@ function convertDocument(docNode) {
           nodes: richNodesFromXml(n.paragraph, { location: `document ${name}` }),
         });
       } else if (t === "table") {
-        blocks.push(...tableToBlocks(n.table, { location: `document ${name}` }));
+        const tableBlocks = tableToBlocks(n.table, { location: `document ${name}` });
+        const indentTwips = attr(n, "indent");
+        if (indentTwips != null && tableBlocks[0]) {
+          const tw = Number(indentTwips);
+          if (!Number.isNaN(tw) && tw > 0) tableBlocks[0].indent = tw;
+        }
+        blocks.push(...tableBlocks);
       }
     }
   }
-  // Strip rawHtmlData intentionally
-  if (findChild(body, "rawHtmlData")) {
-    warn(`Document ${name}: rawHtmlData stripped (legacy, ignored by runtime)`);
+
+  if (blocks.length > 0) {
+    return { name, content: richBlocksToFormHtml(blocks, imageById) };
   }
-  return { name, content: blocks };
+
+  const htmlData = findChild(body, "htmlData");
+  if (htmlData) {
+    const html = textOf(htmlData).trim();
+    if (html) {
+      return { name, content: embedFieldsInImportedHtml(html) };
+    }
+  }
+
+  // Strip rawHtmlData intentionally (full HTML document shell — not Design canvas HTML).
+  if (findChild(body, "rawHtmlData")) {
+    warn(
+      `Document ${name}: rawHtmlData stripped (legacy full-page HTML); no xmlData/htmlData body found`,
+    );
+  } else if (!xmlData) {
+    warn(`Document ${name}: empty (no xmlData or htmlData)`);
+  }
+  return { name, content: "" };
 }
 
 /**
@@ -1270,6 +1427,52 @@ function convertImageDef(imgNode) {
   if (imageFormat === "JPG") imageFormat = "JPEG";
   if (!/^(PNG|GIF|JPEG)$/.test(imageFormat)) imageFormat = "PNG";
   return { id, imageFormat, data };
+}
+
+/**
+ * `<pageHeader><text>…</text><image id width height/></pageHeader>` → JSON.
+ * Nested `<field>` inside text is flattened (plain banner line in Designer dialog).
+ */
+function convertPageHeader(projectBody) {
+  let headerBody = null;
+  for (const n of children(projectBody)) {
+    if (tagName(n) === "pageHeader") {
+      headerBody = n.pageHeader;
+      break;
+    }
+  }
+  if (headerBody == null) return undefined;
+
+  let text = "";
+  let imageId = "";
+  let width;
+  let height;
+  for (const n of children(headerBody)) {
+    const t = tagName(n);
+    if (t === "text") {
+      const body = n.text;
+      if (children(body).some((c) => tagName(c) === "field")) {
+        warn("<pageHeader> text field refs flattened to plain text");
+      }
+      text = flattenPlainText(body);
+    } else if (t === "image") {
+      imageId = String(attr(n, "id") ?? "").trim();
+      const w = Number(attr(n, "width"));
+      const h = Number(attr(n, "height"));
+      if (Number.isFinite(w) && w > 0) width = Math.round(w);
+      if (Number.isFinite(h) && h > 0) height = Math.round(h);
+    }
+  }
+
+  if (!text && !imageId) return undefined;
+  const out = {};
+  if (text) out.text = text;
+  if (imageId) {
+    out.imageId = imageId;
+    if (width != null) out.width = width;
+    if (height != null) out.height = height;
+  }
+  return out;
 }
 
 /** Collect `<images><imagedef>…` and bare `<imagedef>` under project root. */
@@ -1304,6 +1507,7 @@ function convertProjectImages(projectBody) {
  */
 export function convertTawalaXmlToProject(xmlString, options = {}) {
   warnings = [];
+  nextImportedFunctionInstanceId = 1;
   const sourceLabel = options.sourceLabel ?? undefined;
 
   const parser = new XMLParser({
@@ -1329,9 +1533,6 @@ export function convertTawalaXmlToProject(xmlString, options = {}) {
   if (projectAttrs["@_themePath"] === "mvsc") {
     warn('themePath "mvsc" — browser Designer / local Tomcat may lack this theme; UI still opens');
   }
-  if (findChild(projectBody, "pageHeader") != null) {
-    warn("<pageHeader> dropped (absorbed into themePath; not in JSON schema)");
-  }
   if (findChild(projectBody, "styles") != null) {
     warn("<styles> dropped (global fib/mc/text defaults not in JSON schema)");
   }
@@ -1339,6 +1540,7 @@ export function convertTawalaXmlToProject(xmlString, options = {}) {
   // Images first so Form Text / Document inline <image id> can embed data-URLs.
   const images = convertProjectImages(projectBody);
   const imageById = Object.fromEntries(images.map((img) => [img.id, img]));
+  const pageHeader = convertPageHeader(projectBody);
 
   const formsWrap = findChild(projectBody, "forms") ?? [];
   const forms = [];
@@ -1355,7 +1557,7 @@ export function convertTawalaXmlToProject(xmlString, options = {}) {
   const docsWrap = findChild(projectBody, "documents") ?? [];
   const documents = [];
   for (const n of children(docsWrap)) {
-    if (tagName(n) === "document") documents.push(convertDocument(n));
+    if (tagName(n) === "document") documents.push(convertDocument(n, imageById));
   }
 
   const project = {
@@ -1367,6 +1569,7 @@ export function convertTawalaXmlToProject(xmlString, options = {}) {
     documents,
   };
   if (images.length) project.images = images;
+  if (pageHeader) project.pageHeader = pageHeader;
   if (projectAttrs["@_format"] != null) project._originalFormat = projectAttrs["@_format"];
   if (projectAttrs["@_designerBuild"] != null) {
     project._designerBuild = projectAttrs["@_designerBuild"];

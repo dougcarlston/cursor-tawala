@@ -229,7 +229,7 @@ export function CanvasWindow({ win, active }: Props) {
           </button>
         </span>
       </div>
-      <div className="mdi-body">
+      <div className="mdi-body legacy-scrollbar">
         <WindowBody kind={win.kind} name={win.name} />
       </div>
       {RESIZE_DIRS.map((dir) => (

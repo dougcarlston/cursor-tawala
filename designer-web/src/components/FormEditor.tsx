@@ -12,6 +12,7 @@ import { FunctionTableBadge } from "./FunctionTableBadge";
 import { HeadingCanvasRow } from "./HeadingCanvasRow";
 import { TextCanvasRow } from "./TextCanvasRow";
 import { StructuredTextCanvasRow } from "./StructuredTextCanvasRow";
+import { FormPageHeaderBanner } from "./FormPageHeaderBanner";
 import {
   hasFormItemDrag,
   hasFormItemReorderDrag,
@@ -293,7 +294,7 @@ export function FormEditor({ formName }: Props) {
         <div className="form-design-body">
           <div
             ref={canvasRef}
-            className={`form-canvas${dragActive ? " form-canvas-item-drag" : ""}`}
+            className={`form-canvas legacy-scrollbar${dragActive ? " form-canvas-item-drag" : ""}`}
             onClick={(e) => {
               if (e.target === e.currentTarget) {
                 setSelectedItemIndex(null);
@@ -351,6 +352,8 @@ export function FormEditor({ formName }: Props) {
                 />
               </div>
             ) : null}
+
+            <FormPageHeaderBanner project={project} />
 
             {form.items.length === 0 ? (
               <p className="hint form-canvas-hint">

@@ -29,7 +29,7 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 | Potluck Template.tawala | 2 | 3 | 3 | 2 |
 | DirtBowl.tawala | 69 | 79 | 44 | 2 |
 
-**Known lossy warnings (expected):** pageHeader / styles dropped; invitations / multi-form itemization limited; Send subject notes; Document table→paragraph approximations. SportsDashboards deep parity still out of scope. Dynamic MCQ imports open in Configure Function (Edit); nested `where` trees may need a re-save of conditions.
+**Known lossy warnings (expected):** styles dropped; invitations / multi-form itemization limited; Send subject notes; Document table→paragraph approximations. SportsDashboards deep parity still out of scope. Dynamic MCQ imports open in Configure Function (Edit); nested `where` trees may need a re-save of conditions. **Jul 24:** `<pageHeader>` imports into JSON (no longer dropped).
 
 **Jul 21 import follow-ups (fixed same day):** FIB import now emits Design underscore runs from `<blank length>`; Form Text inline `<image id>` embeds as `data-tawala-image-id` imgs with data-URLs from `project.images`; Form Text `<table>` with `<division>` cells → editable HTML (Name / `<<fields>>`); structured-content fallback now shows badge + × delete. Re-run CLI / re-Open `.tawala` to pick up. Skip script shows friendly `equals` for imported `mcEquals`.
 
@@ -75,6 +75,8 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 
 **Not** legacy parity: vintage Designer used a hard-coded ~7″ text box with horizontal scroll. Owner prefers **margin-based reflow** so SportsDashboards (and similar) can target mobile/tablet by constraining overall form/window size instead of hand-rebuilding every layout.
 
+**Related (not the same epic):** multi-device **output sizing** (separate computer / tablet / phone layouts, optional autoswitch) is a larger product redesign that was **not** in the 2011 Designer. Spec’d and **parked** Jul 24 — see § **Device output sizing** below. Do not conflate margin wrap in Design with that future runtime/authoring model.
+
 Planned pieces (after single-line margin align):
 
 - Invisible **line slots** (height from font size) between left/right margins — **not built as a grid**; empty husks after delete were pruned July 10. Snap uses real `.doc-placed-text` lines. 
@@ -114,14 +116,14 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 
 - **Move Up / Move Down** for form items and process statements — **Done Jul 12** (↑/↓ + Alt+arrows + select-then-drag reorder; compact lists, caret only while dragging). **Document blocks — owner smoke Jul 15: pass.**
 - **FIB hint-text styling** (smaller italic secondary font for parentheticals). **Deferred** → `docs/DESIGNER_BACKLOG_FORMS_FIBS.md`. (Source: Designer Sign-up DirtBowl)
-- **Heading per-run Main/Sub size spans stripped** on export/runtime (legacy single-`type` heading can’t express mixed sizes). **Deferred.** (Source: Designer MDI and Heading)
+- **Heading per-run Main/Sub size spans** — **Jul 24:** Heading Type is whole-box again (legacy). Uniform Sub → Deploy `type="Sub"` / Preview+Java `h2.subheading`; Main → `h1.heading`. Mixed leftover markup still exports as Main. (Source: Designer MDI and Heading)
 - **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)
 - **Per-item Properties popups** not migrated — permanent Properties panel still used for non-canvas-inline items. **Deferred.** (Source: Designer MDI and Heading)
 - **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — **superseded July 10:** right-column Properties panel removed; Fields owns the column. Per-item Properties popups remain a separate deferred item.
 - **File Uploader** — **Omitted from Items palette (owner Jul 17).** Never wired in 2011 reference build or browser Designer. Spec only: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`. Use **Insert → Image → From your PC…** / **From the Web…** for images.
 - **Items palette icons** are Unicode/CSS placeholders, not legacy assets. **Deferred.** (Source: Designer Forms foundation)
 - **MCQ dynamic choice source** (“from stored data” + Configure Function). **Done Jul 23** — Choice source / Edit → `ConfigureFunctionDialog` (`dynamic-mcq`); Deploy `mcToXml`. Preview expands rows from session records (condition filter still Preview-only soft). (Source: Forms canvas & Skip)
-- **Rich text HTML → legacy XML export incomplete** for Heading/Text/FIB prompt/MCQ question formatting (MCQ question still stripped to plain text). Unfinished. (Source: Forms canvas & Skip)
+- **Rich text HTML → legacy XML export** for Form items — **MCQ question Done Jul 24**; **Heading whole-box Main/Sub Done Jul 24** (Design Type + Deploy/Preview `h1.heading` / `h2.subheading`). Text/FIB already on the rich path. (Source: Forms canvas & Skip)
 
 ## Skip Instructions
 
@@ -142,7 +144,7 @@ Skip Instructions is **wired** (canvas Edit dialog: If / SkipTo / Set / Comment;
 
 ## Shell / MDI / chrome
 
-- **Help → About Tawala Designer** — **Stub (disabled).** Menu item exists; no copyright / notices / build dialog yet. **Owner Jul 23: legal implications — do not ship / do not drop from the queue.** Owner will supply About text (copyright, trademarks, third-party notices as needed). Spec: `DESIGNER_MENU_SPEC.md` § Help. Tracked as Owner review queue **#13**.
+- **Help → About Tawala Designer** — **Done Jul 24** (`AboutDialog` + Help menu). Two separate © lines (Tawala Systems 2005–2009; Douglas G. Carlston 2026); Beta Version; third-party acknowledgments; no OS/.NET/File Versions. Spec: `DESIGNER_MENU_SPEC.md` § Help. Owner review queue **#13**.
 - **MDI Pass 2** — no Windows menu; Design/Preview and selected item still global across form windows; no layout persistence; no maximize/tile/snap. **Deferred.** (Sources: Designer MDI and Heading; Document WYSIWYG & palette)
 - **Long nowrap function chips push MDI chrome off-reach** — see open bug (Jul 20); workarounds Cascade / hide panels. Related to panel docking + title-bar clamp.
 - **Panel docking** — Items/Statements cannot be resized or moved independently of Project Explorer. **Deferred.** (Source: Designer MDI and Heading)
@@ -162,19 +164,20 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | # | Task | Notes / sequencing |
 |---|------|-------------------|
 | 1 | **Wire Main icon toolbar** (“frequently used” strip) | **Done Jul 12** — `MainIconToolbar` shares handlers with File/Edit via `shellCommands.ts`. |
-| 2 | **Home-page control audit — menus, tabs, and toolbars** | **Jul 17:** File/Edit/Insert/View/Project/Windows/Help. **View toggles wired.** Format removed (palette); Tables skipped; Project Tabs/Styles wired; Page Header/Themes = 8080 stubs. **Help → About** split out to queue **#13** (legal). |
+| 2 | **Home-page control audit — menus, tabs, and toolbars** | **Jul 17:** File/Edit/Insert/View/Project/Windows/Help. **View toggles wired.** Format removed (palette); Tables skipped; Project Tabs/Styles wired; **Page Header wired Jul 24**; Themes = local CSS. **Help → About** split out to queue **#13** (legal). |
 | 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. **Do not start during #9 smoke.** |
 | 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | **Done Jul 23** — Design Configure + Deploy XML. Owner smoke SignupSheets-class apps still useful. |
 | — | **Design-canvas Style paint** | **Owner Jul 18:** **Text** Instructional/Error shown on Forms → Text (already implemented). **FIB/MCQ layout paint = won't do** — interferes with editing; Preview immediate. See `DESIGNER_FORM_FORMAT_TOOLBAR.md`. |
-| 5 | **HTML→XML export for functions we already Configure** | **Mostly done Jul 13–16** — 13 of 17 emit real XML; 4 deferred stubs. Remaining work is **owner smoke**, not emit. See function status matrix in `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`. |
+| 5 | **HTML→XML export for functions we already Configure** | **Mostly done Jul 13–16** — 13 of 17 emit real XML. **Jul 24:** remaining 4 explicitly **parked** (not this build) — see `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Parked function stubs. Payment later = generic API, not PayPal-only. |
 | 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder. **Document blocks — owner smoke Jul 15: pass.** |
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
-| 9 | **Wire the rest of the functions** | **WHERE re-smoke complete Jul 19** (see function matrix). **Jul 20:** TODO #11 MCQ Where **Passed**; TODO #12 Totals vs Bar Graph multi-select **Passed**. Core Configure+Deploy for ladder done earlier Jul 19. |
+| 9 | **Wire the rest of the functions** | **Core ladder done Jul 19–20.** **Jul 24:** four stubs parked until after the other two project branches (`categorizer`, `export-team-roster`, `link-to-project-details`, `paypal-single-item-button`). |
 | 10 | **Get Deploy working** | **Usable Jul 12–16.** **Jul 20:** Potluck + DirtBowl legacy Deploy **Passed**; Send (self) **Passed**. **Jul 21:** general `.tawala` → Designer Open / CLI **landed** — owner smoke Open + Deploy next. |
 | 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner Passed Jul 20.** |
 | 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |
-| 13 | **Help → About Tawala Designer** | **Stub — keep open (legal).** Copyright / notices / build dialog not implemented (`MenuBar` disabled). Owner supplies final About text. Not optional polish — required before any public/shipped Designer build. Spec: `DESIGNER_MENU_SPEC.md` § Help. |
+| 13 | **Help → About Tawala Designer** | **Done Jul 24** — `AboutDialog` wired; attorney-guided copy locked (two © lines; Beta Version; third-party note). Spec: `DESIGNER_MENU_SPEC.md` § Help. Owner smoke Help → About. |
+| 14 | **Device output sizing** (computer / tablet / phone + optional autoswitch) | **Parked Jul 24** — not legacy parity; too large for this track. Spec: § **After the other two project branches**. Revisit with generic payment / other parked stubs after those branches. |
 
 **Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion. **Exception:** queue **#13 About** may be scheduled whenever the owner has the legal text — do not wait for #9.
 
@@ -189,6 +192,22 @@ Owner (July 12, 2026): park these until the browser Designer is considered **bas
 1. **Big smoke test on three different browsers** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on three browsers; capture browser-specific defects. *(Also listed in Owner review queue #3.)*
 2. **Conform Look and Feel** of the Designer shell and its windows to the legacy Designer application **without breaking** underlying behavior already shipped (layout, chrome, typography/colors — visual parity pass only after functional freeze). *(Also listed in Owner review queue #3.)*
 3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit. **Jul 17:** View menu stubs restored (all five); **wire View chrome toggles after menu review completes** (Owner review queue #2). Also parks Page Header/Themes, File↔toolbar parity. **Help → About is not parked here** — see Owner review queue **#13** (legal).
+
+---
+
+## After the other two project branches (parked product epics)
+
+Owner (Jul 24, 2026): these are **not** 2011 Designer parity gaps and are **too large** to start on the current Designer track. Keep them visible in the spec; **do not design or implement** until the other two AI-Tawala branches are finished and the owner reopens them. (Same gate as the four parked Insert → Function stubs — payment/generic checkout, categorizer, roster, My Tawala link.)
+
+### Device output sizing (computer / tablet / phone)
+
+**Intent:** Let a designer author **separate outputs** (or variants) depending on whether the end user is viewing on a **computer**, **tablet**, or **phone**, with the option that Tawala **autoswitches** based on what it can detect at runtime (viewport / user-agent / similar — mechanism TBD).
+
+**Why park:** Did not exist in the legacy Designer fifteen years ago; touches Design authoring, Deploy/runtime layout, and possibly Process/Show paths. Far larger than a single Insert → Function stub.
+
+**Not this epic:** Today’s Document **margin-based reflow** (narrow the Design window → wrap/pack) remains the interim way to approximate smaller widths. Device output sizing is an explicit multi-surface authoring + delivery model on top of (or instead of) “one layout squeezed.”
+
+**When reopened:** Capture product decisions first — how many breakpoints; whether layouts are fully separate projects/forms/documents or conditional blocks; autoswitch vs manual “view as…”; Preview/Deploy parity.
 
 ---
 
