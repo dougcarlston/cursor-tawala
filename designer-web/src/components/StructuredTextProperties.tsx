@@ -119,6 +119,51 @@ function mergeAdjacentTextNodes(nodes: RichTextNode[]): RichTextNode[] {
   return merged;
 }
 
+/** Chromium palette B/I/U often emits span style=… instead of <b>/<i>/<u>. */
+function styleAttrLooksBold(styleAttr: string, style: CSSStyleDeclaration): boolean {
+  if (/font-weight\s*:\s*(normal|400)\b/i.test(styleAttr)) return false;
+  if (/font-weight\s*:\s*(bold|bolder|[6-9]00)\b/i.test(styleAttr)) return true;
+  const w = style.fontWeight;
+  if (w === "bold" || w === "bolder") return true;
+  const n = Number.parseInt(w, 10);
+  return Number.isFinite(n) && n >= 600;
+}
+
+function styleAttrLooksItalic(styleAttr: string, style: CSSStyleDeclaration): boolean {
+  if (/font-style\s*:\s*normal\b/i.test(styleAttr)) return false;
+  if (/font-style\s*:\s*italic\b/i.test(styleAttr)) return true;
+  return style.fontStyle === "italic";
+}
+
+function styleAttrLooksUnderline(styleAttr: string, style: CSSStyleDeclaration): boolean {
+  if (/text-decoration[^;]*\bnone\b/i.test(styleAttr) && !/underline/i.test(styleAttr)) {
+    return false;
+  }
+  if (/text-decoration[^;]*underline/i.test(styleAttr)) return true;
+  return (style.textDecorationLine || style.textDecoration || "").includes("underline");
+}
+
+/**
+ * Re-apply B/I/U from CSS inline styles (styleWithCSS execCommand path).
+ * Order matches legacy nesting: underline outside italic outside bold.
+ */
+function applyCssInlineMarks(el: HTMLElement, children: RichTextNode[]): RichTextNode[] {
+  if (!children.length) return children;
+  const styleAttr = el.getAttribute("style") ?? "";
+  if (!styleAttr && !el.style.cssText) return children;
+  let nodes = children;
+  if (styleAttrLooksBold(styleAttr, el.style)) {
+    nodes = wrapInlineNodes("bold", nodes);
+  }
+  if (styleAttrLooksItalic(styleAttr, el.style)) {
+    nodes = wrapInlineNodes("italic", nodes);
+  }
+  if (styleAttrLooksUnderline(styleAttr, el.style)) {
+    nodes = wrapInlineNodes("underline", nodes);
+  }
+  return nodes;
+}
+
 function wrapInlineNodes(
   type: RichTextNode["type"],
   nodes: RichTextNode[],
@@ -277,9 +322,14 @@ function parseInlineNode(node: Node): RichTextNode[] {
           if (Number.isFinite(size)) attrs.size = size;
         }
         if (el.dataset.tawalaFontColor) attrs.color = el.dataset.tawalaFontColor;
-        return Object.keys(attrs).length ? wrapInlineNodes("font", children, attrs) : children;
+        const fontWrapped = Object.keys(attrs).length
+          ? wrapInlineNodes("font", children, attrs)
+          : children;
+        // Palette may also leave weight/style on the same font span.
+        return applyCssInlineMarks(el, fontWrapped);
       }
-      return children;
+      // styleWithCSS Bold/Italic/Underline → span style="font-weight:bold" etc.
+      return applyCssInlineMarks(el, children);
     }
     case "BR":
       return [];

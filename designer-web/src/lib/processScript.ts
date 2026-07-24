@@ -7,6 +7,7 @@ import {
 import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
 import {
   adjustPathAfterCommandRemoval,
+  parentInsertPath,
   resolveCommandsAtInsertPath,
 } from "@/lib/skipInsertPath";
 

@@ -1576,6 +1576,8 @@ function selectionHasNonTokenText(_root: HTMLElement, range: Range): boolean {
  * paint selected field/function tokens explicitly (owner: B/I/U apply to Fields).
  */
 function paletteToggleInlineMark(command: "bold" | "italic" | "underline"): void {
+  // Prefer <b>/<i>/<u> so structured Text (Report MQL items) round-trips;
+  // styleWithCSS spans are still parsed as a fallback in StructuredTextProperties.
   withEditor((handle) => {
     // Multi-cell drag highlight: toggle mark across every selected cell.
     if (
@@ -1610,7 +1612,7 @@ function paletteToggleInlineMark(command: "bold" | "italic" | "underline"): void
       const typing = getTypingFormat(handle.el);
       styleTokensList(tokens, { ...typing, [command]: next });
     }
-  });
+  }, false);
 }
 
 export function paletteBold(): void {

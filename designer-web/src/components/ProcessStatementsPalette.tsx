@@ -8,9 +8,9 @@ import {
 import { setProcessStatementDrag } from "@/lib/designerDrag";
 
 /**
- * Docked "Processes" palette — the legacy **Statements palette** shown in the same
- * left column as the Items palette when a **Process** window is active (owner Issue 1,
- * July 2026). Click opens configure panels / inserts; drag onto a Process window does the same.
+ * Docked "Statements" palette — legacy process toolbox in the same left column as
+ * Items when a Process window is active. Click opens configure panels / inserts;
+ * drag onto a Process window does the same.
  */
 export function ProcessStatementsPalette() {
   const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
@@ -21,9 +21,9 @@ export function ProcessStatementsPalette() {
 
   return (
     <>
-      <div className="panel-title">Processes</div>
-      <div className="items-palette-body">
-        <div className="form-insert-buttons">
+      <div className="items-palette-title">Statements</div>
+      <div className="items-palette-body statements-palette-body">
+        <div className="form-insert-buttons statements-palette-buttons">
           {PROCESS_STATEMENT_PALETTE.map((def, i) => {
             const prev = PROCESS_STATEMENT_PALETTE[i - 1];
             const newGroup = prev != null && prev.group !== def.group;

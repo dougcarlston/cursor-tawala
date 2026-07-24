@@ -31,6 +31,8 @@ Each form window has **Design** (default) and **Preview** tabs.
 
 **Triggers:** File → New Project…, toolbar New icon, **Ctrl+N**
 
+**Browser Designer (Jul 23):** Compact single-pane icon grid (~380×300) — no left Project-type tree; descriptions as hover tooltips; OK / double-click. Tile graphic is the exact legacy 32×32 ImageList bitmap (pale blue document + lavender gear).
+
 ### Project type (left tree)
 
 Under **All:**

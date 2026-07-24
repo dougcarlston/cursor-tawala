@@ -139,6 +139,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 
 1. Set **Trebuchet MS** + **20 pt** on a Form Text body → type a line → **Return** → type again → second paragraph stays **Trebuchet 20**; palette Face/Size still shows that pair (not Arial / default 12). Cross-check Document smoke #12 in `DESIGNER_DOCUMENT_EDITOR.md`.
 2. Insert a function (`fx`) into Form Text → **single-click** the `<<…>>` chip to select it → **Del** or **Backspace** removes **only** the chip (Text row stays). **Double-click** opens Configure (legacy parity). Same when the row is idle (border click) but the chip is highlighted. Row/toolbar **×** with a highlighted chip also removes the chip, not the whole Text item.
+3. **Bold on Report / structured Text** (e.g. Multiple Question Survey “Age:” beside RESPONSE TOTALS): select the word → Formatting Palette **Bold**. Must stay bold after blur/save (not only while selected). Smoke (Jul 23): styleWithCSS spans and `<b>` both round-trip.
 3. **Fields replace (Jul 23):** In a Text table cell with `<<attendeeName>>` (chip selected or not) → drop another field onto it → cell becomes the new `<<…>>` only — never `<<attende<<…>>eName>>`. Same for Heading / FIB prompt / MCQ question.
 
 ---

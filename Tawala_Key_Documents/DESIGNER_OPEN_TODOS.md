@@ -125,9 +125,12 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 
 ## Skip Instructions
 
-- **Nested If inside then/else `( )` not supported.** **Deferred** (Skip parked). (Source: Forms canvas & Skip)
-- **Modify on existing Skip script line missing** (legacy Add/Modify). **Deferred.** (Source: Forms canvas & Skip)
-- **Skip toolbar Cut/Copy/Paste/Undo stubs** — icons present, not functional. **Deferred.** Covered by Undo closed policy (Jul 20) — not a separate Undo epic. (Source: Forms canvas & Skip)
+Skip Instructions is **wired** (canvas Edit dialog: If / SkipTo / Set / Comment; Modify / delete / reorder / insert gaps including nested If). Soft leftovers only (e.g. re-open insert-point polish) — see `DESIGNER_OPEN_BUGS.md` if needed.
+
+**Closed / not TODOs (owner Jul 23):**
+- **Toolbar Cut / Copy / Paste / Undo** — legacy chrome only; never implemented in the 2011 Designer and **not needed** inside Skip. Do not schedule.
+- **Nested If** — in active use in browser Designer; not a deferred gap.
+- **Modify existing Skip lines** — done Jul 19 (was a stale Deferred line).
 
 ## Process editor
 

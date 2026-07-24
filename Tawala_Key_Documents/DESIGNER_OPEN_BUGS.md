@@ -154,7 +154,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 **Known limits (not bugs to chase):**
 - **Document:** placed-line remount / commit churn often leaves Undo empty or useless even for typing.
 - **Form:** Undo is **per-item**; leaving that row clears its stack.
-- **Skip toolbar** Cut/Copy/Paste/Undo icons remain **stubs** (`DESIGNER_OPEN_TODOS.md` — Deferred UX).
+- **Skip toolbar** Cut/Copy/Paste/Undo — legacy icons only; **never implemented and not needed** inside Skip (owner Jul 23). Not a TODO.
 - Legacy Jan 2011 build often had Undo/Redo **always greyed** anyway.
 
 **Past notes (superseded by policy above):** Document Undo “does not work”; field/Label/Moves not on the stack — expected under this contract, not open fix items.

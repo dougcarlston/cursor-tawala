@@ -1,96 +1,154 @@
 {
   "name": "Get Together Template",
   "format": "2.0",
-  "themePath": "default",
+  "themePath": "greentea",
   "forms": [
     {
       "name": "Survey",
       "startPoint": true,
-      "process": "Process 1",
       "items": [
         {
           "type": "heading",
           "label": "H1",
-          "level": "main",
           "content": "Get Together Invitation"
         },
         {
           "type": "text",
           "label": "T1",
           "style": "instructional",
-          "content": "Get Together helps pick the best time or date for an event. Replace the questions below with your own dates, then delete these instructions and deploy."
-        },
-        {
-          "type": "mc",
-          "label": "Q1",
-          "onlyone": false,
-          "style": "vertical",
-          "question": "We'd like to have dinner with you! Which of the following dates works for you?",
-          "choices": [
-            { "name": "a", "text": "June 3" },
-            { "name": "b", "text": "June 4" },
-            { "name": "c", "text": "June 6" },
-            { "name": "d", "text": "June 9" },
-            { "name": "e", "text": "June 10" }
-          ]
-        },
-        {
-          "type": "mc",
-          "label": "Q2",
-          "onlyone": true,
-          "style": "vertical",
-          "question": "Which date is your top preference?",
-          "choices": [
-            { "name": "a", "text": "June 3" },
-            { "name": "b", "text": "June 4" },
-            { "name": "c", "text": "June 6" },
-            { "name": "d", "text": "June 9" },
-            { "name": "e", "text": "June 10" }
-          ]
+          "content": "<p><span style=\"font-weight: normal;\">Get Together helps pick the best time or date for an event or a meeting.</span></p><p></p><p><span style=\"font-weight: normal;\">Just replace the multiple choice questions below with two of your own describing the event you are inviting people to and the dates you want people to consider.  You can add up to ten choices, although the example below only has five.</span></p><p></p><p><span style=\"font-weight: normal;\">Once you are done modifying this form, delete these instructions and replace them with instructions for your invitees.</span></p><p><span style=\"font-weight: normal;\">Then click on the Deploy button ( <img class=\"tawala-embedded-image tawala-embedded-image-selected\" data-tawala-image-id=\"image2\" data-image-width=\"28\" data-image-height=\"23\" width=\"28\" height=\"23\" src=\"data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAkACQAAD/4QCSRXhpZgAATU0AKgAAAAgABAEaAAUAAAABAAAAPgEbAAUAAAABAAAARgEoAAMAAAABAAIAAIdpAAQAAAABAAAATgAAAAAAAACQAAAAAQAAAJAAAAABAAOShgAHAAAAEgAAAHigAgAEAAAAAQAAACygAwAEAAAAAQAAACQAAAAAQVNDSUkAAABTY3JlZW5zaG90/+0AOFBob3Rvc2hvcCAzLjAAOEJJTQQEAAAAAAAAOEJJTQQlAAAAAAAQ1B2M2Y8AsgTpgAmY7PhCfv/AABEIACQALAMBIgACEQEDEQH/xAAfAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgv/xAC1EAACAQMDAgQDBQUEBAAAAX0BAgMABBEFEiExQQYTUWEHInEUMoGRoQgjQrHBFVLR8CQzYnKCCQoWFxgZGiUmJygpKjQ1Njc4OTpDREVGR0hJSlNUVVZXWFlaY2RlZmdoaWpzdHV2d3h5eoOEhYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4eLj5OXm5+jp6vHy8/T19vf4+fr/xAAfAQADAQEBAQEBAQEBAAAAAAAAAQIDBAUGBwgJCgv/xAC1EQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4+Tl5ufo6ery8/T19vf4+fr/2wBDAAICAgICAgMCAgMEAwMDBAUEBAQEBQcFBQUFBQcIBwcHBwcHCAgICAgICAgKCgoKCgoLCwsLCw0NDQ0NDQ0NDQ3/2wBDAQICAgMDAwYDAwYNCQcJDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ3/3QAEAAP/2gAMAwEAAhEDEQA/AP2gqjqep6boun3GravdQ2VlaxmWe4uHEcUaL1ZmYgAD1Jq9X5pfteeOL/xN4/h+F0MzpouhW8N7qMKtgXN7cDfEsgHVI48MozjLHI4BHyeKxCo03UZy53m0MtwksVNXtsu7Pd9X/bR+EGn3j2ul2+ua9GjFWudNsQ0GQcEhp5YWI9wpB7V6v8Nvjr8NPirI9n4V1PGoxKXk067Q294qjGSI2++oyMlCwHcivyfiiJKQQJkkhURB3PAAA/QV6j8S/g14t+E2i+GPHFxqUOmeJrrdeWlpCxTULFo/mQyKRyrD5XBGFY7SDzXjUM2rTbm4e6t/I/OMv4+zCpUlVqUk6Ubc1uibtvc/W6ivPvhT42X4j/DrQPGoRY5NUs1kmRfupcITHMq+wlVgPavQa+gTTV0frVKpGpBVIbNX+8//0P2gr8s/2ldFbwr+0DPr2q25n03xTa2V1EC5jWZ7BEt5oA45VtiqSRyA4PWv1Mrzz4m/DDwp8WPDT+GvFcDNGG822uYSEubWcDAlhcg4YdwQVI4INfI4zD+2pOC3PO4jyh5lgpYeLtLdeqPDdOX9mrRILf8AaJ0geSbKNY7bwvuXKazGuUwp3MCuAwbBQH96ORivhT4m/ETV/GOuar458TTB7m6ZmSMH5IkHEUEQPREGFHc9SSSSfeNV/Y1+KtjdND4a8S6JqVluOyTVEuLa4VewIhSZWIHfIz7V618K/wBkXT/DWtWviv4jaoniLUbFxLaWMMXlafbyjBDkNlpmUjKlgoHdTwR5VbDYmu1TcVGO7t1ff/gdD85rcOZtjpxw06MaVNO8rbN9Zf5JaI9n/Z58JX/gf4L+FfDeqI0V5DZtcTxNw0cl5K9yyN6FDLtPuK9noor3YxUUoo/XqFGNKlGlHaKS+4//0f2gooor5s7AooooAKKKKAP/2Q==\" alt=\"Screenshot_2026-07-22_at_1_52_24 PM.jpg\" style=\"width: 28px; height: 23px;\">)  up above to create a Web page for your invitation.  </span></p><p></p><p><br></p>"
         },
         {
           "type": "fib",
-          "label": "Q3",
-          "style": "topLabels",
-          "prompt": "Name please:",
-          "blanks": [{ "name": "Name", "length": 29 }]
+          "label": "FIB1",
+          "prompt": "Name please:&nbsp; ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "WholeName",
+              "height": 1
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "MCQ1",
+          "onlyone": false,
+          "choiceSource": "manual",
+          "question": "We'd like to have dinner with you! Which of the following dates works for you?",
+          "choices": [
+            {
+              "name": "a",
+              "text": "August 1"
+            },
+            {
+              "name": "b",
+              "text": "August 2"
+            },
+            {
+              "name": "c",
+              "text": "August 3"
+            },
+            {
+              "name": "d",
+              "text": "August 7"
+            },
+            {
+              "name": "e",
+              "text": "August 8"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "MCQ2",
+          "onlyone": true,
+          "choiceSource": "manual",
+          "question": "Which date is your top preference?",
+          "choices": [
+            {
+              "name": "a",
+              "text": "August 1"
+            },
+            {
+              "name": "b",
+              "text": "August 2"
+            },
+            {
+              "name": "c",
+              "text": "August 3"
+            },
+            {
+              "name": "d",
+              "text": "August 7"
+            },
+            {
+              "name": "e",
+              "text": "August 8"
+            }
+          ]
         }
-      ]
+      ],
+      "themePath": "greentea",
+      "process": "Process 1"
     },
     {
       "name": "Report",
-      "themePath": "default",
+      "startPoint": true,
       "items": [
         {
           "type": "text",
           "label": "T1",
-          "content": [
-            {
-              "type": "paragraph",
-              "nodes": [{ "type": "text", "text": "Here are the results so far:" }]
-            },
-            {
-              "type": "paragraph",
-              "nodes": [
-                {
-                  "type": "questionCorrelationTable",
-                  "questionField": "Record:Survey:Q1",
-                  "displayField": "Record:Survey:Name",
-                  "preferredField": "Record:Survey:Q2",
-                  "form": "Survey"
-                }
-              ]
-            }
-          ]
+          "style": "normal",
+          "content": "Current Responses:<div data-doc-blank=\"1\" style=\"color: rgb(0, 0, 0); min-height: 13.7pt;\"><br></div><div data-doc-blank=\"1\" style=\"color: rgb(0, 0, 0); min-height: 13.7pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"question-correlation-table\" data-function-instance=\"5\" data-function-config=\"{&quot;question-field-name&quot;:&quot;Survey:MCQ1&quot;,&quot;display-field-name&quot;:&quot;Survey:WholeName&quot;,&quot;preferred-choice-field-name&quot;:&quot;Survey:MCQ2&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Survey:WholeName&quot;,&quot;op&quot;:&quot;isNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"QUESTION CORRELATION TABLE\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;QUESTION CORRELATION TABLE(Survey:MCQ1, Survey:WholeName, Survey:MCQ2, Survey:WholeName is not blank)&gt;&gt;</span><br></div>"
         }
-      ]
+      ],
+      "themePath": "greentea",
+      "process": "Process 2"
     }
   ],
   "processes": [
     {
       "name": "Process 1",
-      "commands": [{ "cmd": "show", "form": "Report" }]
+      "commands": [
+        {
+          "cmd": "show",
+          "document": "Document 1"
+        }
+      ]
+    },
+    {
+      "name": "Process 2",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Report"
+        }
+      ]
     }
   ],
-  "documents": []
+  "documents": [
+    {
+      "name": "Document 1",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"34.9pt\" style=\"position: absolute; left: 93.9pt; top: 34.9pt; margin: 0px; min-width: 2em; width: 359.1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; min-height: 16.8pt;\" data-doc-wrap=\"1\" data-doc-blank=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"53.7pt\" style=\"position: absolute; left: 93.9pt; top: 53.7pt; margin: 0px; min-width: 2em; width: 359.1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\">Thank you!</p>"
+    }
+  ],
+  "images": [
+    {
+      "id": "image1",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg=="
+    },
+    {
+      "id": "image2",
+      "imageFormat": "JPEG",
+      "data": "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",
+      "fileName": "Screenshot_2026-07-22_at_1_52_24 PM.jpg"
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "176",
+  "_convertedFrom": "../Tawala Projects/Misc old .Tawala files/Get Together Template.tawala"
 }

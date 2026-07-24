@@ -1,5 +1,5 @@
 {
-  "name": "Signup Sheet Template",
+  "name": "Signup-sheet",
   "format": "2.0",
   "themePath": "baseball",
   "forms": [
@@ -22,57 +22,59 @@
         },
         {
           "type": "fib",
-          "label": "Q1",
-          "style": "topLabels",
-          "prompt": "Enter your full name here:",
+          "label": "FIB3",
+          "prompt": "Full Name: ____________________ (first) ____________________ (last)",
           "blanks": [
             {
-              "name": "FirstName",
-              "alternateLabel": "FirstName",
-              "displayLabel": "First name",
-              "length": 50
+              "name": "a",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "firstName",
+              "height": 1
             },
             {
-              "name": "LastName",
-              "alternateLabel": "LastName",
-              "displayLabel": "Last name",
-              "length": 50
+              "name": "b",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "lastName",
+              "height": 1
             }
-          ]
+          ],
+          "style": "rightAlignLabelsJustified"
         },
         {
           "type": "fib",
-          "label": "Q2",
-          "style": "topLabels",
-          "prompt": "",
+          "label": "FIB1",
+          "prompt": "Email: ____________________",
           "blanks": [
             {
-              "name": "Email",
+              "name": "a",
+              "length": 20,
+              "required": false,
               "alternateLabel": "Email",
-              "displayLabel": "Email",
-              "length": 50,
+              "height": 1,
               "validation": {
                 "type": "email",
                 "errorMessage": "Please enter a valid email address."
               }
-            },
-            {
-              "name": "Tel",
-              "alternateLabel": "Tel",
-              "displayLabel": "Telephone",
-              "length": 50,
-              "validation": {
-                "type": "phone",
-                "errorMessage": "Please enter a valid phone number including area code."
-              }
-            },
-            {
-              "name": "Address",
-              "alternateLabel": "Address",
-              "displayLabel": "Address",
-              "length": 50
             }
-          ]
+          ],
+          "style": "rightAlignLabelsJustified"
+        },
+        {
+          "type": "fib",
+          "label": "FIB2",
+          "prompt": "Address: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20,
+              "required": false,
+              "alternateLabel": "Address",
+              "height": 1
+            }
+          ],
+          "style": "rightAlignLabelsJustified"
         },
         {
           "type": "text",
@@ -87,20 +89,52 @@
                   "version": 1,
                   "form": "Form 1",
                   "columns": [
-                    { "header": "First", "field": "Record:Form 1:FirstName" },
-                    { "header": "Last", "field": "Record:Form 1:LastName" },
-                    { "header": "Email", "field": "Record:Form 1:Email" },
-                    { "header": "Phone", "field": "Record:Form 1:Tel" },
-                    { "header": "Address", "field": "Record:Form 1:Address" }
-                  ]
+                    {
+                      "header": "First",
+                      "field": "<<Form 1:firstName>>"
+                    },
+                    {
+                      "header": "Last",
+                      "field": "<<Form 1:lastName>>"
+                    },
+                    {
+                      "header": "Email",
+                      "field": "<<Form 1:Email>>"
+                    },
+                    {
+                      "header": "Address",
+                      "field": "<<Form 1:Address>>"
+                    }
+                  ],
+                  "showPrint": false,
+                  "showExport": false,
+                  "conditions": [
+                    {
+                      "field": "",
+                      "op": "equals",
+                      "value": ""
+                    }
+                  ],
+                  "combinator": "and"
                 }
               ]
             }
           ]
         }
+      ],
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Form 1"
+        }
       ]
     }
   ],
-  "processes": [],
   "documents": []
 }

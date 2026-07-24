@@ -81,7 +81,7 @@ Compose includes **Mailpit** (SMTP `:1025`, UI http://localhost:8025). Tomcat us
 
 ## Load DirtBowl (advanced)
 
-DirtBowl is no longer on **File** menu — use **Open Project…** with `public/samples/dirtbowl_definition_v3.json`, or deploy via `node scripts/deploy-dirtbowl-java.mjs` from the repo root. It will move to the website **Library** as an advanced sample.
+DirtBowl is no longer on **File** menu — use **Open Project…** with `public/samples/legacy/DirtBowl.tawala`, or deploy via `node scripts/deploy-dirtbowl-java.mjs` from the repo root. It will move to the website **Library** as an advanced sample.
 
 **SignupSheets sample:** `public/samples/signup-sheets.json` (converted from legacy XML via `scripts/convert-signupsheets-xml-to-json.mjs`; see `public/samples/legacy/SignupSheets_CONVERSION_GAPS.md`).
 
@@ -114,11 +114,15 @@ Deploy converts JSON → XML (`server/jsonToXml.mjs`) and POSTs to `/client` lik
 
 | Template | File |
 |----------|------|
-| Simple Survey | `simple-survey.json` |
+| Empty | `empty-project.json` |
+| Form with Process | `form-with-process.json` |
+| Form, Process and Document | `form-process-document.json` |
 | Sign-up Sheet | `signup-sheet.json` |
-| Potluck (simplified starter) | `potluck.json` |
 | Get Together | `get-together.json` |
-| Empty / Form+Process / Form+Process+Document | `empty-project.json`, etc. |
+| Potluck | `potluck.json` |
+| Simple Survey | `simple-survey.json` |
+| Multiple Question Survey | `multiple-question-survey.json` |
+
 
 Deploy to **8080** with `TAWALA_JAVA_URL=http://localhost:8080 npm run dev:api` (or `scripts/dev-java.sh`). Survey/report function tables export via `jsonToXml.mjs` (`choiceTallyTable`, `itemizationTable`, `questionCorrelationTable`).
 

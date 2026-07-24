@@ -716,14 +716,14 @@ Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.
 
 | # | Function | id | XML emit | Owner smoke / notes |
 |---|----------|-----|----------|---------------------|
-| 1 | CATEGORIZER | `categorizer` | **Deferred stub** | No sample need |
+| 1 | CATEGORIZER | `categorizer` | **Deferred stub** | **Hidden from Insert picker Jul 23** — no sample need |
 | 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Passed** — owner Jul 18 (Configure URL → Design token → Preview placeholder → Deploy live image) |
 | 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Passed** — owner Jul 18 (Configure + Deploy; spacing between stacked chips fixed same day) |
-| 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | Empty params |
+| 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Deferred stub** | **Hidden from Insert picker Jul 23** |
 | 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Passed** — owner Jul 19 (core Deploy + **WHERE re-smoke Passed** — all conditions incl. numeric) |
-| 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | Hosted My Tawala |
+| 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Deferred stub** | **Hidden from Insert picker Jul 23** — hosted My Tawala |
 | 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16. **WHERE re-smoke Passed Jul 19** |
-| 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | Payment integration |
+| 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Deferred stub** | **Hidden from Insert picker Jul 23** — payment integration |
 | 9 | PROJECT EMAIL COUNT | `project-email-count` | **Yes** | **Passed** — owner Jul 19 (UI/export + live :8080 count after Process Send / Resend) |
 | 10 | QUESTION CORRELATION TABLE | `question-correlation-table` | **Yes** | Get Together **Passed w/ caveats**. **WHERE re-smoke Passed Jul 19** (multiple conditions) |
 | 11 | RANKED MULTIQUESTION LIST | `popular-choice-correlation-table` | **Yes** | **Passed w/ caveats** — Jul 19 (Get Together Configure help; Column One = FIB/name; col2 = tick). **WHERE re-smoke Passed Jul 19** |
@@ -764,7 +764,7 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
 | Image from PC / Web URL | Yes | **From your PC** Approach A (Jul 16); **From the Web…** = DISPLAY IMAGE (Jul 17 rename); File Uploader form item omitted from palette |
 | Insert Field (document) | Yes | **Jul 17:** Insert → Field from Fields selection; **Jul 17 fix:** only active MDI Document (stale prior cleared on window activate); status nudge when no caret |
-| Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — Jul 16 |
+| Document HTML → XML for functions | Full set | **13 emit**; **4 deferred stubs** (categorizer, roster, link, paypal) — **hidden from Insert → Function picker Jul 23** (catalog kept) |
 
 ---
 

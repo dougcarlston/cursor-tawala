@@ -362,6 +362,21 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
           `<font${face ? ` face="${escAttr(face)}"` : ""} size="${size}" color="${escAttr(color)}">` +
           `${unwrapped}</font>`;
       }
+      // Palette styleWithCSS leaves B/I/U on span style — map like <b>/<i>/<u> tags.
+      const weight = String(style["font-weight"] ?? "").toLowerCase();
+      if (
+        weight === "bold" ||
+        weight === "bolder" ||
+        (/^\d+$/.test(weight) && Number(weight) >= 600)
+      ) {
+        innerXml = `<b>${innerXml}</b>`;
+      }
+      if (String(style["font-style"] ?? "").toLowerCase() === "italic") {
+        innerXml = `<i>${innerXml}</i>`;
+      }
+      if (/\bunderline\b/i.test(String(style["text-decoration"] ?? ""))) {
+        innerXml = `<u>${innerXml}</u>`;
+      }
       out += innerXml;
       continue;
     }

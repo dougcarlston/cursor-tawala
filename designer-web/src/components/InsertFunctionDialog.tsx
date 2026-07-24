@@ -20,7 +20,7 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
     () =>
       (category?.functionIds ?? [])
         .map((id) => getFunctionDef(id))
-        .filter((f): f is FunctionDef => Boolean(f)),
+        .filter((f): f is FunctionDef => !!f && !f.formOnly && !f.pickerHidden),
     [category],
   );
   const [selectedId, setSelectedId] = useState(

@@ -5,6 +5,8 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 **Source:** `TawalaDesigner/Code/TAWALA/Setup/Templates/templates.xml` + template XML.  
 **Deploy:** `node scripts/deploy-tawala-template.mjs "Template Label"` → `http://localhost:8080/client`.
 
+**Browser Designer JSON (Jul 23):** `designer-web/public/samples/templates/*.json` — smoked starters + **Multiple Question Survey** (owner smoked `XMultiple Question Survey.json` → installed as `multiple-question-survey.json`, project name without leading `X`). New Project dialog is a **compact** legacy-style icon grid (no left Project-type tree; ~380×300); tile icon is the exact 32×32 bitmap from legacy `NewProjectDialog` ImageList (`designer-web/public/icons/new-project-template.png` — pale blue paper, blue dog-ear, lavender gear). Descriptions are hover tooltips. Order: Basic → Activities → Meetings → Polls. Sign-up with E-mail omitted (mail backlog).
+
 ---
 
 ## Template catalog

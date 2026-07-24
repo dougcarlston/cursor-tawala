@@ -1,4 +1,4 @@
-/** New Project templates — mirrors legacy `templates.xml` featured set. */
+/** New Project templates — mirrors legacy `templates.xml` featured set (labels + order). */
 
 export interface TemplateEntry {
   id: string;
@@ -18,6 +18,11 @@ export const TEMPLATE_CATEGORIES = [
   "Polls and Surveys",
 ] as const;
 
+/**
+ * Display order matches legacy New Project grid (owner Jul 23):
+ * Basic → Activities → Meetings and Gatherings → Polls and Surveys.
+ * Sign-up Sheet with E-mail omitted (mail backlog).
+ */
 export const PROJECT_TEMPLATES: TemplateEntry[] = [
   {
     id: "empty",
@@ -27,24 +32,25 @@ export const PROJECT_TEMPLATES: TemplateEntry[] = [
     samplePath: "empty-project.json",
   },
   {
-    id: "form-process-document",
-    label: "Form, Process and Document",
-    category: "Basic",
-    description: "Form connected to a process that shows a document (Designer layout demo).",
-    samplePath: "form-process-document.json",
-  },
-  {
     id: "form-with-process",
     label: "Form with Process",
     category: "Basic",
-    description: "Empty form linked to an empty process.",
+    description: "A simple project that contains a Form connected to Process.",
     samplePath: "form-with-process.json",
+  },
+  {
+    id: "form-process-document",
+    label: "Form, Process and Document",
+    category: "Basic",
+    description:
+      "A simple project that contains a Form connected to Process and includes a Document.",
+    samplePath: "form-process-document.json",
   },
   {
     id: "signup-sheet",
     label: "Sign-up Sheet",
     category: "Activities",
-    description: "Collect contact info; signups appear in a table on the same form.",
+    description: "A sign-up sheet you can modify to meet your needs.",
     samplePath: "signup-sheet.json",
     featured: true,
   },
@@ -52,24 +58,32 @@ export const PROJECT_TEMPLATES: TemplateEntry[] = [
     id: "get-together",
     label: "Get Together",
     category: "Meetings and Gatherings",
-    description: "Pick the best date — availability plus top preference.",
+    description: "Select the best date for a meeting.",
     samplePath: "get-together.json",
-    featured: true,
-  },
-  {
-    id: "simple-survey",
-    label: "Simple Survey",
-    category: "Polls and Surveys",
-    description: "One multiple-choice question with a results report.",
-    samplePath: "simple-survey.json",
     featured: true,
   },
   {
     id: "potluck",
     label: "Potluck",
     category: "Meetings and Gatherings",
-    description: "Potluck invitation — RSVP, headcount, and dish contribution (simplified starter).",
+    description: "Arrange a potluck.",
     samplePath: "potluck.json",
+    featured: true,
+  },
+  {
+    id: "simple-survey",
+    label: "Simple Survey",
+    category: "Polls and Surveys",
+    description: "A simple survey you can modify to meet your needs.",
+    samplePath: "simple-survey.json",
+    featured: true,
+  },
+  {
+    id: "multiple-question-survey",
+    label: "Multiple Question Survey",
+    category: "Polls and Surveys",
+    description: "A survey you can modify to meet your needs.",
+    samplePath: "multiple-question-survey.json",
     featured: true,
   },
 ];

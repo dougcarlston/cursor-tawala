@@ -1,73 +1,192 @@
 {
-  "name": "Potluck Template",
+  "name": "potluck",
   "format": "2.0",
-  "themePath": "greentea",
+  "themePath": "default",
   "forms": [
     {
       "name": "Potluck Organizer",
       "startPoint": true,
-      "themePath": "greentea",
-      "process": "Send Thanks",
       "items": [
         {
           "type": "text",
           "label": "T1",
           "style": "instructional",
-          "content": "Potluck invites your friends to a potluck dinner, gets a headcount, and shows who is bringing what. Edit the questions below, then delete these instructions and deploy."
+          "content": "<p>Potluck invites your friends to a potluck dinner, gets a headcount and creates a Web page where everyone can see who is coming and what dish they are bringing.</p><p></p><p>Just edit the questions below to your satisfaction, pick a theme under Format above, modify the \"Details\" Document that tells people where and when the Potluck is, and you're ready to go.  If you want to eliminate a question, you may have a little additional work, as described below. </p><p></p><p>Once you are done modifying this form, delete these instructions and replace them with instructions for your invitees.</p><p>Then click on the Deploy button ( <span style=\"font-size: 10pt; color: rgb(0, 0, 0);\"><img class=\"tawala-embedded-image\" data-tawala-image-id=\"image1\" width=\"22\" height=\"23\" data-image-width=\"22\" data-image-height=\"23\" style=\"width:22px;height:23px\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==\" alt=\"\"></span>)  up above to create a Web page for your invitation.  </p><p></p><p>Once you have deployed your project to the Web, you can get the Web links to the Potluck invitation  and the Report you'll use to review the results from your My Tawala page on the Tawala Website.  Send the Potluck link to your invitees and then use Report to see how they responded.</p>"
         },
         {
           "type": "text",
           "label": "T2",
-          "style": "instructional",
-          "content": "Fill in the form below to let us know if you can make it and what you will bring:"
+          "style": "normal",
+          "content": "Fill in the form below to let us know if you can make it and if so what you will bring:"
         },
         {
           "type": "fib",
           "label": "Q1",
           "style": "topLabels",
-          "prompt": "Name",
-          "blanks": [{ "name": "attendeeName", "length": 35 }]
+          "prompt": "Name___________________________________",
+          "blanks": [
+            {
+              "name": "attendeeName",
+              "length": 35,
+              "alternateLabel": "attendeeName"
+            }
+          ]
         },
         {
           "type": "mc",
           "label": "Q2",
           "onlyone": true,
+          "required": false,
           "style": "horizontal",
+          "displayAs": "radio",
+          "choiceSource": "manual",
           "question": "Will you be able to come to the potluck?",
           "choices": [
-            { "name": "a", "text": "Yes" },
-            { "name": "b", "text": "No" }
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
           ]
         },
         {
           "type": "fib",
           "label": "Q3",
           "style": "freeform",
-          "prompt": "How many of you will be coming? / (Adults) / (Kids)",
+          "prompt": "How many of you will be coming?______ (Adults) ______ (Kids)",
           "blanks": [
-            { "name": "numAdults", "length": 6 },
-            { "name": "numKids", "length": 6 }
+            {
+              "name": "numAdults",
+              "length": 6,
+              "alternateLabel": "numAdults"
+            },
+            {
+              "name": "numKids",
+              "length": 6,
+              "alternateLabel": "numKids"
+            }
           ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "instructional",
+          "content": "<p><span>Note: If you don't want to ask about children, just delete the &quot; ________ (Kids)&quot; part in the question above.  Then make these other changes to this Web app:</span></p><p><span>1) Delete the third line in the table in T5 below using the (</span><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><img class=\"tawala-embedded-image\" data-tawala-image-id=\"image2\" width=\"34\" height=\"24\" data-image-width=\"34\" data-image-height=\"24\" style=\"width:34px;height:24px\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACIAAAAYCAIAAAAQxLheAAAABGdBTUEAALGPC/xhBQAAAkdJREFUSEu9lMtrE1EUh0/+InGh4EZcCXbhUlxXuxERdFFBKSKUuiiIYB8YSdtEkyY2Rg2mycTGxKmR2NiWdFpqaUXzGNNpMy1kmte84mmCl+u0ynUzw7f4DXN/83HOhDhiuSZQl4O+wWy9tzy23jr+VkANDZdr/sFKk/sf4iutY4HiftsGIL/XtgH4XjFtAL5VTBuAzV3TBmBDMgnDL3YIQ76de26p/+n29ZFy78Oflx+IF++Xzt8tne0vnrlVoFssGda3TQI6PHx7MmU6E8YYpz+KaMOv1cGZ1sB087anftNVu/ak1jeqnOxbpFssGdbKBoGMMuiV7kxKN8YP57g0JPYMFM91huhyojdDt1gyCKJBmJ79Yv6+2gAkxz6uYlY1Q2kY/kjmdM9VusWSIScahGfhzLGat6lcSzMOGoas6N5w+tSFK3SLJcNyySBMhOZxiH8zFeJRQ7dYMiwWdIIz8P7oNLirIJeVFU2U1a2y6ppJooZukWz5H6XPQDavE8a8cYsGHQcNPTCbKe1p6BAKLac/gRq6RWdishyA9JZKeOyJLgg/5j6tx+ZXcXVvEks4Bzrwe7hf8a5g0hlIjPviqKFbloymo08h+bVJQA09Df6uKlVdlDV3iBfyrYXNRmqtNvqcQw3dYsnACXUC0eCucBq5qpfkw13h9+g46tHlGp5BDd1iyRBeUgj4Cj67gbt6ibuKdHYV4idwV37c1TucAw90NXSLJUPwc5XQfQULdIslgy+9bwMw9UG2AXDO7doAjEQlG/gF6G5t2krux1cAAAAASUVORK5CYII=\" alt=\"\" /></span><span>) button in the Menu bar above.</span></p><p><span>2) Do the same thing to the table in the Details document, removing all reference to kids.</span></p>"
         },
         {
           "type": "fib",
           "label": "Q4",
           "style": "topLabels",
-          "prompt": "Potluck Contribution",
-          "blanks": [{ "name": "contribution", "length": 35 }]
+          "prompt": "Potluck Contribution___________________________________",
+          "blanks": [
+            {
+              "name": "contribution",
+              "length": 35,
+              "alternateLabel": "contribution"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "instructional",
+          "content": "Click the submit button to enter your information."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Potluck Organizer:Q2",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T6",
+          "content": "You entered the following information:<div data-doc-blank=\"1\" style=\"min-height: 13.7pt;\"><table class=\"user user-border-2\" style=\"position: relative; width: 216pt; border-collapse: collapse; margin-bottom: 12pt; left: 57.3pt; top: 12.3pt;\"><tbody><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"table-cell-selected\">Name&nbsp;</td><td style=\"width: 108pt;\" class=\"\">&nbsp;&lt;&lt;attendeeName&gt;&gt;</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">Number of Adults&nbsp;</td><td style=\"width: 108pt;\" class=\"\">&nbsp;&lt;&lt;numAdults&gt;&gt;</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">Number of Kids&nbsp;</td><td style=\"width: 108pt;\" class=\"\">&nbsp;&lt;&lt;numKids&gt;&gt;</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">Dish&nbsp;</td><td style=\"width: 108pt;\">&nbsp;&lt;&lt;contribution&gt;&gt;</td></tr></tbody></table></div>",
+          "style": "normal"
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Is this information correct?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes, save this information"
+            },
+            {
+              "label": "b",
+              "text": "No, I want to change what I entered"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Potluck Organizer:Q5",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "T2"
+                }
+              ]
+            }
+          ]
         }
-      ]
+      ],
+      "themePath": "default",
+      "process": "Send Thanks",
+      "preProcess": "Show Results"
     },
     {
       "name": "Report",
-      "themePath": "greentea",
+      "startPoint": true,
       "items": [
         {
-          "type": "text",
-          "label": "T1",
-          "content": "Use the legacy Potluck template on 8080 for the full organizer report, documents, and processes. This starter opens the main invitation form for editing in the browser Designer."
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "To delete a person's response, enter his or her name here: ____________________",
+          "blanks": [
+            {
+              "name": "nameToDelete",
+              "length": 20,
+              "alternateLabel": "nameToDelete"
+            }
+          ]
         }
-      ]
+      ],
+      "themePath": "default",
+      "process": "Delete Name",
+      "preProcess": "Show Results"
     }
   ],
   "processes": [
@@ -75,16 +194,95 @@
       "name": "Send Thanks",
       "commands": [
         {
-          "cmd": "comment",
-          "text": "Full Potluck process chain (documents, if/show) — extend in Process editor or deploy legacy .tawala for full behavior."
+          "cmd": "if",
+          "condition": {
+            "field": "Potluck Organizer:Q2",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Thank you Coming",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "showDocument",
+              "document": "Thank you NotComing",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Show Results",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "Details",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Delete Name",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Report:nameToDelete",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Potluck Organizer",
+              "from": "Potluck Organizer",
+              "where": {
+                "field": "Record:Potluck Organizer:attendeeName",
+                "op": "equals",
+                "value": "<<Report:nameToDelete>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Report"
         }
       ]
     }
   ],
   "documents": [
     {
+      "name": "Thank you Coming",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"38.6pt\" style=\"position: absolute; left: 42.6pt; top: 38.6pt; margin: 0px; min-width: 2em; width: 410.4pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\">We're looking forward to seeing you!</p>"
+    },
+    {
+      "name": "Thank you NotComing",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"39.4pt\" style=\"position: absolute; left: 28.4pt; top: 39.4pt; margin: 0px; min-width: 2em; width: 424.6pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\">We're sorry you can't come.</p><p class=\"doc-placed-text\" data-doc-home-top=\"58.2pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 28.4pt; top: 58.2pt; margin: 0px; min-width: 2em; min-height: 16.8pt; width: 424.6pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"77pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 28.4pt; top: 77pt; margin: 0px; min-width: 2em; min-height: 16.8pt; width: 424.6pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p>"
+    },
+    {
       "name": "Details",
-      "content": "Edit the Details document with when and where your potluck will be held."
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"41.8pt\" style=\"position: absolute; left: 43.5pt; top: 41.8pt; margin: 0px; min-width: 2em; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Who is coming:</p><p class=\"doc-placed-text\" data-doc-home-top=\"60.6pt\" style=\"position: absolute; left: 43.5pt; top: 60.6pt; margin: 0px; min-width: 2em; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Potluck Organizer:attendeeName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Adults&quot;,&quot;contents&quot;:&quot;&lt;&lt;Potluck Organizer:numAdults&gt;&gt;&quot;},{&quot;header&quot;:&quot;Kids&quot;,&quot;contents&quot;:&quot;&lt;&lt;Potluck Organizer:numKids&gt;&gt;&quot;},{&quot;header&quot;:&quot;Dish&quot;,&quot;contents&quot;:&quot;&lt;&lt;Potluck Organizer:contribution&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Potluck Organizer:Q2&quot;,&quot;op&quot;:&quot;mcEquals&quot;,&quot;value&quot;:&quot;a&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ..., Potluck Organizer:Q2 equals \"a\")&gt;&gt;</span>​</p><p class=\"doc-placed-text\" data-doc-home-top=\"79.4pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 43.5pt; top: 79.4pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); min-height: 16.8pt; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"98.2pt\" style=\"position: absolute; left: 43.5pt; top: 98.2pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Totals:</p><table class=\"user user-border-1\" data-doc-home-top=\"116.6pt\" style=\"position: absolute; width: 216pt; border-collapse: collapse; left: 46.5pt; top: 116.6pt; margin: 0px;\"><tbody><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">&nbsp;<span style=\"background-color: rgb(255, 255, 255);\">Adults</span></td><td style=\"width: 108pt;\" class=\"\">&nbsp;Kids</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">&nbsp;<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"2\" data-function-config=\"{&quot;field&quot;:&quot;Potluck Organizer:numAdults&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SUM(Potluck Organizer:numAdults)&gt;&gt;</span>​</td><td style=\"width: 108pt;\" class=\"table-cell-selected\">&nbsp;<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"3\" data-function-config=\"{&quot;field&quot;:&quot;Potluck Organizer:numKids&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SUM(Potluck Organizer:numKids)&gt;&gt;</span>​</td></tr></tbody></table><p class=\"doc-placed-text\" data-doc-home-top=\"179.6pt\" style=\"position: absolute; left: 43.5pt; top: 179.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Who can't come:</p><p class=\"doc-placed-text\" data-doc-home-top=\"198.4pt\" style=\"position: absolute; left: 43.5pt; top: 198.4pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"4\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:1,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Potluck Organizer:attendeeName&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Potluck Organizer:Q2&quot;,&quot;op&quot;:&quot;mcEquals&quot;,&quot;value&quot;:&quot;b&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, 1, &lt;&lt;Potluck Organizer:attendeeName&gt;&gt;, Potluck Organizer:Q2 equals \"b\")&gt;&gt;</span><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"119.6pt\" style=\"position: absolute; left: 8.3pt; top: 119.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 36.2pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; min-height: 16.8pt;\" data-doc-wrap=\"1\" data-doc-blank=\"1\"><br></p>"
     }
-  ]
+  ],
+  "images": [
+    {
+      "id": "image1",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg=="
+    },
+    {
+      "id": "image2",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAACIAAAAYCAIAAAAQxLheAAAABGdBTUEAALGPC/xhBQAAAkdJREFUSEu9lMtrE1EUh0/+InGh4EZcCXbhUlxXuxERdFFBKSKUuiiIYB8YSdtEkyY2Rg2mycTGxKmR2NiWdFpqaUXzGNNpMy1kmte84mmCl+u0ynUzw7f4DXN/83HOhDhiuSZQl4O+wWy9tzy23jr+VkANDZdr/sFKk/sf4iutY4HiftsGIL/XtgH4XjFtAL5VTBuAzV3TBmBDMgnDL3YIQ76de26p/+n29ZFy78Oflx+IF++Xzt8tne0vnrlVoFssGda3TQI6PHx7MmU6E8YYpz+KaMOv1cGZ1sB087anftNVu/ak1jeqnOxbpFssGdbKBoGMMuiV7kxKN8YP57g0JPYMFM91huhyojdDt1gyCKJBmJ79Yv6+2gAkxz6uYlY1Q2kY/kjmdM9VusWSIScahGfhzLGat6lcSzMOGoas6N5w+tSFK3SLJcNyySBMhOZxiH8zFeJRQ7dYMiwWdIIz8P7oNLirIJeVFU2U1a2y6ppJooZukWz5H6XPQDavE8a8cYsGHQcNPTCbKe1p6BAKLac/gRq6RWdishyA9JZKeOyJLgg/5j6tx+ZXcXVvEks4Bzrwe7hf8a5g0hlIjPviqKFbloymo08h+bVJQA09Df6uKlVdlDV3iBfyrYXNRmqtNvqcQw3dYsnACXUC0eCucBq5qpfkw13h9+g46tHlGp5BDd1iyRBeUgj4Cj67gbt6ibuKdHYV4idwV37c1TucAw90NXSLJUPwc5XQfQULdIslgy+9bwMw9UG2AXDO7doAjEQlG/gF6G5t2krux1cAAAAASUVORK5CYII="
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "176",
+  "_convertedFrom": "TawalaDesigner/Code/TAWALA/Setup/Templates/Potluck Template.tawala"
 }

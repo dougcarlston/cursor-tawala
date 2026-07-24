@@ -6,8 +6,9 @@
     {
       "name": "Form 1",
       "startPoint": true,
-      "process": "Process 1",
-      "items": []
+      "items": [],
+      "themePath": "default",
+      "process": "Process 1"
     }
   ],
   "processes": [
@@ -16,5 +17,7 @@
       "commands": []
     }
   ],
-  "documents": []
+  "documents": [],
+  "_originalFormat": "1.6",
+  "_convertedFrom": "../Tawala Projects/Misc old .Tawala files/Form with process.tawala"
 }

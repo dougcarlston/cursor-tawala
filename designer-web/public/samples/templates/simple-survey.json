@@ -1,13 +1,11 @@
 {
   "name": "Simple Survey Template",
   "format": "2.0",
-  "themePath": "style2",
+  "themePath": "mvsc",
   "forms": [
     {
       "name": "Survey",
       "startPoint": true,
-      "themePath": "style2",
-      "process": "Process 1",
       "items": [
         {
           "type": "heading",
@@ -19,57 +17,88 @@
           "type": "text",
           "label": "T1",
           "style": "instructional",
-          "content": "This template shows you how to create and administer a simple poll. Replace the question below with your own, then delete these instructions and deploy."
+          "content": "<p><span>This template shows you how to create and administer a simple poll.</span></p><p></p><p><span>There are two Forms in this template.  This one is your Survey.  The question below can be deleted and replaced with your own, just by double clicking or dragging questions from the &quot;Fill in the Blank&quot; and &quot;Multiple Choice&quot; Items in the column to the left. </span></p><p></p><p><span>You can set as many responses to your multiple choice question as you like by pressing the Enter key to add a new response or by deleting any response with the Delete key.</span></p><p></p><p><span>The results are displayed in the Report Form.</span></p><p></p><p><span>Once you are done modifying this survey, delete these instructions and replace them with instructions for the people who will be taking this poll.</span></p><p></p><p><span>Then click on the Deploy button ( </span><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><img class=\"tawala-embedded-image\" data-tawala-image-id=\"image1\" width=\"22\" height=\"23\" data-image-width=\"22\" data-image-height=\"23\" style=\"width:22px;height:23px\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==\" alt=\"\" /></span><span>)  up above to create a Web page for your new poll.  </span></p><p></p><p><span>Once you have deployed your poll to the Web, you can get the Web links to the Survey  and the survey Report from your My Tawala page on the Tawala Website.  Send the Survey link to your pollees or place it on your Web site to drive traffic to your survey.</span></p>"
         },
         {
           "type": "mc",
           "label": "Q1",
           "onlyone": true,
+          "required": false,
           "style": "vertical",
-          "question": "<Put your survey question here>",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "What body of water does the Western end of the Panama Canal connect with?<put your=\"\" survey=\"\" question=\"\" here=\"\"></put>",
           "choices": [
-            { "name": "a", "text": "<Place first response option here>" },
-            { "name": "b", "text": "<Place second response option here>" },
-            { "name": "c", "text": "<Replace this with third option or delete>" },
-            { "name": "d", "text": "<Replace this with fourth option or delete>" }
+            {
+              "label": "a",
+              "text": "The Pacific Ocean"
+            },
+            {
+              "label": "b",
+              "text": "The Atlantic Ocean"
+            },
+            {
+              "label": "c",
+              "text": "The Gulf of Mexico"
+            },
+            {
+              "label": "d",
+              "text": "The Gulf of California"
+            },
+            {
+              "label": "e",
+              "text": "The Gulf of America "
+            }
           ]
         }
-      ]
+      ],
+      "themePath": "mvsc",
+      "process": "Process 1"
     },
     {
       "name": "Report",
       "startPoint": true,
-      "themePath": "style2",
       "items": [
         {
           "type": "text",
           "label": "T1",
           "style": "normal",
-          "content": [
-            {
-              "type": "paragraph",
-              "nodes": [{ "type": "bold", "nodes": [{ "type": "text", "text": "Here are the results so far:" }] }]
-            },
-            {
-              "type": "paragraph",
-              "nodes": [
-                {
-                  "type": "choiceTallyTable",
-                  "field": "Record:Survey:Q1",
-                  "form": "Survey"
-                }
-              ]
-            }
-          ]
+          "content": "Here are the results so far:<div><br><div data-doc-blank=\"1\" style=\"min-height: 13.7pt;\"><br></div><div data-doc-blank=\"1\" style=\"min-height: 13.7pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"response-totals-table\" data-function-instance=\"1\" data-function-config=\"{&quot;layout-type&quot;:&quot;vertical&quot;,&quot;field&quot;:&quot;Survey:Q1&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Survey:Q1&quot;,&quot;op&quot;:&quot;mcIsNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE TOTALS\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;RESPONSE TOTALS(vertical, Survey:Q1, Survey:Q1 is not blank)&gt;&gt;</span><br></div></div>"
         }
-      ]
+      ],
+      "themePath": "mvsc",
+      "process": "Process 2"
     }
   ],
   "processes": [
     {
       "name": "Process 1",
-      "commands": [{ "cmd": "show", "form": "Report" }]
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Report"
+        }
+      ]
+    },
+    {
+      "name": "Process 2",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Survey"
+        }
+      ]
     }
   ],
-  "documents": []
+  "documents": [],
+  "images": [
+    {
+      "id": "image1",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg=="
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "176",
+  "_convertedFrom": "../Tawala Projects/Misc old .Tawala files/Simple Survey Template.tawala"
 }

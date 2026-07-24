@@ -41,6 +41,11 @@ export interface FunctionDef {
   parameters: FunctionParamDef[];
   /** When true, not listed under Insert → Function (Form MCQ Edit only). */
   formOnly?: boolean;
+  /**
+   * When true, omitted from Insert → Function… categories (catalog + Configure
+   * remain for import / future work). Used for Document HTML→XML deferred stubs.
+   */
+  pickerHidden?: boolean;
 }
 
 export interface FunctionCategory {
@@ -97,6 +102,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     name: "CATEGORIZER",
     description:
       "Provides an interactive (drag and drop) method for grouping stored records into categories.",
+    pickerHidden: true,
     parameters: [
       {
         id: "category-names",
@@ -207,6 +213,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "export-team-roster",
     name: "EXPORT TEAM ROSTER",
     description: "Exports a team roster table (legacy All-category function).",
+    pickerHidden: true,
     parameters: [],
   },
   {
@@ -234,6 +241,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     id: "link-to-project-details",
     name: "LINK TO PROJECT DETAILS IN MY TAWALA",
     description: "Creates a link to navigate to the project details of the current project.",
+    pickerHidden: true,
     parameters: [
       {
         id: "description",
@@ -300,6 +308,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
     name: "PAYPAL SINGLE ITEM PURCHASE BUTTON",
     description:
       "Creates a button to sell a single item, request payment, or receive a donation. Requires Tawala online payment support.",
+    pickerHidden: true,
     parameters: [
       {
         id: "button-type",
@@ -626,7 +635,9 @@ export const FUNCTION_CATEGORIES: FunctionCategory[] = [
   {
     id: "all",
     label: "All",
-    functionIds: FUNCTION_CATALOG.filter((f) => !f.formOnly).map((f) => f.id),
+    functionIds: FUNCTION_CATALOG.filter((f) => !f.formOnly && !f.pickerHidden).map(
+      (f) => f.id,
+    ),
   },
   {
     id: "database",
@@ -639,15 +650,9 @@ export const FUNCTION_CATEGORIES: FunctionCategory[] = [
     functionIds: ["sum"],
   },
   {
-    id: "payments",
-    label: "Payments",
-    functionIds: ["paypal-single-item-button"],
-  },
-  {
     id: "tables",
     label: "Tables",
     functionIds: [
-      "categorizer",
       "itemization-table",
       "choice-tally-table",
       "response-totals-table",
@@ -658,6 +663,10 @@ export const FUNCTION_CATEGORIES: FunctionCategory[] = [
   },
 ];
 
+/** Functions offered in Insert → Function… (excludes formOnly + pickerHidden). */
+export function pickerVisibleFunctions(): FunctionDef[] {
+  return FUNCTION_CATALOG.filter((f) => !f.formOnly && !f.pickerHidden);
+}
 export function getFunctionDef(id: string): FunctionDef | undefined {
   return FUNCTION_CATALOG.find((f) => f.id === id);
 }

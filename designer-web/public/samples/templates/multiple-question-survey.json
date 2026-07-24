@@ -1,0 +1,215 @@
+{
+  "name": "Multiple Question Survey",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Survey",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Multiple Question Survey"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "<p><span>To use this template, replace the text on this Form with your own text and then click on the Deploy button ( </span><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><img class=\"tawala-embedded-image\" data-tawala-image-id=\"image1\" width=\"22\" height=\"23\" data-image-width=\"22\" data-image-height=\"23\" style=\"width:22px;height:23px\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==\" alt=\"\"></span><span>)  up above to create a Web page for your new poll.  You will want to delete this instruction box as well.</span></p><p></p><p><span>Once you have deployed your Web app, you can get the Web links to the Survey  and the survey Report from your My Tawala page on the Tawala Website.  Send the Survey link to your pollees or place it on your Web site to drive traffic to your poll.  </span></p><p></p><p><span>Use the Report link to review or display the results to date.</span></p><p></p><p><span>If you add more questions, change questions from multiple choice to fill-in-the-blank or delete questions, you will need to make small changes to the Report form as well.  </span></p><p></p><p><span>Each multiple choice question has its results displayed by a separate function.&nbsp; There is also a function called&nbsp; &lt;&lt;RESPONSE BAR GRAPH&gt;&gt; you can substitute for each multiple choice question.  </span></p><p></p><p><span>You can add more functions to the Report Form by putting the cursor where you want the graph to appear in the Form and then clicking on the Function Item under Insert.</span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Name: _________________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 25,
+              "alternateLabel": "Name"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Hand",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Are you:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Righthanded"
+            },
+            {
+              "label": "b",
+              "text": "Lefthanded"
+            },
+            {
+              "label": "c",
+              "text": "Ambidextrous"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Hair",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Hair color:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Brown"
+            },
+            {
+              "label": "b",
+              "text": "Black"
+            },
+            {
+              "label": "c",
+              "text": "Blonde"
+            },
+            {
+              "label": "d",
+              "text": "Redheaded"
+            },
+            {
+              "label": "e",
+              "text": "Bald"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "topLabels",
+          "prompt": "Age: __________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 10,
+              "alternateLabel": "Age"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Status",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Marital Status:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Single"
+            },
+            {
+              "label": "b",
+              "text": "Married or long-term relationship"
+            },
+            {
+              "label": "c",
+              "text": "Divorced"
+            },
+            {
+              "label": "d",
+              "text": "Separated"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Thank you for taking this poll."
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": true,
+          "required": false,
+          "style": "horizontal",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Would you like to see the results of this poll to date?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Process 1"
+    },
+    {
+      "name": "Report",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Poll Results"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "content": "Individual Results:<div data-doc-blank=\"1\" style=\"color: rgb(0, 0, 0); min-height: 13.7pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:5,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Survey:Name&gt;&gt;&quot;},{&quot;header&quot;:&quot;Handedness&quot;,&quot;contents&quot;:&quot;&lt;&lt;Survey:Hand&gt;&gt;&quot;},{&quot;header&quot;:&quot;Hair Color&quot;,&quot;contents&quot;:&quot;&lt;&lt;Survey:Hair&gt;&gt;&quot;},{&quot;header&quot;:&quot;Age&quot;,&quot;contents&quot;:&quot;&lt;&lt;Survey:Age&gt;&gt;&quot;},{&quot;header&quot;:&quot;Marital Status&quot;,&quot;contents&quot;:&quot;&lt;&lt;Survey:Status&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span><br></div>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "content": "Group Results:<div data-doc-blank=\"1\" style=\"font-size: 10pt; color: rgb(0, 0, 0); min-height: 14pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"response-totals-table\" data-function-instance=\"2\" data-function-config=\"{&quot;layout-type&quot;:&quot;vertical&quot;,&quot;field&quot;:&quot;Survey:Hand&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE TOTALS\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;RESPONSE TOTALS(vertical, Survey:Hand)&gt;&gt;</span><br></div><div data-doc-blank=\"1\" style=\"font-size: 10pt; color: rgb(0, 0, 0); min-height: 14pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"response-totals-table\" data-function-instance=\"3\" data-function-config=\"{&quot;layout-type&quot;:&quot;vertical&quot;,&quot;field&quot;:&quot;Survey:Hair&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE TOTALS\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;RESPONSE TOTALS(vertical, Survey:Hair)&gt;&gt;</span><br></div><div data-doc-blank=\"1\" style=\"font-size: 10pt; color: rgb(0, 0, 0); min-height: 14pt;\"><b>Age</b>:</div><div data-doc-blank=\"1\" style=\"font-size: 10pt; color: rgb(0, 0, 0); min-height: 14pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"simple-list\" data-function-instance=\"4\" data-function-config=\"{&quot;simple-list-field&quot;:&quot;Survey:Age&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SINGLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline; font-size: 10pt;\">&lt;&lt;SINGLE QUESTION LIST(Survey:Age)&gt;&gt;</span><br></div><div data-doc-blank=\"1\" style=\"font-size: 10pt; color: rgb(0, 0, 0); min-height: 14pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"response-totals-table\" data-function-instance=\"5\" data-function-config=\"{&quot;layout-type&quot;:&quot;vertical&quot;,&quot;field&quot;:&quot;Survey:Status&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE TOTALS\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;RESPONSE TOTALS(vertical, Survey:Status)&gt;&gt;</span><br></div>"
+        }
+      ],
+      "themePath": "default"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Survey:Q6",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Report"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [],
+  "images": [
+    {
+      "id": "image1",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg=="
+    }
+  ]
+}

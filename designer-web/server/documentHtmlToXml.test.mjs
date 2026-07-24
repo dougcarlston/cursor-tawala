@@ -345,6 +345,12 @@ describe("documentHtmlToXml nested function tokens", () => {
     expect(xml).not.toContain("rgb(");
     expect(xml).toContain("Hello");
   });
+
+  it("maps span font-weight:bold to <b> (styleWithCSS palette path)", () => {
+    const html = `<p><span style="font-weight: bold;">Age:</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain("<b>Age:</b>");
+  });
 });
 
 describe("documentHtmlToXml invitation / hyperlink", () => {

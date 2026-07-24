@@ -74,7 +74,7 @@ Skip rows are **logic**, not user-visible questions. They run when the responden
 
 Modal titled **Edit Skip Instructions** (project name in title bar).
 
-**Toolbar:** Cut, Copy, Paste, Delete, Undo, Redo.
+**Toolbar:** Cut, Copy, Paste, Delete, Undo, Redo. (Legacy chrome — Cut/Copy/Paste/Undo were never implemented and are not needed inside Skip; Delete / line controls are what matter.)
 
 **Left — Statements palette** (subset of full Process editor):
 
@@ -205,7 +205,7 @@ flowchart TD
 |---------|--------|----------------|
 | Hidden field item | Yes | Not implemented |
 | Page break | Yes | Not implemented |
-| Skip instructions editor | Full If/SkipTo/Set/Comment | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow; **Jul 20:** re-edit keeps insert gaps (`showAllInsertionGaps`) so new lines can be added inside If/Otherwise without rebuilding; **Jul 23:** Statements → Comment focuses the comment text box |
+| Skip instructions editor | Full If/SkipTo/Set/Comment (incl. nested If) | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow; **Jul 20:** re-edit keeps insert gaps; **Jul 23:** Comment autofocus; nested If in owner use — not a deferred gap. Cut/Copy/Paste/Undo toolbar icons = legacy chrome only (not TODOs). |
 | Skip summary on canvas | Yes | Yes (`May skip to` / `Skips to End of Form`) |
 | Form post-process Set → hidden field | Yes | Partial / JSON only |
 
@@ -230,4 +230,4 @@ flowchart TD
 
 ---
 
-*Last updated: July 23, 2026 — Skip Comment auto-focus on selection.*
+*Last updated: July 23, 2026 — Skip: nested If in use; Cut/Copy/Paste/Undo not TODOs.*

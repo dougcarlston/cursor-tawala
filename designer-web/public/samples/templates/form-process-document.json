@@ -6,20 +6,36 @@
     {
       "name": "Form 1",
       "startPoint": true,
-      "process": "Process 1",
-      "items": []
+      "items": [],
+      "themePath": "default",
+      "process": "Process 1"
     }
   ],
   "processes": [
     {
       "name": "Process 1",
-      "commands": [{ "cmd": "show", "document": "Document 1" }]
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "Document 1",
+          "reset": false
+        }
+      ]
     }
   ],
   "documents": [
     {
       "name": "Document 1",
-      "content": ""
+      "content": [
+        {
+          "type": "paragraph",
+          "align": "left",
+          "indent": 0,
+          "nodes": []
+        }
+      ]
     }
-  ]
+  ],
+  "_originalFormat": "1.6",
+  "_convertedFrom": "../Tawala Projects/Misc old .Tawala files/Form with process connecting a document.tawala"
 }
