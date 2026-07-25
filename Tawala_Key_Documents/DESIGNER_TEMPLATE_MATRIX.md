@@ -43,6 +43,8 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 
 ## Deploy smoke tests (Phase 2)
 
+**Status key:** **Passed** = owner confirmed on 8080; **Unmarked** = not yet owner click-tested in this matrix (do not treat as failing).
+
 | Priority | Template | Status | Minimal pass criteria |
 |----------|----------|--------|---------------------|
 | 1 | **Simple Survey Template** | **Passed** | Survey → Report tally on 8080 |
@@ -51,9 +53,11 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 | 4 | **Form with process connecting a document** | **Unmarked** | Submit → **Document 1** HTML visible |
 | 5 | **Sign-up Sheet w Email** | **Unmarked** | FIB submit + table; Send may need mail config |
 | 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
-| 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026 — see reference below) | Multi tally sections + itemization on Report |
-| 8 | **Potluck (legacy direct deploy)** | **Owner Passed Jul 20** | `node scripts/deploy-tawala-template.mjs "Potluck"` → full app on 8080: forms, MQL, theme CSS; looked good and worked. Still **not** Browser Designer New Project JSON (that remains a stub). |
+| 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026) | Multi **choice-tally** + **itemization** on Report — see reference section below |
+| 8 | **Potluck** | **New Project JSON updated Jul 24** | Browser Designer **File → New Project → Potluck** uses owner-supplied `00-WebDesigner-MainMenu_Potluck.json` (installed as `designer-web/public/samples/templates/potluck.json`). Legacy `node scripts/deploy-tawala-template.mjs "Potluck"` also **Owner Passed Jul 20**. |
 | — | **DirtBowl (legacy `.tawala`)** | **Owner Passed Jul 20** | Full project (dozens of Forms/Processes/Documents) via `designer-web/public/samples/legacy/DirtBowl.tawala` — worked flawlessly. Corrupted JSON copies are not a smoke target. |
+
+**#9 function smoke ladder (Jul 24):** Multi Survey (#7) and peers above that are **Passed** already exercise the main emitters (choice-tally, itemization, correlation, sum). Next optional matrix work is the two **Unmarked** rows (#4, #5) — not reopening the four Deferred function stubs.
 
 Update this table when each passes owner click-test. Function-level status: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
 
@@ -122,11 +126,11 @@ Good first deploy target — small XML, no documents, one process statement.
 - **Report:** organizer view of responses.
 - Processes: Send Thanks, Show Results, Delete Name; documents Details, Thank you.
 
-**Legacy direct Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Potluck"`. This deployed `Potluck Template.tawala` directly to Java. It did **not** test Browser Designer import, Configure, or export; the New Project Potluck JSON is only a starter stub.
+**Legacy direct Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Potluck"`. This deployed `Potluck Template.tawala` directly to Java.
 
-**Owner Passed Jul 20 (legacy `.tawala` path):** Deployed Potluck looked good and worked end-to-end, including **MULTIPLE QUESTION LIST** and a **CSS theme**. Confirms Java Deploy + theme for the full template; does **not** upgrade the Browser Designer New Project Potluck stub.
+**Browser Designer New Project (Jul 24):** Owner replaced the broken starter with `JSON Library Sort/1-Main-Menu/Potluck/00-WebDesigner-MainMenu_Potluck.json` → copied to `designer-web/public/samples/templates/potluck.json` (project name `Potluck`; forms Potluck Organizer + Report; 3 processes; 3 documents). No longer a stub.
 
-**Browser Designer SUM smoke (owner passed Jul 19):** The separate `public/samples/sum-smoke-test.json` project passed Configure, export, and live Deploy total. This validates Browser Designer SUM independently; it does not make the Potluck starter stub a full template.
+**Browser Designer SUM smoke (owner passed Jul 19):** The separate `public/samples/sum-smoke-test.json` project passed Configure, export, and live Deploy total. Validates SUM independently of the Potluck New Project template.
 
 | Form | URL |
 |------|-----|

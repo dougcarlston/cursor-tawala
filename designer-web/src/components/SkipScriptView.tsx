@@ -133,7 +133,7 @@ function ScriptCommandLineRow({
       tabIndex={-1}
       className={`${lineClassName}${selected ? " selected" : ""}`}
       onMouseDown={(e) => {
-        // Never focus the label — a focused <button> shows a text caret that fights
+        // Never focus the label — a focused control shows a text caret that fights
         // block selection chrome. Reorder drag is owned by the parent row (draggable);
         // preventDefault here would cancel HTML5 drag, so only prevent when not
         // arming a drag from a selected row.
@@ -142,6 +142,7 @@ function ScriptCommandLineRow({
       onClick={(e) => {
         e.stopPropagation();
         onSelect();
+        // Blur even after drag-capable mousedown (no preventDefault) so no caret remains.
         (e.currentTarget as HTMLElement).blur();
       }}
       onKeyDown={(e) => {
@@ -261,6 +262,19 @@ function emitGap(ctx: RenderCtx, path: string, index: number, key: string): Reac
   // Indexed gaps (Skip + Process click-to-place): visible ▶ / faint hover lines.
   // Hit-only mode is for Process drag when indexed gaps are off.
   if (ctx.indexedMode) {
+    // Edit mode: hide insert-gap ▶ chrome — arrow lives on the selected statement.
+    // Keep a hit-only target so a click can leave edit mode into insert mode.
+    if (editMode && !dragActive) {
+      return (
+        <SkipInsertionLine
+          key={key}
+          hitOnly
+          insertPath={path}
+          insertIndex={index}
+          onClick={() => ctx.selectPoint(path, index)}
+        />
+      );
+    }
     const active = (!editMode && storedActive) || dragActive;
     return (
       <SkipInsertionLine

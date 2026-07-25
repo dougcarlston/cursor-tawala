@@ -33,7 +33,8 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 
 **Jul 21 import follow-ups (fixed same day):** FIB import now emits Design underscore runs from `<blank length>`; Form Text inline `<image id>` embeds as `data-tawala-image-id` imgs with data-URLs from `project.images`; Form Text `<table>` with `<division>` cells → editable HTML (Name / `<<fields>>`); structured-content fallback now shows badge + × delete. Re-run CLI / re-Open `.tawala` to pick up. Skip script shows friendly `equals` for imported `mcEquals`.
 
-**Owner smoke next:** File → Open Potluck / DirtBowl `.tawala` → Explorer populated → optional Deploy. New Project JSON stubs remain stubs — prefer import for real apps.
+**Owner smoke next:** File → Open Potluck / DirtBowl `.tawala` → Explorer populated → optional Deploy. **Jul 24:** New Project → Potluck JSON is no longer a stub (owner `00` file installed as `templates/potluck.json`).
+
 
 **Park:** Deferred UX, 3-browser, look-and-feel; Document invent/chip polish unless blocking.
 
@@ -49,7 +50,7 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 - Process **Send** self-mail on :8080 **works**.
 
 **Important distinctions:**
-- **New Project** Sign-up/Potluck JSON = stubs. Healthy smoke = `node scripts/deploy-tawala-template.mjs "…"` or path to `.tawala`.
+- **New Project** Potluck JSON = **updated Jul 24** (owner `00-WebDesigner-MainMenu_Potluck.json`). Other starters vary; when in doubt smoke via `node scripts/deploy-tawala-template.mjs "…"` or path to `.tawala`.
 - Full DirtBowl source: `designer-web/public/samples/legacy/DirtBowl.tawala`. Do not trust `dirtbowl_definition_v3.json` / open JSON copies.
 - How to deploy `.tawala`: Tomcat on 8080 → `node scripts/deploy-tawala-template.mjs --list` / `"Potluck"` / path.
 
@@ -65,8 +66,8 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 
 ## Document editor & export
 
-- **Document HTML → XML export incomplete** — only some function types emit real XML; others become comments. Tables/placed text improved in `documentHtmlToXml.mjs` but export is still partial. (Sources: Document palette & typewriter; Document WYSIWYG & palette)
-- **fx / Insert Function not fully implemented** — picker popup works (smoke July 10); many functions lack full configure UI and/or real XML export. (Source: Document palette & typewriter; smoke item 14)
+- **Document HTML → XML export** — **13 of 17** function types emit real XML (`documentHtmlToXml.mjs`). **4 Deferred stubs** (categorizer / roster / link / paypal) emit comments only and are hidden from Insert → Function (Jul 24). Tables/placed text improved; remaining gaps are stub product, not missing emitters for the shipped set. (Sources: Document palette & typewriter; Document WYSIWYG & palette)
+- **fx / Insert Function** — picker + Configure for all catalog entries; Insert hides the four parked stubs. Full configure UI for stubs not required this build. (Source: Document palette & typewriter; smoke item 14)
 - **Field-token drag polish** — optional leftover; not confirmed broken. (Source: Document palette & typewriter)
 - **Default Font / Default Size greyed rules** — legacy Reset greyed rules obsolete; Reset control **removed** July 10.
 - **Indent / Outdent** — **verified July 10:** Document placed lines shift by 36 pt steps from the left margin (width still to right margin); Form paragraphs use `margin-left`.
@@ -116,14 +117,14 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 
 - **Move Up / Move Down** for form items and process statements — **Done Jul 12** (↑/↓ + Alt+arrows + select-then-drag reorder; compact lists, caret only while dragging). **Document blocks — owner smoke Jul 15: pass.**
 - **FIB hint-text styling** (smaller italic secondary font for parentheticals). **Deferred** → `docs/DESIGNER_BACKLOG_FORMS_FIBS.md`. (Source: Designer Sign-up DirtBowl)
-- **Heading per-run Main/Sub size spans** — **Jul 24:** Heading Type is whole-box again (legacy). Uniform Sub → Deploy `type="Sub"` / Preview+Java `h2.subheading`; Main → `h1.heading`. Mixed leftover markup still exports as Main. (Source: Designer MDI and Heading)
+- **Heading Main/Sub** — **Jul 24:** Design Type applies to the **selection** (or pends at caret). Mixed Main+Sub lines in one box export as multiple `<heading>` / Preview `h1.heading` + `h2.subheading` with stack gap. See `DESIGNER_FORM_ITEMS_HEADING.md`. (Source: Designer MDI and Heading)
 - **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)
 - **Per-item Properties popups** not migrated — permanent Properties panel still used for non-canvas-inline items. **Deferred.** (Source: Designer MDI and Heading)
 - **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — **superseded July 10:** right-column Properties panel removed; Fields owns the column. Per-item Properties popups remain a separate deferred item.
 - **File Uploader** — **Omitted from Items palette (owner Jul 17).** Never wired in 2011 reference build or browser Designer. Spec only: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`. Use **Insert → Image → From your PC…** / **From the Web…** for images.
-- **Items palette icons** are Unicode/CSS placeholders, not legacy assets. **Deferred.** (Source: Designer Forms foundation)
+- **Items palette icons** — **Done Jul 24** (legacy-style PNG tiles in `designer-web/public/icons/form-item-*.png`). (Was: Unicode/CSS placeholders.)
 - **MCQ dynamic choice source** (“from stored data” + Configure Function). **Done Jul 23** — Choice source / Edit → `ConfigureFunctionDialog` (`dynamic-mcq`); Deploy `mcToXml`. Preview expands rows from session records (condition filter still Preview-only soft). (Source: Forms canvas & Skip)
-- **Rich text HTML → legacy XML export** for Form items — **MCQ question Done Jul 24**; **Heading whole-box Main/Sub Done Jul 24** (Design Type + Deploy/Preview `h1.heading` / `h2.subheading`). Text/FIB already on the rich path. (Source: Forms canvas & Skip)
+- **Rich text HTML → legacy XML export** for Form items — **MCQ question Done Jul 24**; **Heading Main/Sub split Done Jul 24**. Text/FIB already on the rich path. (Source: Forms canvas & Skip)
 
 ## Skip Instructions
 
@@ -168,18 +169,31 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. **Do not start during #9 smoke.** |
 | 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | **Done Jul 23** — Design Configure + Deploy XML. Owner smoke SignupSheets-class apps still useful. |
 | — | **Design-canvas Style paint** | **Owner Jul 18:** **Text** Instructional/Error shown on Forms → Text (already implemented). **FIB/MCQ layout paint = won't do** — interferes with editing; Preview immediate. See `DESIGNER_FORM_FORMAT_TOOLBAR.md`. |
-| 5 | **HTML→XML export for functions we already Configure** | **Mostly done Jul 13–16** — 13 of 17 emit real XML. **Jul 24:** remaining 4 explicitly **parked** (not this build) — see `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Parked function stubs. Payment later = generic API, not PayPal-only. |
+| 5 | **HTML→XML export for functions we already Configure** | **Done Jul 13–16** for 13 of 17. **Jul 24:** remaining 4 **Deferred stub** (parked) — see matrix below. |
 | 6 | **Move Up / Down** for form items (process statements if cheap) | **Done Jul 12** — Form + Process: arrows and drag-reorder. **Document blocks — owner smoke Jul 15: pass.** |
 | 7 | **Sample / template review (first pass)** | **Done Jul 12** (owner). **Re-review after #9 and #10** — functions + Deploy must work before a second full pass. |
 | 8 | **Other structured Form Text tables** (e.g. choice tally) | Same click-to-Configure / rich-edit path as MQL + correlation when a template needs them. Part of #9. |
-| 9 | **Wire the rest of the functions** | **Core ladder done Jul 19–20.** **Jul 24:** four stubs parked until after the other two project branches (`categorizer`, `export-team-roster`, `link-to-project-details`, `paypal-single-item-button`). |
-| 10 | **Get Deploy working** | **Usable Jul 12–16.** **Jul 20:** Potluck + DirtBowl legacy Deploy **Passed**; Send (self) **Passed**. **Jul 21:** general `.tawala` → Designer Open / CLI **landed** — owner smoke Open + Deploy next. |
+| 9 | **Wire the rest of the functions** | See **#9 function status** table below. Core ladder **Done**; four stubs **Deferred**; template re-smoke optional. |
+| 10 | **Get Deploy working** | **Done (usable)** Jul 12–21. Potluck + DirtBowl legacy **Passed** Jul 20; `.tawala` Open landed Jul 21. Remaining = unmarked templates in `DESIGNER_TEMPLATE_MATRIX.md` (Form+Document, Sign-up w Email). |
 | 11 | **Implement MCQ-aware Function Where** | **Done Jul 19** — `mcConditionOperators` + `FunctionConditionsEditor` field-kind switch; XML emits `mc*`. **Owner Passed Jul 20.** |
 | 12 | **RESPONSE TOTALS multi-select undercount** | **Done Jul 19 (investigation)** — no Totals-specific bug; same tally as Bar Graph; regression tests added. **Owner Passed Jul 20** (side-by-side Totals vs Bar Graph on multi MCQ — both pick up all choices). |
 | 13 | **Help → About Tawala Designer** | **Done Jul 24** — `AboutDialog` wired; attorney-guided copy locked (two © lines; Beta Version; third-party note). Spec: `DESIGNER_MENU_SPEC.md` § Help. Owner smoke Help → About. |
 | 14 | **Device output sizing** (computer / tablet / phone + optional autoswitch) | **Parked Jul 24** — not legacy parity; too large for this track. Spec: § **After the other two project branches**. Revisit with generic payment / other parked stubs after those branches. |
+| 15 | **Project Themes — hide themes without local CSS** | **Owner Jul 24 (Library/8080 track):** Today the menu lists the full legacy catalog; **blue** = CSS under `docker/tomcat/css/project/{path}/`, **grey** = still selectable (sets `themePath` but Deploy styles 404). **Later Designer change:** hide (do not show) themes that lack local CSS — Library can only ship themes we actually have. Working set today: `baseball`, `default`, `dirtbowl2`, `greentea`, `mvsc`, `redrays`, `style2`. Code: `designer-web/src/lib/projectThemes.ts` (`hasLocalCss` / `LOCAL_CSS_PATHS`). Theme-maker UI still out of scope. |
 
-**Cleanup plan Jul 16:** Home-page menu audit (#2) and gated items (#3 / After Designer finished) stay **parked** until the remaining #9 smoke-needed functions above are cleared or explicitly deferred. Do not start menu look-and-feel or 3-browser smoke without owner discussion. **Exception:** queue **#13 About** may be scheduled whenever the owner has the legal text — do not wait for #9.
+**Cleanup plan Jul 24:** Home-page menu audit (#2) and gated items (#3) stay **parked**. Function #9 core is Done; optional next is unmarked template Deploy smokes (matrix), not a home-page menu pass.
+
+### #9 function status (Jul 24 — Done / Smoke-needed / Deferred stub)
+
+Source: `documentHtmlToXml.mjs` + `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
+
+| Status | Functions |
+|--------|-----------|
+| **Done** (XML emit + owner Passed) | DISPLAY IMAGE, DISPLAY MCQ, FORM RECORD COUNT, MULTIPLE QUESTION LIST, PROJECT EMAIL COUNT, QUESTION CORRELATION, RANKED MULTIQUESTION LIST, RANKED RESPONSE COUNTS, RANKED RESPONSE NAME, RESPONSE BAR GRAPH, RESPONSE TOTALS, SINGLE QUESTION LIST, SUM |
+| **Smoke-needed** | None for the 13 emitters — template ladder Passed (Simple Survey, Multi Survey, Signup MQL, Get Together w/ caveats, Potluck SUM). Optional re-smoke only if a regression is reported. |
+| **Deferred stub** (parked Jul 24; hidden from Insert picker) | CATEGORIZER, EXPORT TEAM ROSTER, LINK TO PROJECT DETAILS, PAYPAL BUTTON → generic payment later |
+
+**Template smoke ladder (when picking up #9 again):** (1) Multiple Question Survey — **Passed**; (2) Get Together / Potluck / Simple Survey — already Passed; (3) only then ad-hoc DISPLAY IMAGE / DISPLAY MCQ / record-count / simple-list if a new sample needs them. Leave the four Deferred stubs alone.
 
 ---
 

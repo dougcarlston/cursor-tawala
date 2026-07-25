@@ -4,6 +4,7 @@ import {
   collectProjectImages,
   imagesToXml,
   projectToXml,
+  xmlCommentText,
 } from "./jsonToXml.mjs";
 
 describe("imagesToXml", () => {
@@ -399,5 +400,44 @@ describe("projectToXml pageHeader", () => {
       '<pageHeader><text>Hello Camp</text><image id="__HEADER__" width="40" height="60"/></pageHeader>',
     );
     expect(xml).toContain('<imagedef id="__HEADER__">');
+  });
+});
+
+describe("xmlCommentText", () => {
+  it("spaces consecutive dashes so XML comments stay well-formed", () => {
+    expect(xmlCommentText("-- note")).toBe("- - note");
+    expect(xmlCommentText("--- section")).toBe("- - - section");
+    expect(xmlCommentText("a----b")).toBe("a- - - -b");
+    expect(xmlCommentText("trailing-")).toBe("trailing");
+    expect(xmlCommentText("---")).toBe("- - ");
+  });
+
+  it("exports process comments with --- without illegal -- in XML", () => {
+    const xml = projectToXml({
+      name: "Pollish",
+      forms: [{ name: "Form 1", startPoint: true, items: [] }],
+      processes: [
+        {
+          name: "Post-SessionBySessionReport",
+          commands: [
+            {
+              cmd: "comment",
+              text: "--- This is the the case of the top part of the form submitted",
+            },
+          ],
+        },
+      ],
+      documents: [],
+    });
+    expect(xml).toContain("<!-- ");
+    expect(xml).toContain(
+      "This is the the case of the top part of the form submitted -->",
+    );
+    const comments = [...xml.matchAll(/<!--([\s\S]*?)-->/g)].map((m) => m[1]);
+    expect(comments.length).toBeGreaterThan(0);
+    for (const body of comments) {
+      expect(body.includes("--")).toBe(false);
+      expect(body.endsWith("-")).toBe(false);
+    }
   });
 });

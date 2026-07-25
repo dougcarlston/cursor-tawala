@@ -466,10 +466,21 @@ function conditionToXml(cond) {
   return `<${op} field="${escAttr(cond.field)}">${conditionValueXml(cond.value)}</${op}>`;
 }
 
-function xmlCommentText(s) {
-  return String(s ?? "")
-    .replace(/--/g, "- -")
-    .replace(/-$/g, "");
+/**
+ * Sanitize text for use inside an XML comment (`<!-- … -->`).
+ * XML forbids `--` anywhere in the comment body and a trailing `-` before `-->`.
+ * Authors often write legacy-style notes like `-- note` or `--- section`; keep
+ * rewriting until no consecutive dashes remain.
+ */
+export function xmlCommentText(s) {
+  let out = String(s ?? "");
+  // Odd-length runs (e.g. `---`) become `- --` after one pass — loop until clean.
+  while (out.includes("--")) {
+    out = out.replace(/--/g, "- -");
+  }
+  // Avoid `--->` when the body ends with `-`.
+  out = out.replace(/-+$/g, "");
+  return out;
 }
 
 function addressToXml(tag, addr) {

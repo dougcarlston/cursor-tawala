@@ -4,6 +4,8 @@
  *
  * `hasLocalCss`: Tomcat CSS under docker/tomcat/css/project/{path}/ (or default.css).
  * Blue in the menu when true; stubs stay grey but are still selectable (sets themePath).
+ * Owner Jul 24 backlog (DESIGNER_OPEN_TODOS #15): later hide themes with hasLocalCss=false
+ * instead of greying them — Library should only offer themes we ship CSS for.
  */
 
 export type ProjectThemeEntry = {

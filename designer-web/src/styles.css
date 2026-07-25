@@ -5293,6 +5293,13 @@ button.font-color-picker-recent-slot:hover {
   min-height: 14px;
   padding: 1px 72px 1px 0;
   cursor: pointer;
+  user-select: none;
+  caret-color: transparent;
+}
+
+.skip-script-area.process-script-area .skip-script-line-text {
+  user-select: none;
+  caret-color: transparent;
 }
 
 .skip-script-area.process-script-area .skip-script-line-toolbar {

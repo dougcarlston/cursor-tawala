@@ -505,7 +505,7 @@ Insert uses internal `*StatementView` names; palette uses short names:
 | Reset Formatting | | → Formatting Palette |
 | *(separator)* | | |
 | **Page Header…** | → **Project** (8080 stub) — `DESIGNER_PAGE_HEADER.md` |
-| Project Themes | → **Project → Project Themes** submenu (Jul 22) — full legacy list; **blue** = local Tomcat CSS under `docker/tomcat/css/project/`; grey = stub (still sets `themePath`) |
+| Project Themes | → **Project → Project Themes** submenu (Jul 22) — full legacy list; **blue** = local Tomcat CSS under `docker/tomcat/css/project/`; grey = stub (still sets `themePath`). **Owner Jul 24 backlog:** later **hide** themes without local CSS (see `DESIGNER_OPEN_TODOS.md` #15) — do not leave grey stubs selectable once Library is the product surface. |
 | Color | → Formatting Palette |
 | Tabs... | → **Project → Tabs…** (wired) |
 | **Styles** → | → **Project → Styles** (wired) — `DESIGNER_FORM_FORMAT_TOOLBAR.md` |

@@ -52,7 +52,7 @@ node scripts/deploy-tawala-template.mjs "Simple Survey Template"
 | Signup Sheet Template w Email | OK | See matrix | FIB + table OK; **Send** needs SMTP | **Blocked** — outbound mail deferred (see Backlog) |
 | Get Together Template | OK | See matrix | Survey → Report correlation table | **Passed** (owner, July 2026) — Preview + Deploy both passed; no template-specific errors found |
 | Multiple Question Survey Template | OK | See matrix | Multi MCQ → Report tallies + table | **Passed** (owner, July 2026) |
-| Potluck Template | Starter stub only | See matrix | Legacy Organizer → Details + thank-you doc | **Legacy `.tawala` direct deploy passed w/ caveats**; separate Browser Designer SUM smoke **passed Jul 19** (Potluck remains a starter stub) |
+| Potluck Template | OK | See matrix | Organizer → Details + thank-you doc | **New Project JSON replaced Jul 24** with owner `00-WebDesigner-MainMenu_Potluck.json` (2 forms / 3 processes / 3 documents). Legacy `.tawala` direct deploy also **Passed** earlier. |
 | Empty Project | — | — | N/A | — |
 
 Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.

@@ -1,5 +1,5 @@
 {
-  "name": "potluck",
+  "name": "Potluck",
   "format": "2.0",
   "themePath": "default",
   "forms": [
@@ -263,7 +263,7 @@
     },
     {
       "name": "Thank you NotComing",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"39.4pt\" style=\"position: absolute; left: 28.4pt; top: 39.4pt; margin: 0px; min-width: 2em; width: 424.6pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\">We're sorry you can't come.</p><p class=\"doc-placed-text\" data-doc-home-top=\"58.2pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 28.4pt; top: 58.2pt; margin: 0px; min-width: 2em; min-height: 16.8pt; width: 424.6pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"77pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 28.4pt; top: 77pt; margin: 0px; min-width: 2em; min-height: 16.8pt; width: 424.6pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p>"
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"39.4pt\" style=\"position: absolute; left: 28.4pt; top: 39.4pt; margin: 0px; min-width: 2em; width: 423.1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\">We're sorry you can't come.</p><p class=\"doc-placed-text\" data-doc-home-top=\"58.2pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 28.4pt; top: 58.2pt; margin: 0px; min-width: 2em; min-height: 16.8pt; width: 423.1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"77pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 28.4pt; top: 77pt; margin: 0px; min-width: 2em; min-height: 16.8pt; width: 423.1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"98.6pt\" style=\"position: absolute; left: 7.5pt; top: 98.6pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><br></p>"
     },
     {
       "name": "Details",

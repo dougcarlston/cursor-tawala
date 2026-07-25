@@ -183,7 +183,7 @@ Legacy projects open via shared `tawalaXmlToJson` (CLI + Designer). Accepts `.js
 
 ### Process / runtime navigation
 
-- **Process statement: edit vs insert mode (legacy arrow)** — **Fixed Jul 16 (v2):** Selecting a script row enters **edit mode** — solid blue highlight and left **▶** on that statement; insert gap arrow is hidden. Clicking an insert gap / setting insert point clears selection (**insert mode** — ▶ on the separator between lines). Insert hit overlays no longer steal statement clicks (narrower hit band; rows above hits). Smoke: click “Show Form …” → arrow on statement + Modify; click between lines → arrow on gap, no statement highlight.
+- **Process statement: edit vs insert mode (legacy arrow)** — **Fixed Jul 16 (v2); hardened Jul 24.** Selecting a script row enters **edit mode** — solid blue highlight and left **▶** on that statement; insert-gap ▶ chrome is **hidden** (hit-only targets remain so a gap click returns to insert mode). Clicking an insert gap / setting insert point clears selection (**insert mode** — ▶ on the separator). Row labels do not keep a text caret beside the block highlight (`caret-color: transparent` + blur on click). Smoke: (1) click “Show Form …” → ▶ on statement + blue row, **no** insert-gap ▶; (2) click between lines → ▶ on gap only, no statement highlight; (3) click selected row again / Modify panel — still no text caret in the statement text.
 
 - **AdminDash start point → empty Thank you; Coach Contact hard to reach after deploy** — **Owner Passed Jul 20 (legacy `.tawala`).** Not a Designer navigation bug. The JSON / open DirtBowl copy was **corrupted** (bare `Show`, blank AdminDashboard). Full legacy `designer-web/public/samples/legacy/DirtBowl.tawala` (dozens of Forms / Processes / Documents) **deployed and worked flawlessly** for the owner Jul 20 — including AdminDash-scale navigation. Truncated `dirtbowl_definition_v3.json` / New Project stubs remain unreliable; use legacy `.tawala` + `deploy-tawala-template.mjs` for DirtBowl smoke.
 
@@ -282,7 +282,7 @@ Any future Registration-only helper must be gated. Add a **non-DirtBowl** test (
 | # | Item | Notes |
 |---|------|--------|
 | 6 | **`baseball` theme CSS** | Stub / fallback still weak vs full theme; optional — not blocking Signup default theme. |
-| — | **Process caret + row highlight** | **Fixed Jul 16 (v2)** — legacy edit vs insert arrow (see Active bugs). |
+| — | **Process caret + row highlight** | **Fixed Jul 16 (v2); hardened Jul 24** — edit mode hides insert-gap ▶; no text caret on selected row (see Active / Process). |
 
 **Then:** MQL/SignupSheet core is done enough to leave — continue owner review **#9** other untested functions that already emit Document XML (skip four deferred stubs: Categorizer / Roster / Link / PayPal).
 

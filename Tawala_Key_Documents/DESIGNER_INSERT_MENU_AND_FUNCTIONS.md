@@ -707,11 +707,15 @@ Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: P
 
 ---
 
-## Function status matrix (Jul 16, 2026; owner ladder Jul 19)
+## Function status matrix (Jul 24, 2026)
 
-Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.mjs` (`default` → XML comment). Form Text structured nodes also export via `jsonToXml.mjs` where noted.
+Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.mjs` (`default` → XML comment only for the four parked stubs). Form Text structured nodes also export via `jsonToXml.mjs` where noted.
 
-**Jul 19–20 smoke scope:** core Configure + Deploy finished for the ladder. **WHERE re-smoke complete Jul 19** for condition-bearing functions (FRC, MQL, QCT, RMRL, RANKED RESPONSE COUNTS/NAME, SINGLE QUESTION LIST, SUM; RESPONSE BAR GRAPH / RESPONSE TOTALS **FIB Where OK**). **Jul 20:** TODO #11 MCQ-aware Where **Passed**; TODO #12 RESPONSE TOTALS multi-select vs Bar Graph **Passed**.
+**XML emit yes (13):** `record-count`, `sum`, `project-email-count`, `display-image`, `display-mcq-label`, `choice-tally-table`, `response-totals-table`, `question-correlation-table`, `popular-choice-display`, `popular-choice-count`, `popular-choice-correlation-table`, `simple-list`, `itemization-table`.
+
+**XML emit no / Deferred stub (4):** `categorizer`, `export-team-roster`, `link-to-project-details`, `paypal-single-item-button` — Insert picker hides them (`pickerHidden`).
+
+**Jul 19–20 smoke scope:** core Configure + Deploy finished for the ladder. **WHERE re-smoke complete Jul 19** for condition-bearing functions. **Jul 20:** TODO #11 MCQ-aware Where **Passed**; TODO #12 RESPONSE TOTALS multi-select vs Bar Graph **Passed**.
 
 ### Parked function stubs (Owner Jul 24)
 
@@ -792,4 +796,4 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 ---
 
-*Last updated: July 16, 2026 — function XML emit matrix synced to `documentHtmlToXml.mjs`.*
+*Last updated: July 24, 2026 — function XML emit matrix synced to `documentHtmlToXml.mjs`; four stubs parked; Insert siblings Invitation/Hyperlink/Image wired.*
