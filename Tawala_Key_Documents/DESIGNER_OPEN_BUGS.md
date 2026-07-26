@@ -27,6 +27,12 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
+### Variables treated as text (Library vetting blocker — owner Jul 25)
+
+- **Symptom:** Browser Designer treats **variables as text** in most situations where legacy Designer honored typed / non-text variables (process, conditions, function Where, etc.).
+- **Impact:** Blocks full vetting of larger Library / Deep Backup projects even after `.tawala` reconvert. Collect concrete examples in a Designer chat; fix on Design track (not 8080 CSS).
+- **Related Library note:** `LIBRARY_PROJECTS_TRIAGE_JUL22.md` § Jul 25 — reconvert queue; **Jul 25 evening** invitation/hyperlink/field HTML converter fixes landed (SportsDashboards warns 1768→994). Structured-content / `Record:` converter gaps for MQL `where` are separate from the variables-as-text bug.
+
 ### Deploy data isolation (Jul 22 Safari smoke)
 
 - **Symptom:** Safari multi-app smoke looked like “projects sharing data” (signups / form UI from one app showing up in another).

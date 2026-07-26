@@ -209,6 +209,108 @@ describe("convertTawalaXmlToProject", () => {
     expect(docs[0].content).not.toContain("ignored shell");
   });
 
+  it("converts Form Text field refs to HTML field-token (not structured array)", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="FieldText" themePath="default" format="1.9">
+  <forms>
+    <form name="Form 1" startPoint="true">
+      <items>
+        <text label="T1" style="normal">
+          <paragraph align="left" indent="0"><font><field name="Form:Name"/></font></paragraph>
+        </text>
+      </items>
+    </form>
+  </forms>
+  <processes></processes>
+  <documents></documents>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml);
+    const text = (project as { forms: Array<{ items: Array<{ type: string; content?: unknown }> }> })
+      .forms[0].items[0];
+    expect(text.type).toBe("text");
+    expect(typeof text.content).toBe("string");
+    expect(Array.isArray(text.content)).toBe(false);
+    const html = String(text.content);
+    expect(html).toContain('class="field-token');
+    expect(html).toContain('data-field-name="Form:Name"');
+    expect(html).toContain("&lt;&lt;Form:Name&gt;&gt;");
+  });
+
+  it("converts invitation displayText from string value without empty-text warning", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="Inv" themePath="default" format="1.9">
+  <forms>
+    <form name="Form 1" startPoint="true">
+      <items>
+        <text label="T1" style="normal">
+          <paragraph align="left" indent="0">
+            <font><invitation form="NextForm" project="Inv"><displayText><string value="Continue"/></displayText></invitation></font>
+          </paragraph>
+        </text>
+      </items>
+    </form>
+  </forms>
+  <processes></processes>
+  <documents></documents>
+</project>`;
+    const { project, warnings } = convertTawalaXmlToProject(xml);
+    const html = String(
+      (project as { forms: Array<{ items: Array<{ content?: string }> }> }).forms[0].items[0].content,
+    );
+    expect(html).toContain('class="invitation-token"');
+    expect(html).toContain("Continue");
+    expect(html).toContain("&quot;displayText&quot;:&quot;Continue&quot;");
+    expect(warnings.some((w) => w.includes('text=""'))).toBe(false);
+  });
+
+  it("converts hyperlink link element to hyperlink-token HTML", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="Link" themePath="default" format="1.9">
+  <forms>
+    <form name="Form 1" startPoint="true">
+      <items>
+        <text label="T1" style="normal">
+          <paragraph align="left" indent="0">
+            <font><link><description><string value="Help"/></description><url><string value="http://x"/></url></link></font>
+          </paragraph>
+        </text>
+      </items>
+    </form>
+  </forms>
+  <processes></processes>
+  <documents></documents>
+</project>`;
+    const { project, warnings } = convertTawalaXmlToProject(xml);
+    const html = String(
+      (project as { forms: Array<{ items: Array<{ content?: string }> }> }).forms[0].items[0].content,
+    );
+    expect(html).toContain('class="hyperlink-token"');
+    expect(html).toContain("Help");
+    expect(html).toContain("&quot;url&quot;:&quot;http://x&quot;");
+    expect(html).toContain("&quot;displayText&quot;:&quot;Help&quot;");
+    expect(warnings.some((w) => w.includes("Hyperlink in rich content — empty"))).toBe(false);
+  });
+
+  it("converts Document paragraph field to HTML field-token", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="DocField" themePath="default" format="1.9">
+  <forms><form name="Form 1" startPoint="true"><items/></form></forms>
+  <processes/>
+  <documents>
+    <document name="Letter">
+      <xmlData>
+        <paragraph align="left" indent="0"><font><field name="Record:Form 1:Name"/></font></paragraph>
+      </xmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml);
+    const html = String((project.documents as Array<{ content: string }>)[0].content);
+    expect(html).toContain('class="field-token');
+    expect(html).toContain('data-field-name="Record:Form 1:Name"');
+    expect(html).toContain("&lt;&lt;Record:Form 1:Name&gt;&gt;");
+  });
+
   it("imports Document table cells with SUM as function chips and escapes field brackets", () => {
     const xml = `<?xml version="1.0" encoding="utf-8" ?>
 <project name="SumDoc" themePath="default" format="1.9">

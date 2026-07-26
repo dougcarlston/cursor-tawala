@@ -299,7 +299,7 @@ function richNodesFromXml(nodes, ctx = {}) {
         out.push({ type: "underline", nodes: richNodesFromXml(body, ctx) });
         break;
       case "field": {
-        const name = a["@_name"];
+        const name = a["@_name"] ?? flattenPlainText(body);
         if (name) out.push({ type: "field", name });
         break;
       }
@@ -321,8 +321,21 @@ function richNodesFromXml(nodes, ctx = {}) {
         const form = a["@_form"] ?? "";
         const project = a["@_project"] ?? "";
         const priv = String(a["@_private"] ?? "").toLowerCase() === "true";
-        const text = flattenPlainText(body);
-        warn(`Document/text invitation → form="${form}" text="${text}" (limited Designer round-trip)`);
+        // Legacy puts label in <displayText><string value="…"/></displayText>
+        // (flattenPlainText only sees #text, so it used to drop every label).
+        const displayBody = findChild(body, "displayText");
+        let text = "";
+        if (displayBody != null) {
+          text =
+            expressionToString(displayBody) || flattenPlainText(displayBody);
+        } else {
+          text = expressionToString(body) || flattenPlainText(body);
+        }
+        if (!text) {
+          warn(
+            `Document/text invitation → form="${form}" text="" (limited Designer round-trip)`,
+          );
+        }
         const inv = { type: "invitation", form, text, project };
         if (priv) inv.private = true;
         // auth token if present
@@ -342,8 +355,64 @@ function richNodesFromXml(nodes, ctx = {}) {
         out.push(convertSumFunction(n, ctx));
         break;
       case "link": {
-        warn("Hyperlink in rich content — approximated as text");
-        out.push({ type: "text", text: flattenPlainText(body) });
+        // Legacy: <link><new-window/><description>…</description><url>…</url>
+        // description/url are <string value> or <field name> (not #text).
+        const openNewWindow = children(body).some(
+          (c) => tagName(c) === "new-window",
+        );
+        const descBody = findChild(body, "description");
+        const urlBody = findChild(body, "url");
+        const displayText = descBody
+          ? expressionToString(descBody) || flattenPlainText(descBody)
+          : "";
+        const url = urlBody
+          ? expressionToString(urlBody) || flattenPlainText(urlBody)
+          : "";
+        const dcNodes = findChild(body, "displayConditions");
+        const cond = dcNodes ? parseConditions(dcNodes) : null;
+        const conditions = [];
+        let conditional = false;
+        if (cond && typeof cond.field === "string") {
+          conditional = true;
+          conditions.push({
+            field: cond.field,
+            op: cond.op ?? "equals",
+            value: String(cond.value ?? ""),
+          });
+        } else if (cond && Array.isArray(cond.and)) {
+          conditional = true;
+          for (const row of cond.and) {
+            if (row && typeof row.field === "string") {
+              conditions.push({
+                field: row.field,
+                op: row.op ?? "equals",
+                value: String(row.value ?? ""),
+              });
+            }
+          }
+        } else if (cond && Array.isArray(cond.or)) {
+          conditional = true;
+          for (const row of cond.or) {
+            if (row && typeof row.field === "string") {
+              conditions.push({
+                field: row.field,
+                op: row.op ?? "equals",
+                value: String(row.value ?? ""),
+              });
+            }
+          }
+        }
+        if (!displayText && !url) {
+          warn("Hyperlink in rich content — empty description and url");
+        }
+        out.push({
+          type: "hyperlink",
+          url,
+          text: displayText,
+          openNewWindow,
+          conditional,
+          conditions,
+        });
         break;
       }
       case "paragraph":
@@ -632,7 +701,7 @@ function displayFunctionTokenHtml(functionId, config) {
 function embedFieldsInImportedHtml(source) {
   const chips = [];
   let s = String(source ?? "").replace(
-    /<span\b[^>]*\b(?:field-token|function-token|invitation-token)\b[^>]*>[\s\S]*?<\/span>/gi,
+    /<span\b[^>]*\b(?:field-token|function-token|invitation-token|hyperlink-token)\b[^>]*>[\s\S]*?<\/span>/gi,
     (chip) => {
       const i = chips.length;
       chips.push(chip);
@@ -725,11 +794,38 @@ function richNodesToFormHtml(nodes, imageById = {}) {
         isPrivate: Boolean(n.private),
         authToken: String(n.authenticationTokenField ?? ""),
       };
-      const enc = encodeURIComponent(JSON.stringify(draft));
+      // Match Design Insert tokens: raw JSON in the attribute (escHtml for the attr).
+      const confJson = JSON.stringify(draft);
       const label = escHtml(draft.displayText || draft.form || "Invitation");
       out +=
         `<span contenteditable="false" class="invitation-token" ` +
-        `data-invitation-config="${escHtml(enc)}" ` +
+        `data-invitation-config="${escHtml(confJson)}" ` +
+        `style="color:#000080;text-decoration:underline">${label}</span>`;
+      continue;
+    }
+    if (n.type === "hyperlink") {
+      const draft = {
+        url: String(n.url ?? ""),
+        displayText: String(n.text ?? ""),
+        openNewWindow: Boolean(n.openNewWindow),
+        conditional: Boolean(n.conditional),
+        conditions: Array.isArray(n.conditions)
+          ? n.conditions.map((r) => ({
+              field: String(r?.field ?? ""),
+              op: String(r?.op ?? "equals"),
+              value: String(r?.value ?? ""),
+            }))
+          : [],
+      };
+      const confJson = JSON.stringify(draft);
+      const label = escHtml(
+        draft.displayText.trim() ||
+          draft.url.trim() ||
+          "(Link appears here)",
+      );
+      out +=
+        `<span contenteditable="false" class="hyperlink-token" ` +
+        `data-hyperlink-config="${escHtml(confJson)}" ` +
         `style="color:#000080;text-decoration:underline">${label}</span>`;
       continue;
     }
@@ -809,17 +905,15 @@ function convertText(itemNode, imageById = {}) {
   const style = attr(itemNode, "style") ?? "normal";
   const blocks = paragraphsToBlocks(body, { location: `text ${label}`, imageById });
   const item = { type: "text", label, style };
-  const hasImage = blocksHaveType(blocks, "image");
-  const hasTable = blocksHaveType(blocks, "table");
-  const hasItemizationOrInvite =
-    blocksHaveType(blocks, "itemizationTable") || blocksHaveType(blocks, "invitation");
+  const hasMql = blocksHaveType(blocks, "itemizationTable");
 
-  // Prefer Form Text HTML (TextCanvasRow) for tables/images/fields so Design can edit
-  // and Deploy gets documentHtmlToXml — not the structured-block dead-end.
-  if ((hasImage || hasTable) && !hasItemizationOrInvite) {
-    item.content = richBlocksToFormHtml(blocks, imageById);
-  } else if (hasItemizationOrInvite || !blocksAreSimplePlain(blocks)) {
+  // Prefer Form Text HTML (TextCanvasRow) for fields / invitations / hyperlinks /
+  // tables / images so Design can edit. Keep structured arrays only for MQL
+  // (itemization) tables that StructuredTextCanvasRow still owns.
+  if (hasMql) {
     item.content = blocks;
+  } else if (!blocksAreSimplePlain(blocks)) {
+    item.content = richBlocksToFormHtml(blocks, imageById);
   } else {
     item.content = blocksToPlainString(blocks);
   }
