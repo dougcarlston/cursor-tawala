@@ -1,916 +1,0 @@
-Äf<?xml version="1.0" encoding="utf-8" ?>
-<request type="uploadProject" protocol="1.0">
-<credentials user="JDF" password="jdf20q" />
-<project name="Deli Menu" format="1.3">
-<forms>
-<form name="Menu" process="Process Order">
-<items>
-<text label="T1">Deli Sandwich Menu
-
-All sandwiches are $3.95 (plus extras)
-
-Fill out this form and press Submit to place your order.</text>
-<fib label="Q1">First Name: <blank label="a" alternateLabel="Name" length="10"/></fib>
-<fib label="Q2">Phone <blank label="a" alternateLabel="Phone 1" length="3"/> - <blank label="b" alternateLabel="Phone 2" length="4"/></fib>
-<mc label="Q3" onlyone="true" required="false"><question>Will you be picking up this order, or would you like us to deliver it to you?</question><choice label="a">Pick up</choice><choice label="b">Delivery (be sure to complete the address below)</choice></mc>
-<fib label="Q4">Address for delivery: <blank label="a" alternateLabel="Address" length="23"/></fib>
-<text label="T2">
-Your order:
-</text>
-<mc label="Q5" onlyone="true" required="false"><question>Meat:</question><choice label="a">Roast beef</choice><choice label="b">Turkey</choice><choice label="c">Ham</choice><choice label="d">Salami</choice><choice label="e">None</choice></mc>
-<mc label="Q6" onlyone="true" required="false"><question>Bread:</question><choice label="a">White</choice><choice label="b">Whole wheat</choice><choice label="c">Sourdough</choice><choice label="d">Rye</choice></mc>
-<mc label="Q7" onlyone="true" required="false"><question>Cheese:</question><choice label="a">American</choice><choice label="b">Cheddar</choice><choice label="c">Swiss</choice><choice label="d">Jack</choice><choice label="e">None</choice></mc>
-<mc label="Q8" onlyone="false" required="false"><question>Condiments:</question><choice label="a">Mayonnaise</choice><choice label="b">Mustard</choice><choice label="c">Lettuce</choice><choice label="d">Tomato</choice><choice label="e">Onion</choice></mc>
-<mc label="Q9" onlyone="false" required="false"><question>Extras (50 cents each):</question><choice label="a">Sauteed onions</choice><choice label="b">Sauerkraut</choice><choice label="c">Ranch dressing</choice><choice label="d">Special sauce</choice><choice label="e">Deli pickle</choice></mc>
-</items>
-</form>
-</forms>
-<processes>
-<process name="Process Order">
-<set field="Cost" expression="3.95">
-<string value="3.95"/>
-</set>
-<set field="Meat" expression="meatless">
-<string value="meatless"/>
-</set>
-<if>
-<conditions>
-<mcEquals field="Q5" value="a"/>
-</conditions>
-<trueSet>
-<set field="Meat" expression="roast beef">
-<string value="roast beef"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q5" value="b"/>
-</conditions>
-<trueSet>
-<set field="Meat" expression="turkey">
-<string value="turkey"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q5" value="c"/>
-</conditions>
-<trueSet>
-<set field="Meat" expression="ham">
-<string value="ham"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q5" value="d"/>
-</conditions>
-<trueSet>
-<set field="Meat" expression="salami">
-<string value="salami"/>
-</set>
-</trueSet>
-</if>
-<set field="Bread" expression="white">
-<string value="white"/>
-</set>
-<if>
-<conditions>
-<mcEquals field="Q6" value="b"/>
-</conditions>
-<trueSet>
-<set field="Bread" expression="whole wheat">
-<string value="whole wheat"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q6" value="c"/>
-</conditions>
-<trueSet>
-<set field="Bread" expression="sourdough">
-<string value="sourdough"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q6" value="d"/>
-</conditions>
-<trueSet>
-<set field="Bread" expression="rye">
-<string value="rye"/>
-</set>
-</trueSet>
-</if>
-<set field="Cheese" expression="no">
-<string value="no"/>
-</set>
-<if>
-<conditions>
-<mcEquals field="Q7" value="a"/>
-</conditions>
-<trueSet>
-<set field="Cheese" expression="American">
-<string value="American"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q7" value="b"/>
-</conditions>
-<trueSet>
-<set field="Cheese" expression="cheddar">
-<string value="cheddar"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q7" value="c"/>
-</conditions>
-<trueSet>
-<set field="Cheese" expression="Swiss">
-<string value="Swiss"/>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcEquals field="Q7" value="d"/>
-</conditions>
-<trueSet>
-<set field="Cheese" expression="Jack">
-<string value="Jack"/>
-</set>
-</trueSet>
-</if>
-<set field="separator" expression=", ">
-<string value=", "/>
-</set>
-<set field="count" expression="0">
-<string value="0"/>
-</set>
-<if>
-<conditions>
-<mcContains field="Q8" value="a"/>
-</conditions>
-<trueSet>
-<set field="Condiments" expression="mayo">
-<string value="mayo"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q8" value="b"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Condiments"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;mustard">
-<string field="Condiments"/>
-<string value="mustard"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q8" value="c"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Condiments"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;lettuce">
-<string field="Condiments"/>
-<string value="lettuce"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q8" value="d"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Condiments"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;tomato">
-<string field="Condiments"/>
-<string value="tomato"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q8" value="e"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Condiments"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Condiments" expression="&lt;&lt;Condiments&gt;&gt;onion">
-<string field="Condiments"/>
-<string value="onion"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<equals field="count">
-<string value="0"/>
-</equals>
-</conditions>
-<trueSet>
-<set field="Condiments" expression="none">
-<string value="none"/>
-</set>
-</trueSet>
-</if>
-<set field="count" expression="0">
-<string value="0"/>
-</set>
-<if>
-<conditions>
-<mcContains field="Q9" value="a"/>
-</conditions>
-<trueSet>
-<set field="Extras" expression="sauteed onions">
-<string value="sauteed onions"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q9" value="b"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Extras"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;sauerkraut">
-<string field="Extras"/>
-<string value="sauerkraut"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q9" value="c"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Extras"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;Ranch dressing">
-<string field="Extras"/>
-<string value="Ranch dressing"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q9" value="d"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Extras"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;special sauce">
-<string field="Extras"/>
-<string value="special sauce"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<mcContains field="Q9" value="e"/>
-</conditions>
-<trueSet>
-<if>
-<conditions>
-<isGreaterThan field="count">
-<string value="0"/>
-</isGreaterThan>
-</conditions>
-<trueSet>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;&lt;&lt;separator&gt;&gt;">
-<string field="Extras"/>
-<string field="separator"/>
-</set>
-</trueSet>
-</if>
-<set field="Extras" expression="&lt;&lt;Extras&gt;&gt;deli pickle">
-<string field="Extras"/>
-<string value="deli pickle"/>
-</set>
-<set field="count" expression="&lt;&lt;count&gt;&gt; + 1">
-<add>
-<operand field="count"/>
-<operand value="1"/>
-</add>
-</set>
-</trueSet>
-</if>
-<if>
-<conditions>
-<equals field="count">
-<string value="0"/>
-</equals>
-</conditions>
-<trueSet>
-<set field="Extras" expression="none">
-<string value="none"/>
-</set>
-</trueSet>
-<falseSet>
-<set field="Extra Cost" expression="&lt;&lt;count&gt;&gt; * 0.50">
-<mul>
-<operand field="count"/>
-<operand value="0.50"/>
-</mul>
-</set>
-<set field="Cost" expression="&lt;&lt;Cost&gt;&gt; + &lt;&lt;Extra Cost&gt;&gt;">
-<add>
-<operand field="Cost"/>
-<operand field="Extra Cost"/>
-</add>
-</set>
-</falseSet>
-</if>
-<set field="Deliver" expression="no">
-<string value="no"/>
-</set>
-<if>
-<conditions>
-<mcEquals field="Q3" value="b"/>
-</conditions>
-<trueSet>
-<set field="Cost" expression="&lt;&lt;Cost&gt;&gt; + 2.50">
-<add>
-<operand field="Cost"/>
-<operand value="2.50"/>
-</add>
-</set>
-<set field="Deliver" expression="yes">
-<string value="yes"/>
-</set>
-<show document="Confirmation"/>
-<show document="Delivery"/>
-</trueSet>
-<falseSet>
-<show document="Confirmation"/>
-<show document="Pick up"/>
-</falseSet>
-</if>
-<send>
-<to addressLiteral="example@tawala.com"/>
-<subject>Sandwich Order</subject>
-<body document="Order"/>
-</send>
-</process>
-</processes>
-<documents>
-<document name="Confirmation">Thank you for your order, <field name="Name"/>.
-
-You ordered a <field name="Meat"/> sandwich on <field name="Bread"/> with <field name="Cheese"/> cheese.
-
-Condiments: <field name="Condiments"/>
-
-Extras: <field name="Extras"/>
-
-Total cost:  $<field name="Cost"/>
-
-(We will call you at <field name="Phone 1"/>-<field name="Phone 2"/> to confirm your order.)</document>
-<document name="Pick up">
-Your order will be ready for you to pick up in 20 minutes.
-
-Online Deli
-1111 Mainline Blvd.
-555-1212</document>
-<document name="Delivery">
-Your order will be deliverd to you at <field name="Address"/> within 40 minutes.
-
-Online Deli
-1111 Mainline Blvd.
-555-1212</document>
-<document name="Order">Name:  <field name="Name"/>
-
-Phone:  <field name="Phone 1"/>-<field name="Phone 2"/>
-
-Deliver?  <field name="Deliver"/>
-Address:  <field name="Address"/>
-
-Meat: <field name="Q5"/>
-Bread: <field name="Q6"/>
-Cheese: <field name="Q7"/>
-Condiments: <field name="Q8"/>
-Extras: <field name="Q9"/>
-
-Cost:  <field name="Cost"/></document>
-</documents>
-</project>
-</request>
-    ÿÿÿÿ          EProject, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null   Tawala.Proj.Project   nextFormformListnamedocumentListnextDocumentprocessListnextProcess	variables   Tawala.Proj.FormList   Tawala.Proj.DocumentList   Tawala.Proj.ProcessList   Tawala.Proj.VariableList         	      	Deli Menu	      	      	      Tawala.Proj.FormList   ComponentList`1+enableEventsCollection`1+items |System.Collections.Generic.List`1[[Tawala.Proj.Form, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	      Tawala.Proj.DocumentList   ComponentList`1+enableEventsCollection`1+items €System.Collections.Generic.List`1[[Tawala.Proj.Document, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   		      Tawala.Proj.ProcessList   ComponentList`1+enableEventsCollection`1+items System.Collections.Generic.List`1[[Tawala.Proj.Process, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	
-      Tawala.Proj.VariableList   Collection`1+items€System.Collections.Generic.List`1[[Tawala.Proj.Variable, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	      |System.Collections.Generic.List`1[[Tawala.Proj.Form, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.Form[]   	         	   €System.Collections.Generic.List`1[[Tawala.Proj.Document, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.Document[]   	         
-   System.Collections.Generic.List`1[[Tawala.Proj.Process, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.Process[]   	            €System.Collections.Generic.List`1[[Tawala.Proj.Variable, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.Variable[]   	   
-   
-             Tawala.Proj.Form   	             Tawala.Proj.Document   	   	   	   	             Tawala.Proj.Process   	             Tawala.Proj.Variable   	   	   	   	   	   	   	   	   	   	      Tawala.Proj.Form   formItemListskipToDestinationsconnectedProcessComponent+nameTawala.Proj.FormItemList   &Tawala.Proj.Form+SkipToDestinationList   Tawala.Proj.Process      	    	!   	   #   Menu   Tawala.Proj.Document   textComponent+name   $   ÷Thank you for your order, <<Name>>.
-
-You ordered a <<Meat>> sandwich on <<Bread>> with <<Cheese>> cheese.
-
-Condiments: <<Condiments>>
-
-Extras: <<Extras>>
-
-Total cost:  $<<Cost>>
-
-(We will call you at <<Phone 1>>-<<Phone 2>> to confirm your order.)%   Confirmation      &   e
-Your order will be ready for you to pick up in 20 minutes.
-
-Online Deli
-1111 Mainline Blvd.
-555-1212'   Pick up      (   o
-Your order will be deliverd to you at <<Address>> within 40 minutes.
-
-Online Deli
-1111 Mainline Blvd.
-555-1212)   Delivery      *   »Name:  <<Name>>
-
-Phone:  <<Phone 1>>-<<Phone 2>>
-
-Deliver?  <<Deliver>>
-Address:  <<Address>>
-
-Meat: <<Q5>>
-Bread: <<Q6>>
-Cheese: <<Q7>>
-Condiments: <<Q8>>
-Extras: <<Q9>>
-
-Cost:  <<Cost>>+   Order   Tawala.Proj.Process   linesComponent+nameTawala.Proj.ProcessLineList      	,   -   Process Order   Tawala.Proj.Variable   name   .   Cost      /   Meat      0   Bread      1   Cheese      2   	separator      3   count      4   
-Condiments      5   Extras      6   
-Extra Cost      7   Deliver    Tawala.Proj.FormItemList   formCollection`1+itemsTawala.Proj.Form   €System.Collections.Generic.List`1[[Tawala.Proj.FormItem, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	   	9   !   &Tawala.Proj.Form+SkipToDestinationList   Collection`1+items’System.Collections.Generic.List`1[[Tawala.Proj.Form+SkipToDestinationItem, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	:   ,   Tawala.Proj.ProcessLineList   processCollection`1+itemsTawala.Proj.Process   ƒSystem.Collections.Generic.List`1[[Tawala.Proj.ProcessLine, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   
-	;   9   €System.Collections.Generic.List`1[[Tawala.Proj.FormItem, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.FormItem[]   	<         :   ’System.Collections.Generic.List`1[[Tawala.Proj.Form+SkipToDestinationItem, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  (Tawala.Proj.Form+SkipToDestinationItem[]   	=           ;   ƒSystem.Collections.Generic.List`1[[Tawala.Proj.ProcessLine, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.ProcessLine[]   	>           <          Tawala.Proj.FormItem   	?   	@   	A   	B   	C   	D   	E   	F   	G   	H   	I   =           &Tawala.Proj.Form+SkipToDestinationItem   >          Tawala.Proj.ProcessLine   	J   	K   	L   	M   	N   	O   	P   	Q   	R   	S   	T   	U   	V   	W   	X   	Y   	Z   	[   	\   	]   	^   	_   	`   	a   	b   	c   	d   	e   	f   	g   	h   	i   	j   	k   	l   	m   	n   	o   	p   	q   	r   	s   	t   	u   	v   	w   	x   	y   	z   	{   	|   	}   	~   	   	€   	   	‚   	ƒ   	„   	…   	†   	‡   	ˆ   	‰   	Š   	‹   	Œ   	   	   	   	   	‘   	’   	“   	”   	•   	–   	—   	˜   	™   	š   	›   	œ   	   	   	Ÿ   	    	¡   	¢   	£   	¤   	¥   	¦   	§   	¨   	©   	ª   	«   	¬   	­   	®   	¯   	°   	±   	²   	³   	´   	µ   	¶   	·   	¸   	¹   	º   	»   	¼   	½   	¾   	¿   	À   	Á   	Â   	Ã   	Ä   	Å   	Æ   	Ç   	È   	É   	Ê   	Ë   	Ì   	Í   	Î   	Ï   	Ğ   	Ñ   	Ò   	Ó   	Ô   	Õ   	Ö   	×   	Ø   	Ù   	Ú   	Û   	Ü   	İ   	Ş   	ß   	à   	á   	â   	ã   	ä   	å   	æ   	ç   	è   	é   `?   Tawala.Proj.TextItem   textFormItem+id    ê   tDeli Sandwich Menu
-
-All sandwiches are $3.95 (plus extras)
-
-Fill out this form and press Submit to place your order.   @   Tawala.Proj.FibItem   	blankListtextFormItem+id Tawala.Proj.BlankList      	ë   ì   First Name: __________   A   @   	í   î   Phone ___ - ____   B   Tawala.Proj.MCItem   
-choiceListselectOnlyOnerequireAtLeastOnetextFormItem+id   Tawala.Proj.ChoiceList      	ï    ğ   MWill you be picking up this order, or would you like us to deliver it to you?   C   @   	ñ   ò   -Address for delivery: _______________________   D   ?   ó   
-Your order:
-   E   B   	ô    õ   Meat:   F   B   	ö    ÷   Bread:   G   B   	ø    ù   Cheese:	   H   B   	ú     û   Condiments:
-   I   B   	ü     ı   Extras (50 cents each):   J   Tawala.Proj.SetLine   text	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.SetStatement   Tawala.Proj.ProcessStatement      ş   Set Cost to 3.95	ÿ   
-     K   J      Set Meat to "meatless"	  
-     L   Tawala.Proj.IfLine   text	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.IfStatement   Tawala.Proj.IfStatement        If Q5 equals a	  	      M   Tawala.Proj.BlockOpenLine	   	xmlStringtext	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.ProcessStatement   Tawala.Proj.IfStatement        	<trueSet>  (
-	         N   J     Set Meat to "roast beef"	  
-     O   Tawala.Proj.BlockCloseLine	   	xmlStringtext	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.ProcessStatement   Tawala.Proj.IfStatement      	  </trueSet>
-</if>
-  )
-	        P   L     If Q5 equals b	  	      Q   M   	  	  
-	         R   J     Set Meat to "turkey"	  
-     S   O   		  	
-  
-	        T   L     If Q5 equals c	  	      U   M   	  	  
-	         V   J     Set Meat to "ham"	  
-     W   O   		  	
-  
-	        X   L      If Q5 equals d	!  	!      Y   M   	  	  
-	!         Z   J   %  Set Meat to "salami"	&  
-     [   O   		  	
-  
-	!        \   J   *  Set Bread to "white"	+  
-     ]   L   ,  If Q6 equals b	-  	-      ^   M   	  	  
-	-         _   J   1  Set Bread to "whole wheat"	2  
-     `   O   		  	
-  
-	-        a   L   6  If Q6 equals c	7  	7      b   M   	  	  
-	7         c   J   ;  Set Bread to "sourdough"	<  
-     d   O   		  	
-  
-	7        e   L   @  If Q6 equals d	A  	A      f   M   	  	  
-	A         g   J   E  Set Bread to "rye"	F  
-     h   O   		  	
-  
-	A        i   J   J  Set Cheese to "no"	K  
-     j   L   L  If Q7 equals a	M  	M      k   M   	  	  
-	M         l   J   Q  Set Cheese to "American"	R  
-     m   O   		  	
-  
-	M        n   L   V  If Q7 equals b	W  	W      o   M   	  	  
-	W         p   J   [  Set Cheese to "cheddar"	\  
-     q   O   		  	
-  
-	W        r   L   `  If Q7 equals c	a  	a      s   M   	  	  
-	a         t   J   e  Set Cheese to "Swiss"	f  
-     u   O   		  	
-  
-	a        v   L   j  If Q7 equals d	k  	k      w   M   	  	  
-	k         x   J   o  Set Cheese to "Jack"	p  
-     y   O   		  	
-  
-	k        z   J   t  Set separator to ", "	u  
-     {   J   v  Set count to 0	w  
-     |   L   x  If Q8 contains a	y  	y      }   M   	  	  
-	y         ~   J   }  Set Condiments to "mayo"	~  
-        J     Set count to <<count>> + 1	€  
-     €   O   		  	
-  
-	y           L   „  If Q8 contains b	…  	…      ‚   M   	  	  
-	…         ƒ   L   ‰  If count is greater than 0	Š  	Š      „   M   	  	  
-	Š         …   J     -Set Condiments to <<Condiments>><<separator>>	  
-     †   O   		  	
-  
-	Š        ‡   J   “  )Set Condiments to "<<Condiments>>mustard"	”  
-     ˆ   J   •  Set count to <<count>> + 1	–  
-     ‰   O   		  	
-  
-	…        Š   L   š  If Q8 contains c	›  	›      ‹   M   	  	  
-	›         Œ   L   Ÿ  If count is greater than 0	   	          M   	  	  
-	             J   ¤  -Set Condiments to <<Condiments>><<separator>>	¥  
-        O   		  	
-  
-	            J   ©  )Set Condiments to "<<Condiments>>lettuce"	ª  
-     ‘   J   «  Set count to <<count>> + 1	¬  
-     ’   O   		  	
-  
-	›        “   L   °  If Q8 contains d	±  	±      ”   M   	  	  
-	±         •   L   µ  If count is greater than 0	¶  	¶      –   M   	  	  
-	¶         —   J   º  -Set Condiments to <<Condiments>><<separator>>	»  
-     ˜   O   		  	
-  
-	¶        ™   J   ¿  (Set Condiments to "<<Condiments>>tomato"	À  
-     š   J   Á  Set count to <<count>> + 1	Â  
-     ›   O   		  	
-  
-	±        œ   L   Æ  If Q8 contains e	Ç  	Ç         M   	  	  
-	Ç            L   Ë  If count is greater than 0	Ì  	Ì      Ÿ   M   	  	  
-	Ì             J   Ğ  -Set Condiments to <<Condiments>><<separator>>	Ñ  
-     ¡   O   		  	
-  
-	Ì        ¢   J   Õ  'Set Condiments to "<<Condiments>>onion"	Ö  
-     £   J   ×  Set count to <<count>> + 1	Ø  
-     ¤   O   		  	
-  
-	Ç        ¥   L   Ü  If count equals 0	İ  	İ      ¦   M   	  	  
-	İ         §   J   á  Set Condiments to "none"	â  
-     ¨   O   		  	
-  
-	İ        ©   J   æ  Set count to 0	ç  
-     ª   L   è  If Q9 contains a	é  	é      «   M   	  	  
-	é         ¬   J   í  Set Extras to "sauteed onions"	î  
-     ­   J   ï  Set count to <<count>> + 1	ğ  
-     ®   O   		  	
-  
-	é        ¯   L   ô  If Q9 contains b	õ  	õ      °   M   	  	  
-	õ         ±   L   ù  If count is greater than 0	ú  	ú      ²   M   	  	  
-	ú         ³   J   ş  %Set Extras to <<Extras>><<separator>>	ÿ  
-     ´   O   		  	
-  
-	ú        µ   J     $Set Extras to "<<Extras>>sauerkraut"	  
-     ¶   J     Set count to <<count>> + 1	  
-     ·   O   		  	
-  
-	õ        ¸   L   
-  If Q9 contains c	  	      ¹   M   	  	  
-	         º   L     If count is greater than 0	  	      »   M   	  	  
-	         ¼   J     %Set Extras to <<Extras>><<separator>>	  
-     ½   O   		  	
-  
-	        ¾   J     (Set Extras to "<<Extras>>Ranch dressing"	  
-     ¿   J     Set count to <<count>> + 1	  
-     À   O   		  	
-  
-	        Á   L      If Q9 contains d	!  	!      Â   M   	  	  
-	!         Ã   L   %  If count is greater than 0	&  	&      Ä   M   	  	  
-	&         Å   J   *  %Set Extras to <<Extras>><<separator>>	+  
-     Æ   O   		  	
-  
-	&        Ç   J   /  'Set Extras to "<<Extras>>special sauce"	0  
-     È   J   1  Set count to <<count>> + 1	2  
-     É   O   		  	
-  
-	!        Ê   L   6  If Q9 contains e	7  	7      Ë   M   	  	  
-	7         Ì   L   ;  If count is greater than 0	<  	<      Í   M   	  	  
-	<         Î   J   @  %Set Extras to <<Extras>><<separator>>	A  
-     Ï   O   		  	
-  
-	<        Ğ   J   E  %Set Extras to "<<Extras>>deli pickle"	F  
-     Ñ   J   G  Set count to <<count>> + 1	H  
-     Ò   O   		  	
-  
-	7        Ó   L   L  If count equals 0	M  	M      Ô   M   	  	  
-	M         Õ   J   Q  Set Extras to "none"	R  
-     Ö   O   S  
-</trueSet>	
-  
-	M        ×   Tawala.Proj.OtherwiseLine   text	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.ProcessStatement   Tawala.Proj.IfStatement      V  	Otherwise
-	M          Ø   M   X  
-<falseSet>	  
-	M         Ù   J   [  "Set Extra Cost to <<count>> * 0.50	\  
-     Ú   J   ]  %Set Cost to <<Cost>> + <<Extra Cost>>	^  
-     Û   O   _  </falseSet>
-</if>	
-  
-	M        Ü   J   b  Set Deliver to "no"	c  
-     İ   L   d  If Q3 equals b	e  	e      Ş   M   	  	  
-	e         ß   J   i  Set Cost to <<Cost>> + 2.50	j  
-     à   J   k  Set Deliver to "yes"	l  
-     á   Tawala.Proj.ShowLine   text	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.ShowStatement   Tawala.Proj.ProcessStatement      m  Show Document Confirmation	n  
-     â   á   o  Show Document Delivery	p  
-     ã   O   	S  	
-  
-	e        ä   ×   	V  
-	e          å   M   	X  	  
-	e         æ   á   y  Show Document Confirmation	z  
-     ç   á   {  Show Document Pick up	|  
-     è   O   	_  	
-  
-	e        é   Tawala.Proj.SendLine   text	statementgroupselectsGroupisDeletableisSelectablecanInsertBeforeindentLevel     Tawala.Proj.SendStatement   Tawala.Proj.ProcessStatement      €  "Send Order to "example@tawala.com"	  
-     ë   Tawala.Proj.BlankList   Collection`1+items}System.Collections.Generic.List`1[[Tawala.Proj.Blank, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	‚  í   ë   	ƒ  ï   Tawala.Proj.ChoiceList   Collection`1+items~System.Collections.Generic.List`1[[Tawala.Proj.Choice, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	„  ñ   ë   	…  ô   ï   	†  ö   ï   	‡  ø   ï   	ˆ  ú   ï   	‰  ü   ï   	Š  ÿ   Tawala.Proj.SetStatement   variableString
-expressionnamestatuslistTawala.Proj.Expression   ,Tawala.Proj.ProcessStatement+StatementStatus   Tawala.Proj.StatementList      	.   	Œ    Setrıÿÿ,Tawala.Proj.ProcessStatement+StatementStatus   value__        
-  ÿ   	/   	  	  nıÿÿrıÿÿ    
-  Tawala.Proj.IfStatement   
-conditionshasOtherwisenamestatuslist Tawala.Proj.Condition   ,Tawala.Proj.ProcessStatement+StatementStatus   Tawala.Proj.StatementList      	“   ”  Ifkıÿÿrıÿÿ    
-  ÿ   –  Meat	—  	  gıÿÿrıÿÿ    
-    	š   	”  dıÿÿrıÿÿ    
-  ÿ     Meat	  	  `ıÿÿrıÿÿ    
-    	¡   	”  ]ıÿÿrıÿÿ    
-  ÿ   ¤  Meat	¥  	  Yıÿÿrıÿÿ    
-!    	¨   	”  Vıÿÿrıÿÿ    
-&  ÿ   «  Meat	¬  	  Rıÿÿrıÿÿ    
-+  ÿ   	0   	°  	  Nıÿÿrıÿÿ    
--    	³   	”  Kıÿÿrıÿÿ    
-2  ÿ   ¶  Bread	·  	  Gıÿÿrıÿÿ    
-7    	º   	”  Dıÿÿrıÿÿ    
-<  ÿ   ½  Bread	¾  	  @ıÿÿrıÿÿ    
-A    	Á   	”  =ıÿÿrıÿÿ    
-F  ÿ   Ä  Bread	Å  	  9ıÿÿrıÿÿ    
-K  ÿ   	1   	É  	  5ıÿÿrıÿÿ    
-M    	Ì   	”  2ıÿÿrıÿÿ    
-R  ÿ   Ï  Cheese	Ğ  	  .ıÿÿrıÿÿ    
-W    	Ó   	”  +ıÿÿrıÿÿ    
-\  ÿ   Ö  Cheese	×  	  'ıÿÿrıÿÿ    
-a    	Ú   	”  $ıÿÿrıÿÿ    
-f  ÿ   İ  Cheese	Ş  	   ıÿÿrıÿÿ    
-k    	á   	”  ıÿÿrıÿÿ    
-p  ÿ   ä  Cheese	å  	  ıÿÿrıÿÿ    
-u  ÿ   	2   	é  	  ıÿÿrıÿÿ    
-w  ÿ   	3   	í  	  ıÿÿrıÿÿ    
-y    	ğ   	”  ıÿÿrıÿÿ    
-~  ÿ   	4   	ô  	  
-ıÿÿrıÿÿ    
-€  ÿ   ÷  count	ø  	  ıÿÿrıÿÿ   
-…    	û   	”  ıÿÿrıÿÿ    
-Š    	ş   	”   ıÿÿrıÿÿ    
-  ÿ     
-Condiments	  	  üüÿÿrıÿÿ   
-”  ÿ     
-Condiments	  	  øüÿÿrıÿÿ   
-–  ÿ   	  count	
-  	  ôüÿÿrıÿÿ   
-›    	   	”  ñüÿÿrıÿÿ    
-     	   	”  îüÿÿrıÿÿ    
-¥  ÿ     
-Condiments	  	  êüÿÿrıÿÿ   
-ª  ÿ     
-Condiments	  	  æüÿÿrıÿÿ   
-¬  ÿ     count	  	  âüÿÿrıÿÿ   
-±    	   	”  ßüÿÿrıÿÿ    
-¶    	"   	”  Üüÿÿrıÿÿ    
-»  ÿ   %  
-Condiments	&  	  Øüÿÿrıÿÿ   
-À  ÿ   )  
-Condiments	*  	  Ôüÿÿrıÿÿ   
-Â  ÿ   -  count	.  	  Ğüÿÿrıÿÿ   
-Ç    	1   	”  Íüÿÿrıÿÿ    
-Ì    	4   	”  Êüÿÿrıÿÿ    
-Ñ  ÿ   7  
-Condiments	8  	  Æüÿÿrıÿÿ   
-Ö  ÿ   ;  
-Condiments	<  	  Âüÿÿrıÿÿ   
-Ø  ÿ   ?  count	@  	  ¾üÿÿrıÿÿ   
-İ    	C   	”  »üÿÿrıÿÿ    
-â  ÿ   F  
-Condiments	G  	  ·üÿÿrıÿÿ    
-ç  ÿ   J  count	K  	  ³üÿÿrıÿÿ    
-é    	N   	”  °üÿÿrıÿÿ    
-î  ÿ   	5   	R  	  ¬üÿÿrıÿÿ    
-ğ  ÿ   U  count	V  	  ¨üÿÿrıÿÿ   
-õ    	Y   	”  ¥üÿÿrıÿÿ    
-ú    	\   	”  ¢üÿÿrıÿÿ    
-ÿ  ÿ   _  Extras	`  	  üÿÿrıÿÿ   
-  ÿ   c  Extras	d  	  šüÿÿrıÿÿ   
-  ÿ   g  count	h  	  –üÿÿrıÿÿ   
-    	k   	”  “üÿÿrıÿÿ    
-    	n   	”  üÿÿrıÿÿ    
-  ÿ   q  Extras	r  	  Œüÿÿrıÿÿ   
-  ÿ   u  Extras	v  	  ˆüÿÿrıÿÿ   
-  ÿ   y  count	z  	  „üÿÿrıÿÿ   
-!    	}   	”  üÿÿrıÿÿ    
-&    	€   	”  ~üÿÿrıÿÿ    
-+  ÿ   ƒ  Extras	„  	  züÿÿrıÿÿ   
-0  ÿ   ‡  Extras	ˆ  	  vüÿÿrıÿÿ   
-2  ÿ   ‹  count	Œ  	  rüÿÿrıÿÿ   
-7    	   	”  oüÿÿrıÿÿ    
-<    	’   	”  lüÿÿrıÿÿ    
-A  ÿ   •  Extras	–  	  hüÿÿrıÿÿ   
-F  ÿ   ™  Extras	š  	  düÿÿrıÿÿ   
-H  ÿ     count	  	  `üÿÿrıÿÿ   
-M    	¡  	”  ]üÿÿrıÿÿ    
-R  ÿ   ¤  Extras	¥  	  Yüÿÿrıÿÿ    
-\  ÿ   	6   	©  	  Uüÿÿrıÿÿ   
-^  ÿ   ¬  Cost	­  	  Qüÿÿrıÿÿ   
-c  ÿ   	7   	±  	  Müÿÿrıÿÿ    
-e    	´  	”  Jüÿÿrıÿÿ    
-j  ÿ   ·  Cost	¸  	  Füÿÿrıÿÿ   
-l  ÿ   »  Deliver	¼  	  Büÿÿrıÿÿ    
-n  Tawala.Proj.ShowStatement   	componentnamestatuslistTawala.Proj.Document   ,Tawala.Proj.ProcessStatement+StatementStatus   Tawala.Proj.StatementList      	¿  À  Show?üÿÿrıÿÿ    
-p  n  	Â  	À  <üÿÿrıÿÿ    
-z  n  	Å  	À  9üÿÿrıÿÿ    
-|  n  	È  	À  6üÿÿrıÿÿ    
-  Tawala.Proj.SendStatement	   	addressTo	addressCcsubjectbodyformatbodyDocumentnamestatuslistTawala.Proj.FieldOrLiteral   Tawala.Proj.FieldOrLiteral   $Tawala.Proj.SendStatement+FormatType   Tawala.Proj.Document   ,Tawala.Proj.ProcessStatement+StatementStatus   Tawala.Proj.StatementList      	Ë  	Ì  Í  Sandwich OrderÎ   1üÿÿ$Tawala.Proj.SendStatement+FormatType   value__       	Ğ  Ñ  Send.üÿÿrıÿÿ    
-‚  }System.Collections.Generic.List`1[[Tawala.Proj.Blank, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.Blank[]   	Ó        ƒ  ‚  	Ô        „  ~System.Collections.Generic.List`1[[Tawala.Proj.Choice, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.Choice[]   	Õ        …  ‚  	Ö        †  „  	×        ‡  „  	Ø        ˆ  „  	Ù        ‰  „  	Ú        Š  „  	Û        Œ  Tawala.Proj.Expression   elements!Tawala.Proj.ExpressionElementList      	Ü    Œ  	İ  “  Tawala.Proj.Condition   compOpfieldStringfield
-expressionTawala.Proj.MCManyOperator   Tawala.Proj.Field   Tawala.Proj.FieldOrLiteral      	Ş  ß  Q5	à  	á  —  Œ  	â  š  “  	Ş  ä  Q5	å  	æ    Œ  	ç  ¡  “  	Ş  é  Q5	ê  	ë  ¥  Œ  	ì  ¨  “  	Ş  î  Q5	ï  	ğ  ¬  Œ  	ñ  °  Œ  	ò  ³  “  	Ş  ô  Q6	õ  	ö  ·  Œ  	÷  º  “  	Ş  ù  Q6	ú  	û  ¾  Œ  	ü  Á  “  	Ş  ş  Q6	ÿ  	   Å  Œ  	  É  Œ  	  Ì  “  	Ş    Q7	  	  Ğ  Œ  	  Ó  “  	Ş  	  Q7	
-  	  ×  Œ  	  Ú  “  	Ş    Q7	  	  Ş  Œ  	  á  “  	Ş    Q7	  	  å  Œ  	  é  Œ  	  í  Œ  	  ğ  “  	    Q8	  	  ô  Œ  	  ø  Œ  	  û  “  	     Q8	!  	"  ş  “  	#  $  count	%  	&    Œ  	'    Œ  	(  
-  Œ  	)    “  	  +  Q8	,  	-    “  	#  /  count	0  	1    Œ  	2    Œ  	3    Œ  	4    “  	  6  Q8	7  	8  "  “  	#  :  count	;  	<  &  Œ  	=  *  Œ  	>  .  Œ  	?  1  “  	  A  Q8	B  	C  4  “  	#  E  count	F  	G  8  Œ  	H  <  Œ  	I  @  Œ  	J  C  “  	K  L  count	M  	N  G  Œ  	O  K  Œ  	P  N  “  	  R  Q9	S  	T  R  Œ  	U  V  Œ  	V  Y  “  	  X  Q9	Y  	Z  \  “  	#  \  count	]  	^  `  Œ  	_  d  Œ  	`  h  Œ  	a  k  “  	  c  Q9	d  	e  n  “  	#  g  count	h  	i  r  Œ  	j  v  Œ  	k  z  Œ  	l  }  “  	  n  Q9	o  	p  €  “  	#  r  count	s  	t  „  Œ  	u  ˆ  Œ  	v  Œ  Œ  	w    “  	  y  Q9	z  	{  ’  “  	#  }  count	~  	  –  Œ  	€  š  Œ  	    Œ  	‚  ¡  “  	K  „  count	…  	†  ¥  Œ  	‡  ©  Œ  	ˆ  ­  Œ  	‰  ±  Œ  	Š  ´  “  	Ş  Œ  Q3	  	  ¸  Œ  	  ¼  Œ  	  ¿     ‘  ÷Thank you for your order, <<Name>>.
-
-You ordered a <<Meat>> sandwich on <<Bread>> with <<Cheese>> cheese.
-
-Condiments: <<Condiments>>
-
-Extras: <<Extras>>
-
-Total cost:  $<<Cost>>
-
-(We will call you at <<Phone 1>>-<<Phone 2>> to confirm your order.)’  ConfirmationÂ     “  o
-Your order will be deliverd to you at <<Address>> within 40 minutes.
-
-Online Deli
-1111 Mainline Blvd.
-555-1212”  DeliveryÅ     •  ÷Thank you for your order, <<Name>>.
-
-You ordered a <<Meat>> sandwich on <<Bread>> with <<Cheese>> cheese.
-
-Condiments: <<Condiments>>
-
-Extras: <<Extras>>
-
-Total cost:  $<<Cost>>
-
-(We will call you at <<Phone 1>>-<<Phone 2>> to confirm your order.)–  ConfirmationÈ     —  e
-Your order will be ready for you to pick up in 20 minutes.
-
-Online Deli
-1111 Mainline Blvd.
-555-1212˜  Pick upË  Tawala.Proj.FieldOrLiteral   typetext
-expression%Tawala.Proj.FieldOrLiteral+StringType   Tawala.Proj.Expression      gûÿÿ%Tawala.Proj.FieldOrLiteral+StringType   value__        š  example@tawala.com	›  Ì  Ë  dûÿÿgûÿÿ       	  Ğ     	     OrderÓ         Tawala.Proj.Blank   	¡  Ô         Tawala.Proj.Blank   	¢  	£  Õ         Tawala.Proj.Choice   	¤  	¥  Ö         Tawala.Proj.Blank   	¦  ×         Tawala.Proj.Choice   	§  	¨  	©  	ª  	«  Ø         Tawala.Proj.Choice   	¬  	­  	®  	¯  Ù         Tawala.Proj.Choice   	°  	±  	²  	³  	´  Ú         Tawala.Proj.Choice   	µ  	¶  	·  	¸  	¹  Û         Tawala.Proj.Choice   	º  	»  	¼  	½  	¾  Ü  !Tawala.Proj.ExpressionElementList   Collection`1+items‰System.Collections.Generic.List`1[[Tawala.Proj.ExpressionElement, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   	¿  İ  Ü  	À  Ş  Tawala.Proj.MCManyOperator   OpTawala.Proj.MCManyOperator+Ops      ?ûÿÿTawala.Proj.MCManyOperator+Ops   value__        à  Tawala.Proj.Field   namefieldString
-formItemIdxmlFieldTag    	ß  Ã  <<Q5>>    Ä  <field name="$FIELDNAME"/>
-á  Ë  ;ûÿÿgûÿÿ    Æ  a	Ç  â  Ü  	È  å  à  	ä  Ê  <<Q5>>    	Ä  æ  Ë  4ûÿÿgûÿÿ    Í  b	Î  ç  Ü  	Ï  ê  à  	é  Ñ  <<Q5>>    	Ä  ë  Ë  -ûÿÿgûÿÿ    Ô  c	Õ  ì  Ü  	Ö  ï  à  	î  Ø  <<Q5>>    	Ä  ğ  Ë  &ûÿÿgûÿÿ    Û  d	Ü  ñ  Ü  	İ  ò  Ü  	Ş  õ  à  	ô  à  <<Q6>>    	Ä  ö  Ë  ûÿÿgûÿÿ    ã  b	ä  ÷  Ü  	å  ú  à  	ù  ç  <<Q6>>    	Ä  û  Ë  ûÿÿgûÿÿ    ê  c	ë  ü  Ü  	ì  ÿ  à  	ş  î  <<Q6>>    	Ä     Ë  ûÿÿgûÿÿ    ñ  d	ò    Ü  	ó    Ü  	ô    à  	  ö  <<Q7>>    	Ä    Ë  ûÿÿgûÿÿ    ù  a	ú    Ü  	û  
-  à  		  ı  <<Q7>>    	Ä    Ë  ûÿÿgûÿÿ       b	    Ü  	    à  	    <<Q7>>    	Ä    Ë  úúÿÿgûÿÿ      c	    Ü  		    à  	    <<Q7>>    	Ä    Ë  óúÿÿgûÿÿ      d	    Ü  	    Ü  	    Ü  	    Ş  íúÿÿ?ûÿÿ     à  	    <<Q8>>    	Ä    Ë  éúÿÿgûÿÿ      a	    Ü  	    Ü  	  !  à  	     <<Q8>>    	Ä  "  Ë  áúÿÿgûÿÿ       b	!  #  Tawala.Proj.HybridOperator   OpTawala.Proj.HybridOperator+Ops      ŞúÿÿTawala.Proj.HybridOperator+Ops   value__       %  à  	$  $  	<<count>>    	Ä  &  Ë  Úúÿÿgûÿÿ    '  0	(  '  Ü  	)  (  Ü  	*  )  Ü  	+  ,  à  	+  -  <<Q8>>    	Ä  -  Ë  Ñúÿÿgûÿÿ    0  c	1  0  à  	/  3  	<<count>>    	Ä  1  Ë  Ëúÿÿgûÿÿ    6  0	7  2  Ü  	8  3  Ü  	9  4  Ü  	:  7  à  	6  <  <<Q8>>    	Ä  8  Ë  Âúÿÿgûÿÿ    ?  d	@  ;  à  	:  B  	<<count>>    	Ä  <  Ë  ¼úÿÿgûÿÿ    E  0	F  =  Ü  	G  >  Ü  	H  ?  Ü  	I  B  à  	A  K  <<Q8>>    	Ä  C  Ë  ³úÿÿgûÿÿ    N  e	O  F  à  	E  Q  	<<count>>    	Ä  G  Ë  ­úÿÿgûÿÿ    T  0	U  H  Ü  	V  I  Ü  	W  J  Ü  	X  K  #  §úÿÿŞúÿÿ    M  à  	L  [  	<<count>>    	Ä  N  Ë  £úÿÿgûÿÿ    ^  0	_  O  Ü  	`  P  Ü  	a  S  à  	R  c  <<Q9>>    	Ä  T  Ë  ›úÿÿgûÿÿ    f  a	g  U  Ü  	h  V  Ü  	i  Y  à  	X  k  <<Q9>>    	Ä  Z  Ë  “úÿÿgûÿÿ    n  b	o  ]  à  	\  q  	<<count>>    	Ä  ^  Ë  úÿÿgûÿÿ    t  0	u  _  Ü  	v  `  Ü  	w  a  Ü  	x  d  à  	c  z  <<Q9>>    	Ä  e  Ë  „úÿÿgûÿÿ    }  c	~  h  à  	g  €  	<<count>>    	Ä  i  Ë  ~úÿÿgûÿÿ    ƒ  0	„  j  Ü  	…  k  Ü  	†  l  Ü  	‡  o  à  	n  ‰  <<Q9>>    	Ä  p  Ë  uúÿÿgûÿÿ    Œ  d	  s  à  	r    	<<count>>    	Ä  t  Ë  oúÿÿgûÿÿ    ’  0	“  u  Ü  	”  v  Ü  	•  w  Ü  	–  z  à  	y  ˜  <<Q9>>    	Ä  {  Ë  fúÿÿgûÿÿ    ›  e	œ  ~  à  	}    	<<count>>    	Ä    Ë  `úÿÿgûÿÿ    ¡  0	¢  €  Ü  	£    Ü  	¤  ‚  Ü  	¥  …  à  	„  §  	<<count>>    	Ä  †  Ë  Wúÿÿgûÿÿ    ª  0	«  ‡  Ü  	¬  ˆ  Ü  	­  ‰  Ü  	®  Š  Ü  	¯    à  	Œ  ±  <<Q3>>    	Ä    Ë  Múÿÿgûÿÿ    ´  b	µ    Ü  	¶    Ü  	·  ›  Œ  	¸    Œ  	¹  ¡  Tawala.Proj.Blank   lengthalternateLabel    
-   º  Name¢  ¡     »  Phone 1£  ¡     ¼  Phone 2¤  Tawala.Proj.Choice   text   ½  Pick up¥  ¤  ¾  0Delivery (be sure to complete the address below)¦  ¡     ¿  Address§  ¤  À  
-Roast beef¨  ¤  Á  Turkey©  ¤  Â  Hamª  ¤  Ã  Salami«  ¤  Ä  None¬  ¤  Å  White­  ¤  Æ  Whole wheat®  ¤  Ç  	Sourdough¯  ¤  È  Rye°  ¤  É  American±  ¤  Ê  Cheddar²  ¤  Ë  Swiss³  ¤  Ì  Jack´  ¤  Í  Noneµ  ¤  Î  
-Mayonnaise¶  ¤  Ï  Mustard·  ¤  Ğ  Lettuce¸  ¤  Ñ  Tomato¹  ¤  Ò  Onionº  ¤  Ó  Sauteed onions»  ¤  Ô  
-Sauerkraut¼  ¤  Õ  Ranch dressing½  ¤  Ö  Special sauce¾  ¤  ×  Deli pickle¿  ‰System.Collections.Generic.List`1[[Tawala.Proj.ExpressionElement, Project, Version=0.1.2071.18956, Culture=neutral, PublicKeyToken=null]]   _items_size_version  Tawala.Proj.ExpressionElement[]   	Ø        À  ¿  	Ù        Ç  Œ  	Ú  È  ¿  	Û        Î  Œ  	Ü  Ï  ¿  	İ        Õ  Œ  	Ş  Ö  ¿  	ß        Ü  Œ  	à  İ  ¿  	á        Ş  ¿  	â        ä  Œ  	ã  å  ¿  	ä        ë  Œ  	å  ì  ¿  	æ        ò  Œ  	ç  ó  ¿  	è        ô  ¿  	é        ú  Œ  	ê  û  ¿  	ë          Œ  	ì    ¿  	í          Œ  	î  	  ¿  	ï          Œ  	ğ    ¿  	ñ          ¿  	ò          ¿  	ó          Œ  	ô    ¿  	õ          ¿  	ö        !  Œ  	÷  (  Œ  	ø  )  ¿  	ù        *  ¿  	ú        +  ¿  	û        1  Œ  	ü  7  Œ  	ı  8  ¿  	ş        9  ¿  	ÿ        :  ¿  	         @  Œ  	  F  Œ  	  G  ¿  	        H  ¿  	        I  ¿  	        O  Œ  	  U  Œ  	  V  ¿  	        W  ¿  		        X  ¿  	
-        _  Œ  	  `  ¿  	        a  ¿  	        g  Œ  	  h  ¿  	        i  ¿  	        o  Œ  	  u  Œ  	  v  ¿  	        w  ¿  	        x  ¿  	        ~  Œ  	  „  Œ  	  …  ¿  	        †  ¿  	        ‡  ¿  	          Œ  	  “  Œ  	  ”  ¿  	        •  ¿  	        –  ¿  	        œ  Œ  	   ¢  Œ  	!  £  ¿  	"        ¤  ¿  	#        ¥  ¿  	$        «  Œ  	%  ¬  ¿  	&        ­  ¿  	'        ®  ¿  	(        ¯  ¿  	)        µ  Œ  	*  ¶  ¿  	+        ·  ¿  	,        ¸  Ü  	-  ¹  Ü  	.  Ø         Tawala.Proj.ExpressionElement   	/  Ù         Tawala.Proj.ExpressionElement   	0  Ú  Ü  	1  Û         Tawala.Proj.ExpressionElement   	2  Ü  Ü  	3  İ         Tawala.Proj.ExpressionElement   	4  Ş  Ü  	5  ß         Tawala.Proj.ExpressionElement   	6  à  Ü  	7  á         Tawala.Proj.ExpressionElement   	8  â         Tawala.Proj.ExpressionElement   	9  ã  Ü  	:  ä         Tawala.Proj.ExpressionElement   	;  å  Ü  	<  æ         Tawala.Proj.ExpressionElement   	=  ç  Ü  	>  è         Tawala.Proj.ExpressionElement   	?  é         Tawala.Proj.ExpressionElement   	@  ê  Ü  	A  ë         Tawala.Proj.ExpressionElement   	B  ì  Ü  	C  í         Tawala.Proj.ExpressionElement   	D  î  Ü  	E  ï         Tawala.Proj.ExpressionElement   	F  ğ  Ü  	G  ñ         Tawala.Proj.ExpressionElement   	H  ò         Tawala.Proj.ExpressionElement   	I  ó         Tawala.Proj.ExpressionElement   	J  ô  Ü  	K  õ         Tawala.Proj.ExpressionElement   	L  ö         Tawala.Proj.ExpressionElement   	M  	N  ÷  Ü  	O  ø  Ü  	P  ù         Tawala.Proj.ExpressionElement   	Q  	R  ú         Tawala.Proj.ExpressionElement   	S  	T  û         Tawala.Proj.ExpressionElement   	U  	V  ü  Ü  	W  ı  Ü  	X  ş         Tawala.Proj.ExpressionElement   	Y  	Z  ÿ         Tawala.Proj.ExpressionElement   	[  	\            Tawala.Proj.ExpressionElement   	]  	^    Ü  	_    Ü  	`           Tawala.Proj.ExpressionElement   	a  	b           Tawala.Proj.ExpressionElement   	c  	d           Tawala.Proj.ExpressionElement   	e  	f    Ü  	g    Ü  	h           Tawala.Proj.ExpressionElement   	i  	j  	         Tawala.Proj.ExpressionElement   	k  	l  
-         Tawala.Proj.ExpressionElement   	m  	n    Ü  	o           Tawala.Proj.ExpressionElement   	p           Tawala.Proj.ExpressionElement   	q    Ü  	r           Tawala.Proj.ExpressionElement   	s           Tawala.Proj.ExpressionElement   	t  	u    Ü  	v    Ü  	w           Tawala.Proj.ExpressionElement   	x  	y           Tawala.Proj.ExpressionElement   	z  	{           Tawala.Proj.ExpressionElement   	|  	}    Ü  	~    Ü  	           Tawala.Proj.ExpressionElement   	€  	           Tawala.Proj.ExpressionElement   	‚  	ƒ           Tawala.Proj.ExpressionElement   	„  	…    Ü  	†    Ü  	‡           Tawala.Proj.ExpressionElement   	ˆ  	‰           Tawala.Proj.ExpressionElement   	Š  	‹           Tawala.Proj.ExpressionElement   	Œ  	     Ü  	  !  Ü  	  "         Tawala.Proj.ExpressionElement   	  	‘  #         Tawala.Proj.ExpressionElement   	’  	“  $         Tawala.Proj.ExpressionElement   	”  	•  %  Ü  	–  &         Tawala.Proj.ExpressionElement   	—  '         Tawala.Proj.ExpressionElement   	˜  	™  (         Tawala.Proj.ExpressionElement   	š  	›  	œ  
-)         Tawala.Proj.ExpressionElement   	  *  Ü  	  +         Tawala.Proj.ExpressionElement   	Ÿ  	   ,         Tawala.Proj.ExpressionElement   	¡  -  ¿  	¢          .  ¿  	¢          /  Tawala.Proj.StringElement   fieldString   £  3.950  /  ¤  meatless1  ¿  	¢          2  /  ¦  
-roast beef3  ¿  	¢          4  /  ¨  turkey5  ¿  	¢          6  /  ª  ham7  ¿  	¢          8  /  ¬  salami9  /  ­  white:  ¿  	¢          ;  /  ¯  whole wheat<  ¿  	¢          =  /  ±  	sourdough>  ¿  	¢          ?  /  ³  rye@  /  ´  noA  ¿  	¢          B  /  ¶  AmericanC  ¿  	¢          D  /  ¸  cheddarE  ¿  	¢          F  /  º  SwissG  ¿  	¢          H  /  ¼  JackI  /  ½  , J  /  ¾  0K  ¿  	¢          L  /  À  mayoM  Tawala.Proj.FieldElement   fieldTawala.Proj.Field      	Á  N  /  Â   + 1O  ¿  	¢          P  ¿  	¢          Q  M  	Ä  R  M  	Å  S  M  	Æ  T  /  Ç  mustardU  M  	È  V  /  É   + 1W  ¿  	¢          X  ¿  	¢          Y  M  	Ë  Z  M  	Ì  [  M  	Í  \  /  Î  lettuce]  M  	Ï  ^  /  Ğ   + 1_  ¿  	¢          `  ¿  	¢          a  M  	Ò  b  M  	Ó  c  M  	Ô  d  /  Õ  tomatoe  M  	Ö  f  /  ×   + 1g  ¿  	¢          h  ¿  	¢          i  M  	Ù  j  M  	Ú  k  M  	Û  l  /  Ü  onionm  M  	İ  n  /  Ş   + 1o  ¿  	¢          p  /  à  noneq  /  á  0r  ¿  	¢          s  /  ã  sauteed onionst  M  	ä  u  /  å   + 1v  ¿  	¢          w  ¿  	¢          x  M  	ç  y  M  	è  z  M  	é  {  /  ê  
-sauerkraut|  M  	ë  }  /  ì   + 1~  ¿  	¢            ¿  	¢          €  M  	î    M  	ï  ‚  M  	ğ  ƒ  /  ñ  Ranch dressing„  M  	ò  …  /  ó   + 1†  ¿  	¢          ‡  ¿  	¢          ˆ  M  	õ  ‰  M  	ö  Š  M  	÷  ‹  /  ø  special sauceŒ  M  	ù    /  ú   + 1  ¿  	¢            ¿  	¢            M  	ü  ‘  M  	ı  ’  M  	ş  “  /  ÿ  deli pickle”  M  	   •  /     + 1–  ¿  	¢          —  /    none˜  M  	  ™  /     * 0.50š  M  	  ›  /     + œ  M  	    /  	  no  ¿  	¢          Ÿ  M  	     /     + 2.50¡  /    yes¢          Tawala.Proj.ExpressionElement   Á  à  	3     	<<count>>    	Ä  Ä  à  	4     <<Condiments>>    	Ä  Å  à  	2     <<separator>>    	Ä  Æ  à  	4     <<Condiments>>    	Ä  È  à  	3     	<<count>>    	Ä  Ë  à  	4     <<Condiments>>    	Ä  Ì  à  	2   !  <<separator>>    	Ä  Í  à  	4   $  <<Condiments>>    	Ä  Ï  à  	3   '  	<<count>>    	Ä  Ò  à  	4   *  <<Condiments>>    	Ä  Ó  à  	2   -  <<separator>>    	Ä  Ô  à  	4   0  <<Condiments>>    	Ä  Ö  à  	3   3  	<<count>>    	Ä  Ù  à  	4   6  <<Condiments>>    	Ä  Ú  à  	2   9  <<separator>>    	Ä  Û  à  	4   <  <<Condiments>>    	Ä  İ  à  	3   ?  	<<count>>    	Ä  ä  à  	3   B  	<<count>>    	Ä  ç  à  	5   E  
-<<Extras>>    	Ä  è  à  	2   H  <<separator>>    	Ä  é  à  	5   K  
-<<Extras>>    	Ä  ë  à  	3   N  	<<count>>    	Ä  î  à  	5   Q  
-<<Extras>>    	Ä  ï  à  	2   T  <<separator>>    	Ä  ğ  à  	5   W  
-<<Extras>>    	Ä  ò  à  	3   Z  	<<count>>    	Ä  õ  à  	5   ]  
-<<Extras>>    	Ä  ö  à  	2   `  <<separator>>    	Ä  ÷  à  	5   c  
-<<Extras>>    	Ä  ù  à  	3   f  	<<count>>    	Ä  ü  à  	5   i  
-<<Extras>>    	Ä  ı  à  	2   l  <<separator>>    	Ä  ş  à  	5   o  
-<<Extras>>    	Ä     à  	3   r  	<<count>>    	Ä    à  	3   u  	<<count>>    	Ä    à  	.   x  <<Cost>>    	Ä    à  	6   {  <<Extra Cost>>    	Ä    à  	.   ~  <<Cost>>    	Ä  
