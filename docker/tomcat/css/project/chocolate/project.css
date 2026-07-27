@@ -1,0 +1,162 @@
+body {
+	background-color: #C0A878;
+	color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	color: #C0A878;
+}
+
+	h1.pageHeading {
+		height: 150px;
+		color: #C0A878;
+		background-color: #603018; 
+		padding-right: 0px;
+		text-align: right;
+	}
+
+#tawalaProjectContainer {
+	color: #F0F0C0;
+	background-color: #240600;
+	border: 0px solid #cccccc;	
+}
+
+	#tawalaProjectContainer table {
+		color: inherit;
+	}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #C0A878;
+}
+
+#tawalaFooterLogo {
+	position: absolute;
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala-button.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Text styles
+ */
+div.text.heading {
+	color: #C0A878;
+}
+div.text.subheading {
+	color: #C0A878;
+}
+
+div.text.instructional {
+	color: #a0a0ff;
+}
+
+div.text.error {
+	color: #ff8080;
+}
+
+/*
+ * Component styles
+ */
+#tawalaProjectContainer table.component {
+	color: #240600;
+}
+	table.component.outline {
+		border: 1px solid #cccccc;				
+	}
+	
+		table.component thead, 
+		table.component tr.heading th,
+		table.component th.leftheading {
+			background-color: #603018;
+			color: #f0f0c0;
+		}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #8f8f21;
+		}
+
+	table.component tbody {
+		background-color: #ffffff;		
+	}
+
+		table.component tbody tr.odd{
+			background-color: #f0f0c0;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #c0a878;
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th{
+			border: 1px solid #837B70;
+		}
+
+		table.component tfoot{
+			background-color: #C0A878;
+		}
+		
+		table.component tfoot tr.legend {
+			color: #ffffff;
+		}
+		
+
+	.graph .bar span { 
+		color: #C0A878;
+	}
+		.graph.color1 { border-color: #301800; }
+			.graph.color1 .bar { background: #301800; }
+
+		.graph.color2 { border-color: #301800; }
+			.graph.color2 .bar { background: #301800; }
+
+		.graph.color3 { border-color:#301800; }
+			.graph.color3 .bar { background: #301800; }
+
+		.graph.color4 { border-color: #a3a892; }
+			.graph.color4 .bar { background: #a3a892; }
+
+		.graph.color5 { border-color: #a3a892; }
+			.graph.color5 .bar { background: #a3a892; }
+
+		.graph.color6 { border-color: #a3a892; }
+			.graph.color6 .bar { background: #a3a892; }
+
+		.graph.color7 { border-color: #a3a892; }
+			.graph.color7 .bar { background: #a3a892; }
+
+		.graph.color8 { border-color: #a3a892; }
+			.graph.color8 .bar { background: #a3a892; }
+
+		.graph.color9 { border-color: #a3a892; }
+			.graph.color9 .bar { background: #a3a892; }
+
+		.graph.color10 { border-color: #a3a892; }
+			.graph.color10 .bar { background: #a3a892; }
+
+		.graph.color11 { border-color: #a3a892; }
+			.graph.color11 .bar { background: #a3a892; }
+
+		.graph.color12 { border-color: #a3a892; }
+			.graph.color12 .bar { background: #a3a892; }
+
+		.graph.color13 { border-color: #a3a892 }
+			.graph.color13 .bar { background: #a3a892; }
+
+		.graph.color14 { border-color: #a3a892; }
+			.graph.color14 .bar { background: #a3a892; }
+
+		.graph.color15 { border-color: #a3a892; }
+			.graph.color15 .bar { background: #a3a892; }
+
+		.graph.color16 { border-color: #a3a892; }
+			.graph.color16 .bar { background: #a3a892; }
+

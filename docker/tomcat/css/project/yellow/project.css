@@ -1,0 +1,53 @@
+body {
+	background-color: #ffee99;
+}
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	color: #9c6677;
+}
+
+
+#tawalaProjectContainer {
+	background-color: #ffee99;
+	border: 2px solid #ccbb66;	
+    color: #85666f;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #ffee99;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 244px;
+	height: 36px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+#form .submitButton {
+    clear: both;
+    margin: 36px 0 0 0;
+}
+
+#form .submitButton input {
+    border: 2px solid #ccbb66;
+    font-weight: bold;
+    Text-transform: capitalize;
+    background-color: #ffcc44;
+    color: #665500;
+}
+
+
+/*
+ * Text styles
+ */
+ 
+div.text.heading {
+	color: #9c6677;
+}
+ 
+div.text.subheading {
+	color: #9c6677;
+}

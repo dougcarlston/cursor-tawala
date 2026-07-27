@@ -3,11 +3,30 @@ body {
 	font-family: georgia, serif;
 }
 
-h1.pageHeading {
-	height: 77px;
-	line-height: 2.4em;
-	color: #E0E0BE;
-	background-color: #8F8F21;
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	color: #8F8F21;
+}
+
+	h1, div.text.heading {
+		background-image: url("images/leaf-main.gif");
+		padding-left: 2em;	
+	}
+
+		h1.pageHeading {
+			height: 100px;
+			color: #E0E0BE;
+			background-color: #8F8F21;
+			background-image: none;
+		}
+
+	h2, div.text.subHeading {
+		background-image: url("images/leaf-sub.gif");
+		padding-left: 2em;	
+	}
+
+table {
+	font-family: georgia, serif;
+	color: #333333;
 }
 
 #tawalaProjectContainer {
@@ -16,12 +35,38 @@ h1.pageHeading {
 	border: 0px solid #cccccc;	
 }
 
-#tawalaFooter {
-	width: 170px;
-	height: 36px;
-	float: right;
-	cursor: pointer;
-	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+#tawalaProjectContainer table {
+	font-family: inherit;
+	color: inherit;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #C0C520;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala-button.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Text styles
+ */
+
+div.text.instructional {
+	padding: 1em 1em 1.5em 5em;
+	background: #dCe0dD url("images/instructional.gif") 10px 12px no-repeat;
+	font-style: normal;
+}
+
+div.text.error {
+	padding: 1em 1em 1.5em 3.4em;
+	background: #fCe0bD url("images/error.gif") 8px 12px no-repeat;
 }
 
 /*
@@ -33,16 +78,20 @@ table.component {
 		border: 1px solid #cccccc;				
 	}
 	
-	table.component thead {
-		background-color: #755A1E;
-		color: #eeeeee;
-	}
-
-		table.component.outline thead th {
+		table.component.outline thead th, tr.heading th {
 			border: 1px solid #8F8F21;
 		}
 
-	table.component tr {}
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #837B70;
+		color: #eeeeee;
+	}
+
+	table.component tbody tr {
+		background-color: #ffffff;
+	}
 
 		table.component tbody tr.odd{
 			background-color: #efF0dD;
@@ -56,10 +105,15 @@ table.component {
 			background-color: #E0E0BE;
 		}
 
-		table.component.outline tbody td{
+		table.component.outline tbody td,
+		table.component.outline tbody th {
 			border: 1px solid #8F8F21;
 		}
-	
+
+		table.component.outline tfoot {
+			background-color: #E0E0BE;
+		}
+			
 .graph .bar { 
 	color: #ECF0CD; 
 	font-size: .9em;
@@ -116,3 +170,33 @@ table.component {
 .graph.color16 { border-color: #8F8F21; }
 	.graph.color16 .bar { background: #8F8F21; }
 
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt th {
+	background-color: #837B70;
+	color: #eeeeee;
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	color:#EEEEEE;
+}
+
+/* Standard odd/even row colors */
+.yui-skin-sam tr.yui-dt-odd {
+	background-color: #ffffff;
+}
+
+.yui-skin-sam tr.yui-dt-even {
+	background-color: #efF0dD;
+}
+
+/* odd/even row colors when column is selected */
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc, .yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+	background-color:#dcf0a2;
+}
+
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc, .yui-skin-sam tr.yui-dt-odd td.yui-dt-desc {
+	background-color:#def0c8;
+}

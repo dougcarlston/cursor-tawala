@@ -1,42 +1,207 @@
-/* Baseball theme — stub until full assets are transferred from legacy install */
-
 body {
-  background-color: #1f4d1f;
+	color: #ffffff;
+	font-family: Georgia, serif;
+	font-size: 13px;
+	background-color: #365373;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: Georgia, serif;
+	color: #3c3c3c;
+}
+
+	h1, div.text.heading {
+		background-position: bottom left;
+		padding-bottom: 2px;
+		padding-left: 16px;
+		background-image: url(images/baseball-heading-background.jpg);
+		margin-left: -48px;
+		color: #7b4500;
+	}
+
+	h1.pageHeading {
+		height: 134px;
+		font-weight: bold;
+		color: #e6e3d1;
+		background-color: #f5f4ed;
+		padding-bottom: 0;
+		margin-left: 0;
+	}
+
+		h1.pageHeading img {
+			left: 0%;
+			top: 0%;
+		}
+		
+		h1.pageHeading div {
+			padding-left: 24px;
+		}
+
+
+	h2, div.text.subheading {
+		background-image: url(images/baseball-heading-background.jpg);
+		background-position: bottom left;
+		padding-bottom: 2px;
+		padding-left: 16px;
+		margin-left: -48px;
+		color: #7b4500;
+	}
+
+div.document, form {
+	margin-left: 3em;
+}
+
+input.text, textarea {
+	border: 1px solid #7b4500;
+}
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1em 1em 1.5em 1em;
+/*	background: #226130 url("images/instructional.gif") 10px 12px no-repeat; */
+	border: 1px solid #226130;
+	border-top: 6px solid #226130;
+	color: #365373;
+}
+
+div.text.error {
+	padding: 1em 1em 1.5em 1em;
+/*	background: #8d1019 url("images/error.gif") 10px 12px no-repeat; */
+	border: 1px solid #8d1019;
+	border-top: 6px solid #8d1019;
+	color: #365373;
 }
 
 #tawalaProjectContainer {
-  background-color: #f8f4e8;
-  border: 2px solid #8b4513;
+	width: 770px;
+	color: #3c3c3c;
+	background-color: #f5f4ed;
+	border: 0px solid #cccccc;
+	padding-bottom: 0;
 }
 
-h1.pageHeading {
-  color: #ffffff;
-  background-color: #8b0000;
+	#tawalaProjectContainer table {
+		color: inherit;
+		font-family: inherit;
+		font-size: inherit;
+	}
+	
+#innerTawalaFooter {
+	width: 100%;
+	margin-top: 2em;
+	height: 44px;
+	text-align: right;
+	background-color: #663300;
 }
 
-table.component thead {
-  background-color: #1f4d1f;
-  color: #ffffff;
+#tawalaFooterLogo {
+	position: absolute;
+	right: 15px;
+	top: 7px;	
+	width: 205px;
+	height: 29px;
+	background: url("images/madeWithTawala.gif") 100% 50% no-repeat;
 }
 
-/* Validation chrome (also in default.css; repeated here so theme loads still apply) */
-#formErrorMsg {
-  border: 1px solid #cc0000;
-  padding: 6px 10px;
-  margin: 0 0 12px 0;
-  color: #880000;
-  background: #ffcccc;
-  font-family: Verdana, Helvetica, Arial, sans-serif;
-  font-size: 11pt;
-  font-weight: bold;
-  line-height: 1.35;
-  text-align: center;
+
+/*
+ * Component styles
+ */
+table.component {
 }
 
-input.validateError,
-textarea.validateError,
-select.validateError {
-  border: 2px solid #cc0000 !important;
-  background-color: #fff0f0 !important;
+	table.component.outline {
+		border: 1px solid #AA875A;				
+	}
+
+		table.component thead, 
+		table.component tr.heading th,
+		table.component th.leftheading {
+			background-color: #7B4500;
+			color: #ffffff;
+		}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #AA875A;
+		}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #f5f4dd;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #e5e4cd;
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th{
+			border: 1px solid #7B4500;
+		}
+		
+		table.component tfoot{
+			background-color: #f5f4dd;
+		}
+		
+.graph .bar { 
+	color: #444444; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
 }
+
+	
+.graph.color1 { border-color: #fbe580; }
+	.graph.color1 .bar { background: #fbe580; }
+
+.graph.color2 { border-color: #fbe580; }
+	.graph.color2 .bar { background: #fbe580; }
+
+.graph.color3 { border-color:#fbe580; }
+	.graph.color3 .bar { background: #fbe580; }
+
+.graph.color4 { border-color: #fbe580; }
+	.graph.color4 .bar { background: #fbe580; }
+
+.graph.color5 { border-color: #fbe580; }
+	.graph.color5 .bar { background: #fbe580; }
+
+.graph.color6 { border-color: #fbe580; }
+	.graph.color6 .bar { background: #fbe580; }
+
+.graph.color7 { border-color: #fbe580; }
+	.graph.color7 .bar { background: #fbe580; }
+
+.graph.color8 { border-color: #fbe580; }
+	.graph.color8 .bar { background: #fbe580; }
+
+.graph.color9 { border-color: #fbe580; }
+	.graph.color9 .bar { background: #fbe580; }
+
+.graph.color10 { border-color: #fbe580; }
+	.graph.color10 .bar { background: #fbe580; }
+
+.graph.color11 { border-color: #fbe580; }
+	.graph.color11 .bar { background: #fbe580; }
+
+.graph.color12 { border-color: #fbe580; }
+	.graph.color12 .bar { background: #fbe580; }
+
+.graph.color13 { border-color: #fbe580 }
+	.graph.color13 .bar { background: #fbe580; }
+
+.graph.color14 { border-color: #fbe580; }
+	.graph.color14 .bar { background: #fbe580; }
+
+.graph.color15 { border-color: #fbe580; }
+	.graph.color15 .bar { background: #fbe580; }
+
+.graph.color16 { border-color: #fbe580; }
+	.graph.color16 .bar { background: #fbe580; }
 

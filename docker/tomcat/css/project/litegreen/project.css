@@ -1,0 +1,25 @@
+body {
+    background-color: #edf3de;
+}
+
+#tawalaProjectContainer {
+    border: 2px solid #bdc3ae;
+    background-color: #edf3de;
+    color: #333333;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #edf3de;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 244px;
+	height: 36px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}

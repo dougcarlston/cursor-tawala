@@ -1,0 +1,195 @@
+body {
+	color: #ffffff;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 13px;
+	background-color: #00618d;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: Verdana, Geneva, sans-serif;
+	color: #3c3c3c;
+}
+
+	h1, div.text.heading {
+		background-position: bottom left;
+		padding-bottom: .4em;
+		color: #6FA740;
+	}
+
+	h1.pageHeading {
+		height: 150px;
+		font-weight: bold;
+		color: #ffffff;
+		background-color: #f5f4ed;
+		padding-bottom: 0;
+		margin-left: 0;
+	}
+
+		h1.pageHeading img {
+			left: 0%;
+			top: 0%;
+		}
+		
+		h1.pageHeading div {
+			top: 15%;
+		}
+
+
+	h2, div.text.subheading {
+		background-position: bottom left;
+		padding-bottom: .4em;
+		color: #6FA740;
+	}
+
+div.document, form {
+	padding-left: 3em;
+}
+
+input.text, textarea {
+	border: 1px solid #9FB347;
+	background-color: #f8f8f0;
+}
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+/*	background: #226130 url("images/instructional.gif") 10px 12px no-repeat; */
+	border-top: 1px solid #00618D;
+	border-bottom: 1px solid #00618D;
+	color: #00618D;
+}
+
+div.text.error {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+/*	background: #8d1019 url("images/error.gif") 10px 12px no-repeat; */
+	border-top: 1px solid #8F0000;
+	border-bottom: 1px solid #8F0000;
+	color: #8F0000;
+}
+
+#tawalaProjectContainer {
+	width: 839px;
+	color: #3c3c3c;
+	background-color: #ffffff;
+	border: 0px solid #cccccc;
+}
+
+	#tawalaProjectContainer table {
+		font-size: inherit;
+		font-family:  inherit; 
+		color: inherit;
+	}
+
+#innerTawalaFooter {
+	width: 96%;
+	height: 36px;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madeWithTawala.gif") 100% 50% no-repeat;
+}
+
+
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 1px solid #9FB347;				
+	}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #9FB347;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #889A3D;
+		color: #ffffff;
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #f8f8f0;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #e8e8e0;
+		}
+
+		table.component.outline tbody td{
+			border: 1px solid #9FB347;
+		}
+	
+.graph .bar { 
+	color: #2f4f2f; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #6fa740; }
+	.graph.color1 .bar { background: #6fa740; }
+
+.graph.color2 { border-color: #6fa740; }
+	.graph.color2 .bar { background: #6fa740; }
+
+.graph.color3 { border-color:#6fa740; }
+	.graph.color3 .bar { background: #6fa740; }
+
+.graph.color4 { border-color: #6fa740; }
+	.graph.color4 .bar { background: #6fa740; }
+
+.graph.color5 { border-color: #6fa740; }
+	.graph.color5 .bar { background: #6fa740; }
+
+.graph.color6 { border-color: #6fa740; }
+	.graph.color6 .bar { background: #6fa740; }
+
+.graph.color7 { border-color: #6fa740; }
+	.graph.color7 .bar { background: #6fa740; }
+
+.graph.color8 { border-color: #6fa740; }
+	.graph.color8 .bar { background: #6fa740; }
+
+.graph.color9 { border-color: #6fa740; }
+	.graph.color9 .bar { background: #6fa740; }
+
+.graph.color10 { border-color: #6fa740; }
+	.graph.color10 .bar { background: #6fa740; }
+
+.graph.color11 { border-color: #6fa740; }
+	.graph.color11 .bar { background: #6fa740; }
+
+.graph.color12 { border-color: #6fa740; }
+	.graph.color12 .bar { background: #6fa740; }
+
+.graph.color13 { border-color: #6fa740 }
+	.graph.color13 .bar { background: #6fa740; }
+
+.graph.color14 { border-color: #6fa740; }
+	.graph.color14 .bar { background: #6fa740; }
+
+.graph.color15 { border-color: #6fa740; }
+	.graph.color15 .bar { background: #6fa740; }
+
+.graph.color16 { border-color: #6fa740; }
+	.graph.color16 .bar { background: #6fa740; }
+

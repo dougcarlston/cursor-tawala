@@ -1,0 +1,28 @@
+/*
+ * Basic Blue theme
+ */
+body {
+	background-color: #d8ffff;
+}
+
+#tawalaProjectContainer {
+		background-color: #d8ffff;
+		border: 1px solid #88ddff;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	text-align: right;
+}
+
+#tawalaFooterLogo {
+	position: absolute;
+	right: 15px;
+	top: 7px;	
+	width: 244px;
+	height: 36px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+

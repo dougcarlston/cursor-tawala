@@ -1,20 +1,265 @@
-/* Red Rays theme — stub until full assets are transferred from legacy install */
-
 body {
-  background-color: #8b0000;
+	color: #ffffff;
+	font-family: 'Trebuchet MS', Helvetica, sans-serif;
+	font-size: 14px;
+	background-color: #9C1501;
+	line-height: 1.4em;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: Trebuchet, sans-serif;
+	color: #B35743;
+}
+
+	h1, div.text.heading {
+		background-position: bottom left;
+		padding-bottom: .4em;
+		color: #B35743;
+		margin-left: -24px;
+	}
+
+	h1.pageHeading {
+		height: 161px;
+		font-weight: normal;
+		color: #BA5647;
+		background-color: #ffffff;
+		padding-bottom: 0;
+		margin-left: 0;
+	}
+
+		h1.pageHeading img {
+			left: 0%;
+			top: 0%;
+		}
+		
+		h1.pageHeading div {
+			top: 15%;
+		}
+
+
+	h2, div.text.subheading {
+		background-position: bottom left;
+		padding-bottom: .4em;
+		margin-left: -24px;
+		color: #B35743;
+	}
+
+div.document, form {
+	padding-left: 6em;
+}
+
+input.text, textarea {
+	border: 1px solid #B35743;
+	background-color: #f8f8f8;
+}
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+/*	background: #226130 url("images/instructional.gif") 10px 12px no-repeat; */
+	border-top: 2px solid #006B33;
+	border-bottom: 2px solid #006B33;
+	color: #006B33;
+}
+
+div.text.error {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+/*	background: #8d1019 url("images/error.gif") 10px 12px no-repeat; */
+	border-top: 2px solid #8D1019;
+	border-bottom: 2px solid #8D1019;
+	color: #8D1019;
 }
 
 #tawalaProjectContainer {
-  background-color: #fff5f5;
-  border: 2px solid #cc0000;
+	width: 770px;
+	color: #3c3c3c;
+	background-color: #ffffff;
+	border: 0px solid #B35743;
 }
 
-h1.pageHeading {
-  color: #ffffff;
-  background-color: #cc0000;
+#tawalaProjectContainer table {
+	color: inherit;
+	font-family: inherit;
+	font-size: inherit;
 }
 
-table.component thead {
-  background-color: #8b0000;
-  color: #ffffff;
+#innerTawalaFooter {
+	width: 97%;
+	height: 41px;
 }
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala-button.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 1px solid #B35743;				
+	}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 0px solid #B35743;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #DCCFA9;
+		color: #B35743;
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #fcf8e8;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #fcefc9;
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th {
+			border: 1px solid #B35743;
+			border-top: 0px solid #B35743;
+		}
+	
+		table.component tfoot {
+			background-color:#fcf8e8;
+		}
+		
+		table.component tfoot tr.legend {
+			color: #3c3c3c;
+		}
+				
+.graph .bar { 
+	color: #444444; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #B35743; }
+	.graph.color1 .bar { background: #B35743; }
+
+.graph.color2 { border-color: #B35743; }
+	.graph.color2 .bar { background: #B35743; }
+
+.graph.color3 { border-color:#B35743; }
+	.graph.color3 .bar { background: #B35743; }
+
+.graph.color4 { border-color: #B35743; }
+	.graph.color4 .bar { background: #B35743; }
+
+.graph.color5 { border-color: #B35743; }
+	.graph.color5 .bar { background: #B35743; }
+
+.graph.color6 { border-color: #B35743; }
+	.graph.color6 .bar { background: #B35743; }
+
+.graph.color7 { border-color: #B35743; }
+	.graph.color7 .bar { background: #B35743; }
+
+.graph.color8 { border-color: #B35743; }
+	.graph.color8 .bar { background: #B35743; }
+
+.graph.color9 { border-color: #B35743; }
+	.graph.color9 .bar { background: #B35743; }
+
+.graph.color10 { border-color: #B35743; }
+	.graph.color10 .bar { background: #B35743; }
+
+.graph.color11 { border-color: #B35743; }
+	.graph.color11 .bar { background: #B35743; }
+
+.graph.color12 { border-color: #B35743; }
+	.graph.color12 .bar { background: #B35743; }
+
+.graph.color13 { border-color: #B35743 }
+	.graph.color13 .bar { background: #B35743; }
+
+.graph.color14 { border-color: #B35743; }
+	.graph.color14 .bar { background: #B35743; }
+
+.graph.color15 { border-color: #B35743; }
+	.graph.color15 .bar { background: #B35743; }
+
+.graph.color16 { border-color: #B35743; }
+	.graph.color16 .bar { background: #B35743; }
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt table {
+	font-family: inherit;
+}
+
+
+.yui-skin-sam .yui-dt th {
+	background-image: none;
+	background-color: #DCCFA9;
+	color: #B35743;
+	text-align: center;
+	font-weight: bold;	
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	color:#B35743;
+	font-weight:bold;
+}
+
+.yui-skin-sam .yui-dt-liner {
+	color: #000000;
+}
+
+/* Standard odd/even row colors */
+.yui-skin-sam tr.yui-dt-odd {
+	background-color: #fcf8e8;
+}
+
+.yui-skin-sam tr.yui-dt-even {
+	background-color: #ffffff;
+}
+
+/* odd/even row colors when column is selected */
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc, .yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+	background-color:#fcf3ce;
+}
+
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc, .yui-skin-sam tr.yui-dt-odd td.yui-dt-desc {
+	background-color:#fcedb2;
+}
+
+/* paginator attributes */
+.yui-skin-sam .yui-pg-container, .yui-skin-sam .yui-dt-paginator {
+	color: #444444;
+}
+
+.yui-skin-sam .yui-pg-current-page, .yui-skin-sam .yui-dt-paginator .yui-dt-selected {
+	background-color:#FFFFFF;
+	border:1px solid #FFFFFF;
+}
+
+.yui-skin-sam a.yui-pg-page, .yui-skin-sam a.yui-dt-page {
+	background-color:#FFFFFF;
+	border:1px solid #CBCBCB;
+}
+

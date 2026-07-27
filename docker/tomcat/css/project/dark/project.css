@@ -1,0 +1,286 @@
+body {
+	background-color: #111111;
+	color: #ffffff;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	color: #666666;
+}
+
+#tawalaProjectContainer {
+	background-color: #111111;
+    border: 2px solid #aaaaaa;
+    padding: 8px 8px 8px 16px;
+    color: #dddddd;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#tawalaProjectContainer table {
+    color: inherit;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #111111;
+}
+
+#tawalaFooterLogo {
+	position: absolute;
+	right: 15px;
+	top: 7px;	
+	width: 244px;
+	height: 36px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Text styles
+ */
+ 	 
+div.text.instructional {
+	color: #a0a0ff;
+}
+
+div.text.error {
+	color: #ff8080;
+}
+
+
+form input, form textarea {
+    background-color: #333333;
+    border: 1px solid #666666;
+    color: #dddddd;
+}
+
+
+form .submitButton {
+    clear: both;
+    margin: 36px 0 0 0;
+}
+
+form .submitButton input {
+    font-weight: bold;
+    Text-transform: capitalize;
+    color: #dddddd;
+	padding: 4px;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+	background-color: #333333;
+}
+	table.component.outline {
+		border: 1px solid #aaaaaa;				
+	}
+	
+		table.component thead, 
+		table.component tr.heading th,
+		table.component th.leftheading {
+			background-color: #888888;
+			color: #eeeeee;
+		}
+	
+		table.component th {
+		}
+
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #aaaaaa;
+		}
+
+	table.component tfoot {
+		background-color: #eeeeee;
+		color: #000000;
+	}
+
+		table.component tfoot .legend {
+			color: #888888;
+		}
+	
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #444444;
+		}
+
+		table.component tbody tr.even{
+			background-color: #333333;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #555555;
+		}
+
+	table.component td{
+	}
+		table.component td.left {
+		}
+
+		table.component td.right {
+		}
+
+		table.component td.center {
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th {
+			border: 1px solid #aaaaaa;
+		}
+	
+	
+/* Basic Bar Graph from Apples to Oranges
+ *
+ * classes:
+ * 		graph: output a bar graph
+ *		outline: show the table outline
+ *		small, medium, large: set the width of the bar graph (default = medium)
+ *		color1 - color16: set the color of the bar graph
+ *		
+ *		Example of the HTML markup:
+ * 			<div class="graph color1">
+ *				<strong class="bar" style="width: 100%;"><span>100%</span></strong>
+ *			</div>
+ */
+.graph { 
+	position: relative; /* IE is dumb */
+	width: 200px; 
+	border: 1px solid #aaaaaa;
+	padding: 2px; 
+	margin-bottom: .2em;					
+	margin-top: .2em;					
+}
+
+	.graph.small {
+		width: 100px;
+	}
+	
+	.graph.medium {
+		width: 200px;
+	}
+	
+	.graph.large {
+		width: 300px;
+	}
+	
+	.graph .bar { 
+		display: block;	
+		position: relative;
+		text-align: center; 
+		background: #aaaaaa; 					
+		color: #333; 
+		font-size: .9em;
+		height: 1.3em; 
+		line-height: 1.4em;									
+	}
+
+	.graph.color1 { border-color: #aaaaaa; }
+		.graph.color1 .bar { background: #aaaaaa; }
+
+	.graph.color2 { border-color: #bbbbbb; }
+		.graph.color2 .bar { background: #bbbbbb; }
+
+	.graph.color3 { border-color:#cccccc; }
+		.graph.color3 .bar { background: #cccccc; }
+
+	.graph.color4 { border-color: #dddddd; }
+		.graph.color4 .bar { background: #dddddd; }
+
+	.graph.color5 { border-color: #eeeeee; }
+		.graph.color5 .bar { background: #eeeeee; }
+
+	.graph.color6 { border-color: #ffffff; }
+		.graph.color6 .bar { background: #ffffff; }
+
+	.graph.color7 { border-color: #aaaaaa; }
+		.graph.color7 .bar { background: #aaaaaa; }
+
+	.graph.color8 { border-color: #bbbbbb; }
+		.graph.color8 .bar { background: #bbbbbb; }
+
+	.graph.color9 { border-color: #cccccc; }
+		.graph.color9 .bar { background: #cccccc; }
+
+	.graph.color10 { border-color: #dddddd; }
+		.graph.color10 .bar { background: #dddddd; }
+
+	.graph.color11 { border-color: #eeeeee; }
+		.graph.color11 .bar { background: #eeeeee; }
+
+	.graph.color12 { border-color: #ffffff; }
+		.graph.color12 .bar { background: #ffffff; }
+
+	.graph.color13 { border-color: #aaaaaa }
+		.graph.color13 .bar { background: #aaaaaa; }
+
+	.graph.color14 { border-color: #bbbbbb; }
+		.graph.color14 .bar { background: #bbbbbb; }
+
+	.graph.color15 { border-color: #cccccc; }
+		.graph.color15 .bar { background: #cccccc; }
+
+	.graph.color16 { border-color: #dddddd; }
+		.graph.color16 .bar { background: #dddddd; }
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt table {
+	font-family: inherit;
+}
+
+
+.yui-skin-sam .yui-dt th {
+	background-image: none;
+	background-color: #888888;
+	color: #eeeeee;
+	text-align: center;
+	font-weight: bold;	
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	color:#EEEEEE;
+	font-weight:bold;
+}
+
+.yui-skin-sam .yui-dt-liner {
+	color: #ffffff;
+}
+
+/* Standard odd/even row colors */
+.yui-skin-sam tr.yui-dt-odd {
+	background-color: #333333;
+}
+
+.yui-skin-sam tr.yui-dt-even {
+	background-color: #444444;
+}
+
+/* odd/even row colors when column is selected */
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc, .yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+	background-color:#444444;
+}
+
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc, .yui-skin-sam tr.yui-dt-odd td.yui-dt-desc {
+	background-color:#333333;
+}
+
+/* paginator attributes */
+.yui-skin-sam .yui-pg-container, .yui-skin-sam .yui-dt-paginator {
+	color: #444444;
+}
+
+.yui-skin-sam .yui-pg-current-page, .yui-skin-sam .yui-dt-paginator .yui-dt-selected {
+	background-color:#444444;
+	border:1px solid #333333;
+	color: #ffffff;
+}
+
+.yui-skin-sam a.yui-pg-page, .yui-skin-sam a.yui-dt-page {
+	background-color:#444444;
+	border:1px solid #333333;
+	color: #ffffff;
+}
+

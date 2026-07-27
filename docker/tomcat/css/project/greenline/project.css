@@ -1,0 +1,25 @@
+body {
+	background-color: #e3e8d2;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	color: #838872;
+}
+
+#tawalaProjectContainer {
+   	background: white url(images/green-lined-paper.gif) repeat top left;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #e3e8d2;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}

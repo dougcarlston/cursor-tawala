@@ -2,10 +2,9 @@
  * Legacy Format → Project Themes list (theme-config.xml display names + paths).
  * Sorted alphabetically by label — matches C# SortedDictionary in DesignerView.
  *
- * `hasLocalCss`: Tomcat CSS under docker/tomcat/css/project/{path}/ (or default.css).
- * Blue in the menu when true; stubs stay grey but are still selectable (sets themePath).
- * Owner Jul 24 backlog (DESIGNER_OPEN_TODOS #15): later hide themes with hasLocalCss=false
- * instead of greying them — Library should only offer themes we ship CSS for.
+ * `hasLocalCss`: Tomcat CSS under docker/tomcat/css/project/{path}/ (plus root default.css).
+ * Blue in the menu when true. All 28 official themes ship local CSS (Jul 27, 2026).
+ * Hidden `setup` wizard theme is not listed here.
  */
 
 export type ProjectThemeEntry = {
@@ -20,12 +19,33 @@ export type ProjectThemeEntry = {
 /** Theme paths we ship under docker/tomcat/css/project/ (plus root default.css). */
 const LOCAL_CSS_PATHS = new Set([
   "baseball",
+  "basicblue",
+  "basicgreen",
+  "basicpink",
+  "basicyellow",
+  "blueline",
+  "chocolate",
+  "dark",
   "default",
+  "dirtbowl",
   "dirtbowl2",
+  "fullmoon",
+  "greenline",
   "greentea",
+  "lime",
+  "litegreen",
   "mvsc",
+  "orangeswirl",
+  "plain",
+  "purplehaze",
+  "red",
   "redrays",
+  "salzburg",
+  "soup",
   "style2",
+  "tennis",
+  "tincarbell",
+  "yellow",
 ]);
 
 /**

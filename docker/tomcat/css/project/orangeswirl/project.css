@@ -1,0 +1,272 @@
+body {
+	color: #ffffff;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	background-color: #385574;
+	line-height: 1.4em;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: Arial, Helvetica, sans-serif;
+	color: #495C53;
+	line-height: 1.4em;
+}
+
+	h1, div.text.heading {
+		background: #ffffff url("images/heading-background.gif") 0px 0px no-repeat;
+		padding-bottom: .4em;
+		color: #104F5E;
+		margin-left: -84px;
+		padding-top: 8px;
+		padding-left: 84px;
+	}
+
+	h1.pageHeading {
+		height: 103px;
+		line-height: 72px;
+		font-weight: normal;
+		color: #ffffff;
+		background-color: #ffffff;
+		padding: 0;
+		margin: 0;
+	}
+
+		h1.pageHeading img {
+		}
+		
+		h1.pageHeading div {
+			top: 15%;
+			padding-left: 24px;
+		}
+
+
+	h2, div.text.subheading {
+		background: #ffffff url("images/heading-background.gif") 0px 0px no-repeat;
+		padding-bottom: .4em;
+		color: #104F5E;
+		margin-left: -84px;
+		padding-top: 16px;
+		padding-left: 84px;
+	}
+
+div.document, form {
+	padding-left: 6em;
+}
+
+input.text, textarea {
+	border: 1px solid #104F5E;
+	background-color: #f8f8f8;
+}
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1.5em 1.5em 1.5em 1.5em;
+	margin-left: 0;
+	margin-right: 0;
+	color: #3c3c3c;
+	border-top: 8px solid #7C9C32;
+	border-bottom: 8px solid #7C9C32;
+}
+
+div.text.error {
+	padding: 1.5em 1.5em 1.5em 1.5em;
+	margin-left: 0;
+	margin-right: 0;
+	color: #3c3c3c;
+	border-top: 8px solid #850000;
+	border-bottom: 8px solid #850000;
+}
+
+#tawalaProjectContainer {
+	width: 770px;
+	color: #3c3c3c;
+	background-color: #ffffff;
+	border: 0px solid #ffb200;
+}
+
+	#tawalaProjectContainer table {
+		color: inherit;
+		font-family: inherit;
+		font-size: inherit;
+	}
+	
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #ff7f00;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala-button.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 1px solid #aaccaa;				
+	}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #aaccaa;
+			line-height: 1.8em;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #566E88;
+		color: #ffffff;
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #ced8e4;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #AEB8C4;
+		}
+
+		table.component.outline tbody td{
+			border: 1px solid #aaccaa;
+			border-top: 1px solid #aaccaa;
+		}
+		
+	table.component tfoot {
+		background-color: #AEB8C4;
+	}
+	
+.graph .bar { 
+	color: #3c3c3c; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #ffb200; }
+	.graph.color1 .bar { background: #ffb200; }
+
+.graph.color2 { border-color: #ffb200; }
+	.graph.color2 .bar { background: #ffb200; }
+
+.graph.color3 { border-color:#ffb200; }
+	.graph.color3 .bar { background: #ffb200; }
+
+.graph.color4 { border-color: #ffb200; }
+	.graph.color4 .bar { background: #ffb200; }
+
+.graph.color5 { border-color: #ffb200; }
+	.graph.color5 .bar { background: #ffb200; }
+
+.graph.color6 { border-color: #ffb200; }
+	.graph.color6 .bar { background: #ffb200; }
+
+.graph.color7 { border-color: #ffb200; }
+	.graph.color7 .bar { background: #ffb200; }
+
+.graph.color8 { border-color: #ffb200; }
+	.graph.color8 .bar { background: #ffb200; }
+
+.graph.color9 { border-color: #ffb200; }
+	.graph.color9 .bar { background: #ffb200; }
+
+.graph.color10 { border-color: #ffb200; }
+	.graph.color10 .bar { background: #ffb200; }
+
+.graph.color11 { border-color: #ffb200; }
+	.graph.color11 .bar { background: #ffb200; }
+
+.graph.color12 { border-color: #ffb200; }
+	.graph.color12 .bar { background: #ffb200; }
+
+.graph.color13 { border-color: #ffb200 }
+	.graph.color13 .bar { background: #ffb200; }
+
+.graph.color14 { border-color: #ffb200; }
+	.graph.color14 .bar { background: #ffb200; }
+
+.graph.color15 { border-color: #ffb200; }
+	.graph.color15 .bar { background: #ffb200; }
+
+.graph.color16 { border-color: #ffb200; }
+	.graph.color16 .bar { background: #ffb200; }
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt table {
+	font-family: inherit;
+}
+
+
+.yui-skin-sam .yui-dt th {
+	background-image: none;
+	background-color: #566E88;
+	color: #ffffff;
+	text-align: center;
+	font-weight: bold;	
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	color:#EEEEEE;
+	font-weight:bold;
+}
+
+.yui-skin-sam th.yui-dt-asc .yui-dt-liner {
+	background:transparent url(/images/dt-arrow-up-white.png) no-repeat scroll right center;
+}
+
+.yui-skin-sam th.yui-dt-desc .yui-dt-liner {
+	background:transparent url(/images/dt-arrow-dn-white.png) no-repeat scroll right center;
+}
+
+.yui-skin-sam .yui-dt-liner {
+	color: #000000;
+}
+
+/* Standard odd/even row colors */
+.yui-skin-sam tr.yui-dt-odd {
+	background-color: #ced8e4;
+}
+
+.yui-skin-sam tr.yui-dt-even {
+	background-color: #ffffff;
+}
+
+/* odd/even row colors when column is selected */
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc, .yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+	background-color:#dadfe4;
+}
+
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc, .yui-skin-sam tr.yui-dt-odd td.yui-dt-desc {
+	background-color:#b6cbe4;
+}
+
+/* paginator attributes */
+.yui-skin-sam .yui-pg-container, .yui-skin-sam .yui-dt-paginator {
+	color: #444444;
+}
+
+.yui-skin-sam .yui-pg-current-page, .yui-skin-sam .yui-dt-paginator .yui-dt-selected {
+	background-color:#FFFFFF;
+	border:1px solid #FFFFFF;
+}
+
+.yui-skin-sam a.yui-pg-page, .yui-skin-sam a.yui-dt-page {
+	background-color:#FFFFFF;
+	border:1px solid #CBCBCB;
+}

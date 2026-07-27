@@ -1,0 +1,286 @@
+body {
+	color: #ffffff;
+	font-family: Verdana, Geneva, sans-serif;
+	font-size: 13px;
+	background-color: #505050;
+	line-height: 1.4em;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: Verdana, Geneva, sans-serif;
+	color: #ffebb5;
+}
+
+	h1, div.text.heading {
+		padding-bottom: 1em;
+		margin-left: -42px;
+		padding-left: 42px;
+		color: #ffebb5;
+		background: url("images/heading-background.gif") 0px 38px no-repeat;
+	}
+
+	h1.pageHeading {
+		height: 156px;
+		font-weight: normal;
+		color: #ffebb5;
+		background-color: #323232;
+		padding: 0;
+		margin: 0;
+	}
+
+		h1.pageHeading img {
+			left: 0%;
+			top: 0%;
+		}
+		
+		h1.pageHeading div {
+			top: 15%;
+		}
+
+
+	h2, div.text.subheading {
+		padding-bottom: 2em;
+		margin-left: -42px;
+		padding-left: 42px;
+		color: #ffebb5;
+		background: url("images/heading-background.gif") 0px 28px no-repeat;
+	}
+
+a {
+	color: #df87db;
+	text-decoration: none;
+}
+
+	a:hover {
+		text-decoration: underline;
+	}
+
+div.document, form {
+	padding-left: 4em;
+}
+
+table {
+	color: #ffffff;
+}
+
+input.text, textarea {
+	border: 1px solid #FFF0C2;
+	background-color: #5B584F;
+	color: #ffffff;
+}
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1em 1em 54px 1em;
+	margin-left: -52px;
+	margin-right: -27px;
+	padding-left: 130px;
+	padding-right: 40px;
+	background: #46703A url("images/instructional-background.gif") 20px 12px no-repeat;
+	border-top: 2px solid #FFF0C2;
+	border-bottom: 2px solid #FFF0C2;
+	color: #FFF0C2;
+}
+
+div.text.error {
+	padding: 1em 1em 54px 1em;
+	margin-left: -52px;
+	margin-right: -27px;
+	padding-left: 130px;
+	padding-right: 40px;
+	background: #A24727 url("images/error-background.gif") 20px 12px no-repeat;
+	border-top: 2px solid #FFF0C2;
+	border-bottom: 2px solid #FFF0C2;
+	color: #FFF0C2;
+}
+
+#tawalaProjectContainer {
+	width: 869px;
+	color: #ffffff;
+	background-color: #323232;
+	border: 0px solid #4B0462;
+}
+
+	#tawalaProjectContainer table {
+		color: inherit;
+		font-family: inherit;
+		font-size: inherit;
+	}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 42px;
+	border-top: 1px solid #5B584F;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala-button.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+	font-family: Verdana, sans-serif;
+}
+	table.component.outline {
+		border: 1px solid #323232;				
+	}
+	
+		table.component.outline thead th {
+			border: 1px solid #323232;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #FFF0C2;
+		color: #323232;
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #6B685F;
+		}
+
+		table.component tbody tr.even{
+			background-color: #5B584F;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #7B786F;
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th {
+			border: 1px solid #323232;
+		}
+		
+		table.component tfoot td,
+		table.component tfoot th {
+			background-color: #5B584F;
+		}
+	
+.graph .bar { 
+	color: #ffffff; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #4B0462; }
+	.graph.color1 .bar { background: #4B0462; }
+
+.graph.color2 { border-color: #4B0462; }
+	.graph.color2 .bar { background: #4B0462; }
+
+.graph.color3 { border-color:#4B0462; }
+	.graph.color3 .bar { background: #4B0462; }
+
+.graph.color4 { border-color: #4B0462; }
+	.graph.color4 .bar { background: #4B0462; }
+
+.graph.color5 { border-color: #4B0462; }
+	.graph.color5 .bar { background: #4B0462; }
+
+.graph.color6 { border-color: #4B0462; }
+	.graph.color6 .bar { background: #4B0462; }
+
+.graph.color7 { border-color: #4B0462; }
+	.graph.color7 .bar { background: #4B0462; }
+
+.graph.color8 { border-color: #4B0462; }
+	.graph.color8 .bar { background: #4B0462; }
+
+.graph.color9 { border-color: #4B0462; }
+	.graph.color9 .bar { background: #4B0462; }
+
+.graph.color10 { border-color: #4B0462; }
+	.graph.color10 .bar { background: #4B0462; }
+
+.graph.color11 { border-color: #4B0462; }
+	.graph.color11 .bar { background: #4B0462; }
+
+.graph.color12 { border-color: #4B0462; }
+	.graph.color12 .bar { background: #4B0462; }
+
+.graph.color13 { border-color: #4B0462 }
+	.graph.color13 .bar { background: #4B0462; }
+
+.graph.color14 { border-color: #4B0462; }
+	.graph.color14 .bar { background: #4B0462; }
+
+.graph.color15 { border-color: #4B0462; }
+	.graph.color15 .bar { background: #4B0462; }
+
+.graph.color16 { border-color: #4B0462; }
+	.graph.color16 .bar { background: #4B0462; }
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt th {
+	background-color: #FFF0C2;
+	color: #323232;
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	background-color: #FFF0C2;
+	color:#323232;
+	font-weight:bold;
+}
+
+.yui-skin-sam .yui-dt-liner {
+	color: #ffffff;
+}
+
+/* Standard odd/even row colors */
+.yui-skin-sam tr.yui-dt-even {
+	background-color: #5B584F;
+}
+
+.yui-skin-sam tr.yui-dt-odd {
+	background-color: #6B685F;
+}
+
+/* odd/even row colors when column is selected */
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc, .yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+	background-color:#3b3933;
+}
+
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc, .yui-skin-sam tr.yui-dt-odd td.yui-dt-desc {
+	background-color:#4f4c44;
+}
+
+/* paginator attributes */
+.yui-skin-sam .yui-pg-container, .yui-skin-sam .yui-dt-paginator {
+	color: #aaaaaa;
+}
+
+.yui-skin-sam .yui-pg-current-page, .yui-skin-sam .yui-dt-paginator .yui-dt-selected {
+	background-color:#323232;
+	border:1px solid #FFFFFF;
+}
+
+.yui-skin-sam a.yui-pg-page, .yui-skin-sam a.yui-dt-page {
+	background-color:#323232;
+	border:1px solid #CBCBCB;
+}
+
+.yui-skin-sam a.yui-pg-first,
+.yui-skin-sam a.yui-pg-previous,
+.yui-skin-sam a.yui-pg-next,
+.yui-skin-sam a.yui-pg-last,
+.yui-skin-sam a.yui-pg-page,
+.yui-skin-sam .yui-dt-paginator a.yui-dt-first,
+.yui-skin-sam .yui-dt-paginator a.yui-dt-last {
+}
+
+

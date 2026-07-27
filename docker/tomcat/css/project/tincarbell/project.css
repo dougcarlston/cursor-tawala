@@ -1,0 +1,162 @@
+body {
+	background-color: #BBDD99;
+	font-family:'Comic Sans MS', cursive;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: 'Comic Sans MS', cursive;
+	color: #FF2233;
+}
+
+h1.pageHeading {
+	height: 150px;
+	line-height: 3em;
+	font-size: 3em;
+	color: #EEFFAA;
+	background-color: #FF2233;
+	text-align: right;
+}
+
+/*
+ * Text styles
+ */
+div.text.instructional {
+	color: #3e4695;
+	padding: 1em 1em 1.5em 3.6em;
+	background: url("images/instructional.gif") 10px 12px no-repeat;
+}
+
+div.text.error {
+	color: #c24322;
+	padding: 1em 1em 1.5em 3.6em;
+	background: url("images/error.gif") 10px 12px no-repeat;
+}
+
+#tawalaProjectContainer {
+	color: #778877;
+	background-color: #FFFFCC;
+	border: 0px solid #cccccc;	
+}
+
+	#tawalaProjectContainer table {
+		font-family: inherit;
+		color: inherit;
+	}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #BBDD99;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 244px;
+	height: 36px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 1px solid #cccccc;				
+	}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #8F8F21;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #778877;
+		color: #eeeeee;
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #EEFFAA;
+		}
+
+		table.component tbody tr.even{
+			background-color: #FFFFCC;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #BBDD99;
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th{
+			border: 1px solid #8F8F21;
+		}
+
+	table.component tfoot {
+		background-color: #EEFFAA;
+	}
+	
+		table.component tfoot .legend {
+			color:#444444;
+		}	
+	
+.graph .bar { 
+	color: #ECF0CD; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #FF2233; }
+	.graph.color1 .bar { background: #FF2233; }
+
+.graph.color2 { border-color: #FF2233; }
+	.graph.color2 .bar { background: #FF2233; }
+
+.graph.color3 { border-color:#FF2233; }
+	.graph.color3 .bar { background: #FF2233; }
+
+.graph.color4 { border-color: #FF2233; }
+	.graph.color4 .bar { background: #FF2233; }
+
+.graph.color5 { border-color: #FF2233; }
+	.graph.color5 .bar { background: #FF2233; }
+
+.graph.color6 { border-color: #FF2233; }
+	.graph.color6 .bar { background: #FF2233; }
+
+.graph.color7 { border-color: #FF2233; }
+	.graph.color7 .bar { background: #FF2233; }
+
+.graph.color8 { border-color: #FF2233; }
+	.graph.color8 .bar { background: #FF2233; }
+
+.graph.color9 { border-color: #FF2233; }
+	.graph.color9 .bar { background: #FF2233; }
+
+.graph.color10 { border-color: #FF2233; }
+	.graph.color10 .bar { background: #FF2233; }
+
+.graph.color11 { border-color: #FF2233; }
+	.graph.color11 .bar { background: #FF2233; }
+
+.graph.color12 { border-color: #FF2233; }
+	.graph.color12 .bar { background: #FF2233; }
+
+.graph.color13 { border-color: #FF2233 }
+	.graph.color13 .bar { background: #FF2233; }
+
+.graph.color14 { border-color: #FF2233; }
+	.graph.color14 .bar { background: #FF2233; }
+
+.graph.color15 { border-color: #FF2233; }
+	.graph.color15 .bar { background: #FF2233; }
+
+.graph.color16 { border-color: #FF2233; }
+	.graph.color16 .bar { background: #FF2233; }
+

@@ -1,5 +1,89 @@
-/*
- * Default theme overlay — chrome only.
- * FIB layout contracts: /css/project/form-layout-core.css (loaded last by CommonTheme).
- * Do not put form table.fib geometry here; it will lose to core and confuse maintainers.
- */
+body {
+	background-color: #e3e8d2;
+	color: #000000;
+}
+
+h1.pageHeading {
+	height: 100px;
+	line-height: auto;
+	color: #ffffff;
+	background-color: #9D2F30;
+}
+
+#tawalaProjectContainer {
+	background-color: #f8fff4;
+	border: 0px solid #cccccc;	
+}
+
+div.text.instructional {
+	padding: 11px 11px 28px 60px;
+	background: #eeeeff url("images/instructional.gif") 10px 12px no-repeat;
+}
+
+div.text.error {
+	padding: 11px 11px 28px 60px;
+	background: #ffeeee url("images/error.gif") 8px 12px no-repeat;
+}
+
+#innerTawalaFooter {
+	width: 100%;
+	height: 44px;
+	background-color: #e3e8d2;
+}
+
+#tawalaFooterLogo {
+	position: absolute;
+	right: 15px;
+	top: 7px;	
+	width: 244px;
+	height: 36px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+.graph.color1 { border-color: #a3a892; }
+	.graph.color1 .bar { background: #a3a892; }
+
+.graph.color2 { border-color: #a3a892; }
+	.graph.color2 .bar { background: #a3a892; }
+
+.graph.color3 { border-color:#a3a892; }
+	.graph.color3 .bar { background: #a3a892; }
+
+.graph.color4 { border-color: #a3a892; }
+	.graph.color4 .bar { background: #a3a892; }
+
+.graph.color5 { border-color: #a3a892; }
+	.graph.color5 .bar { background: #a3a892; }
+
+.graph.color6 { border-color: #a3a892; }
+	.graph.color6 .bar { background: #a3a892; }
+
+.graph.color7 { border-color: #a3a892; }
+	.graph.color7 .bar { background: #a3a892; }
+
+.graph.color8 { border-color: #a3a892; }
+	.graph.color8 .bar { background: #a3a892; }
+
+.graph.color9 { border-color: #a3a892; }
+	.graph.color9 .bar { background: #a3a892; }
+
+.graph.color10 { border-color: #a3a892; }
+	.graph.color10 .bar { background: #a3a892; }
+
+.graph.color11 { border-color: #a3a892; }
+	.graph.color11 .bar { background: #a3a892; }
+
+.graph.color12 { border-color: #a3a892; }
+	.graph.color12 .bar { background: #a3a892; }
+
+.graph.color13 { border-color: #a3a892 }
+	.graph.color13 .bar { background: #a3a892; }
+
+.graph.color14 { border-color: #a3a892; }
+	.graph.color14 .bar { background: #a3a892; }
+
+.graph.color15 { border-color: #a3a892; }
+	.graph.color15 .bar { background: #a3a892; }
+
+.graph.color16 { border-color: #a3a892; }
+	.graph.color16 .bar { background: #a3a892; }

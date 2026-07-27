@@ -1,33 +1,217 @@
-/* MVSC theme — local stub so SignupSheets (themePath=mvsc) can render / Send confirmation.
-   Full legacy MVSC assets not in repo; style2-compatible shell until transferred. */
-
 body {
-	background-color: #888888;
+	color: #000000;
+	background-color: #ddeeff;
+	font-family: 'Times New Roman', Times, serif;
+	font-size: 11pt;
+}
+
+em { font-style: italic; }
+
+table {
+	font-size: inherit;
+	font-family:  inherit; 
+	color: inherit;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family: 'Times New Roman', Times, serif;
+	color: #000066;
+}
+
+	h1, div.text.heading {
+		background-position: bottom left;
+		padding-bottom: .4em;
+		color: #000066;
+	}
+
+	h1.pageHeading {
+		height: 114px;
+		font-weight: bold;
+		color: #000066;
+		background-color: #ffffff;
+		padding-bottom: 0;
+		margin-left: 0;
+	}
+
+		h1.pageHeading img {
+			left: 0%;
+			top: 0%;
+		}
+		
+		h1.pageHeading div {
+			top: 25%;
+		}
+
+
+	h2, div.text.subheading {
+		background-position: bottom left;
+		padding-bottom: .4em;
+		color: #000066;
+	}
+
+div.document, form {
+	padding-left: 3em;
+}
+
+input.text, textarea {
+	border: 1px solid #000066;
+	background-color: #f8faff;
+}
+
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+/*	background: #226130 url("images/instructional.gif") 10px 12px no-repeat; */
+	border-top: 1px solid #2f75b2;
+	border-bottom: 1px solid #2f75b2;
+	color: #2f75b2;
+}
+
+div.text.error {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+/*	background: #8d1019 url("images/error.gif") 10px 12px no-repeat; */
+	border-top: 1px solid #b42a2f;
+	border-bottom: 1px solid #b42a2f;
+	color: #b42a2f;
 }
 
 #tawalaProjectContainer {
-    border: 14px double #ddcccc;
-    padding: 8px 8px 8px 16px;
-    text-align: left;
-    margin-left: auto;
-    margin-right: auto;
-    background-color: white;
+	width: 900px;
+	color: #000000;
+	background-color: #ffffff;
+	border: 0px solid #cccccc;
+}
+#innerTawalaFooter {
+	background-color: #b42a2f;
 }
 
-#tawalaFooter {
-	width: 170px;
-	height: 36px;
-	float: right;
-	cursor: pointer;
+#tawalaFooterLogo {
+	position: absolute;
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala-button.gif") 100% 50% no-repeat;
 }
 
-#form .mcRadio, #form .mcCheckbox {
-    clear: both;
-    margin: 0px;
-    background-color: transparent;
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 1px solid #aaaaaa;				
+	}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #aaaaaa;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #000066;
+		color: #ffffff;
+		border: 1px solid #000066;				
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr.even{
+			background-color: #f0f0f0;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #e8e8e8;
+		}
+
+		table.component.outline tbody td, table.component.outline tbody th {
+			border-right: 1px solid #dddddd;
+		}
+	
+.graph .bar { 
+	color: #444444; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
 }
 
-#form .submitButton input {
-    font-weight: bold;
-    text-transform: capitalize;
+	
+.graph.color1 { border-color: #cccccc; }
+	.graph.color1 .bar { background: #cccccc; }
+
+.graph.color2 { border-color: #cccccc; }
+	.graph.color2 .bar { background: #cccccc; }
+
+.graph.color3 { border-color:#cccccc; }
+	.graph.color3 .bar { background: #cccccc; }
+
+.graph.color4 { border-color: #cccccc; }
+	.graph.color4 .bar { background: #cccccc; }
+
+.graph.color5 { border-color: #cccccc; }
+	.graph.color5 .bar { background: #cccccc; }
+
+.graph.color6 { border-color: #cccccc; }
+	.graph.color6 .bar { background: #cccccc; }
+
+.graph.color7 { border-color: #cccccc; }
+	.graph.color7 .bar { background: #cccccc; }
+
+.graph.color8 { border-color: #cccccc; }
+	.graph.color8 .bar { background: #cccccc; }
+
+.graph.color9 { border-color: #cccccc; }
+	.graph.color9 .bar { background: #cccccc; }
+
+.graph.color10 { border-color: #cccccc; }
+	.graph.color10 .bar { background: #cccccc; }
+
+.graph.color11 { border-color: #cccccc; }
+	.graph.color11 .bar { background: #cccccc; }
+
+.graph.color12 { border-color: #cccccc; }
+	.graph.color12 .bar { background: #cccccc; }
+
+.graph.color13 { border-color: #cccccc }
+	.graph.color13 .bar { background: #cccccc; }
+
+.graph.color14 { border-color: #cccccc; }
+	.graph.color14 .bar { background: #cccccc; }
+
+.graph.color15 { border-color: #cccccc; }
+	.graph.color15 .bar { background: #cccccc; }
+
+.graph.color16 { border-color: #cccccc; }
+	.graph.color16 .bar { background: #cccccc; }
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt th {
+	background-color: #000066;
+	color: #ffffff;
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	background-color: #000066;
+	color:#ffffff;
+	font-weight:bold;
+}
+
+.yui-skin-sam th.yui-dt-asc .yui-dt-liner {
+	background:transparent url(/images/dt-arrow-up-white.png) no-repeat scroll right center;
+}
+.yui-skin-sam th.yui-dt-desc .yui-dt-liner {
+	background:transparent url(/images/dt-arrow-dn-white.png) no-repeat scroll right center;
 }

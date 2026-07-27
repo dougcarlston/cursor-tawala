@@ -1,0 +1,286 @@
+body {
+	color: #3c3c3c;
+	font-family: Georgia, serif;
+	font-size: 14px;
+	background-color: #ffffff;
+	line-height: 1.4em;
+	background: #ffffff url(images/body-image-top.jpg) repeat-x scroll top left;
+	margin-top: 0px;
+}
+
+h1, h2, h3, h4, h5, h6, div.text.heading, div.text.subHeading {
+	font-family:  Georgia, serif;
+	color: #775731;
+}
+
+	h1, div.text.heading {
+		background-position: bottom left;
+		padding-bottom: .3em;
+		margin-bottom: .3em;
+		color: #E18506;
+		border-bottom: 2px dashed #462802;
+	}
+
+	h1.pageHeading {
+		height: 197px;
+		font-weight: normal;
+		color: #462802;
+		background-color: transparent;
+		padding-bottom: 0;
+		margin-left: 0;
+		border: 0px;
+		text-align: right;
+	}
+
+		h1.pageHeading img {
+			top: 0%;
+			z-index: 1;
+		}
+		
+		h1.pageHeading div {
+			bottom: 10%;
+			border-bottom: 2px dashed #462802;
+			width: 95%;
+			z-index: 2;
+			text-align: left;
+		}
+
+
+	h2, div.text.subheading {
+		background-position: bottom left;
+		padding-bottom: .3em;
+		margin-bottom: .6em;
+		color: #E18506;
+		border-bottom: 2px dashed #462802;
+	}
+
+div.document, form {
+}
+
+input.text, textarea {
+	border: 1px solid #472700;
+	background-color: #ffffff;
+}
+/*
+ * Text styles
+ */
+div.text.instructional {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+	border: 1px solid #004A84;
+	color: #004A84;
+}
+
+div.text.error {
+	padding: 1em 1em 1.5em 1em;
+	margin-left: 0;
+	margin-right: 0;
+	border: 1px solid #BE0000;
+	color: #BE0000;
+}
+
+#tawalaProjectContainer {
+	width: 700px;
+	color: #3c3c3c;
+	background-color: transparent;
+	border: 0px solid #775731;
+}
+
+	#tawalaProjectContainer table {
+		color: inherit;
+		font-family: inherit;
+		font-size: inherit;
+	}
+	
+#innerTawalaFooter {
+	width: 97%;
+	height: 41px;
+	border-top: 2px dashed #462802;
+}
+
+#tawalaFooterLogo {
+	right: 15px;
+	top: 7px;	
+	width: 173px;
+	height: 29px;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+}
+	table.component.outline {
+		border: 0px solid #472701;				
+	}
+	
+		table.component.outline thead th, tr.heading th {
+			border: 1px solid #ffffff;
+		}
+
+	table.component thead, 
+	table.component tr.heading th,
+	table.component th.leftheading {
+		background-color: #472701;
+		color: #ffffff;
+	}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #e5d5bC;
+		}
+
+		table.component tbody tr.even{
+			background-color: #F5E5CC;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #d5c5aC;
+		}
+
+		table.component.outline tbody td,
+		table.component.outline tbody th {
+			border: 1px solid #ffffff;
+			border-top: 0px solid #ffffff;
+		}
+
+	table.component tfoot {
+		background-color: #d5c5aC;
+	}
+	
+		table.component tfoot .legend {
+			color:#444444;
+		}
+	
+.graph .bar { 
+	color: #ffffff; 
+	font-size: .9em;
+	height: 1.7em; 
+	line-height: 1.8em;									
+}
+
+	
+.graph.color1 { border-color: #775731; }
+	.graph.color1 .bar { background: #775731; }
+
+.graph.color2 { border-color: #775731; }
+	.graph.color2 .bar { background: #775731; }
+
+.graph.color3 { border-color:#775731; }
+	.graph.color3 .bar { background: #775731; }
+
+.graph.color4 { border-color: #775731; }
+	.graph.color4 .bar { background: #775731; }
+
+.graph.color5 { border-color: #775731; }
+	.graph.color5 .bar { background: #775731; }
+
+.graph.color6 { border-color: #775731; }
+	.graph.color6 .bar { background: #775731; }
+
+.graph.color7 { border-color: #775731; }
+	.graph.color7 .bar { background: #775731; }
+
+.graph.color8 { border-color: #775731; }
+	.graph.color8 .bar { background: #775731; }
+
+.graph.color9 { border-color: #775731; }
+	.graph.color9 .bar { background: #775731; }
+
+.graph.color10 { border-color: #775731; }
+	.graph.color10 .bar { background: #775731; }
+
+.graph.color11 { border-color: #775731; }
+	.graph.color11 .bar { background: #775731; }
+
+.graph.color12 { border-color: #775731; }
+	.graph.color12 .bar { background: #775731; }
+
+.graph.color13 { border-color: #775731 }
+	.graph.color13 .bar { background: #775731; }
+
+.graph.color14 { border-color: #775731; }
+	.graph.color14 .bar { background: #775731; }
+
+.graph.color15 { border-color: #775731; }
+	.graph.color15 .bar { background: #775731; }
+
+.graph.color16 { border-color: #775731; }
+	.graph.color16 .bar { background: #775731; }
+
+/*
+ * YUI Datatable overrides
+ */
+.yui-skin-sam .yui-dt table {
+	font-family: inherit;
+}
+
+
+.yui-skin-sam .yui-dt th {
+	background-image: none;
+	background-color: #472701;
+	color: #ffffff;
+	text-align: center;
+	font-weight: bold;	
+}
+
+.yui-skin-sam .yui-dt th, .yui-skin-sam .yui-dt th a {
+	color:#ffffff;
+	font-weight:bold;
+}
+
+.yui-skin-sam th.yui-dt-asc .yui-dt-liner {
+	background:transparent url(/images/dt-arrow-up-white.png) no-repeat scroll right center;
+}
+
+.yui-skin-sam th.yui-dt-desc .yui-dt-liner {
+	background:transparent url(/images/dt-arrow-dn-white.png) no-repeat scroll right center;
+}
+
+.yui-skin-sam .yui-dt-liner {
+	color: #000000;
+	border-right:0px solid #ffffff; /* inner column border */
+
+}
+
+.yui-skin-sam .yui-dt td {
+	border-right: 1px solid #ffffff;
+	border-bottom: 1px solid #ffffff;
+}
+
+/* Standard odd/even row colors */
+.yui-skin-sam tr.yui-dt-even {
+	background-color: #E5D5BC;
+}
+
+.yui-skin-sam tr.yui-dt-odd {
+	background-color: #F5E5CC;
+}
+
+/* odd/even row colors when column is selected */
+.yui-skin-sam tr.yui-dt-even td.yui-dt-asc, .yui-skin-sam tr.yui-dt-even td.yui-dt-desc {
+	background-color:#e5c797;
+}
+
+.yui-skin-sam tr.yui-dt-odd td.yui-dt-asc, .yui-skin-sam tr.yui-dt-odd td.yui-dt-desc {
+	background-color:#e5cea9;
+}
+
+/* paginator attributes */
+.yui-skin-sam .yui-pg-container, .yui-skin-sam .yui-dt-paginator {
+	color: #444444;
+}
+
+.yui-skin-sam .yui-pg-current-page, .yui-skin-sam .yui-dt-paginator .yui-dt-selected {
+	background-color:#FFFFFF;
+	border:1px solid #FFFFFF;
+}
+
+.yui-skin-sam a.yui-pg-page, .yui-skin-sam a.yui-dt-page {
+	background-color:#FFFFFF;
+	border:1px solid #CBCBCB;
+}
+
