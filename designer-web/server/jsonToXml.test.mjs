@@ -441,3 +441,160 @@ describe("xmlCommentText", () => {
     }
   });
 });
+
+/**
+ * Process Set statement typing (owner rules, `DESIGNER_OPEN_BUGS.md` "Variables treated
+ * as text"): numeric SET expressions must compile to Java's `<add>/<sub>/<mul>/<div>`
+ * operator XML, not a flat `<string>` concatenation that bakes the literal operator
+ * character into the stored text.
+ */
+function setXml(value, extra = {}) {
+  const xml = projectToXml({
+    name: "SetTest",
+    forms: [{ name: "Form 1", startPoint: true, items: [] }],
+    processes: [
+      {
+        name: "P1",
+        commands: [{ cmd: "set", field: "c", value, ...extra }],
+      },
+    ],
+    documents: [],
+  });
+  const m = xml.match(/<set field="c"[^>]*>([\s\S]*?)<\/set>/);
+  if (!m) throw new Error(`No <set> found in: ${xml}`);
+  return m[0];
+}
+
+describe("Process Set expression typing (numeric vs text)", () => {
+  it("plain numeric literal (no operator) stays a simple string operand", () => {
+    expect(setXml("1")).toBe('<set field="c"><string value="1"/></set>');
+  });
+
+  it("field + field compiles to <add>, not literal '+' text", () => {
+    const xml = setXml("<<a>> + <<b>>");
+    expect(xml).toContain("<add>");
+    expect(xml).toContain('<operand field="a"/>');
+    expect(xml).toContain('<operand field="b"/>');
+    expect(xml).not.toContain("value=\"+\"");
+  });
+
+  it("field + number literal compiles to <add> (regression: legacy narrow-case parity)", () => {
+    const xml = setXml("<<a>> + 5");
+    expect(xml).toContain("<add><operand field=\"a\"/><operand value=\"5\"/></add>");
+  });
+
+  it("subtraction compiles to <sub>", () => {
+    expect(setXml("<<a>> - <<b>>")).toContain(
+      '<sub><operand field="a"/><operand field="b"/></sub>',
+    );
+  });
+
+  it("multiplication compiles to <mul>", () => {
+    expect(setXml("<<a>> * <<b>>")).toContain(
+      '<mul><operand field="a"/><operand field="b"/></mul>',
+    );
+  });
+
+  it("division compiles to <div>", () => {
+    expect(setXml("<<a>> / <<b>>")).toContain(
+      '<div><operand field="a"/><operand field="b"/></div>',
+    );
+  });
+
+  it("parentheses control operator precedence/order", () => {
+    const xml = setXml("(<<a>> + <<b>>) * 2");
+    expect(xml).toContain(
+      '<mul><add><operand field="a"/><operand field="b"/></add><operand value="2"/></mul>',
+    );
+  });
+
+  it("respects * before + without parentheses", () => {
+    const xml = setXml("<<a>> + <<b>> * 2");
+    expect(xml).toContain(
+      '<add><operand field="a"/><mul><operand field="b"/><operand value="2"/></mul></add>',
+    );
+  });
+
+  it("^ with a literal non-negative integer exponent expands to nested <mul> (Java has no pow op)", () => {
+    const xml = setXml("<<a>> ^ 3");
+    expect(xml).toContain(
+      '<mul><mul><operand field="a"/><operand field="a"/></mul><operand field="a"/></mul>',
+    );
+  });
+
+  it("^ with a non-integer/field exponent has no Java equivalent — falls back to literal text", () => {
+    const xml = setXml("<<a>> ^ <<b>>");
+    expect(xml).not.toContain("<mul>");
+    expect(xml).toContain("<string");
+  });
+
+  it('quoted text concatenation: "ice"+"cream" -> icecream (sibling <string> ops, not <add>)', () => {
+    const xml = setXml('"ice"+"cream"');
+    expect(xml).toContain('<string value="ice"/><string value="cream"/>');
+    expect(xml).not.toContain("<add>");
+  });
+
+  it("field + quoted text concatenates (mixed field/text via +)", () => {
+    const xml = setXml('<<a>>+"cream"');
+    expect(xml).toContain('<string field="a"/><string value="cream"/>');
+  });
+
+  it('a quoted number is text, not numeric — "123"+"456" concatenates instead of adding', () => {
+    const xml = setXml('"123"+"456"');
+    expect(xml).toContain('<string value="123"/><string value="456"/>');
+    expect(xml).not.toContain("<add>");
+  });
+
+  it("text operands with a non-+ operator are undefined — falls back to literal text as-is", () => {
+    const xml = setXml('"ice" - "cream"');
+    expect(xml).not.toContain("<sub>");
+    expect(xml).toContain("<string value=");
+  });
+
+  it('arithmeticAsText=true forces literal text even when the value looks arithmetic', () => {
+    const xml = setXml("<<a>> + <<b>>", { arithmeticAsText: true });
+    expect(xml).not.toContain("<add>");
+    expect(xml).toContain('arithmeticAsText="true"');
+  });
+
+  it("a single field reference (no operators) still emits a plain <string field> (FIB typing follows the field's own runtime value)", () => {
+    expect(setXml("<<a>>")).toBe('<set field="c"><string field="a"/></set>');
+  });
+
+  it("mixed field + literal text with no operators keeps existing concatenation behavior", () => {
+    expect(setXml("Hi <<a>>!")).toBe(
+      '<set field="c" arithmeticAsText="false">' +
+        '<string value="Hi "/><string field="a"/><string value="!"/></set>',
+    );
+  });
+
+  // Regression: real "Horses and Penguins Test" project (owner Jul 27) — a self-referencing
+  // `Set Score to <<Score>> + 1` (field on both LHS and RHS) and `Set Wrong to 17 - <<Score>>`
+  // (a bare number as the *first* operand, field second — the reverse operand order from the
+  // synthetic `<<a>> - <<b>>` test above). Both exercise the exact spacing/pattern from the
+  // owner's screenshot, not just a normalized `field+field` shape.
+  it('self-referencing "Set Score to <<Score>> + 1" compiles to <add>, not literal text', () => {
+    const xml = setXml("<<Score>> + 1");
+    expect(xml).toBe(
+      '<set field="c" arithmeticAsText="false">' +
+        '<add><operand field="Score"/><operand value="1"/></add></set>',
+    );
+  });
+
+  it('"Set Wrong to 17 - <<Score>>" (number first, field second) compiles to <sub>', () => {
+    const xml = setXml("17 - <<Score>>");
+    expect(xml).toBe(
+      '<set field="c" arithmeticAsText="false">' +
+        '<sub><operand value="17"/><operand field="Score"/></sub></set>',
+    );
+  });
+
+  it('"Set Score to <<Score>> * 100 / 17" (chained mul/div, real project percent calc)', () => {
+    const xml = setXml("<<Score>> * 100 / 17");
+    expect(xml).toBe(
+      '<set field="c" arithmeticAsText="false">' +
+        "<div><mul><operand field=\"Score\"/><operand value=\"100\"/></mul>" +
+        '<operand value="17"/></div></set>',
+    );
+  });
+});

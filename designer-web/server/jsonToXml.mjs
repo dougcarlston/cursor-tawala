@@ -411,12 +411,16 @@ function templateToFieldRef(value) {
   return `<string value="${escAttr(s)}"/>`;
 }
 
-function valueToXml(value) {
+/**
+ * Fallback expression body: split on `<<field>>` tokens and emit each token/literal
+ * segment as a sibling `<string>` — Java's `StringConcatenationExpression` concatenates
+ * multiple `<string>` children in document order. This is correct for plain literals,
+ * single field references, and "text with fields but no operators" (e.g. `Hi <<Name>>`).
+ * It is NOT correct for expressions containing `+ - * / ^` operators meant as math or
+ * concatenation — see `compileSetExpression` below, which handles those.
+ */
+function legacyValueToXml(value) {
   const s = String(value ?? "");
-  const addMatch = s.match(/^<<([^>]+)>>\s*\+\s*(\d+)$/);
-  if (addMatch) {
-    return `<add><operand field="${escAttr(addMatch[1])}"/><operand value="${escAttr(addMatch[2])}"/></add>`;
-  }
   if (!s.includes("<<")) return templateToFieldRef(s);
   return s
     .split(/(<<[^>]+>>)/)
@@ -425,18 +429,213 @@ function valueToXml(value) {
     .join("");
 }
 
-function setValueToXml(value, arithmeticAsText) {
-  const body = valueToXml(value);
-  if (arithmeticAsText === true) {
-    return { body, attr: ' arithmeticAsText="true"' };
+/**
+ * Tokenizer for Process `Set`/condition expressions. Recognizes (in priority order):
+ * `<<Form:Field>>` references, quoted text literals (`"123"` — owner rule: a quoted
+ * number is text, never a numeric operand), bare numeric literals, the operators
+ * `+ - * / ^` and parentheses, and finally any other run of characters as a bare
+ * (non-numeric) text literal.
+ */
+const EXPRESSION_TOKEN_RE = /<<[^>]+>>|"(?:[^"\\]|\\.)*"|\d+(?:\.\d+)?|[+\-*/^()]|[^\s+\-*/^()"]+/g;
+
+function tokenizeExpression(s) {
+  return s.match(EXPRESSION_TOKEN_RE) ?? [];
+}
+
+function classifyExpressionToken(tok) {
+  const fieldMatch = tok.match(/^<<([^>]+)>>$/);
+  if (fieldMatch) return { kind: "field", name: fieldMatch[1] };
+  if (tok.length >= 2 && tok.startsWith('"') && tok.endsWith('"')) {
+    return { kind: "text", value: tok.slice(1, -1).replace(/\\"/g, '"') };
   }
+  if (/^\d+(?:\.\d+)?$/.test(tok)) return { kind: "number", value: tok };
+  if (tok === "(" || tok === ")") return { kind: "paren", value: tok };
+  if (tok === "+" || tok === "-" || tok === "*" || tok === "/" || tok === "^") {
+    return { kind: "op", value: tok };
+  }
+  return { kind: "text", value: tok };
+}
+
+/** Merge a leading/after-operator `-` into the following numeric literal (unary minus). */
+function mergeUnaryMinus(tokens) {
+  const out = [];
+  for (let i = 0; i < tokens.length; i++) {
+    const tok = tokens[i];
+    const prev = out[out.length - 1];
+    const isUnaryContext = !prev || prev.kind === "op" || (prev.kind === "paren" && prev.value === "(");
+    if (tok.kind === "op" && tok.value === "-" && isUnaryContext) {
+      const next = tokens[i + 1];
+      if (next && next.kind === "number") {
+        out.push({ kind: "number", value: `-${next.value}` });
+        i++;
+        continue;
+      }
+    }
+    out.push(tok);
+  }
+  return out;
+}
+
+const OPERATOR_PRECEDENCE = { "+": 1, "-": 1, "*": 2, "/": 2, "^": 3 };
+const RIGHT_ASSOCIATIVE = new Set(["^"]);
+
+/** Shunting-yard parse of a tokenized Set/condition expression into an operator tree. */
+function parseExpressionTokens(tokens) {
+  const operandStack = [];
+  const opStack = [];
+
+  const applyOp = (op) => {
+    const b = operandStack.pop();
+    const a = operandStack.pop();
+    if (a === undefined || b === undefined) throw new Error("invalidExpression");
+    operandStack.push({ op, a, b });
+  };
+
+  for (const tok of tokens) {
+    if (tok.kind === "field" || tok.kind === "number" || tok.kind === "text") {
+      operandStack.push(tok);
+    } else if (tok.kind === "op") {
+      while (opStack.length) {
+        const top = opStack[opStack.length - 1];
+        if (top === "(") break;
+        const topBeatsCurrent = RIGHT_ASSOCIATIVE.has(tok.value)
+          ? OPERATOR_PRECEDENCE[top] > OPERATOR_PRECEDENCE[tok.value]
+          : OPERATOR_PRECEDENCE[top] >= OPERATOR_PRECEDENCE[tok.value];
+        if (!topBeatsCurrent) break;
+        applyOp(opStack.pop());
+      }
+      opStack.push(tok.value);
+    } else if (tok.value === "(") {
+      opStack.push("(");
+    } else if (tok.value === ")") {
+      while (opStack.length && opStack[opStack.length - 1] !== "(") {
+        applyOp(opStack.pop());
+      }
+      if (opStack.pop() !== "(") throw new Error("invalidExpression");
+    }
+  }
+  while (opStack.length) {
+    const top = opStack.pop();
+    if (top === "(") throw new Error("invalidExpression");
+    applyOp(top);
+  }
+  if (operandStack.length !== 1) throw new Error("invalidExpression");
+  return operandStack[0];
+}
+
+function hasTextLeaf(node) {
+  if (!node.op) return node.kind === "text";
+  return hasTextLeaf(node.a) || hasTextLeaf(node.b);
+}
+
+/** True when every operator in the tree is `+` (owner rule: text vars only support `+`). */
+function allOpsAreAdd(node) {
+  if (!node.op) return true;
+  return node.op === "+" && allOpsAreAdd(node.a) && allOpsAreAdd(node.b);
+}
+
+function flattenAddChain(node, out) {
+  if (node.op === "+") {
+    flattenAddChain(node.a, out);
+    flattenAddChain(node.b, out);
+  } else {
+    out.push(node);
+  }
+}
+
+function leafOperandXml(leaf, tag) {
+  if (leaf.kind === "field") return `<${tag} field="${escAttr(leaf.name)}"/>`;
+  return `<${tag} value="${escAttr(leaf.value)}"/>`;
+}
+
+/**
+ * Numeric expression tree → nested `<add>/<sub>/<mul>/<div>` XML (matches the Java
+ * `Operator`/`ContainingOperator` factory registrations exactly). Returns `null` when
+ * the tree can't be represented in Java XML (Java has no `^` operator — only literal,
+ * non-negative integer exponents can be expanded into repeated `<mul>`; a field or
+ * fractional/negative exponent has no Java-side equivalent).
+ */
+function arithmeticNodeToXml(node) {
+  if (!node.op) return leafOperandXml(node, "operand");
+  if (node.op === "^") {
+    if (node.b.kind !== "number" || !/^\d+$/.test(node.b.value)) return null;
+    const exponent = parseInt(node.b.value, 10);
+    const baseXml = arithmeticNodeToXml(node.a);
+    if (baseXml == null) return null;
+    if (exponent === 0) return `<operand value="1"/>`;
+    let xml = baseXml;
+    for (let i = 1; i < exponent; i++) {
+      xml = `<mul>${xml}${baseXml}</mul>`;
+    }
+    return xml;
+  }
+  const tag = { "+": "add", "-": "sub", "*": "mul", "/": "div" }[node.op];
+  const aXml = arithmeticNodeToXml(node.a);
+  const bXml = arithmeticNodeToXml(node.b);
+  if (aXml == null || bXml == null) return null;
+  return `<${tag}>${aXml}${bXml}</${tag}>`;
+}
+
+/**
+ * Compile a Set/condition expression that contains `+ - * / ^` operators into either:
+ *  - a numeric `<add>/<sub>/<mul>/<div>` tree (owner rule: numeric vars support all
+ *    four math ops plus `^`, with parentheses for order), or
+ *  - a flattened `<string>` concatenation (owner rule: text vars only support `+`,
+ *    meaning concatenate — `"ice"+"cream"` → `icecream`).
+ *
+ * Returns `null` when there are no operators to interpret, the expression doesn't
+ * parse (unbalanced parens, trailing operator, …), or it mixes text operands with a
+ * non-`+` operator (undefined by the owner's rules) — callers should fall back to
+ * `legacyValueToXml`, which preserves the original literal/field text unchanged.
+ */
+function compileSetExpression(value) {
+  const rawTokens = tokenizeExpression(value);
+  if (rawTokens.length < 2) return null;
+  const tokens = mergeUnaryMinus(rawTokens.map(classifyExpressionToken));
+  if (!tokens.some((t) => t.kind === "op")) return null;
+
+  let ast;
+  try {
+    ast = parseExpressionTokens(tokens);
+  } catch {
+    return null;
+  }
+
+  if (hasTextLeaf(ast)) {
+    if (!allOpsAreAdd(ast)) return null;
+    const leaves = [];
+    flattenAddChain(ast, leaves);
+    return { body: leaves.map((leaf) => leafOperandXml(leaf, "string")).join(""), kind: "concat" };
+  }
+
+  const body = arithmeticNodeToXml(ast);
+  if (body == null) return null;
+  return { body, kind: "arithmetic" };
+}
+
+function valueToXml(value) {
+  const s = String(value ?? "");
+  const compiled = compileSetExpression(s);
+  if (compiled) return compiled.body;
+  return legacyValueToXml(s);
+}
+
+function setValueToXml(value, arithmeticAsText) {
+  const s = String(value ?? "");
+  if (arithmeticAsText === true) {
+    return { body: legacyValueToXml(s), attr: ' arithmeticAsText="true"' };
+  }
+  const compiled = compileSetExpression(s);
+  if (compiled) {
+    return { body: compiled.body, attr: ' arithmeticAsText="false"' };
+  }
+  const body = legacyValueToXml(s);
   if (arithmeticAsText === false) {
     return { body, attr: ' arithmeticAsText="false"' };
   }
-  const arithmetic =
+  const looksArithmeticish =
     body.includes("<add>") || (body.match(/<string/g)?.length ?? 0) > 1;
-  const attr = arithmetic ? ' arithmeticAsText="false"' : "";
-  return { body, attr };
+  return { body, attr: looksArithmeticish ? ' arithmeticAsText="false"' : "" };
 }
 
 function conditionValueXml(value) {
