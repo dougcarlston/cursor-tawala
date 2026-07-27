@@ -6,7 +6,7 @@ import { setFormItemDrag } from "@/lib/designerDrag";
 /**
  * Docked "Items" palette — legacy toolbox between Project Explorer and MDI
  * (D-Items-palette-placement). Icons are exact 24×24 bitmaps from legacy
- * `Form_Item*.png`. File Uploader omitted (owner Jul 17). Separator after
+ * `Form_Item*.png`. File Uploader hidden/deferred (owner Jul 27). Separator after
  * Multiple Choice matches legacy rule below File Uploader.
  */
 

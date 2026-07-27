@@ -196,7 +196,7 @@ Pre-processes that are not Post-processes show Pre-only banner text when linked 
 | 3 | Fill in the Blank | Add questions with one or more blanks. |
 | 4 | Multiple Choice | Add single or multiple choice question. |
 
-> **Owner note (June 2026 / Jul Jul 17):** Legacy **File Uploader** form item existed in later builds (e.g. SportsDashboards `<file>`) and in C# source, but was **not** on the Jan 2011 reference Designer and is **omitted** from the browser Items palette (no greyed stub). Documented only in `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § File Uploader (deferred / out of palette). Images: **Insert → Image → From your PC…** (embed) or **From the Web…** (DISPLAY IMAGE URL).
+> **Owner note (June 2026 / Jul 17 / Jul 27):** Legacy **File Uploader** form item existed in later builds (e.g. SportsDashboards `<file>`) and in C# source, but was **not** on the Jan 2011 reference Designer and is **hidden** on the browser Items palette (no greyed stub). **Deferred / out of scope for this build (owner Jul 27)** — do not implement or unhide. Documented only in `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § File Uploader. Images: **Insert → Image → From your PC…** (embed) or **From the Web…** (DISPLAY IMAGE URL).
 
 *(line break)*
 
@@ -443,7 +443,7 @@ Insert contents depend on the **active MDI child** (Form, Process, or Document).
 | Hyperlink... | | Greyed unless cursor in **Text** item |
 | Function... | | Greyed unless cursor in **Text** item |
 
-Matches **Items** palette (seven items; File Uploader omitted). **Field** not present (Document only).
+Matches **Items** palette (seven items; File Uploader hidden/deferred — Jul 27). **Field** not present (Document only).
 
 ### B) Process selected
 
@@ -487,7 +487,7 @@ Insert uses internal `*StatementView` names; palette uses short names:
 | Menu bar order | **Insert before View** is fine (owner) — Insert used more even when Items/Statements palette is easier for most commands |
 | Keep Insert menu | Yes — duplicates palette by design (legacy parity); palette remains the faster path |
 | Form / Process / Document | Already context-sensitive and largely wired — see gaps below |
-| Image submenu | **From your PC…** (embed) · **From the Web…** (DISPLAY IMAGE). Dropped “Tawala Upload”; File Uploader form item omitted from Items palette (Jul 17) |
+| Image submenu | **From your PC…** (embed) · **From the Web…** (DISPLAY IMAGE). Dropped “Tawala Upload”; File Uploader form item hidden/deferred on Items palette (Jul 17 hidden, Jul 27 out of scope) |
 | Form/Process vs palettes | **Identical handlers** (owner Jul 17 — Insert Form items ↔ Items palette; Process statements ↔ Statements palette). Document Image/Invitation/Hyperlink/Function + **Field** (Jul 17) via Insert/fx |
 | Open gaps | Polish only if owner flags during review |
 
