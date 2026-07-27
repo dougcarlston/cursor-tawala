@@ -1,0 +1,15 @@
+body {
+	background-color: #7588A9;
+}
+
+#tawalaProjectContainer {
+   	background: white url(images/blue-lined-paper.gif) repeat top left;
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+	background: url(images/madewithtawala.gif) right 50% no-repeat;
+}

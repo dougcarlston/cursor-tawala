@@ -1,0 +1,15 @@
+/*
+ * Basic Pink theme
+ */
+body {
+	background-color: #ffd8d8;
+}
+
+#tawalaProjectContainer {
+	background-color: #ffd8d8;
+	border: 1px solid #dd8888;
+}
+
+#tawalaFooter {
+	background-image: none;
+}

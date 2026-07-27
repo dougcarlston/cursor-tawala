@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="DocOutputTest01" themePath="default" format="1.3">
+<documents>
+<document name="My Document">
+<htmlData>
+<![CDATA[<p><span style="font-size:10pt;">A simple document test.</span></p>]]>
+</htmlData>
+<rawHtmlData>
+<![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta content="TX_HTML32 12.0.230.500" name="GENERATOR">
+<title></title>
+<style type="text/css"> BODY {font-family: 'Arial';font-size: 12pt;font-weight: normal;font-style: normal;}
+ P {margin-top: 0.05pt;margin-bottom: 0.05pt;font-family: 'Arial';font-size: 12pt;font-style: normal;}
+</style></head>
+<body bgcolor="#FFFFFF" text="#000000">
+<p><span style="font-size:10pt;">A simple document test.</span></p></body>
+</html>]]>
+</rawHtmlData>
+</document>
+</documents>
+</project>

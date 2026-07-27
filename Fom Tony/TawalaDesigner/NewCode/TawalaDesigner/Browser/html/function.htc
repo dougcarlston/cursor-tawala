@@ -1,0 +1,42 @@
+<public:component tagName="function">
+
+<public:attach event="oncontentready" onevent="onContentReady()" />
+
+<script language="JScript">
+
+function onContentReady()
+{
+    element.className="function";
+    element.contentEditable="false";
+    element.onresizestart=cancel;
+    element.onmouseup=onMouseUp;
+    element.onkeydown = onKeyDown;
+    element.onselectstart = cancel;
+
+    element.addBehavior("notadroptarget.htc");
+}
+
+function onMouseUp()
+{
+    element.focus();
+    element.setActive();
+}
+
+function onKeyDown()
+{
+    if (event.keyCode == 46)
+    {
+        element.parentElement.removeChild(element);
+        cancel();
+    }
+}
+
+function cancel()
+{
+    event.returnValue=false;
+    event.cancelBubble=true;
+}
+
+</script>
+
+</public:component>

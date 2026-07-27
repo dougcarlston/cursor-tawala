@@ -1,0 +1,58 @@
+
+    internal class PropertyCollection<T> : IPropertyCollection where T : class
+    {
+        private const BindingFlags bindingFlags = BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly;
+        private static int count;
+        private static IParameterInfoCollection parameterInfoCollection;
+        private static readonly Collection<string> ids = new Collection<string>();
+        private static readonly Collection<PropertyInfo> properties = new Collection<PropertyInfo>();
+        private readonly T propertyOwner;
+
+        public PropertyCollection(T owner, IParameterInfoCollection parameters)
+        {
+            propertyOwner = owner;
+            initialize(parameters);
+        }
+
+        #region IPropertyCollection Members
+
+        public object this[int index]
+        {
+            get { return properties[index].GetValue(propertyOwner, null); }
+            set { properties[index].SetValue(propertyOwner, value, null); }
+        }
+
+        public object this[string id]
+        {
+            get { return this[ids.IndexOf(id)]; }
+            set { this[ids.IndexOf(id)] = value; }
+        }
+
+        public object this[IParameterInfo info]
+        {
+            get { return this[info.Id]; }
+            set { this[info.Id] = value; }
+        }
+
+        public int PropertyCount { get { return count; } }
+
+        #endregion
+
+        private static void initialize(IParameterInfoCollection parameters)
+        {
+            if (parameterInfoCollection != null)
+            {
+                return;
+            }
+
+            parameterInfoCollection = parameters;
+            count = parameters.Count;
+
+            for (int i = 0; i < count; ++i)
+            {
+                ids.Add(parameters[i].Id);
+                properties.Add(typeof(T).GetProperty(parameters[i].PropertyName, bindingFlags));
+            }
+        }
+    }
+}

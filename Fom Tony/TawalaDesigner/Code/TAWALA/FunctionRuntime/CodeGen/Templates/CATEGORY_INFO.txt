@@ -1,0 +1,33 @@
+
+    internal sealed class CategoryInfo : ICategoryInfo
+    {
+        #region ICategoryInfo Members
+
+        public string Name { get { return name; } }
+
+        public IFunctionInfoCollection Functions { get { return functionInfo; } }
+
+        public XPathNavigator Xml { get { return navCategory.Clone(); } }
+
+        #endregion
+
+        public override string ToString()
+        {
+            return Name;
+        }
+
+        #region PRIVATE
+
+        private readonly FunctionInfoCollection functionInfo = new FunctionInfoCollection();
+        private readonly string name;
+        private readonly XPathNavigator navCategory;
+
+        internal CategoryInfo(XPathNavigator _navCategory)
+        {
+            navCategory = _navCategory;
+            name = navCategory.GetAttribute("name", "");
+        }
+
+        #endregion
+    }
+}

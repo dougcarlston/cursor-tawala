@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Form with proc and doc" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default" process="Process 1">
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<show document="Document 1" reset="false"/>
+</process>
+</processes>
+<documents>
+<document name="Document 1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

@@ -1,0 +1,426 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Tawala Invoicing" themePath="mvsc" format="1.10" designerBuild="204">
+<pageHeader><image id="__HEADER__8cab9fa34d14ca0" width="581" height="74"/></pageHeader><styles fibItemStyle="leftAlignLabelsJustified" /><forms>
+<form name="Start" startPoint="true" themePath="mvsc" process="Post-Start">
+<items>
+<heading label="H1" type="Main"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Tawala Services Invoicing</font></paragraph></heading>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Create Invoice</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Show client account</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Show all Invoices</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Show unpaid Invoices</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Show all paid Invoices</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<and>
+<mcDoesNotEqual field="Start:Q1" value="a"/>
+<mcDoesNotEqual field="Start:Q1" value="b"/>
+</and>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Type part or all of the </font><font face="Arial" size="200" color="000000"><b>Client Organization Name</b></font><font face="Arial" size="200" color="000000"> to check our current files: </font><blank label="a" length="20" required="false" alternateLabel="SearchCrit"/></paragraph></fib>
+<break/>
+<mc label="Q3" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">The following existing clients match your criteria.  If there are no matches, press Submit to create a new client record.</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:CreateInvoice:Client"/>
+<string value=" ("/>
+<field name="Record:CreateInvoice:ContactName"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:CreateInvoice:Client"/>
+</value-expression><sort-expression><field name="Record:CreateInvoice:Client"/>
+</sort-expression><record-selector><form name="CreateInvoice" /><conditions>
+<and>
+<contains field="Record:CreateInvoice:Client">
+<string field="Start:SearchCrit"/>
+</contains>
+<equals field="Record:CreateInvoice:PrimaryRecord">
+<string value="Yes"/>
+</equals>
+</and>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+</items>
+</form>
+<form name="CreateInvoice" startPoint="false" themePath="mvsc" process="Post-CreateInvoice" preProcess="Pre-CreateInvoice">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Create Invoice</font></paragraph></heading>
+<fib label="Q1" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Client: </font><font face="Arial" size="200" color="000000"><i>(e.g. Mill Valley Dirt Bowl)</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="Client"/></paragraph></fib>
+<fib label="Q2" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Application Name: </font><font face="Arial" size="200" color="000000"><i>(e.g. SportsDashboards) </i></font><blank label="a" length="20" required="false" alternateLabel="AppName"/></paragraph></fib>
+<fib label="Q3" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Billing Date: </font><blank label="a" length="20" required="false" alternateLabel="Date"/></paragraph></fib>
+<fib label="Q4" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Contact Name: </font><blank label="a" length="20" required="false" alternateLabel="ContactName"/></paragraph></fib>
+<fib label="Q5" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Contact Email: </font><blank label="a" length="20" required="false" alternateLabel="ContactEmail"/></paragraph></fib>
+<fib label="Q6" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="3168"/></tabPositions><font face="Arial" size="200" color="000000">Contact Address: </font><tab/><sp/><sp/><sp/><sp/><sp/><sp/><blank label="a" length="48" required="false" alternateLabel="ContactAddress"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="3168"/></tabPositions><font face="Arial" size="200" color="000000">City: </font><tab/><sp/><sp/><sp/><sp/><sp/><sp/><blank label="b" length="20" required="false" alternateLabel="ContactCity"/><font face="Arial" size="200" color="000000">    State: </font><blank label="c" length="3" required="false" alternateLabel="ContactST"/><font face="Arial" size="200" color="000000">     Zip: </font><blank label="d" length="6" required="false" alternateLabel="ContactZip"/></paragraph></fib>
+<fib label="Q7" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Amount Billed: $ </font><blank label="a" length="20" required="false" alternateLabel="BillableAmt"/></paragraph></fib>
+<fib label="Q8" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Description: </font><blank label="a" length="20" required="false" alternateLabel="Description"/></paragraph></fib>
+<break/>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Here is what your invoice will look like:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="330"><row><cell width="2715"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font>Tawala Systems, Inc.</font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font>120 Locust Ave.</font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font>San Rafael, CA 94901</font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font><field name="CreateInvoice:ContactName"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font><field name="CreateInvoice:Client"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font><field name="CreateInvoice:ContactAddress"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font><field name="CreateInvoice:ContactCity"/></font><font>, </font><font><field name="CreateInvoice:ContactST"/></font><sp/><font><field name="CreateInvoice:ContactZip"/></font><sp/></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font><field name="CreateInvoice:ContactEmail"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><sp/><font><field name="CreateInvoice:Date"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Invoice Number:</b></font></division></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"><division indent="0" align="left"><font><field name="Invoice"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"><division indent="0" align="left"><sp/></division></cell><cell width="5505"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Description:</b></font></division></cell><cell width="300"></cell><cell width="5505"><division indent="0" align="left"><font color="000000"><field name="CreateInvoice:AppName"/></font><font> - </font><font><field name="CreateInvoice:Description"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"></cell><cell width="5505"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Amount Due:</b></font></division></cell><cell width="300"></cell><cell width="5505"><division indent="0" align="left"><font>$</font><font><field name="CreateInvoice:BillableAmt"/></font></division></cell></row><row><cell width="2715"></cell><cell width="300"></cell><cell width="5505"></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="330"><row><cell width="8505"><division indent="0" align="left"><font>Invoice immediately due and payable.  Please pay via Paypal link below only.</font></division></cell></row><row><cell width="8505"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="8505"><division indent="0" align="left"><font>Thank you very much,</font></division><division indent="0" align="left"><font>Tawala Systems</font></division></cell></row><row><cell width="8505"><division indent="0" align="left"><sp/><sp/><sp/></division></cell></row><row><cell width="8505"><division indent="0" align="left"><font>Address any questions regarding this invoice to </font><font color="000080"><u>billing@tawala.com</u></font><font>.</font></division></cell></row></table></text>
+<mc label="Q9" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send out this invoice</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit the invoice</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Cancel this invoice and return to Main Menu</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="CreateInvoice:Q9" value="b"/>
+</conditions>
+<trueSet>
+<skip to="H1"/>
+</trueSet>
+</if>
+</skipInstructions>
+<field name="Status"/>
+<field name="OnlinePaymentAmt"/>
+<field name="InvoiceNumber"/>
+<field name="PrimaryRecord"/>
+</items>
+</form>
+<form name="CreateInvoiceNo" startPoint="false" themePath="mvsc" process="Post-CreateInvoiceNo" preProcess="Pre-CreateInvoiceNo">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<field name="InvoiceNo"/>
+</items>
+</form>
+<form name="PaymentFailure" startPoint="false" themePath="mvsc" process="Post-PaymentFailure">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Thanks" startPoint="false" themePath="mvsc" process="Post-Thanks">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="PayBill" startPoint="false" themePath="mvsc" process="Process 8">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<field name="Invoice"/>
+<field name="Amount"/>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-Start">
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="a"/>
+</conditions>
+<trueSet>
+<show form="CreateInvoiceNo"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="b"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<mcIsBlank field="Start:Q3" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="No client chosen."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+</if>
+<show document="ClientHistory" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="c"/>
+</conditions>
+<trueSet>
+<show document="ShowAll" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="d"/>
+</conditions>
+<trueSet>
+<show document="UnpaidBills" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="e"/>
+</conditions>
+<trueSet>
+<show document="PaidBills" reset="false"/>
+</trueSet>
+</if>
+</process>
+<process name="Pre-CreateInvoice">
+<set field="Primary" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<if>
+<conditions>
+<mcIsNotBlank field="Start:Q3" />
+</conditions>
+<trueSet>
+<get recordList="Record List 1">
+<forms>
+<form name="CreateInvoice"/>
+</forms>
+<conditions>
+<mcEquals field="Start:Q3">
+<string field="Record List 1:CreateInvoice:Client"/>
+</mcEquals>
+</conditions></get>
+<foreach record="SuchClient" recordList="Record List 1">
+<set field="CreateInvoice:Client" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:Client"/>
+</set>
+<set field="CreateInvoice:ContactName" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:ContactName"/>
+</set>
+<set field="CreateInvoice:ContactEmail" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:ContactEmail"/>
+</set>
+<set field="CreateInvoice:ContactAddress" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:ContactAddress"/>
+</set>
+<set field="CreateInvoice:ContactCity" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:ContactCity"/>
+</set>
+<set field="CreateInvoice:ContactST" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:ContactST"/>
+</set>
+<set field="CreateInvoice:ContactZip" arithmeticAsText="false">
+<string field="SuchClient:CreateInvoice:ContactZip"/>
+</set>
+<set field="Primary" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</foreach>
+</trueSet>
+</if>
+</process>
+<process name="Post-CreateInvoiceNo">
+<set field="CreateInvoiceNo:InvoiceNo" arithmeticAsText="false">
+<add>
+<operand field="CreateInvoiceNo:InvoiceNo"/>
+<operand value="1"/>
+</add>
+</set>
+<set field="Invoice" arithmeticAsText="false">
+<string field="CreateInvoiceNo:InvoiceNo"/>
+</set>
+<show form="CreateInvoice"/>
+</process>
+<process name="Pre-CreateInvoiceNo">
+<edit form="CreateInvoiceNo" submit="modify">
+</edit>
+</process>
+<process name="Post-CreateInvoice">
+<if>
+<conditions>
+<equals field="Primary">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="CreateInvoice:PrimaryRecord" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<set field="CreateInvoice:InvoiceNumber" arithmeticAsText="false">
+<string field="Invoice"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="CreateInvoice:Q9" value="a"/>
+</conditions>
+<trueSet>
+<send>
+<to addressField="CreateInvoice:ContactEmail"/>
+<from addressLiteral="billing@tawala.com" aliasLiteral="Tawala Systems Accounting"/>
+<cc addressLiteral="invoice@billing.com"/>
+<subject>Invoice for Services</subject>
+<body document="Invoice Message" reset="false" showHeader="true"/>
+</send>
+<set field="CreateInvoice:Status" arithmeticAsText="false">
+<string value="Invoice Sent"/>
+</set>
+<set field="Message" arithmeticAsText="false">
+<string value="Invoice "/>
+<string field="Invoice"/>
+<string value=" to "/>
+<string field="CreateInvoice:Client"/>
+<string value=" in amount of $"/>
+<string field="CreateInvoice:BillableAmt"/>
+<string value=" has been sent."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="CreateInvoice:Q9" value="c"/>
+</conditions>
+<trueSet>
+<set field="CreateInvoice:Status" arithmeticAsText="false">
+<string value="Cancelled"/>
+</set>
+<set field="Message" arithmeticAsText="false">
+<string value="Invoice "/>
+<string field="Invoice"/>
+<string value=" to "/>
+<string field="CreateInvoice:Client"/>
+<string value=" in amount of $"/>
+<string field="CreateInvoice:BillableAmt"/>
+<string value=" has been cancelled."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+</if>
+<show form="CreateInvoice"/>
+</process>
+<process name="Post-PaymentFailure">
+<show document="FailedPay" reset="false"/>
+</process>
+<process name="Post-Thanks">
+<show document="Thankyou" reset="false"/>
+</process>
+<process name="Process 8">
+<get recordList="Record List 2">
+<forms>
+<form name="CreateInvoice"/>
+</forms>
+<conditions>
+<equals field="_InviteeID">
+<string field="Record List 2:CreateInvoice:InvoiceNumber"/>
+</equals>
+</conditions></get>
+<foreach record="SuchInvoice" recordList="Record List 2">
+<set field="ClientName" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:Client"/>
+</set>
+<set field="CName" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:ContactName"/>
+</set>
+<set field="CAddress" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:ContactAddress"/>
+</set>
+<set field="CCity" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:ContactCity"/>
+</set>
+<set field="CST" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:ContactST"/>
+</set>
+<set field="CZIP" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:ContactZip"/>
+</set>
+<set field="CEmail" arithmeticAsText="false">
+<string value="\"/>
+<string field="SuchInvoice:CreateInvoice:ContactEmail"/>
+</set>
+<set field="CDate" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:Date"/>
+</set>
+<set field="Invoice" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:InvoiceNumber"/>
+</set>
+<set field="CApp" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:AppName"/>
+</set>
+<set field="CDes" arithmeticAsText="false">
+<string value="\"/>
+<string field="SuchInvoice:CreateInvoice:Description"/>
+</set>
+<set field="Amt" arithmeticAsText="false">
+<string field="SuchInvoice:CreateInvoice:BillableAmt"/>
+</set>
+</foreach>
+</process>
+</processes>
+<documents>
+<document name="Invoice">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="330"><row><cell width="2715"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font>Tawala Systems, Inc.</font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font>120 Locust Ave.</font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font>San Rafael, CA 94901</font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="CName"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="ClientName"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="CAddress"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="CAddress"/></font></division><division indent="0" align="left"><font><field name="CCity"/></font><font>, </font><font><field name="CST"/></font><sp/><font><field name="CZIP"/></font><sp/></division></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Email:</b></font></division></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="CEmail"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="CDate"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Invoice Number:</b></font></division></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"><division indent="0" align="left"><font><field name="Invoice"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"><division indent="0" align="left"><sp/></division></cell><cell width="5533"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Description:</b></font></division></cell><cell width="272"></cell><cell width="5533"><division indent="0" align="left"><font><field name="CApp"/></font><font> - </font><font><field name="CDes"/></font><sp/></division></cell></row><row><cell width="2715"></cell><cell width="272"></cell><cell width="5533"></cell></row><row><cell width="2715"><division indent="0" align="right"><font><b>Amount Due:</b></font></division></cell><cell width="272"></cell><cell width="5533"><division indent="0" align="left"><font>$</font><font><field name="Amt"/></font></division></cell></row><row><cell width="2715"></cell><cell width="272"></cell><cell width="5533"></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="330"><row><cell width="8505"><division indent="0" align="left"><font>Invoice immediately due and payable.  Please pay via Paypal link below only.</font></division></cell></row><row><cell width="8505"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="8505"><division indent="0" align="left"><font>Thank you very much,</font></division><division indent="0" align="left"><font>Tawala Systems</font></division></cell></row><row><cell width="8505"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="8505"><division indent="0" align="left"><font>Please address any questions regarding this invoice to billing@tawala.com.</font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="Thankyou">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Thank you for your payment.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Yours,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Tawala Systems</font></paragraph>
+</xmlData>
+</document>
+<document name="FailedPay">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Your payment failed to go through.  Please try again.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Yours,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Tawala Systems</font></paragraph>
+</xmlData>
+</document>
+<document name="Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280" color="800000"><b><i><field name="Message"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="ShowAll">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>14</number-of-columns><column><header>Invoice #</header><contents><field name="Record:CreateInvoice:InvoiceNumber" /></contents></column><column><header>Status</header><contents><field name="Record:CreateInvoice:Status" /></contents></column><column><header>Date</header><contents><field name="Record:CreateInvoice:Date" /></contents></column><column><header>Client</header><contents><field name="Record:CreateInvoice:Client" /></contents></column><column><header>Application</header><contents><field name="Record:CreateInvoice:AppName" /></contents></column><column><header>Amount</header><contents><field name="Record:CreateInvoice:BillableAmt" /></contents></column><column><header>Description</header><contents><field name="Record:CreateInvoice:Description" /></contents></column><column><header>Contact</header><contents><field name="Record:CreateInvoice:ContactName" /></contents></column><column><header>Email</header><contents><field name="Record:CreateInvoice:ContactEmail" /></contents></column><column><header>Address</header><contents><field name="Record:CreateInvoice:ContactAddress" /></contents></column><column><header>City</header><contents><field name="Record:CreateInvoice:ContactCity" /></contents></column><column><header>State</header><contents><field name="Record:CreateInvoice:ContactST" /></contents></column><column><header>Zip</header><contents><field name="Record:CreateInvoice:ContactZip" /></contents></column><column><header>Online Payment</header><contents><field name="Record:CreateInvoice:OnlinePaymentAmt" /></contents></column><conditions><form name="CreateInvoice" /></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="ClientHistory">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>14</number-of-columns><column><header>Invoice #</header><contents><field name="Record:CreateInvoice:InvoiceNumber" /></contents></column><column><header>Status</header><contents><field name="Record:CreateInvoice:Status" /></contents></column><column><header>Date</header><contents><field name="Record:CreateInvoice:Date" /></contents></column><column><header>Client</header><contents><field name="Record:CreateInvoice:Client" /></contents></column><column><header>Application</header><contents><field name="Record:CreateInvoice:AppName" /></contents></column><column><header>Amount</header><contents><field name="Record:CreateInvoice:BillableAmt" /></contents></column><column><header>Description</header><contents><field name="Record:CreateInvoice:Description" /></contents></column><column><header>Contact</header><contents><field name="Record:CreateInvoice:ContactName" /></contents></column><column><header>Email</header><contents><field name="Record:CreateInvoice:ContactEmail" /></contents></column><column><header>Address</header><contents><field name="Record:CreateInvoice:ContactAddress" /></contents></column><column><header>City</header><contents><field name="Record:CreateInvoice:ContactCity" /></contents></column><column><header>State</header><contents><field name="Record:CreateInvoice:ContactST" /></contents></column><column><header>Zip</header><contents><field name="Record:CreateInvoice:ContactZip" /></contents></column><column><header>Online Payment</header><contents><field name="Record:CreateInvoice:OnlinePaymentAmt" /></contents></column><conditions><form name="CreateInvoice" /><conditions>
+<equals field="Record:CreateInvoice:Client">
+<string field="Start:Q3"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="UnpaidBills">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>14</number-of-columns><column><header>Invoice #</header><contents><field name="Record:CreateInvoice:InvoiceNumber" /></contents></column><column><header>Status</header><contents><field name="Record:CreateInvoice:Status" /></contents></column><column><header>Date</header><contents><field name="Record:CreateInvoice:Date" /></contents></column><column><header>Client</header><contents><field name="Record:CreateInvoice:Client" /></contents></column><column><header>Application</header><contents><field name="Record:CreateInvoice:AppName" /></contents></column><column><header>Amount</header><contents><field name="Record:CreateInvoice:BillableAmt" /></contents></column><column><header>Description</header><contents><field name="Record:CreateInvoice:Description" /></contents></column><column><header>Contact</header><contents><field name="Record:CreateInvoice:ContactName" /></contents></column><column><header>Email</header><contents><field name="Record:CreateInvoice:ContactEmail" /></contents></column><column><header>Address</header><contents><field name="Record:CreateInvoice:ContactAddress" /></contents></column><column><header>City</header><contents><field name="Record:CreateInvoice:ContactCity" /></contents></column><column><header>State</header><contents><field name="Record:CreateInvoice:ContactST" /></contents></column><column><header>Zip</header><contents><field name="Record:CreateInvoice:ContactZip" /></contents></column><column><header>Online Payment</header><contents><field name="Record:CreateInvoice:OnlinePaymentAmt" /></contents></column><conditions><form name="CreateInvoice" /><conditions>
+<and>
+<doesNotEqual field="Record:CreateInvoice:Status">
+<string value="Processed"/>
+</doesNotEqual>
+<and>
+<doesNotEqual field="Record:CreateInvoice:Status">
+<string value="Completed"/>
+</doesNotEqual>
+<doesNotEqual field="Record:CreateInvoice:Status">
+<string value="Canceled_Reversal"/>
+</doesNotEqual>
+</and>
+</and>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="PaidBills">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>14</number-of-columns><column><header>Invoice #</header><contents><field name="Record:CreateInvoice:InvoiceNumber" /></contents></column><column><header>Status</header><contents><field name="Record:CreateInvoice:Status" /></contents></column><column><header>Date</header><contents><field name="Record:CreateInvoice:Date" /></contents></column><column><header>Client</header><contents><field name="Record:CreateInvoice:Client" /></contents></column><column><header>Application</header><contents><field name="Record:CreateInvoice:AppName" /></contents></column><column><header>Amount</header><contents><field name="Record:CreateInvoice:BillableAmt" /></contents></column><column><header>Description</header><contents><field name="Record:CreateInvoice:Description" /></contents></column><column><header>Contact</header><contents><field name="Record:CreateInvoice:ContactName" /></contents></column><column><header>Email</header><contents><field name="Record:CreateInvoice:ContactEmail" /></contents></column><column><header>Address</header><contents><field name="Record:CreateInvoice:ContactAddress" /></contents></column><column><header>City</header><contents><field name="Record:CreateInvoice:ContactCity" /></contents></column><column><header>State</header><contents><field name="Record:CreateInvoice:ContactST" /></contents></column><column><header>Zip</header><contents><field name="Record:CreateInvoice:ContactZip" /></contents></column><column><header>Online Payment</header><contents><field name="Record:CreateInvoice:OnlinePaymentAmt" /></contents></column><conditions><form name="CreateInvoice" /><conditions>
+<or>
+<equals field="Record:CreateInvoice:Status">
+<string value="Completed"/>
+</equals>
+<or>
+<equals field="Record:CreateInvoice:Status">
+<string value="Canceled_Reversal"/>
+</equals>
+<equals field="Record:CreateInvoice:Status">
+<string value="Processed"/>
+</equals>
+</or>
+</or>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Invoice Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="CreateInvoice:Date"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Dear Client,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Your Tawala Sports Services Invoice </font><font><field name="CreateInvoice:InvoiceNumber"/></font><font> in the amount of $</font><font><field name="CreateInvoice:BillableAmt"/></font><font> is now due.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To view your bill and pay it online, please </font><font color="000080"><u><invitation form="PayBill" project="" private="true"><authenticationTokenValue><string field="CreateInvoice:InvoiceNumber"/>
+</authenticationTokenValue>click here.</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Sincerely yours,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Tawala Sports Services</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Tawala Systems, Inc.</font></paragraph>
+</xmlData>
+</document>
+</documents>
+<images><imagedef id="__HEADER__8cab9fa34d14ca0"><imagedata imageFormat="PNG">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</imagedata></imagedef></images></project>

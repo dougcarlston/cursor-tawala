@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Simple Survey Template" themePath="style2" format="1.8" designerBuild="176">
+<styles mcItemStyle="vertical" textItemStyle="normal" /><forms>
+<form name="Survey" startPoint="true" themePath="style2" process="Process 1">
+<items>
+<heading label="H1" style="normal" type="Main"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Simple Survey</font></paragraph></heading>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This template shows you how to create and administer a simple poll.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>There are two Forms in this template.  This one is your Survey.  The question below can be deleted and replaced with your own, just by double clicking or dragging questions from the "Fill in the Blank" and "Multiple Choice" Items in the column to the left. </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>You can set as many responses to your multiple choice question as you like by pressing the Enter key to add a new response or by deleting any response with the Delete key.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>The results are displayed in the Report Form.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Once you are done modifying this survey, delete these instructions and replace them with instructions for the people who will be taking this poll.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Then click on the Deploy button ( </font><font face="Arial" size="200" color="000000"><image id="image1" width="22" height="23"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="835" numOfObjects="0" maxRecordSize="813" numOfParams="0" />
+</image></font><font>)  up above to create a Web page for your new poll.  </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Once you have deployed your poll to the Web, you can get the Web links to the Survey  and the survey Report from your My Tawala page on the Tawala Website.  Send the Survey link to your pollees or place it on your Web site to drive traffic to your survey.</font><sp/><sp/></paragraph></text>
+<mc label="Q1" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>&lt;Put your survey question here&gt;</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>&lt;Place first response option here&gt;</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>&lt;Place second response option here&gt;</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>&lt;Replace this with third option or delete&gt;</b></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>&lt;Replace this with fourth option or delete&gt;</b></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>&lt;You can add more options by hitting Return key here&gt;</b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Report" startPoint="true" themePath="style2">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Here are the results so far:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><b><choice-tally-table version="1"><field>Record:Survey:Q1</field><conditions><form name="Survey" /></conditions></choice-tally-table></b></font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<show form="Report"/>
+</process>
+</processes>
+<images><imagedef id="image1"><imagedata imageFormat="PNG">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFU
+OE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xr
+TkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJc
+ff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEydd
+V+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8
+O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxT
+e1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCP
+pnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXI
+Zjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yA
+I2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVP
+tItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+S
+vTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomev
+P2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==</imagedata></imagedef></images></project>

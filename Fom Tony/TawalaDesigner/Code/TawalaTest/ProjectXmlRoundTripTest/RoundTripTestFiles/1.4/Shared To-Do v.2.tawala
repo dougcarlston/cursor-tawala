@@ -1,0 +1,503 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Shared To-Do" themePath="default" format="1.4">
+<forms>
+<form name="task" startPoint="false" themePath="default" process="Task Setup Post Processing" preProcess="Build Signup Sheet">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Fill in the information below to add a new task.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>You can add as many tasks as your project requires.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions> </paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Description (required): </font><tab/><blank label="a" length="37" required="false" alternateLabel="description"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Due date:</font><tab/><blank label="b" length="11" required="false" alternateLabel="due"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Person to whom assigned (if known):</font><tab/><blank label="c" length="37" required="false" alternateLabel="assignedTo"/></paragraph></fib>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Click the Submit button to add this task.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>When you are done adding tasks, </i></b></font><font face="Arial" size="200" color="0000FF"><b><i><field name="doneAddingTasksPrompt"/></i></b></font><font face="Arial" size="200" color="0000FF"><b><i>.</i></b></font></paragraph></text>
+</items>
+</form>
+<form name="signup" startPoint="true" themePath="default" process="Signup Post Processing" preProcess="Build Signup Sheet">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/></tabPositions><font face="Arial" size="200" color="000000"><i>To sign up please fill out this form:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="1080"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><tab/><font face="Arial" size="200" color="000000">Your name or initials:</font><tab/> <blank label="a" length="26" required="false" alternateLabel="name"/><font face="Arial" size="200" color="000000"> </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="1080"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><tab/><font face="Arial" size="200" color="000000">Task number:</font><tab/><font face="Arial" size="200" color="000000"> </font><blank label="b" length="26" required="false" alternateLabel="taskId"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/></tabPositions><tab/><font face="Arial" size="200" color="000000"><b>OR</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/></tabPositions><font face="Arial" size="200" color="000000"><i>To mark a task as "completed" indicate the task number:</i></font> <blank label="c" length="5" required="false" alternateLabel="competedTaskId"/></paragraph></fib>
+</items>
+</form>
+<form name="Setup" startPoint="true" themePath="default" process="Customization Post Processing">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="220" color="000000"><b>Shared To-Do</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Create a project with tasks to be shared by members of your group.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>First, define the project:</i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000"><b>Project Name:</b></font><font face="Arial" size="200" color="000000">  (required)</font><tab/><blank label="a" length="34" required="true" alternateLabel="projectName"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000"><i>If you would like to receive notifications, please provide:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000"><b>Your name:</b></font><tab/><blank label="b" length="34" required="false" alternateLabel="organizerName"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email: </b></font><tab/><blank label="c" length="34" required="false" alternateLabel="organizerEmail"/></paragraph></fib>
+<mc label="Q2" alternateLabel="notifyOrganizerOnSignup" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Notify me when somebody signs up for a task</b></font></paragraph></choice></mc>
+<mc label="Q3" alternateLabel="notifyOrganizerOnTaskCompletion" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Notify me when a task is marked as completed</b></font></paragraph></choice></mc>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>Once you've provided the above information, click the Submit button to continue.</i></b></font></paragraph></text>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="default" process="Administration Post Process" preProcess="Build Signup Sheet">
+<items>
+<mc label="Q1" alternateLabel="addNewTask" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Check here if you want to add new tasks.</b></font></paragraph></choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Task Setup Post Processing">
+<if>
+<conditions>
+<isNotBlank field="task:description"/>
+</conditions>
+<trueSet>
+<get recordList="tasks">
+<forms>
+<form name="task"/>
+</forms>
+</get>
+<set field="maxTaskId" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<foreach record="currentTask" recordList="tasks">
+<if>
+<conditions>
+<isLessThan field="maxTaskId">
+<string field="currentTask:task:id"/>
+</isLessThan>
+</conditions>
+<trueSet>
+<set field="maxTaskId" arithmeticAsText="false">
+<string field="currentTask:task:id"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="id" arithmeticAsText="false">
+<add>
+<operand field="maxTaskId"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isBlank field="task:assignedTo"/>
+</conditions>
+<trueSet>
+<set field="status" arithmeticAsText="false">
+<string value="unassigned"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="status" arithmeticAsText="false">
+<string value="assigned"/>
+</set>
+</falseSet>
+</if>
+</trueSet>
+<falseSet>
+<show document="Blank Task Error" reset="false"/>
+</falseSet>
+</if>
+<show form="task"/>
+</process>
+<process name="Customization Post Processing">
+<set field="NotifyOrganizerOnSignup" arithmeticAsText="false">
+<string value="no"/>
+</set>
+<set field="NotifyOrganizerOnCompletion" arithmeticAsText="false">
+<string value="no"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Setup:notifyOrganizerOnSignup" value="a"/>
+</conditions>
+<trueSet>
+<set field="NotifyOrganizerOnSignup" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Setup:notifyOrganizerOnTaskCompletion" value="a"/>
+</conditions>
+<trueSet>
+<set field="NotifyOrganizerOnCompletion" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+</trueSet>
+</if>
+<show document="Confirm Customization" reset="false"/>
+</process>
+<process name="Customization Pre Processing">
+<get recordList="customization records">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="customization" recordList="customization records">
+<set field="ProjectName" arithmeticAsText="false">
+<string field="customization:Setup:projectName"/>
+</set>
+<set field="OrganizerName" arithmeticAsText="false">
+<string field="customization:Setup:organizerName"/>
+</set>
+<set field="OrganizerEmail" arithmeticAsText="false">
+<string field="customization:Setup:organizerEmail"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="customization:Setup:notifyOrganizerOnSignup" value="a"/>
+</conditions>
+<trueSet>
+<set field="NotifyOrganizerOnSignup" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="NotifyOrganizerOnSignup" arithmeticAsText="false">
+<string value="no"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="customization:Setup:notifyOrganizerOnTaskCompletion" value="a"/>
+</conditions>
+<trueSet>
+<set field="NotifyOrganizerOnCompletion" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="NotifyOrganizerOnCompletion" arithmeticAsText="false">
+<string value="no"/>
+</set>
+</falseSet>
+</if>
+</foreach>
+</process>
+<process name="Build Signup Sheet">
+<comment>--- Ability to call a procedure would be nice - this code is replicated.</comment>
+<get recordList="customization records">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="customization" recordList="customization records">
+<set field="ProjectName" arithmeticAsText="false">
+<string field="customization:Setup:projectName"/>
+</set>
+<set field="OrganizerName" arithmeticAsText="false">
+<string field="customization:Setup:organizerName"/>
+</set>
+<set field="OrganizerEmail" arithmeticAsText="false">
+<string field="customization:Setup:organizerEmail"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="customization:Setup:notifyOrganizerOnSignup" value="a"/>
+</conditions>
+<trueSet>
+<set field="NotifyOrganizerOnSignup" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="NotifyOrganizerOnSignup" arithmeticAsText="false">
+<string value="no"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="customization:Setup:notifyOrganizerOnTaskCompletion" value="a"/>
+</conditions>
+<trueSet>
+<set field="NotifyOrganizerOnCompletion" arithmeticAsText="false">
+<string value="yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="NotifyOrganizerOnCompletion" arithmeticAsText="false">
+<string value="no"/>
+</set>
+</falseSet>
+</if>
+</foreach>
+<comment>--- Here's where we start building the report</comment>
+<show document="Signup Header" reset="false"/>
+<get recordList="tasks">
+<forms>
+<form name="task"/>
+</forms>
+</get>
+<foreach record="currentTask" recordList="tasks">
+<set field="currentTaskDescription" arithmeticAsText="false">
+<string field="currentTask:task:description"/>
+</set>
+<set field="currentTaskDue" arithmeticAsText="false">
+<string field="currentTask:task:due"/>
+</set>
+<set field="currentTaskEmail" arithmeticAsText="false">
+<string field="currentTask:task:assignedTo"/>
+</set>
+<set field="currentTaskId" arithmeticAsText="false">
+<string field="currentTask:task:id"/>
+</set>
+<set field="currentTaskStatus" arithmeticAsText="false">
+<string field="currentTask:task:status"/>
+</set>
+<if>
+<conditions>
+<equals field="currentTaskStatus">
+<string value="completed"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Task Completed" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="currentTaskStatus">
+<string value="unassigned"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Task Unassigned" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="currentTaskStatus">
+<string value="assigned"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Task Assigned" reset="false"/>
+</trueSet>
+</if>
+</foreach>
+<show document="Signup Footer" reset="false"/>
+<comment>--- Check flag to see whether we got here from the Administration Form</comment>
+<if>
+<conditions>
+<equals field="administrationMode">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="doneAddingTasksPrompt" arithmeticAsText="false">
+<string value="simply close your browser window"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="doneAddingTasksPrompt" arithmeticAsText="false">
+<string value="proceed to the next step by clicking Review and Send"/>
+</set>
+</falseSet>
+</if>
+</process>
+<process name="Signup Post Processing">
+<if>
+<conditions>
+<isNotBlank field="signup:competedTaskId"/>
+</conditions>
+<trueSet>
+<get recordList="tasks">
+<forms>
+<form name="task"/>
+</forms>
+<conditions>
+<equals field="tasks:task:id">
+<string field="signup:competedTaskId"/>
+</equals>
+</conditions></get>
+<foreach record="currentTask" recordList="tasks">
+<if>
+<conditions>
+<equals field="currentTask:task:status">
+<string value="completed"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Task Already Completed" reset="false"/>
+</trueSet>
+<falseSet>
+<set field="currentTask:task:status" arithmeticAsText="false">
+<string value="completed"/>
+</set>
+<show document="Completion Notification" reset="false"/>
+<if>
+<conditions>
+<equals field="NotifyOrganizerOnCompletion">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="currentTaskDescription" arithmeticAsText="false">
+<string field="currentTask:task:description"/>
+</set>
+<send>
+<to addressField="OrganizerEmail"/>
+<subject>Tawala project's task is completed</subject>
+<body document="Task Completion Email Notification" reset="false"/>
+</send>
+</trueSet>
+</if>
+</falseSet>
+</if>
+</foreach>
+<show form="signup"/>
+</trueSet>
+</if>
+<set field="lastTaskSignedUpFor" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<get recordList="matchedTasks">
+<forms>
+<form name="task"/>
+</forms>
+<conditions>
+<equals field="matchedTasks:task:id">
+<string field="signup:taskId"/>
+</equals>
+</conditions></get>
+<foreach record="matchedTask" recordList="matchedTasks">
+<if>
+<conditions>
+<equals field="matchedTask:task:status">
+<string value="unassigned"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="lastTaskSignedUpFor" arithmeticAsText="false">
+<string field="matchedTask:task:description"/>
+</set>
+<set field="matchedTask:task:assignedTo" arithmeticAsText="false">
+<string field="signup:name"/>
+</set>
+<set field="matchedTask:task:status" arithmeticAsText="false">
+<string value="assigned"/>
+</set>
+<if>
+<conditions>
+<equals field="NotifyOrganizerOnSignup">
+<string value="yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="currentTaskDescription" arithmeticAsText="false">
+<string field="matchedTask:task:description"/>
+</set>
+<send>
+<to addressField="OrganizerEmail"/>
+<subject>Tawala project's task is signed up for</subject>
+<body document="Task Signup Email Notification" reset="false"/>
+</send>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isBlank field="lastTaskSignedUpFor"/>
+</conditions>
+<trueSet>
+<show document="Task Not Found" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Signup Confirmation" reset="false"/>
+</falseSet>
+</if>
+</trueSet>
+<falseSet>
+<show document="Task Already Assigned" reset="false"/>
+</falseSet>
+</if>
+</foreach>
+<show form="signup"/>
+</process>
+<process name="Administration Post Process">
+<if>
+<conditions>
+<mcEquals field="Administration:addNewTask" value="a"/>
+</conditions>
+<trueSet>
+<comment>--- Flag to control text that appears in the task Form (set in Build Signup Sheet Process)</comment>
+<set field="administrationMode" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<show form="task"/>
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Task Setup Confirmation">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="008000">You have successfully added a new task  </font><font face="Arial" size="200" color="008000"><b><field name="task:description"/></b></font><font face="Arial" size="200" color="008000">.</font></paragraph>
+</xmlData>
+</document>
+<document name="Customization Exists Prompt">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">You have finished describing the project. If you would like to change any of this information use the form below.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Project: </font><tab/><font face="Arial" size="200" color="000000"><b><field name="ProjectName"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Your name:</font><tab/><font face="Arial" size="200" color="000000"><b><field name="OrganizerName"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Email:</font><tab/><font face="Arial" size="200" color="000000"><b><field name="OrganizerEmail"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Notify on sign up?</font><tab/><font face="Arial" size="200" color="000000"><b><field name="NotifyOrganizerOnSignup"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Notify on task completion?</font><tab/><font face="Arial" size="200" color="000000"><b><field name="NotifyOrganizerOnCompletion"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><font face="Arial" size="200" color="000000">Next:</font><sp/><font face="Arial" size="280" color="000080"><u><invitation form="task" project="">set up the tasks</invitation></u></font><font face="Arial" size="200" color="000000">.</font></paragraph>
+</xmlData>
+</document>
+<document name="Task Assigned">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="4320"/><tabStop position="6480"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/></tabPositions><font face="Arial" size="200" color="000000"><field name="currentTaskId"/></font><tab/><font face="Arial" size="200" color="0000FF"><field name="currentTaskDescription"/></font><tab/><font face="Arial" size="200" color="000000"><field name="currentTaskDue"/></font><tab/><font face="Arial" size="200" color="000000"><field name="currentTaskEmail"/></font><sp/></paragraph>
+</xmlData>
+</document>
+<document name="Task Unassigned">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="4320"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><field name="currentTaskId"/></font><tab/><font face="Arial" size="200" color="FF8040"><b><field name="currentTaskDescription"/></b></font><sp/><sp/><tab/><font face="Arial" size="200" color="000000"><field name="currentTaskDue"/></font><sp/></paragraph>
+</xmlData>
+</document>
+<document name="Signup Confirmation">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF">Task "</font><font face="Arial" size="200" color="0000FF"><b><field name="lastTaskSignedUpFor"/></b></font><font face="Arial" size="200" color="0000FF">" has been assigned to "</font><font face="Arial" size="200" color="0000FF"><b><field name="signup:name"/></b></font><font face="Arial" size="200" color="0000FF">". </font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Task Not Found">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="FF0000">Task #</font><font face="Arial" size="200" color="FF0000"><field name="signup:taskId"/></font><font face="Arial" size="200" color="FF0000"> is not found</font></paragraph>
+</xmlData>
+</document>
+<document name="Task Already Assigned">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="FF0000">Task </font><font face="Arial" size="200" color="FF0000"><b><field name="signup:taskId"/></b></font><font face="Arial" size="200" color="FF0000"> is already signed up for</font><font face="Arial" size="200" color="000000">.</font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Signup Header">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="4320"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="ProjectName"/></b></font><font face="Arial" size="200" color="000000"><b> Tasks</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="4320"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><b>#</b></font><tab/><font face="Arial" size="200" color="000000"><b>Description </b></font><tab/><font face="Arial" size="200" color="000000"><b>Due </b></font><tab/><font face="Arial" size="200" color="000000"><b>Assigned To</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="4320"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><b>_____________________________________________________________________________________________</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Completion Notification">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="008000">Task </font><font face="Arial" size="200" color="008000"><b><field name="signup:competedTaskId"/></b></font><font face="Arial" size="200" color="008000"> has been marked as completed</font><font face="Arial" size="200" color="000000">.</font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Task Completed">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="4320"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><field name="currentTaskId"/></font><tab/><font face="Arial" size="200" color="008000"><field name="currentTaskDescription"/></font><tab/><font face="Arial" size="200" color="000000"><field name="currentTaskDue"/></font><tab/><font face="Arial" size="200" color="000000"><field name="currentTaskEmail"/></font><sp/></paragraph>
+</xmlData>
+</document>
+<document name="Signup Footer">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>_____________________________________________________________________________________________</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">                                                         Task Color Legend:</font><sp/><sp/><sp/><sp/><sp/><font face="Arial" size="200" color="FF8000">Unassigned</font><sp/><sp/><sp/><sp/><font face="Arial" size="200" color="0000FF">Assigned</font><sp/><sp/><sp/><font face="Arial" size="200" color="008000">Completed</font></paragraph>
+</xmlData>
+</document>
+<document name="Task Completion Email Notification">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Dear </font><font face="Arial" size="200" color="000000"><field name="OrganizerName"/></font><font face="Arial" size="200" color="000000">,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Task "</font><font face="Arial" size="200" color="000000"><field name="currentTaskDescription"/></font><font face="Arial" size="200" color="000000">" was just marked as completed. For more details on the status of </font><font face="Arial" size="200" color="000000"><field name="ProjectName"/></font><font face="Arial" size="200" color="000000"> project, or to create additional tasks, go to </font><font face="Arial" size="200" color="000080"><u><invitation form="Administration" project="">the administration form</invitation></u></font><font face="Arial" size="200" color="000000">.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Best regards,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Tawala Systems, Inc.</font></paragraph>
+</xmlData>
+</document>
+<document name="Task Signup Email Notification">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Dear </font><font face="Arial" size="200" color="000000"><field name="OrganizerName"/></font><font face="Arial" size="200" color="000000">,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="signup:name"/></font><font face="Arial" size="200" color="000000"> just signed up to work on "</font><font face="Arial" size="200" color="000000"><field name="currentTaskDescription"/></font><font face="Arial" size="200" color="000000">". For more details on the status of </font><font face="Arial" size="200" color="000000"><field name="ProjectName"/></font><font face="Arial" size="200" color="000000"> project, or to create additional tasks, go to </font><font face="Arial" size="200" color="000080"><u><invitation form="Administration" project="">the administration form</invitation></u></font><font face="Arial" size="200" color="000000">.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Best regards,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Tawala Systems, Inc.</font></paragraph>
+</xmlData>
+</document>
+<document name="Task Already Completed">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="FF0000">Task #</font><font face="Arial" size="200" color="FF0000"><field name="signup:competedTaskId"/></font><font face="Arial" size="200" color="FF0000"> has already been marked as completed.</font></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><sp/></paragraph>
+</xmlData>
+</document>
+<document name="Confirm Customization">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>This is your project definition:</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Project: </font><tab/><font face="Arial" size="200" color="000000"><b><field name="Setup:projectName"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Your name:</font><tab/><font face="Arial" size="200" color="000000"><b><field name="Setup:organizerName"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Email:</font><tab/><font face="Arial" size="200" color="000000"><b><field name="Setup:organizerEmail"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Notify on sign up?</font><tab/><font face="Arial" size="200" color="000000"><b><field name="NotifyOrganizerOnSignup"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions><font face="Arial" size="200" color="000000">Notify on task completion?</font><tab/><font face="Arial" size="200" color="000000"><b><field name="NotifyOrganizerOnCompletion"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>If the above information is correct,</i></b></font><sp/><font face="Arial" size="220" color="000080"><b><u><invitation form="task" project="">click here set to up the tasks</invitation></u></b></font><font face="Arial" size="200" color="000000">.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">If you wish to start over and re-define your project, </font><font face="Arial" size="200" color="000080"><u><invitation form="Setup" project="">click here to return to the previous form</invitation></u></font><font face="Arial" size="200" color="000000">.</font></paragraph>
+</xmlData>
+</document>
+<document name="Blank Task Error">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="FF0000"><b>You must provide a description for your task!</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><b><i>If you are done defining tasks, proceed to the next step (Review and Send).</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><sp/></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

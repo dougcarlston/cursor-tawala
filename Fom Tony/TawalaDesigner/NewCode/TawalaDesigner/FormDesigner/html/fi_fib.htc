@@ -1,0 +1,99 @@
+<public:component tagName="FibItem">
+
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+<public:attach event="onkeypress" onevent="onKeyPress()" />
+
+<public:property name="HasLabel" get="getHasLabel" />
+<public:property name="Contents" get="getContents" put="putContents" />
+<public:property name="Summary" get="getSummary" put="putSummary" />
+
+<script language="JScript">
+
+var container = null;
+
+init();
+
+function init()
+{
+    element.style.display="block";
+    element.FunctionsAllowed = "true";
+  
+	container = document.createElement("div");
+		
+	container.addBehavior("editable.htc");
+	container.acceptFieldDrop = false;
+	
+	container.addBehavior("breakonenterkey.htc");
+	container.addBehavior("acceptsdraggedfields.htc");
+	container.className = "fibitem formitem";
+	container.innerText = "[Question Text]: ";
+	
+	element.appendChild(container);
+}
+
+function getHasLabel()
+{
+    return "true";
+}
+
+function putContents(value)
+{
+    container.innerHTML = value;
+}
+
+function getContents()
+{
+    return container.innerHTML;
+}
+
+function getSummary()
+{
+    return container.innerText;
+}
+
+function putSummary(value)
+{
+    container.innerText = value;
+}
+
+function onActivate()
+{
+    var blankId = "";
+        
+    if (event.srcElement.tagName == "INPUT")
+    {
+        blankId = event.srcElement.parentElement.id;
+    }
+    
+    if (event.srcElement.tagName == "Blank")
+    {
+		blankId = event.srcElement.id;
+    }
+
+	if (window.external != null)
+	{
+		window.external.FibItemActivated(element.id, blankId);
+	}
+}
+
+function onDeactivate()
+{
+	if (window.external != null)
+	{
+	    window.external.FormItemDeactivated(element.id);
+	}
+}
+
+function onKeyPress()
+{
+	if (event.keyCode == 95)
+	{
+		window.external.InsertBlank(element.id);
+		event.returnValue=false;
+	}
+}
+
+</script>
+
+</public:component>

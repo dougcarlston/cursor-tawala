@@ -1,0 +1,144 @@
+body {
+	background-color: #e3e8d2;
+	font-family: "Times", serif;
+	font-size: .9em;
+}
+
+h1, h2, h3, h4, h5, h6 { 
+	font-family:  times, serif;
+	letter-spacing: .05em;
+}
+
+h1 {}
+	h1.heading {
+		height: 77px;
+		line-height: 2.4em;
+		color: #ffffff;
+		background-color: #9D2F30; /* c3c8b2; */
+		background: url('images/red-gradient.jpg') left bottom repeat-x;		
+	}
+
+h2 {
+	background-color: #fDc0c0; /* #e3e8d2; */
+	padding-left: 1em;
+	line-height: 1.6em;
+/*	border: 1px solid #c3c8b2; */
+}
+
+h3 {}
+
+h4 {}
+
+h5 {}
+
+h6 {}
+
+#tawalaProjectContainer {
+	background-color: #f8fff4;
+	border: 0px solid #cccccc;
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 64px;
+	float: right;
+	cursor: pointer;
+	background: url("images/madewithtawala.gif") 100% 30% no-repeat;
+}
+
+form div.fib div.question, form .fib .answer {
+}
+
+/*
+ * Component styles
+ */
+table.component {
+	border-collapse: collapse;
+	font-size: 1em;
+}
+	table.component.outline {
+		border: 1px solid #e3e8d2;				
+	}
+	
+	table.component thead {
+		background-color: #cDcDcD; /*#a3a892; */
+		color: #000000;
+	}
+
+		table.component thead th {
+			padding: .2em 1em;
+		}
+
+		table.component.outline thead th {
+			border: 1px solid #cccccc;
+		}
+
+	table.component td{
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+
+		table.component.outline tbody td{
+			border: 1px solid #e3e8d2;
+		}
+		
+		table.component tbody tr.odd{
+			background-color: #f0f0f0; /* #f3f8e2; */
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #e0e0e0; /* #e3e8d2; */
+		}
+
+.graph.color1 { border-color: #F09000; }
+	.graph.color1 .bar { background: #F09000; }
+
+.graph.color2 { border-color: #D87818; }
+	.graph.color2 .bar { background: #D87818; }
+
+.graph.color3 { border-color:#D86018; }
+	.graph.color3 .bar { background: #D86018; }
+
+.graph.color4 { border-color: #C06018; }
+	.graph.color4 .bar { background: #C06018; }
+
+.graph.color5 { border-color: #C04818; }
+	.graph.color5 .bar { background: #C04818; }
+
+.graph.color6 { border-color: #F09000; }
+	.graph.color6 .bar { background: #F09000; }
+
+.graph.color7 { border-color: #D87818; }
+	.graph.color7 .bar { background: #D87818; }
+
+.graph.color8 { border-color:#D86018; }
+	.graph.color8 .bar { background: #D86018; }
+
+.graph.color9 { border-color: #C06018; }
+	.graph.color9 .bar { background: #C06018; }
+
+.graph.color10 { border-color: #C04818; }
+.graph.color10 .bar { background: #C04818; }
+
+.graph.color11 { border-color: #F09000; }
+	.graph.color11 .bar { background: #F09000; }
+
+.graph.color12 { border-color: #D87818; }
+	.graph.color12 .bar { background: #D87818; }
+
+.graph.color13 { border-color:#D86018; }
+	.graph.color13 .bar { background: #D86018; }
+
+.graph.color14 { border-color: #C06018; }
+	.graph.color14 .bar { background: #C06018; }
+
+.graph.color15 { border-color: #C04818; }
+	.graph.color15 .bar { background: #C04818; }
+
+.graph.color16 { border-color: #F09000; }
+	.graph.color16 .bar { background: #F09000; }
+

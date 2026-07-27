@@ -1,0 +1,70 @@
+	public sealed class FunctionRepository : IFunctionRepository
+	{
+        public IFunctionInfoCollection Functions { get { return functionInfoCollection; } }
+        public ICategoryInfoCollection Categories  { get { return categoryInfoCollection; } }
+
+        public XPathNavigator Xml { get { return navigator.Clone(); } }
+
+		public Assembly GeneratedAssembly { get { return Assembly.GetExecutingAssembly(); }	}
+		public string Signature	{ get { return "${REPOSITORYSIGNATURE}"; } }
+		public string Created	{ get { return "${CREATIONTIME}"; } }
+
+        public XPathNavigator FindByGid(string gid)
+        {
+            return navigator.SelectSingleNode(string.Format("//*[@gid='{0}']", gid));
+        }
+
+		private void initialize()
+		{
+            categoryInfoCollection.Initialize();
+            functionInfoCollection.Initialize();
+
+            categorizeFunctions();
+		}		
+
+        internal static IFunctionRepository CreateInstance()
+        {
+			if (instance == null)
+			{
+				navigator = Utility.GetRootXPathNavigator();
+				instance = new FunctionRepository();
+			}
+			return instance;
+        }
+        
+        internal static void InitializeInstance()
+        {
+			instance.initialize();
+        }
+
+ 		internal static FunctionRepository Instance { get { return instance; } }
+ 		
+		#region Private
+
+        private void categorizeFunctions()
+        {
+            foreach (IFunctionInfo functionInfo in functionInfoCollection)
+            {
+                XPathNodeIterator iterator = Xml.Select("//category[element-id = '" + functionInfo.Id + "']/attribute::name");
+
+                while (iterator.MoveNext())
+                {
+                    categoryInfoCollection[iterator.Current.Value].Functions.Add(functionInfo);
+                }
+            }
+
+            foreach (ICategoryInfo categoryInfo in categoryInfoCollection)
+            {
+                ((FunctionInfoCollection)categoryInfo.Functions).Sort();
+            }
+        }
+
+        private CategoryInfoCollection categoryInfoCollection = new CategoryInfoCollection();
+        private FunctionInfoCollection functionInfoCollection= new FunctionInfoCollection();
+
+        private static XPathNavigator navigator;
+ 		private static FunctionRepository instance;
+ 		
+       #endregion
+	}
+}

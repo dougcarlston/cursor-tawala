@@ -1,0 +1,400 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="BBUtility" themePath="default" format="1.6">
+<forms>
+<form name="Main" startPoint="true" themePath="default" process="Process 1">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>BB Alumni Utility</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="0000FF"><i>For updating Broderbund Alumni List Manually</i></font></paragraph></text>
+<mc label="Q1" alternateLabel="MenuChoice" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Add new record</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Delete existing record</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Edit record</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Confirm an unconfirmed record</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Show all records</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Show unconfirmed records </font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Show declined records</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Show confirmed records</font></paragraph></choice></mc>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Enter target email address, if needed (b, c and d): </font><blank label="a" length="17" required="false" alternateLabel="SearchEmail"/></paragraph></fib>
+</items>
+</form>
+<form name="Edit Item" startPoint="false" themePath="default" process="Process 2">
+<items>
+<text label="T1"><paragraph indent="0" align="right"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><table indent="0"><row><cell width="3600"><division indent="0" align="right"><font face="Arial" size="200" color="000000"><b>First Name:</b></font></division></cell><cell width="405"></cell><cell width="6795"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="First"/></font></division></cell></row><row><cell width="3600"><division indent="0" align="right"><font face="Arial" size="200" color="000000"><b>Last Name:</b></font></division></cell><cell width="405"></cell><cell width="6795"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Last"/></font></division></cell></row><row><cell width="3600"><division indent="0" align="right"><font face="Arial" size="200" color="000000"><b>Email Address:</b></font></division></cell><cell width="405"></cell><cell width="6795"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Contact"/></font></division></cell></row></table></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Is this the record you are looking for?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">No</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Edit Item:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Enter new data or leave a field blank to leave as is:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><b>Change " </b></font><font face="Arial" size="200" color="000000"><b><field name="First"/></b></font><font face="Arial" size="200" color="000000"><b>" to:</b></font><sp/><tab/><blank label="a" length="28" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><b>Change "</b></font><font face="Arial" size="200" color="000000"><b><field name="Last"/></b></font><font face="Arial" size="200" color="000000"><b>" to:</b></font><tab/><blank label="b" length="28" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/></tabPositions><font face="Arial" size="200" color="000000"><b>Change "</b></font><font face="Arial" size="200" color="000000"><b><field name="Contact"/></b></font><font face="Arial" size="200" color="000000"><b>" to: </b></font><tab/><blank label="c" length="28" required="false"/></paragraph></fib>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<if>
+<conditions>
+<mcEquals field="Main:MenuChoice" value="a"/>
+</conditions>
+<trueSet>
+<show document="Add a name" reset="false"/>
+<show form="Main"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<mcEquals field="Main:MenuChoice" value="h"/>
+<or>
+<mcEquals field="Main:MenuChoice">
+<string value="e"/>
+</mcEquals>
+<or>
+<mcEquals field="Main:MenuChoice">
+<string value="f"/>
+</mcEquals>
+<mcEquals field="Main:MenuChoice">
+<string value="g"/>
+</mcEquals>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<show document="Header" reset="false"/>
+</trueSet>
+</if>
+<get recordList="Record List 1">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+</get>
+<foreach record="Person" recordList="Record List 1">
+<if>
+<conditions>
+<and>
+<mcEquals field="Main:MenuChoice">
+<string value="b"/>
+</mcEquals>
+<equals field="Main:SearchEmail">
+<string field="Person:BBSharedEmailList:Email"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="Person:BBSharedEmailList:publishName" arithmeticAsText="false">
+<string value="false"/>
+</set>
+<set field="Person:BBSharedEmailList:DisplayEmail" arithmeticAsText="true">
+<string value="** deleted **"/>
+</set>
+<set field="Person:BBSharedEmailList:duplicateRecord" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<show document="DeleteConfirm" reset="false"/>
+</trueSet>
+</if>
+<set field="FirstName" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:First"/>
+</set>
+<set field="LastName" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:Last"/>
+</set>
+<set field="Email" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:Email"/>
+</set>
+<set field="DupRecord" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:duplicateRecord"/>
+</set>
+<set field="DisplayEmail" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:DisplayEmail"/>
+</set>
+<set field="PubName" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:publishName"/>
+</set>
+<if>
+<conditions>
+<and>
+<mcEquals field="Main:MenuChoice">
+<string value="c"/>
+</mcEquals>
+<equals field="Main:SearchEmail">
+<string field="Email"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="First" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:First"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:Last"/>
+</set>
+<set field="Contact" arithmeticAsText="false">
+<string field="Person:BBSharedEmailList:Email"/>
+</set>
+<show form="Edit Item"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Main:MenuChoice" value="d"/>
+<isNotBlank field="Main:SearchEmail" />
+</and>
+</conditions>
+<trueSet>
+<get recordList="Record List 7">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<and>
+<equals field="Record List 7:BBSharedEmailList:Email">
+<string field="Main:SearchEmail"/>
+</equals>
+<equals field="Record List 7:BBSharedEmailList:DisplayEmail">
+<string value="** unconfirmed **"/>
+</equals>
+</and>
+</conditions></get>
+<foreach record="UnconfirmedPerson" recordList="Record List 7">
+<set field="UnconfirmedPerson:BBSharedEmailList:DisplayEmail" arithmeticAsText="false">
+<string field="UnconfirmedPerson:BBSharedEmailList:Email"/>
+</set>
+<set field="UnconfirmedPerson:BBSharedEmailList:publishName" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<show document="Confirmation" reset="false"/>
+</foreach>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Main:MenuChoice" value="e"/>
+</conditions>
+<trueSet>
+<show document="Show Table" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Main:MenuChoice" value="f"/>
+<equals field="DisplayEmail">
+<string value="** unconfirmed **"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<show document="Show Table" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Main:MenuChoice" value="g"/>
+<equals field="PubName">
+<string value="false"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<show document="Show Table" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Main:MenuChoice">
+<string value="h"/>
+</mcEquals>
+<and>
+<doesNotEqual field="DisplayEmail">
+<string value="** unconfirmed **"/>
+</doesNotEqual>
+<doesNotEqual field="DisplayEmail">
+<string value="** deleted **"/>
+</doesNotEqual>
+</and>
+</and>
+</conditions>
+<trueSet>
+<show document="Show Table" reset="false"/>
+</trueSet>
+</if>
+</foreach>
+<show form="Main"/>
+</process>
+<process name="Process 2">
+<if>
+<conditions>
+<mcEquals field="Edit Item:Q1" value="a"/>
+</conditions>
+<trueSet>
+<get recordList="Record List 2">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<and>
+<equals field="Record List 2:BBSharedEmailList:Email">
+<string field="Contact"/>
+</equals>
+<doesNotEqual field="Record List 2:BBSharedEmailList:duplicateRecord">
+<string value="Wrong"/>
+</doesNotEqual>
+</and>
+</conditions></get>
+<foreach record="TestCase" recordList="Record List 2">
+<if>
+<conditions>
+<isNotBlank field="Edit Item:Q2:a" />
+</conditions>
+<trueSet>
+<set field="TestCase:BBSharedEmailList:First" arithmeticAsText="false">
+<string field="Edit Item:Q2:a"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Edit Item:Q2:b" />
+</conditions>
+<trueSet>
+<set field="TestCase:BBSharedEmailList:Last" arithmeticAsText="false">
+<string field="Edit Item:Q2:b"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Edit Item:Q2:c" />
+</conditions>
+<trueSet>
+<set field="TestCase:BBSharedEmailList:Email" arithmeticAsText="false">
+<string field="Edit Item:Q2:c"/>
+</set>
+</trueSet>
+</if>
+<set field="TestCase:BBSharedEmailList:DisplayEmail" arithmeticAsText="false">
+<string field="TestCase:BBSharedEmailList:Email"/>
+</set>
+<get recordList="Record List 3">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<equals field="Record List 3:BBSharedEmailList:duplicateRecord">
+<string value="Wrong"/>
+</equals>
+</conditions></get>
+<foreach record="SuchItem" recordList="Record List 3">
+<set field="SuchItem:BBSharedEmailList:duplicateRecord" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</foreach>
+<show form="Main"/>
+</foreach>
+</trueSet>
+<falseSet>
+<get recordList="Record List 5">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<and>
+<equals field="Record List 5:BBSharedEmailList:First">
+<string field="First"/>
+</equals>
+<and>
+<equals field="Record List 5:BBSharedEmailList:Last">
+<string field="Last"/>
+</equals>
+<equals field="Record List 5:BBSharedEmailList:Email">
+<string field="Contact"/>
+</equals>
+</and>
+</and>
+</conditions></get>
+<foreach record="Such" recordList="Record List 5">
+<set field="Such:BBSharedEmailList:duplicateRecord" arithmeticAsText="false">
+<string value="Wrong"/>
+</set>
+</foreach>
+<get recordList="Record List 6">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<and>
+<equals field="Record List 6:BBSharedEmailList:Email">
+<string field="Contact"/>
+</equals>
+<doesNotEqual field="Record List 6:BBSharedEmailList:duplicateRecord">
+<string value="Wrong"/>
+</doesNotEqual>
+</and>
+</conditions></get>
+<foreach record="DataCase" recordList="Record List 6">
+<set field="First" arithmeticAsText="false">
+<string field="DataCase:BBSharedEmailList:First"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="DataCase:BBSharedEmailList:Last"/>
+</set>
+<set field="Contact" arithmeticAsText="false">
+<string field="DataCase:BBSharedEmailList:Email"/>
+</set>
+</foreach>
+<show form="Edit Item"/>
+</falseSet>
+</if>
+<show document="NoMatch" reset="false"/>
+<get recordList="Record List 4">
+<forms>
+<form name="BBSharedEmailList" externalSharedData="true"/>
+</forms>
+<conditions>
+<equals field="Record List 4:BBSharedEmailList:duplicateRecord">
+<string value="Wrong"/>
+</equals>
+</conditions></get>
+<foreach record="SuchCase" recordList="Record List 4">
+<set field="SuchCase:BBSharedEmailList:duplicateRecord" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</foreach>
+<show form="Main"/>
+</process>
+</processes>
+<documents>
+<document name="Show Table">
+<xmlData>
+<table indent="0"><row><cell width="1890"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="FirstName"/></font></division></cell><cell width="1815"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="LastName"/></font></division></cell><cell width="2265"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Email"/></font></division></cell><cell width="1230"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="PubName"/></font></division></cell><cell width="2340"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="DisplayEmail"/></font></division></cell><cell width="1260"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="DupRecord"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="Header">
+<xmlData>
+<table indent="0"><row><cell width="1935"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>First Name</b></font></division></cell><cell width="1755"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Last Name</b></font></division></cell><cell width="2265"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Email</b></font></division></cell><cell width="1245"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Pub Name</b></font></division></cell><cell width="2340"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Display Email</b></font></division></cell><cell width="1260"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b>Dup Record</b></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="NoMatch">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="DD0000"><b><i>I'm sorry.  I can't find a record that matches that email.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Add a name">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="000000"><b>Add Name</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">To add a new name to the project, </font><font face="Arial" size="200" color="000080"><u><invitation form="Questionnaire" project="BB Email List Builder">click here</invitation></u></font><font face="Arial" size="200" color="000000">.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="360" color="000000"><b>Warning:  This is for the main app, </b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="360" color="000000"><b>not the demo app.</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Confirmation">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="BF0000"><b><i>The </i></b></font><font face="Arial" size="200" color="BF0000"><b><i><field name="Main:SearchEmail"/></i></b></font><font face="Arial" size="200" color="BF0000"><b><i> address has been confirmed.</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="DeleteConfirm">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="BF0000"><b><i>The </i></b></font><font face="Arial" size="200" color="BF0000"><b><i><field name="Main:SearchEmail"/></i></b></font><font face="Arial" size="200" color="BF0000"><b><i> address has been deleted.</i></b></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

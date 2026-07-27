@@ -1,0 +1,26 @@
+body {
+	background-color: #ffee99;
+}
+
+#tawalaProjectContainer {
+	background-color: #ffee99;
+	border: 2px solid #ccbb66;	
+    color: #85666f;
+}
+
+#tawalaFooter {
+	background-image: none;
+}
+
+#form .submitButton {
+    clear: both;
+    margin: 36px 0px 0px 80%;
+}
+
+#form .submitButton input {
+    border: 2px solid #ccbb66;
+    font-weight: bold;
+    Text-transform: capitalize;
+    background-color: #ffcc44;
+    color: #665500;
+}

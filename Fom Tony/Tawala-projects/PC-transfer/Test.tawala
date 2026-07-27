@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Test" themePath="default" format="1.9" designerBuild="194">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default" process="Process 1" preProcess="Process 3">
+<items>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter some data: </font><blank label="a" length="20" required="false"/></paragraph></fib>
+<mc label="Q2" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Review and update?</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Form 2" startPoint="false" themePath="default" process="Process 2">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>1</number-of-columns><column><header>Data</header><contents><field name="Record:Form 1:Q1:a" /></contents></column><conditions><form name="Form 1" /></conditions></itemization-table></font></paragraph></text>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<show form="Form 2"/>
+</process>
+<process name="Process 2">
+<if>
+<conditions>
+<mcContains field="Form 1:Q2" value="a"/>
+</conditions>
+<trueSet>
+<edit form="Form 1" submit="modify">
+</edit>
+</trueSet>
+</if>
+</process>
+<process name="Process 3">
+<set field="Form 1:Q2" arithmeticAsText="false">
+<string value="b"/>
+</set>
+</process>
+</processes>
+</project>

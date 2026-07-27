@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="UsesMyDataSources" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default" process="Process 1">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<get recordList="Record List 1">
+<forms>
+<form name="MyDataSource1" externalSharedData="true"/>
+</forms>
+</get>
+<foreach record="Record1" recordList="Record List 1">
+</foreach>
+</process>
+</processes>
+<documents>
+<document name="Document 1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><record-count version="3"><form-name>MyDataSource2</form-name><conditions><form name="MyDataSource2" externalSharedData="true" /></conditions></record-count></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

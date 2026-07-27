@@ -1,0 +1,33 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="FormDesignerTest\FormDesignerTest\bin\Debug\FormDesignerTest.dll" />
+    <assembly path="TawalaDesignerTest\ProjectExplorerTest\bin\Debug\ProjectExplorerTest.dll" />
+    <assembly path="TawalaDesignerTest\DocumentDesignerTest\bin\Debug\DocumentDesignerTest.dll" />
+    <assembly path="TawalaDesignerTest\StoryTest\bin\Debug\StoryTest.dll" />
+    <assembly path="TawalaDesignerTest\DialogsTest\bin\Debug\DialogsTest.dll" />
+    <assembly path="TawalaDesignerTest\BugTest\bin\Debug\BugTest.dll" />
+    <assembly path="TawalaDesignerTest\XmlSupportTest\bin\Debug\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\ProjectsTest\bin\Debug\ProjectsTest.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto">
+    <assembly path="FormDesignerTest\FormDesignerTest\bin\Release\FormDesignerTest.dll" />
+    <assembly path="TawalaDesignerTest\ProjectExplorerTest\bin\Release\ProjectExplorerTest.dll" />
+    <assembly path="TawalaDesignerTest\DocumentDesignerTest\bin\Release\DocumentDesignerTest.dll" />
+    <assembly path="TawalaDesignerTest\StoryTest\bin\Release\StoryTest.dll" />
+    <assembly path="TawalaDesignerTest\DialogsTest\bin\Release\DialogsTest.dll" />
+    <assembly path="TawalaTest\XmlSupportTest\bin\Release\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\XmlSupportTest\bin\Release\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\ProjectsTest\bin\Release\ProjectsTest.dll" />
+  </Config>
+  <Config name="Debug|x86" binpathtype="Auto">
+    <assembly path="TawalaTest\XmlSupportTest\bin\x86\Debug\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\XmlSupportTest\bin\Debug\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\ProjectsTest\bin\Debug\ProjectsTest.dll" />
+  </Config>
+  <Config name="Release|x86" binpathtype="Auto">
+    <assembly path="TawalaTest\XmlSupportTest\bin\x86\Release\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\XmlSupportTest\bin\x86\Release\XmlSupportTest.dll" />
+    <assembly path="TawalaDesignerTest\ProjectsTest\bin\x86\Release\ProjectsTest.dll" />
+  </Config>
+</NUnitProject>

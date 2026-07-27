@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6BFB6C46-4EFE-419A-A444-212B1740A212}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tawala.FunctionConfiguration</RootNamespace>
+    <AssemblyName>FunctionConfiguration</AssemblyName>
+    <StartupObject>
+    </StartupObject>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+  <ItemGroup>
+    <Compile Include="Presenter\BlankParameter.cs" />
+    <Compile Include="Presenter\ConfigurableParameter.cs" />
+    <Compile Include="Presenter\ConfigureFunctionPresenter.cs" />
+    <Compile Include="Presenter\ConfiguredFunction.cs" />
+    <Compile Include="Presenter\ConditionsParameter.cs" />
+    <Compile Include="Presenter\IConfiguredFunction.cs" />
+    <Compile Include="Presenter\EnumerationParameter.cs" />
+    <Compile Include="Presenter\FormParameter.cs" />
+    <Compile Include="Presenter\IConfigurableParameter.cs" />
+    <Compile Include="Presenter\IConfigureFunctionPresenter.cs" />
+    <Compile Include="Presenter\IConfigureFunctionView.cs" />
+    <Compile Include="Presenter\MCItemParameter.cs" />
+    <Compile Include="Presenter\ParameterValue.cs" />
+    <Compile Include="Presenter\StringParameter.cs" />
+    <Compile Include="View\BlankTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\ConfigureFunctionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="View\ConfigureFunctionDialog.designer.cs">
+      <DependentUpon>ConfigureFunctionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\EnumerationComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\FormComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\FunctionParameterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="View\FunctionParameterControl.designer.cs">
+      <DependentUpon>FunctionParameterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="View\IdentityComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\IdentityTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\IIdentityControl.cs" />
+    <Compile Include="View\IParameterControl.cs" />
+    <Compile Include="View\MCItemTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="View\StringTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="View\ConfigureFunctionDialog.resx">
+      <DependentUpon>ConfigureFunctionDialog.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="View\FunctionParameterControl.resx">
+      <DependentUpon>FunctionParameterControl.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\TAWALA\Controls\Controls.csproj">
+      <Project>{4F0A6D51-0E78-41AB-BBD7-CB9D2EA86670}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TAWALA\Project\Project.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Project</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TAWALA\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

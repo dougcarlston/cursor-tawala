@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Potluck Template" themePath="greentea" format="1.8" designerBuild="176">
+<styles fibItemStyle="topLabels" mcItemStyle="vertical" textItemStyle="normal" /><forms>
+<form name="Potluck Organizer" startPoint="true" themePath="greentea" process="Send Thanks" preProcess="Show Results">
+<items>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Potluck invites your friends to a potluck dinner, gets a headcount and creates a Web page where everyone can see who is coming and what dish they are bringing.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Just edit the questions below to your satisfaction, pick a theme under Format above, modify the "Details" Document that tells people where and when the Potluck is, and you're ready to go.  If you want to eliminate a question, you may have a little additional work, as described below. </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Once you are done modifying this form, delete these instructions and replace them with instructions for your invitees.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Then click on the Deploy button ( </font><font face="Arial" size="200" color="000000"><image id="image1" width="22" height="23"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="835" numOfObjects="0" maxRecordSize="813" numOfParams="0" />
+</image></font><font>)  up above to create a Web page for your invitation.  </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Once you have deployed your project to the Web, you can get the Web links to the Potluck invitation  and the Report you'll use to review the results from your My Tawala page on the Tawala Website.  Send the Potluck link to your invitees and then use Report to see how they responded.</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Fill in the form below to let us know if you can make it and if so what you will bring:</b></font></paragraph></text>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Name</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="35" required="false" alternateLabel="attendeeName"/></paragraph></fib>
+<mc label="Q2" onlyone="true" required="false" style="horizontal"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Will you be able to come to the potluck?</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000">No</font></paragraph></choice></mc>
+<fib label="Q3" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>How many of you will be coming?</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="6" required="false" alternateLabel="numAdults"/><font face="Verdana" size="200" color="000000"> (Adults)        </font><blank label="b" length="6" required="false" alternateLabel="numKids"/><font face="Verdana" size="200" color="000000"> (Kids)</font></paragraph></fib>
+<text label="T3" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Note: If you don't want to ask about children, just delete the " ________ (Kids)" part in the question above.  Then make these other changes to this Web app:</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>1) Delete the third line in the table in T5 below using the (</font><font face="Arial" size="200" color="000000"><image id="image2" width="34" height="24"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="1301" numOfObjects="0" maxRecordSize="1279" numOfParams="0" />
+</image></font><font>) button in the Menu bar above.</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>2) Do the same thing to the table in the Details document, removing all reference to kids.</font></paragraph></text>
+<fib label="Q4" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Verdana" size="200" color="000000"><b>Potluck Contribution</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="35" required="false" alternateLabel="contribution"/></paragraph></fib>
+<text label="T4" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font><b>Click the submit button to enter your information. </b></font></paragraph></text>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Potluck Organizer:Q2" value="b"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T5" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>You entered the following information:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="315"><row><cell width="2115"><division indent="0" align="left"><font>Name</font></division></cell><cell width="8370"><division indent="0" align="left"><font><field name="Potluck Organizer:attendeeName"/></font></division></cell></row><row><cell width="2115"><division indent="0" align="left"><font>Number of Adults</font></division></cell><cell width="8370"><division indent="0" align="left"><font><field name="Potluck Organizer:numAdults"/></font></division></cell></row><row><cell width="2115"><division indent="0" align="left"><font>Number of Kids</font></division></cell><cell width="8370"><division indent="0" align="left"><font><field name="Potluck Organizer:numKids"/></font></division></cell></row><row><cell width="2115"><division indent="0" align="left"><font>Dish</font></division></cell><cell width="8370"><division indent="0" align="left"><font><field name="Potluck Organizer:contribution"/></font></division></cell></row></table></text>
+<mc label="Q5" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Is this information correct?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes, save this information</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, I want to change what I entered</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Potluck Organizer:Q5" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T2"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="Report" startPoint="true" themePath="greentea" process="Delete Name" preProcess="Show Results">
+<items>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">To delete a person's response, enter his or her name here: </font><blank label="a" length="20" required="false" alternateLabel="nameToDelete"/></paragraph></fib>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Send Thanks">
+<if>
+<conditions>
+<mcEquals field="Potluck Organizer:Q2" value="a"/>
+</conditions>
+<trueSet>
+<show document="Thank you Coming" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Thank you NotComing" reset="false"/>
+</falseSet>
+</if>
+</process>
+<process name="Show Results">
+<show document="Details" reset="false"/>
+</process>
+<process name="Delete Name">
+<if>
+<conditions>
+<isNotBlank field="Report:nameToDelete" />
+</conditions>
+<trueSet>
+<delete><form name="Potluck Organizer"/><conditions>
+<equals field="Record:Potluck Organizer:attendeeName">
+<string field="Report:nameToDelete"/>
+</equals>
+</conditions></delete>
+</trueSet>
+</if>
+<show form="Report"/>
+</process>
+</processes>
+<documents>
+<document name="Thank you Coming">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Thank you for your response.</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>I look forward to seeing you!</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Thank you NotComing">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font><b>Sorry you won't be able to attend!</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Thank you for responding.</b></font></paragraph>
+</xmlData>
+</document>
+<document name="Details">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="360"><b>&lt;Enter Name of Event here&gt;</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>When:</b></font><font>  &lt;Enter date and time here&gt;</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Where:</b></font><font> &lt;Enter location and directions here&gt;</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Total people coming so far:</b></font><sp/></paragraph><table indent="2685"><row><cell width="1450"><division indent="0" align="right"><font>Adults:</font></division></cell><cell width="200"></cell><cell width="2700"><division indent="0" align="left"><font><sum version="1"><field>Record:Potluck Organizer:numAdults</field><conditions><form name="Potluck Organizer" /><conditions>
+<mcEquals field="Record:Potluck Organizer:Q2" value="a"/>
+</conditions></conditions></sum></font></division></cell></row><row><cell width="1450"><division indent="0" align="right"><font>Kids:</font></division></cell><cell width="200"></cell><cell width="2700"><division indent="0" align="left"><font><sum version="1"><field>Record:Potluck Organizer:numKids</field><conditions><form name="Potluck Organizer" /><conditions>
+<mcEquals field="Record:Potluck Organizer:Q2" value="a"/>
+</conditions></conditions></sum></font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>People planning on coming and what they're bringing:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>2</number-of-columns><column><header>Name</header><contents><field name="Record:Potluck Organizer:attendeeName" /></contents></column><column><header>Bringing</header><contents><field name="Record:Potluck Organizer:contribution" /></contents></column><conditions><form name="Potluck Organizer" /><conditions>
+<mcEquals field="Record:Potluck Organizer:Q2">
+<string value="a"/>
+</mcEquals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+</documents>
+<images><imagedef id="image1"><imagedata imageFormat="PNG">iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFU
+OE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xr
+TkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJc
+ff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEydd
+V+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8
+O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxT
+e1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCP
+pnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXI
+Zjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yA
+I2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVP
+tItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+S
+vTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomev
+P2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==</imagedata></imagedef><imagedef id="image2"><imagedata imageFormat="PNG">iVBORw0KGgoAAAANSUhEUgAAACIAAAAYCAIAAAAQxLheAAAABGdBTUEAALGPC/xhBQAAAkdJREFU
+SEu9lMtrE1EUh0/+InGh4EZcCXbhUlxXuxERdFFBKSKUuiiIYB8YSdtEkyY2Rg2mycTGxKmR2NiW
+dFpqaUXzGNNpMy1kmte84mmCl+u0ynUzw7f4DXN/83HOhDhiuSZQl4O+wWy9tzy23jr+VkANDZdr
+/sFKk/sf4iutY4HiftsGIL/XtgH4XjFtAL5VTBuAzV3TBmBDMgnDL3YIQ76de26p/+n29ZFy78Of
+lx+IF++Xzt8tne0vnrlVoFssGda3TQI6PHx7MmU6E8YYpz+KaMOv1cGZ1sB087anftNVu/ak1jeq
+nOxbpFssGdbKBoGMMuiV7kxKN8YP57g0JPYMFM91huhyojdDt1gyCKJBmJ79Yv6+2gAkxz6uYlY1
+Q2kY/kjmdM9VusWSIScahGfhzLGat6lcSzMOGoas6N5w+tSFK3SLJcNyySBMhOZxiH8zFeJRQ7dY
+MiwWdIIz8P7oNLirIJeVFU2U1a2y6ppJooZukWz5H6XPQDavE8a8cYsGHQcNPTCbKe1p6BAKLac/
+gRq6RWdishyA9JZKeOyJLgg/5j6tx+ZXcXVvEks4Bzrwe7hf8a5g0hlIjPviqKFbloymo08h+bVJ
+QA09Df6uKlVdlDV3iBfyrYXNRmqtNvqcQw3dYsnACXUC0eCucBq5qpfkw13h9+g46tHlGp5BDd1i
+yRBeUgj4Cj67gbt6ibuKdHYV4idwV37c1TucAw90NXSLJUPwc5XQfQULdIslgy+9bwMw9UG2AXDO
+7doAjEQlG/gF6G5t2krux1cAAAAASUVORK5CYII=</imagedata></imagedef></images></project>

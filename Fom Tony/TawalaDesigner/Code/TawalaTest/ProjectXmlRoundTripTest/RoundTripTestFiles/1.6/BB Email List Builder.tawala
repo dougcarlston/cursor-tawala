@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="BB Email List Builder" themePath="basicblue" format="1.6">
+<forms>
+<form name="Customize" startPoint="true" themePath="basicblue" dataEntryOnly="true" process="Post-Setup">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="240" color="4D6581"><b>Automated Email List Builder</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>This Web app builds an email mailing list for your organization. It sends a notification</i></b></font><sp/><font face="Arial" size="200" color="2E4685"><b><i>to all added members, giving them a link to the page where they can opt in or opt out of being included in the list. They may also view the list and</i></b></font><sp/><font face="Arial" size="200" color="2E4685"><b><i>add more names.  It works like a chain letter, sending the same  request to each</i></b></font><sp/><font face="Arial" size="200" color="2E4685"><b><i>added member until the list is complete.</i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Organization Name: </b></font><blank label="a" length="37" required="false" alternateLabel="Organization"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Text for an email describing what you are doing and why:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="102" height="4" required="false" alternateLabel="BodyText"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Name of person signing the email:</b></font><sp/><blank label="a" length="25" required="false" alternateLabel="Signer"/></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email address of person signing the letter: </b></font><blank label="a" length="18" required="true" alternateLabel="SignerEmail"/></paragraph></fib>
+<mc label="Q5" alternateLabel="EmailVisible" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>What member information do you want visible to everyone?</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Names only</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Names and email addresses</b></font></paragraph></choice></mc>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Note: To make this work you must have at least one or two people in the group for whom you have email addresses.</i></b></font></paragraph></text>
+<mc label="Q6" alternateLabel="haveAddresses" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Do you have some initial email addresses?</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Yes</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>No, I don't have those yet</b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Questionnaire" startPoint="true" themePath="basicblue" dataSourceName="BBSharedEmailList" process="Post-Main" preProcess="Build List">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Enter the name and email address of a group member not yet on the list:</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Name: </b></font><blank label="a" length="21" required="false" alternateLabel="First"/><font face="Arial" size="200" color="333333"><b>(First)</b></font><blank label="b" length="24" required="false" alternateLabel="Last"/><font face="Arial" size="200" color="333333"><b>(Last)</b></font></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Email address:</b></font><sp/><blank label="a" length="48" required="false" alternateLabel="Email"/></paragraph></fib>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Click the Submit button to add this member to the list.</i></b></font></paragraph></text>
+<mc label="Q3" alternateLabel="addAnother" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Check here if you wish to add another member name and email address.</b></font></paragraph></choice></mc>
+<field name="duplicateRecord"/>
+<field name="DisplayEmail"/>
+<field name="publishName"/>
+<field name="GroupName"/>
+<field name="PotluckInvitationSent"/>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="basicblue" process="Build List" preProcess="Pre-Administration">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Confirm" startPoint="false" themePath="basicblue" process="Post-Confirm" preProcess="Pre-Confirm">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">If you want to change the way your name appears in the list, enter the change below:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="21" required="false" alternateLabel="NewFirst"/><font face="Comic Sans MS" size="220" color="000000"> (First) </font><blank label="b" length="24" required="false" alternateLabel="NewLast"/><font face="Comic Sans MS" size="220" color="000000"> (Last)</font></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">If you would prefer to use an email address other than </font><font face="Comic Sans MS" size="220" color="000000"><field name="confirmEmail"/></font><font face="Comic Sans MS" size="220" color="000000">, enter the new address below.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">(</font><font face="Comic Sans MS" size="220" color="000000">To insure privacy, you will receive another email invitation to verify the new address.)</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="57" required="false" alternateLabel="NewEmail"/></paragraph></fib>
+</items>
+</form>
+<form name="OptOut" startPoint="false" themePath="basicblue" process="Post-OptOut">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-Setup">
+<if>
+<conditions>
+<mcEquals field="Customize:haveAddresses">
+<string value="b"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<show document="Try later" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Setup Step2" reset="false"/>
+<comment>this flag controls which Document is shown at the end of the Post-Main process</comment>
+<set field="setupMode" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<show form="Questionnaire"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-Main">
+<if>
+<conditions>
+<isNotBlank field="Questionnaire:Email" />
+</conditions>
+<trueSet>
+<comment>see if the email has previously been entered</comment>
+<comment>this flag will also serve to delete duplicate records (created here) in BuildList</comment>
+<set field="Questionnaire:duplicateRecord" arithmeticAsText="false">
+<string value="false"/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="Questionnaire"/>
+</forms>
+<conditions>
+<equals field="Record List 5:Questionnaire:Email">
+<string field="Questionnaire:Email"/>
+</equals>
+</conditions></get>
+<foreach record="AlreadyInList" recordList="Record List 5">
+<if>
+<conditions>
+<doesNotEqual field="AlreadyInList:Questionnaire:publishName">
+<string value="false"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<set field="Questionnaire:duplicateRecord" arithmeticAsText="false">
+<string value="true:published"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Questionnaire:duplicateRecord" arithmeticAsText="false">
+<string value="true:declined"/>
+</set>
+</falseSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<doesNotEqual field="Questionnaire:duplicateRecord">
+<string value="false"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="Questionnaire:duplicateRecord">
+<string value="true:declined"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="AlreadyDeclined" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="AlreadyExistsInList" reset="false"/>
+</falseSet>
+</if>
+<show form="Questionnaire"/>
+</trueSet>
+</if>
+<comment>email will not be displayed until confirmed by member</comment>
+<set field="Questionnaire:DisplayEmail" arithmeticAsText="true">
+<string value="** unconfirmed **"/>
+</set>
+<comment>display name (default condition)</comment>
+<set field="Questionnaire:publishName" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<comment>token for Private Invitation in Solicitation Document</comment>
+<set field="InvitationEmail" arithmeticAsText="false">
+<string field="Questionnaire:Email"/>
+</set>
+<comment>set up variables for Solicitation Document</comment>
+<set field="Questionnaire:GroupName" arithmeticAsText="false">
+<string field="OurGroup"/>
+</set>
+<set field="emailGroupName" arithmeticAsText="false">
+<string field="OurGroup"/>
+</set>
+<set field="emailFirstName" arithmeticAsText="false">
+<string field="Questionnaire:First"/>
+</set>
+<set field="emailText" arithmeticAsText="false">
+<string field="OurText"/>
+</set>
+<comment>send the solicitation email</comment>
+<send>
+<to addressField="Questionnaire:Email"/>
+<from addressLiteral="doug@carlston.net" aliasLiteral="Doug Carlston"/>
+<subject>Email List for <field name="OurGroup"/></subject>
+<body document="Solicitation" reset="false"/>
+</send>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Questionnaire:addAnother" value="a"/>
+</conditions>
+<trueSet>
+<show form="Questionnaire"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="setupMode">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Setup Complete" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Thank you" reset="false"/>
+</falseSet>
+</if>
+</process>
+<process name="Build List">
+<get recordList="Record List 2">
+<forms>
+<form name="Customize"/>
+</forms>
+</get>
+<foreach record="Datum" recordList="Record List 2">
+<set field="OurGroup" arithmeticAsText="false">
+<string field="Datum:Customize:Organization"/>
+</set>
+<set field="OurText" arithmeticAsText="false">
+<string field="Datum:Customize:BodyText"/>
+</set>
+<set field="Secretary" arithmeticAsText="false">
+<string field="Datum:Customize:Signer"/>
+</set>
+<if>
+<conditions>
+<doesNotEqual field="newSenderAddingNames">
+<string value="true"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<comment>if we didn't get here from the Post-Confirm Process</comment>
+<comment>use customizer's return address in the solicitation email</comment>
+<set field="SenderEmailAddress" arithmeticAsText="false">
+<string field="Datum:Customize:SignerEmail"/>
+</set>
+<set field="SenderName" arithmeticAsText="false">
+<string field="Datum:Customize:Signer"/>
+</set>
+</trueSet>
+</if>
+<comment>this flag controls whether email addresses are displayed to the public in the Questionnaire</comment>
+<set field="displayEmailAddresses" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Datum:Customize:EmailVisible" value="a"/>
+</conditions>
+<trueSet>
+<set field="displayEmailAddresses" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<comment>delete duplicate records</comment>
+<delete><form name="Questionnaire"/><conditions>
+<doesNotEqual field="Record:Questionnaire:duplicateRecord">
+<string value="false"/>
+</doesNotEqual>
+</conditions></delete>
+<if>
+<conditions>
+<equals field="adminMode">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Report" reset="false"/>
+<show document="ReportOptOuts" reset="false"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<equals field="displayEmailAddresses">
+<string value="true"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Report" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="Report NamesOnly" reset="false"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</process>
+<process name="Post-Confirm">
+<get recordList="Record List 3">
+<forms>
+<form name="Questionnaire"/>
+</forms>
+<conditions>
+<equals field="Record List 3:Questionnaire:Email">
+<string field="_InviteeID"/>
+</equals>
+</conditions></get>
+<foreach record="Matching Record" recordList="Record List 3">
+<if>
+<conditions>
+<isNotBlank field="Confirm:NewFirst" />
+</conditions>
+<trueSet>
+<set field="Matching Record:Questionnaire:First" arithmeticAsText="false">
+<string field="Confirm:NewFirst"/>
+</set>
+<set field="Matching Record:Questionnaire:Last" arithmeticAsText="false">
+<string field="Confirm:NewLast"/>
+</set>
+</trueSet>
+</if>
+<comment>this will be the return address in the solicitation email</comment>
+<set field="SenderEmailAddress" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<set field="SenderName" arithmeticAsText="false">
+<string field="Matching Record:Questionnaire:First"/>
+<string value=" "/>
+<string field="Matching Record:Questionnaire:Last"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Confirm:NewEmail" />
+</conditions>
+<trueSet>
+<set field="Matching Record:Questionnaire:DisplayEmail" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Matching Record:Questionnaire:Email" arithmeticAsText="false">
+<string field="Confirm:NewEmail"/>
+</set>
+<set field="Matching Record:Questionnaire:DisplayEmail" arithmeticAsText="true">
+<string value="** unconfirmed **"/>
+</set>
+<comment>set up variables for solicitation email</comment>
+<set field="InvitationEmail" arithmeticAsText="false">
+<string field="Confirm:NewEmail"/>
+</set>
+<set field="SenderEmailAddress" arithmeticAsText="false">
+<string field="Confirm:NewEmail"/>
+</set>
+<set field="emailGroupName" arithmeticAsText="false">
+<string field="Matching Record:Questionnaire:GroupName"/>
+</set>
+<set field="emailFirstName" arithmeticAsText="false">
+<string field="Matching Record:Questionnaire:First"/>
+</set>
+<set field="emailText" arithmeticAsText="false">
+<string value="Your email address for "/>
+<string field="emailGroupName"/>
+<string value=" has been updated."/>
+</set>
+<comment>send the solicitation email</comment>
+<send>
+<to addressField="Confirm:NewEmail"/>
+<from addressLiteral="doug@carlston.net" aliasLiteral="Doug Carlston"/>
+<subject>Email address update for <field name="emailGroupName"/></subject>
+<body document="Solicitation" reset="false"/>
+</send>
+</falseSet>
+</if>
+<set field="Matching Record:Questionnaire:publishName" arithmeticAsText="false">
+<string value="true"/>
+</set>
+</foreach>
+<comment>this flag makes sure SenderName and SenderEmailAddress</comment>
+<comment>are not overwritten in the BuildList Process</comment>
+<set field="newSenderAddingNames" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<show form="Questionnaire"/>
+</process>
+<process name="Post-OptOut">
+<get recordList="Record List 6">
+<forms>
+<form name="Questionnaire"/>
+</forms>
+<conditions>
+<equals field="Record List 6:Questionnaire:Email">
+<string field="_InviteeID"/>
+</equals>
+</conditions></get>
+<foreach record="Matching Record6" recordList="Record List 6">
+<set field="Matching Record6:Questionnaire:publishName" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</foreach>
+<show document="Decline Thank You" reset="false"/>
+</process>
+<process name="Pre-Confirm">
+<set field="InviteeFullName" arithmeticAsText="false">
+<string value="no match"/>
+</set>
+<get recordList="Record List 7">
+<forms>
+<form name="Questionnaire"/>
+</forms>
+<conditions>
+<equals field="Record List 7:Questionnaire:Email">
+<string field="_InviteeID"/>
+</equals>
+</conditions></get>
+<foreach record="Matching Record7" recordList="Record List 7">
+<set field="InviteeFullName" arithmeticAsText="false">
+<string field="Matching Record7:Questionnaire:First"/>
+<string value=" "/>
+<string field="Matching Record7:Questionnaire:Last"/>
+</set>
+<comment>this works around a bug with inserting _InviteeID into a FIB</comment>
+<set field="confirmEmail" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<equals field="InviteeFullName">
+<string value="no match"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="No Match Found" reset="false"/>
+<show form="Questionnaire"/>
+</trueSet>
+<falseSet>
+<show document="Match Found" reset="false"/>
+</falseSet>
+</if>
+</process>
+<process name="Pre-Administration">
+<comment>flag controls which Documents are shown by Build List Process</comment>
+<set field="adminMode" arithmeticAsText="false">
+<string value="true"/>
+</set>
+<comment>a trick to detect when the user got here via the Invitation link</comment>
+<comment>in the "Thank you" document; in this case the Administration</comment>
+<comment>Form is being invoked at the end of the Questionnare</comment>
+<if>
+<conditions>
+<equals field="_InviteeID">
+<string value="fromQuestionnaire"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="adminMode" arithmeticAsText="false">
+<string value="false"/>
+</set>
+</trueSet>
+</if>
+</process>
+</processes>
+<documents>
+<document name="Try later">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Please click on the Tawala logo above to leave this page. Return to the List Builder customization wizard once you have gathered some starter email addresses for your group.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>The more email adresses you have to start with, the more successful this Web app will be.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Thank you.</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Thank you">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">Thank you.  To see the current list for </font><font face="Comic Sans MS" size="220" color="000000"><field name="OurGroup"/></font><sp/><font face="Comic Sans MS" size="220" color="000080"><u><invitation form="Administration" project="" private="true"><authenticationTokenValue><string value="fromQuestionnaire"/>
+</authenticationTokenValue>click here</invitation></u></font><font face="Arial" size="200" color="000000">.</font></paragraph>
+</xmlData>
+</document>
+<document name="Solicitation">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Dear </font><font face="Arial" size="200" color="000000"><field name="emailFirstName"/></font><font face="Arial" size="200" color="000000">,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Re: </font><font face="Arial" size="200" color="000000"><field name="emailGroupName"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">The following message is sent to you by </font><font face="Arial" size="200" color="000000"><field name="SenderName"/></font><font face="Arial" size="200" color="000000"> on behalf of Doug Carlston:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="emailText"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>To include your own name and email address in the list </b></font><font face="Arial" size="200" color="000080"><b><u><invitation form="Confirm" project="" private="true"><authenticationTokenValue><string field="InvitationEmail"/>
+</authenticationTokenValue>click here</invitation></u></b></font><font face="Arial" size="200" color="000000"><b>. (When you get to the Confirmation screen, </b></font><font face="Arial" size="200" color="000000"><b><u>you must click the Submit button to be confirmed</u></b></font><font face="Arial" size="200" color="000000"><b>.)</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>If you do not wish to be in the list, </b></font><font face="Arial" size="200" color="000080"><b><u><invitation form="OptOut" project="" private="true"><authenticationTokenValue><string field="InvitationEmail"/>
+</authenticationTokenValue>click here</invitation></u></b></font><sp/><font face="Arial" size="200" color="000000"><b>to have your name and email address removed.</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Yours,</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Doug Carlston</font></paragraph>
+</xmlData>
+</document>
+<document name="Report">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="360" color="000000"><b><field name="OurGroup"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">Here is our list so far.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First Name</header><contents><field name="Record:Questionnaire:First" /></contents></column><column><header>Last Name</header><contents><field name="Record:Questionnaire:Last" /></contents></column><column><header>Email Address</header><contents><field name="Record:Questionnaire:DisplayEmail" /></contents></column><conditions><form name="Questionnaire"/><conditions>
+<equals field="Record:Questionnaire:publishName">
+<string value="true"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="200" color="000000">   -  </font><font face="Comic Sans MS" size="200" color="000000"><field name="Secretary"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Setup Step2">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Start sending automated emails to your "seed" group right now by filling out the form below. You can send as many emails as you have addresses for now.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>When you're done you can click on Review and Send to the left, which will provide a link you may use to send additional emails in the future.</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Setup Complete">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Congratulations! Your Automated Email List Builder is underway.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Proceed to the next step (Review and Send).</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Decline Thank You">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">Your name and email address will not appear in the list.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">Thank you for responding.</font></paragraph>
+</xmlData>
+</document>
+<document name="No Match Found">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">We're sorry, but we could not find your email address in our list of pending entries. It's possible that you have already confirmed your name and email address.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">If your name is not on the list and you would like to sign up, add your information below. For your protection you will receive another "invitation email," which will require you to confirm again.</font></paragraph>
+</xmlData>
+</document>
+<document name="AlreadyExistsInList">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">The email address </font><font face="Comic Sans MS" size="220" color="000000"><field name="Questionnaire:Email"/></font><font face="Comic Sans MS" size="220" color="000000"> is already in the list.</font></paragraph>
+</xmlData>
+</document>
+<document name="AlreadyDeclined">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">The email addess </font><font face="Comic Sans MS" size="220" color="000000"><field name="Questionnaire:Email"/></font><font face="Comic Sans MS" size="220" color="000000"> was previously invited to join and has declined.</font></paragraph>
+</xmlData>
+</document>
+<document name="Match Found">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">Thank you for joining our list!</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">We already have your email address, and we show your name as </font><font face="Comic Sans MS" size="220" color="000000"><b><field name="InviteeFullName"/></b></font><font face="Comic Sans MS" size="220" color="000000">.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="F02C22"><b>Note: To confirm your name and email address as is, you must click the Submit button.</b></font></paragraph>
+</xmlData>
+</document>
+<document name="ReportOptOuts">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">The following people have declined to join the list:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="200" color="000000"><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First Name</header><contents><field name="Record:Questionnaire:First" /></contents></column><column><header>Last Name</header><contents><field name="Record:Questionnaire:Last" /></contents></column><column><header>Email Address</header><contents><field name="Record:Questionnaire:Email" /></contents></column><conditions><form name="Questionnaire"/><conditions>
+<equals field="Record:Questionnaire:publishName">
+<string value="false"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph>
+</xmlData>
+</document>
+<document name="Report NamesOnly">
+<xmlData>
+<paragraph indent="0" align="center"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="360" color="000000"><b><field name="OurGroup"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="220" color="000000">Here is our list so far.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><itemization-table version="1"><number-of-columns>2</number-of-columns><column><header>First Name</header><contents><field name="Record:Questionnaire:First" /></contents></column><column><header>Last Name</header><contents><field name="Record:Questionnaire:Last" /></contents></column><conditions><form name="Questionnaire"/><conditions>
+<equals field="Record:Questionnaire:publishName">
+<string value="true"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Comic Sans MS" size="200" color="000000">   -  </font><font face="Comic Sans MS" size="200" color="000000"><field name="Secretary"/></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

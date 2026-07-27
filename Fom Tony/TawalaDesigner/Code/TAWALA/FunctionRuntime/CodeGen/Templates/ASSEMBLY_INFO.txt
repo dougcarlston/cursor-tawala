@@ -1,0 +1,17 @@
+//
+// Copyright © 2005-${YEAR} Tawala Systems, Inc. All rights reserved.
+//
+using System;
+using System.ComponentModel;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+[assembly: AssemblyCompany("Tawala Systems, Inc")]
+[assembly: AssemblyProduct("Tawala")]
+[assembly: AssemblyCopyright("© 2005-${YEAR} Tawala Systems, Inc. All rights reserved.")]
+[assembly: AssemblyVersion("${ASSEMBLYVERSION}")]
+[assembly: AssemblyInformationalVersion("1.0")] // prevents version info from getting tacked onto Application.LocalUserAppDataPath.
+[assembly: ComVisible(false)]
+

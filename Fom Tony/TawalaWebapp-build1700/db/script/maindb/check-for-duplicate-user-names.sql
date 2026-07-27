@@ -1,0 +1,1 @@
+select * from users a where  1 < (select count(*) from users x where lower(a.user_name) = lower(x.user_name)) order by user_name

@@ -1,0 +1,113 @@
+body {
+	background-color: #C0A878;
+}
+
+h1.pageHeading {
+	height: 77px;
+	line-height: 2.4em;
+	color: #C0A878;
+	background-color: #240600;
+}
+
+#tawalaProjectContainer {
+	color: #F0F0C0;
+	background-color: #301800;
+	border: 0px solid #cccccc;	
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+/*
+ * Component styles
+ */
+table.component {
+	color: #240600;
+}
+	table.component.outline {
+		border: 1px solid #cccccc;				
+	}
+	
+	table.component thead {
+		background-color: #603018;
+		color: #F0F0C0;
+	}
+
+		table.component.outline thead th {
+			border: 1px solid #8F8F21;
+		}
+
+	table.component tr {}
+
+		table.component tbody tr.odd{
+			background-color: #F0F0C0;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #C0A878;
+		}
+
+		table.component.outline tbody td{
+			border: 1px solid #837B70;
+		}
+
+	.graph .bar span { 
+		color: #C0A878;
+	}
+		.graph.color1 { border-color: #301800; }
+			.graph.color1 .bar { background: #301800; }
+
+		.graph.color2 { border-color: #301800; }
+			.graph.color2 .bar { background: #301800; }
+
+		.graph.color3 { border-color:#301800; }
+			.graph.color3 .bar { background: #301800; }
+
+		.graph.color4 { border-color: #a3a892; }
+			.graph.color4 .bar { background: #a3a892; }
+
+		.graph.color5 { border-color: #a3a892; }
+			.graph.color5 .bar { background: #a3a892; }
+
+		.graph.color6 { border-color: #a3a892; }
+			.graph.color6 .bar { background: #a3a892; }
+
+		.graph.color7 { border-color: #a3a892; }
+			.graph.color7 .bar { background: #a3a892; }
+
+		.graph.color8 { border-color: #a3a892; }
+			.graph.color8 .bar { background: #a3a892; }
+
+		.graph.color9 { border-color: #a3a892; }
+			.graph.color9 .bar { background: #a3a892; }
+
+		.graph.color10 { border-color: #a3a892; }
+			.graph.color10 .bar { background: #a3a892; }
+
+		.graph.color11 { border-color: #a3a892; }
+			.graph.color11 .bar { background: #a3a892; }
+
+		.graph.color12 { border-color: #a3a892; }
+			.graph.color12 .bar { background: #a3a892; }
+
+		.graph.color13 { border-color: #a3a892 }
+			.graph.color13 .bar { background: #a3a892; }
+
+		.graph.color14 { border-color: #a3a892; }
+			.graph.color14 .bar { background: #a3a892; }
+
+		.graph.color15 { border-color: #a3a892; }
+			.graph.color15 .bar { background: #a3a892; }
+
+		.graph.color16 { border-color: #a3a892; }
+			.graph.color16 .bar { background: #a3a892; }
+

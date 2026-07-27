@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="SetStatementsArithmeticAndText" themePath="default" format="1.3">
+<processes>
+<process name="Process 1">
+<set field="number1" arithmeticAsText="false" expression="10 - 2">
+<sub>
+<operand value="10"/>
+<operand value="2"/>
+</sub>
+</set>
+<set field="text1" arithmeticAsText="true" expression="10 - 2">
+<string value="10 - 2"/>
+</set>
+<set field="number2" arithmeticAsText="false" expression="&lt;&lt;number1&gt;&gt; * 5">
+<mul>
+<operand field="number1"/>
+<operand value="5"/>
+</mul>
+</set>
+<set field="text2" arithmeticAsText="true" expression="&lt;&lt;number1&gt;&gt; * 5">
+<string field="number1"/>
+<string value=" * 5"/>
+</set>
+</process>
+</processes>
+</project>

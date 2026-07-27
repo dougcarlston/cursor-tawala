@@ -1,0 +1,32 @@
+<templates>
+<categories>
+<category cid="1" name="Basic"/>
+<category cid="2" name="Activities"/>
+<category cid="3" name="E-mail Lists"/>
+<category cid="4" name="Meetings"/>
+<category cid="5" name="Polls and Surveys"/>
+</categories>
+<projects>
+<project label="Empty" file="Empty Project" cid="1">
+<description>Start with an empty project.</description>
+</project>
+<project label="Form, Process and Document" file="Form_with_process_connecting_a_document_v.1" cid="1">
+<description>A simple project that contains a Form connected to Process and includes a Document.</description>
+</project>
+<project label="Form with Process" file="Form_with_process_v.1" cid="1">
+<description>A simple project that contains a Form connected to Process.</description>
+</project>
+<project label="Get Together" file="Get_Together_Template_v.1" cid="4">
+<description>Select the best date for a meeting.</description>
+</project>
+<project label="Multiple Question Survey" file="Multiple_Question_Survey_Template_v.2" cid="5">
+<description>A survey you can be modify to meet your needs.</description>
+</project>
+<project label="Sign-up Sheet" file="Signup_Sheet_Template_v.1" cid="2">
+<description>A sign-up you can be modify to meet your needs.</description>
+</project>
+<project label="Sign-up Sheet with E-mail" file="Signup_Sheet_Template_w_Email_v.2" cid="2">
+<description>A sign-up with e-mail that you can be modify to meet your needs.</description>
+</project>
+</projects>
+</templates>

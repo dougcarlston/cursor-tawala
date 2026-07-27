@@ -1,0 +1,1466 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Dirtbowl Communicator" themePath="dirtbowl2" format="1.10" designerBuild="204">
+<pageHeader><image id="__HEADER__8caaff660bbde30" width="675" height="95"/></pageHeader><styles fibItemStyle="leftAlignLabelsJustified" /><forms>
+<form name="Start" startPoint="true" themePath="dirtbowl2" process="Post-Start" preProcess="Pre-Start">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Communicator</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This utility allows you to:</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- create a message to send out to your entire contact list, </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- add an optional multiple choice question to that communication, </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- review the responses you receive to that question.</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>-- use list management tools to add, edit, delete or audit email records for validity.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Current Status:</font></paragraph><table indent="660"><row><cell width="4168"><division indent="0" align="left"><font color="6380B6"><i>Names in Contact Data Base:</i></font></division></cell><cell width="272"></cell><cell width="5700"><division indent="0" align="left"><font color="6380B6"><i><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /></conditions></record-count></i></font></division></cell></row><row><cell width="4168"><division indent="0" align="left"><font color="6380B6"><i>Current Communication in Memory?</i></font></division></cell><cell width="272"></cell><cell width="5700"><division indent="0" align="left"><font color="6380B6"><b><i><field name="PrevMessage"/></i></b></font></division></cell></row><row><cell width="4168"><division indent="0" align="left"><font color="6380B6"><i>Number of responses to current message:</i></font></division></cell><cell width="272"></cell><cell width="5700"><division indent="0" align="left"><font color="6380B6"><i><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<isNotBlank field="Record:DataBase:Response" />
+</conditions></conditions></record-count></i></font></division></cell></row></table></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Select:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Review and send current communication to list</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Review responses from current communication</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Compose new communication to send to list </font><font face="Arial" size="200" color="000000"><b><i>(Warning:</i></b></font><font face="Arial" size="200" color="000000"><i> Deletes  prior message and response data)</i></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">List Management Tools </font><font face="Arial" size="200" color="000000"><i>(View, Add, Edit, Delete and Audit records)</i></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Create Teams based on current response data</i></font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Use Categorizer to assign Players to Teams</i></font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Quit</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="DataBase" startPoint="false" themePath="dirtbowl2" dataSourceName="Dirtbowl Email List" process="Post-DataBase">
+<items>
+<fib label="Q1" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Add Name to List:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Name: </font><blank label="a" length="20" required="false"/><font face="Arial" size="200" color="000000"> (first) </font><blank label="b" length="20" required="false"/><font face="Arial" size="200" color="000000"> (last)</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email: </font><blank label="c" length="20" required="false"/></paragraph></fib>
+<field name="FirstName"/>
+<field name="LastName"/>
+<field name="Email Address"/>
+<field name="Response"/>
+<field name="BadEmail?"/>
+<field name="Team"/>
+</items>
+</form>
+<form name="Composer" startPoint="false" themePath="dirtbowl2" process="Post-Composer">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Composer</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Compose or review your message below, then press the Submit button.  You will still have an opportunity after that to abandon or modify the message before it is sent.</font></paragraph></text>
+<fib label="Q1" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>To:</b></font><font face="Arial" size="200" color="000000"> (</font><font face="Arial" size="200" color="000000"><i>e.g. Friends of Mill Valley Dirtbowl</i></font><font face="Arial" size="200" color="000000">) </font><blank label="a" length="27" required="false" alternateLabel="To"/></paragraph></fib>
+<fib label="Q2" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>From:</b></font><sp/><font face="Arial" size="200" color="000000"><i>(Name)</i></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="27" required="false" alternateLabel="FromName"/></paragraph></fib>
+<fib label="Q3" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>From:</b></font><sp/><font face="Arial" size="200" color="000000"><i>(Email)</i></font><sp/><blank label="a" length="27" required="false" alternateLabel="FromEmail"/></paragraph></fib>
+<fib label="Q4" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Subject:</b></font><sp/><blank label="a" length="27" required="false" alternateLabel="Subject"/></paragraph></fib>
+<fib label="Q5" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Body of Message:</b></font><sp/><blank label="a" length="61" height="10" required="false" alternateLabel="Body"/></paragraph></fib>
+<fib label="Q6" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Closing:</b></font><font face="Arial" size="200" color="000000"> (</font><font face="Arial" size="200" color="000000"><i>e.g. Yours truly, Jack</i></font><font face="Arial" size="200" color="000000">) </font><blank label="a" length="61" height="5" required="false" alternateLabel="Closing"/></paragraph></fib>
+<break/>
+<text label="T3" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Your message will look like this:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2775"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:To"/></font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font color="000000"><field name="Composer:FromName"/></font><font> (</font><font><field name="Composer:FromEmail"/></font><font>)</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:Subject"/></font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Body"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Closing"/></font></division></cell></row><row><cell width="10800"></cell></row></table></text>
+<mc label="Q7" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Include a question with the message   </font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send this message </font><font face="Arial" size="200" color="000000"><b>without a question attached</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit this message further</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return to Main Menu </font><font face="Arial" size="200" color="000000"><b>without</b></font><font face="Arial" size="200" color="000000"> sending this message for the present</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Composer:Q7" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+</skipInstructions>
+<field name="QuestionAdded?"/>
+<field name="Sent?"/>
+</items>
+</form>
+<form name="AddQuestion" startPoint="false" themePath="dirtbowl2" process="Post-AddQuestion" preProcess="Pre-AddQuestion">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Multiple Choice Question</font></paragraph></text>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please enter Question here: </font><blank label="a" length="55" required="false" alternateLabel="Question"/></paragraph></fib>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Response Choices: </font><font face="Arial" size="200" color="000000"><i>(leave blank any you don't need)</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="A"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="b" length="20" required="false" alternateLabel="B"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="c" length="20" required="false" alternateLabel="C"/></paragraph></fib>
+<skipInstructions>
+<if>
+<conditions>
+<or>
+<isBlank field="AddQuestion:Question" />
+<isBlank field="AddQuestion:A" />
+</or>
+</conditions>
+<trueSet>
+<skip to="Q3"/>
+</trueSet>
+</if>
+</skipInstructions>
+<break/>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Your message will now look like this:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2775"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:To"/></font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:FromName"/></font><font> (</font><font><field name="Composer:FromEmail"/></font><font>)</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2775"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="390"></cell><cell width="7635"><division indent="0" align="left"><font><field name="Composer:Subject"/></font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Body"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="AddQuestion:Question"/></font></division></cell></row><row><cell width="10800"><division indent="720" align="left"><font><field name="AddQuestion:A"/></font></division><division indent="720" align="left"><font><field name="AddQuestion:B"/></font></division><division indent="720" align="left"><font><field name="AddQuestion:C"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Composer:Closing"/></font></division></cell></row></table></text>
+<mc label="Q3" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Send this message as is</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit the message further</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit the question further</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return to Main Menu </font><font face="Arial" size="200" color="000000"><b>without</b></font><font face="Arial" size="200" color="000000"> sending this message for the present</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcIsBlank field="AddQuestion:Q3" />
+</conditions>
+<trueSet>
+<skip to="T2"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="GetResponse1" startPoint="false" themePath="dirtbowl2" process="Post-Response1">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="SendEmail" startPoint="false" themePath="dirtbowl2" process="Post-SendEmail">
+<items>
+<text label="T1" style="error"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Note:</b></font><font> If you are sending a large number of emails, the process can take a few minutes.  Please wait until you are returned to the Main Menu upon completion.  Do not click the back arrow, as it may interfere with the successful completion of the mailing.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Press </font><font><i>Submit</i></font><font> to begin the mailing.</font></paragraph></text>
+</items>
+</form>
+<form name="GetResponse2" startPoint="false" themePath="dirtbowl2" process="Post-Response2">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="GetResponse3" startPoint="false" themePath="dirtbowl2" process="Post-Response3">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Report" startPoint="false" themePath="dirtbowl2" process="Post-Report">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><b>Here are the results from the most recent question:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="a"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsA"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="b"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsB"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="c"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsC"/></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>See list of individuals who answered:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">"</font><font face="Arial" size="200" color="000000"><field name="AnsA"/></font><font face="Arial" size="200" color="000000">"</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">"</font><font face="Arial" size="200" color="000000"><field name="AnsB"/></font><font face="Arial" size="200" color="000000">"</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">"</font><font face="Arial" size="200" color="000000"><field name="AnsC"/></font><font face="Arial" size="200" color="000000">"</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>See all responses in a single table</i></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Report:Q1" value="d"/>
+</conditions>
+<trueSet>
+<skip to="T6"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Report:Q1" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T5"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Report:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T4"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Report:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="a"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><sp/><font><field name="AnsA"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="a"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="b"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><font><field name="AnsB"/></font><sp/></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="b"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T5"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><record-count version="3"><form-name>DataBase</form-name><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="c"/>
+</equals>
+</conditions></conditions></record-count></font><sp/><font><field name="AnsC"/></font><sp/></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Response">
+<string value="c"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T6"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>a = "</font><font><field name="AnsA"/></font><font face="Arial" size="200" color="000000">"</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>b = "</font><font><field name="AnsB"/></font><font face="Arial" size="200" color="000000">" </font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font>c = "</font><font><field name="AnsC"/></font><font face="Arial" size="200" color="000000">"</font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>4</number-of-columns><column><header>First</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><column><header>Response</header><contents><field name="Record:DataBase:Response" /></contents></column><conditions><form name="DataBase" /></conditions></itemization-table></font><sp/></paragraph></text>
+</items>
+</form>
+<form name="Utilities" startPoint="false" themePath="dirtbowl2" process="Post-Utilities">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">List Management</font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">View the list</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Add a record to the list</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit/delete record</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Audit emails for validity</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return to Main Menu</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="c"/>
+</conditions>
+<trueSet>
+<skip to="Q2"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Utilities:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>You may sort the list by clicking on either heading.</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First Name</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last Name</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /></conditions></itemization-table></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Press Submit to return to main List Management menu.</i></font></paragraph></text>
+<skipInstructions>
+<skip to="T1"/>
+</skipInstructions>
+<fib label="Q2" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter </font><font face="Arial" size="200" color="000000"><b><i>part or all of the email</i></b></font><font face="Arial" size="200" color="000000"> of the record you want to edit or delete: </font><font face="Arial" size="200" color="000000"><i>(leave blank to see entire list)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="a" length="20" required="false" alternateLabel="TargetEmail"/></paragraph></fib>
+</items>
+</form>
+<form name="MessageUnsent" startPoint="false" themePath="dirtbowl2" process="Post-MessageUnsent">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Your previous message has not yet been sent.</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Here is what it looks like:</i></font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2685"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="Recipient"/></font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="FromN"/></font><font> (</font><font><field name="FromE"/></font><font>)</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="Sub"/></font></division></cell></row><row><cell width="2685"></cell><cell width="272"></cell><cell width="7843"></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyStart"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Query"/></font></division><division indent="720" align="left"><font><field name="AnsA"/></font></division><division indent="720" align="left"><font><field name="AnsB"/></font></division><division indent="720" align="left"><font><field name="AnsC"/></font></division></cell></row><row><cell width="10800"></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyClose"/></font></division></cell></row></table></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure that you want to abandon this effort and start over?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes, throw this email message away</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, I want to edit or send this email</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Just return me to the Main Menu please</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="MessageAlreadySent" startPoint="false" themePath="dirtbowl2" process="Post-MessageAlreadySent">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Your previous message has already been sent out at least once.</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="950000"><i>Here is what it looks like.</i></font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2685"><division indent="0" align="right"><font><b>To:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="Recipient"/></font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>From:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="FromN"/></font><font> (</font><font><field name="FromE"/></font><font>)</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Date:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font>Today</font></division></cell></row><row><cell width="2685"><division indent="0" align="right"><font><b>Subject:</b></font></division></cell><cell width="272"></cell><cell width="7843"><division indent="0" align="left"><font><field name="Sub"/></font></division></cell></row><row><cell width="2685"></cell><cell width="272"></cell><cell width="7843"></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyStart"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="Query"/></font></division><division indent="720" align="left"><font><field name="AnsA"/></font></division><division indent="720" align="left"><font><field name="AnsB"/></font></division><division indent="720" align="left"><font><field name="AnsC"/></font></division></cell></row><row><cell width="10800"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10800"><division indent="0" align="left"><font><field name="BodyClose"/></font></division></cell></row></table></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure that you want to send or edit it again? </font><font face="Arial" size="200" color="000000"><i>(Responses will be added to previous ones in reports)</i></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, that wasn't my intent.  Please return to Main Menu.</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="EditDelete" startPoint="false" themePath="dirtbowl2" process="Post-EditDelete">
+<items>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark record that you wish to edit or delete:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:DataBase:FirstName"/>
+<string value=" "/>
+<field name="Record:DataBase:LastName"/>
+<string value="   ("/>
+<field name="Record:DataBase:Email Address"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:DataBase:Email Address"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="DataBase" /><conditions>
+<contains field="Record:DataBase:Email Address">
+<string field="Target"/>
+</contains>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+</items>
+</form>
+<form name="EditDelete1" startPoint="false" themePath="dirtbowl2" process="Post-EditDelete1" preProcess="Pre-EditDelete1">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First Name</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last Name</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Email Address">
+<string field="EditDelete:Q1"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit this record</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Delete this record</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="EditDelete1:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T3"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="EditDelete1:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Here is the information in the record:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To change or add information, just fill in the appropriate field and press Submit </font><font><i>(leave alone to keep as is)</i></font></paragraph></text>
+<fib label="Q2" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Name:  </b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="AltFirst"/><font face="Arial" size="200" color="000000"> (first) </font><blank label="b" length="20" required="false" alternateLabel="AltLast"/><font face="Arial" size="200" color="000000"> (last)</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email:   </b></font><blank label="c" length="20" required="false" alternateLabel="AltEmail"/></paragraph></fib>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Here is the record to be deleted:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="1"><number-of-columns>3</number-of-columns><column><header>First Name</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last Name</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="DataBase" /><conditions>
+<equals field="Record:DataBase:Email Address">
+<string field="EditDelete:Q1"/>
+</equals>
+</conditions></conditions></itemization-table></font></paragraph></text>
+<mc label="Q3" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, leave as is</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Audit1" startPoint="false" themePath="dirtbowl2" process="Post-Audit1">
+<items>
+<text label="T1"><paragraph indent="0" align="center"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Audit Emails</font></paragraph></text>
+<text label="T2" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This utility checks the entire contact list for valid email addresses.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>If it finds a record with more than one valid email or with none, it will give you a chance to edit it so that it will work properly with the Communicator.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>You will have the opportunity to edit, delete or pass each record that fails the audit test.</font></paragraph></text>
+<text label="T3" style="error"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Note: Some good emails may be marked as questionable, particularly ones from unusual domains.  Do </font><font><b>NOT</b></font><font> assume that a flagged record is bad until you check it manually.</font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Proceed</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Return</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Audit2" startPoint="false" themePath="dirtbowl2" process="Post-Audit2" preProcess="Pre-Audit2">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="320">Audit Emails</font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Audit has flagged </font><font><field name="Count"/></font><font> record(s) as suspicious.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This record was flagged:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Name:</b></font><sp/><sp/><font><field name="First"/></font><sp/><font face="Arial" size="200" color="000000"><field name="Last"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Email:   </b></font><font><field name="Email"/></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit this record</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Delete this record</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark this email as valid</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Break off Audit for now, leaving this record unchanged</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T4"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="Audit2:Q1" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Edit Record:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To change or add information, just fill in the appropriate field and press Submit </font><font><i>(leave a field alone to keep as is)</i></font></paragraph></text>
+<fib label="Q2" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Name:</b></font><sp/><sp/><blank label="a" length="20" required="false" alternateLabel="ChangeFirst"/><font face="Arial" size="200" color="000000"> (first) </font><blank label="b" length="20" required="false" alternateLabel="ChangeLast"/><font face="Arial" size="200" color="000000"> (last)</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email:</b></font><sp/><sp/><blank label="c" length="20" required="false" alternateLabel="ChangeEmail"/></paragraph></fib>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T4"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Record to delete:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Name:</b></font><sp/><sp/><font><field name="First"/></font><sp/><font face="Arial" size="200" color="000000"><field name="Last"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Email:</b></font><sp/><sp/><font><field name="Email"/></font></paragraph></text>
+<mc label="Q3" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Are you sure?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Yes</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">No, leave as is</font></paragraph></choice></mc>
+</items>
+</form>
+<form name="TeamCreator" startPoint="false" themePath="dirtbowl2" process="Post-TeamCreator">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Create Teams</font></paragraph></heading>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Which response do you want to create teams for?</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="AnsA"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="AnsB"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><field name="AnsC"/></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Creator1" startPoint="false" themePath="dirtbowl2" process="Post-Creator1">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<field name="Teams"/>
+</items>
+</form>
+<form name="Categorizer" startPoint="false" themePath="dirtbowl2" process="Post-Categorizer">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-Start">
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="a"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="PrevMessage">
+<string value="No"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="No prior communication found."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<equals field="PrevMsgSent">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="MessageAlreadySent"/>
+</trueSet>
+<falseSet>
+<edit form="Composer" submit="modify">
+</edit>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="b"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="Query" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="There was no question in the last email sent out."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+</if>
+<show form="Report"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="c"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<and>
+<equals field="PrevMsgSent">
+<string value="No"/>
+</equals>
+<equals field="PrevMessage">
+<string value="Yes"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<show form="MessageUnsent"/>
+</trueSet>
+</if>
+<delete><form name="Composer"/></delete>
+<delete><form name="AddQuestion"/></delete>
+<get recordList="Record List 4">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="SuchRecord" recordList="Record List 4">
+<set field="SuchRecord:DataBase:Response" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</foreach>
+<show form="Composer"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="d"/>
+</conditions>
+<trueSet>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="e"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isBlank field="AnsA" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="There are no responses to categorize yet"/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+<falseSet>
+<show form="TeamCreator"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Start:Q1" value="f"/>
+</conditions>
+<trueSet>
+<show form="Categorizer"/>
+</trueSet>
+</if>
+<show form="Start"/>
+</process>
+<process name="Post-Composer">
+<if>
+<conditions>
+<mcEquals field="Composer:Q7" value="a"/>
+</conditions>
+<trueSet>
+<comment>Add a question</comment>
+<set field="Composer:QuestionAdded?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<show form="AddQuestion"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Composer:Q7" value="b"/>
+</conditions>
+<trueSet>
+<comment>Send as is</comment>
+<show form="SendEmail"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Composer:Q7" value="d"/>
+</conditions>
+<trueSet>
+<comment>Abandon</comment>
+<show form="Start"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-AddQuestion">
+<get recordList="Record List 11">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="Composition" recordList="Record List 11">
+<set field="Composition:Composer:QuestionAdded?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="a"/>
+</conditions>
+<trueSet>
+<show form="SendEmail"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="b"/>
+</conditions>
+<trueSet>
+<edit form="Composer" submit="modify">
+</edit>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="AddQuestion:Q3" value="d"/>
+</conditions>
+<trueSet>
+<show form="Start"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-SendEmail">
+<delete><form name="DataBase"/><conditions>
+<isBlank field="Record:DataBase:Email Address" />
+</conditions></delete>
+<set field="BodyStart" arithmeticAsText="false">
+<string field="Composer:Body"/>
+</set>
+<set field="BodyClose" arithmeticAsText="false">
+<string field="Composer:Closing"/>
+</set>
+<set field="FromN" arithmeticAsText="false">
+<string field="Composer:FromName"/>
+</set>
+<set field="FromE" arithmeticAsText="false">
+<string field="Composer:FromEmail"/>
+</set>
+<set field="Sub" arithmeticAsText="false">
+<string field="Composer:Subject"/>
+</set>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 2">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="Email" recordList="Record List 2">
+<set field="Recipient" arithmeticAsText="false">
+<string field="Email:DataBase:Email Address"/>
+</set>
+<if>
+<conditions>
+<and>
+<equals field="Composer:QuestionAdded?">
+<string value="Yes"/>
+</equals>
+<mcDoesNotEqual field="Composer:Q7" value="b"/>
+</and>
+</conditions>
+<trueSet>
+<set field="Query" arithmeticAsText="false">
+<string field="AddQuestion:Question"/>
+</set>
+<set field="AnsA" arithmeticAsText="false">
+<string field="AddQuestion:A"/>
+</set>
+<set field="AnsB" arithmeticAsText="false">
+<string field="AddQuestion:B"/>
+</set>
+<set field="AnsC" arithmeticAsText="false">
+<string field="AddQuestion:C"/>
+</set>
+<append document="Letter" appendage="Questionnaire"/>
+</trueSet>
+</if>
+<append document="Letter" appendage="LetterClose"/>
+<send>
+<to addressField="Recipient"/>
+<from addressField="FromE" aliasField="FromN"/>
+<subject><field name="Sub"/></subject>
+<body document="Letter" reset="true" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<get recordList="Record List 10">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="SentStatus" recordList="Record List 10">
+<set field="SentStatus:Composer:Sent?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string field="Count"/>
+<string value=" email messages sent out."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</process>
+<process name="Post-Response1">
+<set field="Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 5:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item1" recordList="Record List 5">
+<set field="First" arithmeticAsText="false">
+<string field="Item1:DataBase:FirstName"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="Item1:DataBase:LastName"/>
+</set>
+<set field="Item1:DataBase:Response" arithmeticAsText="false">
+<string value="a"/>
+</set>
+</foreach>
+<show document="Thanks" reset="false"/>
+</process>
+<process name="Post-Response2">
+<set field="Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="Record List 6">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 6:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item2" recordList="Record List 6">
+<set field="First" arithmeticAsText="false">
+<string field="Item2:DataBase:FirstName"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="Item2:DataBase:LastName"/>
+</set>
+<set field="Item2:DataBase:Response" arithmeticAsText="false">
+<string value="b"/>
+</set>
+</foreach>
+<show document="Thanks" reset="false"/>
+</process>
+<process name="Post-Response3">
+<set field="Email" arithmeticAsText="false">
+<string field="_InviteeID"/>
+</set>
+<get recordList="Record List 7">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 7:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item3" recordList="Record List 7">
+<set field="First" arithmeticAsText="false">
+<string field="Item3:DataBase:FirstName"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="Item3:DataBase:LastName"/>
+</set>
+<set field="Item3:DataBase:Response" arithmeticAsText="false">
+<string value="c"/>
+</set>
+</foreach>
+<show document="Thanks" reset="false"/>
+</process>
+<process name="Post-MessageUnsent">
+<if>
+<conditions>
+<mcEquals field="MessageUnsent:Q1" value="a"/>
+</conditions>
+<trueSet>
+<delete><form name="Composer"/></delete>
+<delete><form name="AddQuestion"/></delete>
+<get recordList="Record List 8">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="Response" recordList="Record List 8">
+<set field="Response:DataBase:Response" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</foreach>
+<show form="Composer"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="MessageUnsent:Q1" value="b"/>
+</conditions>
+<trueSet>
+<edit form="Composer" submit="modify">
+</edit>
+</trueSet>
+</if>
+<show form="Start"/>
+</process>
+<process name="Post-MessageAlreadySent">
+<if>
+<conditions>
+<mcEquals field="MessageAlreadySent:Q1" value="a"/>
+</conditions>
+<trueSet>
+<edit form="Composer" submit="modify">
+</edit>
+</trueSet>
+</if>
+<show form="Start"/>
+</process>
+<process name="Post-Report">
+<if>
+<conditions>
+<mcIsBlank field="Report:Q1" />
+</conditions>
+<trueSet>
+<show form="Start"/>
+</trueSet>
+</if>
+<show form="Report"/>
+</process>
+<process name="Post-Utilities">
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="b"/>
+</conditions>
+<trueSet>
+<comment>Add record to list</comment>
+<show form="DataBase"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="c"/>
+</conditions>
+<trueSet>
+<comment>Edit/delete record</comment>
+<set field="Target" arithmeticAsText="false">
+<string field="Utilities:TargetEmail"/>
+</set>
+<show form="EditDelete"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="d"/>
+</conditions>
+<trueSet>
+<comment>Audit Emails</comment>
+<show form="Audit1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Utilities:Q1" value="e"/>
+</conditions>
+<trueSet>
+<show form="Start"/>
+</trueSet>
+</if>
+<show form="Utilities"/>
+</process>
+<process name="Pre-AddQuestion">
+<edit form="AddQuestion" submit="modify">
+</edit>
+</process>
+<process name="Post-DataBase">
+<set field="Unique" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<get recordList="Record List 13">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="DataBase:Q1:b">
+<string field="Record List 13:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="FormerRecord" recordList="Record List 13">
+<set field="Unique" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<equals field="Unique">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="DataBase:FirstName" arithmeticAsText="false">
+<string field="DataBase:Q1:a"/>
+</set>
+<set field="DataBase:LastName" arithmeticAsText="false">
+<string field="DataBase:Q1:b"/>
+</set>
+<set field="DataBase:Email Address" arithmeticAsText="false">
+<string field="DataBase:Q1:c"/>
+</set>
+<set field="Message" arithmeticAsText="false">
+<string field="DataBase:FirstName"/>
+<string value=" "/>
+<string field="DataBase:LastName"/>
+<string value=" added to contact list."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Utilities"/>
+</trueSet>
+<falseSet>
+<comment>If not unique, treat this as an edit command</comment>
+<set field="Target" arithmeticAsText="false">
+<string field="DataBase:Q1:c"/>
+</set>
+<show form="EditDelete"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-EditDelete">
+<set field="Email" arithmeticAsText="false">
+<string field="EditDelete:Q1"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Email" />
+</conditions>
+<trueSet>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<get recordList="Record List 14">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 14:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Person" recordList="Record List 14">
+<set field="First" arithmeticAsText="false">
+<string field="Person:DataBase:FirstName"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="Person:DataBase:LastName"/>
+</set>
+</foreach>
+<show form="EditDelete1"/>
+</process>
+<process name="Post-EditDelete1">
+<if>
+<conditions>
+<mcEquals field="EditDelete1:Q1" value="a"/>
+</conditions>
+<trueSet>
+<get recordList="Record List 15">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 15:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="Item2Fix" recordList="Record List 15">
+<if>
+<conditions>
+<isNotBlank field="EditDelete1:AltFirst" />
+</conditions>
+<trueSet>
+<set field="Item2Fix:DataBase:FirstName" arithmeticAsText="false">
+<string field="EditDelete1:AltFirst"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="EditDelete1:AltLast" />
+</conditions>
+<trueSet>
+<set field="Item2Fix:DataBase:LastName" arithmeticAsText="false">
+<string field="EditDelete1:AltLast"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="EditDelete1:AltEmail" />
+</conditions>
+<trueSet>
+<set field="Item2Fix:DataBase:Email Address" arithmeticAsText="false">
+<string field="EditDelete1:AltEmail"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string field="Email"/>
+<string value=" record edited."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="EditDelete1:Q1" value="b"/>
+<mcEquals field="EditDelete1:Q3" value="a"/>
+</and>
+</conditions>
+<trueSet>
+<delete><form name="DataBase"/><conditions>
+<equals field="Email">
+<string field="Record:DataBase:Email Address"/>
+</equals>
+</conditions></delete>
+<set field="Message" arithmeticAsText="false">
+<string field="Email"/>
+<string value=" record deleted."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<show form="Utilities"/>
+</process>
+<process name="Post-Audit1">
+<if>
+<conditions>
+<mcDoesNotEqual field="Audit1:Q1" value="a"/>
+</conditions>
+<trueSet>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<get recordList="Record List 16">
+<forms>
+<form name="DataBase"/>
+</forms>
+</get>
+<foreach record="AuditableRecord" recordList="Record List 16">
+<if>
+<conditions>
+<doesNotEqual field="AuditableRecord:DataBase:BadEmail?">
+<string value="Valid"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<or>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value="@"/>
+</doesNotContain>
+<or>
+<contains field="AuditableRecord:DataBase:Email Address">
+<string value=" "/>
+</contains>
+<or>
+<contains field="AuditableRecord:DataBase:Email Address">
+<string value=","/>
+</contains>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value="."/>
+</doesNotContain>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="AuditableRecord:DataBase:BadEmail?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".com"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".net"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".org"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".mil"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".gov"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".biz"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".us"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".edu"/>
+</doesNotContain>
+<and>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".fr"/>
+</doesNotContain>
+<doesNotContain field="AuditableRecord:DataBase:Email Address">
+<string value=".sy"/>
+</doesNotContain>
+</and>
+</and>
+</and>
+</and>
+</and>
+</and>
+</and>
+</and>
+</and>
+</conditions>
+<trueSet>
+<set field="AuditableRecord:DataBase:BadEmail?" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+</trueSet>
+</if>
+</foreach>
+<show form="Audit2"/>
+</process>
+<process name="Pre-Audit2">
+<set field="Done" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 17">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Record List 17:DataBase:BadEmail?">
+<string value="Yes"/>
+</equals>
+</conditions></get>
+<foreach record="SuspectOne" recordList="Record List 17">
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+<set field="First" arithmeticAsText="false">
+<string field="SuspectOne:DataBase:FirstName"/>
+</set>
+<set field="Last" arithmeticAsText="false">
+<string field="SuspectOne:DataBase:LastName"/>
+</set>
+<set field="Email" arithmeticAsText="false">
+<string field="SuspectOne:DataBase:Email Address"/>
+</set>
+<set field="Done" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</foreach>
+<if>
+<conditions>
+<equals field="Done">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="All records have been checked."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<set field="Audit2:ChangeFirst" arithmeticAsText="false">
+<string field="First"/>
+</set>
+<set field="Audit2:ChangeLast" arithmeticAsText="false">
+<string field="Last"/>
+</set>
+<set field="Audit2:ChangeEmail" arithmeticAsText="false">
+<string field="Email"/>
+</set>
+</process>
+<process name="Post-Audit2">
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="d"/>
+</conditions>
+<trueSet>
+<comment>Break Off</comment>
+<show form="Utilities"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="Audit2:Q1" value="b"/>
+<mcEquals field="Audit2:Q3" value="a"/>
+</and>
+</conditions>
+<trueSet>
+<comment>Delete</comment>
+<delete><form name="DataBase"/><conditions>
+<equals field="Email">
+<string field="Record:DataBase:Email Address"/>
+</equals>
+</conditions></delete>
+</trueSet>
+</if>
+<get recordList="Record List 18">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Email">
+<string field="Record List 18:DataBase:Email Address"/>
+</equals>
+</conditions></get>
+<foreach record="AuditRepair" recordList="Record List 18">
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="a"/>
+</conditions>
+<trueSet>
+<comment>Edit</comment>
+<if>
+<conditions>
+<isNotBlank field="Audit2:ChangeFirst" />
+</conditions>
+<trueSet>
+<set field="AuditRepair:DataBase:FirstName" arithmeticAsText="false">
+<string field="Audit2:ChangeFirst"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Audit2:ChangeLast" />
+</conditions>
+<trueSet>
+<set field="AuditRepair:DataBase:LastName" arithmeticAsText="false">
+<string field="Audit2:ChangeLast"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isNotBlank field="Audit2:ChangeEmail" />
+</conditions>
+<trueSet>
+<set field="AuditRepair:DataBase:Email Address" arithmeticAsText="false">
+<string field="Audit2:ChangeEmail"/>
+</set>
+</trueSet>
+</if>
+<set field="AuditRepair:DataBase:BadEmail?" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Audit2:Q1" value="c"/>
+</conditions>
+<trueSet>
+<comment>Mark Record OK</comment>
+<set field="AuditRepair:DataBase:BadEmail?" arithmeticAsText="false">
+<string value="Valid"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show form="Audit2"/>
+</process>
+<process name="Pre-Start">
+<delete><form name="DataBase"/><conditions>
+<isBlank field="Record:DataBase:Email Address" />
+</conditions></delete>
+<set field="PrevMessage" arithmeticAsText="false">
+<string value="No"/>
+</set>
+<set field="PrevMsgSent" arithmeticAsText="false">
+<string value="No"/>
+</set>
+<get recordList="Record List 1">
+<forms>
+<form name="Composer"/>
+</forms>
+</get>
+<foreach record="Msg" recordList="Record List 1">
+<set field="PrevMessage" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<if>
+<conditions>
+<equals field="Msg:Composer:Sent?">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="PrevMsgSent" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<set field="Recipient" arithmeticAsText="false">
+<string field="Msg:Composer:To"/>
+</set>
+<set field="FromN" arithmeticAsText="false">
+<string field="Msg:Composer:FromName"/>
+</set>
+<set field="FromE" arithmeticAsText="false">
+<string field="Msg:Composer:FromEmail"/>
+</set>
+<set field="Sub" arithmeticAsText="false">
+<string field="Msg:Composer:Subject"/>
+</set>
+<set field="BodyStart" arithmeticAsText="false">
+<string field="Msg:Composer:Body"/>
+</set>
+<set field="BodyClose" arithmeticAsText="false">
+<string field="Msg:Composer:Closing"/>
+</set>
+<if>
+<conditions>
+<equals field="Msg:Composer:QuestionAdded?">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<get recordList="Record List 3">
+<forms>
+<form name="AddQuestion"/>
+</forms>
+</get>
+<foreach record="Q" recordList="Record List 3">
+<set field="Query" arithmeticAsText="false">
+<string field="Q:AddQuestion:Question"/>
+</set>
+<set field="AnsA" arithmeticAsText="false">
+<string field="Q:AddQuestion:A"/>
+</set>
+<set field="AnsB" arithmeticAsText="false">
+<string field="Q:AddQuestion:B"/>
+</set>
+<set field="AnsC" arithmeticAsText="false">
+<string field="Q:AddQuestion:C"/>
+</set>
+</foreach>
+</trueSet>
+<falseSet>
+<set field="Query" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="AnsA" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="AnsB" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="AnsC" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</foreach>
+</process>
+<process name="Pre-EditDelete1">
+<set field="EditDelete1:AltFirst" arithmeticAsText="false">
+<string field="First"/>
+</set>
+<set field="EditDelete1:AltLast" arithmeticAsText="false">
+<string field="Last"/>
+</set>
+<set field="EditDelete1:AltEmail" arithmeticAsText="false">
+<string field="Email"/>
+</set>
+</process>
+<process name="Post-TeamCreator">
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 22">
+<forms>
+<form name="DataBase"/>
+</forms>
+<conditions>
+<equals field="Record List 22:DataBase:Response">
+<string field="TeamCreator:Q1"/>
+</equals>
+</conditions></get>
+<foreach record="Response" recordList="Record List 22">
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Count" arithmeticAsText="false">
+<div>
+<operand field="Count"/>
+<operand value="3"/>
+</div>
+</set>
+<set field="TeamCount" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<show form="Creator1"/>
+</process>
+<process name="Post-Creator1">
+<set field="Creator1:Teams" arithmeticAsText="false">
+<string value="Team"/>
+<string field="TeamCount"/>
+</set>
+<set field="TeamCount" arithmeticAsText="false">
+<add>
+<operand field="TeamCount"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isGreaterThan field="TeamCount">
+<string field="Count"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string field="TeamCount"/>
+<string value=" Teams created."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Start"/>
+</trueSet>
+<falseSet>
+<show form="Creator1"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-Categorizer">
+<show document="Categorizer" reset="false"/>
+</process>
+</processes>
+<documents>
+<document name="Letter">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Composer:Body"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Questionnaire">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="Query"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000080"><u><invitation form="GetResponse1" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>[   ]</invitation></u></font><sp/><font color="000000"><field name="AnsA"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000080"><u><invitation form="GetResponse2" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>[   ]</invitation></u></font><sp/><font color="000000"><field name="AnsB"/></font></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="000080"><u><invitation form="GetResponse3" project="" private="true"><authenticationTokenValue><string field="Recipient"/>
+</authenticationTokenValue>[   ]</invitation></u></font><sp/><font color="000000"><field name="AnsC"/></font><sp/></paragraph><paragraph indent="720" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font color="AE0000"><i>(Please click in the box before the response you wish to record)</i></font></paragraph>
+</xmlData>
+</document>
+<document name="Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280" color="A80000"><b><i><field name="Message"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="LetterClose">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="BodyClose"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Categorizer">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Rearrange teams as you please, then click on Save.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><categorizer version="1"><category-names>Record:Creator1:Teams</category-names><category-ids>Record:Creator1:Teams</category-ids><category-storage-field>Record:DataBase:Team</category-storage-field><navigate-to>Start</navigate-to><number-of-columns>3</number-of-columns><column><header>First</header><contents><field name="Record:DataBase:FirstName" /></contents></column><column><header>Last</header><contents><field name="Record:DataBase:LastName" /></contents></column><column><header>Email</header><contents><field name="Record:DataBase:Email Address" /></contents></column><conditions><form name="Creator1" /><form name="DataBase" /><form name="Start" /><conditions>
+<equals field="Record:DataBase:Response">
+<string field="TeamCreator:Q1"/>
+</equals>
+</conditions></conditions></categorizer></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Start" project="">Return to Main Menu</invitation></u></font></paragraph>
+</xmlData>
+</document>
+<document name="Thanks">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280"><b>Dear </b></font><font size="280"><b><field name="First"/></b></font><font size="280"><b>,</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280"><b>Thank you for your response.  I'll be back to you shortly.</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+</documents>
+<images><imagedef id="__HEADER__8caaff660bbde30"><imagedata imageFormat="JPEG">/9j/4AAQSkZJRgABAgAAZABkAAD/7AARRHVja3kAAQAEAAAAZAAA/+4ADkFkb2JlAGTAAAAAAf/bAIQAAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQEBAQICAgICAgICAgICAwMDAwMDAwMDAwEBAQEBAQECAQECAgIBAgIDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMD/8AAEQgAXwKjAwERAAIRAQMRAf/EANgAAAEEAgMBAQAAAAAAAAAAAAYEBQcIAwkBAgoACwEAAgIDAQEBAAAAAAAAAAAABAUCAwABBggHCRAAAgEDAwIFAgQDBAQLBQQLAQIDEQQFIRIGAAcxQSITCFEJYXEyFIEVFpGhQiOxwVIK8NHxYjMkJbU2dhfhcpJDU4KiNxiy4nM0VMQ1ZYWVVxEAAQMCAwQHBgIHBQYFAwUBARECAwAhMRIEQVFhBfBxgZEiEwahscHRMgfhFPFCUnIjMwhiktLTFYKywkNTc2ODk8MkoqMWNER0lKQY/9oADAMBAAIRAxEAPwC0X3TP94L+XX29fuT8J7Gf0d2pyfxltM7ir/mdtdY24uO4HI+DXvKLjEZa6sM9Je47HcayOKsYJJLcOkyXDRgSNEp91tvblLcwIaQDZCflfd7saJE5V4COIJF7Imy3tNWZ+/8Afes7tfBTD/D7jHwy5N2wv+cfIee75xm7/krYjk/tdqbmxs8Zxxhg0ka9wsHJ81m/etsykhSNsXNGqS+sCJ8O436cfZ8a2+UkDISFHv2dY4Va7u19xPv727+932N+DpvuPp8fe4nxV5B3Fu8YOPYqa+zvcdUyb4zK4rlcvt5mPB2D4plNtFI3u0fcKbXTQ2gphbFfYvHYgGOC1IyOBOCIOg7+PC9Tp9nH7lfL/ue9iu6vd/mXarj3aLI9u++HKu0kXGuP8gynJI5oOPWmPvo7+9yGTx+Mf968WSRHWOIR7kJFK7V2gyBw2kjuA+dbikc9xa5LAe1flTr3L+49yjgP3cfjh9tS37WYHJ8Y76dlOfd2ch3VuOS5GxzvHJuH8a5tm7bEY/jYxU2NzUd9dcQEUjfu4ZIo7gvt/wAsCSKoUNTznPk6YVtgkDlHETIkpRhG8iGRFcg7GeNZImkRW1KhlJGlR49ZU609/C37nGc708s+4l2g+SHD+C9l+8v2+ebZ083xmG5VcZjimT7P3WEzvLuGdyjmclBj3t8dNx7EMb7cqC3AV2IL0Gxe5t17O5fYtUtkd4mu+oA9Pd11px+S/wDvBnyW4v8Aat7MfJfhPCu33CPld8zO+fc3ivxj7f2ltJyma17I8H5RkcYvcu54xm4ruXL3Mdk2Ptz+6S3tjc3kdw3okFuuZmkkDG1rrfA8evBeq2jI4IcVVPkcN6hOC4pVteDffI57bfY4i+5Jk+3WA7g99u03JbPs73z7e5G8fiOFuO6vHuWYzivL545uO2mTj43bZWxytplrOFYpkhivYomBbrdnKW4AX9g99bEqMU4ql7bPns3V6D+2vcKfuH2W4D3XGKbDXPOe13Fe4Qwd4LgPip+TcTsOSDFXSzxWt2GsZL32XDpHJVTVVbQYQA5Ni1PMfLzWzIvDCtd/2nPuK80+4twv5S8l5v2pwvaTJ/Hf5Z9yPjZb4bD5rKZtsxZ8ExvHshHncq+VscfNj8tO+dME9siFI2g3BvXsTbg39VcT0VEPZw3isY55Ja9FFrEG6ncTbBDcG5B3aoPuafcM+5/gfu39n/t1fBbud2R7axdwux8ndCCfu5wDDZKC/wAjZ/8AqJe3VlfZfOWmQZLbI2XbxoccLSaKS4nunLiMez1ElALYjj8PxvVTpiCWjYenT9FWf+EXG/viRfHP5tYTv53M7Dt3hW0yuc+HfcrhWK4ZyXAZPnMvHb+/mw3LOOxWKpacfusmuMhhjuYDNYtLcpSRI4gLA4OKSIXYWsAii6bjwJRb4VBjpAM8f0AKiKtgnFUuL3KKt61GW/8AvHfyv7tfETsZ8aO0Nnx7j33k+ZfKSw+MPcbifL+Bw47B8XixWavoMn3LuMHkcHecPtY8jd2sGFyeOdIZsTcyXs6IVtI/frBBwF+nbUvOfs6dOm017NOMYnuDg+yceK7q8tseddwrPhuaj5Vy3GcftOK2OayL22QlFzb8esLi7s8UkdtJHEYo5ZVqhO9q1NjcplGXBR021ZKvkOXHIeOzqFeNLEc35D+zsIpeUcimup7CFzvzeSMhWWESj3HSUK8ix+JY+um4jXr72OXaPwsbHACQt42kneFOxdguB1LXwwa+UAmR2ocQSFEpAB2EDKSLcSPdTTmOUZi7lMD5rMtsYGSZ8peSsXEZXYP85SzLUCtQVNR+PTGDSxsaGNjjDR/YAHY3tU78BclANRqpZHFwfKQdheSdiqUHZZR7w9+QZOwkijlzOZkDqSZHy19K6ndSskJmCiPa2hGpp4VFemDNKyZhOSLMNzAB2Yle2hzPKqh70/eP4Uw5fN5a+lmSXLZKSNkMDA5O5nimg9sRqjKZWQxNH4p4akHovTaTTsYDJFE5/FgHvWqZZJ5CUlkDdni952+yo0z2ey1w7W9zl8iW3NGlb28kFI5Ax0M5DSEgD/R5ddBotHpGXjijAsbBu0bsq+0br7FE+p1LgrnSksUFXEoFOCqEVTgcVtjQcl7mDu33F+KGgIuLg7/+dTcdoP0qT068LQA0oEwtbhSp0siqRmO/x344j3DqpUkuVdlH769AKg1/cTFqlQSoQSbqgmnl4dRMgAUmthzycAib3f4qWWk1/jpqxZC69NaH3Z6guACwPv7q7SR4+HVRlOpiWRSDsUbOz4Vc58jJFBGYbfH/AIxRi3IMrOkkxzuZWZVBG/JTMrk6KFCMheqqNaCla9Jm6bQsRjYWgDYjB1/qUd5s7yrpHkn+0fev6aNsXns8qvImZyyqWAo2Qun3bQfA+6ooN3mD+HSqbR6NrgBFEqbGN+VFjVajJaSUEn9s/hR/a8sz2zd/UOc213IRkrw1oaFRuk3qaj6j+HSh+njBLSxnGwpgdTqXNBjkflP9pw+NFuI5ryj9bZ/OgblJBzV/JvQHUgfuVoV8NT49UTaaAxuaIYrhLsGP47d4q2LUz5xmll8J/aO8fL21LuD53zF1Vv6lz8nttHIlcvflmioGCqXmZkIEeh8ddOkrtO0hHwRZiTYNGzb0x4rTyHUOAtK/KEuXHb07MLJR3keWcolx80f9TchZtoYg5jIsPRIr6gz0IoK+dKdbi0+nDxliiUKhyjcatmlkkiyGSVSio47xUSNyfk6yyyScgzJZWber5W+YBqtuNP3O59T5E+HRQ0Ojf4hDCVuDkG3fv9nGljtTqIxldJKEx8R2dONAOW5hyuZmVeQ5xkatB/NsgKoGBIVv3S+221Qaj+zwo40mk0bWti8mFFN8gS18ON6UTarUue4OmmH+2bWXYnV2WSow7g8ci7mcGynBOS5XPnjt7a2yPa2WXyVv7EWKubbJWa2yW13btHHBcWEdEjaMlV2hlrUbm5by/mWjk088MbYXi6K1doVzS1yLYoQoJBsa1ptfr9HKzUwSSOmYbAlR2Bwc1QMCQUNxcCuuD5zcZniuKx8OdzjScUe5wb47IZbK3LY2weec4lDLLI6MZlspF1q0YQa+sgIPSnLdHy4yaRque4OOZwaSgdZpBBAIBCkJgSAMzqd+qeY8w17o9W9fKAa3KM2UWJUEEIpJAbuspyikD5fMQRyLNmspHJItFVcldgmPdSdSFmVvboKKT5mutOu6bpI5iGiCNwW6tbbj9O/qsca4uTWOgaXmeRqDY5wXgVc7G5wxHXTbjslmbZMhj3y18MJBZzZfFFLq+cYyKB447vF3LRtJbtHem4DrKxh2NGqEHfUINbEzlvNfMnhjcxzA2zWtwKqFBuL2VbkqAUDnSTycz5Y0aeR4IeVBc44jGzmlDbYmFiWqT23TkOP/AHeP5Fe5XE2dg2InykM0t1MIrDK3VrZwXy2y3kdtkLOW0vZGil3NGXiZRUqQLNVq9Igm0oY6UNwLWjdceEHgT1f2qhFy/V+cNPqXSDTXKh70K4tc3MQcFFxbrFduVc8v7XDYjj3Dmt+N22KzNrjrbIvci4TOPbcsyl5b5zOpcrvErY/L3ETrbmJdtGZhQDpJP6e08jDzbVNifM4qhjacrTkDbjMHBbhRYK0EKKdw861Y1LeV6d0g07QfEJHMvj4goBJFsWhp8SEKCdYvmHJruSXFW3K5o3v5bqwtEbOZA4lHKzXMsd2sDyym0t3HqCqPRUgVoDVzw8n0Pp06wRxDWuytY0tZc2QYiwQKP2QTZEqfIXa3WeqPyjpJn6dgLnvzvLW3BacpafqumBuMVqXMxy654z+14biOSy3YsPdv+QZPAZ3MXmLyfI8s65O8fE3V28M4x1ihhijVlNHRyDrQLPSnJg3lI1k8bSJXZhmaqXQIST12G7cpZ+qObwjm8uk07niOMltnIQBguXwkkYkLuwRB1eY8kNw9yeS58+jahOXvkYnX01NxUhQRWhr4ddT5MP1eTEm7KK5cap5flE0mGOZyLdcfZs7Up3g5ZyqSIuOS5tdxI2tmr8sQNKgvONvj5Hqr8vpnX8qIcMoqx8+oY7L5kp4qfnSYZ/lGyRpeUZz3TIHUrl72QFWCgqf+sU0ZWP8AEfxuywIP4UQI/shK0Z5i8ESTZU/acPjSleW8wVU9zkOcWqLQnK31W9K6/wDSAGo1rU9V+Tpjcwxf3a2ZpgUEsv8AePzpwtuV8vBVk5HnWDipAzF8oFGp6qTjdQH6in59Qk0ulcF8qIBP2R06d9+n1Ewfl82XNYnxnD2g48CL8KNsfyXkYj9+TkudSgYk/wA5yUbEmtAsaXi6bB4ihb+0dLnw6fzfLEMSLjkBTdsxXZsudlMhNK2PO58xKL9ZB766XvNeQMXjTknIwopQNm8qzVK03Ct0AB6q+IP4jq1mh04+qOEnhGB86FdqtRJhJNkOCyGhPMZrk9zGp/qXPkMu4Vy2Q8Tqoq1y1Sv4kmp8ejIYNMywii/uig559QQHGWVBYo82tj+J2pUT5POZ/ECQW+ayqrK9zdNTIXqhpZneeeWguKNLLM7M5/xOSTqa9PIINFqAP4MK2H0NO4bhSDVz67TK4TzIpKZ3AbTipvxTGgA8m5Rf3iSLm8sJBcsoAyV+VkruNSqzAPSRtdNKHXpn+U0wADWNDAAPpjS3DKuGFz8aSO1usdISJDc/tPON7nOFOw2FO1xyPkGyNBl8spm/VTJXxKimq095TXUV6iY9MSgYEXHLF/lVe7U6iMF2YlB+1J/j6h20jGY5F4vmMnGopV2yt5QageVyddfw6v8Ayen3D+5F/lVV/qGo3n+/J/jolxfJszD6nzmUbaNwrk75WNa1AJnPgfKmv06WnQ6Im8MIP7rf8I71tuonT67VxhY5XEcHycf/ABD7roL0/juRy2BrhV5PmVhaORUVsreEuWTaRu979RGlQNfy8ancr07ipjgUX+gKN23puop/OtTEhdLMFUDxu9qdONYoe4nInKM3J8yzRsrlP5rfAqVPgD7jeqvgRr1h5ZpnkAsiP+wPnURzvVJ45Jbm3jcLb9tuOxQqUUWPdDP0KNyLOAuwFTmr8MRoNKSxsx9Wn16E1HKtMFDYolAP6gN+mwfoNi5tqimWWYYf8w9/H3ndUgWPO+QLErjkueDUO1zmctIaGq+mtyQCK6imn+hTJy/TG3kxf3G/L404i18v1+dNx8bl7D70A2220U4XuHyKwu4Jrjk/IfaL+L5vJjcCjIQQbtCR6hSnhXoWTl+mcw5Yosyf9MUezmGoilDy+UoUvIfZx9+FWj4Z3OyeUSJLfk+brGhV1OYyBetNSvuztQAjyoKfTUDnNbyxkCv8qLKtvA3p0w2070vM3SkHzJhv8ezHD8fZhYLDcvzYiB/n2WcBNwkfI3bNUhEZP+k9wBfIBtNa165ifTtz+JjG7wBbsPx7LU/infICGvkznAh5w20RnlueUVbM5VR4VOUvAK/xm6p/Lw/sjuHyq3O84STf3/wpFdcvzGypzWVLjVduTvWLaNRdwlIAr1JuniJs1vcPlWnTyxNzeZL2vJ+A76CLvnPIVnEEmbzO0UJ3ZC/Yih276G5XQgmg8aD8ejNPpNNIpDWom4d2HfZaom1s+UZ5HqdxKfPphQBm+V8mmuajkWaWMRkD/tbIGn+1Tbcx+3QUP16aw6TSKUjjQHa0HtvS1+rn+kSSr++4ouzH8cKrf3E5Py8WlyU5TyJNX3f9sZMqQCrOCxvQArsKBR4n+zroNBptK+XL5MOQAfqD5Uq5hqdRFAXmSXMR+26x+PGqY5fkXIr68nlmz2cuWVwimTKZNmLk0kqXvZQiAAfQf3ddzBo9AWD+DEOpjf8AD11891up1ciSOleVLvqc8gIiojm+69I7nM5iGKOD+eZQOxG8/wAwvGYLUEfquTSlKfQjq53L9EEywxLf9VvdhjuqDZ9Q1uWSQmwtmksdn/MIAtfHftuqg5lyCLZCmdy8UKaejKX4JrU7zS5ArU6+J6idBpUCwQk/uNXuSw9lER67UNVome0qtnuQ9pccMOoddO68mzks8LS8gy6GNZI0lTJXjTJHM0bzIkr3JkVJTChYV2kotf0girUaTSNAEcEOXEjIAp6duPbZHrtQXeKeUn98rUx4Dnmax6xCPlGef0ksv87yEKo7UUsaSurERrTyJ/u657UaHTveroYv7gO+n2l5hLGwrLKSf/EI3YY++jZeeZ2fZHdclz4SQGSNxnMiQta7GIM5FRGfqKn6dCnQaUAkQw/3BRzdfO54aJJgVGMhO3DDHv3Y0nt+S8qW6EsHJOQSxBG2I+eyNdrH9dTcFSQGp5/n1jdHpHX8qEjgxvv66lJPMF/jTC+1ziPfTBf9weW2d29qvK+RmQBnEa5vIhdfWAG/cOWLKa18zXqwcv0hGbyocf2G0I/VTCQszTlAv1uvZUFj042puk7yc1xu2CHkmceK4Fbhpcxfs5aihIwwnJVgD4ippT+F8fJtJICXxRDd/DGz4VuTnEmmZ5fmSgoFBeVvcdNnGhMc15ZfZBbl+S56INMWVFyl9IpUyblqPeSooSa+Z+nRR0Okhiy+VCR+4AT06cQhrdXqJS9kktyoOc229w9qLU0YnmGfvBZY6TlHIqbbdJSuYyQVabNyqgnK7UHhqafTpLPpdOwl4hhLsf5bRiTfj1AX4U90s80oAMswCJ9ZOA4jtX31KFnPn5T7EfJOQhkczAtmsi3u6hmU7rokKzMa1LeFaa9Lns07L+TDin0Nw7qY/wAYALLLb+0aN8TyHldlcJNHyXOMpor7s1k9tQdDSW9n2gE18P7ugpINNK1PJiB/cb8AKsE+ojK+bNh+2asBxLn+dkhT3s3k2cmrlspeyFSKncDNPJXaG8KnX+FOZ1WjhBs0DsHwv7Kf6XVzZcsjy7jf3YYXtj2GrJcdz1/PaxtJe3Ezu/8A82aSRlG72/GSu4KQR4eIr+aOSMNciU6a7MzNbuFSTjbqd1X3LmWRnBYbpZTt1K0oXIpRT4+fQpYwFEFEPe8sDge6ncSyV/W5/Au1D+GhB6jkbuHdVPmP3nvNdjO9Pp+Ieao/HWQjrXlt6AfKpec7oT866+7J/wDUf/42/wCPqWRu4VDzH/tHvpFcXMwYIJpABtYlHZX/ABUmpGo/Dz6zI3cKujc4hSSvXSb99N+23e5NX9l79fffdu/mvtU3U/2NK/7OnUMrc2A+r/hopDv2V5lfnb9tLlPyy++3xHifdTtX3O5z8au7/wAYu8Sco7iWfFslh+OcPlu7nmlvgcXi+f2Nj/IcfyDE8gix8tqbppLp4LgM0bRkTiokvLS5TG1oC9mC2Cr1ntqzKWudlbcu3HaccdoBK4C6Vou7jfZ8+41zT4q/Irul3s7Zd5+5/fP4/wDfTs/8M/jTh8fw3MWWTsuzfbPJ57+rO4vC+I2HH0u8t21yX7jCDG5jHW7Xvtw3cslw8LzrLUWvJ8WIw7PeE28KkQSpXwtt7eN/kK9SXyY+NHf/AJV/vBP2/u8+L7V8rzvZXjvxN5BxPPdwXwPIJOG8D5Jj8Zz29ms87mscyW+Ly2RmyNtDDHdlUlMjbUkeNgNvbmJcFS9wnHqG3j8BoZswaQFRtio2D5Hu7a1k/bj+Rn3L/tcJ8tPjRwf7UffP5NRcu+WPcvuHwjudD/UHarg+Xx3Ibq1weMkfO8j4tksTcYm5bEpdC9hlEMVvOxdikYlbZzHEHIpO7Hs29FqTZPEcuUSO3m3vGClfglWF+enOvuGdn/uZfbU+40/26e6HdbluL+JPN+NdzOwXZvJ5DuPb9qu5HOsBy3C57jOe7lcQ4vmMDC+EteUw+1PcBbO+mtZkglJ2O2ntcUy3A3b9vtKbiluGZ3tOd6AqT7hv4V6WPgh3w+V/yA7Oy8/+XPxVsviJzm8y6LgO2tv3NxvdC8u+MTY2zvrXOZTK43G4qPFXs0100LWUkXuRNEasa0GPDQmXHcq+0Ad1XROkcCXomyxHv9/yrzLf7wF8EfmpjPk3ad0/ts8S5+R9yjt4/wAUfnXBwDiWO5djs7ho7/iWE4jmuYXGcxecvODYfM8YaWwy2Zxk+HhgscVFFPNGLqZrnAHO+k+I2PUiC+7HqqqUFrj+wU61uTxOC26t1V1b7enzC+c/3QIeB9n7bl3wg+PH2sux/E+ynxV5B3R7JYTuTwuLk3H8XisXlUxGH57x7JcM7jW/N73IZTKXuWvo8rsENnEqv/lPFJwcx9nI0YdoxAJ3bcRY41DI96MddyY3uBbFB1IdqjBUER8NPmP2L+2/96P7W91xDkffjuHxXvf2e+SvA+Tdu+2nIcNYd48L3t/pCPlmb7e4fHQNYG2wWZ7Oy274awj9q1u0vo9jK9uVpILrMUgG5CC6AgEEgnsB2HdW3AtUKcqnEYoUVb+/41uY+Af3NPuhd4b3sH2KvftBdze23EuH8Q4Fw/vD3p71dyJ+2trhbPC4nD8av+V8Z4tybguMyfMZZbm2luGsrd1kRGXe0atvE358r3Nb/ESyuQE3O4lDvAKccK2yUgtjZ9AtYKQMN4HelavvhP8AK77of24u833B+znDftJ97+/2E72fP/v93g4dzGK45JwDhrZnnPIsTg7JP63zfCb3jmR4G+KxFhc22aSa3twlzcGcj2WEOAAvNjj2Ae3vJ43qDHuZYEKRt3947qjT7r/brut3c+4l8Dfk99wP7XvyX7p9sc98Rsvad7/jz8VMzy/uhnuD85w3Ie5Scfw1n3I7RzcTf+a8V5Fn8Ff3i/zWyt54LktBcXKr7DbyK4ZQSNqXK7fgmz21J4cAZZPpJ3gbB1kLdCRe6YFPQp9jjk/xSi7f98+23xS+DPzS+D/HcJzXBct5dxj5iWfcSHJ8w5RyHj1tjP5pw+fuT3K7i5X9vY4PA2S3UcDWkKmWJijFgxiDnYHj6fYu1DtQ27t6C6IZSWoQUW+JGG4dFqufYr7fvAeK/wC8ZfKL5EY/4u53jPB7P47cL7h8R7uXOP5e3b3M/IbuPdzR9zeTcVydxePxSPld9iJWtr+whr+zf3LgQwm9DzTRG5gEsi78V6fOtBjC8olnCy8CbCxTDeAUuFAr0jct/wDCvJv/AC/mf+7bnrUf8xv7w99Tn/kv/dPurwgwTw21nZSNL7dLW3IJJDhxEhOzaNxIbUUqQKdemdPEXRtDQSU998d3yFec5X/xHLbxe6y/Omb+cXVa7IPA6bHofDX/AKStRTpn+Vj3np2VUppokZyGcHc5JYlqsWJ1OtalieimBqgGzarkLw0liZq7WlwksEpCK7slNUkogVnRzQkMrhlB10FPDw6yWMtcEJyr31VHIJA0u+rrRFVOvCmG/jslZ5JFcyOxBIY1JAAOxagej6nTTzr0XHmyjMiJQk/l5zlXMpXd2UxMISaCFAoau7X3GX/nEs6BmHjQePVwkeLBxTrofK3cKxyTwAgRqY9ihStWYllrrXaoBP4UHVghlcjkxuq+2oGSMeE91Msl6rTmu32yKFgG0YD/AA6sWXSnTNkWRmUUA6ZX3w30qt7opcJGZGiDUO5CFYbty1BbRQPP8OpzaWNwNleBboPZQ8WsmCEoGEoeHeaOcXk5va9RVgKHaQworAUagIXezKdBp+VeufngzFD9Q+dPIntU28JIXfhs7/ZRsl0RAqwqqs1fdNJAoJIUmPc5cEKNK+fSh0J8xZFth+NqOEzQ3LHgVwK9SFT2074vItE+2RyWLggEenbQFj6ANQqn6Vr5+HUHxsaxyg5U2b+3sw+VTjkLyFP8QHvCYVKWIzH7eJh7kiBjQUVWVakVFCDWhYmuulaamhVTxMeAiqhvge/5+21MdJqZWqSmVelj0HbR7YXU8wd5pWkpVAjbQpVgNx9IVtPzp1Q5A1ThTGE53FpRQhFhv6ui12ucdFLCXiiSM7ZB6HYCpqaOGLAanSn4DwoOoNcWo62XE3J2bOntNamha8OYFzpwCqb7Ov8AQKjvK41YLcmJWLxMQ+87jUsF1CgAUBI06Y6Wa6hMwwXAg/p7qUamBrCZbrtXsF9vS9Bkt4iboyTvArREdiCAGWtCoK/XWm2temrYzkQDwkj30pfqXizUzdX47qhvI3PLsPmdvFspj7bimTdbnluGvoIbq6zE8Es5gFnkJ0nnsAzXJKsqn1KPWCdVU/INRNrRNoiI/LV9wEKkK1blt0cgBDiACgBDmkHPYY9F5GsBl81wZZQ4G5DrFrSAFaVwBJ8RKjPhLk5mbH3V/i81NZX0zJd2orazWYhlS2uVln/zXguFkmR442AWRI3J9SgdXy8+13lmKCMM1TFaXNBIQEjA4E7CVsCU2VXFyPQxu8yd5k05GYNcQCpCi4GAuCE2ot1qWHmtlsFw1tY2tlZK11DdoIBIMrbgxi3mvHvWuybiOB3DeyYo2cVKeXUYNFJqXjWcxc+Sa/hJGRSbFAAVsUuiOKgkNy1z8xbp4jpdA1kbHZVc1S8IPpUktRUVW4tCJdQ9X/l/KcXam4uFt8txnI8fsIZbiVrVY8JfwchsLRVbcr+3G137IcsayGnjrLUQaVnMdO8gthJdmaPpUZQ22AUkA7LBLip8vlmm5fqIZHl0wAyvJAeC7MSpS4CEgJZSbolLMocbb2ezIS2aiRUS0hupVhl94zKqiFV3SNdQ3Mqt/loRWgZSDQk6+SGPSTCdM8hZ5bRgCCcxuVT6bLswvS/lUXM3GF7UUPd5jiCuUIgCWCgPvxHE1I/BMhcW8uSzGbz1hFfYbA3N5bWOQe4sIM/ImUkxlyscmB/kkl7l/wCV5i2YoXWBCin26M464jmnJHa+KDSPLy0PzANKZSAVWxQHN4kuSLFAK7fQc0i0B1GqgYxuoLAFIs5TiQt3Ajw7Eu5b002Ez2k22MtvjADySRlQyqjI5RGBpEChCga1BJPX0GVuUNjaghDGhOIHi4fNMMa4HzZC9zwB4nEk7V2XXYT7+wqhv2cjcwMJ9dACCCRpRa+NCNT5dLpNOFSPcuPH5USyQ3N3XTZb3fGiC3yKRRkB1ZkAEan22StfUDTXwNRX/i6HfBkcAVwun6KMGrjDMryjuJA+OFPVqTeRxSRPGSz0mUlV2gBd3thFUKF8Na1rWvVLo3C9k6cKP05hmj8xQGgobjC17rtKdwTGsuUvra1tyhuPUFjVShjNdgAoSysKenyFdPx1sghdKLi1B6uRsUpLTYImG4Y7Kb8DlmZWllZpETcClTQLuZvUfEkgD6H8up6mEBQFUJ7hs37PhU9Fqw8tDri+w8OIAXpepAe9Bg3DYysgMftM6GOg20O0lSGetB9PEdK2xJIl1G/vt06qczTlsJJTDZ14dot7aA8llLu2lR3u0bUncdgTQCi6KoPpp+NQT0y08BkJH6vTpe1JNTqWsaD+uL7bfJeHCsa8njkQxFlYmi7mIVqk/wCE7hXX6A9WnQvzKCBVLeYhzAyRMpRb4bdy99DeavLe6WjuqqAqEFhQAKU126gVH1Hj+Q6LhilhGZg2+7tHTvobWapk3hdgnHDAe4H2IBehOe3ihjtpLWaFXqpVxRpdzAnU7mBNG8qDTw6aB8pCu3bjw44dNtc7Lka/+GPD39/s9u6lRjE0QaNhLICSFQMQB4VqAQdfx6rF2rgg9nz996slbI/YCip17zfDhjgdpAYMixt3/wCsSA0qAoFNprqABWuvn40HREEplClMONUSpEUK8PZ1b/deka35VSqmYKfII+mtdNKrqfLx6syOVUHeflQ/5hnH2fOk0mVndKFkJAbWshJrXQ7kof7up5GqtQc+V7szseoW9vwrLFcb1RmqjN40oBrofEkhT/o6zILkba357VyOsV2Inavtovw0sboVdFMqPSIVcFqAMP8AEVUqw08B5Upp0DqMoKonzVO3pupppSS4MXAjr6+g71o0ikvrbZcB5EqlCpKuo3AaMCD4Hw8NegZI43jxAKuzGm8biwgtKj2btidfutTxDnJwip7hEhp/mFEqhUKfSf0hTQgaE6+WnQ/5cEEMBJ3bOiVJ0h+rArsx6e2pN4Fy9LO8VnlBnViN1XU02vuYDdscbK+I+tDWnSnX6PzIy1MoPV8in6ONNuXax0bwqm3b02oflVvuGdwxcypCSCjFV/zCjE6ECu3aQVB8v9RHXI67laNO7YR2bOluta6/R68BCw3Gw4bQtj7uypuiyKXEIYUjZixFWoQEJWlageokHrmXwSMcWsaXFLWsens6iFeGd8jFaoC4i3z99YN120i7yAd6gopUj2gSXchizAHyNR1ENdmzgHInYDa2KLiTj1pWnGMhSSSmJXHYK+nNrMz28lN5T1MoUsoDDQEhiCD+FB+fV7M8R8wDH29fTdQ8jmsjWQo07PinxoWvcXamGUBd8sZLE+4f0yEBF2kqFDNUnTwPlp0ZDM4PAtlcuAOzvG1OyxxoZ7NO6MyQudm2Lvud3S9VT7nXzzW02LmjjWDczll3qSyEIElf3NV9WlKV663lceV4cFXKOxSV91JebOH5ZwKD2E2Hz/Cqo5h8ZZwzID7lzvdw+8bQaUKig27Af4iupOhHZ6fznYgBg6e3oK4OYx+WEKm+O02uPbttsxqPDdz3EodmO1qhTRasFrUHVqUpTSnTdgRGkC/XSqWcteGhCSq49ldzcxxn1+IoQoB9QJpTxH011HUiwLmUA1ZG8vap306tVVt512Kd49KaJqa+A/xELRq/ToKbDKbjjjREJGZL5lHUnTotHNvO/wC0RYnC6+sISHBAAAqSSBRR0slhV2Zox6e+mebK0BpOF8Mff3BKK8TeltluZWkFAPWAWVgv+EgA7C31qR/f0BqIiwqaYaSQuaG7EO7ib9i+yjqG6Q+0oUkbCuhJKhDoZBvIBPgDTXoIt3UezUPbaS437fxrF/LrC9kkuhtaYxum/eaijUrtLVLgHzP9h63mcAlXkRulzqrkHZbZ04GgjPYaNBEqhVBqBJuY1kGzUNtFaafjrTwPROnnmBOZFTsoXVwaaZZULilzvSybsMPiXVjjJxccYmaG4ZQu0rT/AC/SBt9IUekDT8OsOaW4BHYe/Gh2lkIygNRTtuEsmHS9EGGzv7ifeze0wJCFERKIWqi6rpTwofy/E0zwgNyuuCOvHp0FG6LUNMpc1BcnhbivFOKjslHCZzKyX0MKTyyFljDkqlRFsoACgTcyhvMEmn4dL5YGZfGT7E28O3sC04ZI8vsAineu4WU9XBamLHyXRtWE5ozmisNZNg/xEkspJJP1FOkL/CUIGbbRwuV2dOnWtSpwq2uvdiMgJt/Tr+kioK+oDbqw08B/ZqVXMC0DZmPQJ8ezbR+izONiQ0fAqnTfxAq2HFbqRI01osbMKAeIBBqanVv7uuW1TQJCequtguo3lPYTUxYyaUqKU3MjjzAYgPSuoGtKfkT0A8XWiYyrS04NT20RxXLqsYkCqBtVqjUagaUYj8vP+PVdadGCSQq1le61pGAR5lgdfyAI06yoCL9qksuQAU1ZNfOMndoR57qD+PW0JqYiAucONIWvoqE+pjUV1WpqRU/qNTTX8ethpNScWtCgg9RrtvH7Sv8A/bK+B/T/ADvbX+zofM76tvmp8PdV2dqY7F7KvP0LTSvusrK+6ysr7rKyvusrK+6yspJdX9jZbP3t7aWnu7vb/dXENv7mzbv2e66b9m8Vp4VH16ytEgYlK+h/Y+6Z7f8Aae9fxJOZofZ929ggWNI5jInruYoUnQBqsFDgDxHWVgTEYmu6R2skxvI0t5JwklobpFjaYJFMwltjOoLhI7hDuStA4NRUdZW7Y7aUdZWV91lZWKSCCavvQxS1ilgPuRo9YJ9nvwncDWKb213r4NtFfAdZWIDjXyQQRyzTxwxJNce3+4mSNFln9pSkXvSKA8vtIaLuJ2jQdZWIMdtZesrKHuWkDinJydAOPZoknwA/ltz1OP8AmN/eHvqub+S/90+6vAkk4lt7Z6gJ7ETgk1p7kaMVLGgIUmg0GnXrGFgbG1jDmAaACNoAxGOONeal8TpXjK5xUg7L+/fxrhd5ZhQUqAoAO4kgH8iKmnVpyho/arAXZiqBg+VE9rj4/wBqVmRg8o9dVj3xkN/gYx7gCFBoaj6fivkncJFabDuPtqYGZqlcerbSO9xy2lvNLASwCbnD7dwIYNuBUJVTTUePh1dDOZZAx+K2qqVvljzGogU9qe3p2Q7kL5xcuWLLvnl3Er6wg3LtapJUqWHh4U66iHSxlodc2FqQTalwcQdpN6wx36bWUOh18ZKhhqabSSKg0/s6sdpmHYi7qrbPgVw303GeaWcmIAgNIwVQVRgxJLOCRqa+Z8eiGsaxgadwqgyPfIovXE8QigDPQvvJZ66a7iSWYVI2j8NdeptdmOUC3tqDo8viJJce6sMToH3SM+4HRtGFKUo1QW8NOrGkKpVaHka4tysAy0ZWuQiUBYgDuZT6wauKaKrIWA11FR4nTpRLpXMHT5dL00i1Ge9iO6/FSNnwojs5ZGTf7gjqjsy1oGoabAK6lqAePQcsbCUI+dFxTva0OF1PZjj+ONHOIaFbqH3D6FCjxXcKFRUVpQgDU/SvSuaMgODsAD1G3Q9dXxz5yHsQucUPBeiVM2LihFt7tIvWRsDgekAgqCST4soP59JNQJURo8QXZb5pb3phTjSiEBXmxO0jtTZw4JsvRFBMsA3IG92tApp7OzbTUD1FhU0oR/qIbg9xLSnlkX3/ACpiwsjRwH8QG25KzpkLgRGEsNpRhu9e+u07TUNTcDTWnWCJoBaFykqnw6ju4mpGeRNhciLt799ILuIS2ppVmk3CRmozbztOoqK0ILDz/u6ui/hua4Gw6bN+3ZQWozSxvYniN9u/ju7+uoxvMRLJNcOUcF9wapAUBwYyCKo1afj49PGSjyg130BPeuO3s2Ugkge1xJBzD2dD02VFV7bGOdjOJEpKEiQ13ruNCVaMIXVVLAKwYbhXxp0+jnb5ZAY05mpt3quONrHBNhsQrEUjJgWvcMqlFCGyBbcFOFzZENccPgkxc3J4biOQVzgvrdJZmnma2u7K3CXOxpnuEjQpIhc1RTRdqlgDzTHxw8zfCCsaZioA8ZLdwaoOzE8ShNP9VC/WcuZOVa8EAI4lWgG1ydqkiwsu6jGaeM+6izAhRviohb20ZUZqEVE+7dXSlKdNS+aWQl+VpRbYe04r3rhSOIva0PlBOZyDja1kthdFFNl9b2GXvsZbzMYrjCXcWV/dweqaH3IJbWO0qymEpetDtlRmV9mqnzCPmZZq3s02mDvOzHMdiFCMBgblCdg4Guj5fE7SMdqZSMhCAE7Vub7Wqi7FI2kUTWHF6YnIZa5llyEVtLg7JJrhbSf2L2aaaaa5VHMBgcw2W4MjSGkTVANKiaiOGPnEXL9Y+RyMzbEKNFsCAFRQVVdqE0S6V7dHJPpQwOEjQE/t5lVCrjuQANIuoIR0kurVeP4rHWVzjr/G5Sd+SC4itY3yFtezPd4qewlu5rVZI7QrZpcLGjsQ71JA2jo/lELNZzHUcyKnKGhoP0/rXH9pEW4tlUUPzWcw6WLSMDQ5HF973IQcBbvUqbJjtbKREqXMgJJX3WJNDJJIygqP075D+PTeceFrRcK434pSCNxjVr8eH6erupU6TI6h2KISB6GZQBXwAI0oOqmRFwJXfb5dPfU2hrQQhLsfFj+iuTdCAEFyxD0Gq12ilCx0rXrUkZBBaqoMT8OnXVb5Cz6EGBOzp1URY3MrYwySGVisgYbTRl/TT0iqkNTy8NNOqH6fO9SMdlrbV/H4VfBqSxhvfMTtXZxTq69ooPvs64nlZn94tIxCkbtoJ3Kas6vTadNejI9FkADVwuq/JKC1GtzAusq9Z969AlqJ+O5+2mt3s2KJPIxYFRt3U/SG3ljTyoNfp1RqtM5viB8R7rdnC991T0GqL3hQAAU777+Gz3lAdNmIYLd0DAAgLTVU0A3AbtCCAfMU1I6UxRZ35Qlj7K6CbVObEP2sTj3WNwtxj3qKi3k2WDrH7UpLhnAAJAFSpp47gFIOnhp0902lDShu3Hpbq2+6uW1uqc85GoNnHYVx6FNmIO2cnBK/umQqaHaJPEaHxDDx6ZjSqFygjspcJntNnGuJc3K8GyVpHqCFLK4LD9O5a0QnadDUaHqbYD9IRB1d3wrbtRI5LoB39a9OCV3xE8k9zaAu+0ygbGYlQBWgAqAQo8OoSxhitKEVqFzpHZcLp0vu9vCpchtIFVHgiCFzU0BACsNCqnUMRp9ek0uoc07Mqjpan7NO6RLFScO/8Eob5Fj2ZZZjAW9vbt/wt5ammo8ddB0bp3sKZCEPQUq1sDmeJqop/Tx4jEnsQImZYfGEV+mwGo0pTQa6/wAP7Oj25SfFSaT8wB/Dudqqo7OnvRnAoajxGo6PMDCEU0IHEFRiKeoi6RKJaK5OxfFtT+mtCR/fSnQL8od4PpopuZwV13YnDf8AKjXBARXUUrsDSj7VO0MwYUUE1qelmpa2RWlUT3fpp1pZZBKGnKgKmxXincMfiBUhfuiYh7rBwzMPbQaotCamrUFWA/MHoFgy+IKT07fbT0ta5rgVzd3w6XvsrtFjN4edmaiVNVZfDb6QQyE1J8adak1T2vsm32dtViMO/jL4/CvbbdSWKR7eRnVgrgSoSCRTaAaggqfURTrb/wCO2+38KsLiw22JfrN+4VNnB+RxRSQVkkR41jei10LMDpuZhtUa0FaAV8tOe1unUFpAIJ93THuroOXakNeFKJt3W91024DHCrk4XPi6t1Zn3BGK7VLF13AbiSXIOygH5afTrkZoMjyh8XDp04V1TZCWhLs6YdPgaLbTItI5ZQoXbQEqzVqwoTRl2kU8K/2+QcoMx8uSzRuxX5VtGyAtQ5ga73M6iN2Cx13GRpApWhIO6peQkj/migJp4daEYafC5zrJwqSFgW+CUxvl444pTqGFNgbUSU8agFKhf4ePVnk3atz2eytiR6HYCm23b1VVDu1kVdGCq8Sym4BIYf5rp7ALbd24KgPh+PXV8pZJnyv2J1pcn8PbSHnJj/LOAXe7dbf31TrKgieX3GLRGjKSdx2oQzHSujU167zTNY5oP6yd1fPJ3vY0A4kn3ChtpWQnYp9ok+3u3UopIOz9I1Pj5/XotwDgAQiUvcwOxWuYmM0yq2gYEenyoGbStda9aDQAlWRExBG4E7adwxGxSSVRQoH4D8aGnj+HQ80Re/OvTsBq0TuW+7p0UU7vfO6RiNii1BNKHypUasCKHQ06pMDg4jot6YB4LWqUKpbdbt+FGmCyAQfuZkG2mlDUEJ6fVu8RRNTXU+XSrUwF5U49Ou+FM4NR5bsrUQD3qmB4n2UU2PJYInJ/y/8AM3LVmpIST4sPcLGpFAKa1r0EdLI5gLbgYd/VRw1DM5c9ATimOCb8Epeco61aAoI29RNWp+OqlARWpr+PVXlIUfjU3zhyZAttvT40O3l9cO/vzlpFViVVQTHVTQuoqpJagJ1Ov95UcMaAgk93YvH41SZHkJIAHHFFQdSkm/tpvmmWSP3mkcDYvpB1oBpVWDUJPj+PRGVn0jfhVRyHG/C4w9tKMXdxpPGyAtTbUkCgJKgVAIq2mvh0NOFaiBAfl0+G+7TljL4C53qE2dh232kVP/A5Bc31hM9S4u4UNWBj9veocbWXwKrXxpQ9Ida5zW5RxXuJrp9OjxnGKDtV2Ps9tWOOKnuLiFgBDEd2g9INfEkVO7YP41/LVAS0A4bOsfppgH7Bcmpv4ti19DxyFYSNsYr+oCjMWG31Ns0HhQf3c9rXI4tU2v2notdBpGsdYAJ79vDh2DhU9ccWOCJGFNZPUGodoFVDAAAhjQmv16Q6hxc8k07g+ocVqTbG7WDaKesGgqDtJYsNNtf9rzp0K5uaiQ4sWyg/Cl5uGL7yKNuDVBrShqKAg6DqOSpfmAiJbr/CsUt4AQZSatWhNT4a+AXQAnw06zJWxOU8LfbSZ72MimrA+O1SPD67iOpBgBWoOfI9uUoBWFrtdp2K27y3AbfHWtGr4dSSqww7cKXfvz+z/wAH/wDRfd/S/wCj+e/q8f7vHoTKMv8A5y//AFVehzZdmVPYtaGvunfPz5f9mflXybgPazvlyXgXEcRY3LWmFwVjh2tqx5ydHuru4yOLyl2xht0UaSIlKjbtKqvhn7x/c/17yP1fNy7k2vdptDE/K1sbGbAHK4uD8y572Q5RsQV9b9Pcq5bNohLPEHyOCkuK4qLYAYW3Y4haiftp3r++Fzrjdr3C4zke+fLeFZHF4jMYy9eLg2MF/j8llcY1td2dtc4EZG+tbqzdovehiMcLTK8gMaupC5Jzr+ofmuiHNIJeYTaJwBblihbmBcAqmEFwRScgJS9iKt1MfpWF/kOELZRjc2t+9bt29lRRyX7nv3O+wnda5j7j8q53x+EZd57Ptj3k47YwWV9ilmtPdtbfMW/HOKZPKQzxqwF3ZSokaSbkUaOEmr+7f3f9Kc5a/m8moEbLmDURMyOBOBIjichFgQWuQ5lUVe3kXI9dpv4AapFnMcV3KLkYrvChK9XvwT+bPbr5w9nLXuLw1L3E8gw86YPn/EstFFBkuNcnjtobm4sx7b7MlYSW1zDLDewosE6yigRw8Ufsr0D655V6/wCQt5xy45ZmnJNGqmKRFLVtmaRdrhiChRwc0cFzLl0/LNSdNNeytd+0N6bDvG/glQX92z5Z9z/h/wDHDE8+7SZLjWO5fyLm9hw+2/qTGXOUV4r7H31/JPiorW/sGTKWC48zAyGWAwrJ7kbjw5r7zet+beg/Sbea8k8j89JqWRfxGl6NIcXFoDmjMMts2ZuzKpCF8h5dDzPXeRqM3lBhd4SikIACUJS+xDxqbft0d7+bfIv4f9ou73cW7iv+Y8qxd9Jm7y3xU2Gtrm6ssjc2TTW1jPPcyJFKYN1fcZCxOzam1V6T7cc/1/qf0VoOeczyfn543Z8oRpLXuYqKcQ1SbAkqAGkUJzTTR6PmEumhXymuspUoQDj28eutEn3/ADuhzrC9/vjvxGx5nlOM8RtcBkMvLbWWUy2Lxd7eZHJ2Vtdz8jTD3kE97ZY6C0X2jsM0QupgrbWO3zd/UvznmcXqDlvKIp3RaEaYy5Q57QXGXIXOyFSjWkYKGlyXIXq/SMEJ0087mrJnDcAf1VAC8StUD7bfED7k3fbi0ferszh+5OR4DlMjDkOD2+S7uXsA5HYSSm0kyViMryPDZCxxu+JnRZVib2Jaiv6m+ecn+3v3S55p2c45QNW/lT3Nc1dSWFyEh2Que1xaq+Lw4A7FppqOa8l0zzBNkEwCFGKm0KgQFEtWfuTgfujfELDYHMcnj759guGZ2/uYstyKLuFb9xuOrkzcxXM+SzK2k3IbXjtjbtfiOP3womV6LuMbt0TzPTfeL0JpI53v12i0znOBcJXSMKJ9WRzsqZvCHHM7YXuBqELuQczkLUileBYFqHsUDtSw4LW+/wC0d9yblPyvh5N2M7z2FhB3k7c41MnZ53EW8tpj+bcPheKzbNvZO0kVhfWU89utwkbhC11GYo1jqsfon7LfdeX11p5OT86LP9f00bXZmgjzWYOcR9Ie0oqEBwcoaENctz7kreWPbNp1/KvJCH9U4oNpG7dgtaw/nV9wj7iXav5cd0e3/bbnXIIuDcNzNlFxq24v22F3hL3FZXAY/PCa/vMjY5S5vrm0jvVWRxJDFuD7LeEURfk33R+5H3T5B631fLOU6h7eX6d48tscALS17GPbmVshc4B37QBxIapbTrknKeS6rl0c07VkeLkvIKgkFLgAKN3CqP8AJfumfcvivFy2Y74c74iLm3laHGScRw+DxlygWWMmyjyPHLk+8JEC1947WPkdOvl+u+8X3ZbM6XU8x1OnjcQg8pjWixwWMHAnrICG1Oo+RckyBrImvd+8Sf8Ae6DGmy3+6T9yPll7swPyA7k31xWCzSw45xzBXHuXFGjjjjhg41O8t1cyIfMlm8KCgFTfvP8AdzUuWDmc5s0eCGF2wAEpE4gnE7ypAq0ch5FGCDC3biT8TVsfiF8yPugdxPk92Y4hynmvfrO8Ry/cLi9jzbF5Th0cGOXh0uQhbP3GVuYeN44Y+GCxLH3Y2ST/ADEG41Veu/8At566+8HPPV/L4tZqdbPyp2qY2YGJgb5WZvmEpG0BGu+pwAG9Q2lXNuX8kg5dMY2RtmyEtIN8wBypcm52A3t2exvl4DcT5Op8G47mgaeNDjbkde64/wCY394e+vms1oXn+yfdXgLxUZvMXaFjRza2pJroaxr9QxB9Pjr163e38tJ5bSXBtldcniTZSdteY3yCRnjADHLZtkQ7OHCivDWZiRiYiX3FY30ZmBqX2UANP/b+PQOrlL3AA44j3VbA1oCj6ALL2r+nsp3lka3BLQs5dSoBTwLaKdSCCToCAehGNDyigVY94AUKb7PcaRXTM1upZSm9grxmjAg1YVqta+kfTx16vhDRKQLoMaqmc7yg7Ak4dOqoBz9nKbueheONJZ3orbHB9xiw1FSpUgj8v7ez0M2aMApmAA9ljSDVxsa5xCm5TBMR24L7KYx4DUnQakUJ08SKCh/gOjaX04WpAVioap2ht1CtRX9JFPrr1IRteLraqnTSQlBlIPX867pvuoz7gULu9JXcrVHmK7gQa06qGRhutEu82Rvhy47VrvBi2m3+senb4+nxr9BJXw/DrbpImYknqHzqnLPuA6yvuri2EkPpeOjK1dr6g0NSCu7yI1GnVmVr2eI2G0EVWXvjkWMElwwQ96W6LUh40M3tKyo3qNK7gCFO5mADHWoIANR9ekMpSRWqtN2EjTrgLp066JIawnR3arVq7FmHh+k6UpTTqiZolugacQmHxtUWTFjlQZcCOm2pBweUcRxo0tAGTQsaGjeJXQVofD6Hw6Uyackrg3Cx716IiYU2jeC3wk5iDfrwPEbycDc40Rrm3gnaTduiJoQwbaPIUAcAUPn9NT0JJpmlqD4dt0PyojTzZJLEknEDDA0U2l/bXVCpPl6RoxHgSCRQ7W0/5eg36dHhrdu/Zw7k7aPbqozZRm2dOmzGnuNEEEgkf0MQyMldddd1VO00UUH108adDODw4C2RSu/h7cavBY5TfzQAm43v7CorvDaQOSaqVdSaybdpOgH+EHdoB9QOrg52XKD4aHkcf1mqeqof59jEt5hcR0JhAZPajqoHqAYgVZiqKaeBI6d6CXM8NUkAErfaU6YjbSLWwuMRbZe7ZtwthtRbC9Qpe/zFLi4y+ENtHnJsYMVcPftOcdkcc2QS9ayvFjce0ytGCkiFG9AUmlSSdVyx+qnbLE45mFUCfJUVCRcWw2inlfM4xpHRygZyUxK4KCmYk2VCigrgBXZMhyS+cRtj8XZJMsH7e5tssl61kYisMsq1itCqsshIVq08at5B66DmxOEbISxMwDgpJTKhLzmIAQ27zdrpdRyqKLzXZi4PwKHDaqNGNkF+yi61tBaxXQSSSa4vrlshe3UoO2S6jMCskCSNIv7dFTcFIZd7GmhI6I02hh07iPEXveHEkqRlNkQBFW9r7ESlnMdaNfAWtsyNiBMLqpW6/SmPvrPcY25yFq9tFkLm2srkY8ZC1hkSKK5a1bINFdMNh23CpkZo6rRNr6qTQiE/LxNrfzTXOEotwAwPG4UKCCMQVSrtJzH8ty5ule1piQHC5KWK4WNyCCDtp5xVvZ2NmLCyt4o7O1mlSGPYCFBCVIY1diaCtT+XV0EH+nwMjiwvfb7ECXsgHFaHm5g7VzvkP1FAdgsuzFd69lPllde5JsWjAGppuoCAxqPIglepvV7bgggVWXOs4gKOnTrrrksqpBjO1HjU7VoQxKFh5vWh8Pz6lE2QnwAZcDQ7tVFGEkzZySbcUxtbD4LuE7jJM+5mVjsHgoZlAHjp4Vodatp0S3Tq65uemPTvoc68OBLAPDZSVO/DH2oD1UjXMSuVjb0R0I1LeJrqx3ajy/Dq46AjxEDDt91VjXIEbiu6279q1N9xcszuoZWSvipI3VoSCVah8wR4f6i4YmhoO2gZHl7iVx9+2iDj7yC7jkLbVoDu/wDeK19RagG4eBGor0FqWZyWEeAGieX+WxCS4yHNuTFNvZvvUg5a+D2qRekO4BrGCPM7larE+dPxAHSuLT5JnOZcE/O5NN5tSXMR6AAdvTpsqM8m9B6JHlKUB30Kj6gbQvhTX8unUDRmC7umNc5qDnsvgLvgcNiYUxRqslS7hGdd6mtFDEk7XBFQGoaGvl59FuJbZoUA9OnuqmF7Htyg+ICuJGckK/8A8sbAvkNvpP11NNT1toaArdt6uK7adbGd99uQaEODuBbdUMda7q1NNehpWAEpVQlc2TIAECn2L76mi2yaLDbMVViaByoairQKKerUkDw1p/d0in0wAW4v8K69uscy7A3E3691x7a65G4EnvVmRlWomDUpqV/6OqgkLTWp061A0qmA9vRfb7R9U9kgQ2b0t1bONR9eQpKu4LtQMSmtWUEiq11+o8Rr02BCpSTUFBmZgN/GhfQmgDGtQqg1ap/SK7dTX8NenJUN40k20V4LGm5CibeqBwaAgGhO4g7lI/SDp49KtVI0OcWm/wCHzpro9MJWguUAfM9Ow7qPYcbFuiaAj/LcI1StQVYHaKJ9PEEjpXJncFFq6CGGIRk4IMe/5++ng1Q7CKelVYAjUChBJ9QqSAehHKvGi2AZBkKjYvQU52ly0cDxlgfcBCKxNNopWgqKkUP9vVPltfIhVPwPv9+NY+VGua36gnsvj8+ymG4imkY7ZVpuB03VYVG6r7xWvjpStPHo5hiZYdPYlUyMkkObYnTt+VSJgIJQLe5h3h/8tAVFUKkhSSBRq0rp4EdKNY+MvcGfT8br+HZTXTNNjxum5bfj2nAGrl8QUw2CMwDGYRiuoIqKAhajT0/jpTWvjxeuKTdpruNInkAIMF29Xfbq4Uaib2SH9yRAANFcD1/7QohJqNKa6dAubtKL1VchOGNIL3LSiOqyF2/TR20G4agKrCpB8fy6tjjDjggTFK0gJAUEr1p8qAsxlLyBCEnRd6l2WQGkhq1VUgghgBp59MIIIyQ5NqVTqHmNcqk5SdvfuTu4VXjnN+uUShUgKJFZxUUI2DYlWcBK1/M9dBomhj7L0vXL8wnkcwtCEO+DhcXwSq9ZeJpEEauwB37SwqSPRXUUqSuh66nSkBvFAPfXI6lkiZcUK9dh7qFZ1ZEhjYCq+54ee5gfHz6MBJJBpcCSSCErDG5jcOtCVrStaagjyIPn1up072UGTyje3ZWz3Dg6pAj7qDbU+57m1abh4g6a/kt5pzfQcl0/5zmM0UWnVPEpK4qi3GwIFUpdQKdcl5Fzfn8rtNyXRz6rVNCnJkygbiCQ5dq4JtxrpyHLYjgMWLn5rJdY6yyk/wC2tUtESfINM4BSD2DV0mkZztYoYgEbcwINPkvrj71elPTWjc7T6iKfmj4y5jG+MEDOGgta4PGZzHAOLmsHhzObmbm+9fbv+nf1t6v5mw8z0k2l5FYPc5zGPDvApDznYMokYSzK6RA9GnLVgeQdrslx/P8AEuP23IMELPn3F8PzHgt1mcjFiHz2Dz1raXlskfuJJALqzOQSGVgSjyIWCoGVQn5V9/fQ8+h0p5u50Wv1LFytIAaUB8ZcoYAVADn+IhGFw8VMebf0x/cKLmOuPIxDqeU6SYsa4j+I4DtGY2K5B4QQXBtA+f4zybhOVuMHyvFXmEy8dw6xQXqs1vcxIW2zY+8WkN7FOoDJIu2taEVGn1fkfPuUeodEzX8mnika4E5MXBHEHAoqgiy327/iPqH07zr0nzQcs9RQuiNwSG23g7bEEG5NitqU2pleIrvI3AkhwwdakhTUORuCn8x+Hh0xmDHu8yMEApjwF9gQEju34lZpZ2SgnTPbI39pDlxS3uJW5C2wr6/uJrZIoiw9w1BHiBXaQaA+ndXX+PVEMbTHtCn4n3UdI2VjskyZxdyYJ3qqJtx4UmspCTJ7hQim5gxJ1P6iNxoFFNer/LabgFbDp8KEMviUCylOrZ3eynHGyk36LCkZiahlqpWoZgxpRk8QB5eFegtQ0hpcN59iCrdKksviwJTvPfj021ZrgttDJa/urcqjFx7CKygLInqA/wBrbV9dtP09c5rHOQjE32Haov0vXYaNjMoK+FoBx4L8/dU+2d4faUS3G5U0TewO5So10Hn+FB0hC5roBt38Ohpn5cTl8xRuT20b4flQiure3imCqhCkHUaKP8QP6gKNpQ6adKp9K6QKQjkF1HS4su+jmanyxYtTqPZtG3tSp4x3JYhDCEdVZaL6q1JJNGJEgJDVr0gfpS0kuX9HZXQQ6sEeEhVwun4duHtqRLPNma3WVJWmZz9ValNKAFf1V/w/3+HQLoy1yGyUybLG9mYIqUuXLSr6mWb0jd/0QWhGoqdugHnQ9Qy8a0JGEeJF7fl86wvnJGJIDkk6k7PDyoSGY6fXrMvGsEjME6eykpykjfqG6n6a7jQ1FfFz4gfh1vKzjU/OYMAa6pkZN4BCKh0JAatDUH/ERQjx/DrWVq1EzElAgFP/AO/b+XVoP/Du6m3T3f6o2U/VX2vP/ar/AGdQyhe34VrzH4oN+3qrzjfff4C3Aflt/OFzbZF+d9ur3k1zjHsxCtpHlOR561gsILxzKL0PBHtkTYCB6fAgt+ef9Q/JouU+uItVFM50urY2fK5PBme9hS1wDGMcAgtifs/pWc6jl743tAax2Vd6AEL/AHu/fXqk+39Ll5vhp8dHzF1aXkn/AKUcKSxuLFY1t3xsXHsdFaoNhJaaEoySs1C0qsQApUD2F9vC8+h+Vl+VfyUaZVRMtlUm6fVsVUCVwvMbcwnRU813vv2KqcKD/uQdhO3Pe74id9bPmdjDaX+D7d8h5PhOU2WMx9znMPleM2sXILAwXFzbyzLZ3d3hYILoRlZWtGdEOtCB9z/TvKvUXormEHMw1vlaZ8rJcoLo3RfxQWnK5wDiwNeGhSwkVZynUy6XmET4VVzw0jYQ7w3CgFFULgRXnA+w/wB4L7gHy7v+1VteWV5xnvLxLJW17kpBeLA+V4Jj8ll8Xb4C0klMtveX5uw1wZvfrbwr7bRqrmTyr/Tbz7U8u9YS+n4GsfoNc12ZxLszXQxyPZlBRVDSCrVRT4cK7T1ZAyTQt1TyQ+MhLBDmIFz1kYbUrZz/ALw68K/FHtQJJIY5G7548WweJ3mll/onl4kigkUhYCbZpGcmu5VK01qPqv8AVEQPQ+jBdlJ5kxBdXfwpbcAniK7hSb0cF5m+yjyT/vNq3n2cL+0v/t59hjazSzfs7DPY66E0plaC8ss9fw3FupNDHHGy+lD+gGnhTrvvshJHJ9suW+WtmSA3W/mvNuCEEfDALOfgjm8y7x/uitF3+8JskXym7VSxW16j/wDpUi3txNFusLqFszfGCGxeSMwrcRmJkuaMX9uWOiilW85/1RZG+rdA8tev+n4n6XfxXWbbEDErtFjXVejg52ilaCE83tHhGNbGPt2/c5+GPbD4adge13cfvJj+LdwOC8Ciw/KOP5Oxy81xjLmDMZMRIbyLFxWksTwSxmMIW2qwUs1N7fXPtt92ft9yr0Py7l3NOZsi10EOR4eyVcwc5fEGFpG0ISgIWknNuS80l5jLJBC50bnKCC3cNhcD7KyfcJ+6j8KuS/F7ut294RyTB95+d844pdcbwHFExN/NjrSXNLIIM5mr94IBZ4zH3VirOIZVnMwjHpB3rZ9xfvF9vdR6R1ug0Gsj1ur1ELmNY1kiZiUDi4taPC4BwRy4OAQgmPKuRc0GujlkjMbGuBJJaqbQEJxFjsRa1s/Yfwqcl+Zd5yDjXF8nh+Kdtfj9yHi3IORLMTd53lfKOS8YzWOh5le2Jix8uQuYcbem0t4khItLACRXAdn+V/05RN1fq6TVaLTOh0On5c5rngFHyPkH1vVHFFDAgQMwzAo49VOyaJscjw6Z8oQE3ADTgNnHHHca9gTcewTzz3MmHxktxdStPPNNZW80jyukSO26WNyu8QqWAoGarH1Ek+1TFG45nNaXdQrgUrTL99fEcfx3wUzt3Dw3Hy3a854JbW3ILXH2kJ4yj8isHkleZY4zAmTSL9qCp3Vk2gbWYj4R/UXBpx9s53iJhm/MwNa7IC5qyAnKUVqhqG4UFNtdH6Uc4c5YFIYWPJvY2sveo6qhn/d6bOxzHxl7vpk8dir7+R98cjZ2U0uMs5ZJIrnh/ErsTSTTwSTe5GVAX22RCurB2o/SP+mBkT/ROreWMzs5m9oKBf5Gncq3Kqd+AFlBon1gv+osVUMIKf7T/lXoHt8PibSUXFri8dbTgkia3sraGUFk9piJI4lcFo/SddV08OvSyAYba5LK0YAU18zkMXD+VygVMfGs7IAdASmLumpX8adWRfzG/vD31XP/ACX/ALp91fn2cT5EtxjMeG9kGSxtCGAkA3ewh20Y7gSW0H0I/j7B1OlkXzHhJCi4IqBR0NeWYp2SI1x/hglDfBTfjUi2uYltkQoA9dx9JCgKSy7Q3qr6hXUHx8fCiqTTZnLdrqPjIPgaQYwe1cdnXThJm1khDyF2c1KiQq7VqV1evuEen8vLocaQh2Iy1POVKNPmezp2U2DJSXMUgcW4/wDpkVUllr4b5DpUUr9D0QNOInKMy9OFQkf5gAaFYTinHZ7aCc7jTfH3I3MZcepBQKzAVb1FWKh2Y+ev+lvopxGboSLdlLdbpyQgXL2cbdybsTc0OJxupO+VgAB4MupK1NCEY+g6agV6YHWlUaLdOql40llW/ThupXHgHqqCTeNtAFrv0H/7Ng1APoOpjmLgAMow6bapfy5l3ZiL9NlOMGBhnhkmDXI2bSEPthtrE6Git6lUVP8AoHQjtaWkA5QT10cNOSbKQV6cT1U5Rw2kccrSx/8ARgFUFNzGjVHrDEAbfyHUGSOJGBB6wPYRWpGBmDRtJULh10gu8dbXc7PG8iH0jbWIBa1Oq0ASrEnxpTq7809VLQh66g2BrW5WlCO38aKMfhxHLbyxTSNLCRXdtAKLMrlmQKtd2o0b66dBSzlxLUx+XXstxrcbfDmCZcEOOJOKb12JYXVUeZLJgS5KqtSz7NQi6liqkLoo8tT1SHyYEAmtuiixBIHTDd7adsdas6AQu7oG3e54bat/hXQ0FK6ef59VyPcQCEVb2OG3t66vhhbcHNlS229k2YU6SWktrtff7nuelk2k1VlI9XqbzoPz6rfI7LYK7r4jovwq5jM78r3nKSQewce5fbTzj/cjSKMUUaH1g7v0Cuu5Qo00Pl0PMwDNNu+J/GphhjGZpKNNtq0fY1Loko8iyIoFdwbQMrLqdwqdSB+X50UTFrsBffh3j3Uz0z3ZSHIgTevS1/denqOFYip3sSSRTwVjtYioH+yNfHx6pTjRJeXbAlN2exEORszBGEldk2s8i1fRTqCwA1NPIk9EwS+S/ODs6d+FCyMM8ZY8Ip4YdOwVEmS4MbSIshclxSlRu3k1B1UOo0PgRXz6fx8ykmZ5YOVDi1PxG3rsu8HnX8nYx2dSq7URcd3wQ3F9gncYG7t3VoNjNRw7SAF9r13RtIVLBRppofSNSK9Ft1LHNDSSmy6i+4caD1UOoiATK5oTYd2OPAY4m9LrayuBHtYJIEQrWOVpGClYxQ73c6+2SBpQ18a6VYuztW1FAF0RY/Ai5AI2ccPhWdPRs2asrJQMu4EKR9GU1alP+FOq3s8wqrgb4ceteyrY3CJmRGliC5xCd3b7q5mMkkx2IisxJKa0FAKkU8j9T5nq1rQLOzW6loaSVwaHMLEK7/YLnrWuiXU9m5rRWNNFrqNdSSQaUbSh1PUxGHfSqcapOqyj+IhX9le1V9mwkVxlz7tutyrUkNDUGlRteQ60DUNfDTXq2NgzhosKpllbkDkB6xfC23D8aEZ79lCLXawX/CzbnoXoxq2gIGpOmnTBkRzI1qjeRbpw3d9K3vK5hayYlMffs6t5pv8AfMrfrZKU2rou9fHcAy7iDr4HwHl0Y5qgrcnbuoZ75GgFB2LY7ih99K0dWFBQEaED6+PmTqQa9D+FrvLFumyronZmAnH8afLS5EaKI5NjAUYVBpqabtKa006DlaS41Yx7GI1xR6neNq9BTm+QcpRvTXQspIbWv6Cd1CR+GlP7KGRhuFzREs7gFcUHaaZbuf8AUkS7oyPEsN9KAn0+nWvhSvRcUYXM4oaAfqo/pce7v20iUelf/dpqBWhA0NRoQQD+Y6vOJ66VCQxyl8eC13ESekMx3NUgVAr56A1JoPHqJe7YLCmDdQ8tBICkdNtZ4GaJhShMZqKg0JqfEV8OoPAdffVLJnOkc4oot7xRfHmFkT2ahfALqN3iBRTvpU0pSnh0I9hfdw+FOTqmABU6gQffv6qUtl0ljFBEX8SpqBt8KOhapo340PUGadoAIXHpet6jVsxcmbu76Z5bp5rj2owgAG59pIVKEhgA26pFR4Hx0016IawMbmcClLZZZZTlBACdNvZXZP20Vyu8LvLB29JPpFdx1BUVANfCvn1aQ/IWuJyCyg4fPZ1VFuUuCYmiOzu6ELahDG5IY01APoYijU0U+FNOl7mHAlePQbKc6eXy23uD17t3TfT1aXMkUjM77YxuO2p2kaDcRuIZqVp4dVGCxF16e+rxrJo7gBCU7N+Kd9ENldLKxkADBD+n/m/pNQamvqBHh4dAzQPZ4TdcMevp0FMINV56tcADuP6dvv6qd40gWrBlYSkBVahoa127aDUbv4dDvZK0FzhgOP4UWEsT1C1+P6aPcJxi0yMYbcUVyu8oUB27S2gCHdUVpWg6Xzal7TlQEbMd+9aYafSDUQ5iXAoFwS4B2gnb7Kl+y45Y2llDbIoYxlXWRlG4mgB3U27xtqPIEdKH6pzpFIt07qcR6SNsYyKlsfjtPuo9sMp+xQKgBAACqS4CUpSm0U0ppSlKn69AzQsnQuJBpxFqGxsy7Kef6iF0NjgRHaalFkKippVdd28A6V6oOkC+EqlXM1DCezpf8Kb5L6FdxQ7lC1RzoGf/AGdvjQfn5dXCEoC47akdQ0Anh7aCc/mLO4TZO6xhAKuhIUbSSNNr7mIBJp+fRcMRa6ygcaAnnBZmKEmwAviV9m7HqxqHsrdC8lkWERS25ARJB+pgQSWBD0FQf+Hk2hY5ozDGuc1UrHSEFLFV+XXt4rwqK8jZpDKRK2rF98dQyqQQwpUGpJJ+tQB9NXumJwwsOnT9CWYMehcUA6J2IfgaBb3HPNc7IDuelArUWqgF61FdRXprG8FiuB7P0GlEobmJaevCmma0mhrVa7RV6f4TU1FDRjQanTTqatN24VUQWlDjTXc4PkeaKx8R5DluM8iUumOyWMnjCCWS0vQI8haSVNzYqKyOsZjkYJ+obar8f+7voTkHrflcMXOeYt5e7TPztcS0BxLXNAIcL3JsCCUIr7t9jPuN6n+3vONRP6e5U/mrdVF5cjGsldlaHxvLv4bSAUblBcTlzKiKHa0u+HbrvJ2mc887jcwuOU468zUVBjMlFBkcZexyhLZjjrh779vFcXFmrM0wNWBA2UTd4f8AVHoflXp6F7tDzPSa7LMYxkLVeWgF4Rr3HPGHNLwUykodmb9JvQn3N5x6tkZp+bci1vLGmBshdIwlFJLXEvZGcsxa9rHNABDQWODg4C/3fDulyX5Vfbo4T3K41jf5H3E+IFtxmLA5WzdpMlyDiOTlssbyLHXbiGS9kNgId6BJIw1XG5mkQjgHzCQM08rW/wAJWE3VwJsqk/TYBEAvX0jk/LoeXc7nmc97tLzE5y12UNY8Ma3wIiZwMxUuNsUCVB3xj+5hym/wVvxTvDFi+4vErWVLIW3KY8jfZvHJ7szKtrlLK9s2tZTtZkZiI6zUZCiijrlPP+e+k9VHreUaiRgac2XM4NO8OaCFCE32KoIIKc/6s9A+kfWcU2n5xpIpJY/A94b4moqI/KHFrStkABapVpa6tlnbrM/HPvrkLDi/Z7ugvHO4OThe4xvCufXdnFaZh5wwhsMJnILawihlN3/1cLcgkOwXc1Cx9K+jv6lJZfK5f6m08bf1fNZmAcblSrnI7YAAQTtYK8ceu/6SW6KGbnPozUyOgu7yjkIbtOXKxq70JCX8WyhvkOKzXGMvf8d5JjrzF57FXLWV7Z3wQvFe73QIjx+ieORoXZZFO0x7T56+quXcw0HPdCzmnJJ4dTy54JDmlA0BxaVXaCCDuIIS1eMuc8t5r6b5lNyfnMcjNbA4NIQHPmaHWLSG3BG3cDemmK6JAO0xo7CISmZdrF1Le04ABRyo89CR+XTFkQfEZ2Oa5rRcDZv6Y7aTnUSNeBNGYw4KAVsDcA8QLEbDanvHXpjlgZY11KhW8CyeW7xOo1/j4DyDlhzxrcNd8UNMdMWxy2+rHtxqYcVyk4pI3hKBHYBotriklATt9S6q4r9amn5IpdMZPA5enHjXQabUEuGUheu4uvBb7wmNSRbc7LRqFe2YqBvcNIRXXUKJgzVX8yCKanwXO0WQYnt+NNY9bFMQoBXh7lxGK7qcLHnSJdIQEjAotdxWSvg24h10oCdF0P5dQOhe5Q8hNib/AG1KTXRtCcbqR27alHDcty2ag2WMgpDTUsxoTtY0IahY09XiKDpTPoI4yPPCu4YHv3dOBml1ZcxWusexPaRt29YqUOIdwMnZPDjb1VYmSSNJB7u81cCqEsAKq4AqBrp4CnSjW8uiIMkf04nbsKDhhfFPbTXS62RrgyyE7iuN7r+nuqwVjnZmto33lklhDgtuO4NUgAAg+tW8zp4dc/Jp2gFwsBsroIpHuYDa9LVyDyglSABUegbfVoRu9xXqB9BT8+qGxsNxfp2VtzngobGuIrmSNwzM7ihBVnNDUfjuoQepuja4IEBqIeQVxrq95Mrq5c1LqoTUIdzeBUaEAE+Ov49a8toaidMK2HOJVaf/AHv+x928V/pfb+r/AOX/AF17NfH9OzT6dQQZ8CnmJ25PnVqHKn/h/wDFWkP/AHhto4vlR27mkhM6wdjbWX2vcSFWI5PnlAeRwwVfV40OtKilevz2/qhaH+tuWtK35a0W2LqJQvZX2z0aSNBOn/X/AOBtel/4DcbxPFvhn8bMfh7eW2t7rtDwjNXCT3tzkJXyObwVllMjK1zckO3uXly5CqscaigVFUBR61+32li0foflMMP0fkIXYk3kYJHXKlcziqm2FcRzF5fzCdzsfNcP7pyj2AUR/MrnvH+2PxY78c35Na2ORxeE7acolOHyEkkcGfvZ8bNa43AIIbi2mmuc1fzR28UaOGd5AKEVHRfrLmOn5V6U5jr9U1r4WaSUZHLleXNLGxlEKPc4MKEHxWqGiidPrIomFHGRt9yFSR1AE9leS77E3byPl/z3PJrmG6S37X8B5xnzaXaTQyW+Vz8g4/j0nXcrh8cs86xB0UOhJq3gPGX9OnJ5dR9wn8yMLo49Np5HhQ7w+Y3ywC7C4eQQbuIJQFqV33quYM5W2AuDs72jZctOZfZ2dtbiv94MsrS4+HfD7u4EJuMZ3ewtzYF/eacXM2Ezdm4toklijdmtrhw2+oCVp6iOvs39TcMUnoKB8iZmcwjLbkXLJAUumBKqCgum2kHpFzm80Ibthd729NlWP+y/ZQ2f29OzBidXa8uOX31yEIKx3U/Jch78Qo8lCjJrr4+Q6637EMjZ9sOXeXgfNOJJ/mvxUnYiAIAEAFBeoyTzibNio/3RWkD/AHhnLNc/J7tZhS+1MJ2omy6xs/oc5fK3NvK6RldrzLBiWPmwVainn58/qi1EsnqrQ6MAFrdASF2ZpThfHw7Rgd6J03o5jG6OWU4mX3NFE/x3+wZku8vZntj3a5F8io+Lz9xOG4jmEvE8f2/kvjg/5/ZQX8GLkzLcstRfmxR0DbrfaZAaEjUn+mv6aYueen9Lzifmhgl1WnZJkbAJAM7cwGcyNOBGAseq9Wr9XSafVPgbCHtY8hS8g2KYBpG+tYnEPhtFYfPLG/C/vVzPK8Ax113Ay3CL3nNliY7K7y1n/J7rkHFWx9jdtk0s4+aR21lFG0rXawyXIBiLrtPyzlf29g0n3QZ6E51qHaaJupLRLlCvCfwimbKPMdlyKqZwq4U6n5q6Tkx5npmB5yLlXC/i2Lbb1GvcZ8WviZ2b+IPbq37c9n+PR4yyeUXmczdyTcZ7k+VMEFvNl83fytJLcXt0lshcKViUgLGkcapGn6Aek/SPJPRfKW8n5FFk04OZziVfI84ved52AANaLNa0Wr5nrNbqdfOdRqXZn7NwG4D3nE4kmrMddNQlaavvsy8ii+A3KmxE6wYk867e/wBSMwgatqvJ8fJjAokVpKpmUhf00WiHcfAH4Z/UWZh9sdR5X0fm9NnG9vmAgYH9fLu+B6L0sGnnLM3/AE3p15fktQ5/u8WPt7b4l9zr6MTLcZXvZkbi6SVw6IYeJcYtrdIGDMXh/bRoQzHcxOtfHpH/AExxNj9C6pzf1+ZSE7AvlQtsMRZote+FEernF3MmA7IW/wC86t/HXo+uVoW5x/4K5h/5W5B/3Td9WRfzW/vD31VP/If+4fdX51PGprlcZi0BUqMfa/TSMwxsD+gHcKgU1/4vb80cbx4h+mvIEUj2uRuFHdpfSh0fcwERG5A7FSh9PpRn/wAIPh4V/s6V6iANuLsNHwzOzKSc+zp099OzZWOTVklWv+AFXUU00JKVqPwHQwjEdhc76LmeXvOOW1uylluHuA7BTHtYALKpRiCoNaeoUrXrT3tYAq1GKJ8pICIOnzogtcPNdqru+2PwjSlGaunpbaxKigFSNegX6xkJQDxbaLdA6QYjKMNw4LtTptp6h4xNNIRRFUIsbMYwwqBtBBKKorTxUH+zwG/O2UKi70+ZNTbCHC4aTvx7xb4eynqPjQgjFI4vQg3P7sm5tqip/CtK0GnQztU5xJzez8KvMTcqOaUA37u2kWRs7W2gMhKCVgC6gFVAGjNSoWgRaajWlfyvgbK8By+H58aDlliBIA8XDYnD5bajO7nmlknJjVRJtCEEagqAw8QC1Aa+HhXzHXR6WJh8IHiAsF4i/vpNqpZI2+Iq0oCU4G3sA4DjesWOi924UH9P+LUgEfqI01NVU/x63MUam1ahErcz9w9pwqQ8ZbxwQbkX/pC5INTTxTQkk/4a/mOlzwrlPD50Q1znMCmsoleVp4AArLu2vSoIBAoVYEGutT/d1BSRs2+w4Gp2B22T2jEdVF2JsmWHdICBTXxQ1AAAAU6Dbr5UrToWdz7ZSgAx+XXs2UTGoHaT38eyiG2sUmeix+5TxrIRSoPgS5I0H93VPnhgVzvFxT4KnxomAF8gBuPwpJmYUhCCE+zIwVwVBYAq2pAJ08P7+rIpWzBELhu6fjVE7i1qKgGHft/RSrF50WzpHNIWYmpq6glQCVABI9FB4aDoSbTZhmaDjjfh31fp9Q2NQ429/v6xh3XBS+cgOwoTtOpIqQRoQa7K0qPKta66dDnTFozHDda/UhOFEO1LMhDLO37qW2Ms27eU3rJ6GPqKsCQdxI8GB1r1RJFkQlbnDq7f07aNhmcWnOBgl9vZ1jEJsp1v7K1kChqsWC1UFgVpU6a+R+vjX8OpL5ZzABcN9t9S1eniczy3fSSqL7d9Cl3woTlpLa49TKxqKOFINQfVUba6HTw6Ki1BZZ30r03cePdS88uZLdjSqm90PeQCpPsuKw4rhNzcu0UUTbaD3iqlKugcgUHqoK6V/sr1ceYiMWKr1cev4VQ3lspLiBdpw67deysWQ4ObKF7iRBGWJCDbVq/XcWFSdwr/AKvOyHmbXuUJbq+HT21XqeVujaA4FD17O3Z0WhS2wpSWYurMEAejVoR6jqSQf4GpP49GnUNsYz9S7QvZbroE6TM1JAFGHDu2HpupkvbRZGc0NYmICmqg7if06JU6a00H4dExyGQeA37PxoKXTxxn+I3w9Z+B7+itdyjSwmqllVdjUJ8NakhforUr5Dz6sjc4vD+m+qtRHFHEY24i4CmwsO3DbQTd28TuWB3BRtDCqmmulDX9LN/d03hdIcpUZSL/AD7aTTkx5i2yHDt6CkcUO3VxVwxowJ1BodaUrqT4/wCjokndhQkkuazPoIw6fD31mUBWLrUMaVNTrTQaVp1FzQ5F2VASvaEBsK7h2DBgSGGtR/wp1Hy2HEBaiXvdiaymaSUosjFl3AUoANTr4Aa6+Pj1ExRgEgBe+sdK8MQGwB+dKWlRSQza+ehPjr9OqwxxCjCggx7rivvcT/bX+0D+469ZlduNayO3GviquQ5qSANpDNoB4UoaDrASAmypeY8WXCs9uSwkLakSsv00AFBp+fVojYWhRsohgQZtpxrgSOPAj+Kq3/6QNeqEFD+Y9EWlSOwJYMa/Xx/0+PU4QCC04UW/x/VenGNRGdyChpSup0qD4Go8R1FxLwjrhaFEsgwNLjbhaSsusqld5IO9V2hgV/SK0FdB0OXvADdguPf8aZZQb7TWaGQQkFVAIII26AUIIotNuh6qKuJJxNEwyiLYT27OqlRvN5HuOwBNGNFAC6AkgFQQB1AMGZSlXieJzsDmJ4fOizG3IgdyKMjWx9RFagarpTQkr9NPw6reA4odn48avEpheHR4gIMNuy4O6nGyyButVFNrDwKH/HSutCQPqP8Ai6EkjDYy39VPxpnDqHzJmOJQhN/4VP3EoZXsFkE21hSoYqoUKUAIIA8Aw/5T1y+qQPQYJXTcvzPjUFHAp3Y2GOHu41Iy3kkftQM3uGlBu0/Sp1O1lNDrQajT8OgzEwlcHGmRJLUJ8A2HbSeDKOqkV9qPdsDkBl3+mg3bKfpHiTQDrDGx5VwvWCQMb4XWzJs/G1fPklhYyCXfK2tUo1QaihP/AEYXTw8qCg6kWNLcqeGoeaA7Mt6yfzSWe3KruLudoSiqzHaTrQj/ACzXxFNOoCJjXKKszyOaSpyJ1fDb219/KYri033iLFK7sCjtWi+dNxJDuP7afx60ZUejbhNnTCpkO8vM624dXd2fEVFnI72xwqSW1mq+0BV1G+Rty7QFDGreliaBT5/j000rHzOANwMMNvTsuaTavy4VP0g443TrXbUNXuXFy/vOtS++gNQy0NPFRtJP49dJFpw0IBsFyvzrldTqs0qRi4N7pjfaD7MKYjdVld4gqMSanVjSp19VVqQdaadE+WEyuvQokY5wdHZwJJuoJPX299JrsvtbcwYtExqKagkDU0FdCettTMAMCfiBVQeo8Kou3rHzqHu6fbs9y+JXPH7bkeT4nk1ka4x2cxTvFdWcvsSwvtni/wA6ATRSMu5CGHiPAg8f9x/QWn+4Hp13ITOIH+Y16locuW4xvZyFFQgEICQ4fUftT9x5vtN6nZ61i0w1RYPLyElCCCHAtG9ryFAUKt8qVrd5v8Q+ecNxmW5hmO6K8lsoEK3NllrrM3V1kHnpHES9wZEa4QpuYOPSgJrUAN489R/Yfm/pPQP5x+Zhm0cT3NswgWaXXQvAWwv4VKKdvvT0x/VpyT7h6qP06OXO0k0oaVZIc2Zz2tyhWsNlc8kEHwZrFKv/APbPx/Bub9se8vx253yqfBHulxnL8Htrr+Y22PjxFzcWsttjMpbtHPARNjs1cxO6Rk7YSgG2IAded9aHt1rxlTNlIUFqlAfpKXVQiC9t9elYNS9mhg1kCSHTuti8uYEGK+LwYFUKAnFa1CZLsv3A7H91ub8C5qbDH5zt1kL7EZ+zjnt5JL+3jjgnxWYsJY1ka+xtzavFNEC25YnX06EKTI9r9OxhBJkOUcCqIuwnAEYo66CmTtZpZuby6snJoXsUhEzAsAP03KklxBuLOxRB8d3M4nJrS648seNucK8VzjLy0Eltex3kEkQhnL2VwjveR1UFixq4Omi0yPQxxxZbuc4AFU60FrBcMSm25oODXPildDZ0bQblQEWwIB/VzE4/USSpa1w9ZvYbkU3yc4J2SxmYt4cl3IxH8uzd5m3EVlf5bA23sWmRwmcvGh/b3UnuxwqP/nQontiQEOW6n0f9wPUPpvR6rlPLXufDq4smVx+gtzZXMzBzQmYlzUAcQ26qD80+4X2w9M+qtTDz3msYim0pzNeGk/WAoc1rmFykNRS4AlxQZiaavlAcNa94M1b4zE2eDFpa42PMYqzs7eytky0MCs8kcUEcUNuWjNH2JGu4NQHx69q/YjV805n6KZLrnuL3ap7Mzi0rG1GhqgXykXJGYqHOLsxNfnx/UXoeS6L1rHpORBojfp/EGh4A1Be52YZlSygMA8tBZqZRUCW13MI0CBDJ6RGGAA90KjOnuLcRbAjGi0Rq/Xr7NLpNWx/ltyCMbzswFrqqb6+FS6uKLUBkPmOgJKuAVO8dONPkGXkltgCgruLgFwKyChB0FG9Q8qDyGnQcumLXEOajxjt3qAfjtpkNSn0PB3YBf00UWGUSGNqNHRzrXaTUUoNsgUgVFfHoJ+kdJcBD0v099HQzv+odPjtp/wAIwyl5HbG5a33g1AalTQFf0bWcgV8PP+3oSWPywrbir4pjM5HlUHV7k/T21bHt7ax4GZIJFPt3dSZUZnRmNRT1M+0qWH0ptPnUdcxzJweF2BVtst0/RXU6OHIECLsv19L1Y2041ZyrDfKsQk94PEFVSyszUZBrtLFv9qu3XQinXJzayRXNaT5abUw6eyulh0sIQBpzLx2bttSNZuywKhTa6jbuqG9NCCB4rUj6ajoBQXZDuWmcQEkZaR4MOtenupZFdFHUBgwRlZkKqQwBBIOgrXwOvUCGOBABUix39XTiLVONkLP4caKMR89/wwogE1vPC/8AlLCxjLoaIK0AZVDUB3E6UHl0HlkY4KSQtWEtIIRDTQ6NJuVplMe9PSAKj1igJAJUgjT6+fV5VpDgow6vxXsSteEhCL/K9EX7J/5Lt/c6f0rsrtHh/X3ueNf1V0+vlXz6rznzML+Yv/0Vryz5aKf5ftzquPTHhXnk++BL3vu/l/bxd6cdxKxto+K5O07YHhV0boX/AGx/qfKyYbJ54X8sM0HIVRZPfhAooXTcfH82f6iHc/k9bj/XGQR6ZkH/AMUxuzF2nEkxYXiyPc8ODrI21yoX7x6U/Kjl5GnLjIXeNbAPIaqcERN/fU7/ABt+/VzrsX2W7e9qeTdgsdz5uA8ai43Zcgs+Ww8W/mGOxcNvZ4GEW0+NuESSzto/bnJV5ZWK0qQxPR+lP6kJuR8j0vKNboGTHTQ+XmDyxWsszBrx4W2OJcikgqXC6z0mNRqHzxy5c7lQhUJx2g3Pd3JWT5VfdE+Uvzct/wCU4jD4PhXB+E5rE8yg4VxKFs7lMpeY3MRX2BGeivpJbnlFpjbkwyPbWlqsc5h3yoyxho+N9Z/eL1h6/c3S6aGOHlEMrZBCxc7y1wQvJcS8AqC3LkAKubuP5fyHQcs8cjnOnc0jMcGgjZZBsQ48a9Bv2iuw/d3F4Tul8rvkPg/6b7v/ACKyWJnXCJiLHjJxvBeO20sPHobzj+JtsbBjru8uru6upIJ4pJFE0W5lljZV9P8A2W9Oc40nLtR6s9RtMfOuaCM5CMuWJgJaXMQZXPLnOuM2XKXFSQOQ9QauCWduj0hXTQrcYFxN02IAEtbYMKAP94Gtsrc/ELgy2V/aWWP/APWXApmI7i29+S6hlwubjsktphFM9o8GQMcjOqksilKEMekn9TLXu9ARZSMn5+JV2+F6bFx4j5EekiBzUkqvlO+FTZ9kCTGSfb27aHGMWpyruCuQJkkk/wC0/wCpbk3YVpCf8tSQF2gLtAoOuj+wIhb9rtAyIOBa+bMqLmMz3bCUCOCCxRFFD+p8/wDrEjn/AEkNTqRO24N99aZv94exkP8A+ZDtVlbWwZrs9sGt8pfLcSEvbJlbz+VwGAu0dqsc80/+cqoWaUKSaKB8K/qhi0p9RaKUI3VDRBSTi3zXWDVQooNwFuioU6D0aZPy0rcWebh/sDbXor+3Blk5D8Gfi/lo5cpcW8narjUlne5S9E99kEFi8Mlzdex7SGL33lSOJ12qsaMFWihfUn21lbN6C5TI0ELoowVK3AQoUFlByhAgQJauP5sv+pzKlpCiWUbDbbvO0321oK+/92q7jcH75dlfkXxz91j+BnAYPj9nyTHWwS64x3X49nM7lcbc3uUt1XJzXOXsprSaGSSWSslnJuUgkt5u/qS5XznQeotD6q5ekeiOlyeY0APZPC9z82fKXBzmOYI0P/LcUGW/V+kpdO/TSaJ95c6ocC1wARFQ3BJ23G+t7/25fl3ifmD8auH81newsO4nG7WDh/c/jVvJIJ8Py3CWdpFdXBt5ooXjtMzbSw3sO0Mix3CqSGqo9E/bT1pp/XXpTT83Yf8A5rQI523CStADjcCz/rGKLlUotctzXl7uW612nP8AKxYd7dm+4wPfZUq+vXf0trW991fgeS7k/ETO8Pxlnw/JXWY5/wBr7G3x/O8lkMJxe5vL/m+Hx9n/ADbMYyVLqxtUlu/FQayFCWVQQ3yn7z8qk5z6El0EQiMj9VpgPMcWsBMzGqS0g2zWC3KCnnp15ZzaO5Chwtxad+zfbCq6fZW7TZPsbwL5TdrcryThfK7ji3yLkt1zPbq/nyfCriO57d8MuUjwN5cIkssFqsghkruImjYEkjRD9h+SO9O8l5tyh74JHQ84cM0L/MYf/jaY2diUJOKHhervUeoGq1EM4DgHQCzgh+t+yt1nX3SudoW5x/4K5h/5W5B/3Td9WRfzW/vD31VP/If+4fdX53PFsLPfYbGSqWUDHWRShoSRbxeBI0J+poBprr17Z1GrZCUsSt68i6fSulKoeHu6e3GiI465hk2rFKu3b4iSRtQCTuowatfr+HQ35pr40eFxwRMav/LGOQltjbFVw408xRG2cSTRe1GFO2TV2JY7aEBpAq1qKgDUUrrQiOyr4cKuZmyo/wCrp8KJsbJE0LPv2gMjLQMpYHdQkMtTu8NNdv4HULUNOYEYGi4nlzfKaBmv07O7DbRpZyG5RaKFqyopGiHdTbQastAR/wAPBRKzI9AVJo+J5c05giWtR1FGUj2aK1alkNa+GvrUgEga6U6Bq9jC1mXA8PxrBeSrb2zLvIcxlELHczHbQFiakk/XqbGqVP01jyAMmJPu21C3I8ndtMIXVkow3uqmjbVFBt2labtPOpT8D11WlYwhXC4Xfbp8a5yfzGfSU60Hv93A0OU3gzSksYjtMf6Ca6DcVpQAsfEeI6N+k5GWB240LdwMkly2yYUsxBH7mnmQSPyCOD/pHUZxYHZUWEZHDbb30e2oEkO2M+2w9MxpuDA76UDEmv1pQa9LZGkvIFiaLhcBGCbge+iGysidssgLuApVgACRo4YlPAV8B+GvVL3kWbcjEpVrWF18G7uvCiy1qsSJRXrpQ1AqWOmhU+dOl8s0j3kLj1Vf5RaQ0b+w4U+W1tLbxmUbvcYA0HgoGtCvmaeJI/AfjQGBzhnH8Ppu2caLhY6NwebdOnCmDkDTGKNkUhtoqqgOQwkIA8Duou78OjNGGscCMd/W0UJqmqE4D50GQpNPJ6A+8E+skmlFJ3Fk3EAgaefTEkYH4XoMN3U5xXNyrxwzBw3qo5bbTarH0hQF0U0OvVUojdEWoLfOpszNkU+7p7alDEyz+2qqdy0oFYEqAWADHaQRSnifLpPqchNsE9pBN9t/0050xzAbgL9/yo1jgDWWhC+vcXbX0rpoX1BHgSCK08T5gqc2VbU0a1hhAcUBuvFU2pstS/ELaW1TuQVRoq7mau5kYqVqw9RFeqtQx2UBuIPzoiHyWyFCCcl9q4KUvRthGsZIpFtSsYaVQwWJiSwVagM492jAj0r408tT0G5zygzHPfBP0YWuibjhR2Vt/D4bXKnq2rjuVVS2NIc9ijeK0UKMYmkUmi1BXQhqUBrStaUAP40HU9NKA57r/UnaCVw9nBKG1sXmNjykKhOzqCgpiMePbQtccfhgjl9pAgZY1dXUEnYStKHXXd9R+PRo1Ti8AFD1fhs6XpW/QODC7Ko6x8OxLe+0N8osreGUxwKImiZmcjcQ4ZkpoxIFf7qfj102gkL2ucb3H6K5jXRBQ3Cx+f49faocbJWSRy2xTuYVYirU/Sqn0sWr4GoIPmNOjW/zLblT40vmCR5Tu3bFwXp71AciFSWSPaA0focroHfcTv8AHX9Q8h4dONP/ACgT9Rd7EpHqEDXA4J7aZZBJ6fbNDWh0HgfOpr4fh0UE20DGY7+YLJWTrVV191lZXIJBBHiDUfmOsxtWEKEOFfMxYkk1J/5PLrQAAQYVoAAIMK463W6yCWQAANoBQaL4D+HUcjTdKgY2EqRenCzJMTHzMpr/ABCV/wBPUgNlbNhbePfSjZF+H/xH/j6j5bd1Qyw8O+u4FOoRMLFXbVxNL4WZ1JY1O4jwA0oPpT69ReACgoSRoa5BglO5LMgQ12nTRiNDpoQQw/DXocBQ0ltl3n3LamjpXlpjzHKBhb310ZFWNgATRW/UzOfAnUsST/Hq4wxoqUOZHtaSDcCkcbUdDtTR1P6FHgQfEAH+zql0bA0lNlVx6rUeY1XHEe+i2ANOEKULeyNkZb0jQU3EAMdv+roEtka8PcR0/T0tTprg8fxBZOmHXS3GSmOZI5QI3jZgQQAPUrbT9Klusle50bo1UH8KLhe2N4K4YHp0Spu47nCitbpJWuiaBdR6vEruqaHx/wDb1y+r04z7h0410+i1To22Xbgdu3AcF+VlMEzF1I4QD2jr/mKVroDoPE6/w6CdAGAuXDpvpmzWvlcIzgf07h76d4opZVUB0V1ozg7V3AeK1Y7QST5HqlatazOuXHdf5Utt1g3bbhFBGocysPV4BWVWpShrrpp1pamGBtngBw4j3U4SXNpGwkeWPdQqDvBAGpp+rbU0p9dfp1hq1pBCAhOvq6X99C/I+SyCBwhYqu0BhoWqxowCgLTcB+J/EU6sggatgjenT5Y0PqdQQEUKfdv78F+BFQvkr6S+MjusnrAZd34UI2imoIA/t0A6f6OARtJ22+PxpDq3mexP0qe8fha1A06uxaFIyoJPoAqaAhhoPpSvjr02jehzO2JffXOyaO5IKk+z237ab5I3gYVqG18RQjQeRr5HqLiVzgqTVD4nQEUmnkfZ4+J2nQeBFSPD6jorTAP8TrkH5VFjnOejsE+IpJUgUDMAaEgMRqCwBFDoaH+PRbmteC1wt0240UxxhkE0dn5esYnYVHspl5rh7fknC+TYW7jhuhf4a+RIbpFkjW5NnM1vcRlxWGaJ0LBkKt6fHQdcp6m5ZDznks/K518gslIALmo5rPC7wuapab4qUQmul9Hc81XI+fQ8zgIEjdQz9RpXxKilpRcDbA8b+fa97gcq4PyiaTGZLJWGQscpdTj252x7e6lxIm2eKCOIyGRYjvUqooARqBT8v+baVp5hqIZB9Ez2hQMyBxS6A/jsr9meS62ODlmk1MAD/M0sblDlaQ5gXeL7xhsNST3h77r3q5Diec5jH28HOGwlnhM3kv3MbnLW1ksiY5Jo9xf3bVGjQUCnYgj/AEqoC3SRy6QuBOZtktw9y4Y2GIuKcTy6fWQsYUa4ElAQgVFQftOwN7IFz2yxVjbZsnyPFzIpUGcF4hEpjmaNLe4uVoxIIJgJoDuO4V+htmkGV0h8IRV4gfPbsxqekg/jxscjmtNwSEyKpzLZA0FRtRBXrT+2le4rD8mN5yOyt51s+32H45bT3IVUxzZOKe7mUXUYpE0k9kSHB3VUUO0U6U8tl8rUGUMDzlIClACcLpYnAdd7LQXqpkjuWljZPLyuzOw+ll3LsygXctkG9Ka+Y22f7zd4+Vw8csmymQ5Nye8ayAbcY7EXU8UF7dywoESBrFQagDcRUkn1H9J/R7uX+ift/wAui18rI9Q2Av8AJAKulIa5xCjM7M9FKeInMQCTX5Q+r9FzH1n91eY6blMMkmnGrLmyoUYCXhhIJyt8BIRyBt1NlFiue9ouB9jO0d5h+4WO4/nOX8tt8gMTyGK7mGRsspYsklrb44RgqqxGRY94WjR+tqkgj4Ryb7lerPXHr6DQ8icG8j/Mq52zywucOJwbIPpb9TXASAZUbXoLmH2o9C+gvtjqtfz8B/O4dMjSS8h0jg3LlaHMQxuKEkuDgmZS4tqiltUzVferN/tN6t5YH1sgRWNRrQUJ8uvYchjY0RsILRYIc1hxJJPWSSdprxGIZcSczgR4kTN/aAAAC42AA2CnyFZJxVI318dDUAildNfPoAubvpjE17rix9nfuTr3JRFY2GSWSG7gQo7VoBuqxIqzGtVBJJNKUA6FnmhTKEts+Hu440XDp5kN9nZjv693E1cbtFc5K5t7dMn7axRziNJZAxopAKhdwUndXSp08KefXGc0EQHh+pDtxtib+1ONdhoxMnj3jfvwCDf7yNlXYxQtksFlLgmCNQpII37z6jtpWui0OtPDx64OQ+NCLHpt4Y8K7PT5QrziLpxU+429tLBdrKaRtQjUjzI/+0o8OtkrVj55LZRl7j8K4S4jgkDN/wBIzBqlmpQEf4f0qK/lXqGUZUAww7kqMcqEuIUnE9fClUmTQISZ18qgFQRqPNRX+zqJiW7bO7wPnV7p4mtzIvXbvOFMP9QQBnCyUoHpTeBVAWU12AH1KDTdr5V6k3T5dikm6329L1UdQ91ybJgAmzj7jjhR3/P7X+Sbt/p/pDfTc1f/AMQPa3/qru93WvhT8OqvLPmon/N/9vDq4dlEfmG+WqX8tdv7aJhu7aux3z+D/wAVfkryfH8z75dnMF3D5PicOMBjcvlcpyezns8Qty14LOGPDZzG2yqLh2bdsL+phuoxB+Qeo/t/6P8AVurZrvUehj1Wqjj8trnOkCMzF2VGPaD4iSpBNzeu90nMtdoWFmkkLGucpRMURbg7BUQv9qT7er3TXp+MHCRcNNDOzR5XmkSGSC3ltIz7EfJ0g2CCdgV27WJ3EFgCELfsx9sGoByiCxW75jv3yXF7g2NlFghP+vc3/wCs7ub8qlftj8E/iF2bymNzvbbsFwHjWbw6zJjMylld5TLWS3FROsGSzd7kr1RKjFG9ZrGzJ+liC+5N9vfRXp+Rk3J+W6aGaMktcGlzgXBCQ55cVSwKqAoCAkUNqOZ6/VNLdRK9zTiFRe5LcKtgiCMFVLkF5H9cjyGsjtIwDSMzBAzHatdqLRVAUADsaBqsPyx+JPbP5j9ubLtn3RynNcLhsZyPF8qx2T4Hmcfhc5Z5fEzB4JFmy2F5BjZ4JYTJDJHNayqY5WK7ZAjryvrD0dyf1vyn/R+c+cNOJGyNdE/I9r2lQ4FHNNlajmuCOJADw1zTNDrp+Xz/AJiDLnQgghQQd+3cbEYblBc/ir8YeAfEHs5gOyPbPI8oynFcBPkL6K85fkLHKZq7yWXu5b7KX11d2GLxUG66uJdEWJURVUAV3MxHpT0vy70dySLkPKjK7RRFxaZC0u8RLipa1jcTZGhBWtbrJtfqDqZ08wgYBBbtJ7yarF80ftd9kPnDzfj/AD3uRzXulxLL8f47LxlI+32W45jbbJ42S7S9VMqM1xnOyTi3uIw0ao0YDVLbqIE5H119pPTP3B18PMecy62LUQxeX/AkY1r2ZsyPD4pFvuymwovl3OtbyyN0WmEZY52bxAkgoliHN2b1q7fZXtNxvsT2p4F2f4fPkbji3bvjOJ4rgXy0lrNkDjsTaRWsTXU1paWcUs0zI0jtsqXc+VAO85JyjS8h5RpuS6IvOk0sLY2FxBdlaECkBoXqaBuApfPNJqZn6iVPMe4kphfdjbtNBnye+NHbf5bdoc/2T7rnPLw7kMuPu55uM31li87j8lib63yGLy2JyV7jMqlnf2FxB6D7Txsjuro6tToD1X6W5V6y5JJyDnIedDK5pJYQ1wLHBzS0kOGIuoIIJBCE1Zo9ZNodQ3VacjzGrjgVCXqqXwx+2F2w+DfcHlnM+1PdrvLn8Ny/F2+NyXBue5XjGWwJlsjcfy7LvNiOMYK8uM1jY7qaOGdm0iuJkZWDJ7fI+hftTyb7fcw1Gs5Jq9c6DUsAdFK6MsUFQ7wRsUtUhuCAlVN6N5jzjUc0jYzUsiDmEo4Ag32XJ7d/CtmHX1GlFVj+WnxW4P8AMHtLd9ouech5pxTFz5rCZ23z/Acta4nkNleYPJW2RhWGXIY/K46WCaS2UMJbdyjBZEKuisOT9aekND645E7kHMJtRBpnyxvzQua16xuDgPE17SFG1puhxAo3Qa6Tl2pGqhaxzw0hHAkIccCD7aB/hP8AB3tz8FuF8w4J2y5bzvlOE5ly6TmeQl55dYK/yUOWmxOMxEqxXmFweEV7b2MUrqHQvvkkLM9UCDehvQnKft/y2flfJ5dTLBPqTO4zuY5+cxxxm7GRhCIwbhVJuiAS5hzGfmUrZtQGBzWZQGggIpO0u376up12tAULc4/8Fcw/8rcg/wC6bvqyL+a394e+qp/5D/3D7q/PT4nO9rjsakSkp+ysIym7d6f20SoBuI2UPkTQ+Na+HseUOmiY+S+ZgJttIx3dMK8qRyeU/IwplJAHBcN9SraQi8MH+WVRtC6MqkhSQ3pKt6gAdfP+zpRKTECuIpkyQOd4CqnAjDfeiluPWc4hMcW9rhHLR++u2IrRNyAEMvpFfOhNPHoH85KzAoRt37atMbXEtKkHZuPbgUwpkveJ3FuzSRSNsUqNrMh1ah/WoBBFDQmn0oTQ9Gx8wVo8wC69Eod2lAd4FF99+zZ7adcLDHIhQiT3EFGIag2qaKdpUAqSNDqf7ehNTnzBLt6qsY4BXs+peO3Dp10cWcm6JVLuzBQ3rChgD/hO0AemvQUjU8QQg4320VE4EZVuKYc7NPBIjbTVP0FlNFq5NT5Gm0D8zr9OiIo2OIacEuOO0VTO5zWuO026hvoJuiL0NNNGBI41NKMpJoSK1ArT6UI8unGmkdHIGsQNvxxBXFaValuQF6q4IF4dlqEckiQyK0ZZluVEklQPWS9QaKgK1rr4dNYDmPivlpbJmDCB4SVB7ETptpdh7CAiCSJ50FfbZQVen6VO0vG7EAMaCnjQDQax1eoUkGwt2ns6berUERGUYlD1IvHcg27Nq1IFjHaxAxNVzRVMu8BlcEjc6ghF1JPhpTw6VSAuBQgk48enQ0ew5CLIBhw78aI7eRYwPbZXQeltQ24f4gWFdrEHyp49DuLrg7Rt6LRAkcTmVTRniY1aMOVoCFdASTt0Q1BOpodP4dCPQOLAUspTfYfim1dtHQPc9A4r0H40VxRKI0JQEuKOdT6GqVNAaDULr5dL88gNyVB60o52Um2CU2ZPGw+xJKtSI0ZttSQK0qPUNRTQ1+nj0TppXCRrLZT70xoOWFgjL2g5xhfj8qjezvgLydFiX2txVaqaqKlfUwfSja0+gPTSRWQZgPGd3Z7PjSwOc9+Vth06JRmmAt723E4kCuyqxVjRU1rqU2ttpWnS5+okabusp2DDr+VFM0rnsyp8L8AOPYq7acsHOsMscSgyUbad6rUksq+kjZoHNRrpXrUzXuBARW4Y4XTZV+lMR1B05BVdm24G/wB96M76WS3RJpkYxyjZRSFqrhmQa6lSATX8telrShU051TS5ojjKAG/XZOmHsrnG2V0LuGVyfYYgpSm8EFH1Bj8F/j5dZKgYSSDbju7Klp2ZHDY8jpiOhFS9xTGRH3Hox3zuzE7VomyM7VEaKvqP11oNOlc0jUzv/V6fHbTZjSxga36nG3z6CpClx0FupVIUlqlUdxX3NAa19dDX6f6D0B5solAUlpNsO79HWlXyMGUm6gbCfcvTBaivlkQhiaQR7JGErOqAEVBhZaAeJIOnTbTkuc3N0th0NAapBpy+M7PaNvz31WnOyGV7qRofXFJFu3f4xVqGgIFAfGmh/h11ugUNQWXbb2KNtq4jU2kObAFAPd7FoNyDVjjeJFA0LAVAVj+ugqNQANP4+fTaFniQkklPePxPzoCZrXhJLXTvw31F+SkL3UhoBuoz08CzeqorUgAED+HTjTD+GDxrk9W92fL+qRTf0RQdfdZWV91lZX3WVlfdZWV91lZS1YoyqkrqVBOreJH59UF7gSFoZ0jw4gGy0piAQbV0UuCR466eZqfLq6I5mEnGtCR5cATZR76Ue2NoYqQD560r9K9SzXRb1aI4zsvuWuQwPgesIIxqbXtd9NZFkdBRTQVr4A6/wAQfp1AtabmsLGuKnGsyXE1Y19xqB1I11/V5nxI18Dp1ExsHiAuB0QYVJznBpvspwErsQrN6WIU6KNCaHWmmnVWY7Tahmve5wabgmlPtRrRgKEag1PiNR4mnWOAazMDf30S2JmbDbxpxsYncud7INFG00rQCQjTVSCq6/TToGbN+t9VvctMtMb5W4H37/ZSkXVZyjGhX0A0Gr7/AEgUBOoPj1YImObnaFcPclY+cteGn6kF/hh0wqRMDMULIJCZIwvidSCH1IFKaGnSXVRNcC4jq7xTzQTvl8JLgb4e9URdlHoyW2BHdS0hJHlQ0r9CtDUa6U/0dLjA7YQnTp0Wm7HDNlcpQBSOr3/iRupZb5sgEtcyV0VUlZwoH1GwnwpToZ2lcQhAVdlvhRI1ORyhSE2qd2xfem1KxXXJPZJLXAam0qoJOppQruqxIoR5dSboXEKg9v6O6tSa5zbtsvUBt3qe+sC8pikjDvMPc8CrMug18CVJ8fLw6mNBwt041SeYyDA7eHwFM19yO2lJVwjb1BIJpUp+moDDSvh4fj9eiW6AtDcpKjd+PX0tVT9a5XPflPttbaEAw2ig2+zymaiwIwBIBG5KUoDoCQdR5f39NIdJI5qtJB6gfhSiTmAicBiox6ewimqTKeoPGGVyPURt1p4fqSniT5a+fRDdM9hV1js2UJJrg9cCD2/4U9tNt3P76PLrvWnqNDXcyr4AAeA6sZC3OA+4vvqPmicIQEbhZMe07qamdmFCaitfAeP8B0WyNkf0BKwMaCoxrr/q/wCXqdSVaXMgeIRBRueJWQkkeswzxU8aatKvl4dLNUxY3NbYuzjBVDgFF+HtNE6csjex7xYStcLn6ga84XeXFPY8z5EZWrLByfOWblo41kElvkbqJ4moWK+0IqUpWjnWoJP5e+qNK/R+pdfp3qcusmCkIuWVzVTs/E1+ynozWQ6/0TynUxZV/wBP0ygFULoGOQneL27UCpUOvNSZINp/zEJ3hiCNH0FBWvp8ajpHxroUstXF7D4GbJ3dn+6tp3i/mFmklxGgkljeCASzt722UIgZAWLAqxFQarol5jKgbG0kXcSNiWA9oI7xtrodAJPPA8WYsa1xB2XLgbHEhu0WUXW3rx+3B2xxPL+zXday5TbTSWd3c8LsSMc0EeStv2VjyKOZrO6W2nWK/E0zrvkEsUkbIutNvTD07/AD9eW5/IkjeGoSpaXOS174YhVQFa4/1/qJnSwaDTyuiM8cwLhlsCY1UPBBBHAkYhPqbaLF9ueBfH7i/K+T8AseYY+W2geW+zPLIbC9vcmzSSwQWlhksXicaYLdJSngQHoocEajs/Vnrn1J631mmbKR+Xj/AIcbGI2MvKtDgC7xOO8uIG5oBX5j6J+3/pz0QdQ+HK+TUkySvJLntY1XluBIaFwAJKNJzOCnWv3t7id0O6Rx/K+VYDMYzARtJNjZ5sNkbTDrFO2ySWO6nS3WU3DOjM21Yv0lQoI69YfZf0z6Y9LaIvn1Gmd6t1cTHSMf5bnRPMbHSQo3wnI48TcuB8VeSfvv6r9YeqtS/Rcq0c0fojQayRjZmNcBM1jnNbKc6/zGAkKAgyhFaSYRh3Brbd+ouu/1K9WEjA+tCUb9PiDQ9fdDGGDLZQ0YYLavOUEokjDmEmMmyouXKoXjVhuK4DGXyQOgkDSH23qRRGVqBgu1tS1NPD8Ka9c1rNQ6NQqIceP4bPxrqOXaNkimQZzu4Ig6/hsFShjuEWYuQJpAtug9MaE+4pU0oUYsRr9QddfwK5+qc0LifZ3/AI03ZomqC0IRxv7fkEq0vFeI24giijheNFf3I5WCgyNSgrt2iigEeka+H065DmOrebFyvOOHXwTH5085fp81wEatuo9EG3uNTXaYvZb+xGx3bFR2BBqo8BVqCp+oAr9OkBka8ZrZltf5Lx310o0+QISi8F2rwON/ZXE2Fu4lEkaOQ3pqwHqDqRUECn6a/wAPDXqImauU48NnuPsqJhdcggju/D20hubOS3UMVYCg3bqA1JpULTQV/E/3dWBzScq3qste27ggNClzFPb3RuSBLExYlqkMGbRU13bVUVHmKUp0S1wLcoxt07aHlYXeEmx99umNDuQyEUasqbVmYGiw1op3UapLNsJFRp4U8OrmMLiuyq3ORuRpJdv3dO+nL+ZTf09T3Zaf+n/7r/D/AP8AUN9a1r7m7/irTrPJHn7P56f/AGqzzR5SXTyV7PMXv6LUFfOr7xfye+Mnf3KdquD8M7U5jCQWgyFnc57EcqlzDLJkLixW3Vba8s7W4T3FjVfb3sS4G4kjd4Y+5P3w9Uei/U0vKNDpdJLo2EZS5shJuVDiJWoeoC11BJT7pyf09pOY6JuolkkbI4YAtQKNnhPtvwqE4PvlfPfG3sNzmPi9wi4xIw8/IXVOM9xI1nwMbC3/AJubqO+ia3iSdJCYiN67QSSqvXmv/wDon17DCzVT8o0bont+kM1DHKC5pKl7hlBacQpwsQtFj0ty0uLW6iRQd7CMF2NBX9NbZft//dl7c/NfkUPbTK8NynbHurdYnLZzC4a9uIb7BcxxGBPt5nIcUyUUsr3C4x0Y3EM/tTx7gFWRUkkX7N9t/vHyf1/N/pz4X6PnOQubG45myALmyOQFWgKQRsdlLspNIubcin5Z/EDhJp1xGIwRR8RwsFrZF3o7q8b7I9rOc91eW3cFphOE8dyWcuPfnhg/dzWls72eOt/fmgE15kLvZDFEre5I7hUBYgH6hznm2k5FyrUc31rg3TaeJzypRUwaP7T3I1oxLiAASaTwwv1EzYI/re4AfPqAueANebvjn34/kf3e5FxvhHYv4l2fKufzvm7jL8SXIZPkmQyFtFNJcW9tiMZi2wuRWbF4qN2kZ3SroA1anry1pv6jvUfPNVHofTXJGz6w5s7S6R6hrXOLm5AEDQ0lyhygH6ca7F3pTTadpl1moLY7bAMd6+zDtoR4h99f5Nz8gyfcy+7Ewcy7LcdxmHxHczHYGzmxtpwLml7cXhjtcdyaZ7oy21zaozxxXg959N8tIwGF5f8A1E+p5Zpecycs8305ExJGtaWeW8/SRN4gVyu8LgpsG4FxnL6W0gDYGzZdW42W+Yfu23i4TjuG/D4afOHsz82eDyc07aXmQsMjibmXE57iudjbH5rFXypFLKLjHieWCWOX2i8EqPOhiDbJCRMF9HeiPXnIfXvLTzDkrzmY7LJG5BIwoCCQCfCQfC7A3GIIHKa/l2p5bMIdSLkKCMDv7RtGIqG8n90fshifmdF8KchheTY7na8mPGLrlN/HaRcTXIS8a/qKxtopjMuQafJLNDb29IJBNduIVrvEgRH7s+nG+u//AMAkj1DOZmTyxI4NbEXlge1oJcHOzqWjK0+IDYVBB5Nq/wDTf9UBYYUVASXIqE2CBMbnCrud8e9fb748dr+V93u6OaTA8L4fj2vsrftDcXDkk7Le1t7e1huLm4uruciOOONHd3YKqsxCnvOec75d6d5XNzjmsnl6GFquOJuUAaNriSABtNL4IJdVM2CAZpXFAPnuFQX8SPnh2B+asHLG7JZXP5G54LDhZeV2+Z43l8CuMbkLZEYqCKbLWlmMhLKMXPvMCukZjILEFC3O+i/uF6Z9fRzyenZXv/LZPMD2Fhb5mfLZTjkd3biKJ1/LdZy1zW6toaXgohUWRfeKfflH81vj58O7LiV5305fNxv+t8hc2PHra0w+WzV3eDHxLc5O6/bYmzvJ47SwtfU8hURq5RXZN6t0Z6q9a+nPRcUE3qKfyI9Q8tZ4XOUtTMUaCUbmapTaBiRUNHoNVr3ObpG5nMAJuAgOGO0oU6q1yfdU+e3c/sv2J+N3dD4r8psrK1785nIy2fIb7GW981zxm34/a5jDXlnj8pFPaWpu2yYaT3FWUoyq6bkHt/KfvP8AcvnHpj0zyzm/o6aMDmEhIkdGHrH5Yc1GvBAJVSrVCJanPIOUafXauWLXtckQuAUupGIPuPGtrHxj5xnu5nx17IdxOUTw3XI+b9reE8pzdxbKq28uTznH7HI3jQBUjHs+/cHaaAkanXr7J6X5jPzf01y/mupc12o1OihlcWhGlz42uJA2BTstutSHVRNg1UsLVyskc0LigcQKnPp7VFC3OP8AwVzD/wArcg/7pu+rIv5rf3h76qn/AJD/ANw+6vzt+N3pjw2N3O1Rj7EsWanq9iNkfeakEeHXtubTB7UYgaEwGA2DqryDHqA1/wDEu66Kcd/Q0c2+VukSIwlt0eu8lyag+nRStCPA1rXpQ+HxFrmgnbZaZibwjxENPFKJrDPX0pVpHdVQjYxkrvNSx3ekEUqKHw8PLoSbSRkK1oFt1EQTAqxznY4kkodxXEdOo5t8gs8ae7MVVjukQEqpCuRuAY7C5XXXWp11r0ofC5rrAltHtkaiOQSd3Tolqcbf245QtnpG6+onapYH9RQx7T6kAp9fPw6gbyAEnED21GQDyScLLb8Pf3USYyFUmMjx0id9q0UF3jNCGYmgL61+mvUPpflQEkkbwN3tIXbapwMOUOJcgA6dNtc5yytZSVLPJsJRmauhod60JBIVl08xTx6npnh0iuut8Ta++2zevwFmoAa07vft/RUe3dvb28/sH3GXRi5K1CsAVBG0htp/L/V0yaWhDcGkxzOBFiNxpvlxLXEa74GmANaCN2KEgjVQAy1/s0/Lq8asjxNROBv21T+ULbFQ7iLHqB+dLcVjbqMBI7Z2QA0ZozVQNx9LUUAEt9KaU6yTUMcQ4oG8fhc441sQvYub6ilhh204tbNbURkCEitQP1fXUknQnwJ06xmVEbWSBwcjr9Oz3UstbhYldX8P1LQVJNKEfgdBTy+p6xwXYCo7un6K01yUXYbJAmMGQiPci0LNQAn1ArUhdv0Gh/s6BfCpco8SYjpt6JamEEqkEYbcOnXsqSYblJINwVdh2qWGgWpADI4/w6jSooP70z43NeGj9I+FNmSNLCiEG4O0Hr49NtZmWN7YwgLLvRh7jEPWpJo1U1p4efVTWFkwma51jgtsKtfIww+SWNzEYpfFdo3WxoEtMJaQ3jzbkZWYsQwTb6qA0qCoKsSR9Nfp08mlzRBpKDgcaSOYwSANAVoOwbrX4/hfGi9YbeCBliH+UWAYxlKihqKUAU+o6+evShznA3CcN1txpoxuAbb49tZIcK63KmP3Fk0B0aoqUIKEEjduGn0r46aykmdkTAcPn77mtwaZo1JTKHhvBcRtGJwT31IU+N/cWlui7TJFsVt25qKI2B0G4H1Up5AVofLpWJg2Qm+Ur7+ynxhD4w5AXbsU99PdpixFaiRlZwgKq1AxU+mp0NVU0oaUA/HzrklzsJBQqLfDrut8d2BqUcAZL4mquJ4m/wCHai41IGCWJFiUGRW2VCEFQ7MpJ3DWhHq/DwoegNQ0uaMp8Trm+O25sLcaKB8SkDKMDtBw9vCn65u0t0G5tzAH246/U6mnkpPj0PHFI5wG7j0Teu64VQsnOUINvd04figXkhb3kNwZirP+onR/aPqH6RUjcdPIaefk0hD2FCp71271w7SaHlaxzLJbqxUdl9vG+yoB5TjrdFl2ld5LAaIKsHjI3UBPiTWn0P49dDopZM4aFynHHdXJ67TMjY4kNN9w3j59mFRbJZqYnjkJjAZjoNSwOm2i0/UKa+X5dPmSFsgJNiN/Z099c5LG58ZJVcPcnHinuqJ8pZCC4mowkVZNoJ1O2g2GprWo+mg8tOnkEqjILVzssbQ7xAKqXFMRUrSvmAw/I9HkJStzS1F2ha69aqNcgkeBI0I0+hFCPyIPWVlZVjVlBL0JrptJ86eNeoFxBRKHfqGRuLDiOm6vjC9fSNy+R0Ff4E18eszt22NTbMxzcy1zGopIGAqpUagGhqQadacbhMKq1LiI1aSOgrPEKSKS5Ya/5ZBp+k6eJHp/LrbUc5CBUGTxloaQC9OmyluzwZfHxofDX6fl1YAGqBVxjNpGY4pThDIygQzVWBzRqrSh8a1pXUj+Hj1WUN2m9WFD9J7qxC2kEvtBCDupULpT618KU18et57cawFowADt1ZP23/P/APu//rdQ83hVfncK5WCjA760IP6foa/XrRkUIlaMqhEp0jjipuB3ka66U8f8Pl/HqKNDScUFWRMYoIKlay7gaCn/AA/s6qEzXENLQi9NlFFhClb07WcyLcOqg7PaYjQCrFVWu0ADcK0J8+h51DvHb49Pwo6KWNw8LQLrb29ONJYGj/eFnq0bSsKg7jqSEKkgg+qlP9Pn1Y0OEbnDb86GLgZL3Pu6t2FuFHVhHcxvLJauNFBVpa7nWuoLV1ooJpUjTpbK3OA0dN23pv3uNI/I7MmVAd996beu/BDYgoF88lpGsgEcgqfcAIT/ACzVvLWtCDpqfLodsKOBOxdnS46GnLJRkLz9JTavD9F+/YzLkDJq0m4El1qxXaRVaqfIMPL6fTrflJZLdtCnVsEiSFqphs+XxpDc3QbX3GX11qWKqag6akVP8OrWRFb4brml+q1vmNyxEi/UE4bfYKSNeEqKA7fJ13AMQCKbi1T1YIgDfGqzLNK0NBaE3Er7zTVPcGWRqMaro1CfPwUmvqI269FsjysCjwraqpnPaAA5xO25pN7xaC42s2nta1Ir6zT+A6IiYWAkkklK22NbygE9/vpKruCHJZlV13Atoa1IU1rowU+XUze5vU8jNw7qzxkv7jEeh30UmoFDu20+i7h5dVyAAgi1UzeBMll3WrHJExYbI2Ip/gQkVqfoKVp1KNSO2pwkltyt6z20WjiSPWqkB01oa+G4eGnVUxc0hCRRIAyjrPwpbontso1Quy6aKUVGShFCBUeAPl0I8eJhcT4nFvDZ7b34VS+R8Ie7KsZaADuK4jcQouL1oL+WXEr3jfdDncLwsLd+TZfP2wigf12uavJL+Ig7irL7V2NVqq0ANNwVfzn+7HJ9Vyj13zBkrSIH6l7mlCn8RJLE8XbLAqhr9aPsXz/Qc++1/KzA4DWxaSNsjVBcXRLESUS/hBK+IBFACE06u/eL+6qMiR1QOCAxNSC3p9YU+Arp/b185FfWwlbNfg8V5BdyWKW63k7CaJ7WTZcGQm192OWdZBsQHYXJbRQu4mgr0g5o0iVpI8GVAd93E9yiuj5SSY3yA+IgbbhEF9t0VTjfFDXrn+CkP8m7P8qt7K8GNlyGYxU2QsHkg96VbOxyFsIo5oo4luXM7kuVp6i7/wCIL0ZygnyJWIXNc5gI4Ep3bSMCBe1cl6ujY/XaaR7AXMZIGu3LkJ6sLHjbbWyzEf0JyjjU1nkXweZtLq2t5P5Pdpb3sQs4pkljgNsTPatFDINxVASJaDSg3dhop2xlssb0eF8QchbjZpBzKqrl3kFdnyTmcevfOBFGXaR4uUDmSZgLuUIQQgGZQgUcKC/OzvjJw/t9x7hXbGz44Mpmc7a4zK22WiiGNHD4IYY7yMWyKbc+1tpACHVyu4ekV66v0ZyLn3q/1K13IXSRv0cjJppQT5ha4lfE1Srz4XlzgQ0lwEilpR+r+fci+33pLU8w9WRs1Gn1EJhggIb5ecf2XAjKxpBawMy5g1iss5uoJHQ3hZEKIbotFE53mNTKzhDUuDtBofEdfoKI2s08YYPA1gHYAABX5zTzwz66eWBuWCSZzmN/ZaS4gdgQVNXGOTe3Mlva2MyIX3VSZ19dBQnb4lddfHrn9ZpWi7wCNyW6KOmxrodU8LlLg443I2fD3KgWrccTwc98LSSZdok9JeYEmlKE7WFSxr46/wCnrlNY9o+keMbenTGuzgaVQqjnW3Ynut8KuDxfERRiCKXey+yShb9VRWrhyWruI8fLw64TU6l2YlVf8Ft0/TXV6KDI1U8K8McbdSfKj2DHxC53PtMdDStN7MFG1XIQAqWHh+XQPmKLWcaYMjV4BuxaeXjX2xX2yGDenQ7aaetaUAP946jwFko5zQWpZKGMpZe4p/y0ERonoAFFJ2uWpTxqaEHyHn1bE9OL+Pw7KXPamI8HT47aCMzi4kt9iBlDEVcBiBqSCQxbwZR5jQ0+nRccjhJf6U2pj2Js91DyxsMeZoQg9DUQ3VjHaTzSStHt9xlEdKjcXAailaBVJ8a0/KvTaORUCKKTzMeAUKbt/VbdRLS1/kFfZjp/QX/0k/R/6mbPb8PCulPDoZZPPxP8/f8A+FRPln8vsXyE/wDve6tN/wB1vk0dl8+e32e59Y3E/F+FDiN41rhcVbY26yfE8PzNcxkEW4jliuMpmv8Aq+1J5HBdQke5UVQv5m/efm0uj+6kOr5hHl0On1MJzNQOdGx4LkGCgZgpF1G0En0X6djdJyIRxk5nROQHC64HdmPFMOFbts/9+v7f15xfMWcVn3R5HLd4fKWS8OynbQW+OzSSQTWKYjJ3dze32FjxWWZvYkYi4UQuSYnHpb7nqv6ivtwdA/wauUOY5pidC1CMpOV4LyMrhY2cgJVuyudZ6W5r5ouwXHiDuOIsvu6687/xB5R8kON95sT8sex3YbNc741xLuNlMRx7H423yUnGeNL3Lv7pr/gOEs8QZBFcCxuHkeX9r+2jZWnkWQRkDzZ6F1/qyD1Sz1j6d0Dp9HFq8jYvEQBKfLc1iCyMkcSQoaA57gQ3MOp5jDoX6M6DVSZXli5rL4fEpPW0ewcK3ZfeM74XvLu6Hxr+J9zyrJ8D4dn8xxzuD3czv76zxHF7Sewv7K/w2L5L+5ka5u7Wytknvo7OXQ3UFu6gyIrdfe/vv6gdPzTlnooag6bQaiVkmofmyMytcHMDyiEeElrCTmflOQlgXm/TWkPlScwLM0zWowWxIQouGKE2QA3C1rV4B3O7K9oPuowc4+IWfhzPbpO2nMcZjLy5aA22Y5ze8DzMectrmW9f2rizvc9bpdRy7wEjJC7tN3yTlfMfS/KPulJqfScgdy0xSghzkzSOikaEc9CAXENeWklyubmyuQu5otZqOSBmuCTZm4DABwOxdi2PA4iqzYbuPhb34Mdh/id2s5cB3D7899Mxme+SRxWthZWFuc1Z8c7aYnOXcnsXBgnOakuDFVoIVgGisKnmJOdtl9DaL0jyWZn5/mOvc7VNsEIe1sTcxIBu5pQEB3iKI5SYNOnMpNdqGkRRRDJt2EuO3cQvVurcB237HYT7eP3Jfjjh+2t1kcd205n2cw3brvRcT/8AXkyXOs1ZZKXDXD30jpjrq45Zyf8AY/tyhea1hhoWVZK9fbuS8i0f2v8AulyvQcvLm8q1WgbBO4KWOmmKMJRyBxlbHiEQFygEVzuq1UnOOTzTSgefHJmaNuVoGbHhmW+JthVYvvbcJzHYH51du/kxxIW2GGRwvEe4VjeXtykD5nuP235Gkl7JZ20TQ3F8lriRiIZgpXdHRdxYMRy/380er9O/cfl/q3lrGskdFG/MC0LJDJlJyhwcXAOiVxAH0qbGjfTLo9VymXQTFW5nBODwu3Z9QAqy/wB9z5LScj7XfGn4/cXvoMhlO8WP433UzkePuXgvbvGTTpjuK2ItoJPZubTO8shl/wAo6RzWFCCaFOn/AKiPVcmp5Fyz0xoHLPzFjJ3oSAYyAGKACC0uLjc2LQQCRQnpbReXq5tXMmWFWDA3B8V+wYWub1UP7HfMM12T+dvJOzPNprvB3HPODZnBXvHrhx+7uOfcaubLIYJb21kKSLPZ8fu8yzOwDorEUO4Drhf6d9frvT/r7U+nOZOkiZqoHjy7hjpWEOaSNpDfMDSQrczgEzOVl6qih1XLGauJC6NwvtymxA7wTsIG8AU5feA5bzn5Y/O/E/Hvh2OtMpjO013xDgdlZYu6s/fz+Y7rS8du8plobiRxbtJY4W6S3mUszr+yep2H24zfvdzDWetPuPp/SehasPL3xwgh1jLqMj32FxhGwpmTISfFYU+nY2cv5S/XyJmlV2H6rFAvtspGGNrVcz75XafF9uvhL8UeL2s0eztVy2w4pj0kvktr445eGjHzm1x9urRZG6to8dGrSxlPaY7gAJCOux/qM5TDyv0DyfTwuyt0c7IW3Qub5BYUG1cgLlsirQXpSZ03MJy5qukaXGxKeJUVePXYIRdd3/wr/l3/AOUP4z/yeFrbE/8Aod20/llu5LPBj/6Txf7OF2Yli0VvtUk+Y69CeivL/wDw/lXlBI/9O0yD/wAllcvrV/OzZsfOf/vGrO9dNQtC3OP/AAVzD/ytyD/um76si/mt/eHvqqf+Q/8AcPur86fjr24xmL95QwNjYgtowAFvEGFCaAgjx69xPDiEaUdXjtrg1xLgo6dN9rY0bJcLEAtrvLMPAbgyj9VKiu41rXxHS8wvLjmPaQKNEgIBOAwQ7+PclK1v7YzK7Fo1QggItATQ1CAVopY6jStT49a8h5jQDpxqPmZZQSRcYDhuBTp30cY27hmtUcOKRhtdQANzj1bTsagX8afn0p1GncH+EX20bHqLeOzThZT8ezhT1jctGbhIUcufc2IDUglDt9LAlTGaUIqDTy+oM2keEeB4rdD8/bR0E4d4Ddh/R0Gyp0xwjmtY98Ue9Qp1jBOoqGqw8Sa/w6UagPjITMG9e0WX49tOIcpZgKSZu3cxtNHtqYzENKkSESMjkbSKbvP6006rhICBtit9yEj4qtZM0HxEL78PlagS4xHvygx0ll2hdaOG8CBXyIJpWhJ/DpxDK1jf4t+v5Vz5he1qglD3r7KM8Tx9rFUlnAIIf/KoGQ7aAKKgoaD6E+X8Fuq1kcgJjahA2AL+K7B7dlO4tGDl8zAHeo7z192ylywQwwMXpbn1bQg9ttulabaH9WoHmR516JmOKXwt8eG7pYWVrGgkILbBxoSy1rHIFKuRVvEAakA0JFATStD+XRcTgzxNOYda+3stQGoYC8gW7E7xa59tzQrMP27OGfRBqwqNGUVFBUmoalPPoxrg5uY4UGQQU28Kz2l08ZQIwVGZSWIZSBUVYHQjQf3dTQSsyjKDlN7gnt91SBcx2JG+iaLkcsMXspckAaCpkCnQAghhQlqfUAk9L5NGS+4UjaO/FfhRB1RY1cxTpb5VmtuYu8VHYKUoCYiSrnwNTGQdwUg/U9Rk0NzZV7N29T7T1VNmsLm42HFe6/s44UphzKSPviCanX0R0JJI9eu/x/0dY7SSeWpbYYEuXuUJ02VvzBmUZcwHWvvxojsb/wDSrSLuanpJopKHchAJ8CB9fPoKXTo4hQPl040RBqFla05sqHqRDR7YZD3NkjFyVOqrIy0Ab1ajUkg01Ph0ueyxDlFt3vrooZBJYZRJw2jgdm6pJw0kVyRsFBJE1d4HqG8DWnj+AP16TamNyhhIBzC/Z07aawva5iAI6jWytUIMZUEOlABQakoAR5DQUH4dVte1qxYtaCpPttux6XOTZmgFn1Fw7bbaUvaS2iGRaqFJClWAKKRRf00ofI+Xh1B8jZXtQ7b43Btw3m3HrqbMws5qBBux7Cbbv0UOXmTeMFnV2dwdrs27VdoNdDSldK9FQvhc0ZcbKN3acfwqDnPugQb8fYPiflQheX0m2QllEjapRtr1bcCWopYgaGpr4dEtb5jwSEaOHRaFdIY2FqlTxK7V+fXUPckyDSzSRhwsoqQviakqCdwFBUCvlr/DrptFG1jUKJ8EUDf+BrlOYTPkIDHLig7cU3njtoGa4mlkCTKCaV3AggCnnRQT6h506ciNliWhaRlSzNmP40CcjSCOVwASWCvtUgKC3poKCgIK/wBn8OjdNmzW30m17QJGoACWjvU/BceCJjQPIYyV9vftC09ZG6tSfIkAAEdN6Qkk412T29o3MAdajYT5nz/LqBzLbCg5YpnPJY4hvX+NY3puO01GlDSnkPL8+pBUvjV8TXNYA8q6skOpYHwCMQPoajXqL8B11VqWNyFyDNv7KyVI8Cf7eoIKWBzhYEpSqOMEeC+oAnQa/ifrqerGMTxPw2CjmB0rQ3G22svs0NQF/PwP9w6mjFVCvXU/y5Btl6dlLkt2Co0VWYhWINDr6T6PT5f6Oqy9SQRbpjUo0aSx1KwkphX3QDSoTeS1CakbgSSD/q6qzAuJaTlVP0VZKHNIODU2Vk9x/wDbf/4j/wAfUVNUZnbzXTrK1X3WVlcgkagkH6jTrVYCQVGNdg7AgkkgEEgk0I+n8esAaCoAWp+Y/aSR11la4LKyhSpYAEhvIENTwFRUdSdldiAtTM7sqNUdtLQSpBWgI1FQCAfrQgio6k5qsLQgolrkdmNHmGuxLBblWKbWfUt5ldhjUnaRRjpTx8Ok05DXZtnzSui5Y9rpPLO0W7FUfGiDJO0dm/sIGQgVr4AM609BoWLFq+f49Dtu8NLjhfr20ZM5sWYhA0H4pUdrko6qqHYirXRWADeAWigGoX+FOmjY/MaiBbfHp7d9In6kB+ARNt91Y/3/ALjUcuEArVzX1VpTYu4eB8epthe0qGj2VQZmuxPsT3V2/c1G2FixruKgOBTwLUoBXw6kWHGQADsqyFzHOQOItvSvmcIBWMDdWoFPL60FDoetnM8BcBgUqxjM7ijiUSk0srUAjTaDXeBWjUoVqFoDQ/XqbGouY1uQzwpkV68CU9tJmeSlDVRWtBuAJHgSK6kV/v6tAbsvQks+oKZlZ1KFpWHKxvqdWQCh8Cx1PjpUDqkhSBsvTCRMzScPmQPea596XydlGuisVGpJ8jr4/wBnWxYIKta0NCCl1qzNGxYljvIqxJNAFIFTrQE9DT/UOqpjCs7ShCAd310pTWo8yNadRZDJIA5uANuB4VYGue1F8K1QX5rdsI+QYS25xjbSslnH/LeRiK3BkuLVYSllM5gieeSaGORUjdiVRUoaUWnnD+oD0RJreWN57o2g6lrgZAEVyeEE/wBoAgixJW9hXrH+mH1+eS87k9Nc0eRoZgRESqNJGchtwgeQQ5MSAAFNae34pduz28jBn/WERGcNApB93ejgbhQ+kEgsNtanrxO4SMf5bmkPAVK/Q6KOCaITxSsdEXICLg3THfjb27a2Wfb3yvFeMc2trPLRRWD3N/LE17NLIY54khgV7e/t0HtmIajbICAzLRdQQj5kXGRuZcoGHFTs2bBvKV0OhgEene6ILmKA32NBxRP1lBXeMBW7z5H9wuV9jLXtjBwOKF8Vyf8AqyXKz46SWGO3vMNZ8dvrC7MMQk9mK5tr+dwSqKCSQdDurOpm0rMuke+PM0tdlcRnBQEFDcFLi4NCQ8t0nMpXO5jHFMQABnaHZQ5Vb4htRq4HBRhWs3j3z3+SXGO72EtMLn8pyM5HJyW0HHqwXC30cs9xEtxd3rSPHBHEx2tI8xRlrqVLt0d6d5Xzv1DqvyvKGySavzC1BmKZQpU32XVLYY0m9Qc09H8g5VJzTn35SDS6VxawZWBzWjKw5Lgq4loAYENmocW345dzXlPP81PnuV5I5C+e3jhhTc1LGN0SS4tCnvTRlBJVD7RWJwgoAKjr9Hftj6Ki9C+nGeaG/wCpTo17sqPcCG5szlJRxauTMWts0LlBP5Ufdz7hv+4XqedumzDkkTi5kKh0YyqGuQNDXPDbB5BccVAwabJFe7RPSQWJQhdqnQlGUCm1CDUADw6+mvYPC3AAomzu4JXyvTyAjOLgtVTj0K399TJxqxktbi1McSNNPTcoT/KiICU2ihC00rpQeY65rWSZ7LYfj0FdBomSAlMMF3EIb9PdWw7t9i3ydnZggqY6LMpUMQCpWoU0K/3/APH845rM6OYoceNvZX0PlsDZD4gC7q617ib+6rX4WxVLQs7bAoCK9BtoDqBrUCulK/Trj9Q7M9BhXVxNygDE09pAGeSVQACNqhVAJpqq0H0r/f1X9NFhInAfrFBStLRfb3SMVYjd5AKKVG4EV08/DqBkOZBhRSU2XqwLG6NIGQISzBaBQtdxFdwooFQR59TDjYojloecNy5TjQJlWtWhmHuO6AegJU7qMCCQKqCtPE008fp0dC4kbL9PlS2XwtIKocKr7yyeaFmSG2eUyXJBkQEuoWZmpuqDsFNRXXcPAVPTvRNa54LyAE2omG38KTatUytBzb7r0+feqrd/07+i6/8Aw+3f4v1f+qVNv6v10/h+PU0i/MYt/wD1H/s+6tpL+X/WX8vxx8/3p7K1F/cqzfE+5X3BuK8V5ryjBWPArbJ4DgfKeQ3E7xx8Qw8fLimfW9vcPY5HJY+Gyjlkmunhinu1jjYLGXFOvy1+8mq03NvuqOX81eyPlzNTDE95cjWRF4D3OLcxGXxEkAlHHwghD6S9OxyafkfmwgmUxlwG9yW3cO7Gt3K/Ar7JHFMXk4s3k+y+Qs/5fd5G8GY+T2WkyIs7ONZLu6tHw/cuxzOyNV/6K3JTcwCpu20++x/br7AaSMl55a8NaTfWkuQIp8M4JPeVO+ucPNPUzzjN/wCnb/drRD8CPkrcfEz5tXmC7XcwkvPjj3D7r3vb185z25myuJ5BwnFckmj49y2ZMTDi7I8sS0tVaG7SKNI4PW6kJr57+2/qp3on7iHQ8nnX0nPqfKkdNmcDCH/WAzKBIAQ5QwZS4qwNzCum5rov9Q5T5s7B+fbGoDbI5FS+IJCXXrVDWzL71XY3tVg+83ZP5Kdz4u6GV7I87yOOwvdrHcNvMdbWrZzBYQQcPu8ebnHfv8Xf5Lh9rkLeeYNLJSONVMRYB/qX9QXpzlmm53y/1TzZusk5FO8Q6psUgADmoIi0OsHFuf8AVdmLdiElP6Y1kz9PLo9OWDUNbmYSMQVzX7tyLWtLt78Ue1fcHgPzE+SPDOFzydne13CcbyLtFgrrIZ2+iTkOduUkueGcxuosvYZ15uJ4m4aadraeAy3Cxltyx0PyPlPpHknMNNz71Ry6GX/RtHpw/Sx5nPdmeWxva54cMxjDnPCGyNupDXPJtdqI36bRSOH5h5OcolgCVAQoqXXYu5Q18n+K/CO3ncH7b2S49c5Pi3Hflj2y4HkuQ8s5k9pyKxsOXcwbFWfIeQ21leQ46yx4wEnKbWW0gZ3a2njR1ZnA63zD0PpOVc29MDSZYtJzfTQ5ppW5ssjizM/FrVbmUWBsrlSps5g/U6fV+FzpYHOAY1wJci4ABQHGwF9wJvVlPjP2j7k/JH56cW7JyfInmnfvtr8Qed2fLrDuN7l/Fx79rwPLY26wWFyWRzMk0ueytzf4i2tYzbtKLayE5hqEXd2PpDkfOPVf3Hi5SObT67kvJ9U2bzQ5xZkgkUN8RJOdzWxNOY2zOaMjA2lnMNRDouUmbyGx6rUR5cpF1c3HsCnDdtNbF/8AeDexltzn47cL72W07yZrsdyeCzubD3YIYzxTuS5x2WuIluLWVbzIvleP2McKiWMRR+6XWTepT6r/AFIenv8AVPSMHN4l/MaKfKioCybLmNgXFwfHGGhpwc5QbIm9K6ryOYOgJ8EjB3tVOCEFyruFatvhHLlvm585fg9B3Ew0t3YfHj478SsnuOOvJNb3lr2k5ByrI8X5Bn/5ucokUo5HyCweZLeONNyROaFndvi/28nk+4f3H5C7mUaw8r5bGAAAmXRvkdG56qP5r2gi5cCgy0+5qxvKuU6lsJ8U8x2/9QAED/ZBPDG9SR91PN5z4V/c44V3/wC11pBDmeUccxncpze2UVphbnkVjiMr26v8NDf2tul3bY+Tipja9toZkeSaZJ1KvIQHP3p1Gp9BfdHT+reUMH5iSKOdHJ5edHwuSyjOG/xACrgSSig1R6fZHzPkz9BqD4GuLbYpZw27F8JSyUCfaI7ej5hfcH51387nx773h13m+8tzY4V3tcLH3B5rn8nNibGWCR5r3+UWdnPlHtIveV1lhilLH2mWQD7H6J/rr7k6z1dzUEOje/VZWFGec57cqtK+EFznNRCHNxQVb6jeOWcoj5dDg4CNTjlAK33oADwOFbTfv+Ji7jsv2GtORwQf0zL3J5TJkL6T3lktslDwm8/kFnHNarNc2383yEn7feIpY97Irr6gevqX9SjY5eRctg1A/wDhnVyuc66tLYXFpCXUkoMQpQgkilHpQubqZXM+vIEG9XXrZl8L+V8YwfxI+K+Fy2cxmJyj9g+2DLjcjfW9veQpFwzEs37pJTEbeg0BkEYdgQorp19m9FzQQ+jeUtle1pPLdOfEQLeUy9zgpF+I31z2tU66ZAf5z+P6xqa+Qd/uyPFMpDheSd1+BYTLXK2zW2PyXJ8Va3V0t3L7Fq1pFLcq10txcVjQx7t0gKD1AjpzqOe8j0cjYdXrNJFM8K1r5o2l108Ic4E3tbbaqWwzvBcyORzRiQ1xHeAlF3MLm3u+CcsubSeG6t5eK8hMU9vKk0MgGLvFJjljZkcBgRofEdOISDIwi4JHvoWf+Q/9x3uNfnIYiZo7DHVLFBZ21UDGlDAlaDwqCa/n17//AC7JdMA0NEhaLp1bcb14oMzmTkkktDjZaMLS7UsFRm92lWfUH1KWSraMfQf4eHSt8JDQ2RuJN7Yg3onzHNcXsKtCWuiEWpV+3e8ZhHG7tEPBWRQSyg03N59VkMjaGux9+3jWzI97y8IGlMdgw4cad8VLf26vauzxogIZQ7KRqfS230tWump9Ph4agztjJzJ4qNYTkBXq6fGpEwNi900c8bMkkbRkNHRSXKhi5I1LUP4eGp6Ta2UkEI2wPCwNvkvCmenRpaDgQONyEJ7Md9S7jLzIoWilnahJCsHYsUWu31VB1WnjqDXpDKxWAkhzcuKYEpvHbTRmpLSS0EJsWyKE6jRZbXwmUQ3CBgFA31YsQAVLk6tv1GoINTXoWOLM4iNxa8e2/YidZWmAlzMDiFBArmI4q0uPdj3SE/7Sq4C7q0J2A7mpr4+PUXmRy5iBhtJ+JHfWssQH0qU3D4phS3JchWRB/lR+6relFiWNRUAKNinSuw0AoD4n69Rh5eA4g3cT7eKjYi7TdVvU9VzBzWhoACC2we/DuHwAsjl55BVplB0ogUkkGv6V9xSo08dPp04jgDz4gopHPOb5DY9Oi9lA2S5PNBMYWdAUVtDuZiaCv6nJWvkBr59N9Py0HxlGhdu3qCXTcdtt9LjqiSQoAC48ChPy39hQfuMxK5WWQnczDbRyfTX1NUaqQKUJqTp/A8csYLZlH7v40JPqHRvaGu8Ljc3RLXG/FbE12XIzMoZZWoRUH33NPw20DEj6db/09oNyTf8AZ+K9N1b80kKzO69kFjxVUA3rcbRSF8iVO1VRjQ+o7lCt9Co31H5H+zq38hHvd7PlQ8szmSZAWDfiU7QB7Ab40tx99KW3enTcGCe4EZgpKVBK7qE+GtKfj1RqNJFGwuBK9ny6dlbZO4uDQWkrszYXPDBOorwNFmPv5/bclY6b6AesjQA/p3aePjX/ANq1xQZMRTGNxPiNFeMvPfkUMT7oqRRj6aBiSoJOjLofP+3quWOLIZGNGzcvTd+mr43HO3KcqbrdOI21MuJt0Aim3OzFtjV8GBZagjWoBGn/AApzU3gXu61C411mjjPll5cVC7en4VM2At1iB8CNKblBb9W7RttKerwB/MdIJpGvDgQPMAUdydifop7DEYwEPhI+NvjRzjUDGUnxR02mmoHr9IPkpIFfy6AleWIn60YXrO3iaucwPRdjl7qc7rW2lUKp9DnUA+Kjxr47NtR9D1RGWh4zfSDsxqblTw49F9lRXmUmiEkmntkO6D1EDaAaDQBdRUgfTpvFF40AsuIAHu3YXxx30NM/LGQEW56+m3dYVGNzl0jmlXduKABmZnDBhT1K3qrQH/R9OnLIScrQK52aV4L1NkTq/HHuFRfnQZ7j90JSqndR2arNUjw9Qbwp/b10WkYI25U7bbv0Cuf1MjnuJIXhh89t70OXMvtRoY5HdSSCdxVg3p9NfpQVGmn8ejG/WQbD2UvnkEbELRnI3J076BclIZrltwDLQDXUt4kM9f1Nr49NtMCgsEXFOFcrqpnveDmOFsd5pge19w1hKhQKHdUHdUk6BPChHR7lW4ShpMwPiABTZXZYAgCsELDxNK1qajUgHwPVZje4qDagpHkPIBNYnVwxCxRldKEhfoK+Y8+oEBtnOOapNc0hXOctcKCGFVVSSAQoFKEjTSuhHWwhI2haDleTNlDiWKNtKtq/7K/2DojK3cKllbuFcxNt3AVI3mtdSPDRfoo8uogKq7DV0cyWAAAt3U7WVstyWDFwBtoFPqJkJPiwagFPCnUTYpRrEcm406RW4hnVQWf25NgBJ2kKaHcooG0GunQLpXl5Y2zc3xq2HTt8xTck7v0/KlG2OXSOAsBrRmZ/wrRR+PWNDSFbZq7SR81q17ozYsBPabdS276V/wAvjkjllip7cQ8WVak6Ek6DTb5fXz6rM9gAQCm751Z+RjBAIueA+HTctMFxH/mgBmVdngh2iobSvlUg/wB3RDPAC03Idt3JSyYtamVrVTd1/KuOsoavusrK5HiPzHW2/UOutHClyIhUVRT4/wCEfU/h1c4BcBRELQYwSAv41lIBFCAR9DqOtVcQDY4Ushv7iBRHHtOmitvNRWvkdKAUqKGnVD4YZHeW4XI3DZ2URHLPGQ+Fc4wuV9nCi3H5pprf256BWR61Zm3bdxA3Go9RH0pr9NOlz4PLkRi5Tu4johpqzmMskflSMaQ7aVJsVuTvS69+8QugEdERFRShJKjbuO4VBpQNSgP4dM4ovLbivTp2UmlkBkyBFRfbSXq2oVkjkaJiygEkU1rSlQfIj6dRewPCGpNcWlRXeSd5aVou2v6aitaeNSfp1gamJJ66l5r/ANUp1Wr6KRBu9wyHwptofrWu49Re1x+lKti1L2LmJK77/Gu5YOy+yjORXcJFRhQlafWg+p060AWg5yAOFZLMZiEFxw6qVey7qu/ahBrtjqFP6abtdSuvVOcNPhUjjVrXPLg6QkpsU9ntrHIgRgBXwrr+Z/AfTqbVIU0bE8vap306xACKOgArGhNABUlRUmniT0PqPrHV86tFY5QpYV3fpHgQPM/809aje9rUaUC1F2pMJygA7aH+Scfx/KcFleN5NFeyy1qbeT3EhkeOp3RXCGdJIwkVzGmhQjx+vS7nnKYee8vdyycA+ZG4mwJXAG4IUJY3Q065N6g1nINXDz5pLIopGgEZhtupaQU4KMTWhzufxnO9u+U5XGmKODLYHINHE7RBLW52SxSSRrGERdqSMCiEhVBBBIKsfzW9a+npOR841WimX+E/K4FcHAYEoS24y7Q0ggnGv1s+3XrDTep+RaSbTxhjdRDmjwIzMLsypZrhlcpwc4FQ36az9ne71vxHltpe3OKgiuXu4pZlaL9uHeaRTIEWLZtVDtNDtG2rfgOC1umM8YLCczRYXId8c3EquBIxr6notX5LvJym5vmIaQCExKAhuLVy5QXWIJT1g/GLIcM+Y/ZVMDnZcKtzx2y/ZYHI2HtDK4O8v1uoIVWC9SWQSCe0SJyNqzMjMGIXb0siYJmFkiBzALkpa2xFKC6YnZexq5nLLymcamJriyQq4Fp4lcbFCeA3bRr24H2NHaDMcnTMYc2nOk5BnMNeTXEX/XbfF4yaS3sYMWLqCO7t8ZeIvvyIxLtMxZiaAD3b/Tl6J0fKPSzfUL9Ox/qHmMhyZxHIGxNu18SA5C4EFxXOcHfS0M/N/wDqs+43M+ceuj6a5fMG+leXMBcIs0fmTStAe2bDziHksBcrA0Iy7nudKUbggAH0roioANqCm0UooUgUqOvScjRI7O8BVUW27xuryrGBE17dOnnEI4bP7QtZMbUogl9uWOVSaKRoDQhQKUFCBovhTTqMsLrEkqQoK79vXe+2r4ZP1URzUBAsOocLInsqeOJ5aO7/AGJmdYJNfClTQEVoSR6iwA/5OuU1cHluVqp06dVdXppwoaSANlk6wb7d/G5WtkXbTJRC0tWSOENcW1q52Kq1YE7ypruYAf2/Xr5jzeNwnKrlv0wxxOz319G5RO3LsJ34m4Xu2Lvqw4ypWEsy1Sm4hXKr5aFTuBYEfXrmXadCgJtXSeYn1CnKLKorA1ZArA0IYBvqPQX8hrXqDo3kIgNX/mQSqBeqk+Sz5AX21BFSaUYKQBqfJqgH6D8PHrGxZUBVT3/Ktu1DnA5UAAuaEr/OTXQWBIju8Qo3CpPpBdi2sfq8BpXxP0I/Lhqku8PtTb0vQf5rOQgV3Hfs3/Cg/I5C4iiJOrNLs2tuUJUOWUgEMRQUoT0XFGzBuCd9DSOcSrlVe75UMxwyXsrgbKsWdiwOypO6mgbUnw/LorNkCjZQ5Qox11399G/8uk/kmz2o6/0Vtr6Ke5/6g+9s/wDe2aV/TXz6G80+aqn+av8A9tFonymeUmUJ5SYD/qKnffrqqPzx+358We9fyKyPNOV/cA7DdjsrJjVtrvhHKefdtrTlKXYy09wL+4izHI8LexpJG3tmNodHBCsKEnw/9y/tr6J596pm5jzH1Jy7l+ukTPDNLEHtPiuj52EY+EZQiY19o5PzbmOl0TYYtJJLEBZzQ5CLJgwjruaqnc/af+CxhdR917sQjm2kVWuO5vZqRRO4EZlJfnIb2EZlZUrpIFJLeB4k/Zz7YjxO9Y8qLsuBm0yKvDUjh7uNMBz3nODdBLjsD1/3OmNXY7F/AX7V/Bst2iv7H5o9pec85wfO+Ncg428Xfjs9kF5LksNk3u8bxzjGFs8x7MEOTyMae6ljC11PR4S7o7A/RvT327+znLdVpJIeeaPVc0inDx/8vTHzEc7wBgeXIZLnxOJcC3AkUr1XNOfzMeH6d7IXNQ+B9sL5iBswturdf8meO/GblfZ3M4D5Q5Dthi+zeSgtLbIX/crkHG+LcWtllmt0x722d5BeWGOx1z+4aL9tLHKkiS+20REgRh989Taf07q+Szab1UdO3krwA8zPbGwEnwnO4tyuVMpDg4HArXOaN2qbO1+hz/mBcZApTbYKo3hErzgdzftzW2E473ey/wAHPuG9uH+Ouaw+Tm7n8Mv+6WJ5RxrDqcXi1hs81yPAchu8JCr2jFbQ5Fo5Y7XVpSm+RfLmu+2GnZpddP8Abf1Lov8A8ccC6eL8zGWNHh8EkkZdGQSmUy5cvhvv7PT841CsZzPSTecoGYMdudctRfpzWCkjMgRRVX+M/CvuF33+O3Yblffr5odhey/b3HYC6wHYzhPcvmWG4cz4BXxq5jOYaXkPJsfjMtdyBQzTWhlAk9gVAaXZxOn9Aa31P6f0HMfVPPuV8s5cA5ung1E0bMC3M4KQC4t63DwEkjE+TmjdJPJDpdNPNLlCuY1bK4pssq3vdQBinpy+372p+H/ZntXNwb4q8+7UdzZ8YbFe5fNe3vNeJc5zWc5N+1UPe8tynGsnlJYLmc7mhhnZBGhoiqgCj1v9uuU+ieS8l/IejJ9HqYmZBPLBLHKXyZfqkdG5yE3LQTYWFq4bmc2vn1Hm8wa9jiuUOBAAXBoPYp2nsqTvm/wzt93E+KPfHhHc/lfDeC8P5LwXKYy95hz7MYzAcX47eSqrYrJ5DL5aa3srL9vkkiKMXVmeig1PTj1todDzP0prtBzGaHT6WWAt82VzWxsco8tz3OIAAky4kXRLpQ+hkkh1ccsTS97XKgCkj9YAXvlWtQX2PfjnxHsxnO9GUvu/XZDuxz3J2/FLLE4rtXzfjnKcli8DaWOQnzt9kxjc9lr0W9/fZK0iYGNFVrGNt1Go3xT7AemeX+n38yeNfoNZzGVsTWtgnimMcLXSOcVjJ8L5HgLcLGAuyug9TauTVeSBHKyBpN3Mc0OcQAEzAGzQSmN70m/3hbhGG5N29+PGXk5VxPCZvCcr5ZbJiMtnMVieR5nG5q347ZfvcEl7lLG/ubTj85aa7S1RywdC5VUB6F/qb0I1XJeWT+fp4nxTyo2QtBeHCJSzMVOQhpcGtcbhUFWekZAzUzNyuKtapC2TMi9alFI241JH2Ou0XZTt52n5Dm8Z3F7O8072cuzV9l83iOCc141yPkvEOKxwWuMxuFy1ljMvkspbWsslnLfH3NqCe+ZHBaFCGn9PvJvTnLOSS6jT6rQan1LqHEyiF8TpIoWlI2ubG9+UG71QLmAK5RVHqefVTaprXslZpGBG5g4BzjckEgLu7DVpvur9ieGd/eyPEON8w76dp+wgw/PLbOYrk3eDO4TB8Zy0yWFxZZDCO+byuGjukbE3U08qRT+5thFFby6z7x+nOW+pfT0Gk5lzHRctij1TXiTVOayN6C7Fe5ouFtfqSguRaqbSasyQxSTEsIRgJIUi9gcK0G5b7VPYufJW8tn9034qQ42TCzywpcd1uJxzR3kqW5gix8MHNlhHHYpVOoeuxloop15y1f2h9Nz6lj2er+RR/wAIZAJoVzKcuUed9CmxFzlAAC26yLnepa3K/Q6ktzXOVxtZVsLpsVONYsJ9rT402fMcYnM/uYfFnN8Dezuf5xLZ97+EYvLWl89nsxz2a3PNpUumjvBOy+6DEF2ehiZChOj+0HpWHmUbuZeruUyx7f8A5EIkLU/VaZD+tmP1XFiTdYS881RhTTaGcPK/qHKCtrhSbJsCHfXqt4Bw3EcA+OdxxXG8uHOrDF8Gz8Z5TJlLXMR5aJsLctFcfvrZVtmt2sfbKqv+WiEBP8sKB7R9PaOPl/LtJo9PM7URxsaBISCX3+pQSEJwAKAIBYV8617/ADWzySta3MHEjYLYFeGK8a8AOIxUf7CzWe7tapY2VfZyGO2FntoW2pK93tkMdSGoNu4aMfP9BGat7oGPijlII2tlabW+nKE4HaL7a8YPgAlcxzowQd8bh/ezX4jZhsooxmEtpnRXvMRGm+QCSXL4iO42+plLCTJRmuw00BB8PyDm1Ny6Rjw6ygtk3b8pW/CwoiOCVP4ZDo0Nw6NvXZSg3n2VIuGwCRu5jvcVKmxKMM5hBVSRTcn80IoAT4U0H1p0m1eva0k5Sl0BhldfrEaLuJpho9M+ygr/AN6PDtdfqyoqLT8mCQXNGnwPqZNp/qHDF6ujEbg2UKodjHxI2Cv0PQDuYERtIacxX/kyb/8At2okaJZXFX7E/jRIqcH3qRsHgWjiYtNx9loGZByTjDspY+kEvlGYkI3g1W01OnSqfVNcVdlCmyxSbr/qBBTKLSzYODydv8WMbSn660VW3H7opI9rPhNtQWVeUcYB8Kj0jJUDU8q16DOo0/6zgv8A2Zf8FX/lpS7B3/rRj3P+dZBgMsUdg+KBG+if1ZxgFqVpQtkgw3D6eH59SGq0xRXMX/sy+3wfCs/KzqqPQf8AjM/x1ljwOU272kwwpSqtynjh108AuRDMB+VOoDU6ba5v/oyf4Kw6WfEB/wD6zPi+hnKWOXjiO5bOQLowtMpji1StQVKZNw5AHkfHTU6dGwSQZsrXt6/Kf/gFLp4JQpcx5O1Jo1/3l6BKFsjbZp0X2rSFZKkCmaxtApFDUJko2rXUE7gCCKa9M4PybrOVOBmHvYnTdVBi1OX+E2VFv/Ej+D6j7L2WSM004Nrv2kywrf44MD50jiyQB08QTu086gdOtJLp3sWNiOwsZMP9pgcRhdMeqlh0+pZG7Nm8tDjJG7rUL7BjTVbx3G0e6sKkMd1bi2NfMEKLmWinw/XXxPV7iDgHd8n+GgG2srQP3Yz7zS5YZHWT2xbikbbytxArbCPURW6BIH8etGQbWH+9L8q2Gg4yW/ch+a91YFtC7BQ0RJrQSXsESEgE+qQ3SBfD69Z5hH1NcnXJ8GrWFrP1Xof3Y/i4j2U72VlebQsS22pcVOWsTH512NPfKPLxB8fDqMk0IYc7HZeJlTZiMp9p+CaZDI9yCQE7h5TDh+2HW3nw3w2k0dYTDZDZKJJcVtYrt353CKqsoJIZpcoU1UihI/D6dKJNTow8PYwhqn9WV3D6cgVTsVB9WK030uk1RCPDvL2/x491gUdfZiLWAstG2OwOQK1iusMNTVE5BxsEj/Gfc/mdQqr46UPh0DqNZoitwHcYJfajN3HCjotJI2YeUHYnCaI7NniVSOIqcOK8ay8tuDc3fHPS6mET8q4nbSBqU0N7kykpodAB4+HhXrk9bPGZDlc7AfRFIu3+yLdnUca6blcL2wJI22a2eWIhexyZurt4z/x/jN80Cj9xx0KpNN/LuKBDLuG3Y0eahZnGvmRWv8E08wAzNdqFOP8AClITb+qUp2yNhIAbp7C38SIdykbf0UVx8YvwT7lxx4qVI9PL+NVrp/tcgYDT+PQrdRGD4jqET/pS/Fhq0wE/qwD/AM2L/GKT3PF8sKG1uMETXRF5fxUNX0jV5ORUr4kUA6mJ9OTjqQP+1L/grfkvRQ3T5v8AuxD/AIjQpn+KX72TPNe8aSQrueO55fw9anahUbnzkwVlGlCF3VHj5GabURNcgOpLV/6cu/Z4Bjw76HlikLT5bYA9F/mR42TB3vHVVf8AkPD8hGxZcrxAxMtdqct4lMVVQqsKQZYEMag0r5eddH+k1Tc1vMzf24pOOCMXC3d1nmdXpnuciRgof5c0Y4XV+748EAchhbiG1IWTDSH/ADAzLyDjcihh7Y/w5Pbr9QT/AA6bx6uPM3HHbDL7fAh6WpLLo9Sp8sWv/wA6L/HZOq/G1R9c42+AVGbGCIvV3gzGHdAdpHrNrftDu2+R9VPwoem+n1EMjSZGkvG5srBs2BhU433dxTavT6xj0ldlKYEwyHrJL7BNnBdtME+MT3XrJZE1Jr/NrBRWpqoH7/yI/I9HsmaisjcnAy/4PxpO+CVfFK3+7p8O2XCmmTGtVzDJYhdxqFythpJ4Gqx3zlz4VNanoyLUxhqeU4niZfiyqXQKbyt/uwj3SJXRLCcV3vaN4UpkYFA8fP8AekGvV41Eafy3jq80/wDBSucQMnc17YHuCXcdODhxlB76x/sJvOWAn/m38QH8ALs9aMrSVDHJ/wCd8hQRfpV+iH//ADf5lJZLKbe2tifDV8lbBjoPENeg9VOnhBR0Ti7rl+LaLiELowWiMD/yPg+s0djPsHqth46JkoivifDbdMv9/U2ysIVrHgdc3wFDTOhbIQWQk7ydPu/fpSLG4oP8y08B439pX+Nbmtfz6354H6ju6b5VoM05C5YL/wBrTf5tLrO0vY33RftZCupCZCzLGoIA2rdhiAKnz6x0kZajmPU8ZR/wmidM/TjM0RxFgN0On7L+aAnf7aMLGwuLrYLxsXbsRGEM+SwkTBSBtJ92/WTxr4+fjQ9KtTLp1IMbs4/tTX7mH2d1dBp4nODcjmBpCgJDZbgAiQruXDDAUQw8WKSW+2/40+gPp5Xxdgu5hvDVzFTtpqNfz6CPMW7Wlf8A+PNfd+pb2U0HKo8pOduQL/8AuIMNqeO90vvrm5wU9l7ivd42e3r+uzz2CvAxIOpCX7bWqv10JH1HUNPrdK1pDQCP+zKQq7SGJh24UO/TTNdmkkZm3fwcP/UIKXFgq4b6ji4sZlkb25LcrUgBL6zYVGlQf349LdP4poyMskb83XNh2sx4dtc/NIGDM2OIrsHk49kmHUvuFIRjXBB9+1NCDQ5DF0P4H/tHw6IM7CE8t/fN/gpZk0n7MP8Ae03+bWUWL1G17GtRSl9ja18qf9p+Neq/MZtbKnXL/l1Y3yA4FrYC5bX0nwkXurKLC6qKyW9Kiv8A17H+H/8AsT/o6zzYf+m/vl/wUaHkkLFEi74P80+40ojxsrOoM9oB578jZqugrQkXdRWnUHTxgWjevXKf+GrneWnhZDm/eh/xj30uTG3KK3sTWROlfYyVm7/QaS3oj+vifCtNeqvzDUQMeTxE/wAG/Chnooc5kFtiwfGWuRZ5EEEspFQDuvcVt1NKn2b9pKLWugJ6j562EZXr1A9vl1HOw28vTjj/APG/zqcIbC6VwTNZN40DX1kE8DXcJLwqfw1GvUWzNBV0cifvT/GOrWviH1M0x/8A6/8Am1xdWNwVBkkxYTeKA5HGgBqN4bLgt4fjTrH6hR4I3grvn/y6sa+HERwZuH5f/N+FIlx0jVX3sKDXcGORsAdvhtO68RT4j8f9VonZkBfHJm4GY/8At/CrA+JbxxJ1wf5ldxipK+q6w1PwyOLJr/HIjrTp2J4WSLx87/BWPdEngjiXj5H+aKV2+Imbf7dzizTbXZlcTF/tUrXI+r/V1pupYPqjef8A1/8ALqlwa762wDt04/3pT7K5nxEi7fdnxhru27sxiG8KVpS+enl1s6qM/TFJ3z/5ZrbcjPpZAe3T/wDDJ76T/wArH/8AEYkf/wCUxLf/AM6tOonULhG8dsx/9sVMPbtjh74P82s8GNlXd7VxjDXbu2ZDEt4VpWt69OsGob+tHIf/AFh/7ZqLnw/rRwdpg/zaVJjrtiQJ8eNAQXyGGVKgigq16PVU/TqX5mIYxSHtm/y6J0zPMCwmJgXAeSnskIX4Vy+NmQ0NxiTUVGy/wcgoa0qUvGCtp4eI62NUw4Qy98/+XRr4tQwgCRpUL9MPwefnwrvHi711Jinx5WtDsyuHhG6gr6RdamhGvVb9TGt4njr88/8ACKnGzU5bPbj+zD8XVk/kd63qa5xQJ8Q+ewCtppqHvlYafUdDu1UGa8b16p/8Botmk1j2hwQg7fNhZ/8ATnt8cdtarvm9b4Ru4Nni7n+T29/a8VtLu6yDXOLnhnv2vmbG2zXEd20VzK1vRdocLGdhoWI68d/f6bT6j1Bk8prXCBrc0hLQVAIPjLSWqULnABpBA2Gvc39Mun1mn5AXGSRDq1DYyZHNQkPQta5hcW3ytzOTLnaiA6t7yC4jyZa0ce9HcpcRCKaCeV5TN7YSNYJWLS/uGqsesgABK0B68v8AlvaEOVU2OB4bCb8BfbhXs92oiklL4w9C8jxMc0qilQ5oQcSE2Ktq3K/az7n93+G8zv8A+n+BdwuWYfJZnDLl041xPkmStMfcUv4FaSTEWV0YoxbbZXB2K21gSNxPSjXFzdS18eZ0+0DFLZcNu5RuTi6j8ubl/k6vLHAVyOK5cTmCusnVtzKcE30/JrhGD5XNYdwbHMcQwPMhaWcXLeFci5lxnC8scQ2qezeTcdzGetMr+6lTX2xHHXQIu3r2v9hOfeo4+SxaPX6PVt5I6IZJvKL4MoOVto2OLVCoC0DK0vU5lr82f6l/T/ouX1N+e0Ou0rufscQ+ESCOXiVle0OsiZc3hQgplJpacHJoq3GIcqfS4z2Dh3jwqytk32kgVpU08K9eiTquXh7lQjMf+VMmOxIzbutXl2HT6hshAewBSi+S62y/mAEjftxSlQwOSZUpcYzaQu0NyLjqqARp6jk10p9erG67lzXEMAzcIZT7fLP41dFy/XF5dmaVU2miG39nP4eIUphRfxTj19LlbJI7nBwqsnuxSS8l4565ApISJTkyA+6g2+JPlqaAavWR/llOO4wy7wv6l+v5JTXlmilaC05iuJ8+HsXx2PvRK2Q8NxfI7XF2UcKYyZEZwGgz+AuEYnxYPb56RWZSfLXTr5lrnslOaR8oCbY5GhOotGJXcB1rX0jRMkj+lkR6pGHZguY4BL7RssKsXh7bkVx/++WkMJB8ZMzgoT4mu3/tNm1U6/q8NB1y2obp/wDlSOI4NcO+3x210Wle8YRxqmxzCfYVTBV7KemxWZBX9uMUUrR/bz2Hp/h1G7Kj1UPQ7JoGtsCi/sk+4Ue5upBObIT1j50lnxOUaN1AxKhkcMzcg4+oUFSKn/tRhQV18OtB+lzKFzLud8qxzNYWkHKB1t+dNqYG7o4ebCE7fSTyXACjAHQBcm1SSfOg08erzM3YH/3XfKqBA84uYP8Aabf210PHrnYGlu8CBX9B5Fx8tXUCm7JiOtNf1eH9nUHTR4Pa7LvLSnu+FY+AZVe6PqLm/NKSnj82yQJcYJk9xN/t8l42jbg4KkmHKhvc3UoKkk6DqRnaELGuJt+q7BcbjABTUY9PvcxE/aZxTAjE2or/AJRe/wAl9v8AdYSv9J/tq/zPC+z+5/r79z7m/wDmftbdvp9zdt9/07vc9HVfmt836X/zNxw8vpx2ol6s8t3l/UP5e9uOfHr9nur/2Q==</imagedata></imagedef></images></project>

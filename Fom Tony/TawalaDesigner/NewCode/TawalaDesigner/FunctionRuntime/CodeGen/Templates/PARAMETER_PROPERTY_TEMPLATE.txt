@@ -1,0 +1,12 @@
+		private ${TYPE} prop_${FNAME}${FASSIGN};
+
+        [ParameterMarker]
+        [ParameterProperty("${GID}", typeof(${TYPE}), typeof(${TYPE}))]
+		public ${TYPE} ${PNAME}
+		{
+			get	{ return prop_${FNAME};	}
+			set
+			{
+				if (prop_${FNAME} != value) { prop_${FNAME} = value; NotifyChanged("${PNAME}");	}
+			}
+		}

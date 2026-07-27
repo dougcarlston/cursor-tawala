@@ -1,0 +1,27 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="stevebockman" password="tawalame" />
+<project name="Document" format="1.3">
+<forms>
+<form name="Form 1" process="Process 1">
+<items>
+<fib label="Q1">First Name: <blank label="a" alternateLabel="First" length="10" /></fib>
+<fib label="Q2">Last Name: <blank label="a" alternateLabel="Last" length="10" /></fib>
+<mc label="Q3" onlyone="false" required="false"><question>Favorite Fruits</question><choice label="a">Apples</choice><choice label="b">Bananas</choice><choice label="c">Oranges</choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<set field="Full Name">
+<string field="First" />
+<string value=" " />
+<string field="Last" />
+</set>
+</process>
+</processes>
+<documents>
+<document name="Document 1">First name is <field name="First" />. Last name is <field name="Last" />. Composited name is <field name="First" /> <field name="Last" />. Full name is <field name="Full Name" />. Favorite fruits are <field name="Q3" />.</document>
+</documents>
+</project>
+</request>

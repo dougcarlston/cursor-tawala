@@ -1,0 +1,72 @@
+body {
+	background-color: #e3e8d2;
+}
+
+h1.pageHeading {
+	height: 77px;
+	line-height: 2.4em;
+	color: #ffffff;
+	background-color: #9D2F30;
+}
+
+#tawalaProjectContainer {
+	background-color: #f8fff4;
+	border: 0px solid #cccccc;	
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+.graph.color1 { border-color: #a3a892; }
+	.graph.color1 .bar { background: #a3a892; }
+
+.graph.color2 { border-color: #a3a892; }
+	.graph.color2 .bar { background: #a3a892; }
+
+.graph.color3 { border-color:#a3a892; }
+	.graph.color3 .bar { background: #a3a892; }
+
+.graph.color4 { border-color: #a3a892; }
+	.graph.color4 .bar { background: #a3a892; }
+
+.graph.color5 { border-color: #a3a892; }
+	.graph.color5 .bar { background: #a3a892; }
+
+.graph.color6 { border-color: #a3a892; }
+	.graph.color6 .bar { background: #a3a892; }
+
+.graph.color7 { border-color: #a3a892; }
+	.graph.color7 .bar { background: #a3a892; }
+
+.graph.color8 { border-color: #a3a892; }
+	.graph.color8 .bar { background: #a3a892; }
+
+.graph.color9 { border-color: #a3a892; }
+	.graph.color9 .bar { background: #a3a892; }
+
+.graph.color10 { border-color: #a3a892; }
+	.graph.color10 .bar { background: #a3a892; }
+
+.graph.color11 { border-color: #a3a892; }
+	.graph.color11 .bar { background: #a3a892; }
+
+.graph.color12 { border-color: #a3a892; }
+	.graph.color12 .bar { background: #a3a892; }
+
+.graph.color13 { border-color: #a3a892 }
+	.graph.color13 .bar { background: #a3a892; }
+
+.graph.color14 { border-color: #a3a892; }
+	.graph.color14 .bar { background: #a3a892; }
+
+.graph.color15 { border-color: #a3a892; }
+	.graph.color15 .bar { background: #a3a892; }
+
+.graph.color16 { border-color: #a3a892; }
+	.graph.color16 .bar { background: #a3a892; }
+

@@ -1,0 +1,371 @@
+<public:component tagname="DropArea">
+
+<public:method name="DoRowDragDrop" />
+<public:method name="NotifyDragDropEnded" />
+
+<public:propert name="InsertionPoint" />
+<public:property name="RowDragInProgress" />
+
+<script language="JScript">
+
+	var body = null;
+	var insertionMarker = null;
+
+	init();
+
+	function init()
+	{
+		element.style.display = "block";
+		element.style.height = "100%";
+		element.RowDragInProgress = false;
+		element.InsertionPoint = 0;
+		element.style.paddingBottom = "30px";
+		body = element.document.body;
+
+		setNormalDragDrop();
+
+	}
+
+	function DoRowDragDrop()
+	{
+		element.RowDragInProgress = true;
+
+		setRowDragDrop();
+
+		element.dragDrop();
+
+		setNormalDragDrop()
+
+		element.RowDragInProgress = false;
+	}
+
+	function NotifyDragDropEnded()
+	{
+		destroyInsertionMarker();
+	}
+
+	// **********************************************************************************************
+	// functions to handle normal drag and drop mode (not moving rows)
+	// essentially for handling items dragged in from outside the browser like new form items
+	// **********************************************************************************************
+
+	function onNormalDragEnter()
+	{
+		if (isNewFormItem())
+		{
+			event.dataTransfer.dropEffect = "copy";
+			event.returnValue = false;
+
+			updateInsertionMarker();
+		}
+		ignoreDraggedField();
+	}
+
+	function onNormalDragLeave()
+	{
+		if (isNewFormItem())
+		{
+			event.dataTransfer.dropEffect = "none";
+			event.returnValue = false;
+		}
+		ignoreDraggedField();
+
+	}
+
+	function onNormalDragOver()
+	{
+		if (isNewFormItem())
+		{
+			event.returnValue = false;
+			updateInsertionMarker();
+		}
+		ignoreDraggedField();
+
+	}
+
+	function onNormalDrop()
+	{
+		if (isNewFormItem())
+		{
+			event.returnValue = false;
+			destroyInsertionMarker();
+		}
+		ignoreDraggedField();
+
+	}
+
+	function isNewFormItem()
+	{
+		var data = event.dataTransfer.getData("Text");
+		if (data != null && data.indexOf("#NewFormItem#") == 0)
+		{
+			return true;
+		}
+		return false;
+	}
+
+	function ignoreDraggedField()
+	{
+		if (getDraggedFieldId() > 0)
+		{
+			event.dataTransfer.dropEffect = "none";
+			event.returnValue = false;
+			event.cancelBubble = true;
+		}
+	}
+
+	function setNormalDragDrop()
+	{
+		// source events
+		element.ondrag = null;
+		element.ondragend = null;
+		element.ondragstart = null;
+
+		// target events
+		element.ondragenter = onNormalDragEnter;
+		element.ondragleave = onNormalDragLeave;
+		element.ondragover = onNormalDragOver;
+		element.ondrop = onNormalDrop;
+	}
+
+	// ***********************************************
+	// functions to handle dragging rows (form items)
+	// ***********************************************
+
+	// ondragstart: Fires on the source object when the user starts to drag a text selection or selected object. 
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDragStart()
+	{
+		event.dataTransfer.effectAllowed = "move";
+	}
+
+	// ondragenter: Fires on the target element when the user drags the object to a valid drop target.
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDragEnter()
+	{
+		event.dataTransfer.dropEffect = "move";
+		event.returnValue = false;
+		updateInsertionMarker();
+	}
+
+	// ondragleave: Fires on the target object when the user moves the mouse out of a valid drop target during a drag operation.
+	// ondragleave: does not support the event object's toElement and fromElement properties.
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDragLeave()
+	{
+		event.dataTransfer.dropEffect = "none";
+		event.returnValue = false;
+	}
+
+	// ondragover: Fires on the target element continuously while the user drags the object over a valid drop target.
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDragOver()
+	{
+		event.returnValue = false;
+		updateInsertionMarker();
+	}
+
+	// ondrag: Fires on the source object continuously during a drag operation regardless of what the target is.
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDrag()
+	{
+		//    event.returnValue=false;
+	}
+
+	// ondrop: Fires on the target object when the mouse button is released during a drag-and-drop operation.
+	// The ondrop event fires before the ondragleave and ondragend events.
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDrop()
+	{
+		event.returnValue = false;
+
+		destroyInsertionMarker();
+
+		var itemsMoved = 0;
+
+		if (InsertionPoint < 0)
+		{
+			var selectedRows = createSelectedRowsArray();
+
+			for (var i = selectedRows.length - 1; i >= 0; --i)
+			{
+				formTBody.insertBefore(selectedRows[i]);
+				itemsMoved++;
+			}
+		}
+		else
+		{
+			var targetRow = formTBody.rows[InsertionPoint];
+
+			if (targetRow != null)
+			{
+				var selectedRows = createSelectedRowsArray(targetRow);
+
+				for (var i = selectedRows.length - 1; i >= 0; --i)
+				{
+					formTBody.insertBefore(selectedRows[i], targetRow);
+					itemsMoved++;
+				}
+			}
+		}
+
+		if (itemsMoved > 0)
+		{
+			window.external.FormItemsMoved();
+		}
+	}
+
+	// ondragend: Final drag event that fires on the source object when the user releases the mouse at the close of a drag operation.  Occurs after ondragleave
+	// Bubbles: Yes     Cancels: Yes
+	function onRowDragEnd()
+	{
+		destroyInsertionMarker();
+	}
+
+	function setRowDragDrop()
+	{
+		// source events
+		element.ondrag = onRowDrag;
+		element.ondragend = onRowDragEnd;
+		element.ondragstart = onRowDragStart;
+
+		// target events
+		element.ondragenter = onRowDragEnter;
+		element.ondragleave = onRowDragLeave;
+		element.ondragover = onRowDragOver;
+		element.ondrop = onRowDrop;
+	}
+
+	// ***********************************************
+	// helper functions
+	// ***********************************************
+
+	function updateInsertionMarker()
+	{
+		if (event != null && insertionMarker != null && event.srcElement == insertionMarker)
+		{
+			return;
+		}
+
+		createInsertionMarker();
+
+		var nearestRow = getNearestRowIndex();
+
+		if (nearestRow == -1)
+		{
+			InsertionPoint = -1;
+		}
+		else
+		{
+			var row = formTBody.rows[nearestRow];
+			var y = event.y - row.offsetTop;
+			var h = row.offsetHeight;
+
+			if (y < h / 2)
+			{
+				InsertionPoint = nearestRow;
+				insertionMarker.runtimeStyle.pixelTop = row.offsetTop;
+			}
+			else
+			{
+				if (nearestRow + 1 < formTBody.rows.length)
+				{
+					InsertionPoint = nearestRow + 1;
+					insertionMarker.runtimeStyle.pixelTop = row.offsetTop + row.offsetHeight;
+				}
+				else
+				{
+					InsertionPoint = -1;
+				}
+			}
+		}
+
+		if (InsertionPoint < 0)
+		{
+			if (formTBody.rows.length == 0)
+			{
+				insertionMarker.runtimeStyle.pixelTop = 0;
+			}
+			else
+			{
+				var row = formTBody.rows[formTBody.rows.length - 1];
+				insertionMarker.runtimeStyle.pixelTop = row.offsetTop + row.offsetHeight;
+			}
+		}
+	}
+
+	function createInsertionMarker()
+	{
+		if (insertionMarker == null)
+		{
+			insertionMarker = element.document.createElement("img");
+			insertionMarker.src = "Insert.png";
+			insertionMarker.width = 16;
+			insertionMarker.height = 13;
+			insertionMarker.style.position = "absolute";
+			insertionMarker.style.pixelLeft = 0;
+			insertionMarker.style.pixelTop = -30;
+			insertionMarker.style.zIndex = 1;
+
+			insertionMarker.ondragenter = element.ondragenter;
+			insertionMarker.ondragover = element.ondragover;
+			insertionMarker.ondrop = element.ondrop;
+
+			body.appendChild(insertionMarker);
+		}
+	}
+
+	function destroyInsertionMarker()
+	{
+		if (insertionMarker != null)
+		{
+			body.removeChild(insertionMarker);
+			insertionMarker = null;
+		}
+	}
+
+	function getNearestRowIndex()
+	{
+		var searchElement = event.srcElement;
+
+		while (searchElement != null)
+		{
+			var name = searchElement.tagName.toLowerCase();
+
+			if (name == "tr")
+			{
+				var index = searchElement.sectionRowIndex;
+				return index;
+			}
+
+			if (name == "body")
+			{
+				break;
+			}
+
+			searchElement = searchElement.parentElement;
+		}
+
+		return -1;
+	}
+
+	function createSelectedRowsArray(targetRow)
+	{
+		var selectedRows = new Array();
+
+		for (var i = formTBody.rows.length - 1; i >= 0; --i)
+		{
+			var r = formTBody.rows[i];
+
+			if (r != targetRow && r.Selected)
+			{
+				selectedRows.push(r.removeNode(true));
+			}
+		}
+
+		return selectedRows;
+	}
+
+</script>
+
+</public:component>

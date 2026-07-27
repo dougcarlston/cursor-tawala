@@ -1,0 +1,43 @@
+body {
+	background-color: #888888;
+}
+
+#tawalaProjectContainer {
+    border: 14px double #ddcccc;
+    padding: 8px 8px 8px 16px;
+    text-align: left;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: white;
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+	background: url(images/madewithtawala.gif) 100% 50% no-repeat;
+}
+
+#form .mcRadio, #form .mcCheckbox {
+    clear: both;
+    margin: 0px;
+    background-color: transparent;
+    background-image: url("images/Q-image.gif");
+    background-attachment: scroll;
+    background-position: 0% 0%;
+    background-repeat: no-repeat;
+}
+
+#form .mcRadio .question, #form .mcCheckbox .question {
+    padding: 18px 8px 12px 18px;
+}
+
+#form .mcRadio .answer, #form .mcCheckbox .answer {
+    margin: 0px 0px 8px 14px;
+}
+
+#form .submitButton input {
+    font-weight: bold;
+    Text-transform: capitalize;
+}

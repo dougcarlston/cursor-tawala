@@ -1,0 +1,1652 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="MultiquestionPoll" themePath="default" format="1.6">
+<forms>
+<form name="Setup" startPoint="true" themePath="default" dataEntryOnly="true" process="Post-Setup">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><font face="Arial" size="240" color="4D6581"><b>Online Poll Builder</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>You may use this Web app to build a poll of any length, consisting of any</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>combination of multiple choice and fill-in-the-blank questions.  </i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Poll Title</b></font><font face="Arial" size="200" color="000000"><b>:</b></font><sp/><blank label="a" length="40" required="false" alternateLabel="Title"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Poll Date or Version</b></font><font face="Arial" size="200" color="333333">:</font><sp/><blank label="a" length="17" required="false" alternateLabel="Date"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Pre-test instructions to examinee:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="65" height="3" required="false" alternateLabel="PreInstructions"/></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Comments or instructions to poll-taker upon completion of poll:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="65" height="3" required="false" alternateLabel="PostInstructions"/></paragraph></fib>
+<mc label="Q5" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Show poll results to poll-taker upon completion (will show only totals from multiple-choice questions)</b></font></paragraph></choice></mc>
+<text label="T3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="C24322"><b>Note: If you are changing the set-up of a poll you customized earlier, your previous questions and poll-takers' responses will be deleted.</b></font></paragraph></text>
+<field name="TotalQuestions"/>
+<field name="ShowPoll"/>
+</items>
+</form>
+<form name="Create Poll" startPoint="false" themePath="default" process="Post-CreatePoll" preProcess="DisplayPollQuestions">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Please enter poll question here:</i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="333333"><b>): </b></font><blank label="a" length="70" height="2" required="false"/></paragraph></fib>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Question type:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Multiple choice</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Fill-in-the-blank</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q2" value="a"/>
+</conditions>
+<trueSet>
+<skip to="Q4"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><b><field name="Create Poll:Q1:a"/></b></font><font face="Arial" size="200" color="000000"> _____________________________________________________________</font></paragraph></text>
+<mc label="Q3" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Add another Question</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Edit this Question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Finish Setup</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q3" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+<falseSet>
+<skip to="__EndOfForm__"/>
+</falseSet>
+</if>
+</skipInstructions>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="333333"><b>)</b></font><sp/><font face="Arial" size="200" color="333333"><b><field name="Create Poll:Q1:a"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Response Choices:</b></font><sp/><font face="Arial" size="200" color="2E4685"><i>(leave blank any fields you don't need)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="333333">a)   </font><blank label="a" length="63" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="333333">b)   </font><blank label="b" length="63" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="333333">c)  </font><sp/><blank label="c" length="63" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">d)   </font><blank label="d" length="63" required="false"/></paragraph></fib>
+<mc label="Q5" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Add another Question</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Edit this Question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Finish Setup</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q5" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<field name="QuestionNumber"/>
+<field name="Type"/>
+<field name="TotalQuestions"/>
+</items>
+</form>
+<form name="Setup Finish" startPoint="false" themePath="default" process="Post-SetupFinish" preProcess="DisplayPollQuestions">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Main" startPoint="true" themePath="default" process="Post-Main" preProcess="DisplayPollHeader">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="PollLoop" startPoint="false" themePath="default" process="Post-PollLoop" preProcess="Pre-PollLoop">
+<items>
+<skipInstructions>
+<if>
+<conditions>
+<equals field="QType">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<skip to="Q2"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="QNumber"/></font><font face="Arial" size="200" color="000000">) </font><font face="Arial" size="200" color="000000"><field name="Q"/></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="57" required="false"/></paragraph></fib>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q2" onlyone="true" required="true"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="QNumber"/></font><font face="Arial" size="200" color="000000">) </font><font face="Arial" size="200" color="000000"><field name="Q"/></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="C"/></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D"/></font></paragraph></choice></mc>
+<field name="QuestionNumber"/>
+<field name="Answer"/>
+<field name="Question"/>
+<field name="ChoiceA"/>
+<field name="ChoiceB"/>
+<field name="ChoiceC"/>
+<field name="ChoiceD"/>
+<field name="Type"/>
+</items>
+</form>
+<form name="DisplayResults" startPoint="false" themePath="default" process="Post-DisplayResults">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="default" process="Post-Administration" preProcess="DisplayPollHeader">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><font face="Arial" size="240" color="4D6581"><b>Administration</b></font></paragraph></text>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>View poll</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>See totals from specific question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>See detail results from specific question</b></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>See totals from all multiple-choice questions</b></font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>See detail results from all questions</b></font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Show correlation detail for up to first ten questions</b></font></paragraph></choice></mc>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Question number (for specific question options):</b></font><font face="Arial" size="200" color="000000"/><blank label="a" length="10" required="false"/></paragraph></fib>
+</items>
+</form>
+<form name="SpecifyQuestion" startPoint="false" themePath="default" process="Post-SpecifyQuestion" preProcess="DisplayPollQuestions">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b>Question number: </b></font><sp/><sp/><blank label="a" length="10" required="false"/></paragraph></fib>
+</items>
+</form>
+<form name="TotalQuestion" startPoint="false" themePath="default" process="Post-TotalQuestion">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="DetailQuestion" startPoint="false" themePath="default" process="Post-DetailQuestion">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="AllDetailQs" startPoint="false" themePath="default" process="Post-AllDetailQs">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Correlation" startPoint="false" themePath="default" process="Post-Correlation">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Post-Setup">
+<comment>- delete previous poll data</comment>
+<delete><form name="Create Poll"/></delete>
+<delete><form name="PollLoop"/></delete>
+<comment>- variables for display in Final Poll and PollPost documents</comment>
+<set field="PollTitle" arithmeticAsText="false">
+<string field="Setup:Title"/>
+</set>
+<set field="PollDate" arithmeticAsText="false">
+<string field="Setup:Date"/>
+</set>
+<set field="PollPre" arithmeticAsText="false">
+<string field="Setup:PreInstructions"/>
+</set>
+<set field="PollPost" arithmeticAsText="false">
+<string field="Setup:PostInstructions"/>
+</set>
+<if>
+<conditions>
+<mcContains field="Setup:Q5" value="a"/>
+</conditions>
+<trueSet>
+<comment>- flag used in Post-PollLoop process</comment>
+<set field="Setup:ShowPoll" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Setup:ShowPoll" arithmeticAsText="false">
+<string value="No"/>
+</set>
+</falseSet>
+</if>
+<set field="QNumber" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<show form="Create Poll"/>
+</process>
+<process name="Post-CreatePoll">
+<set field="Create Poll:QuestionNumber" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q2" value="a"/>
+</conditions>
+<trueSet>
+<comment>- set the question type in the stored record for this question</comment>
+<set field="Create Poll:Type" arithmeticAsText="false">
+<string value="MCQ"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q5" value="a"/>
+</conditions>
+<trueSet>
+<comment>- customizer wants to add another question</comment>
+<show document="Poll So Far" reset="false"/>
+<show form="Create Poll"/>
+</trueSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q2" value="b"/>
+</conditions>
+<trueSet>
+<comment>- set the question type in the stored record for this question</comment>
+<set field="Create Poll:Type" arithmeticAsText="false">
+<string value="FIB"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Create Poll:Q3" value="a"/>
+</conditions>
+<trueSet>
+<comment>- customizer wants to add another question</comment>
+<show document="Poll So Far" reset="false"/>
+<show form="Create Poll"/>
+</trueSet>
+</if>
+</trueSet>
+</if>
+<comment>- customizer is done adding questions</comment>
+<show document="Final Poll Header" reset="false"/>
+<set field="Create Poll:TotalQuestions" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<show form="Setup Finish"/>
+</process>
+<process name="DisplayPollQuestions">
+<comment>- get the list of questions</comment>
+<get recordList="Record List 1">
+<forms>
+<form name="Create Poll"/>
+</forms>
+</get>
+<foreach record="Question" recordList="Record List 1">
+<comment>- question number and question text variable for display</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string field="Question:Create Poll:QuestionNumber"/>
+</set>
+<set field="Q" arithmeticAsText="false">
+<string field="Question:Create Poll:Q1:a"/>
+</set>
+<if>
+<conditions>
+<equals field="Question:Create Poll:Type">
+<string value="FIB"/>
+</equals>
+</conditions>
+<trueSet>
+<comment>- append the question to the Final Poll doc</comment>
+<append document="Final Poll" appendage="FIB"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<equals field="Question:Create Poll:Type">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<comment>- accumulate choice text, appending each one to Final Poll doc</comment>
+<set field="A" arithmeticAsText="false">
+<string field="Question:Create Poll:Q4:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Question:Create Poll:Q4:b"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Question:Create Poll:Q4:c"/>
+</conditions>
+<trueSet>
+<append document="Final Poll" appendage="MCQ2"/>
+</trueSet>
+<falseSet>
+<set field="C" arithmeticAsText="false">
+<string field="Question:Create Poll:Q4:c"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Question:Create Poll:Q4:d"/>
+</conditions>
+<trueSet>
+<append document="Final Poll" appendage="MCQ3"/>
+</trueSet>
+<falseSet>
+<set field="D" arithmeticAsText="false">
+<string field="Question:Create Poll:Q4:d"/>
+</set>
+<append document="Final Poll" appendage="MCQ4"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</trueSet>
+<falseSet>
+<comment>- clear choice text so it won't display where not appropriate</comment>
+<set field="A" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</foreach>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+<comment>- show the assembled document</comment>
+<show document="Final Poll" reset="true"/>
+</process>
+<process name="Post-SetupFinish">
+<show document="Setup End" reset="false"/>
+</process>
+<process name="DisplayPollHeader">
+<comment>- set the display variables for Final Poll and PostPoll documents</comment>
+<get recordList="Record List 2">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="Configuration" recordList="Record List 2">
+<if>
+<conditions>
+<isNotBlank field="Configuration:Setup:Title"/>
+</conditions>
+<trueSet>
+<set field="PollTitle" arithmeticAsText="false">
+<string field="Configuration:Setup:Title"/>
+</set>
+<set field="PollDate" arithmeticAsText="false">
+<string field="Configuration:Setup:Date"/>
+</set>
+<set field="PollPre" arithmeticAsText="false">
+<string field="Configuration:Setup:PreInstructions"/>
+</set>
+<set field="PollPost" arithmeticAsText="false">
+<string field="Configuration:Setup:PostInstructions"/>
+</set>
+<set field="PollShow" arithmeticAsText="false">
+<string field="Configuration:Setup:ShowPoll"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show document="Final Poll" reset="false"/>
+</process>
+<process name="Post-Main">
+<comment>- set up the initial question number and the total question count</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<set field="QuestionTotal" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="Create Poll"/>
+</forms>
+</get>
+<foreach record="TotalNumber" recordList="Record List 5">
+<if>
+<conditions>
+<isLessThan field="QuestionTotal">
+<string field="TotalNumber:Create Poll:TotalQuestions"/>
+</isLessThan>
+</conditions>
+<trueSet>
+<set field="QuestionTotal" arithmeticAsText="false">
+<string field="TotalNumber:Create Poll:TotalQuestions"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<comment>- now show the first question</comment>
+<show form="PollLoop"/>
+</process>
+<process name="Pre-PollLoop">
+<comment>- fetch the current question to display in the PollLoop form</comment>
+<get recordList="Record List 3">
+<forms>
+<form name="Create Poll"/>
+</forms>
+<conditions>
+<equals field="Record List 3:Create Poll:QuestionNumber">
+<string field="QNumber"/>
+</equals>
+</conditions></get>
+<foreach record="Query" recordList="Record List 3">
+<set field="Q" arithmeticAsText="false">
+<string field="Query:Create Poll:Q1:a"/>
+</set>
+<set field="QType" arithmeticAsText="false">
+<string field="Query:Create Poll:Type"/>
+</set>
+<set field="A" arithmeticAsText="false">
+<string field="Query:Create Poll:Q4:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Query:Create Poll:Q4:b"/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string field="Query:Create Poll:Q4:c"/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string field="Query:Create Poll:Q4:d"/>
+</set>
+</foreach>
+</process>
+<process name="Post-PollLoop">
+<comment>- store the user's response</comment>
+<if>
+<conditions>
+<equals field="QType">
+<string value="FIB"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="PollLoop:Answer" arithmeticAsText="false">
+<string field="PollLoop:Q1:a"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="PollLoop:Answer" arithmeticAsText="false">
+<string field="PollLoop:Q2"/>
+</set>
+</falseSet>
+</if>
+<comment>- set up for the next question</comment>
+<set field="PollLoop:QuestionNumber" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<set field="PollLoop:Question" arithmeticAsText="false">
+<string field="Q"/>
+</set>
+<set field="PollLoop:ChoiceA" arithmeticAsText="false">
+<string field="A"/>
+</set>
+<set field="PollLoop:ChoiceB" arithmeticAsText="false">
+<string field="B"/>
+</set>
+<set field="PollLoop:ChoiceC" arithmeticAsText="false">
+<string field="C"/>
+</set>
+<set field="PollLoop:ChoiceD" arithmeticAsText="false">
+<string field="D"/>
+</set>
+<set field="PollLoop:Type" arithmeticAsText="false">
+<string field="QType"/>
+</set>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isLessThanOrEqualTo field="QNumber">
+<string field="QuestionTotal"/>
+</isLessThanOrEqualTo>
+</conditions>
+<trueSet>
+<comment>- and present it to the user</comment>
+<show form="PollLoop"/>
+</trueSet>
+</if>
+<comment>- we end up here if there are no more questions</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<get recordList="Record List 8">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="Choice" recordList="Record List 8">
+<comment>- if customizer has set flag to allow the user to see the results</comment>
+<if>
+<conditions>
+<isNotBlank field="Choice:Setup:ShowPoll"/>
+</conditions>
+<trueSet>
+<set field="PollShow" arithmeticAsText="false">
+<string field="Choice:Setup:ShowPoll"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show document="PollPost" reset="false"/>
+<if>
+<conditions>
+<equals field="PollShow">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<comment>- show them</comment>
+<show form="DisplayResults"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-DisplayResults">
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<comment>- get all the users' responses and do the calcualtions to display the results</comment>
+<get recordList="Record List 4">
+<forms>
+<form name="PollLoop"/>
+</forms>
+</get>
+<foreach record="Query" recordList="Record List 4">
+<if>
+<conditions>
+<and>
+<equals field="QNumber">
+<string field="Query:PollLoop:QuestionNumber"/>
+</equals>
+<equals field="Query:PollLoop:Type">
+<string value="MCQ"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+<set field="TotA" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotB" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotC" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotD" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Q" arithmeticAsText="false">
+<string field="Query:PollLoop:Question"/>
+</set>
+<set field="A" arithmeticAsText="false">
+<string field="Query:PollLoop:ChoiceA"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Query:PollLoop:ChoiceB"/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string field="Query:PollLoop:ChoiceC"/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string field="Query:PollLoop:ChoiceD"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 9">
+<forms>
+<form name="PollLoop"/>
+</forms>
+<conditions>
+<and>
+<equals field="QNumber">
+<string field="Record List 9:PollLoop:QuestionNumber"/>
+</equals>
+<equals field="Record List 9:PollLoop:Type">
+<string value="MCQ"/>
+</equals>
+</and>
+</conditions></get>
+<foreach record="Response" recordList="Record List 9">
+<set field="TotalResponses" arithmeticAsText="false">
+<add>
+<operand field="TotalResponses"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<contains field="Response:PollLoop:Answer">
+<string value="a"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotA" arithmeticAsText="false">
+<add>
+<operand field="TotA"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="Response:PollLoop:Answer">
+<string value="b"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotB" arithmeticAsText="false">
+<add>
+<operand field="TotB"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="Response:PollLoop:Answer">
+<string value="c"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotC" arithmeticAsText="false">
+<add>
+<operand field="TotC"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="Response:PollLoop:Answer">
+<string value="d"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotD" arithmeticAsText="false">
+<add>
+<operand field="TotD"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="PercentA" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotA"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentB" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotB"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentC" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotC"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentD" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotD"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentA" arithmeticAsText="false">
+<string field="PercentA"/>
+<string value="%"/>
+</set>
+<set field="PercentB" arithmeticAsText="false">
+<string field="PercentB"/>
+<string value="%"/>
+</set>
+<set field="PercentC" arithmeticAsText="false">
+<string field="PercentC"/>
+<string value="%"/>
+</set>
+<set field="PercentD" arithmeticAsText="false">
+<string field="PercentD"/>
+<string value="%"/>
+</set>
+<if>
+<conditions>
+<isBlank field="C"/>
+</conditions>
+<trueSet>
+<set field="TotC" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="PercentC" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isBlank field="D"/>
+</conditions>
+<trueSet>
+<set field="TotD" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="PercentD" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<append document="TotalResults" appendage="ResultsCM"/>
+</trueSet>
+</if>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<comment>- show the results doc</comment>
+<show document="TotalResults" reset="true"/>
+<if>
+<conditions>
+<equals field="Admin">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<comment>- if we got here via the Administration form, redisplay it</comment>
+<set field="Admin" arithmeticAsText="false">
+<string value="No"/>
+</set>
+<show form="Administration"/>
+</trueSet>
+</if>
+</process>
+<process name="Post-Administration">
+<comment>- process the Administrator's choice from the Form</comment>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="a"/>
+</conditions>
+<trueSet>
+<comment>- View poll</comment>
+<get recordList="Record List 10">
+<forms>
+<form name="Create Poll"/>
+</forms>
+</get>
+<foreach record="QAdmin" recordList="Record List 10">
+<set field="QNumber" arithmeticAsText="false">
+<string field="QAdmin:Create Poll:QuestionNumber"/>
+</set>
+<set field="Q" arithmeticAsText="false">
+<string field="QAdmin:Create Poll:Q1:a"/>
+</set>
+<if>
+<conditions>
+<equals field="QAdmin:Create Poll:Type">
+<string value="FIB"/>
+</equals>
+</conditions>
+<trueSet>
+<append document="Final Poll" appendage="FIB"/>
+</trueSet>
+<falseSet>
+<if>
+<conditions>
+<equals field="QAdmin:Create Poll:Type">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="A" arithmeticAsText="false">
+<string field="QAdmin:Create Poll:Q4:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="QAdmin:Create Poll:Q4:b"/>
+</set>
+<if>
+<conditions>
+<isBlank field="QAdmin:Create Poll:Q4:c"/>
+</conditions>
+<trueSet>
+<append document="Final Poll" appendage="MCQ2"/>
+</trueSet>
+<falseSet>
+<set field="C" arithmeticAsText="false">
+<string field="QAdmin:Create Poll:Q4:c"/>
+</set>
+<if>
+<conditions>
+<isBlank field="QAdmin:Create Poll:Q4:d"/>
+</conditions>
+<trueSet>
+<append document="Final Poll" appendage="MCQ3"/>
+</trueSet>
+<falseSet>
+<set field="D" arithmeticAsText="false">
+<string field="QAdmin:Create Poll:Q4:d"/>
+</set>
+<append document="Final Poll" appendage="MCQ4"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</trueSet>
+<falseSet>
+<set field="A" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</foreach>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+<show document="Final Poll" reset="true"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<comment>- See totals from specific question</comment>
+<if>
+<conditions>
+<isBlank field="Administration:Q2:a"/>
+</conditions>
+<trueSet>
+<show document="NoSpecifiedQ" reset="false"/>
+<show form="SpecifyQuestion"/>
+</trueSet>
+<falseSet>
+<set field="TargetQ" arithmeticAsText="false">
+<string field="Administration:Q2:a"/>
+</set>
+<show form="TotalQuestion"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1">
+<string value="c"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>- See detail results from specific question</comment>
+<if>
+<conditions>
+<isBlank field="Administration:Q2:a"/>
+</conditions>
+<trueSet>
+<show document="NoSpecifiedQ" reset="false"/>
+<show form="SpecifyQuestion"/>
+</trueSet>
+<falseSet>
+<set field="TargetQ" arithmeticAsText="false">
+<string field="Administration:Q2:a"/>
+</set>
+<show form="DetailQuestion"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="d"/>
+</conditions>
+<trueSet>
+<comment>- See totals from all MCQs</comment>
+<set field="Admin" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<show form="DisplayResults"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="e"/>
+</conditions>
+<trueSet>
+<comment>- See detail results from all questions</comment>
+<show form="AllDetailQs"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="f"/>
+</conditions>
+<trueSet>
+<comment>- Show correlation detail for up to first ten questions</comment>
+<show form="Correlation"/>
+</trueSet>
+</if>
+<comment>- redisplay the Administration options</comment>
+<show form="Administration"/>
+</process>
+<process name="Post-SpecifyQuestion">
+<set field="TargetQ" arithmeticAsText="false">
+<string field="SpecifyQuestion:Q1:a"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<comment>- See totals from specific question</comment>
+<show form="TotalQuestion"/>
+</trueSet>
+<falseSet>
+<comment>- See totals from all MCQs</comment>
+<show form="DetailQuestion"/>
+</falseSet>
+</if>
+</process>
+<process name="Post-TotalQuestion">
+<comment>- See totals from specific question</comment>
+<set field="TotA" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotB" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotC" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="TotD" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="FIBTest" arithmeticAsText="false">
+<string value="False"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 11">
+<forms>
+<form name="PollLoop"/>
+</forms>
+<conditions>
+<equals field="Record List 11:PollLoop:QuestionNumber">
+<string field="TargetQ"/>
+</equals>
+</conditions></get>
+<foreach record="TargetQuery" recordList="Record List 11">
+<if>
+<conditions>
+<equals field="TargetQuery:PollLoop:Type">
+<string value="FIB"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="FIBTest" arithmeticAsText="false">
+<string value="True"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Q" arithmeticAsText="false">
+<string field="TargetQuery:PollLoop:Question"/>
+</set>
+<set field="QNumber" arithmeticAsText="false">
+<string field="TargetQuery:PollLoop:QuestionNumber"/>
+</set>
+<set field="A" arithmeticAsText="false">
+<string field="TargetQuery:PollLoop:ChoiceA"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="TargetQuery:PollLoop:ChoiceB"/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string field="TargetQuery:PollLoop:ChoiceC"/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string field="TargetQuery:PollLoop:ChoiceD"/>
+</set>
+<set field="TotalResponses" arithmeticAsText="false">
+<add>
+<operand field="TotalResponses"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<contains field="TargetQuery:PollLoop:Answer">
+<string value="a"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotA" arithmeticAsText="false">
+<add>
+<operand field="TotA"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="TargetQuery:PollLoop:Answer">
+<string value="b"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotB" arithmeticAsText="false">
+<add>
+<operand field="TotB"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="TargetQuery:PollLoop:Answer">
+<string value="c"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotC" arithmeticAsText="false">
+<add>
+<operand field="TotC"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="TargetQuery:PollLoop:Answer">
+<string value="d"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="TotD" arithmeticAsText="false">
+<add>
+<operand field="TotD"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</falseSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<equals field="FIBTest">
+<string value="True"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="NoTotalsforFIB" reset="false"/>
+<show form="DetailQuestion"/>
+</trueSet>
+</if>
+<set field="PercentA" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotA"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentB" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotB"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentC" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotC"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentD" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="TotD"/>
+<operand value="100"/>
+</mul>
+<operand field="TotalResponses"/>
+</div>
+</set>
+<set field="PercentA" arithmeticAsText="false">
+<string field="PercentA"/>
+<string value="%"/>
+</set>
+<set field="PercentB" arithmeticAsText="false">
+<string field="PercentB"/>
+<string value="%"/>
+</set>
+<set field="PercentC" arithmeticAsText="false">
+<string field="PercentC"/>
+<string value="%"/>
+</set>
+<set field="PercentD" arithmeticAsText="false">
+<string field="PercentD"/>
+<string value="%"/>
+</set>
+<if>
+<conditions>
+<isBlank field="C"/>
+</conditions>
+<trueSet>
+<set field="C" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="PercentC" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<isBlank field="D"/>
+</conditions>
+<trueSet>
+<set field="D" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="PercentD" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<show document="ResultsCM" reset="false"/>
+<show form="Administration"/>
+</process>
+<process name="Post-DetailQuestion">
+<comment>- See detail results from specific question</comment>
+<get recordList="Record List 12">
+<forms>
+<form name="PollLoop"/>
+</forms>
+<conditions>
+<equals field="Record List 12:PollLoop:QuestionNumber">
+<string field="TargetQ"/>
+</equals>
+</conditions></get>
+<foreach record="TargetQuestion" recordList="Record List 12">
+<set field="QNumber" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:QuestionNumber"/>
+</set>
+<set field="Q" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:Question"/>
+</set>
+<set field="Response" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:Answer"/>
+</set>
+<if>
+<conditions>
+<equals field="TargetQuestion:PollLoop:Type">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="TargetQuestion:PollLoop:Answer">
+<string value="a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:ChoiceA"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="TargetQuestion:PollLoop:Answer">
+<string value="b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:ChoiceB"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="TargetQuestion:PollLoop:Answer">
+<string value="c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:ChoiceC"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="TargetQuestion:PollLoop:Answer">
+<string value="d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="TargetQuestion:PollLoop:ChoiceD"/>
+</set>
+</trueSet>
+</if>
+<append document="ResultsHeader" appendage="MCQResultsCM"/>
+</trueSet>
+<falseSet>
+<append document="ResultsHeader" appendage="FIBResultsCM"/>
+</falseSet>
+</if>
+</foreach>
+<show document="ResultsHeader" reset="true"/>
+<show form="Administration"/>
+</process>
+<process name="Post-AllDetailQs">
+<comment>- See detail results from all questions</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<get recordList="Record List 13">
+<forms>
+<form name="PollLoop"/>
+</forms>
+</get>
+<foreach record="Question1" recordList="Record List 13">
+<if>
+<conditions>
+<equals field="QNumber">
+<string field="Question1:PollLoop:QuestionNumber"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Q" arithmeticAsText="false">
+<string field="Question1:PollLoop:Question"/>
+</set>
+<set field="QType" arithmeticAsText="false">
+<string field="Question1:PollLoop:Type"/>
+</set>
+<show document="ResultsHeader" reset="false"/>
+<get recordList="Record List 14">
+<forms>
+<form name="PollLoop"/>
+</forms>
+<conditions>
+<equals field="QNumber">
+<string field="Record List 14:PollLoop:QuestionNumber"/>
+</equals>
+</conditions></get>
+<foreach record="Respondent" recordList="Record List 14">
+<set field="Response" arithmeticAsText="false">
+<string field="Respondent:PollLoop:Answer"/>
+</set>
+<if>
+<conditions>
+<equals field="QType">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<equals field="Response">
+<string value="a"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="Respondent:PollLoop:ChoiceA"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Response">
+<string value="b"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="Respondent:PollLoop:ChoiceB"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Response">
+<string value="c"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="Respondent:PollLoop:ChoiceC"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Response">
+<string value="d"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Choice" arithmeticAsText="false">
+<string field="Respondent:PollLoop:ChoiceD"/>
+</set>
+</trueSet>
+</if>
+<show document="MCQResultsCM" reset="false"/>
+</trueSet>
+<falseSet>
+<show document="FIBResultsCM" reset="false"/>
+</falseSet>
+</if>
+</foreach>
+</trueSet>
+</if>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<show form="Administration"/>
+</process>
+<process name="Post-Correlation">
+<comment>- Show correlation detail for up to first ten questions</comment>
+<get recordList="Record List 15">
+<forms>
+<form name="PollLoop"/>
+</forms>
+<conditions>
+<isLessThanOrEqualTo field="Record List 15:PollLoop:QuestionNumber">
+<string value="10"/>
+</isLessThanOrEqualTo>
+</conditions></get>
+<foreach record="Entry" recordList="Record List 15">
+<set field="Column" arithmeticAsText="false">
+<string field="Entry:PollLoop:QuestionNumber"/>
+</set>
+<if>
+<conditions>
+<equals field="Column">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<append document="CorrelationHeader" appendage="CorrelationCM"/>
+<set field="R1" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+<set field="R2" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R3" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R4" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R5" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R6" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R7" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R8" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R9" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="R10" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="2"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R2" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="3"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R3" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="4"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R4" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="5"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R5" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="6"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R6" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="7"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R7" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="8"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R8" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="9"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R9" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Column">
+<string value="10"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="R10" arithmeticAsText="false">
+<string field="Entry:PollLoop:Answer"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<append document="CorrelationHeader" appendage="CorrelationCM"/>
+<show document="CorrelationHeader" reset="true"/>
+<show form="Administration"/>
+</process>
+</processes>
+<documents>
+<document name="FIB">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>)</b></font><sp/><font face="Arial" size="200" color="000000"><field name="Q"/></font><font face="Arial" size="200" color="000000">    ___________________________________________</font><tab/></paragraph>
+</xmlData>
+</document>
+<document name="Final Poll">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><tab/><font face="Arial" size="280" color="000000"><b><field name="PollTitle"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="PollDate"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/><tabStop position="17280"/></tabPositions><font face="Arial" size="200" color="000079"><b><i><field name="PollPre"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="MCQ2">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><field name="Q"/></font><tab/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">a) </font><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">b) </font><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph>
+</xmlData>
+</document>
+<document name="MCQ3">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><field name="Q"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">a) </font><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">b) </font><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">c) </font><font face="Arial" size="200" color="000000"><field name="C"/></font></paragraph>
+</xmlData>
+</document>
+<document name="MCQ4">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><field name="Q"/></font><tab/><tab/><tab/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">a) </font><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">b) </font><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">c) </font><font face="Arial" size="200" color="000000"><field name="C"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">d) </font><font face="Arial" size="200" color="000000"><field name="D"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Final Poll Header">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>This will be the format of your finished poll.  </i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Poll So Far">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Your poll so far....</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Setup End">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>This is what your poll-takers will see after they complete the poll:</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685">-------------------------------------------------------------------------------------------</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000077"><b><i><field name="PollPost"/></i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685">-------------------------------------------------------------------------------------------</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>If this looks correct, proceed to the next step (Review and Send).</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><sp/></paragraph>
+</xmlData>
+</document>
+<document name="PollPost">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i><field name="PollPost"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="ResultsCM">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>)</b></font><sp/><font face="Arial" size="200" color="000000"><b><field name="Q"/></b></font></paragraph><table indent="615"><row><cell width="4200"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="A"/></font></division></cell><cell width="270"/><cell width="1035"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><field name="TotA"/></b></font></division></cell><cell width="200"/><cell width="1615"><division indent="0" align="left"><font face="Arial" size="200" color="000080"><b><field name="PercentA"/></b></font></division></cell></row><row><cell width="4200"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="B"/></font></division></cell><cell width="270"/><cell width="1035"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><field name="TotB"/></b></font></division></cell><cell width="200"/><cell width="1615"><division indent="0" align="left"><font face="Arial" size="200" color="000080"><b><field name="PercentB"/></b></font></division></cell></row><row><cell width="4200"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="C"/></font></division></cell><cell width="270"/><cell width="1035"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><field name="TotC"/></b></font></division></cell><cell width="200"/><cell width="1615"><division indent="0" align="left"><font face="Arial" size="200" color="000080"><b><field name="PercentC"/></b></font></division></cell></row><row><cell width="4200"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="D"/></font></division></cell><cell width="270"/><cell width="1035"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><field name="TotD"/></b></font></division></cell><cell width="200"/><cell width="1615"><division indent="0" align="left"><font face="Arial" size="200" color="000080"><b><field name="PercentD"/></b></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="TotalResults">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="NoTotalsforFIB">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>We cannot show summary totals for Fill-in-the-blank questions, </i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>so we will show you a detail table instead.  </i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="ResultsHeader">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><b><field name="Q"/></b></font></paragraph>
+</xmlData>
+</document>
+<document name="FIBResultsCM">
+<xmlData>
+<table indent="960"><row><cell width="5160"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Response"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="MCQResultsCM">
+<xmlData>
+<table indent="960"><row><cell width="390"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Response"/></font></division></cell><cell width="315"/><cell width="4455"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Choice"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="NoSpecifiedQ">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>You did not specify a question number.  Please review your poll and identify the poll question that you'd like to see results for in the blank at the end.  Then press "Submit."</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="CorrelationCM">
+<xmlData>
+<table indent="0"><row><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R1"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R2"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R3"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R4"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R5"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R6"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R7"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R8"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R9"/></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="R10"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="CorrelationHeader">
+<xmlData>
+<table indent="0"><row><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q1</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q2</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q3</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q4</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q5</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q6</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q7</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q8</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q9</u></b></font></division></cell><cell width="1080"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><u>Q10</u></b></font></division></cell></row></table>
+</xmlData>
+</document>
+</documents>
+</project>

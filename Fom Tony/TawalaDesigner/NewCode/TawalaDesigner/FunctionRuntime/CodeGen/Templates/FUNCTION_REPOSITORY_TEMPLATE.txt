@@ -1,0 +1,25 @@
+	public sealed class FunctionRepositoryImpl : FunctionRepository, IFunctionRepository
+	{
+        public IFunctionInfoCollection Functions { get { return functions; } }
+
+        public ICategoryInfoCollection Categories { get { return categories; } }
+
+        public XPathNavigator Xml { get { return navigator.Clone(); } }
+
+		public Assembly GeneratedAssembly { get { return Assembly.GetExecutingAssembly(); }	}
+		public string Signature	{ get { return "${REPOSITORYSIGNATURE}"; } }
+		public string Created	{ get { return "${CREATIONTIME}"; } }
+
+		private FunctionRepositoryImpl() 
+		{
+			ResourceManager rm = new ResourceManager("functions", Assembly.GetExecutingAssembly());
+			
+			using (StringReader sr = new StringReader(rm.GetString("REPOSITORY_XML")))
+			{
+				XPathNavigator repositoryRoot = new XPathDocument(sr).CreateNavigator();
+				repositoryRoot.MoveToFirstChild();
+				navigator = repositoryRoot.Clone();
+			}
+		}		
+	}
+}

@@ -1,0 +1,47 @@
+﻿body
+{
+	font: normal normal normal 10pt Arial;
+	margin: 0px;
+	padding: 0px;
+}
+
+.field, .function
+{
+	padding: 0px 2px 0px 2px;
+	vertical-align: middle;
+	border: solid 1px #808080;
+	border-left-width: 2px;
+	border-right-width: 2px;
+	margin-left: 2px;
+	margin-right: 2px;
+}
+
+.field
+{
+	background-color: #E0FFE0;
+}
+
+.function
+{
+	background-color: #E0E0FF;
+}
+
+.link
+{
+	background-color: White;
+	color: Blue;
+	text-decoration: underline;
+}
+
+table.user
+{
+	border: dotted 1px black;
+	margin: 0px;
+	padding: 0px;
+}
+
+table.user tbody tr td
+{
+	border: dotted 1px black;
+}
+

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="DisplayLabelTest" themePath="default" format="1.9" designerBuild="200">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<fib label="Q1" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Your name: </font><blank label="a" length="20" required="false"/></paragraph></fib>
+<mc label="Q2" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Days you can attend:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Monday</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Tuesday</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Wednesday</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Thursday</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Friday</font></paragraph></choice></mc>
+<break/>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="2535"><division indent="0" align="right"><font>Your name:</font></division></cell><cell width="200"></cell><cell width="8065"><division indent="0" align="left"><font><field name="Form 1:Q1:a"/></font></division></cell></row><row><cell width="2535"><division indent="0" align="right"><font>You can attend on:</font></division></cell><cell width="200"></cell><cell width="8065"><division indent="0" align="left"><font><display-mcq-label version="1"><field-name>Record:Form 1:Q2</field-name></display-mcq-label></font></division></cell></row></table></text>
+</items>
+</form>
+</forms>
+</project>

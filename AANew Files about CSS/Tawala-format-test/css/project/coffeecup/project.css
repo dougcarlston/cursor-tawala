@@ -1,0 +1,163 @@
+body {
+	background-color: #aaaaaa;
+	font-family: "Lucida Grande", Arial, Verdana, Helvetica, sans-serif;
+}
+
+/* palette
+240700
+360100
+361800
+FFEDAE
+FCF487
+*/
+
+h1 { }
+
+	h1.heading {
+		height: 4em;
+		line-height: 3em;
+		background-color: #240700;
+		border-bottom: 2px solid #361800;
+		background: url('images/coffeecup.jpg') right top no-repeat;
+		color: #FCF487;
+	}
+
+h2 {
+	background-color: #FFEDAE;
+	background: url('images/coffee-bean.gif') left 50% no-repeat;
+	padding-left: 2em;
+	font-weight: bold;
+	line-height: 1.6em;
+	border: 0px solid #c3c8b2;
+}
+
+h3 {}
+
+h4 {}
+
+h5 {}
+
+h6 {}
+
+#tawalaProjectContainer {
+	background-color: #f8fff4;
+	border: 0px solid #cccccc;
+}
+
+#tawalaFooter {
+	width: 170px;
+	height: 36px;
+	float: right;
+	cursor: pointer;
+	background: url("images/madewithtawala.gif") 100% 50% no-repeat;
+}
+
+form div.fib div.question, form .fib .answer {
+}
+
+/*
+ * Component styles
+ */
+table.component {
+	border-collapse: collapse;
+	font-size: 1em;
+}
+	table.component.outline {
+		border: 1px solid #e3e8d2;				
+	}
+	
+	table.component thead {
+		background-color: #3c2211;
+		color: #ffffff;
+	}
+
+		table.component thead th {
+			padding: .2em 1em;
+		}
+
+		table.component.outline thead th {
+			border: 1px solid #cccccc;
+		}
+
+	table.component td{
+		padding-left: 1em;
+		padding-right: 1em;
+	}
+
+		table.component.outline tbody td{
+			border: 1px solid #e3e8d2;
+		}
+		
+		table.component tbody tr.odd{
+			background-color: #FFEDAE;
+		}
+
+		table.component tbody tr.even{
+			background-color: #ffffff;
+		}
+
+		table.component tbody tr:hover {
+			background-color: #FCF487;
+		}
+
+.graph.color1 { border-color: #F09000; }
+	.graph.color1 .bar { background: #F09000; }
+
+.graph.color2 { border-color: #D87818; }
+	.graph.color2 .bar { background: #D87818; }
+
+.graph.color3 { border-color:#D86018; }
+	.graph.color3 .bar { background: #D86018; }
+
+.graph.color4 { border-color: #C06018; }
+	.graph.color4 .bar { background: #C06018; }
+
+.graph.color5 { border-color: #C04818; }
+	.graph.color5 .bar { background: #C04818; }
+
+.graph.color6 { border-color: #F09000; }
+	.graph.color6 .bar { background: #F09000; }
+
+.graph.color7 { border-color: #D87818; }
+	.graph.color7 .bar { background: #D87818; }
+
+.graph.color8 { border-color:#D86018; }
+	.graph.color8 .bar { background: #D86018; }
+
+.graph.color9 { border-color: #C06018; }
+	.graph.color9 .bar { background: #C06018; }
+
+.graph.color10 { border-color: #C04818; }
+.graph.color10 .bar { background: #C04818; }
+
+.graph.color11 { border-color: #F09000; }
+	.graph.color11 .bar { background: #F09000; }
+
+.graph.color12 { border-color: #D87818; }
+	.graph.color12 .bar { background: #D87818; }
+
+.graph.color13 { border-color:#D86018; }
+	.graph.color13 .bar { background: #D86018; }
+
+.graph.color14 { border-color: #C06018; }
+	.graph.color14 .bar { background: #C06018; }
+
+.graph.color15 { border-color: #C04818; }
+	.graph.color15 .bar { background: #C04818; }
+
+.graph.color16 { border-color: #F09000; }
+	.graph.color16 .bar { background: #F09000; }
+
+
+button:hover, .buttons a:hover{
+    background-color:#FFEDAE;
+    border:1px solid #c2e1ef;
+    color:#333333;
+}
+
+.buttons a:active{
+    background-color:#FCF487;
+    border:1px solid #FCF487;
+    color:#fff;
+}
+

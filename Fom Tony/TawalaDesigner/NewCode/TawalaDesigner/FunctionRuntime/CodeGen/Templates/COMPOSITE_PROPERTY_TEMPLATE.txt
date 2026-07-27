@@ -1,0 +1,63 @@
+
+		[Description("${PNAME} Composite")]
+		public class __composite_${PNAME} : CompositeParameterBase
+		{
+		    ${PROPERTIES}
+		    
+   		    protected override void NotifyChanged(string name)
+		    {
+			    if (CompositePropertyChanged != null)
+			    {
+			        CompositePropertyChanged(this, new PropertyChangedEventArgs("${PNAME}"));
+			    }
+			    
+			    base.NotifyChanged(name);
+		    }
+		}
+		
+		[Description("${PNAME} Composite Collection")]
+		public class __composite_collection_${PNAME} : CompositeParameterCollectionBase<__composite_${PNAME}>
+		{			
+  		    protected override void NotifyChanged(string name)
+		    {
+			    if (CompositePropertyChanged != null)
+			    {
+			        CompositePropertyChanged(this, new PropertyChangedEventArgs("${PNAME}"));
+			    }
+			    
+			    base.NotifyChanged(name);
+		    }
+		    
+		    public override ICompositeParameter CreateItem()
+		    {
+				return new  __composite_${PNAME}();
+		    }
+		    
+		    public override IBindingList CreateBindingList()
+		    {
+				return new BindingList<__composite_${PNAME}>(this);
+		    }
+		    
+		    public override string ToFunctionParameterXml()
+		    {
+				StringBuilder sbXml = new StringBuilder();
+				foreach (ICompositeParameter composite in this)
+				{
+					sbXml.AppendFormat("<${CCID}>{0}</${CCID}>", composite.ToFunctionParameterXml());
+				}
+				return sbXml.ToString();
+		    }
+		}
+		
+		private __composite_collection_${PNAME}  prop_${FNAME} = new __composite_collection_${PNAME}();
+
+        [ParameterMarker]
+        [ParameterProperty("${GID}", typeof(__composite_${PNAME}), typeof(__composite_collection_${PNAME}))]
+		public __composite_collection_${PNAME} ${PNAME}
+		{
+			get	{ return prop_${FNAME};	}
+			set
+			{
+				if (prop_${FNAME} != value)	{ prop_${FNAME} = value; NotifyChanged("${PNAME}");	}
+			}
+		}

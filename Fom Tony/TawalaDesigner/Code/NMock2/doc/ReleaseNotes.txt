@@ -1,0 +1,28 @@
+Release Name: 2.0.0RC2
+
+NMock2.dll Details
+------------------
+Version: 	2.0.0.44
+Date Modified: 	1/30/2008 4:55PM  
+
+Notes:
+Second Release Candidate of NMock2
+
+The NMock2.dll is now strongly named.
+Bugs with using Ordered expectations have been fixed.
+
+We now build on a CruiseControl.NET server provided by ThoughtWorks. Builds can be found at http://ccnetlive.thoughtworks.com/NMock2-builds/
+--------------------------------------------------------------------------------
+Changes:
+Changes Since 2.0.0RC1
+-----------------------
+The NAnt Build script has been completely rewritten.
+CruiseControl.NET is now used for continuous integration and official builds.
+Updated to the latest NUnit (2.4.6).
+Added Fire syntax for mocking events.
+Added Has.Field matcher.
+Added Is.TypeOf matcher.
+Unexpected invocations suppressed by catch blocks in code under test will be retrown when VerifyAllExpectationsHaveBeenMet() is called.
+Added the ability to name the mocks when using NewMock<T>()
+Added CollectAction to capture parameters passed to invocations.
+Fixed a bug with returning a nullable type.

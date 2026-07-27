@@ -1,0 +1,38 @@
+body {
+	background-color: #bc2021;
+}
+
+#tawalaProjectContainer {
+    border: 1px solid #ffd057;
+    margin-left: auto;
+    margin-right: auto;
+    background-color: #bc2021;
+    color: #eab693;
+}
+
+#tawalaFooter {
+	background-image: none;
+}
+
+.text {
+    border-bottom: 1px solid #eeb027;
+    margin: 16px 0px 6px 0px; 
+    padding: 0px 0px 2px 8px; 
+}
+
+#form input {
+    background-color: #fff6db;
+    border: 1px solid #ffd057;
+}
+
+#form .submitButton {
+    clear: both;
+    margin: 36px 0px 0px 80%;
+}
+
+#form .submitButton input {
+    font-weight: bold;
+    Text-transform: capitalize;
+    background-color: #fff6db;
+    color: #884444;
+}

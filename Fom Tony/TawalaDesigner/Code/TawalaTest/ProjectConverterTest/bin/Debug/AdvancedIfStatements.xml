@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<request type="uploadProject" protocol="1.0">
+<credentials user="JDF" password="jdf20q" />
+<project name="AdvancedIfStatements" format="1.3">
+<forms>
+<form name="Form 1" process="Process 1">
+<items>
+<fib label="Q1">Fib Item 1: <blank label="a" length="10" required="false"/></fib>
+<fib label="Q2">Fib Item 2: <blank label="a" length="10" required="false"/></fib>
+<mc label="Q3" onlyone="true" required="false"><question>MC Item 1</question><choice label="a">Choice A</choice><choice label="b">Choice B</choice><choice label="c">Choice C</choice><choice label="d">Choice D</choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<if>
+<conditions>
+<or>
+<mcEquals field="Q3" value="a"/>
+<mcEquals field="Q3" value="b"/>
+</or>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<mcEquals field="Q3" value="a"/>
+<or>
+<mcEquals field="Q3" value="b"/>
+<mcEquals field="Q3" value="c"/>
+</or>
+</or>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<isNotBlank field="Q1:a" />
+<equals field="Q2:a">
+<string value="Q2 Response"/>
+</equals>
+</and>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<isNotBlank field="Q1:a" />
+<and>
+<equals field="Q2:a">
+<string value="Q2 Response"/>
+</equals>
+<isGreaterThan field="Q1:a">
+<string value="21"/>
+</isGreaterThan>
+</and>
+</and>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Q1:a">
+<add>
+<operand field="Q2:a"/>
+<operand value="1"/>
+</add>
+</equals>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<equals field="Q1:a">
+<add>
+<operand field="Q2:a"/>
+<operand value="1"/>
+</add>
+</equals>
+<equals field="Q1:a">
+<sub>
+<operand field="Q2:a"/>
+<operand value="1"/>
+</sub>
+</equals>
+</or>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<equals field="Q1:a">
+<string field="Q2:a"/>
+<string value=" "/>
+<string field="Q2:a"/>
+</equals>
+<doesNotEqual field="Q1:a">
+<string field="Q2:a"/>
+<string value=" "/>
+<string field="Q2:a"/>
+</doesNotEqual>
+</and>
+</conditions>
+<trueSet>
+</trueSet>
+</if>
+</process>
+</processes>
+</project>
+</request>

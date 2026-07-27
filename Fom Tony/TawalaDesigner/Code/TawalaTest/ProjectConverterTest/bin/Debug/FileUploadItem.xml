@@ -1,0 +1,10 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<project name="FileUploadItem" themePath="default" format="1.12" designerBuild="218">
+<pageHeader></pageHeader><forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<file label="F3" alternateLabel="File" required="true" style="topLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">[Replace this with heading of your own.]</font><fileNameInput/></paragraph></file>
+</items>
+</form>
+</forms>
+</project>

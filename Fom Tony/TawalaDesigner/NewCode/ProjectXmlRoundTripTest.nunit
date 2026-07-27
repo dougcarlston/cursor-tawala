@@ -1,0 +1,9 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="TawalaTest\ProjectXmlRoundTripTest\bin\Debug\ProjectXmlRoundTripTest.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto">
+    <assembly path="TawalaTest\ProjectXmlRoundTripTest\bin\Release\ProjectXmlRoundTripTest.dll" />
+  </Config>
+</NUnitProject>

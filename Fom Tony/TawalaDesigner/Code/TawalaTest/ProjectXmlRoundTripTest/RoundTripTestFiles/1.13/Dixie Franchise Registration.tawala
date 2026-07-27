@@ -1,0 +1,1927 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Dixie Franchise Registration" themePath="mvsc" format="1.13" designerBuild="235">
+<pageHeader><image id="__HEADER__8cb65af11da16e0" width="891" height="148"/></pageHeader><styles fibItemStyle="leftAlignLabels" /><forms>
+<form name="Registration" startPoint="true" themePath="mvsc" process="Post-Registration" preProcess="Pre-Registration">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><image id="image3" width="842" height="43"><metafileHeader fileType="1" headerSize="9" version="768" fileSize="54405" numOfObjects="0" maxRecordSize="54383" numOfParams="0" />
+</image></font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280" color="C00000"><b><i><field name="Message"/></i></b></font></paragraph></text>
+<fib label="Q1" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>League Name:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="LeagueName"/></paragraph></fib>
+<fib label="Q2" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>League Address:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="LeagueAddress"/></paragraph></fib>
+<fib label="Q3" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>City, State Zip:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="LeagueCityStateZip"/></paragraph></fib>
+<fib label="Q4" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="LeagueEmailAddress"/><font face="Arial" size="200" color="000000">  </font><font color="000000"><i>Note: Your order confirmation will be sent to this email address.</i></font></paragraph></fib>
+<fib label="Q5" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Email (a</b></font><font face="Arial" size="200" color="000000"><b><i>gain):</i></b></font><font face="Arial" size="200" color="000000"> </font><blank label="a" length="20" required="false" alternateLabel="EmailAddressConfirmation"/><font face="Arial" size="200" color="000000">  </font><font color="000000"><i>Please type it carefully and enter it again here to prevent error.</i></font></paragraph></fib>
+<fib label="Q6" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Franchise #:</b></font><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><sp/><font face="Arial" size="200" color="000000"><b>S-</b></font><blank label="a" length="20" required="false" alternateLabel="Franchise"/></paragraph></fib>
+<fib label="Q7" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>District #:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="District"/></paragraph></fib>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></text>
+<text label="T4" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Please enter number of teams:</b></font></paragraph></text>
+<fib label="Q8" style="rightAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>SweeTees: </i></font><blank label="a" length="4" required="false" alternateLabel="SweeTees"/><font face="Arial" size="200" color="000000"><i> @ $10 per team plus $25 State Fee</i></font></paragraph></fib>
+<fib label="Q9" style="rightAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Darlings: </i></font><blank label="a" length="4" required="false" alternateLabel="Darlings"/><font face="Arial" size="200" color="000000"><i> @ $15 per team plus $25 State Fee</i></font></paragraph></fib>
+<fib label="Q10" style="rightAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Angels: </i></font><blank label="a" length="4" required="false" alternateLabel="Angels"/><font face="Arial" size="200" color="000000"><i> @ $15 per team plus $25 State Fee</i></font></paragraph></fib>
+<fib label="Q11" style="rightAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Ponytails: </i></font><blank label="a" length="4" required="false" alternateLabel="Ponytails"/><font face="Arial" size="200" color="000000"><i> @ $15 per team plus $25 State Fee</i></font></paragraph></fib>
+<fib label="Q12" style="rightAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Belles: </i></font><blank label="a" length="4" required="false" alternateLabel="Belles"/><font face="Arial" size="200" color="000000"><i> @ $15 per team plus $25 State Fee</i></font></paragraph></fib>
+<fib label="Q13" style="rightAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><i>Debs: </i></font><blank label="a" length="4" required="false" alternateLabel="Debs"/><font face="Arial" size="200" color="000000"><i> @ $15 per team plus $25 State Fee</i></font></paragraph></fib>
+<text label="T5" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Press Submit to total your order and to continue to the rest of the Franchise Registration form.</font></paragraph></text>
+<skipInstructions>
+<if>
+<conditions>
+<or>
+<isBlank field="Registration:LeagueName" />
+<or>
+<isBlank field="Registration:LeagueAddress" />
+<or>
+<isBlank field="Registration:LeagueCityStateZip" />
+<or>
+<isBlank field="Registration:LeagueEmailAddress" />
+<or>
+<isBlank field="Registration:Franchise" />
+<isBlank field="Registration:District" />
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="You must provide information for League Name, Address and Email, Franchise and District."/>
+</set>
+<skip to="T1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<doesNotEqual field="Registration:LeagueEmailAddress">
+<string field="Registration:EmailAddressConfirmation"/>
+</doesNotEqual>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="League Email address fields do not match. Please correct."/>
+</set>
+<skip to="T1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<doesNotContain field="Registration:LeagueEmailAddress">
+<string value="@"/>
+</doesNotContain>
+<or>
+<doesNotContain field="Registration:LeagueEmailAddress">
+<string value="."/>
+</doesNotContain>
+<or>
+<contains field="Registration:LeagueEmailAddress">
+<string value=" "/>
+</contains>
+<contains field="Registration:LeagueEmailAddress">
+<string value=","/>
+</contains>
+</or>
+</or>
+</or>
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="League Email address is invalid. Please correct."/>
+</set>
+<skip to="T1"/>
+</trueSet>
+</if>
+<set field="NatFeeS" arithmeticAsText="false">
+<mul>
+<operand field="Registration:SweeTees"/>
+<operand value="10"/>
+</mul>
+</set>
+<set field="NatFeeD" arithmeticAsText="false">
+<mul>
+<operand field="Registration:Darlings"/>
+<operand value="15"/>
+</mul>
+</set>
+<set field="NatFeeA" arithmeticAsText="false">
+<mul>
+<operand field="Registration:Angels"/>
+<operand value="15"/>
+</mul>
+</set>
+<set field="NatFeeP" arithmeticAsText="false">
+<mul>
+<operand field="Registration:Ponytails"/>
+<operand value="15"/>
+</mul>
+</set>
+<set field="NatFeeB" arithmeticAsText="false">
+<mul>
+<operand field="Registration:Belles"/>
+<operand value="15"/>
+</mul>
+</set>
+<set field="NatFeeDeb" arithmeticAsText="false">
+<mul>
+<operand field="Registration:Debs"/>
+<operand value="15"/>
+</mul>
+</set>
+<if>
+<conditions>
+<isGreaterThan field="Registration:SweeTees">
+<string value="0"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TotS" arithmeticAsText="false">
+<add>
+<mul>
+<operand field="Registration:SweeTees"/>
+<operand value="10"/>
+</mul>
+<operand value="25"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="TotS" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isGreaterThan field="Registration:Darlings">
+<string value="0"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TotD" arithmeticAsText="false">
+<add>
+<mul>
+<operand field="Registration:Darlings"/>
+<operand value="15"/>
+</mul>
+<operand value="25"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="TotD" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isGreaterThan field="Registration:Angels">
+<string value="0"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TotA" arithmeticAsText="false">
+<add>
+<mul>
+<operand field="Registration:Angels"/>
+<operand value="15"/>
+</mul>
+<operand value="25"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="TotA" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isGreaterThan field="Registration:Ponytails">
+<string value="0"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TotP" arithmeticAsText="false">
+<add>
+<mul>
+<operand field="Registration:Ponytails"/>
+<operand value="15"/>
+</mul>
+<operand value="25"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="TotP" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isGreaterThan field="Registration:Belles">
+<string value="0"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TotB" arithmeticAsText="false">
+<add>
+<mul>
+<operand field="Registration:Belles"/>
+<operand value="15"/>
+</mul>
+<operand value="25"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="TotB" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isGreaterThan field="Registration:Debs">
+<string value="0"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TotDebs" arithmeticAsText="false">
+<add>
+<mul>
+<operand field="Registration:Debs"/>
+<operand value="15"/>
+</mul>
+<operand value="25"/>
+</add>
+</set>
+</trueSet>
+<falseSet>
+<set field="TotDebs" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<set field="Total" arithmeticAsText="false">
+<add>
+<add>
+<add>
+<add>
+<add>
+<operand field="TotA"/>
+<operand field="TotB"/>
+</add>
+<operand field="TotD"/>
+</add>
+<operand field="TotDebs"/>
+</add>
+<operand field="TotP"/>
+</add>
+<operand field="TotS"/>
+</add>
+</set>
+<set field="Total" arithmeticAsText="false">
+<add>
+<operand field="Total"/>
+<operand value="10"/>
+</add>
+</set>
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</skipInstructions>
+<text label="T6" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="240"><row><cell width="915"></cell><cell width="1590"><division indent="0" align="left"><font><b><i># of Teams</i></b></font></division></cell><cell width="2655"><division indent="0" align="left"><font><i>National Fee</i></font></division></cell><cell width="675"></cell><cell width="1440"><division indent="0" align="left"><font><i>State Fee</i></font></division></cell><cell width="3285"><division indent="0" align="left"><font><i>Total Fees</i></font></division></cell></row></table><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="255"><row><cell width="1470"><division indent="0" align="left"><font>SweeTees</font></division></cell><cell width="660"><division indent="0" align="left"><font><field name="Registration:SweeTees"/></font></division></cell><cell width="2100"><division indent="0" align="right"><sp/><font><i>@ $10 per team = $</i></font></division></cell><cell width="900"><division indent="0" align="right"><font><field name="NatFeeS"/></font></division></cell><cell width="2115"><division indent="0" align="right"><font><i> + $25.00     = $</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><field name="TotS"/></font></division></cell></row><row><cell width="1470"><division indent="0" align="left"><font>Darlings</font></division></cell><cell width="660"><division indent="0" align="left"><font><field name="Registration:Darlings"/></font></division></cell><cell width="2100"><division indent="0" align="right"><sp/><font><i>@ $15 per team = $</i></font></division></cell><cell width="900"><division indent="0" align="right"><font><field name="NatFeeD"/></font></division></cell><cell width="2115"><division indent="0" align="right"><font><i> + $25.00     = $</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><field name="TotD"/></font></division></cell></row><row><cell width="1470"><division indent="0" align="left"><font>Angels</font></division></cell><cell width="660"><division indent="0" align="left"><font><field name="Registration:Angels"/></font></division></cell><cell width="2100"><division indent="0" align="right"><sp/><font><i>@ $15 per team = $</i></font></division></cell><cell width="900"><division indent="0" align="right"><font><field name="NatFeeA"/></font></division></cell><cell width="2115"><division indent="0" align="right"><font><i> + $25.00     = $</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><field name="TotA"/></font></division></cell></row><row><cell width="1470"><division indent="0" align="left"><font>Ponytails</font></division></cell><cell width="660"><division indent="0" align="left"><font><field name="Registration:Ponytails"/></font></division></cell><cell width="2100"><division indent="0" align="right"><sp/><font><i>@ $15 per team = $</i></font></division></cell><cell width="900"><division indent="0" align="right"><font><field name="NatFeeP"/></font></division></cell><cell width="2115"><division indent="0" align="right"><font><i> + $25.00     = $</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><field name="TotP"/></font></division></cell></row><row><cell width="1470"><division indent="0" align="left"><font>Belles</font></division></cell><cell width="660"><division indent="0" align="left"><font><field name="Registration:Belles"/></font></division></cell><cell width="2100"><division indent="0" align="right"><sp/><font><i>@ $15 per team = $</i></font></division></cell><cell width="900"><division indent="0" align="right"><font><field name="NatFeeB"/></font></division></cell><cell width="2115"><division indent="0" align="right"><font><i> + $25.00     = $</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><field name="TotB"/></font></division></cell></row><row><cell width="1470"><division indent="0" align="left"><font>Debs</font></division></cell><cell width="660"><division indent="0" align="left"><font><field name="Registration:Debs"/></font></division></cell><cell width="2100"><division indent="0" align="right"><sp/><font><i>@ $15 per team = $</i></font></division></cell><cell width="900"><division indent="0" align="right"><font><field name="NatFeeDeb"/></font></division></cell><cell width="2115"><division indent="0" align="right"><font><i> + $25.00     = $</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><field name="TotDebs"/></font></division></cell></row><row><cell width="1470"></cell><cell width="660"></cell><cell width="2100"></cell><cell width="900"></cell><cell width="2115"><division indent="0" align="right"><sp/><font>Administration</font><sp/><font>Fee  </font><font><i>$</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><u>10</u></font></division></cell></row><row><cell width="1470"></cell><cell width="660"></cell><cell width="2100"></cell><cell width="900"></cell><cell width="2115"><division indent="0" align="right"><font color="000000"><b>Total</b></font><sp/><font color="000000"><b>Fees</b></font><sp/><font color="000000"><i>$</i></font></division></cell><cell width="1530"><division indent="0" align="right"><font><b><field name="Total"/></b></font></division></cell></row></table></text>
+<mc label="Q14" alternateLabel="LateFee" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">There is a </font><font face="Arial" size="200" color="000000"><b>$50 LATE FEE</b></font><font face="Arial" size="200" color="000000"> for payments made </font><font face="Arial" size="200" color="000000"><b>after April 1</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Add $50 LATE FEE</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">I am paying before April 1</font></paragraph></choice></mc>
+<text label="T7" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="1815"><division indent="0" align="left"><font><i><u>League Officials:</u></i></font></division></cell><cell width="1230"></cell><cell width="1318"><division indent="0" align="left"><font><i>Name</i></font></division></cell><cell width="932"></cell><cell width="1470"><division indent="0" align="left"><font><i>Address</i></font></division></cell><cell width="720"></cell><cell width="2220"><division indent="0" align="left"><font><i>City, State Zip</i></font></division></cell><cell width="330"></cell><cell width="1860"><division indent="0" align="left"><font><i>Phone Number</i></font></division></cell></row></table></text>
+<fib label="Q15" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">President </font><blank label="a" length="14" required="false" alternateLabel="PresName"/><sp/><blank label="b" length="14" required="false" alternateLabel="PresAdd"/><sp/><blank label="c" length="15" required="false" alternateLabel="PresCity"/><sp/><blank label="d" length="13" required="false" alternateLabel="PresPhone"/></paragraph></fib>
+<fib label="Q16" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Vice-President </font><blank label="a" length="14" required="false" alternateLabel="VPName"/><font face="Arial" size="200" color="000000"> </font><blank label="b" length="14" required="false" alternateLabel="VPAdd"/><font face="Arial" size="200" color="000000"> </font><blank label="c" length="15" required="false" alternateLabel="VPCity"/><font face="Arial" size="200" color="000000"> </font><blank label="d" length="13" required="false" alternateLabel="VPPhone"/></paragraph></fib>
+<fib label="Q17" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Secretary </font><blank label="a" length="14" required="false" alternateLabel="SecName"/><font face="Arial" size="200" color="000000"> </font><blank label="b" length="14" required="false" alternateLabel="SecAdd"/><font face="Arial" size="200" color="000000"> </font><blank label="c" length="15" required="false" alternateLabel="SecCity"/><font face="Arial" size="200" color="000000"> </font><blank label="d" length="13" required="false" alternateLabel="SecPhone"/></paragraph></fib>
+<fib label="Q18" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Treasurer </font><blank label="a" length="14" required="false" alternateLabel="TreasName"/><font face="Arial" size="200" color="000000"> </font><blank label="b" length="14" required="false" alternateLabel="TreasAdd"/><font face="Arial" size="200" color="000000"> </font><blank label="c" length="15" required="false" alternateLabel="TreasCity"/><font face="Arial" size="200" color="000000"> </font><blank label="d" length="13" required="false" alternateLabel="TreasPhone"/></paragraph></fib>
+<fib label="Q19" style="leftAlignLabels"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">League Website URL: </font><blank label="a" length="36" required="false" alternateLabel="LeagueURL"/></paragraph></fib>
+<text label="T8" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>I certify this league will comply with all organizational requirements such as boundary, population, playing rules, player selection and participation, etc. as outlined in the current edition of the official Dixie Softball Rule Guide.  In addition, I understand the National Board of Directors of Dixie Softball, Inc. (DSI) strongly recommends all franchised leagues adopt and implement a child abuse/molestation risk management program.  Our league understands that guidelines for establishing a child abuse/molestation risk management program are available at no charge through the national office, or the league may develop a similar comprehensive program.  Due to the fact that DSI has no operational control over league security including the selection of local league volunteers, our league understands it is solely responsible for adopting and implementing a child abuse/molestation risk management program.  Therefore, as a condition to maintaining its DSI franchise rights, our league hereby indemnifies and holds harmless DSI and its officers, directors, state and district officials, and administrative employees, (collectively the "releasees"), for any legal action, including reasonable attorney fees, based on child abuse/molestation allegations, including any allegation of negligence on the part of any or all of the releasees, arising from any teams, leagues, tournaments, or other activities of our league.</font></paragraph></text>
+<fib label="Q20" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Submitted by: </font><blank label="a" length="20" required="false" alternateLabel="Submittee"/><font face="Arial" size="200" color="000000"> Title: </font><blank label="b" length="16" required="false" alternateLabel="SubTitle"/><font face="Arial" size="200" color="000000"> Date: </font><blank label="c" length="16" required="false" alternateLabel="SubDate"/><sp/></paragraph></fib>
+<mc label="Q21" alternateLabel="Continue?" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please carefully review the information you have entered above. Then choose one of the following and press Submit.</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">I am ready to make payment now</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">I need to edit some of my initial entries.  Please return me to Page 1 of this form.</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Abandon this registration.  I will fill it out at a later date</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcIsBlank field="Registration:Continue?" />
+</conditions>
+<trueSet>
+<skip to="T6"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Registration:Continue?" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcIsBlank field="Registration:Q18" />
+</conditions>
+<trueSet>
+<skip to="T5"/>
+</trueSet>
+</if>
+</skipInstructions>
+<field name="PaymentStatus"/>
+<field name="PaymentAmount"/>
+<field name="Selected"/>
+</items>
+</form>
+<form name="Success" startPoint="false" themePath="mvsc" preProcess="Pre-Success">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Your payment has been received.  An email confirming receipt of your payment will be sent to your email address.</font></paragraph></text>
+</items>
+</form>
+<form name="Failure" startPoint="false" themePath="mvsc" process="Post-Failure">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Your payment transaction was not successful.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Press Submit to try again.</font></paragraph></text>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="mvsc" process="Post-Admin" preProcess="Pre-Admin">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Administrator Menu</font></paragraph></heading>
+<mc label="Q1" alternateLabel="MenuOption" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Review registrations</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Remove a registration</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit a registration</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Change a registrant's payment status manually</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Email message to registrants</font></paragraph></choice></mc>
+<skipInstructions>
+<set field="Administration:DeleteOrEditCrit" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="b"/>
+</conditions>
+<trueSet>
+<set field="Action" arithmeticAsText="false">
+<string value="delete"/>
+</set>
+<skip to="T5"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<or>
+<mcEquals field="Administration:MenuOption" value="c"/>
+<mcEquals field="Administration:MenuOption" value="d"/>
+</or>
+</conditions>
+<trueSet>
+<set field="Action" arithmeticAsText="false">
+<string value="edit"/>
+</set>
+<skip to="T5"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="e"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q2" alternateLabel="ViewAllOrSome" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">See Information on all registrations</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">See a specific registration or group of registrations</font></paragraph></choice></mc>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Fields with a check mark in front of them will be displayed:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><display-mcq-label version="1"><field-name>Administration:DisplayFields</field-name><display>all_choices</display></display-mcq-label></font></paragraph></text>
+<mc label="Q3" alternateLabel="ChangeFields" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Check here to add or remove fields to be displayed</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcDoesNotContain field="Administration:ChangeFields" value="a"/>
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<mcEquals field="Administration:ViewAllOrSome" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Q5"/>
+</trueSet>
+<falseSet>
+<skip to="T3"/>
+</falseSet>
+</if>
+</trueSet>
+</if>
+</skipInstructions>
+<mc label="Q4" alternateLabel="DisplayFields" onlyone="false" required="false" style="multicolumn" columnCount="3" paddingBottom="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please check the registration fields that you'd like to see displayed:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">League Name</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">League Address</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Franchise #</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">District #</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Team Counts</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">President Name</font></paragraph></choice><choice label="g"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">President Address</font></paragraph></choice><choice label="h"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">President Phone</font></paragraph></choice><choice label="i"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Vice-President</font></paragraph></choice><choice label="j"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">VP Address</font></paragraph></choice><choice label="k"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">VP Phone</font></paragraph></choice><choice label="l"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Secretary</font></paragraph></choice><choice label="m"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Secretary Address</font></paragraph></choice><choice label="n"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Secretary Phone</font></paragraph></choice><choice label="o"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Treasurer</font></paragraph></choice><choice label="p"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Treasurer Address</font></paragraph></choice><choice label="q"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Treasurer Phone</font></paragraph></choice><choice label="r"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">League Email Address</font></paragraph></choice><choice label="s"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">League Website URL</font></paragraph></choice><choice label="t"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Submitted by</font></paragraph></choice><choice label="u"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Submitter Title</font></paragraph></choice><choice label="v"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Submission Date</font></paragraph></choice><choice label="w"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Payment Status</font></paragraph></choice><choice label="x"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Payment Amount</font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administration:ViewAllOrSome" value="b"/>
+</conditions>
+<trueSet>
+<skip to="Q5"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T3" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="League Name"/>
+</header><contents><field name="Record:Registration:LeagueName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="a"/>
+</display-conditions></column><column><header><string value="League Address"/>
+</header><contents><field name="Record:Registration:LeagueAddress" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="b"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:LeagueCityStateZip" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="b"/>
+</display-conditions></column><column><header><string value="Franchise #"/>
+</header><contents><field name="Record:Registration:Franchise" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="c"/>
+</display-conditions></column><column><header><string value="District #"/>
+</header><contents><field name="Record:Registration:District" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="d"/>
+</display-conditions></column><column><header><string value="SweetTees"/>
+</header><contents><field name="Record:Registration:SweeTees" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Darlings"/>
+</header><contents><field name="Record:Registration:Darlings" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Angels"/>
+</header><contents><field name="Record:Registration:Angels" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Ponytails"/>
+</header><contents><field name="Record:Registration:Ponytails" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Belles"/>
+</header><contents><field name="Record:Registration:Belles" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Debs"/>
+</header><contents><field name="Record:Registration:Debs" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="President"/>
+</header><contents><field name="Record:Registration:PresName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="f"/>
+</display-conditions></column><column><header><string value="Pres Address"/>
+</header><contents><field name="Record:Registration:PresAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="g"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:PresCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="g"/>
+</display-conditions></column><column><header><string value="Pres Phone"/>
+</header><contents><field name="Record:Registration:PresPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="h"/>
+</display-conditions></column><column><header><string value="Vice President"/>
+</header><contents><field name="Record:Registration:VPName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="i"/>
+</display-conditions></column><column><header><string value="VP Address"/>
+</header><contents><field name="Record:Registration:VPAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="j"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:VPCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="j"/>
+</display-conditions></column><column><header><string value="VP Phone"/>
+</header><contents><field name="Record:Registration:VPPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="k"/>
+</display-conditions></column><column><header><string value="Secretary"/>
+</header><contents><field name="Record:Registration:SecName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="l"/>
+</display-conditions></column><column><header><string value="Sec Address"/>
+</header><contents><field name="Record:Registration:SecAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="m"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:SecCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="m"/>
+</display-conditions></column><column><header><string value="Sec Phone"/>
+</header><contents><field name="Record:Registration:SecPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="n"/>
+</display-conditions></column><column><header><string value="Treasurer"/>
+</header><contents><field name="Record:Registration:TreasName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="o"/>
+</display-conditions></column><column><header><string value="Treas Address"/>
+</header><contents><field name="Record:Registration:TreasAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="p"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:TreasCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="p"/>
+</display-conditions></column><column><header><string value="Treas Phone"/>
+</header><contents><field name="Record:Registration:TreasPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="q"/>
+</display-conditions></column><column><header><string value="League Email Address"/>
+</header><contents><field name="Record:Registration:LeagueEmailAddress" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="r"/>
+</display-conditions></column><column><header><string value="League URL"/>
+</header><contents><field name="Record:Registration:LeagueURL" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="s"/>
+</display-conditions></column><column><header><string value="Submitted by"/>
+</header><contents><field name="Record:Registration:Submittee" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="t"/>
+</display-conditions></column><column><header><string value="Submitter Title"/>
+</header><contents><field name="Record:Registration:SubTitle" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="u"/>
+</display-conditions></column><column><header><string value="Submission Date"/>
+</header><contents><field name="Record:Registration:SubDate" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="v"/>
+</display-conditions></column><column><header><string value="Payment Status"/>
+</header><contents><field name="Record:Registration:PaymentStatus" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="w"/>
+</display-conditions></column><column><header><string value="Payment Amount"/>
+</header><contents><field name="Record:Registration:PaymentAmount" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="x"/>
+</display-conditions></column><conditions><form name="Registration" /></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Total fees paid and received: $</font><font><sum version="1"><field>Record:Registration:PaymentAmount</field><conditions><form name="Registration" /><conditions>
+<or>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Completed"/>
+</equals>
+<or>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Processed"/>
+</equals>
+<or>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Paid"/>
+</equals>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Pending"/>
+</equals>
+</or>
+</or>
+</or>
+</conditions></conditions></sum></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Fees marked as Unpaid: $</font><font><sum version="1"><field>Record:Registration:PaymentAmount</field><conditions><form name="Registration" /><conditions>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Unpaid"/>
+</equals>
+</conditions></conditions></sum></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Total team counts:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="1543"><division indent="0" align="center"><font>SweeTees</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Darlings</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Angels</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Ponytails</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Belles</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Debs</font></division></cell></row><row><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:SweeTees</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Darlings</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Angels</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Ponytails</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Belles</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Debs</field><conditions><form name="Registration" /></conditions></sum></font></division></cell></row></table></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<fib label="Q5" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Enter part or all of a word in any field: </font><blank label="a" length="20" required="false" alternateLabel="SearchCrit"/></paragraph></fib>
+<break/>
+<text label="T4" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Registrations containing the word or phrase "</font><font><field name="Administration:SearchCrit"/></font><font>" in one or more fields:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><itemization-table version="2"><show-print-control>false</show-print-control><column><header><string value="League Name"/>
+</header><contents><field name="Record:Registration:LeagueName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="a"/>
+</display-conditions></column><column><header><string value="League Address"/>
+</header><contents><field name="Record:Registration:LeagueAddress" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="b"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:LeagueCityStateZip" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="b"/>
+</display-conditions></column><column><header><string value="Franchise #"/>
+</header><contents><field name="Record:Registration:Franchise" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="c"/>
+</display-conditions></column><column><header><string value="District #"/>
+</header><contents><field name="Record:Registration:District" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="d"/>
+</display-conditions></column><column><header><string value="SweetTees"/>
+</header><contents><field name="Record:Registration:SweeTees" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Darlings"/>
+</header><contents><field name="Record:Registration:Darlings" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Angels"/>
+</header><contents><field name="Record:Registration:Angels" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Ponytails"/>
+</header><contents><field name="Record:Registration:Ponytails" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Belles"/>
+</header><contents><field name="Record:Registration:Belles" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="Debs"/>
+</header><contents><field name="Record:Registration:Debs" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="e"/>
+</display-conditions></column><column><header><string value="President"/>
+</header><contents><field name="Record:Registration:PresName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="f"/>
+</display-conditions></column><column><header><string value="Pres Address"/>
+</header><contents><field name="Record:Registration:PresAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="g"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:PresCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="g"/>
+</display-conditions></column><column><header><string value="Pres Phone"/>
+</header><contents><field name="Record:Registration:PresPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="h"/>
+</display-conditions></column><column><header><string value="Vice President"/>
+</header><contents><field name="Record:Registration:VPName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="i"/>
+</display-conditions></column><column><header><string value="VP Address"/>
+</header><contents><field name="Record:Registration:VPAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="j"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:VPCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="j"/>
+</display-conditions></column><column><header><string value="VP Phone"/>
+</header><contents><field name="Record:Registration:VPPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="k"/>
+</display-conditions></column><column><header><string value="Secretary"/>
+</header><contents><field name="Record:Registration:SecName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="l"/>
+</display-conditions></column><column><header><string value="Sec Address"/>
+</header><contents><field name="Record:Registration:SecAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="m"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:SecCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="m"/>
+</display-conditions></column><column><header><string value="Sec Phone"/>
+</header><contents><field name="Record:Registration:SecPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="n"/>
+</display-conditions></column><column><header><string value="Treasurer"/>
+</header><contents><field name="Record:Registration:TreasName" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="o"/>
+</display-conditions></column><column><header><string value="Treas Address"/>
+</header><contents><field name="Record:Registration:TreasAdd" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="p"/>
+</display-conditions></column><column><header><string value="City, State, Zip"/>
+</header><contents><field name="Record:Registration:TreasCity" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="p"/>
+</display-conditions></column><column><header><string value="Treas Phone"/>
+</header><contents><field name="Record:Registration:TreasPhone" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="q"/>
+</display-conditions></column><column><header><string value="League Email Address"/>
+</header><contents><field name="Record:Registration:LeagueEmailAddress" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="r"/>
+</display-conditions></column><column><header><string value="League URL"/>
+</header><contents><field name="Record:Registration:LeagueURL" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="s"/>
+</display-conditions></column><column><header><string value="Submitted by"/>
+</header><contents><field name="Record:Registration:Submittee" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="t"/>
+</display-conditions></column><column><header><string value="Submitter Title"/>
+</header><contents><field name="Record:Registration:SubTitle" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="u"/>
+</display-conditions></column><column><header><string value="Submission Date"/>
+</header><contents><field name="Record:Registration:SubDate" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="v"/>
+</display-conditions></column><column><header><string value="Payment Status"/>
+</header><contents><field name="Record:Registration:PaymentStatus" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="w"/>
+</display-conditions></column><column><header><string value="Payment Amount"/>
+</header><contents><field name="Record:Registration:PaymentAmount" /></contents><display-conditions><mcContains field="Administration:DisplayFields" value="x"/>
+</display-conditions></column><conditions><form name="Registration" /><conditions>
+<or>
+<contains field="Record:Registration:Franchise">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:District">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:PresName">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:PresAdd">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:PresCity">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:PresPhone">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:VPName">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:SecName">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:TreasName">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:LeagueEmailAddress">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:LeagueURL">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:Submittee">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:SubTitle">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:SubDate">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:PaymentStatus">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:PaymentAmount">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:LeagueName">
+<string field="Administration:SearchCrit"/>
+</contains>
+<or>
+<contains field="Record:Registration:LeagueAddress">
+<string field="Administration:SearchCrit"/>
+</contains>
+<contains field="Record:Registration:LeagueCityStateZip">
+<string field="Administration:SearchCrit"/>
+</contains>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</or>
+</conditions></conditions></itemization-table></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>The following data are for ALL registrations</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Total fees paid and received: $</font><font><sum version="1"><field>Record:Registration:PaymentAmount</field><conditions><form name="Registration" /><conditions>
+<or>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Completed"/>
+</equals>
+<or>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Processed"/>
+</equals>
+<or>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Paid"/>
+</equals>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Pending"/>
+</equals>
+</or>
+</or>
+</or>
+</conditions></conditions></sum></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Fees marked as Unpaid: $</font><font><sum version="1"><field>Record:Registration:PaymentAmount</field><conditions><form name="Registration" /><conditions>
+<equals field="Record:Registration:PaymentStatus">
+<string value="Unpaid"/>
+</equals>
+</conditions></conditions></sum></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Total team counts:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="0"><row><cell width="1543"><division indent="0" align="center"><font>SweeTees</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Darlings</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Angels</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Ponytails</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Belles</font></division></cell><cell width="1543"><division indent="0" align="center"><font>Debs</font></division></cell></row><row><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:SweeTees</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Darlings</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Angels</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Ponytails</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Belles</field><conditions><form name="Registration" /></conditions></sum></font></division></cell><cell width="1543"><division indent="0" align="center"><font><sum version="1"><field>Record:Registration:Debs</field><conditions><form name="Registration" /></conditions></sum></font></division></cell></row></table></text>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T5" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Enter Franchise number of registration to </font><font><field name="Action"/></font><font> (or leave blank to see all registrations):</font></paragraph></text>
+<fib label="Q6" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><blank label="a" length="20" required="false" alternateLabel="DeleteOrEditCrit"/></paragraph></fib>
+<skipInstructions>
+<if>
+<conditions>
+<isBlank field="Administration:DeleteOrEditCrit" />
+</conditions>
+<trueSet>
+<skip to="T7"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T6" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q7" alternateLabel="SelectFromFilteredForms" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please select the correct registration form :</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Registration:Franchise"/>
+<string value=" (District: "/>
+<field name="Record:Registration:District"/>
+<string value=" - President: "/>
+<field name="Record:Registration:PresName"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:Registration:Franchise"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="Registration" /><conditions>
+<contains field="Record:Registration:Franchise">
+<string field="Administration:DeleteOrEditCrit"/>
+</contains>
+</conditions></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="c"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+<set field="TargetFranchise" arithmeticAsText="false">
+<string field="Administration:SelectFromFilteredForms"/>
+</set>
+<if>
+<conditions>
+<isBlank field="TargetFranchise" />
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+<set field="Administration:UpdatePmtStatus" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:UpdatePmtAmount" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<skip to="T8"/>
+</skipInstructions>
+<text label="T7" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q8" alternateLabel="SelectFromAllForms" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Please select the correct registration form:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Registration:Franchise"/>
+<string value=" (District: "/>
+<field name="Record:Registration:District"/>
+<string value=" - President: "/>
+<field name="Record:Registration:PresName"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:Registration:Franchise"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="Registration" /></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="c"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+<set field="TargetFranchise" arithmeticAsText="false">
+<string field="Administration:SelectFromAllForms"/>
+</set>
+<if>
+<conditions>
+<isBlank field="TargetFranchise" />
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+<set field="Administration:UpdatePmtStatus" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:UpdatePmtAmount" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</skipInstructions>
+<text label="T8" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q9" alternateLabel="UpdatePmtStatus" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark the registration for Franchise #</font><font face="Arial" size="200" color="000000"><field name="TargetFranchise"/></font><font face="Arial" size="200" color="000000"> as:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Paid</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Unpaid</font></paragraph></choice></mc>
+<fib label="Q10" style="freeform"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Show the paid/unpaid amount as: </font><blank label="a" length="8" required="false" alternateLabel="UpdatePmtAmount"/><sp/><sp/><font face="Arial" size="200" color="000000"><i>(enter only the numeric amount, without dollar sign or commas, e.g. </i></font><font face="Arial" size="200" color="000000"><b><i>1250.00</i></b></font><font face="Arial" size="200" color="000000"><i>)</i></font></paragraph></fib>
+<field name="TempFranchise"/>
+</items>
+</form>
+<form name="Communicator" startPoint="false" themePath="mvsc" dataEntryOnly="true" process="Post-Communicator">
+<items>
+<heading label="H1" type="Sub"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="360" color="000000">Communicator</font></paragraph></heading>
+<text label="T1" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>This tool permits you to send emails to some or all of the people that have registered.  The groupings created below can be changed if they are not the best for your purposes.</font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q1" alternateLabel="Recipient" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Send this email to:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">All registered leagues</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">One or more leagues based on payment criteria</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">One or more leagues based on District</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Leagues containing one or more specific divisions</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">One or more leagues selected from a list </font></paragraph></choice></mc>
+<fib label="Q2" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>From:</b></font><sp/><font face="Arial" size="200" color="000000"><i>(Name)</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="FromName"/></paragraph></fib>
+<fib label="Q3" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>From:</b></font><sp/><font face="Arial" size="200" color="000000"><i>(Email)</i></font><sp/><blank label="a" length="20" required="false" alternateLabel="FromEmail"/></paragraph></fib>
+<fib label="Q4" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Subject:</b></font><sp/><blank label="a" length="20" required="false" alternateLabel="Subject"/></paragraph></fib>
+<fib label="Q5" style="leftAlignLabelsJustified"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000"><b>Body of message</b></font><font face="Arial" size="200" color="000000">: </font><blank label="a" length="49" height="10" required="false" alternateLabel="Body"/></paragraph></fib>
+<text label="T3" style="instructional"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Press Submit to continue.  You will have an opportunity to review your message before it is sent.</font></paragraph></text>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="a"/>
+</conditions>
+<trueSet>
+<skip to="__EndOfForm__"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="c"/>
+</conditions>
+<trueSet>
+<skip to="T5"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="d"/>
+</conditions>
+<trueSet>
+<skip to="T6"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="e"/>
+</conditions>
+<trueSet>
+<skip to="T7"/>
+</trueSet>
+</if>
+</skipInstructions>
+<text label="T4" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q6" alternateLabel="PaymentCriteria" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark the payment status of recipients of this message: </font><font face="Arial" size="200" color="000000"><i>(You may mark more than one.)</i></font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Registration:PaymentStatus"/>
+</display-expression><value-expression><field name="Record:Registration:PaymentStatus"/>
+</value-expression><sort-expression></sort-expression><record-selector><form name="Registration" /></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T5" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q7" alternateLabel="DistrictCriteria" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark the District(s) of recipients of this message: </font><font face="Arial" size="200" color="000000"><i>(You may mark more than one.)</i></font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Registration:District"/>
+</display-expression><value-expression><field name="Record:Registration:District"/>
+</value-expression><sort-expression><field name="Record:Registration:District"/>
+</sort-expression><record-selector><form name="Registration" /></record-selector></dynamic-mcq></data-provider></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T6" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q8" alternateLabel="DivisionCriteria" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark the division(s) whose leagues will receive this message:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">SweeTees</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Darlings</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Angels</font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Ponytails</font></paragraph></choice><choice label="e"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Belles</font></paragraph></choice><choice label="f"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Debs</font></paragraph></choice></mc>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<text label="T7" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<mc label="Q9" alternateLabel="LeagueCriteria" onlyone="false" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Mark the league(s) of recipients of this message:</font></paragraph></question><data-provider><dynamic-mcq version="1"><display-expression><field name="Record:Registration:Franchise"/>
+<string value="  (URL:"/>
+<field name="Record:Registration:LeagueURL"/>
+<string value=" Email:"/>
+<field name="Record:Registration:LeagueEmailAddress"/>
+<string value=")"/>
+</display-expression><value-expression><field name="Record:Registration:Franchise"/>
+</value-expression><sort-expression><field name="Record:Registration:Franchise"/>
+</sort-expression><record-selector><form name="Registration" /></record-selector></dynamic-mcq></data-provider></mc>
+</items>
+</form>
+<form name="CommunicatorSend" startPoint="false" themePath="mvsc" process="Post-CommunicatorSend">
+<items>
+<text label="T1" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font color="000080"><u><invitation form="Administration" project="">Cancel</invitation></u></font></paragraph></text>
+<text label="T2" style="normal"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><i>Here is what your email will look like:</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><table indent="555"><row><cell width="10245"><division indent="0" align="left"><font><b>To: </b></font><font><display-mcq-label version="1"><field-name>Communicator:Recipient</field-name><display>label_only</display></display-mcq-label></font></division></cell></row><row><cell width="10245"><division indent="0" align="left"><font><b>From:</b></font><sp/><font><field name="Communicator:FromName"/></font><font>  (</font><font><field name="Communicator:FromEmail"/></font><font><i>)</i></font></division></cell></row><row><cell width="10245"><division indent="0" align="left"><font><b>Date: </b></font><font>Today</font></division></cell></row><row><cell width="10245"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10245"><division indent="0" align="left"><font><b>Subject: </b></font><font><field name="Communicator:Subject"/></font><sp/></division></cell></row><row><cell width="10245"><division indent="0" align="left"><sp/></division></cell></row><row><cell width="10245"><division indent="0" align="left"><font><field name="Communicator:Body"/></font></division></cell></row></table></text>
+<mc label="Q1" alternateLabel="Action" onlyone="true" required="false" style="vertical"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Select:</font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Proceed to send emails</font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Edit the email</font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font face="Arial" size="200" color="000000">Abandon the email and return to Main Menu</font></paragraph></choice></mc>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Pre-Registration">
+<set field="Message" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</process>
+<process name="Post-Registration">
+<if>
+<conditions>
+<isBlank field="Registration:Franchise" />
+</conditions>
+<trueSet>
+<set field="TempNo" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<get recordList="Record List 2">
+<forms>
+<form name="Administration"/>
+</forms>
+</get>
+<foreach record="Number" recordList="Record List 2">
+<if>
+<conditions>
+<isGreaterThan field="Number:Administration:TempFranchise">
+<string field="TempNo"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TempNo" arithmeticAsText="false">
+<add>
+<operand field="Number:Administration:TempFranchise"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="Administration:TempFranchise" arithmeticAsText="false">
+<string field="TempNo"/>
+</set>
+<set field="Registration:Franchise" arithmeticAsText="false">
+<string value="Temp"/>
+<string field="TempNo"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Registration:LateFee" value="a"/>
+</conditions>
+<trueSet>
+<set field="Total" arithmeticAsText="false">
+<add>
+<operand field="Total"/>
+<operand value="50"/>
+</add>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="Admin">
+<string value="Yes"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Admin" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:DeleteOrEditCrit" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:SelectFromFilteredForms" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:SelectFromAllForms" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Message" arithmeticAsText="false">
+<string value="Registration edited."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Registration:Continue?" value="a"/>
+</conditions>
+<trueSet>
+<show document="Paypal" reset="false"/>
+</trueSet>
+<falseSet>
+<set field="Registration:Selected" arithmeticAsText="false">
+<string value="Delete"/>
+</set>
+</falseSet>
+</if>
+</process>
+<process name="Post-Failure">
+<show document="Paypal" reset="false"/>
+</process>
+<process name="Pre-Success">
+<send>
+<to addressField="Registration:LeagueEmailAddress"/>
+<from addressLiteral="do_not_reply@tawala.com" aliasLiteral="Dixie Softball, Inc."/>
+<subject>Franchise Registration Confirmation</subject>
+<body document="Confirmation" reset="false" showHeader="true"/>
+</send>
+</process>
+<process name="Pre-Admin">
+<delete><form name="Registration"/><conditions>
+<equals field="Record:Registration:Selected">
+<string value="Delete"/>
+</equals>
+</conditions></delete>
+<edit form="Administration" submit="modify">
+</edit>
+</process>
+<process name="Post-Admin">
+<comment>Put temporary ID's in Franchise box if blank</comment>
+<get recordList="Record List 2">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<isBlank field="Record List 2:Registration:Franchise" />
+</conditions></get>
+<foreach record="Blank" recordList="Record List 2">
+<set field="TempNo" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<get recordList="Record List 2">
+<forms>
+<form name="Administration"/>
+</forms>
+</get>
+<foreach record="Number" recordList="Record List 2">
+<if>
+<conditions>
+<isGreaterThan field="Number:Administration:TempFranchise">
+<string field="TempNo"/>
+</isGreaterThan>
+</conditions>
+<trueSet>
+<set field="TempNo" arithmeticAsText="false">
+<add>
+<operand field="Number:Administration:TempFranchise"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<set field="Administration:TempFranchise" arithmeticAsText="false">
+<string field="TempNo"/>
+</set>
+<set field="Blank:Registration:Franchise" arithmeticAsText="false">
+<string value="Temp"/>
+<string field="TempNo"/>
+</set>
+</foreach>
+</foreach>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="b"/>
+</conditions>
+<trueSet>
+<comment>Delete a registration</comment>
+<if>
+<conditions>
+<isBlank field="Administration:DeleteOrEditCrit" />
+</conditions>
+<trueSet>
+<delete><form name="Registration"/><conditions>
+<equals field="Record:Registration:Franchise">
+<string field="Administration:SelectFromAllForms"/>
+</equals>
+</conditions></delete>
+</trueSet>
+<falseSet>
+<delete><form name="Registration"/><conditions>
+<equals field="Record:Registration:Franchise">
+<string field="Administration:SelectFromFilteredForms"/>
+</equals>
+</conditions></delete>
+</falseSet>
+</if>
+<set field="Message" arithmeticAsText="false">
+<string value="Record deleted"/>
+</set>
+<show document="Message" reset="false"/>
+<set field="Administration:MenuOption" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:DeleteOrEditCrit" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:SelectFromFilteredForms" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:SelectFromAllForms" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</trueSet>
+</if>
+<set field="Administration:ViewAllOrSome" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Administration:ChangeFields" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="c"/>
+</conditions>
+<trueSet>
+<comment>Edit a registration</comment>
+<set field="Administration:MenuOption" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Admin" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Administration:DeleteOrEditCrit" />
+</conditions>
+<trueSet>
+<edit form="Registration" submit="modify">
+<conditions>
+<equals field="Record:Registration:Franchise">
+<string field="Administration:SelectFromAllForms"/>
+</equals>
+</conditions>
+</edit>
+</trueSet>
+<falseSet>
+<edit form="Registration" submit="modify">
+<conditions>
+<equals field="Record:Registration:Franchise">
+<string field="Administration:SelectFromFilteredForms"/>
+</equals>
+</conditions>
+</edit>
+</falseSet>
+</if>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="d"/>
+</conditions>
+<trueSet>
+<comment>Change registrant's payment status manually</comment>
+<if>
+<conditions>
+<isBlank field="Administration:DeleteOrEditCrit" />
+</conditions>
+<trueSet>
+<get recordList="Record List 3">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<equals field="Record List 3:Registration:Franchise">
+<string field="Administration:SelectFromAllForms"/>
+</equals>
+</conditions></get>
+</trueSet>
+<falseSet>
+<get recordList="Record List 3">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<equals field="Record List 3:Registration:Franchise">
+<string field="Administration:SelectFromFilteredForms"/>
+</equals>
+</conditions></get>
+</falseSet>
+</if>
+<foreach record="Alteration" recordList="Record List 3">
+<if>
+<conditions>
+<mcEquals field="Administration:UpdatePmtStatus" value="a"/>
+</conditions>
+<trueSet>
+<set field="Alteration:Registration:PaymentStatus" arithmeticAsText="true">
+<string value="Paid"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:UpdatePmtStatus" value="b"/>
+</conditions>
+<trueSet>
+<set field="Alteration:Registration:PaymentStatus" arithmeticAsText="false">
+<string value="Unpaid"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcIsNotBlank field="Administration:UpdatePmtStatus" />
+</conditions>
+<trueSet>
+<if>
+<conditions>
+<isNotBlank field="Administration:UpdatePmtAmount" />
+</conditions>
+<trueSet>
+<set field="Alteration:Registration:PaymentAmount" arithmeticAsText="false">
+<string field="Administration:UpdatePmtAmount"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Alteration:Registration:PaymentAmount" arithmeticAsText="false">
+<string value="0"/>
+</set>
+</falseSet>
+</if>
+<set field="Message" arithmeticAsText="false">
+<string value="Payment status for Franchise #"/>
+<string field="Alteration:Registration:Franchise"/>
+<string value=" marked as "/>
+<string field="Alteration:Registration:PaymentStatus"/>
+<string value=". Amount = $"/>
+<string field="Alteration:Registration:PaymentAmount"/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+</foreach>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:MenuOption" value="e"/>
+</conditions>
+<trueSet>
+<comment>Send email to registrants</comment>
+<set field="Administration:MenuOption" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<show form="Communicator"/>
+</trueSet>
+</if>
+<set field="Administration:MenuOption" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<show form="Administration"/>
+</process>
+<process name="Post-Communicator">
+<show form="CommunicatorSend"/>
+</process>
+<process name="Post-CommunicatorSend">
+<if>
+<conditions>
+<mcEquals field="CommunicatorSend:Action" value="c"/>
+</conditions>
+<trueSet>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="CommunicatorSend:Action" value="b"/>
+</conditions>
+<trueSet>
+<show form="Communicator"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcDoesNotEqual field="CommunicatorSend:Action" value="a"/>
+</conditions>
+<trueSet>
+<show form="CommunicatorSend"/>
+</trueSet>
+</if>
+<set field="MessageBody" arithmeticAsText="false">
+<string field="Communicator:Body"/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="a"/>
+</conditions>
+<trueSet>
+<comment>Send to all registered leagues</comment>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 4">
+<forms>
+<form name="Registration"/>
+</forms>
+</get>
+<foreach record="League" recordList="Record List 4">
+<send>
+<to addressField="League:Registration:LeagueEmailAddress"/>
+<from addressField="Communicator:FromEmail" aliasField="Communicator:FromName"/>
+<subject><field name="Communicator:Subject"/></subject>
+<body document="Letter" reset="false" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string value="Your email was sent to "/>
+<string field="Count"/>
+<string value=" leagues."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="b"/>
+</conditions>
+<trueSet>
+<comment>Send message to leagues based on payment criterial</comment>
+<if>
+<conditions>
+<mcIsBlank field="Communicator:PaymentCriteria" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="You made no payment criteria selection."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Communicator"/>
+</trueSet>
+</if>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 5">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<mcContains field="Communicator:PaymentCriteria">
+<string field="Record List 5:Registration:PaymentStatus"/>
+</mcContains>
+</conditions></get>
+<foreach record="Payee" recordList="Record List 5">
+<send>
+<to addressField="Payee:Registration:LeagueEmailAddress"/>
+<from addressField="Communicator:FromEmail" aliasField="Communicator:FromName"/>
+<subject><field name="Communicator:Subject"/></subject>
+<body document="Letter" reset="false" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string value="Your email was sent to "/>
+<string field="Count"/>
+<string value=" leagues matching your payment criteria. "/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="c"/>
+</conditions>
+<trueSet>
+<comment>Send message to leagues based on District</comment>
+<if>
+<conditions>
+<mcIsBlank field="Communicator:DistrictCriteria" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="You made no District criteria selection."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Communicator"/>
+</trueSet>
+</if>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 6">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<mcContains field="Communicator:DistrictCriteria">
+<string field="Record List 6:Registration:District"/>
+</mcContains>
+</conditions></get>
+<foreach record="LeagueInDistrict" recordList="Record List 6">
+<send>
+<to addressField="LeagueInDistrict:Registration:LeagueEmailAddress"/>
+<from addressField="Communicator:FromEmail" aliasField="Communicator:FromName"/>
+<subject><field name="Communicator:Subject"/></subject>
+<body document="Letter" reset="false" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string value="Your email was sent to "/>
+<string field="Count"/>
+<string value=" leagues in the selected District(s)."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="d"/>
+</conditions>
+<trueSet>
+<comment>Send message to leagues containing specific divisions</comment>
+<if>
+<conditions>
+<mcIsBlank field="Communicator:DivisionCriteria" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="You made no division criteria selection."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Communicator"/>
+</trueSet>
+</if>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 7">
+<forms>
+<form name="Registration"/>
+</forms>
+</get>
+<foreach record="Uncleared" recordList="Record List 7">
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<and>
+<mcContains field="Communicator:DivisionCriteria" value="a"/>
+<isGreaterThan field="Uncleared:Registration:SweeTees">
+<string value="0"/>
+</isGreaterThan>
+</and>
+</conditions>
+<trueSet>
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcContains field="Communicator:DivisionCriteria" value="b"/>
+<isGreaterThan field="Uncleared:Registration:Darlings">
+<string value="0"/>
+</isGreaterThan>
+</and>
+</conditions>
+<trueSet>
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcContains field="Communicator:DivisionCriteria" value="c"/>
+<isGreaterThan field="Uncleared:Registration:Angels">
+<string value="0"/>
+</isGreaterThan>
+</and>
+</conditions>
+<trueSet>
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcContains field="Communicator:DivisionCriteria" value="d"/>
+<isGreaterThan field="Uncleared:Registration:Ponytails">
+<string value="0"/>
+</isGreaterThan>
+</and>
+</conditions>
+<trueSet>
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcContains field="Communicator:DivisionCriteria" value="e"/>
+<isGreaterThan field="Uncleared:Registration:Belles">
+<string value="0"/>
+</isGreaterThan>
+</and>
+</conditions>
+<trueSet>
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcContains field="Communicator:DivisionCriteria" value="f"/>
+<isGreaterThan field="Uncleared:Registration:Debs">
+<string value="0"/>
+</isGreaterThan>
+</and>
+</conditions>
+<trueSet>
+<set field="Uncleared:Registration:Selected" arithmeticAsText="false">
+<string value="Yes"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<get recordList="Record List 8">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<equals field="Record List 8:Registration:Selected">
+<string value="Yes"/>
+</equals>
+</conditions></get>
+<foreach record="Selection" recordList="Record List 8">
+<send>
+<to addressField="Selection:Registration:LeagueEmailAddress"/>
+<from addressField="Communicator:FromEmail" aliasField="Communicator:FromName"/>
+<subject><field name="Communicator:Subject"/></subject>
+<body document="Letter" reset="false" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string value="Your email was sent to "/>
+<string field="Count"/>
+<string value=" leagues containing selected divisions."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Communicator:Recipient" value="e"/>
+</conditions>
+<trueSet>
+<comment>Send emails to specific, selected leagues</comment>
+<if>
+<conditions>
+<mcIsBlank field="Communicator:LeagueCriteria" />
+</conditions>
+<trueSet>
+<set field="Message" arithmeticAsText="false">
+<string value="You selected no leagues to receive this message."/>
+</set>
+<show document="Message" reset="false"/>
+<show form="Communicator"/>
+</trueSet>
+</if>
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 9">
+<forms>
+<form name="Registration"/>
+</forms>
+<conditions>
+<mcContains field="Communicator:LeagueCriteria">
+<string field="Record List 9:Registration:Franchise"/>
+</mcContains>
+</conditions></get>
+<foreach record="League" recordList="Record List 9">
+<send>
+<to addressField="League:Registration:LeagueEmailAddress"/>
+<from addressField="Communicator:FromEmail" aliasField="Communicator:FromName"/>
+<subject><field name="Communicator:Subject"/></subject>
+<body document="Letter" reset="false" showHeader="true"/>
+</send>
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Message" arithmeticAsText="false">
+<string value="Your email has been sent to the "/>
+<string field="Count"/>
+<string value=" league(s) you selected."/>
+</set>
+<show document="Message" reset="false"/>
+</trueSet>
+</if>
+<show form="Administration"/>
+</process>
+</processes>
+<documents>
+<document name="Paypal">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>To make your payment by credit card or Paypal, click on the button below.  </font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>You will be sent a copy of this transaction at your League email address.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><paypal-single-item-button version="1"><button-type>pay</button-type><item><string value="Dixie Softball Annual Franchise Fees"/>
+</item><amount><field name="Total"/>
+</amount><successful-payment-return-form-name>Success</successful-payment-return-form-name><cancelled-payment-return-form-name>Failure</cancelled-payment-return-form-name><status-field>Record:Registration:PaymentStatus</status-field><amount-field>Record:Registration:PaymentAmount</amount-field><style-option>tawala</style-option></paypal-single-item-button></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Confirmation">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><b>Registration Confirmation</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font>Dixie Softball, Inc. confirms the receipt of your franchise payment of $</font><font><field name="Registration:PaymentAmount"/></font><font> in payment of state and national fees for the 2009 season.</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>
+</xmlData>
+</document>
+<document name="Message">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font size="280" color="C00000"><b><i><field name="Message"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Letter">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><field name="MessageBody"/></font></paragraph>
+</xmlData>
+</document>
+</documents>
+<images><imagedef id="image3"><imagedata imageFormat="PNG">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</imagedata></imagedef><imagedef id="__HEADER__8cb65af11da16e0"><imagedata imageFormat="PNG">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</imagedata></imagedef></images></project>

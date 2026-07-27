@@ -1,0 +1,21 @@
+			
+		public class PARAMETER_CONTAINER_BASE : INotifyPropertyChanged
+		{
+			public event PropertyChangedEventHandler PropertyChanged;
+			
+			protected void Notify(string pname)
+			{
+				if (PropertyChanged != null)
+				{
+					PropertyChanged(this, new PropertyChangedEventArgs(pname));
+				}
+			}
+	
+			protected PARAMETER_CONTAINER_BASE(object owner)
+			{
+				this.owner = owner;
+			}
+			
+			protected readonly object owner;			
+		}
+	}

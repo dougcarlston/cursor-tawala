@@ -1,0 +1,279 @@
+<html>
+	<head>
+		<link rel="stylesheet" href="css/project/default.css" type="text/css" media="screen" />
+		<link rel="stylesheet" href="css/project/orange/project.css" title="template" disabled="false" type="text/css" media="screen" />
+
+		<script type="text/javascript" src="scripts/yui/build/yahoo-dom-event/yahoo-dom-event.js" ></script>
+		<script type="text/javascript" src="scripts/project/default.js" ></script>
+	</head>
+	<body>
+		<div id="tawalaProjectContainer">
+			<h1 class="heading">Potluck Project Title</h1>
+			<div class="tawalaDocument">
+				<div>
+					<span><b>When:</b> &nbsp;&nbsp;</span>
+					<span>date &nbsp;&nbsp;</span>
+					<span>time</span>
+				</div>
+				<div>
+					<span><b>Where:</b> &nbsp;</span>
+					<span>location</span>
+				</div>
+			</div>
+			<div class="tawalaDocument">
+				<table>
+					<tr>
+						<td>
+							<span>Total People coming so far: </span>
+						</td>
+						<td>&nbsp;</td>
+						<td>
+							<div style="text-align: right;"> Adults: </div>
+						</td>
+						<td>&nbsp;</td>
+						<td>
+							<span> 13</span>
+						</td>
+					</tr>
+					<tr>
+						<td>&nbsp;</td>
+						<td>&nbsp;</td>
+						<td>
+							<div style="text-align: right;"> Kids:</div>
+						</td>
+						<td>&nbsp;</td>
+						<td>
+							<span> 8</span>
+						</td>
+					</tr>
+				</table>
+			</div>
+			<div class="tawalaDocument">
+				<div>
+					<span>People planning on coming and what they're bringing:</span>
+				</div>
+				<br />
+				<table class="component outline sortable stripe">
+					<thead>
+						<tr>
+							<th>Name</th><th>Dish</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd"><td>Jane Jacobs</td><td>Fried chicken</td></tr>
+						<tr class="even"><td>Peter Reynolds</td><td>Potato salad</td></tr>
+						<tr class="odd"><td>Mary Prentis</td><td>Cookies</td></tr>
+						<tr class="even"><td>Wendy Smith</td><td>Corn bread</td></tr>
+						<tr class="odd"><td>Nancy Galstead</td><td>Green salad</td></tr>
+						<tr class="even"><td>Margaret Jones</td><td>Chocolate cake</td></tr>
+						<tr class="odd"><td>John Freidman</td><td>Coleslaw</td></tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="tawalaDocument">
+				<div>
+					<span>People who can't come:</span>
+				</div>
+				<br />
+				<table class="component outline sortable stripe">
+					<thead>
+						<tr>
+							<th><div class="text">Name</div></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="odd"><td>Jane Jacobs</td></tr>
+						<tr class="even"><td>Peter Reynolds</td></tr>
+						<tr class="odd"><td>Mary Prentis</td></tr>
+						<tr class="even"><td>Wendy Smith</td></tr>
+						<tr class="odd"><td>Nancy Galstead</td></tr>
+						<tr class="even"><td>Margaret Jones</td></tr>
+						<tr class="odd"><td>John Freidman</td></tr>
+					</tbody>
+				</table>
+			</div>
+		
+			<form method="POST" id="tawalaProjectForm">
+				<h2>Your Information</h2>
+				<div class="textItem">
+					<i>Fill in the form below to let us know if you can make it and if so what you will bring</i>
+				</div>
+				<div class="fib">
+					<label class="question">
+						Name
+					</label>
+					<div class="answer">
+						<input type="text" class="text" name="attendeeName" id="tawalaField_attendeeName" size="35" />
+					</div>
+				</div>
+				
+				<div class="mcRadio horizontal">
+					<label class="question">
+						MCQ with answers aligned horizontally
+					</label>
+					<span class="answer">
+						<input class="radio" name="Q2" type="radio" value="a" />
+						<label  class="choice">Yes</label>
+					</span>
+					<span class="answer">
+						<input class="radio" name="Q2" type="radio" value="b" /> 
+						<label  class="choice">No</label>
+					</span>
+				</div>
+
+				<div class="mcRadio vertical">
+					<label class="question">
+						Radio buttons with lots of text
+					</label>
+					<span class="answer">
+						<input class="radio" name="Q2" type="radio" value="a" />
+						<label  class="choice">
+							Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut magna urna, congue in, faucibus at, egestas ut, nisi. Donec tellus ligula, vestibulum vitae, laoreet a, facilisis a, urna. Quisque fringilla dolor at nulla. Donec pellentesque odio nec nisi. Etiam ultrices tempor turpis. Pellentesque eget leo. Vivamus euismod magna eget mi. Praesent eleifend eleifend enim. Etiam vehicula iaculis sem. Maecenas mattis neque vel nibh. Aenean sodales sapien quis lectus. Fusce rhoncus, ipsum ut pellentesque pulvinar, nunc nisi interdum sem, at bibendum orci lorem et enim. Proin imperdiet. Nullam eleifend purus eget turpis. Duis tempus, magna at volutpat sagittis, lectus nibh eleifend justo, in malesuada urna quam ut orci. Maecenas magna mauris, elementum fringilla, tincidunt laoreet, semper sed, nisl. Aenean rutrum.
+						</label>
+					</span>
+					<span class="answer">
+						<input class="radio" name="Q2" type="radio" value="b" /> 
+						<label  class="choice">
+							Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut magna urna, congue in, faucibus at, egestas ut, nisi. Donec tellus ligula, vestibulum vitae, laoreet a, facilisis a, urna. Quisque fringilla dolor at nulla. Donec pellentesque odio nec nisi. Etiam ultrices tempor turpis. Pellentesque eget leo. Vivamus euismod magna eget mi. Praesent eleifend eleifend enim. Etiam vehicula iaculis sem. Maecenas mattis neque vel nibh. Aenean sodales sapien quis lectus. Fusce rhoncus, ipsum ut pellentesque pulvinar, nunc nisi interdum sem, at bibendum orci lorem et enim. Proin imperdiet. Nullam eleifend purus eget turpis. Duis tempus, magna at volutpat sagittis, lectus nibh eleifend justo, in malesuada urna quam ut orci. Maecenas magna mauris, elementum fringilla, tincidunt laoreet, semper sed, nisl. Aenean rutrum.
+						</label>
+					</span>
+				</div>
+
+				<div class="mcCheckbox">
+					<label class="question">
+							MCQ with checkboxes boxes aligned vertically
+					</label>
+					<span class="answer">
+						<input class="checkbox" name="Q2" type="checkbox" value="a" /> 
+						<label  class="choice">Yes</label>
+					</span>
+					<span class="answer">
+						<input class="checkbox" name="Q2" type="checkbox" value="b" /> 
+						<label  class="choice">No</label>
+					</span>
+				</div>
+
+				<div class="fib">
+					<label class="question">
+						FIB standard formatting
+					</label>
+					<div class="answer">
+						<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						<label>(Adults)</label>
+						<input type="text" class="text" name="numKids" id="tawalaField_numKids" size="6" />
+						<label>(Kids)</label>
+					</div>
+				</div>
+
+				<div class="fib vertical">
+					<label class="question">
+						FIB with vertical formating of initial label
+					</label>
+					<div class="answer">
+						<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						<label>(Adults)</label>
+						<input type="text" class="text" name="numKids" id="tawalaField_numKids" size="6" />
+						<label>(Kids)</label>
+					</div>
+				</div>
+
+				<div class="text">
+					<div>
+						<b>FIB's aligned left. Label width 380px</b>
+					</div>
+				</div>
+
+				<div class="fib horizontal aligned left">
+					<table>
+						<tr><td class="question">
+							FIB with horizontal formating with label aligned left
+						</td>
+						<td class="answer">
+							<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						</td></tr>
+					</table>
+				</div>
+				<div class="fib horizontal aligned left">
+					<table>
+						<tr><td class="question">
+							Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Ut magna urna, congue in, faucibus at, egestas ut, nisi. Donec tellus ligula, vestibulum vitae, laoreet a, facilisis a, urna. Quisque fringilla dolor at nulla. Donec pellentesque odio nec nisi. Etiam ultrices tempor turpis. Pellentesque eget leo. Vivamus euismod magna eget mi. Praesent eleifend eleifend enim. Etiam vehicula iaculis sem. Maecenas mattis neque vel nibh. Aenean sodales sapien quis lectus. Fusce rhoncus, ipsum ut pellentesque pulvinar, nunc nisi interdum sem, at bibendum orci lorem et enim. Proin imperdiet. Nullam eleifend purus eget turpis. Duis tempus, magna at volutpat sagittis, lectus nibh eleifend justo, in malesuada urna quam ut orci. Maecenas magna mauris, elementum fringilla, tincidunt laoreet, semper sed, nisl. Aenean rutrum.
+						</td>
+						<td class="answer">
+							<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						</td></tr>
+					</table>
+				</div>
+				<div class="fib horizontal aligned left">
+					<table>
+						<tr><td class="question">
+							Third FIB with horizontal formating
+						</td>
+						<td class="answer">
+							<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						</td></tr>
+					</table>
+				</div>
+
+				<div class="text">
+					<div>
+						<b>FIB's aligned right. Label width 380px</b>
+					</div>
+				</div>
+
+				<div class="fib horizontal aligned right">
+					<table>
+						<tr><td class="question">
+							FIB with horizontal formating with label aligned left
+						</td>
+						<td class="answer">
+							<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						</td></tr>
+					</table>
+				</div>
+				<div class="fib horizontal aligned right">
+					<table>
+						<tr><td class="question">
+							Second FIB with horizontal formating
+						</td>
+						<td class="answer">
+							<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						</td></tr>
+					</table>
+				</div>
+				<div class="fib horizontal aligned right">
+					<table>
+						<tr><td class="question">
+							Third FIB with horizontal formating
+						</td>
+						<td class="answer">
+							<input type="text" class="text" name="numAdults" id="tawalaField_numAdults" size="6" />
+						</td></tr>
+					</table>
+				</div>
+
+				<div class="fib vertical">
+					<label class="question">
+						FIB vertical formatting
+					</label>
+					<div class="answer">
+						<input type="text" class="text" name="contribution" id="tawalaField_contribution" size="35" />
+					</div>
+				</div>
+
+				<div class="text">
+					<div>
+						<i>Click the submit button to enter your information. When you're done you can close this window</i>
+					</div>
+				</div>
+
+				<input type="hidden" name="_form" value="Potluck Organizer"></input>
+				<input type="hidden" name="_segment" value="0"></input>
+				<div class="submitButton buttons">
+					<button type="submit" value="submit" onClick="parent.window.scrollTo(0,0);">Submit</button>
+				</div>
+
+			</form>
+		</div>
+		<div id="tawalaFooter" onclick="location.href='http://www.tawala.com'"></div>
+	</body>
+</html>

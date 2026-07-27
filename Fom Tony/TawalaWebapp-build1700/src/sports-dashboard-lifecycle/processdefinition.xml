@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<process-definition  xmlns="urn:jbpm.org:jpdl-3.2"  name="sports-dashboard-lifecycle">
+	<description>
+		Sports Dashboard Life Cycle
+	</description>
+
+
+	<swimlane name="sales">
+		<assignment pooled-actors="sales"></assignment>
+	</swimlane>
+
+
+	<start-state name="create project">
+		<description>
+			Create project
+		</description>
+		<transition to="demo"></transition>
+	</start-state>
+
+
+	<task-node name="awaiting PO">
+		<description>
+			Awaiting PO
+		</description>
+		<task name="confirm PO receipt">
+			<description>
+				Check to see if PO has arrived
+			</description>
+			<assignment pooled-actors="sales"></assignment>
+			<timer duedate="15 days" name="PO receipt timeout" transition="to handle PO exception">
+				<action class="com.tawala.jbpm.sportsdashboards.action.HandlePOTimeout"></action>
+			</timer>
+		</task>
+		<transition to="need PO follow up" name="to handle PO exception">
+			<description>
+				Follow up with the client.
+			</description>
+		</transition>
+		<transition to="registration" name="to wait for registration completion">
+			<description>
+				Wait for registration completion.
+			</description>
+		</transition>
+	</task-node>
+
+	<task-node name="need PO follow up">
+		<description>
+			Need PO follow up
+		</description>
+		<task name="find out customer is OK">
+			<description>
+				Find out customer is OK
+			</description>
+			<assignment pooled-actors="sales"></assignment>
+		</task>
+		<transition to="take project offline" name="to cancel project">
+			<description>
+				Cancel project.
+			</description>
+		</transition>
+		<transition to="awaiting PO" name="to awaiting PO">
+			<description>
+				Continue waiting for PO receipt.
+			</description>
+		</transition>
+	</task-node>
+
+	<task-node name="need invoice">
+		<description>
+			Need invoice
+		</description>
+		<task name="create invoice">
+			<description>
+				Send invoice
+			</description>
+			<assignment pooled-actors="accounting"></assignment>
+		</task>
+		<transition to="awaiting payment"></transition>
+	</task-node>
+
+	<task-node name="awaiting payment">
+		<description>
+			Awaiting payment
+		</description>
+		<task name="acknowledge payment receipt">
+			<description>
+				Check to see if money has come in
+			</description>
+			<assignment pooled-actors="accounting"></assignment>
+			<timer duedate="15 days" name="payment not received in time" transition="to invoice exception">
+				<action class="com.tawala.jbpm.sportsdashboards.action.HandleInvoiceWaitTimeout"></action>
+			</timer>
+		</task>
+		<transition to="invoice paid" name="to invoice paid">
+			<description>
+				Invoice received. End the project workflow.
+			</description>
+		</transition>
+		<transition to="payment overdue" name="to invoice exception">
+			<description>
+				Payment is delayed. Follow up with the client.
+			</description>
+		</transition>
+	</task-node>
+
+	<task-node name="payment overdue">
+		<description>
+			Payment overdue
+		</description>
+		<task name="follow up on payment overdue">
+			<description>
+				Follow up on payment overdue
+			</description>
+			<assignment pooled-actors="accounting"></assignment>
+		</task>
+		<transition to="awaiting payment" name="to awaiting payment">
+			<description>
+				Wait for payment receipt.
+			</description>
+		</transition>
+		<transition to="take project offline" name="to cancel project">
+			<description>
+				Cancel project.
+			</description>
+		</transition>
+	</task-node>
+
+	<task-node name="registration">
+		<description>
+			Registration
+		</description>
+		<task name="check to see if we can invoice">
+			<description>
+				Check to see if we can invoice
+			</description>
+			<assignment pooled-actors="customer service"></assignment>
+		</task>
+		<transition to="need invoice"></transition>
+	</task-node>
+
+	<task-node name="demo">
+		<description>
+			Demo
+		</description>
+		<task name="confirm client commitment">
+			<description>
+				Demo SportsDashboards
+			</description>
+			<assignment pooled-actors="sales"></assignment>
+		</task>
+		<transition to="take project offline" name="to cancel project">
+			<description>
+				Cancel project.
+			</description>
+		</transition>
+		<transition to="need PO" name="to create PO">
+			<description>
+				Client is ready to proceed. Proceed to creating PO.
+			</description>
+		</transition>
+	</task-node>
+
+	<task-node name="need PO">
+		<description>
+			Need PO
+		</description>
+		<task name="create purchase order">
+			<description>
+				Create PO
+			</description>
+			<assignment pooled-actors="sales"></assignment>
+		</task>
+		<transition to="launch setup"></transition>
+	</task-node>
+
+	<node name="enable backups">
+		<action class="com.tawala.jbpm.sportsdashboards.handler.EnableProjectBackupHandler"></action>
+		<description>
+			Enable backups
+		</description>
+		<transition to="awaiting PO"></transition>
+	</node>
+
+	<task-node name="launch setup">
+		<description>
+			Launch setup
+		</description>
+		<task name="prepare project for release">
+			<description>
+				Prepare for launch
+			</description>
+			<assignment pooled-actors="sales"></assignment>
+		</task>
+		<transition to="enable backups"></transition>
+	</task-node>
+
+	<task-node name="take project offline">
+		<description>
+			Take project offline
+		</description>
+		<task name="take project offline">
+			<description>
+				Take project offline
+			</description>
+			<assignment pooled-actors="customer service"></assignment>
+		</task>
+		<transition to="project cancelled"></transition>
+	</task-node>
+
+
+	<end-state name="invoice paid">
+		<description>
+			Invoice paid
+		</description>
+	</end-state>
+
+	<end-state name="project cancelled">
+		<description>
+			Project cancelled
+		</description>
+	</end-state>
+
+
+</process-definition>

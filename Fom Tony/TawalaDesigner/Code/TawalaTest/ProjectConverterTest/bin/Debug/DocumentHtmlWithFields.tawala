@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="DocumentHtmlWithFields" themePath="default" format="1.3">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<fib label="Q1">FIB 1 <blank label="a" length="10" required="false"/></fib>
+<mc label="Q2" onlyone="true" required="false"><question>MCQ 1</question><choice label="a">A</choice><choice label="b">B</choice><choice label="c">C</choice></mc>
+</items>
+</form>
+</forms>
+<documents>
+<document name="Document 1">
+<htmlData>
+<![CDATA[<p><span style="font-size:10pt;">A document with a field &lt;&lt;Q1:a&gt;&gt;.</span></p>
+<p><span style="font-size:10pt;"></span></p>
+<p><span style="font-size:10pt;">&nbsp;</span></p>
+<p><span style="font-size:10pt;">Another line and another field &lt;&lt;Q2&gt;&gt;.</span></p>]]>
+</htmlData>
+<rawHtmlData>
+<![CDATA[<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+<meta content="TX_HTML32 12.0.230.500" name="GENERATOR">
+<title></title>
+<style type="text/css"> BODY {font-family: 'Arial';font-size: 12pt;font-weight: normal;font-style: normal;}
+ P {margin-top: 0.05pt;margin-bottom: 0.05pt;font-family: 'Arial';font-size: 12pt;font-style: normal;}
+</style></head>
+<body bgcolor="#FFFFFF" text="#000000">
+<p><span style="font-size:10pt;">A document with a field &lt;&lt;Q1:a&gt;&gt;.</span></p>
+<p><span style="font-size:10pt;"></span></p>
+<p><span style="font-size:10pt;">&nbsp;</span></p>
+<p><span style="font-size:10pt;">Another line and another field &lt;&lt;Q2&gt;&gt;.</span></p></body>
+</html>]]>
+</rawHtmlData>
+</document>
+</documents>
+</project>

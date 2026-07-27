@@ -1,0 +1,19 @@
+//
+// Copyright © 2005-${YEAR} Tawala Systems, Inc. All rights reserved.
+//
+using System;
+using System.ComponentModel;
+using System.Reflection;
+using System.Resources;
+using System.Runtime.InteropServices;
+using System.Runtime.CompilerServices;
+
+using FC = Tawala.Functions.Runtime.Private.FunctionClassAttribute;
+
+[assembly: AssemblyCompany("Tawala Systems, Inc.")]
+[assembly: AssemblyProduct("Tawala Designer")]
+[assembly: AssemblyCopyright("© 2005-${YEAR} Tawala Systems, Inc. All rights reserved.")]
+[assembly: AssemblyVersion("${ASSEMBLYVERSION}")]
+[assembly: ComVisible(false)]
+
+

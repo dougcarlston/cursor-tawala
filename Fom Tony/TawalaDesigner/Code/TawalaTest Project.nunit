@@ -1,0 +1,37 @@
+﻿<NUnitProject>
+  <Settings activeconfig="Debug" />
+  <Config name="Debug" binpathtype="Auto">
+    <assembly path="TawalaTest\CommonTest\bin\Debug\CommonTest.dll" />
+    <assembly path="TawalaTest\ProjectTest\bin\Debug\ProjectTest.dll" />
+    <assembly path="TawalaTest\FunctionalityTest\bin\Debug\FunctionalityTest.dll" />
+    <assembly path="TawalaTest\ProcessesTest\bin\Debug\ProcessesTest.dll" />
+    <assembly path="TawalaTest\XmlSupportTest\bin\Debug\XmlSupportTest.dll" />
+    <assembly path="TawalaTest\RtfSupportTest\bin\Debug\RtfSupportTest.dll" />
+    <assembly path="TawalaTest\ProjectUITest\bin\Debug\ProjectUITest.dll" />
+    <assembly path="TawalaTest\TextEditorTest\bin\Debug\TextEditorTest.dll" />
+    <assembly path="TawalaTest\ControlsTest\bin\Debug\ControlsTest.dll" />
+    <assembly path="TawalaTest\AcceptanceTest\bin\Debug\AcceptanceTest.dll" />
+    <assembly path="TawalaTest\FormsTest\bin\Debug\FormsTest.dll" />
+    <assembly path="TawalaTest\BugTest\bin\Debug\BugTest.dll" />
+    <assembly path="TawalaTest\DesignerUITest\bin\Debug\DesignerUITest.dll" />
+    <assembly path="TawalaTest\ParsingTest\bin\Debug\ParsingTest.dll" />
+    <assembly path="TawalaTest\FunctionTests\bin\Debug\FunctionTests.dll" />
+    <assembly path="TawalaTest\FrameworkBehaviorTests\bin\Debug\FrameworkBehaviorTests.dll" />
+    <assembly path="TawalaTest\ProjectConverterTest\bin\Debug\ProjectConverterTest.dll" />
+    <assembly path="TawalaTest\FontSupportTest\bin\Debug\FontSupportTest.dll" />
+    <assembly path="TawalaTest\TestSupportTest\bin\Debug\TestSupportTest.dll" />
+  </Config>
+  <Config name="Release" binpathtype="Auto">
+    <assembly path="TawalaTest\DynamicFunctionTests\bin\Release\DynamicFunctionTests.dll" />
+    <assembly path="TawalaTest\DynamicFunctionTests\bin\Release\DynamicFunctionTests.dll" />
+    <assembly path="TawalaTest\DynamicFunctionTests\bin\Release\DynamicFunctionTests.dll" />
+    <assembly path="tawala\DesignerUI\bin\Release\DesignerUI.dll" />
+    <assembly path="TawalaTest\DesignerUITest\bin\Release\DesignerUITest.dll" />
+    <assembly path="TawalaTest\LabelSupportTest\bin\Release\LabelSupportTest.dll" />
+    <assembly path="TawalaTest\ParsingTest\bin\Release\ParsingTest.dll" />
+    <assembly path="TawalaTest\FunctionTests\bin\Release\FunctionTests.dll" />
+    <assembly path="TawalaTest\FrameworkBehaviorTests\bin\Release\FrameworkBehaviorTests.dll" />
+    <assembly path="TawalaTest\ProjectConverterTest\bin\Release\ProjectConverterTest.dll" />
+    <assembly path="TawalaTest\TestSupportTest\bin\Release\TestSupportTest.dll" />
+  </Config>
+</NUnitProject>

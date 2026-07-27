@@ -1,0 +1,382 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="3.5" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{55533182-6777-4318-A076-B1E8294D62F7}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tawala.ProjectExplorer</RootNamespace>
+    <AssemblyName>ProjectExplorer</AssemblyName>
+    <TargetFrameworkVersion>v2.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="IProjectExplorerView.cs" />
+    <Compile Include="ProjectExplorerPresenter.cs" />
+    <Compile Include="ProjectExplorerView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="ProjectExplorerView.Designer.cs">
+      <DependentUpon>ProjectExplorerView.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Dialogs\SavedProjectInvalid.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Dialogs\SavedProjectInvalid.Designer.cs">
+      <DependentUpon>SavedProjectInvalid.cs</DependentUpon>
+    </Compile>
+    <Service Include="{94E38DFF-614B-4cbd-B67C-F211BB35CE8B}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ProjectExplorerView.resx">
+      <DependentUpon>ProjectExplorerView.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Dialogs\SavedProjectInvalid.resx">
+      <DependentUpon>SavedProjectInvalid.cs</DependentUpon>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\FormDesigner\FormDesigner.csproj">
+      <Project>{64119070-D726-4F91-A9D4-72537DEB0786}</Project>
+      <Name>FormDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Application\MainApplication.csproj">
+      <Project>{8613E442-1DEC-4050-A83C-F7261D410CC8}</Project>
+      <Name>MainApplication</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DocumentDesigner\DocumentDesigner.csproj">
+      <Project>{3324721B-A2A2-4C11-AA30-609370E213D1}</Project>
+      <Name>DocumentDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Projects\Projects.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Projects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ComponentDesigner\ComponentDesigner.csproj">
+      <Project>{0ED209C9-8BC5-4340-A604-15BF8D43A2EA}</Project>
+      <Name>ComponentDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ProcessDesigner\ProcessDesigner.csproj">
+      <Project>{CD457912-F04D-46FE-8AC2-98EAB7EC69C1}</Project>
+      <Name>ProcessDesigner</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TawalaInterfaces\TawalaInterfaces.csproj">
+      <Project>{62431343-6FF1-4BC0-84E6-5C15F64CB86D}</Project>
+      <Name>TawalaInterfaces</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\document.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\document_new.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\downarrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_copy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_cut.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_paste.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_redo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\edit_undo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\file_save.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_closed.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\folder_openwitharrow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_bold.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_choosecolor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_colorbuttondefault.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_colorbuttontheme.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_defaultcolor.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_italic.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_themecolorswatch.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\font_underline.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_isstartpoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itembreak.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemdraginsert.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemfib.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemheading.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemhiddenfield.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemmcq.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemskip.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_itemtext.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_lastrecord.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_makestartpoint.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_new.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_postprocess.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_preprocess.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\form_preview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\function.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\help_information.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\insert_image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\insertmarker.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\invitationmanager.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\normalview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\pageview.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\paragraph_indent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\paragraph_outdent.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\process.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\process_new.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\project.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\project_deploy.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\project_manager.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\project_new.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\sizetocontents.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\startpointlastrecord.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_addcolumnafter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_addcolumnbefore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_addrowafter.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_addrowbefore.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_deletecolumn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_deleterow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_insert.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\table_insertdeleteroworcolumn.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_center.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_clearformatting.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_justify.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_leftalign.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\text_rightalign.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\view.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

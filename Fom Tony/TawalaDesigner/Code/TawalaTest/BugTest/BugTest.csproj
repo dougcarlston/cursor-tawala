@@ -1,0 +1,221 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>9.0.30729</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FD60EE9A-DDD6-468D-8549-F09B3BA756F4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>TawalaTest.BugTest</RootNamespace>
+    <AssemblyName>BugTest</AssemblyName>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="nunit.framework, Version=2.2.8.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ClipboardCopyPasteDocument296.cs" />
+    <Compile Include="ClipboardCopyPasteForm295.cs" />
+    <Compile Include="ClipboardCopyPasteProcess417.cs" />
+    <Compile Include="ClipboardCopyPasteComponentTestHelper.cs" />
+    <Compile Include="ClipboardCopyPasteRequiresSerializableAttribute.cs" />
+    <Compile Include="ChangedFunctionParameterIdCausesException449.cs" />
+    <Compile Include="AlternateLableCannotMatchVariableName825.cs" />
+    <Compile Include="McqWithMoreThan26ChoicesShowsLabelsWhenDeployed1019.cs" />
+    <Compile Include="RemovingOtherwiseWithNestedIfCorruptsProcess970.cs" />
+    <Compile Include="RecordNodeDisappearsAfterNestedForEachWithIf616.cs" />
+    <Compile Include="SerializingBlankWithValidationCausesException975and976.cs" />
+    <Compile Include="VariableSetInSkipAndReferencedInFibCausesBadSave954.cs" />
+    <Compile Include="FormFieldSetInSkipInstructionsAppearAsVariablesInFieldsPalette943 .cs" />
+    <Compile Include="SpaceBetweenFieldsInChoiceNotPreserved914.cs" />
+    <Compile Include="InvalidMCQConditionCausesBadSave899.cs" />
+    <Compile Include="SetStatementRecordField579.cs" />
+    <Compile Include="SetStatementFormQualifier508.cs" />
+    <Compile Include="ForwardFieldReferenceInTableCell712.cs" />
+    <Compile Include="VariableReferencedInFormItemChangesToQualifiedField728.cs" />
+    <Compile Include="McqDoesNotEqualOperatorNotRetained868.cs" />
+    <Compile Include="EmptyTextStyleAttributeCausesException870.cs" />
+    <Compile Include="SpecialXmlCharactersInSubjectBoxCauseBadSave711.cs" />
+    <Compile Include="SpecialXmlCharactersShowUrlStatementCausesBadSave707.cs" />
+    <Compile Include="ShowUrlStatementInsideIfCausesBadSave706.cs" />
+    <Compile Include="PastingFormWithHyperlinkCausesException698.cs" />
+    <Compile Include="PastingDocumentWithInvitationCausesException642.cs" />
+    <Compile Include="SendSubjectWithFieldsSeparatedBySpaceCausesBadSaveWhenNested691.cs" />
+    <Compile Include="McqIsBlankConditionCausesBadSave703.cs" />
+    <Compile Include="ForwardReferenceInFunctionConditionsCausesBadSave689.cs" />
+    <Compile Include="HeadingInFunctionWithSameNameAsFormCausesFailure690.cs" />
+    <Compile Include="IsBlankConditionCausesCrash688.cs" />
+    <Compile Include="SendSubjectWithFieldsSeparatedBySpaceCausesBadSave679.cs" />
+    <Compile Include="CopyProcessWithNullDocument662.cs" />
+    <Compile Include="DeletingFormReferencedByFunctionBug572.cs" />
+    <Compile Include="FontSizeNotPreserved600.cs" />
+    <Compile Include="InsertFunctionMustReplaceSelection575.cs" />
+    <Compile Include="ImagesNotPreservedInSavedProject569.cs" />
+    <Compile Include="BugTestSetup.cs" />
+    <Compile Include="RightConditionBoxClearsUnexpectedly387.cs" />
+    <Compile Include="SpecialXmlCharactersInFieldNameInDocumentCauseBadSave519.cs" />
+    <Compile Include="PastedDocumentDoesNotAppearInStatementDropdowns489.cs" />
+    <Compile Include="FIBBlankFollowedBySpaceCauseBadSave540.cs" />
+    <Compile Include="NoFormsAndDataSourceInForEachBadSave527.cs" />
+    <Compile Include="ProjectOpenMissingDataSources531.cs" />
+    <Compile Include="ShowRecordStatementInsideIf530.cs" />
+    <Compile Include="DeleteStatementNestedInIfStatementFails510.cs" />
+    <Compile Include="SpecialXmlCharactersInAlternateLabelCausesBadSave501.cs" />
+    <Compile Include="GetStatementInvalidForm468.cs" />
+    <Compile Include="RecordNodeDisappearsWithNestedForEach480.cs" />
+    <Compile Include="CreateExtraFieldAppearsInvalid323.cs" />
+    <Compile Include="MCQHeaderTextFollowedBySpaceAndField472.cs" />
+    <Compile Include="SpecialCharactersInTextItem432.cs" />
+    <Compile Include="SpecialCharactersInDocument431.cs" />
+    <Compile Include="SetRecordField419.cs" />
+    <Compile Include="InvitationTargetRemoved418.cs" />
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="ShowStatementMissingForm391.cs" />
+    <Compile Include="FieldsPaletteNodeCollapsed355.cs" />
+    <Compile Include="InvitationFieldXml394.cs" />
+    <Compile Include="SetNegativeValue309.cs" />
+    <Compile Include="SetStatementFieldDoubleClick322.cs" />
+    <Compile Include="NoChoicesInFieldsPalette319.cs" />
+    <Compile Include="ExpressionRetained289.cs" />
+    <Compile Include="FieldInTextItem220.cs" />
+    <Compile Include="FieldsPalettePosition337.cs" />
+    <Compile Include="ImageDataRemains330.cs" />
+    <Compile Include="ImageSaveTime311.cs" />
+    <Compile Include="ImageSelectTime316.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShowStatementMissingDocument390.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\TAWALA\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Controls\Controls.csproj">
+      <Project>{4F0A6D51-0E78-41AB-BBD7-CB9D2EA86670}</Project>
+      <Name>Controls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Core\Core.csproj">
+      <Project>{3878667C-1FD0-411C-B936-2E57ACEE8C71}</Project>
+      <Name>Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Documents\Documents.csproj">
+      <Project>{1E6D58CF-C25B-42C1-982D-01C4C83FD5D1}</Project>
+      <Name>Documents</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\FunctionControls\FunctionControls.csproj">
+      <Project>{92985673-814F-4316-B7F9-19078EE36EDA}</Project>
+      <Name>FunctionControls</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Functions\Functions.csproj">
+      <Project>{83728549-B86D-414D-A2AA-7B16515A138D}</Project>
+      <Name>Functions</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\FunctionViewPresenter\FunctionViewPresenter.csproj">
+      <Project>{8546DB36-F4EA-49C0-925F-AD0124ECA727}</Project>
+      <Name>FunctionViewPresenter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Processes\Processes.csproj">
+      <Project>{DA2F4203-642C-4AB3-94A4-B61778BF282C}</Project>
+      <Name>Processes</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\ProjectUI\ProjectUI.csproj">
+      <Project>{5500AEE7-74CA-4439-8661-22E14D6E65A8}</Project>
+      <Name>ProjectUI</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\Projects\Projects.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Projects</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\RtfSupport\RtfSupport.csproj">
+      <Project>{07F1A28C-D83A-4F06-9FFA-6BBA9C40D38A}</Project>
+      <Name>RtfSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\TextEditor\TextEditor.csproj">
+      <Project>{0BEDC378-9483-468E-97E9-C6DBFEE17127}</Project>
+      <Name>TextEditor</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\TAWALA\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\TestSupport\TestSupport.csproj">
+      <Project>{0F28CF83-EE9A-4F98-B989-FF6557A675B7}</Project>
+      <Name>TestSupport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

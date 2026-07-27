@@ -1,0 +1,26 @@
+
+	public sealed class ${CLASSNAMEV} : Function
+	{
+		${PROPERTIES}
+		
+		public static IFunction CreateInstance() { return new ${CLASSNAMEV}(); }
+		
+  		public static event PropertyChangedEventHandler CompositePropertyChanged;
+  		
+  		public override void BeginEdit()
+  		{
+  		    CompositePropertyChanged += forwardChange;
+  		}
+  		
+  		public override void EndEdit()
+  		{
+   		    CompositePropertyChanged -= forwardChange;
+  		}
+  		
+  		private void forwardChange(object sender, PropertyChangedEventArgs args)
+  		{
+ 			Debug.WriteLine("${CLASSNAMEV}.forwardChange('" + sender.GetType().FullName + ", '" + args.PropertyName + "')");
+ 		    NotifyChanged(args.PropertyName);
+  		}
+	}
+}

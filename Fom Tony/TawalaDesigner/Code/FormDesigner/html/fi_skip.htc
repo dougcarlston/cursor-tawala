@@ -1,0 +1,57 @@
+<public:component tagName="SkipItem">
+
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+<public:property name="Summary" get="getSummary" put="putSummary" />
+
+<script language="JScript">
+
+init();
+
+function init()
+{
+    element.style.display = "block";
+    element.className="skipitem";
+    element.innerText = "Skip Instructions";
+    
+    element.onclick=editSkipInstructions;
+    element.UNSELECTABLE = true;
+}
+
+function editSkipInstructions()
+{
+    if (window.external != null)
+    {
+	    window.external.EditSkipInstructions(element.id);
+	}
+}
+
+function getSummary()
+{
+    return element.innerText;
+}
+
+function putSummary(value)
+{
+    element.innerText = value;
+}
+
+function onActivate()
+{
+    if (window.external != null)
+    {
+        window.external.FormItemActivated(element.id);
+    }
+}
+
+function onDeactivate()
+{
+    if (window.external != null)
+    {
+        window.external.FormItemDeactivated(element.id);
+    }
+}
+
+</script>
+
+</public:component>

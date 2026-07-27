@@ -1,0 +1,147 @@
+<public:component tagName="ItemLabel">
+
+<public:method name="Attached" />
+
+<public:property name="LabelText" get="getLabelText" put="putLabelText" />
+
+<script language="JScript">
+
+var active = false;
+var div = null;
+var row = null;
+var cell = null;
+
+init();
+
+function init()
+{
+    element.className = "ItemLabel";
+    element.style.display = "block";
+    
+    element.tabIndex=0;
+    element.UNSELECTABLE=true;
+}
+
+function Attached()
+{
+    cell = element.parentElement;
+    row = cell.parentElement;
+    
+    cell.className = "label";
+    cell.tabIndex=0;
+    cell.UNSELECTABLE=true;
+    
+    cell.onclick=onCellClick;
+    cell.onkeydown=onCellKeyDown;
+    cell.onmousedown=onCellMouseDown;
+    cell.onmousemove=onCellMouseMove;
+    cell.onmouseup=onCellMouseUp;
+
+    if (row.HasLabel == "true") 
+    {
+        div = element.document.createElement("div");
+        div.className = "label";
+        div.innerText = "Error!";
+        div.UNSELECTABLE = true;
+
+        element.appendChild(div);
+    }
+    else
+    {
+        element.style.width = "20px";        
+    }
+}
+
+function getLabelText()
+{
+    if (div != null)
+    {
+	    return div.innerText;
+	}
+	else
+	{
+	    return "";
+	}
+}
+
+function putLabelText(value)
+{
+    if (div != null)
+    {
+	    div.innerText = value;
+	}
+}
+
+function onCellClick()
+{
+    event.returnValue = false;
+    event.cancelBubble = true;
+}
+
+function onCellKeyDown()
+{
+    if (isDeleteKey())
+    {
+        event.cancelBubble = true;
+        window.external.DeleteSelectedItems();
+    }
+    
+    if (isCtrlC())
+    {
+        event.cancelBubble = true;
+        window.external.CopySelectedItems();
+    }
+}
+
+function isCtrlC()
+{
+	return (event.ctrlKey && event.keyCode == 67);
+}
+
+function isDeleteKey()
+{
+	return event.keyCode == 46;
+}
+
+var offsetDownY = 0;
+var thisCellMouseDown = false;
+
+function onCellMouseDown()
+{
+    offsetDownY = event.offsetY;
+    thisCellMouseDown = true;
+    
+    if (!(event.ctrlKey || event.shiftKey || event.altKey))
+    {
+        cell.focus();
+    }
+    formContainer.HandleFormItemSelect(row, cell);
+}
+
+function onCellMouseMove()
+{   
+    if (!thisCellMouseDown || !row.Selected)
+        return;
+        
+    if (event.button != 1 || (Math.abs(offsetDownY-event.offsetY) < 6))
+        return;
+                    
+    event.returnValue=false;
+        
+    dropArea.DoRowDragDrop();
+}
+
+function onCellMouseUp()
+{
+    offsetDownY = event.offsetY;
+    thisCellMouseDown = false;
+    
+    if (!(event.ctrlKey || event.shiftKey || event.altKey))
+    {
+        formContainer.SelectSingleFormItem(row);
+    }
+}
+
+</script>
+
+</public:component>

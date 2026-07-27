@@ -1,0 +1,69 @@
+<public:component tagName="FieldItem">
+
+<public:attach event="onactivate" onevent="onActivate()" />
+<public:attach event="ondeactivate" onevent="onDeactivate()" />
+
+<public:property name="FieldName" get="getFieldName" put="putFieldName" />
+
+<script language="JScript">
+
+var div = null;
+
+init();
+
+function init()
+{
+    element.style.display="block";
+    element.style.backgroundColor = "rgb(224,255,224)";
+    
+    element.ondragstart = onDragStart;
+    
+    div = document.createElement("div");
+    div.style.backgroundColor = element.style.backgroundColor;
+    
+    div.addBehavior("editable.htc");
+    div.acceptFieldDrop = false;
+
+    div.addBehavior("exitonenterkey.htc");
+    div.innerHTML = "Field1";
+    div.className="formitem hiddenfielditem ";
+	
+	element.appendChild(div);
+}
+
+function onDragStart()
+{
+    event.returnValue = false;
+    event.cancelBubble = true;
+}
+
+function getFieldName()
+{
+    return div.innerHTML;
+}
+
+function putFieldName(value)
+{
+    div.innerHTML=value;
+}
+
+function onActivate()
+{
+    if (window.external != null)
+    {
+        window.external.FormItemActivated(element.id);
+    }
+}
+
+function onDeactivate()
+{
+    if (window.external != null)
+    {
+        window.external.FormItemDeactivated(element.id);
+		window.external.HiddenFieldChanged();
+    }
+}
+
+</script>
+
+</public:component>

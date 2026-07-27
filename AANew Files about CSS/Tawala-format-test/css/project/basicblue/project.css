@@ -1,0 +1,15 @@
+/*
+ * Basic Blue theme
+ */
+body {
+	background-color: #d8ffff;
+}
+
+#tawalaProjectContainer {
+		background-color: #d8ffff;
+		border: 1px solid #88ddff;
+}
+
+#tawalaFooter {
+	background-image: none;
+}

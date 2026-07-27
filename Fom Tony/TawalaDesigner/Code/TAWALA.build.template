@@ -1,0 +1,77 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<project name="TAWALA" default="build">
+
+	<!-- Change the values of these to your own username and password for the SVN repository -->
+	<property name="svnUsername" value="MYUSERNAME" />
+	<property name="svnPassword" value="MYPASSWORD" />
+
+	<property name="buildFolder" value="." />
+	<property name="tawalaFolder" value="${buildFolder}/TAWALA" />
+	<property name="tawalaTestFolder" value="${buildFolder}/TawalaTest" />
+	<property name="setupFolder" value="${buildFolder}/TAWALA/Setup/Release" />
+	<property name="devenvFolder" value="C:/Program Files/Microsoft Visual Studio 9.0/Common7/IDE" />
+	<property name="wzipseFolder" value="C:/Program Files/WinZip Self-Extractor" />
+	<property name="repositoryLocation" value="svn+ssh://${svnUsername}@svn.tawala.com/home/svn/repository/tawala_designer/trunk/Code" />
+	
+	<target name="build" depends="svnUpdate, runTests, makeSelfExtractingExeFile">
+	</target>
+
+	<target name="svnUpdate" description="Checkout from SVN repository">
+		<svn-update
+			destination="${buildFolder}"
+			uri="${repositoryLocation}"
+			password="${svnPassword}"
+			verbose="true"
+			quiet="false"
+		/>
+	</target>
+
+	<target name="buildTawalaTestSolution">
+		<msbuild project="${tawalaTestFolder}/TawalaTest.sln" verbosity="Quiet">
+			<arg value="/property:Configuration=debug" />
+			<arg value="/t:Rebuild" />
+		</msbuild>
+	</target>
+
+	<target name="runTawalaTests">
+		<exec program="nunit-console">
+			<arg value="${buildFolder}/TawalaTest Project.nunit" />
+		</exec>
+	</target>
+
+	<target name="runProjectXmlRoundTripTests">
+		<exec program="nunit-console">
+			<arg value="${buildFolder}/ProjectXmlRoundTripTest.nunit" />
+		</exec>
+	</target>
+
+	<target name="runTests" depends="buildTawalaTestSolution, runTawalaTests, runProjectXmlRoundTripTests" />
+
+	<target name="buildTawalaSetupProject">
+		<exec program="devenv.exe" basedir="${devenvFolder}">
+			<arg value="${tawalaFolder}/TAWALA.sln" />
+			<arg line="/rebuild Release" />
+			<arg line="/project Setup" />
+		</exec>
+	</target>
+
+	<target name="makeZipFile" depends ="buildTawalaSetupProject">
+		<zip zipfile="${setupFolder}/Tawala.zip">
+			<fileset basedir="${setupFolder}">
+				<include name="setup.exe" />
+				<include name="Tawala.msi" />
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="makeSelfExtractingExeFile" depends="makeZipFile">
+		<exec program="wzipse32.exe" basedir="${wzipseFolder}">
+			<arg value="${setupFolder}/Tawala" />
+			<arg value="-y" />
+			<arg value="-auto" />
+			<arg line="-c setup.exe" />
+		</exec>
+	</target>
+
+</project>

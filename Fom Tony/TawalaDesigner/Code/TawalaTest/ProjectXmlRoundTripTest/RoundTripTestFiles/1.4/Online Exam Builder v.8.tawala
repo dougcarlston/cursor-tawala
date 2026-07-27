@@ -1,0 +1,992 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Online Exam Builder v.7" themePath="default" format="1.4">
+<forms>
+<form name="Setup" startPoint="true" themePath="default" dataEntryOnly="true" process="Process 1">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><font face="Arial" size="240" color="4D6581"><b>Online Exam Builder</b></font></paragraph></text>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>You may use this Web app to build a test of any length, consisting of any</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>combination of multiple choice and fill-in-the-blank questions.  The app</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>will automatically grade each exam as it is taken.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Note: Generally, multiple choice questions are preferable for automated grading</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>tests, as the slightest variation in spelling or grammar can cause a fill-in-</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>the-blank answer to be marked wrong.  </i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Exam Title</b></font><font face="Arial" size="200" color="000000"><b>:</b></font><sp/><blank label="a" length="40" required="false" alternateLabel="Title"/></paragraph></fib>
+<fib label="Q2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Exam Date</b></font><font face="Arial" size="200" color="333333">:</font><sp/><blank label="a" length="17" required="false" alternateLabel="Date"/></paragraph></fib>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Pre-test instructions to examinee:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="65" height="3" required="false" alternateLabel="PreInstructions"/></paragraph></fib>
+<fib label="Q4"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Comments or instructions to examinee upon completion of test:</b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="65" height="3" required="false" alternateLabel="PostInstructions"/></paragraph></fib>
+<mc label="Q5" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Give examinee score upon completion of exam</b></font></paragraph></choice></mc>
+<mc label="Q6" onlyone="false" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Give examinee correct answers upon completion of exam</b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="CreateTest" startPoint="false" themePath="default" process="Process 2" preProcess="Process 3">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Please enter exam question here:</i></b></font></paragraph></text>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="333333"><b>):</b></font><sp/><blank label="a" length="70" height="2" required="false"/></paragraph></fib>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Question type:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Multiple-choice</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Fill-in-the-blank</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="CreateTest:Q2" value="a"/>
+</conditions>
+<trueSet>
+<skip to="Q5"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q3"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="333333"><b>) </b></font><font face="Arial" size="200" color="333333"><b><field name="CreateTest:Q1:a"/></b></font><sp/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Please enter correct answer</i></b></font><font face="Arial" size="200" color="2E4685">:</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="61" required="false"/></paragraph></fib>
+<mc label="Q4" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Add another question</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Edit this question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Finish Setup</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="CreateTest:Q4" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+<falseSet>
+<skip to="__EndOfForm__"/>
+</falseSet>
+</if>
+</skipInstructions>
+<fib label="Q5"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="333333"><b>)</b></font><sp/><font face="Arial" size="200" color="333333"><b><field name="CreateTest:Q1:a"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Response Choices:</b></font><sp/><font face="Arial" size="200" color="2E4685"><i>(leave blank any fields you don't need)</i></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="333333">a) </font><blank label="a" length="63" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="333333">b) </font><blank label="b" length="63" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="333333">c)</font><sp/><blank label="c" length="63" required="false"/></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">d) </font><blank label="d" length="63" required="false"/></paragraph></fib>
+<break/>
+<text label="T2"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="333333"><b>)</b></font><sp/><font face="Arial" size="200" color="333333"><b><field name="CreateTest:Q1:a"/></b></font></paragraph></text>
+<mc label="Q6" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Please enter correct answer:</i></b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><field name="CreateTest:Q5:a"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><field name="CreateTest:Q5:b"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><field name="CreateTest:Q5:c"/></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><field name="CreateTest:Q5:d"/></font></paragraph></choice></mc>
+<mc label="Q7" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Add another Question</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Edit this Question</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Finish Setup</b></font></paragraph></choice></mc>
+<skipInstructions>
+<if>
+<conditions>
+<mcEquals field="CreateTest:Q7" value="b"/>
+</conditions>
+<trueSet>
+<skip to="T1"/>
+</trueSet>
+</if>
+</skipInstructions>
+</items>
+</form>
+<form name="Setup Finish" startPoint="false" themePath="default" process="Process 7" preProcess="Process 3">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+<form name="Questionnaire" startPoint="true" themePath="default" process="Process 11" preProcess="Process 10">
+<items>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000">Name:  </font><blank label="a" length="40" required="false" alternateLabel="Name"/></paragraph></fib>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000077"><b><i>You will be asked questions one at a time.  Please review your answer carefully before continuing as you will not have a chance to change your responses later.  Do not use the back arrow on your browser to try to change a response.</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000077"><b><i>Press the Submit button below when you are ready to begin.</i></b></font></paragraph></text>
+</items>
+</form>
+<form name="Main2" startPoint="false" themePath="default" process="Process 8">
+<items>
+<skipInstructions>
+<if>
+<conditions>
+<equals field="Type">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<skip to="Q2"/>
+</trueSet>
+</if>
+</skipInstructions>
+<fib label="Q1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="QNumber"/></font><font face="Arial" size="200" color="000000">) </font><font face="Arial" size="200" color="000000"><field name="Q"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><blank label="a" length="30" required="false"/></paragraph></fib>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+<mc label="Q2" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="QNumber"/></font><font face="Arial" size="200" color="000000">) </font><font face="Arial" size="200" color="000000"><field name="Q"/></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="C"/></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="D"/></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="Scoring" startPoint="false" themePath="default" process="Process 9">
+<items>
+<text label="T1"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000079"><b><i><field name="TestPost"/></i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000079"><b><i>Press the Submit button to see your Score.</i></b></font></paragraph></text>
+</items>
+</form>
+<form name="Administration" startPoint="true" themePath="default" process="Process 12">
+<items>
+<mc label="Q1" onlyone="true" required="false"><question><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Choose:</b></font></paragraph></question><choice label="a"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Student scores</b></font></paragraph></choice><choice label="b"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>See copy of exam</b></font></paragraph></choice><choice label="c"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Analysis of questions</b></font></paragraph></choice><choice label="d"><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="333333"><b>Quit</b></font></paragraph></choice></mc>
+</items>
+</form>
+<form name="AdminShowTest" startPoint="false" themePath="default" process="Process 13" preProcess="Process 3">
+<items>
+<skipInstructions>
+<skip to="__EndOfForm__"/>
+</skipInstructions>
+</items>
+</form>
+</forms>
+<processes>
+<process name="Process 1">
+<comment>Puts a column called "Answers" on the right side of the test.</comment>
+<set field="AFlag" arithmeticAsText="false">
+<string value="Answers"/>
+</set>
+<comment>BFlag will eventually be used to display the student's responses</comment>
+<set field="BFlag" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<comment>StudResp will display the student's responses</comment>
+<set field="StudResp" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="TestTitle" arithmeticAsText="false">
+<string field="Setup:Title"/>
+</set>
+<set field="TestDate" arithmeticAsText="false">
+<string field="Setup:Date"/>
+</set>
+<set field="TestPre" arithmeticAsText="false">
+<string field="Setup:PreInstructions"/>
+</set>
+<set field="TestPost" arithmeticAsText="false">
+<string field="Setup:PostInstructions"/>
+</set>
+<comment>We'll need to count how many questions we've got</comment>
+<set field="TotalQuestions" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<comment>Set up flags to determine what to show each testee</comment>
+<set field="ShareScore" arithmeticAsText="false">
+<string field="Setup:Q5"/>
+</set>
+<set field="ShareAnswer" arithmeticAsText="false">
+<string field="Setup:Q6"/>
+</set>
+<comment>Start adding questions to test.</comment>
+<show form="CreateTest"/>
+</process>
+<process name="Process 2">
+<comment>We're going to need to know which Question we're on in the future, so this attaches these variables to this form in future GET statements.</comment>
+<set field="TotalQuestions" arithmeticAsText="false">
+<add>
+<operand field="TotalQuestions"/>
+<operand value="1"/>
+</add>
+</set>
+<set field="QuestionNumber" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<comment>Then set Type to MCQ or FIB, which is easier to read than "Q2"</comment>
+<if>
+<conditions>
+<mcEquals field="CreateTest:Q2" value="a"/>
+</conditions>
+<trueSet>
+<set field="Type" arithmeticAsText="false">
+<string value="MCQ"/>
+</set>
+<set field="Answer" arithmeticAsText="false">
+<string field="CreateTest:Q6"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="Type" arithmeticAsText="false">
+<string value="FIB"/>
+</set>
+<set field="Answer" arithmeticAsText="false">
+<string field="CreateTest:Q3:a"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<isBlank field="CreateTest:Q1:a"/>
+</conditions>
+<trueSet>
+<set field="TotalQuestions" arithmeticAsText="false">
+<operand value="-1"/>
+</set>
+<set field="AFlag" arithmeticAsText="false">
+<string value="Answers"/>
+</set>
+<show document="Final Test Header" reset="false"/>
+<show form="Setup Finish"/>
+</trueSet>
+</if>
+<comment>If Designer wants to add more questions to test, loop back to Form Create Test;</comment>
+<comment>otherwise let's get ready to review the test and finish</comment>
+<if>
+<conditions>
+<and>
+<mcEquals field="CreateTest:Q7">
+<string value="a"/>
+</mcEquals>
+<mcEquals field="CreateTest:Q2" value="a"/>
+</and>
+</conditions>
+<trueSet>
+<show document="Test So Far" reset="false"/>
+<show form="CreateTest"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<and>
+<mcEquals field="CreateTest:Q2" value="b"/>
+<mcEquals field="CreateTest:Q4" value="a"/>
+</and>
+</conditions>
+<trueSet>
+<show document="Test So Far" reset="false"/>
+<show form="CreateTest"/>
+</trueSet>
+</if>
+<set field="AFlag" arithmeticAsText="false">
+<string value="Answers"/>
+</set>
+<show document="Final Test Header" reset="false"/>
+<show form="Setup Finish"/>
+</process>
+<process name="Process 3">
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<get recordList="Record List 1">
+<forms>
+<form name="CreateTest"/>
+</forms>
+<conditions>
+<isNotBlank field="Record List 1:CreateTest:Q1:a"/>
+</conditions></get>
+<foreach record="Question" recordList="Record List 1">
+<set field="Q" arithmeticAsText="false">
+<string field="Question:CreateTest:Q1:a"/>
+</set>
+<comment>If it's an FIB, grab the right field for the answer and put it in variable "Answer" then add the question to Final Test</comment>
+<if>
+<conditions>
+<mcEquals field="Question:CreateTest:Q2" value="b"/>
+</conditions>
+<trueSet>
+<set field="Answer" arithmeticAsText="false">
+<string field="Question:CreateTest:Q3:a"/>
+</set>
+<append document="Final Test" appendage="FIB"/>
+</trueSet>
+<falseSet>
+<comment>If it's an MCQ, grab the right field for the answer and put it in variable "Answer" then add the question to Final Test</comment>
+<if>
+<conditions>
+<mcEquals field="Question:CreateTest:Q2" value="a"/>
+</conditions>
+<trueSet>
+<set field="Answer" arithmeticAsText="false">
+<string field="Question:CreateTest:Q6"/>
+</set>
+<set field="A" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:b"/>
+</set>
+<comment>We don't want to display blank response options, but all MCQ's have to have at least 2 options, so fill A and B, then check to see if there's a C</comment>
+<if>
+<conditions>
+<isBlank field="Question:CreateTest:Q5:c"/>
+</conditions>
+<trueSet>
+<append document="Final Test" appendage="MCQ2"/>
+</trueSet>
+<falseSet>
+<set field="C" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:c"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Question:CreateTest:Q5:d"/>
+</conditions>
+<trueSet>
+<append document="Final Test" appendage="MCQ3"/>
+</trueSet>
+<falseSet>
+<set field="D" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:d"/>
+</set>
+<append document="Final Test" appendage="MCQ4"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</trueSet>
+<falseSet>
+<set field="A" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<show document="Final Test" reset="true"/>
+</process>
+<process name="Process 10">
+<get recordList="Record List 2">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="Instruction" recordList="Record List 2">
+<if>
+<conditions>
+<isNotBlank field="Instruction:Setup:Title"/>
+</conditions>
+<trueSet>
+<set field="TestTitle" arithmeticAsText="false">
+<string field="Instruction:Setup:Title"/>
+</set>
+<set field="TestDate" arithmeticAsText="false">
+<string field="Instruction:Setup:Date"/>
+</set>
+<set field="TestPre" arithmeticAsText="false">
+<string field="Instruction:Setup:PreInstructions"/>
+</set>
+<set field="TestPost" arithmeticAsText="false">
+<string field="Instruction:Setup:PostInstructions"/>
+</set>
+<set field="ShareScore" arithmeticAsText="false">
+<string field="Instruction:Setup:ShareScore"/>
+</set>
+<set field="ShareAnswer" arithmeticAsText="false">
+<string field="Instruction:Setup:ShareAnswer"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<show document="Final Test" reset="false"/>
+</process>
+<process name="Process 11">
+<comment>First, find out how many questions are in the test</comment>
+<set field="TotalQuestions" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 4">
+<forms>
+<form name="CreateTest"/>
+</forms>
+<conditions>
+<isNotBlank field="Record List 4:CreateTest:Q1:a"/>
+</conditions></get>
+<foreach record="Entry" recordList="Record List 4">
+<set field="TotalQuestions" arithmeticAsText="false">
+<add>
+<operand field="TotalQuestions"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<comment>And start the exam with the first question</comment>
+<get recordList="Record List 5">
+<forms>
+<form name="CreateTest"/>
+</forms>
+</get>
+<foreach record="Query" recordList="Record List 4">
+<if>
+<conditions>
+<equals field="Query:CreateTest:QuestionNumber">
+<string value="1"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Q" arithmeticAsText="false">
+<string field="Query:CreateTest:Q1:a"/>
+</set>
+<set field="Type" arithmeticAsText="false">
+<string field="Query:CreateTest:Type"/>
+</set>
+<if>
+<conditions>
+<equals field="Type">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="A" arithmeticAsText="false">
+<string field="Query:CreateTest:Q5:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Query:CreateTest:Q5:b"/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string field="Query:CreateTest:Q5:c"/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string field="Query:CreateTest:Q5:d"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="A" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</trueSet>
+</if>
+</foreach>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<show form="Main2"/>
+</process>
+<process name="Process 8">
+<set field="Student" arithmeticAsText="false">
+<string field="Questionnaire:Name"/>
+</set>
+<set field="QuestionNumber" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<isLessThanOrEqualTo field="QNumber">
+<string field="TotalQuestions"/>
+</isLessThanOrEqualTo>
+</conditions>
+<trueSet>
+<get recordList="Record List 6">
+<forms>
+<form name="CreateTest"/>
+</forms>
+<conditions>
+<and>
+<equals field="QNumber">
+<string field="Record List 6:CreateTest:QuestionNumber"/>
+</equals>
+<isNotBlank field="Record List 6:CreateTest:Q1:a"/>
+</and>
+</conditions></get>
+<foreach record="Question" recordList="Record List 6">
+<set field="Q" arithmeticAsText="false">
+<string field="Question:CreateTest:Q1:a"/>
+</set>
+<set field="Type" arithmeticAsText="false">
+<string field="Question:CreateTest:Type"/>
+</set>
+<if>
+<conditions>
+<equals field="Type">
+<string value="MCQ"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="A" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:b"/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:c"/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:d"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="A" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="C" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="D" arithmeticAsText="false">
+<string value=" "/>
+</set>
+</falseSet>
+</if>
+</foreach>
+<show form="Main2"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<contains field="ShareAnswer">
+<string value="a"/>
+</contains>
+</conditions>
+<trueSet>
+<set field="AFlag" arithmeticAsText="false">
+<string value="Correct"/>
+</set>
+<set field="BFlag" arithmeticAsText="false">
+<string field="Questionnaire:Name"/>
+</set>
+<show form="Scoring"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<equals field="ShareScore">
+<string value="a"/>
+</equals>
+</conditions>
+<trueSet>
+<show form="Scoring"/>
+</trueSet>
+</if>
+</process>
+<process name="Process 7">
+<show document="Setup End" reset="false"/>
+</process>
+<process name="Process 9">
+<comment>QNumber is the question we are grading (and eventually 1 more than the total number of questions in test) and Score keeps track of how many questions student got right.</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<set field="Score" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<get recordList="Record List 7">
+<forms>
+<form name="CreateTest"/>
+</forms>
+<conditions>
+<isNotBlank field="Record List 7:CreateTest:Q1:a"/>
+</conditions></get>
+<foreach record="Question" recordList="Record List 7">
+<set field="StudResp" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<set field="Q" arithmeticAsText="false">
+<string field="Question:CreateTest:Q1:a"/>
+</set>
+<comment>If the question is a FIB, get Answer from Q3 rather than Q4.  Then Get the student's response from Form Main2.</comment>
+<if>
+<conditions>
+<mcEquals field="Question:CreateTest:Q2" value="b"/>
+</conditions>
+<trueSet>
+<set field="Answer" arithmeticAsText="false">
+<string field="Question:CreateTest:Q3:a"/>
+</set>
+<get recordList="Record List 8">
+<forms>
+<form name="Main2"/>
+</forms>
+</get>
+<foreach record="Response" recordList="Record List 8">
+<if>
+<conditions>
+<equals field="Question:CreateTest:QuestionNumber">
+<string field="Response:Main2:QuestionNumber"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="StudResp" arithmeticAsText="false">
+<string field="Response:Main2:Q1:a"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<comment>If student gets question right, add 1 to Score</comment>
+<if>
+<conditions>
+<equals field="Answer">
+<string field="StudResp"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Score" arithmeticAsText="false">
+<add>
+<operand field="Score"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<append document="Final Test" appendage="FIB"/>
+</trueSet>
+<falseSet>
+<comment>We assume if it isn't a FIB, it's an MCQ, which is a little more complicated, as we have to retrieve and display all the possible choices as well as the question</comment>
+<set field="Answer" arithmeticAsText="false">
+<string field="Question:CreateTest:Q6"/>
+</set>
+<get recordList="Record List 9">
+<forms>
+<form name="Main2"/>
+</forms>
+</get>
+<foreach record="Response1" recordList="Record List 9">
+<if>
+<conditions>
+<equals field="Question:CreateTest:QuestionNumber">
+<string field="Response1:Main2:QuestionNumber"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="StudResp" arithmeticAsText="false">
+<string field="Response1:Main2:Q2"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<if>
+<conditions>
+<equals field="Answer">
+<string field="StudResp"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Score" arithmeticAsText="false">
+<add>
+<operand field="Score"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+<set field="A" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:a"/>
+</set>
+<set field="B" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:b"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Question:CreateTest:Q5:c"/>
+</conditions>
+<trueSet>
+<append document="Final Test" appendage="MCQ2"/>
+</trueSet>
+<falseSet>
+<set field="C" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:c"/>
+</set>
+<if>
+<conditions>
+<isBlank field="Question:CreateTest:Q5:d"/>
+</conditions>
+<trueSet>
+<append document="Final Test" appendage="MCQ3"/>
+</trueSet>
+<falseSet>
+<set field="D" arithmeticAsText="false">
+<string field="Question:CreateTest:Q5:d"/>
+</set>
+<append document="Final Test" appendage="MCQ4"/>
+</falseSet>
+</if>
+</falseSet>
+</if>
+</falseSet>
+</if>
+<set field="QuestionNumber" arithmeticAsText="false">
+<string field="QNumber"/>
+</set>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<set field="Student" arithmeticAsText="false">
+<string field="Questionnaire:Name"/>
+</set>
+<set field="Count" arithmeticAsText="false">
+<string field="QuestionNumber"/>
+</set>
+<set field="TestPre" arithmeticAsText="true">
+<string field="Student"/>
+<string value="'s Score: "/>
+<string field="Score"/>
+<string value="/"/>
+<string field="Count"/>
+</set>
+<if>
+<conditions>
+<equals field="ShareAnswer">
+<string value="a"/>
+</equals>
+</conditions>
+<trueSet>
+<show document="Final Test" reset="true"/>
+</trueSet>
+<falseSet>
+<show document="ScoreOnly" reset="false"/>
+</falseSet>
+</if>
+</process>
+<process name="Process 12">
+<comment>Get items that will be needed regardless which option is chosen.</comment>
+<get recordList="Record List 11">
+<forms>
+<form name="Setup"/>
+</forms>
+</get>
+<foreach record="Item" recordList="Record List 11">
+<if>
+<conditions>
+<isNotBlank field="Item:Setup:Title"/>
+</conditions>
+<trueSet>
+<set field="TestTitle" arithmeticAsText="false">
+<string field="Item:Setup:Title"/>
+</set>
+<set field="TestDate" arithmeticAsText="false">
+<string field="Item:Setup:Date"/>
+</set>
+<set field="TestPre" arithmeticAsText="false">
+<string field="Item:Setup:PreInstructions"/>
+</set>
+<set field="TestPost" arithmeticAsText="false">
+<string field="Item:Setup:PostInstructions"/>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="AFlag" arithmeticAsText="false">
+<string value="Answer"/>
+</set>
+<set field="BFlag" arithmeticAsText="false">
+<string value=" "/>
+</set>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="a"/>
+</conditions>
+<trueSet>
+<comment>This option shows all student scores.</comment>
+<get recordList="Record List 10">
+<forms>
+<form name="Scoring"/>
+</forms>
+</get>
+<foreach record="Testee" recordList="Record List 10">
+<set field="Student" arithmeticAsText="false">
+<string field="Testee:Scoring:Student"/>
+</set>
+<set field="Score" arithmeticAsText="false">
+<string field="Testee:Scoring:Score"/>
+</set>
+<set field="Count" arithmeticAsText="false">
+<string field="Testee:Scoring:Count"/>
+</set>
+<append document="AdminHeader" appendage="ScoresCM"/>
+</foreach>
+<show document="AdminHeader" reset="true"/>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="b"/>
+</conditions>
+<trueSet>
+<comment>This option displays the test and the correct answers.</comment>
+<show form="AdminShowTest"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1" value="c"/>
+</conditions>
+<trueSet>
+<comment>This just calculates what percent of people got each question right.</comment>
+<set field="QNumber" arithmeticAsText="false">
+<string value="1"/>
+</set>
+<get recordList="Record List 12">
+<forms>
+<form name="CreateTest"/>
+</forms>
+<conditions>
+<isNotBlank field="Record List 12:CreateTest:Q1:a"/>
+</conditions></get>
+<foreach record="Question" recordList="Record List 12">
+<set field="Count" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Score" arithmeticAsText="false">
+<string value="0"/>
+</set>
+<set field="Type" arithmeticAsText="false">
+<string field="Question:CreateTest:Type"/>
+</set>
+<set field="Answer" arithmeticAsText="false">
+<string field="Question:CreateTest:Answer"/>
+</set>
+<get recordList="Record List 13">
+<forms>
+<form name="Main2"/>
+</forms>
+<conditions>
+<equals field="QNumber">
+<string field="Record List 13:Main2:QuestionNumber"/>
+</equals>
+</conditions></get>
+<foreach record="Response" recordList="Record List 13">
+<set field="Count" arithmeticAsText="false">
+<add>
+<operand field="Count"/>
+<operand value="1"/>
+</add>
+</set>
+<if>
+<conditions>
+<equals field="Type">
+<string value="FIB"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="StudResp" arithmeticAsText="false">
+<string field="Response:Main2:Q1:a"/>
+</set>
+</trueSet>
+<falseSet>
+<set field="StudResp" arithmeticAsText="false">
+<string field="Response:Main2:Q2"/>
+</set>
+</falseSet>
+</if>
+<if>
+<conditions>
+<equals field="Answer">
+<string field="StudResp"/>
+</equals>
+</conditions>
+<trueSet>
+<set field="Score" arithmeticAsText="false">
+<add>
+<operand field="Score"/>
+<operand value="1"/>
+</add>
+</set>
+</trueSet>
+</if>
+</foreach>
+<set field="Percent" arithmeticAsText="false">
+<div>
+<mul>
+<operand field="Score"/>
+<operand value="100"/>
+</mul>
+<operand field="Count"/>
+</div>
+</set>
+<append document="AdminHeader1" appendage="QScoresCM"/>
+<set field="QNumber" arithmeticAsText="false">
+<add>
+<operand field="QNumber"/>
+<operand value="1"/>
+</add>
+</set>
+</foreach>
+<show document="AdminHeader1" reset="true"/>
+<show form="Administration"/>
+</trueSet>
+</if>
+<if>
+<conditions>
+<mcEquals field="Administration:Q1">
+<string value="c"/>
+</mcEquals>
+</conditions>
+<trueSet>
+<comment>We'd like to add the ability to see each student's response to each question.</comment>
+<comment>This is a killer.  We need to make a table with an unknown number of columns (questions?) and an unknown number of lines (students?).  Any ideas?</comment>
+<comment>Alternatively, you could enter a student's name from a list and just see the quiz with their answers and score, like they do.</comment>
+</trueSet>
+</if>
+</process>
+<process name="Process 13">
+<show form="Administration"/>
+</process>
+</processes>
+<documents>
+<document name="FIB">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>)</b></font><sp/><font face="Arial" size="200" color="000000"><field name="Q"/></font><sp/><sp/><sp/><sp/><tab/><tab/><font face="Arial" size="200" color="000000"><b><field name="Answer"/></b></font><tab/><font face="Arial" size="200" color="000000"><b><field name="StudResp"/></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Final Test">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><tab/><font face="Arial" size="280" color="000000"><b><field name="TestTitle"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="TestDate"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000079"><b><i><field name="TestPre"/></i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="8063"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/><tabStop position="17280"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/><tabStop position="17280"/></tabPositions><tab/><font face="Arial" size="200" color="000000"><b><u><field name="AFlag"/></u></b></font><tab/><font face="Arial" size="200" color="000000"><b><u><field name="BFlag"/></u></b></font></paragraph>
+</xmlData>
+</document>
+<document name="MCQ2">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><field name="Q"/></font><tab/><tab/><font face="Arial" size="200" color="000000"><b><field name="Answer"/></b></font><tab/><font face="Arial" size="200" color="000000"><b><field name="StudResp"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">a) </font><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">b) </font><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph>
+</xmlData>
+</document>
+<document name="MCQ3">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><field name="Q"/></font><tab/><tab/><font face="Arial" size="200" color="000000"><b><field name="Answer"/></b></font><tab/><font face="Arial" size="200" color="000000"><b><field name="StudResp"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">a) </font><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">b) </font><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">c) </font><font face="Arial" size="200" color="000000"><field name="C"/></font></paragraph>
+</xmlData>
+</document>
+<document name="MCQ4">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="6768"/><tabStop position="7200"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b>) </b></font><font face="Arial" size="200" color="000000"><field name="Q"/></font><tab/><tab/><font face="Arial" size="200" color="000000"><b><field name="Answer"/></b></font><tab/><font face="Arial" size="200" color="000000"><b><field name="StudResp"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">a) </font><font face="Arial" size="200" color="000000"><field name="A"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">b) </font><font face="Arial" size="200" color="000000"><field name="B"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">c) </font><font face="Arial" size="200" color="000000"><field name="C"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><font face="Arial" size="200" color="000000">d) </font><font face="Arial" size="200" color="000000"><field name="D"/></font></paragraph>
+</xmlData>
+</document>
+<document name="Final Test Header">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>This will be the format of your finished test.  The answers </i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>marked in the right margin will NOT appear on the test.</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Test So Far">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>Your test so far....</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="Setup End">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>This is what your students will see once they finish the exam:</i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685">-------------------------------------------------------------------------------------------</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000077"><b><i><field name="TestPost"/></i></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685">-------------------------------------------------------------------------------------------</font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="2E4685"><b><i>If this looks correct, proceed to the next step (Review and Send).</i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="ScoreOnly">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><b><i><field name="TestPre"/></i></b></font></paragraph>
+</xmlData>
+</document>
+<document name="AdminHeader">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><tab/><font face="Arial" size="280" color="000000"><b><field name="TestTitle"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="TestDate"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/><tabStop position="15840"/><tabStop position="16560"/></tabPositions><font face="Arial" size="220" color="000000"><b><u>Name</u></b></font><tab/><font face="Arial" size="220" color="000000"><b><u>Score</u></b></font></paragraph>
+</xmlData>
+</document>
+<document name="ScoresCM">
+<xmlData>
+<table indent="360"><row><cell width="3750"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Student"/></font></division></cell><cell width="1200"/><cell width="5490"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Score"/></font><font face="Arial" size="200" color="000000">/</font><font face="Arial" size="200" color="000000"><field name="Count"/></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="QScoresCM">
+<xmlData>
+<table indent="435"><row><cell width="2370"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><b><field name="QNumber"/></b></font><font face="Arial" size="200" color="000000"><b> )</b></font></division></cell><cell width="2355"><division indent="0" align="left"><font face="Arial" size="200" color="000000"><field name="Score"/></font><font face="Arial" size="200" color="000000">/</font><font face="Arial" size="200" color="000000"><field name="Count"/></font></division></cell><cell width="5640"><division indent="0" align="left"><font face="Arial" size="200" color="000079"><b><field name="Percent"/></b></font><font face="Arial" size="200" color="000079"><b> %</b></font></division></cell></row></table>
+</xmlData>
+</document>
+<document name="AdminHeader1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><tab/><tab/><tab/><tab/><tab/><font face="Arial" size="280" color="000000"><b><field name="TestTitle"/></b></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions><font face="Arial" size="200" color="000000"><field name="TestDate"/></font></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="720"/><tabStop position="1440"/><tabStop position="2160"/><tabStop position="2880"/><tabStop position="3600"/><tabStop position="4320"/><tabStop position="5040"/><tabStop position="5760"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/></tabPositions></paragraph><paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/><tabStop position="6480"/><tabStop position="7200"/><tabStop position="7920"/><tabStop position="8640"/><tabStop position="9360"/><tabStop position="10080"/><tabStop position="10800"/><tabStop position="11520"/><tabStop position="12240"/><tabStop position="12960"/><tabStop position="13680"/><tabStop position="14400"/><tabStop position="15120"/></tabPositions><font face="Arial" size="220" color="000000"><b><u>Question</u></b></font><tab/><font face="Arial" size="220" color="000000"><b><u>Correct Responses</u></b></font><tab/><font face="Arial" size="220" color="000000"><b><u>Percent Correct</u></b></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

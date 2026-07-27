@@ -1,0 +1,15 @@
+/*
+ * Basic Yelllow theme
+ */
+body {
+	background-color: #ffffd8;
+}
+
+#tawalaProjectContainer {
+	background-color: #ffffd8;
+	border: 1px solid #eeee88;
+}
+
+#tawalaFooter {
+	background-image: none;
+}

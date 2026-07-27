@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="Bug572-FunctionHidden" themePath="default" format="1.6">
+<forms>
+<form name="Form 1" startPoint="true" themePath="default">
+<items>
+<field name="Hidden1"/>
+</items>
+</form>
+</forms>
+<documents>
+<document name="Document 1">
+<xmlData>
+<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions><font><sum version="1"><field>Record:Form 1:Hidden1</field><conditions><form name="Form 1" /></conditions></sum></font></paragraph>
+</xmlData>
+</document>
+</documents>
+</project>

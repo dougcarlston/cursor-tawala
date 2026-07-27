@@ -1,0 +1,15 @@
+/*
+ * Basic Green theme
+ */
+body {
+	background-color: #d8ffd8;
+}
+
+#tawalaProjectContainer {
+	background-color: #d8ffd8;
+	border: 1px solid #88dd88;
+}
+
+#tawalaFooter {
+	background-image: none;
+}

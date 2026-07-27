@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<project name="ThreeProcesses" themePath="default" format="1.10" designerBuild="0">
+<processes>
+<process name="Process 1">
+</process>
+<process name="Process 2">
+</process>
+<process name="Process 3">
+</process>
+</processes>
+</project>

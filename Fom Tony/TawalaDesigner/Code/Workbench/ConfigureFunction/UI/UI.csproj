@@ -1,0 +1,106 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{0D60D1F7-38E7-4A3C-B617-4575AE7CC6B1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Tawala.Controls</RootNamespace>
+    <AssemblyName>UI</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ConfigureFunctionDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="ConfigureFunctionDialog.Designer.cs">
+      <DependentUpon>ConfigureFunctionDialog.cs</DependentUpon>
+    </Compile>
+    <Compile Include="BlankTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FormComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="StringTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="MCQTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="IdentityTextBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="EnumerationComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="FunctionParameterControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="FunctionParameterControl.Designer.cs">
+      <DependentUpon>FunctionParameterControl.cs</DependentUpon>
+    </Compile>
+    <Compile Include="IdentityComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="IIdentityControl.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="ConfigureFunctionDialog.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>ConfigureFunctionDialog.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="FunctionParameterControl.resx">
+      <SubType>Designer</SubType>
+      <DependentUpon>FunctionParameterControl.cs</DependentUpon>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\TAWALA\Project\Project.csproj">
+      <Project>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</Project>
+      <Name>Project</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\TAWALA\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ConfigureFunction\ConfigureFunction.csproj">
+      <Project>{B5C899F4-03F2-4541-8562-193B40667527}</Project>
+      <Name>ConfigureFunction</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

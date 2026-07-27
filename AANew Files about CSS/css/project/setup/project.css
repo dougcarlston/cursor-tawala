@@ -1,0 +1,38 @@
+body {
+	margin: 0;
+	padding: 0;
+}
+
+form, .document {
+    padding: 0;
+}
+
+input.text, textarea {
+	width: 90%;
+	border-color:#7C7C7C rgb(195, 195, 195) rgb(221, 221, 221);
+	border-style:solid;
+	border-width:1px;
+	color:#333333;
+}
+
+input.button {
+	
+}
+
+input.radio {
+	
+}
+
+input.checkbox {
+	
+}
+
+#tawalaProjectContainer {
+	padding: 0;
+	margin: 0;
+}
+	
+.document {
+    padding:  0;
+}
+

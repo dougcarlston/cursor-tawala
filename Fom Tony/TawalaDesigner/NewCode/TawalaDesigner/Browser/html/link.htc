@@ -1,0 +1,65 @@
+﻿<public:component tagname="link">
+
+<public:attach event="oncontentready" onevent="onContentReady()" />
+<public:property name="LinkId" put="putLinkId" get="getLinkId" />
+<public:property name="DisplayText" put="putDisplayText" get="getDisplayText" />
+
+<script language="JScript">
+
+function onContentReady()
+{
+	element.className = "link";
+    element.contentEditable=false;
+    element.onresizestart = cancel;
+    element.onselectstart = cancel;
+    element.onbeforeeditfocus = cancel;
+    element.onmouseup=onMouseUp;
+    element.onkeydown = onKeyDown;
+    
+    element.addBehavior("notadroptarget.htc");
+}
+
+function putLinkId(val)
+{
+    element.linkId=val;
+}
+
+function getLinkId()
+{
+    return element.linkId;
+}
+
+function putDisplayText(val)
+{
+    element.innerHTML = val;
+}
+
+function getDisplayText()
+{
+    return element.innerHTML;
+}
+
+function onMouseUp()
+{
+    element.focus();
+    element.setActive();
+}
+
+function onKeyDown()
+{
+    if (event.keyCode == 46)
+    {
+        element.parentElement.removeChild(element);
+        cancel();
+    }
+}
+
+function cancel()
+{
+    event.returnValue=false;
+    event.cancelBubble=true;
+}
+
+</script>
+
+</public:component>

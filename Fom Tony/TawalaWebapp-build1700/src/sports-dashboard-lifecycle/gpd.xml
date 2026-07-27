@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<root-container name="sports-dashboard-lifecycle" width="1105" height="793">
+  <node name="create project" x="264" y="36" width="217" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="awaiting PO" x="264" y="396" width="217" height="36">
+    <edge>
+      <label x="-45" y="15"/>
+    </edge>
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="need PO follow up" x="216" y="516" width="205" height="37">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+    <edge>
+      <label x="-67" y="-24"/>
+    </edge>
+  </node>
+  <node name="need invoice" x="456" y="588" width="217" height="37">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="awaiting payment" x="456" y="660" width="217" height="37">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+    <edge>
+      <label x="-77" y="-14"/>
+    </edge>
+  </node>
+  <node name="payment overdue" x="228" y="744" width="205" height="37">
+    <edge>
+      <label x="42" y="2"/>
+    </edge>
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="registration" x="456" y="516" width="217" height="37">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="demo" x="264" y="110" width="217" height="36">
+    <edge>
+      <label x="-77" y="-10"/>
+    </edge>
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="need PO" x="264" y="180" width="217" height="37">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="enable backups" x="264" y="324" width="217" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="launch setup" x="264" y="252" width="217" height="37">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="take project offline" x="12" y="684" width="132" height="36">
+    <edge>
+      <label x="5" y="-10"/>
+    </edge>
+  </node>
+  <node name="invoice paid" x="660" y="756" width="132" height="36"/>
+  <node name="project cancelled" x="12" y="756" width="132" height="36"/>
+</root-container>

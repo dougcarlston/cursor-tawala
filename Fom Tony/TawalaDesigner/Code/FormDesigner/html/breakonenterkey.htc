@@ -1,0 +1,19 @@
+<public:component>
+
+<public:attach event="onkeypress" onevent="onKeyPress()" />
+
+<script language="JScript">
+
+function onKeyPress()
+{
+	if (event.keyCode == 13)
+	{
+	    var range = document.selection.createRange();
+	    range.pasteHTML("<br/>");
+	    range.select();
+		event.returnValue=false;
+	}
+}
+
+</script>
+</public:component>

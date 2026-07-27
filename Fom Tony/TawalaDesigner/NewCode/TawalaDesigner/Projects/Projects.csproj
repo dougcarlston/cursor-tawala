@@ -1,0 +1,445 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="3.5">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{3600E7BC-AF69-4D9E-82E4-F2EFA3AF6CE5}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyName>Projects</AssemblyName>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Tawala.Projects</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <OldToolsVersion>2.0</OldToolsVersion>
+    <UpgradeBackupLocation>
+    </UpgradeBackupLocation>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <ErrorReport>prompt</ErrorReport>
+    <DebugType>full</DebugType>
+    <UseVSHostingProcess>true</UseVSHostingProcess>
+    <CodeAnalysisRules>-Microsoft.Design#CA1012;-Microsoft.Design#CA2210;-Microsoft.Design#CA1040;-Microsoft.Design#CA1005;-Microsoft.Design#CA1020;-Microsoft.Design#CA1021;-Microsoft.Design#CA1010;-Microsoft.Design#CA1011;-Microsoft.Design#CA1009;-Microsoft.Design#CA1050;-Microsoft.Design#CA1026;-Microsoft.Design#CA1019;-Microsoft.Design#CA1031;-Microsoft.Design#CA1047;-Microsoft.Design#CA1000;-Microsoft.Design#CA1048;-Microsoft.Design#CA1051;-Microsoft.Design#CA1002;-Microsoft.Design#CA1061;-Microsoft.Design#CA1006;-Microsoft.Design#CA1046;-Microsoft.Design#CA1045;-Microsoft.Design#CA1038;-Microsoft.Design#CA1008;-Microsoft.Design#CA1028;-Microsoft.Design#CA1004;-Microsoft.Design#CA1035;-Microsoft.Design#CA1063;-Microsoft.Design#CA1032;-Microsoft.Design#CA1023;-Microsoft.Design#CA1033;-Microsoft.Design#CA1039;-Microsoft.Design#CA1016;-Microsoft.Design#CA1014;-Microsoft.Design#CA1017;-Microsoft.Design#CA1018;-Microsoft.Design#CA1027;-Microsoft.Design#CA1059;-Microsoft.Design#CA1060;-Microsoft.Design#CA1034;-Microsoft.Design#CA1013;-Microsoft.Design#CA1036;-Microsoft.Design#CA1044;-Microsoft.Design#CA1041;-Microsoft.Design#CA1025;-Microsoft.Design#CA1052;-Microsoft.Design#CA1053;-Microsoft.Design#CA1057;-Microsoft.Design#CA1058;-Microsoft.Design#CA1001;-Microsoft.Design#CA1049;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055;-Microsoft.Design#CA1030;-Microsoft.Design#CA1003;-Microsoft.Design#CA1007;-Microsoft.Design#CA1043;-Microsoft.Design#CA1024;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA1300;-Microsoft.Interoperability#CA1403;-Microsoft.Interoperability#CA1406;-Microsoft.Interoperability#CA1413;-Microsoft.Interoperability#CA1402;-Microsoft.Interoperability#CA1407;-Microsoft.Interoperability#CA1404;-Microsoft.Interoperability#CA1410;-Microsoft.Interoperability#CA1411;-Microsoft.Interoperability#CA1405;-Microsoft.Interoperability#CA1409;-Microsoft.Interoperability#CA1415;-Microsoft.Interoperability#CA1408;-Microsoft.Interoperability#CA1414;-Microsoft.Interoperability#CA1412;-Microsoft.Interoperability#CA1400;-Microsoft.Interoperability#CA1401;-Microsoft.Maintainability#CA1502;-Microsoft.Maintainability#CA1501;-Microsoft.Maintainability#CA1500;-Microsoft.Mobility#CA1600;-Microsoft.Mobility#CA1601;-Microsoft.Naming#CA1718;-Microsoft.Naming#CA1720;-Microsoft.Naming#CA1700;-Microsoft.Naming#CA1712;-Microsoft.Naming#CA1713;-Microsoft.Naming#CA1709;-Microsoft.Naming#CA1708;-Microsoft.Naming#CA1715;-Microsoft.Naming#CA1710;-Microsoft.Naming#CA1707;-Microsoft.Naming#CA1722;-Microsoft.Naming#CA1711;-Microsoft.Naming#CA1716;-Microsoft.Naming#CA1705;-Microsoft.Naming#CA1725;-Microsoft.Naming#CA1719;-Microsoft.Naming#CA1721;-Microsoft.Naming#CA1706;-Microsoft.Naming#CA1724;-Microsoft.Naming#CA1726;-Microsoft.Performance#CA1809;-Microsoft.Performance#CA1807;-Microsoft.Performance#CA1816;-Microsoft.Performance#CA1817;-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1818;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1810;-Microsoft.Performance#CA1822;-Microsoft.Performance#CA1815;-Microsoft.Performance#CA1814;-Microsoft.Performance#CA1819;-Microsoft.Performance#CA1820;-Microsoft.Performance#CA1802;-Microsoft.Portability#CA1901;-Microsoft.Portability#CA1900;-Microsoft.Reliability#CA2000;-Microsoft.Reliability#CA2002;-Microsoft.Reliability#CA2003;-Microsoft.Reliability#CA2004;-Microsoft.Reliability#CA2006;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2100;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2110;-Microsoft.Security#CA2120;-Microsoft.Security#CA2101;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124;-Microsoft.Usage#CA2209;-Microsoft.Usage#CA2236;-Microsoft.Usage#CA2227;-Microsoft.Usage#CA2222;-Microsoft.Usage#CA2202;-Microsoft.Usage#CA1806;-Microsoft.Usage#CA2217;-Microsoft.Usage#CA2212;-Microsoft.Usage#CA2201;-Microsoft.Usage#CA2228;-Microsoft.Usage#CA2240;-Microsoft.Usage#CA2229;-Microsoft.Usage#CA2238;-Microsoft.Usage#CA2207;-Microsoft.Usage#CA2208;-Microsoft.Usage#CA2237;-Microsoft.Usage#CA2232;-Microsoft.Usage#CA2223;-Microsoft.Usage#CA2211;-Microsoft.Usage#CA2233;-Microsoft.Usage#CA2225;-Microsoft.Usage#CA2226;-Microsoft.Usage#CA2234;-Microsoft.Usage#CA2241;-Microsoft.Usage#CA2239;-Microsoft.Usage#CA1801;-Microsoft.Usage#CA2205;-Microsoft.Usage#CA2230</CodeAnalysisRules>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+    <ErrorReport>prompt</ErrorReport>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisRules>-Microsoft.Design#CA1012;-Microsoft.Design#CA2210;-Microsoft.Design#CA1040;-Microsoft.Design#CA1005;-Microsoft.Design#CA1020;-Microsoft.Design#CA1021;-Microsoft.Design#CA1010;-Microsoft.Design#CA1011;-Microsoft.Design#CA1009;-Microsoft.Design#CA1050;-Microsoft.Design#CA1026;-Microsoft.Design#CA1019;-Microsoft.Design#CA1031;-Microsoft.Design#CA1047;-Microsoft.Design#CA1000;-Microsoft.Design#CA1048;-Microsoft.Design#CA1051;-Microsoft.Design#CA1002;-Microsoft.Design#CA1061;-Microsoft.Design#CA1006;-Microsoft.Design#CA1046;-Microsoft.Design#CA1045;-Microsoft.Design#CA1038;-Microsoft.Design#CA1008;-Microsoft.Design#CA1028;-Microsoft.Design#CA1004;-Microsoft.Design#CA1035;-Microsoft.Design#CA1063;-Microsoft.Design#CA1032;-Microsoft.Design#CA1023;-Microsoft.Design#CA1033;-Microsoft.Design#CA1039;-Microsoft.Design#CA1016;-Microsoft.Design#CA1014;-Microsoft.Design#CA1017;-Microsoft.Design#CA1018;-Microsoft.Design#CA1027;-Microsoft.Design#CA1059;-Microsoft.Design#CA1060;-Microsoft.Design#CA1034;-Microsoft.Design#CA1013;-Microsoft.Design#CA1036;-Microsoft.Design#CA1044;-Microsoft.Design#CA1041;-Microsoft.Design#CA1025;-Microsoft.Design#CA1052;-Microsoft.Design#CA1053;-Microsoft.Design#CA1057;-Microsoft.Design#CA1058;-Microsoft.Design#CA1001;-Microsoft.Design#CA1049;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055;-Microsoft.Design#CA1030;-Microsoft.Design#CA1003;-Microsoft.Design#CA1007;-Microsoft.Design#CA1043;-Microsoft.Design#CA1024;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA1300;-Microsoft.Interoperability#CA1403;-Microsoft.Interoperability#CA1406;-Microsoft.Interoperability#CA1413;-Microsoft.Interoperability#CA1402;-Microsoft.Interoperability#CA1407;-Microsoft.Interoperability#CA1404;-Microsoft.Interoperability#CA1410;-Microsoft.Interoperability#CA1411;-Microsoft.Interoperability#CA1405;-Microsoft.Interoperability#CA1409;-Microsoft.Interoperability#CA1415;-Microsoft.Interoperability#CA1408;-Microsoft.Interoperability#CA1414;-Microsoft.Interoperability#CA1412;-Microsoft.Interoperability#CA1400;-Microsoft.Interoperability#CA1401;-Microsoft.Maintainability#CA1502;-Microsoft.Maintainability#CA1501;-Microsoft.Maintainability#CA1500;-Microsoft.Mobility#CA1600;-Microsoft.Mobility#CA1601;-Microsoft.Naming#CA1718;-Microsoft.Naming#CA1720;-Microsoft.Naming#CA1700;-Microsoft.Naming#CA1712;-Microsoft.Naming#CA1713;-Microsoft.Naming#CA1709;-Microsoft.Naming#CA1708;-Microsoft.Naming#CA1715;-Microsoft.Naming#CA1710;-Microsoft.Naming#CA1707;-Microsoft.Naming#CA1722;-Microsoft.Naming#CA1711;-Microsoft.Naming#CA1716;-Microsoft.Naming#CA1705;-Microsoft.Naming#CA1725;-Microsoft.Naming#CA1719;-Microsoft.Naming#CA1721;-Microsoft.Naming#CA1706;-Microsoft.Naming#CA1724;-Microsoft.Naming#CA1726;-Microsoft.Performance#CA1809;-Microsoft.Performance#CA1807;-Microsoft.Performance#CA1816;-Microsoft.Performance#CA1817;-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1818;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1810;-Microsoft.Performance#CA1822;-Microsoft.Performance#CA1815;-Microsoft.Performance#CA1814;-Microsoft.Performance#CA1819;-Microsoft.Performance#CA1820;-Microsoft.Performance#CA1802;-Microsoft.Portability#CA1901;-Microsoft.Portability#CA1900;-Microsoft.Reliability#CA2000;-Microsoft.Reliability#CA2002;-Microsoft.Reliability#CA2003;-Microsoft.Reliability#CA2004;-Microsoft.Reliability#CA2006;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2100;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2110;-Microsoft.Security#CA2120;-Microsoft.Security#CA2101;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124;-Microsoft.Usage#CA2209;-Microsoft.Usage#CA2236;-Microsoft.Usage#CA2227;-Microsoft.Usage#CA2222;-Microsoft.Usage#CA2202;-Microsoft.Usage#CA1806;-Microsoft.Usage#CA2217;-Microsoft.Usage#CA2212;-Microsoft.Usage#CA2201;-Microsoft.Usage#CA2228;-Microsoft.Usage#CA2240;-Microsoft.Usage#CA2229;-Microsoft.Usage#CA2238;-Microsoft.Usage#CA2207;-Microsoft.Usage#CA2208;-Microsoft.Usage#CA2237;-Microsoft.Usage#CA2232;-Microsoft.Usage#CA2223;-Microsoft.Usage#CA2211;-Microsoft.Usage#CA2233;-Microsoft.Usage#CA2225;-Microsoft.Usage#CA2226;-Microsoft.Usage#CA2234;-Microsoft.Usage#CA2241;-Microsoft.Usage#CA2239;-Microsoft.Usage#CA1801;-Microsoft.Usage#CA2205;-Microsoft.Usage#CA2230</CodeAnalysisRules>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x64' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x64\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x64</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisRules>-Microsoft.Design#CA1012;-Microsoft.Design#CA2210;-Microsoft.Design#CA1040;-Microsoft.Design#CA1005;-Microsoft.Design#CA1020;-Microsoft.Design#CA1021;-Microsoft.Design#CA1010;-Microsoft.Design#CA1011;-Microsoft.Design#CA1009;-Microsoft.Design#CA1050;-Microsoft.Design#CA1026;-Microsoft.Design#CA1019;-Microsoft.Design#CA1031;-Microsoft.Design#CA1047;-Microsoft.Design#CA1000;-Microsoft.Design#CA1048;-Microsoft.Design#CA1051;-Microsoft.Design#CA1002;-Microsoft.Design#CA1061;-Microsoft.Design#CA1006;-Microsoft.Design#CA1046;-Microsoft.Design#CA1045;-Microsoft.Design#CA1038;-Microsoft.Design#CA1008;-Microsoft.Design#CA1028;-Microsoft.Design#CA1004;-Microsoft.Design#CA1035;-Microsoft.Design#CA1063;-Microsoft.Design#CA1032;-Microsoft.Design#CA1023;-Microsoft.Design#CA1033;-Microsoft.Design#CA1039;-Microsoft.Design#CA1016;-Microsoft.Design#CA1014;-Microsoft.Design#CA1017;-Microsoft.Design#CA1018;-Microsoft.Design#CA1027;-Microsoft.Design#CA1059;-Microsoft.Design#CA1060;-Microsoft.Design#CA1034;-Microsoft.Design#CA1013;-Microsoft.Design#CA1036;-Microsoft.Design#CA1044;-Microsoft.Design#CA1041;-Microsoft.Design#CA1025;-Microsoft.Design#CA1052;-Microsoft.Design#CA1053;-Microsoft.Design#CA1057;-Microsoft.Design#CA1058;-Microsoft.Design#CA1001;-Microsoft.Design#CA1049;-Microsoft.Design#CA1054;-Microsoft.Design#CA1056;-Microsoft.Design#CA1055;-Microsoft.Design#CA1030;-Microsoft.Design#CA1003;-Microsoft.Design#CA1007;-Microsoft.Design#CA1043;-Microsoft.Design#CA1024;-Microsoft.Design#CA1062;-Microsoft.Globalization#CA1301;-Microsoft.Globalization#CA1302;-Microsoft.Globalization#CA1303;-Microsoft.Globalization#CA1306;-Microsoft.Globalization#CA1304;-Microsoft.Globalization#CA1305;-Microsoft.Globalization#CA1300;-Microsoft.Interoperability#CA1403;-Microsoft.Interoperability#CA1406;-Microsoft.Interoperability#CA1413;-Microsoft.Interoperability#CA1402;-Microsoft.Interoperability#CA1407;-Microsoft.Interoperability#CA1404;-Microsoft.Interoperability#CA1410;-Microsoft.Interoperability#CA1411;-Microsoft.Interoperability#CA1405;-Microsoft.Interoperability#CA1409;-Microsoft.Interoperability#CA1415;-Microsoft.Interoperability#CA1408;-Microsoft.Interoperability#CA1414;-Microsoft.Interoperability#CA1412;-Microsoft.Interoperability#CA1400;-Microsoft.Interoperability#CA1401;-Microsoft.Maintainability#CA1502;-Microsoft.Maintainability#CA1501;-Microsoft.Maintainability#CA1500;-Microsoft.Mobility#CA1600;-Microsoft.Mobility#CA1601;-Microsoft.Naming#CA1718;-Microsoft.Naming#CA1720;-Microsoft.Naming#CA1700;-Microsoft.Naming#CA1712;-Microsoft.Naming#CA1713;-Microsoft.Naming#CA1709;-Microsoft.Naming#CA1708;-Microsoft.Naming#CA1715;-Microsoft.Naming#CA1710;-Microsoft.Naming#CA1707;-Microsoft.Naming#CA1722;-Microsoft.Naming#CA1711;-Microsoft.Naming#CA1716;-Microsoft.Naming#CA1705;-Microsoft.Naming#CA1725;-Microsoft.Naming#CA1719;-Microsoft.Naming#CA1721;-Microsoft.Naming#CA1706;-Microsoft.Naming#CA1724;-Microsoft.Naming#CA1726;-Microsoft.Performance#CA1809;-Microsoft.Performance#CA1807;-Microsoft.Performance#CA1816;-Microsoft.Performance#CA1817;-Microsoft.Performance#CA1800;-Microsoft.Performance#CA1818;-Microsoft.Performance#CA1805;-Microsoft.Performance#CA1810;-Microsoft.Performance#CA1822;-Microsoft.Performance#CA1815;-Microsoft.Performance#CA1814;-Microsoft.Performance#CA1819;-Microsoft.Performance#CA1820;-Microsoft.Performance#CA1802;-Microsoft.Portability#CA1901;-Microsoft.Portability#CA1900;-Microsoft.Reliability#CA2000;-Microsoft.Reliability#CA2002;-Microsoft.Reliability#CA2003;-Microsoft.Reliability#CA2004;-Microsoft.Reliability#CA2006;-Microsoft.Security#CA2116;-Microsoft.Security#CA2117;-Microsoft.Security#CA2105;-Microsoft.Security#CA2115;-Microsoft.Security#CA2104;-Microsoft.Security#CA2122;-Microsoft.Security#CA2114;-Microsoft.Security#CA2123;-Microsoft.Security#CA2111;-Microsoft.Security#CA2108;-Microsoft.Security#CA2107;-Microsoft.Security#CA2103;-Microsoft.Security#CA2100;-Microsoft.Security#CA2118;-Microsoft.Security#CA2109;-Microsoft.Security#CA2119;-Microsoft.Security#CA2106;-Microsoft.Security#CA2112;-Microsoft.Security#CA2110;-Microsoft.Security#CA2120;-Microsoft.Security#CA2101;-Microsoft.Security#CA2121;-Microsoft.Security#CA2126;-Microsoft.Security#CA2124;-Microsoft.Usage#CA2209;-Microsoft.Usage#CA2236;-Microsoft.Usage#CA2227;-Microsoft.Usage#CA2222;-Microsoft.Usage#CA2202;-Microsoft.Usage#CA1806;-Microsoft.Usage#CA2217;-Microsoft.Usage#CA2212;-Microsoft.Usage#CA2201;-Microsoft.Usage#CA2228;-Microsoft.Usage#CA2240;-Microsoft.Usage#CA2229;-Microsoft.Usage#CA2238;-Microsoft.Usage#CA2207;-Microsoft.Usage#CA2208;-Microsoft.Usage#CA2237;-Microsoft.Usage#CA2232;-Microsoft.Usage#CA2223;-Microsoft.Usage#CA2211;-Microsoft.Usage#CA2233;-Microsoft.Usage#CA2225;-Microsoft.Usage#CA2226;-Microsoft.Usage#CA2234;-Microsoft.Usage#CA2241;-Microsoft.Usage#CA2239;-Microsoft.Usage#CA1801;-Microsoft.Usage#CA2205;-Microsoft.Usage#CA2230</CodeAnalysisRules>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <Optimize>true</Optimize>
+    <FileAlignment>4096</FileAlignment>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <CodeAnalysisUseTypeNameInSuppression>true</CodeAnalysisUseTypeNameInSuppression>
+    <CodeAnalysisModuleSuppressionsFile>GlobalSuppressions.cs</CodeAnalysisModuleSuppressionsFile>
+    <ErrorReport>prompt</ErrorReport>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Common\Common.csproj">
+      <Project>{83F995B3-C049-44C8-8CB0-DD62C852E20F}</Project>
+      <Name>Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FontSupport\FontSupport.csproj">
+      <Project>{245B890C-9981-4FF9-9FA0-0A828D8539E3}</Project>
+      <Name>FontSupport</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\FunctionRuntime\FunctionRuntime.csproj">
+      <Project>{0C7C56C8-7EFC-40AD-8612-D104637CC4D8}</Project>
+      <Name>FunctionRuntime</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XmlSupport\XmlSupport.csproj">
+      <Project>{11D9C7DE-6B84-4108-9952-CCB18C29D2F3}</Project>
+      <Name>XmlSupport</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\CommonAssemblyInfo.cs">
+      <Link>Properties\CommonAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="Deployment\DeploymentError.cs" />
+    <Compile Include="Deployment\DeploymentResponse.cs" />
+    <Compile Include="Deployment\IDeploymentItem.cs" />
+    <Compile Include="Deployment\IDeploymentResponse.cs" />
+    <Compile Include="Deployment\ProjectDeployment.cs" />
+    <Compile Include="Deployment\ProjectDeployments.cs" />
+    <Compile Include="Deployment\StartPoint.cs" />
+    <Compile Include="Documents\IDocument.cs" />
+    <Compile Include="Documents\NewDocument.cs" />
+    <Compile Include="Factories\ChoiceBlockFactory.cs" />
+    <Compile Include="Exceptions\ProjectMissingDataSourcesException.cs" />
+    <Compile Include="Factories\DeploymentFactory.cs" />
+    <Compile Include="Factories\McqItemContentsFactory.cs" />
+    <Compile Include="Factories\ProjectComponentFactory.cs" />
+    <Compile Include="Factories\ProcessStatementFactory.cs" />
+    <Compile Include="Factories\FormItemContentsFactory.cs" />
+    <Compile Include="Factories\FormItemFactory.cs" />
+    <Compile Include="Fields\IAnyField.cs" />
+    <Compile Include="Fields\UnresolvedField.cs" />
+    <Compile Include="ComponentMaker.cs" />
+    <Compile Include="Forms\ChoiceField.cs" />
+    <Compile Include="Forms\FormItemContents\InvitationReference.cs" />
+    <Compile Include="Forms\FormItemContents\HyperlinkReference.cs" />
+    <Compile Include="Forms\FormItemContents\LinkReference.cs" />
+    <Compile Include="Forms\FormItemContents\ImageList.cs" />
+    <Compile Include="Forms\FormItemContents\DataProvider.cs" />
+    <Compile Include="Forms\FormItemContents\DynamicMcqFunctionReference.cs" />
+    <Compile Include="Forms\FormItemContents\FunctionReference.cs" />
+    <Compile Include="Forms\FormItemContents\FontStyle.cs" />
+    <Compile Include="Forms\FormItemContents\IChoice.cs" />
+    <Compile Include="Forms\FormItemContents\IImageReference.cs" />
+    <Compile Include="Forms\FormItemContents\ImageReference.cs" />
+    <Compile Include="Forms\FormItemContents\ISkipInstructions.cs" />
+    <Compile Include="Forms\FormItemContents\NewBlank.cs" />
+    <Compile Include="Forms\FormItemContents\BlankPlaceholderXhtmlContents.cs" />
+    <Compile Include="Forms\FormItemContents\BoldContents.cs" />
+    <Compile Include="Forms\FormItemContents\NewChoice.cs" />
+    <Compile Include="Forms\FormItemContents\ContentsContainer.cs" />
+    <Compile Include="Forms\FormItemContents\DivisionContents.cs" />
+    <Compile Include="Forms\FormItemContents\FieldReference.cs" />
+    <Compile Include="Forms\FormItemContents\NewChoiceList.cs" />
+    <Compile Include="Forms\FormItemContents\NewFont.cs" />
+    <Compile Include="Forms\FormItemContents\FormItemContents.cs" />
+    <Compile Include="Forms\FormItemContents\FormItemContentsCollection.cs" />
+    <Compile Include="Forms\FormItemContents\FormItemContentsConverter.cs" />
+    <Compile Include="Forms\FormItemContents\IBlank.cs" />
+    <Compile Include="Forms\FormItemContents\IFormField.cs" />
+    <Compile Include="Forms\FormItemContents\ItalicContents.cs" />
+    <Compile Include="Forms\FormItemContents\IXhtmlElement.cs" />
+    <Compile Include="Forms\FormItemContents\NullContents.cs" />
+    <Compile Include="Forms\FormItemContents\ParagraphContents.cs" />
+    <Compile Include="Forms\FormItemContents\Question.cs" />
+    <Compile Include="Forms\FormItemContents\NewSkipInstructions.cs" />
+    <Compile Include="Forms\FormItemContents\TableBodyContents.cs" />
+    <Compile Include="Forms\FormItemContents\TableCellContents.cs" />
+    <Compile Include="Forms\FormItemContents\TableContents.cs" />
+    <Compile Include="Forms\FormItemContents\TableRowContents.cs" />
+    <Compile Include="Forms\FormItemContents\TextContents.cs" />
+    <Compile Include="Forms\FormItemContents\UnderlineContents.cs" />
+    <Compile Include="Forms\FormItemContents\WhitespaceContents.cs" />
+    <Compile Include="Forms\FormItemContents\XhtmlElement.cs" />
+    <Compile Include="Forms\FormItemLabelSupport.cs" />
+    <Compile Include="Forms\IExternalForm.cs" />
+    <Compile Include="Forms\IFormItem.cs" />
+    <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\NewFormItems\IChoiceList.cs" />
+    <Compile Include="Forms\NewFormItems\NewSkipInstructionsItem.cs" />
+    <Compile Include="Forms\NewFormItems\ISkipInstructionsItem.cs" />
+    <Compile Include="Forms\NewFormItems\IHiddenField.cs" />
+    <Compile Include="Forms\NewFormItems\NewHiddenField.cs" />
+    <Compile Include="Forms\NewFormItems\NewMcqItem.cs" />
+    <Compile Include="Forms\NewFormItems\IMcqItem.cs" />
+    <Compile Include="Forms\NewFormItems\NewHeadingItem.cs" />
+    <Compile Include="Forms\NewFormItems\IHeadingItem.cs" />
+    <Compile Include="Forms\NewFormItems\ITextItem.cs" />
+    <Compile Include="Forms\NewFormItems\NewTextItem.cs" />
+    <Compile Include="Forms\NewFormItems\IFibItem.cs" />
+    <Compile Include="Forms\NewFormItems\IFormItemContents.cs" />
+    <Compile Include="Forms\NewFormItems\NewFibItem.cs" />
+    <Compile Include="Function\FunctionFormCollection.cs" />
+    <Compile Include="Function\FunctionCompoundExpression.cs" />
+    <Compile Include="Function\FunctionUtil.cs" />
+    <Compile Include="HtmlSelection.cs" />
+    <Compile Include="Hyperlink.cs" />
+    <Compile Include="IComponent.cs" />
+    <Compile Include="ILink.cs" />
+    <Compile Include="Images\IImageData.cs" />
+    <Compile Include="Images\IImageDefinitionCollection.cs" />
+    <Compile Include="Images\ImageData.cs" />
+    <Compile Include="Images\ImageDefinition.cs" />
+    <Compile Include="Images\ImageDefinitionCollection.cs" />
+    <Compile Include="Images\IImageDefinition.cs" />
+    <Compile Include="IProjectComponent.cs" />
+    <Compile Include="NullObjects.cs" />
+    <Compile Include="PageHeader.cs" />
+    <Compile Include="Parsing\LogicParser.cs" />
+    <Compile Include="Parsing\MathParser.cs" />
+    <Compile Include="Parsing\Parser.cs" />
+    <Compile Include="Processes\IProcess.cs" />
+    <Compile Include="ProcessStatement\ShowUrlLine.cs" />
+    <Compile Include="ProcessStatement\ShowUrlStatement.cs" />
+    <Compile Include="ProjectComponentCollection.cs" />
+    <Compile Include="ProjectLoader\ProjectLoader.cs" />
+    <Compile Include="Fields\AssignableField.cs" />
+    <Compile Include="Fields\ExternalField.cs" />
+    <Compile Include="Fields\ExternalFieldProvider.cs" />
+    <Compile Include="Fields\FieldProviders.cs" />
+    <Compile Include="Fields\IAssignableField.cs" />
+    <Compile Include="Fields\FieldUtil.cs" />
+    <Compile Include="Forms\ExternalForm.cs" />
+    <Compile Include="LegacyVariableConverter.cs" />
+    <Compile Include="ProcessStatement\ShowRecordLine.cs" />
+    <Compile Include="ProcessStatement\ShowRecordStatement.cs" />
+    <Compile Include="ProcessStatement\DeleteLine.cs" />
+    <Compile Include="ProcessStatement\DeleteStatement.cs" />
+    <Compile Include="ProjectInvitationMapById.cs" />
+    <Compile Include="ProcessStatement\AppendLine.cs" />
+    <Compile Include="ProcessStatement\AppendStatement.cs" />
+    <Compile Include="ProcessStatement\ArithmeticLine.cs" />
+    <Compile Include="ProcessStatement\ArithmeticStatement.cs" />
+    <Compile Include="ProcessStatement\BlockCloseLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\BlockOpenLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\BreakItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Function\FunctionFieldWrapper.cs" />
+    <Compile Include="Function\FunctionMCItem.cs" />
+    <Compile Include="Function\FunctionBlank.cs" />
+    <Compile Include="Function\FunctionContentsField.cs" />
+    <Compile Include="Function\FunctionConditions.cs" />
+    <Compile Include="Fields\IDeserializedField.cs" />
+    <Compile Include="Fields\FieldSerializationInfo.cs" />
+    <Compile Include="ComparisonOperator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Component.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComponentList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Condition.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Conditions.cs" />
+    <Compile Include="ConditionsParser.cs" />
+    <Compile Include="ProcessStatement\CommentStatement.cs" />
+    <Compile Include="ProcessStatement\CommentLine.cs" />
+    <Compile Include="ProjectFunctionMapById.cs" />
+    <Compile Include="Fields\RecordSetField.cs" />
+    <Compile Include="Fields\ProjectFieldMapById.cs" />
+    <Compile Include="Fields\ProjectFieldMapByName.cs" />
+    <Compile Include="ProjectXmlValidator.cs" />
+    <Compile Include="RecordSetNamer.cs" />
+    <Compile Include="Documents\InvitationField.cs" />
+    <Compile Include="Fields\PaletteField.cs" />
+    <Compile Include="Fields\IPaletteField.cs" />
+    <Compile Include="HtmlData.cs" />
+    <Compile Include="Forms\FormInfo.cs" />
+    <Compile Include="Forms\IForm.cs" />
+    <Compile Include="ProcessStatement\SendBody.cs" />
+    <Compile Include="IOperatorDatasource.cs" />
+    <Compile Include="ProcessStatement\IProcessStatement.cs" />
+    <Compile Include="Fields\FieldMapper.cs" />
+    <Compile Include="IConditionComponent.cs" />
+    <Compile Include="LogicalOperator.cs" />
+    <Compile Include="ProcessStatement\ProcessStatementList.cs" />
+    <Compile Include="Factories\Factory.cs" />
+    <Compile Include="ProcessElementList.cs" />
+    <Compile Include="Fields\FieldSource.cs" />
+    <Compile Include="Fields\FlatFieldList.cs" />
+    <Compile Include="IRecursiveEnumerable.cs" />
+    <Compile Include="Fields\QualifiedFieldList.cs" />
+    <Compile Include="Fields\FieldList.cs" />
+    <Compile Include="Fields\IField.cs" />
+    <Compile Include="IProcessElement.cs" />
+    <Compile Include="Fields\RecordField.cs" />
+    <Compile Include="Fields\RecordSet.cs" />
+    <Compile Include="Fields\Record.cs" />
+    <Compile Include="ProcessStatement\ForEachLine.cs" />
+    <Compile Include="ProcessStatement\GetLine.cs" />
+    <Compile Include="ProcessStatement\ForEachStatement.cs" />
+    <Compile Include="Expression.cs" />
+    <Compile Include="ExpressionElement.cs" />
+    <Compile Include="ExpressionElementList.cs" />
+    <Compile Include="ProcessStatement\GetStatement.cs" />
+    <Compile Include="Forms\SkipToDestinationItem.cs" />
+    <Compile Include="Documents\DocumentList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Fields\Field.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FieldOrLiteral.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FormItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FormItemList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FormList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\IfLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\IfStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\OtherwiseLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Process.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\ProcessLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\ProcessLineList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\ProcessList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\ProcessStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Project.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProjectEvents.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ProcessStatement\SendLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\SendStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\SetLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\SetStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\ShowLine.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\ShowStatement.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ProcessStatement\SkipToLine.cs" />
+    <Compile Include="ProcessStatement\SkipToStatement.cs" />
+    <Compile Include="Fields\Variable.cs" />
+    <Compile Include="Fields\VariableList.cs" />
+    <Compile Include="Function\XmlToFunctionConverter.cs" />
+    <Compile Include="UrlExpression.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <SubType>Designer</SubType>
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{B4F97281-0DBD-4835-9ED8-7DFB966E87FF}" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>
