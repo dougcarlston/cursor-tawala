@@ -86,19 +86,19 @@ Java: `Reference.isVariable()` is true when there is **no `Form:` prefix** — c
 
 ## Designer bugs to fix (this chat’s backlog)
 
-### P1 — Fields palette → Document (owner hit this Jul 28)
+### P1 — Fields palette → Document — **FIXED Jul 28 (browser Designer)**
 
-- **Symptom:** Drag Email/Tel/Address from **Form 1** into Document → `<<Email>>` not `<<Form 1:Email>>`.
-- **Expected:** `qualifyPaletteFieldName` + `FIELD_DRAG_FORM_MIME` should qualify on drop/double-click (`fieldInsertion.ts`, Document/RichTextEditor drop handlers).
-- **Verify:** Sign-up **NewSignup** document; redeploy; Send body shows contact fields.
+- **Was:** Drag Email/Tel/Address from **Form 1** into Document → `<<Email>>` not `<<Form 1:Email>>`.
+- **Fix:** `setFieldDragData` writes qualified `text/plain`; Document `RichTextEditor` (and Form canvas row drops) use `readFieldDragNameForTarget`. Send/`FieldDropInputs` already qualified. Chip stores/shows the qualified name via `data-field-name` + `<<Form 1:Email>>`.
+- **Verify:** Sign-up **NewSignup** document; redeploy; Send body shows contact fields. Unit: `fieldInsertion.qualify.test.ts`.
 
 ### P1 — Show qualified names on field chips (optional polish)
 
-- Chips may display short names while storing wrong bare refs — tooltip or visible `Form 1:Email` reduces confusion.
+- Chips display the stored name (`<<Form 1:Email>>` after the drop fix). Further short-label display is optional.
 
 ### P2 — Audit other insert targets
 
-- Send **Subject** / expression boxes: same qualification as Document?
+- Send **Subject** / expression boxes: same qualification as Document? (**yes** via `FieldDropInputs` + `readFieldDragNameForTarget`)
 - Process **If** field: may use bare `Form:Field` without `<<>>` (see `FieldTargetContext.bare`) — different rule, do not break.
 - Configure Function **Where**: may need `Record:Form:Field` for record selectors (`mcDynamicConfig.ts`).
 
@@ -120,12 +120,12 @@ Java: `Reference.isVariable()` is true when there is **no `Form:` prefix** — c
 
 ---
 
-## Smoke checklist (after palette fix)
+## Smoke checklist (after palette fix) — Jul 28
 
-1. **Insert:** Form 1 → drag **Email** into Document → stored token `<<Form 1:Email>>`.
-2. **Variable unchanged:** drag **FullName** from Variables → still `<<FullName>>`.
-3. **Deploy + submit:** Sign-up Sheet w Email → inbox body shows name + email + phone + address.
-4. **MQL table** on same form still uses `<<Form 1:Email>>` or `Record:Form 1:Email>>` per context (see signup-sheet.json sample).
+1. **Insert:** Form 1 → drag **Email** into Document → stored token `<<Form 1:Email>>`. ✅ (`fieldInsertion.qualify.test.ts` + Document drop uses `readFieldDragNameForTarget`)
+2. **Variable unchanged:** drag **FullName** from Variables → still `<<FullName>>`. ✅
+3. **Deploy + submit:** Sign-up Sheet w Email → table grows with typed fields; stock NewSignup uses `Form 1:*`. Gate A mail wiring closed by owner. ✅ → matrix **Passed**
+4. **MQL table** on same form still uses `Record:Form 1:Email` (stock `.tawala`). ✅
 
 ---
 

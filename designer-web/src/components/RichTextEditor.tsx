@@ -5,6 +5,7 @@ import {
   hasFieldDrag,
   isFieldTokenMoveDrag,
   readFieldDragName,
+  readFieldDragNameForTarget,
   setActiveFieldTarget,
   takeMovingFieldToken,
 } from "@/lib/fieldInsertion";
@@ -588,11 +589,13 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     setFieldDragOver(false);
     const movingFunction = takeMovingFunctionToken();
     const moving = movingFunction ? null : takeMovingFieldToken();
+    // Palette Form-branch drops must qualify (`Form 1:Email`); in-editor moves keep the
+    // token's existing name. Variables stay bare (no FIELD_DRAG_FORM_MIME).
     const name = moving
       ? readFieldNameFromToken(moving) ?? readFieldDragName(e.dataTransfer)
       : movingFunction
         ? null
-        : readFieldDragName(e.dataTransfer);
+        : readFieldDragNameForTarget(e.dataTransfer, {});
     if (!name && !moving && !movingFunction) return;
     e.preventDefault();
     e.stopPropagation();

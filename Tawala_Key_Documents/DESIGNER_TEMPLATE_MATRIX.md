@@ -51,13 +51,13 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 | 2 | **Signup Sheet Template** | **Passed** (Jul 16 refresh) | Submit → table rows; Form MQL path; FIB Deploy formatting |
 | 3 | **Form with process** | **Passed** | Empty Form 1 + Process 1 (Designer demo) |
 | 4 | **Form with process connecting a document** | **Unmarked** | Submit → **Document 1** HTML visible |
-| 5 | **Sign-up Sheet w Email** | **Unmarked** | FIB submit + table; Send may need mail config |
+| 5 | **Sign-up Sheet w Email** | **Passed** (Jul 28) | FIB submit + table; NewSignup body uses `Form 1:*` refs; Gate A mail wiring closed Jul 28; Designer Form-branch insert qualifies |
 | 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
 | 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026) | Multi **choice-tally** + **itemization** on Report — see reference section below |
 | 8 | **Potluck** | **New Project JSON updated Jul 24** | Browser Designer **File → New Project → Potluck** uses owner-supplied `00-WebDesigner-MainMenu_Potluck.json` (installed as `designer-web/public/samples/templates/potluck.json`). Legacy `node scripts/deploy-tawala-template.mjs "Potluck"` also **Owner Passed Jul 20**. |
 | — | **DirtBowl (legacy `.tawala`)** | **Owner Passed Jul 20** | Full project (dozens of Forms/Processes/Documents) via `designer-web/public/samples/legacy/DirtBowl.tawala` — worked flawlessly. Corrupted JSON copies are not a smoke target. |
 
-**#9 function smoke ladder (Jul 24):** Multi Survey (#7) and peers above that are **Passed** already exercise the main emitters (choice-tally, itemization, correlation, sum). Next optional matrix work is the two **Unmarked** rows (#4, #5) — not reopening the four Deferred function stubs.
+**#9 function smoke ladder (Jul 24):** Multi Survey (#7) and peers above that are **Passed** already exercise the main emitters (choice-tally, itemization, correlation, sum). Remaining optional matrix work is **#4** (Form + Process + Document) — not reopening the four Deferred function stubs. **#5 Sign-up Sheet w Email** passed Jul 28 (Gate A + Designer field qualification).
 
 Update this table when each passes owner click-test. Function-level status: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
 
@@ -194,19 +194,30 @@ Prior caveats before patch:
 ## Sign-up Sheet w Email (reference)
 
 - Same FIB + **itemization-table** as Sign-up Sheet template.
-- **Process 1:** Send email with **NewSignup** document (placeholder recipient in XML).
+- **Process 1:** Send email with **NewSignup** document (stock To is placeholder `<Insert your email address here>` — replace with a real address before Send smoke).
+- **NewSignup** body uses **`Form 1:FirstName` / `Form 1:Email` / `Form 1:Tel` / `Form 1:Address`** (not bare `<<Email>>`). Bare names are process variables only — see `DESIGNER_FIELD_QUALIFICATION_HANDOFF.md`.
 - Theme: `redrays`.
 
-**Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Sign-up Sheet Template w Email"`
+**Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Sign-up Sheet with E-mail"`  
+*(label resolves to `Signup Sheet Template w Email.tawala`)*
 
 | Form | URL |
 |------|-----|
 | Form 1 | http://localhost:8080/p/onszvng2ec776jt/uwh7ift.Form+1 |
 
-**Smoke test:** Same as Sign-up Sheet (submit → Thank You → back → table grows). **Send** process enqueues email via `EmailService` → Spring `JavaMailSender` (`mail.host=localhost` by default). Without SMTP, signup may save but notification mail fails.
+**Smoke test:** Same as Sign-up Sheet (submit → Thank You → back → table grows). **Send** process enqueues email via `EmailService` → SMTP (Resend via `.env.email.local`, or Mailpit). Fill a real **To** address in Process 1 before expecting inbox delivery.
 
-**Owner confirmed (July 2026):** Does not work end-to-end — no working email on local 8080. Form/table behavior not separately retested. Outbound mail tracked in `docs/ROADMAP.md` **Backlog** (JavaMailSender vs provider — deferred).
+**Jul 28, 2026 — Passed**
 
+| Check | Result |
+|-------|--------|
+| Gate A (:5173/:3001/:8080 + SMTP wiring) | Closed by owner — blank body was **not** mail stack |
+| Designer Form-branch → Document insert | Qualifies as `<<Form 1:Email>>` (`fieldInsertion.qualify.test.ts`; `RichTextEditor` / canvas drops use `readFieldDragNameForTarget`) |
+| Variables folder | Still bare `<<FullName>>` |
+| Stock NewSignup XML | `Form 1:Email` (and FirstName/Tel/Address) |
+| Deploy + submit | Thank you; itemization shows First/Last/Email/Tel/Address (redeploy Jul 28) |
+
+Do not reopen SMTP/theme CSS here. Do not start Website/Library or Final Designer polish from this matrix row.
 ---
 
 ## Multiple Question Survey (reference)
@@ -228,4 +239,4 @@ Prior caveats before patch:
 
 ---
 
-*Last updated: July 2026.*
+*Last updated: July 28, 2026.*

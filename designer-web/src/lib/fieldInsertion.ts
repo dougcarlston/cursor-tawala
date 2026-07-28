@@ -2,14 +2,15 @@
  * Fields panel → editor drag-and-drop (backlog §1 Phase 2, legacy `FieldsPalette.cs`).
  *
  * A dragged field/variable leaf carries two payloads:
- *  - a custom MIME (`FIELD_DRAG_MIME`) holding the bare field name, so drop targets can
- *    distinguish a Tawala-field drag during `dragover` (when `getData` is unreadable, only
- *    `dataTransfer.types` is available) and insert a controlled `<<name>>` token; and
- *  - `text/plain` holding the ready-made `<<name>>` token, so any native editable control
- *    (uncontrolled textareas, external targets) inserts the correct reference automatically.
+ *  - a custom MIME (`FIELD_DRAG_MIME`) holding the bare leaf name, plus optional
+ *    `FIELD_DRAG_FORM_MIME` with the form folder name so drop targets can qualify during
+ *    `drop` (and distinguish a Tawala-field drag during `dragover` via `types` only); and
+ *  - `text/plain` holding the ready-made token (`<<Form 1:Email>>` or bare `<<FullName>>`),
+ *    so any native editable control inserts the correct reference automatically.
  *
- * Double-click insert (legacy: insert at current editor focus) reuses the same token via a
- * module-level "active target" the focused editor registers; see `insertFieldIntoActiveTarget`.
+ * Form-branch leaves must insert as `Form:Field` (Java: bare names are process variables).
+ * Variables-folder leaves stay bare. Double-click insert reuses the same qualification via
+ * `paletteLeafInsertName` / `insertFieldIntoActiveTarget`.
  */
 
 import {
@@ -41,7 +42,10 @@ export function setFieldDragData(
   if (formName) {
     dataTransfer.setData(FIELD_DRAG_FORM_MIME, formName);
   }
-  dataTransfer.setData("text/plain", fieldToken(name));
+  // Native text/plain fallback must already be qualified — Document/Send drop handlers
+  // that miss custom MIME would otherwise insert bare `<<Email>>` (process variable).
+  const resolved = qualifyPaletteFieldName(name, formName);
+  dataTransfer.setData("text/plain", fieldToken(resolved));
   dataTransfer.effectAllowed = "copy";
 }
 

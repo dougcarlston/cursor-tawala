@@ -15,7 +15,7 @@ import {
 } from "@/lib/fibBlanks";
 import {
   hasFieldDrag,
-  readFieldDragName,
+  readFieldDragNameForTarget,
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
@@ -450,7 +450,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onDrop={(e) => {
                 setDragOver(false);
-                const name = readFieldDragName(e.dataTransfer);
+                const name = readFieldDragNameForTarget(e.dataTransfer, {});
                 if (!name) return;
                 e.preventDefault();
                 const el = editorRef.current;

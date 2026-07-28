@@ -3,7 +3,7 @@ import { HeadingItem, HEADING_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
   hasFieldDrag,
-  readFieldDragName,
+  readFieldDragNameForTarget,
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
@@ -479,7 +479,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onDrop={(e) => {
                 setDragOver(false);
-                const name = readFieldDragName(e.dataTransfer);
+                const name = readFieldDragNameForTarget(e.dataTransfer, {});
                 if (!name) return;
                 e.preventDefault();
                 e.stopPropagation();

@@ -3,7 +3,7 @@ import { McItem, MCQ_PLACEHOLDER, TawalaChoice } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
   hasFieldDrag,
-  readFieldDragName,
+  readFieldDragNameForTarget,
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
@@ -380,7 +380,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onDrop={(e) => {
                 setDragOver(false);
-                const name = readFieldDragName(e.dataTransfer);
+                const name = readFieldDragNameForTarget(e.dataTransfer, {});
                 if (!name) return;
                 e.preventDefault();
                 const el = editorRef.current;
