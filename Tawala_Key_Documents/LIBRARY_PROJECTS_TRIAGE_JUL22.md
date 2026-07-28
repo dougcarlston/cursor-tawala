@@ -1,14 +1,16 @@
 # Library Projects triage — Jul 22, 2026
 
-Source folder (historical Jul 22–23): `Projects/Tawala Projects/Library Projects`  
-(Jul 22 scan used `Triage group/Best/Library Projects`; files were moved up Jul 23.)
+Source folder: `~/Projects/Tawala Projects/Library Projects`  
+**Live repo:** `/Users/DougC1/Projects/Tawala` (not the old `AI-Tawala` path).
 
-**Scanner (saved Jul 24):** `scripts/triage-library-json.mjs` — Jul 22 hazards plus Jul 23–24 checks (Heading Main/Sub, Page Header, rich FIB/MCQ nested font). Report-only by default; `--amend` only qualifies SUM `Record:` prefixes.
+**Scanners:**
+- `scripts/triage-library-json.mjs` — Jul 22–24 Deploy/import hazards (nested font, Heading, Page Header, …). `--amend` = SUM `Record:` only.
+- `scripts/audit-field-refs.mjs` — **Jul 28** Form/Record/Get/ForEach field-reference audit (report-only; **no** alternate-label invention). Results: `FIELD_REFERENCE_AUDIT.md`.
 
 ```bash
-cd ~/Projects/AI-Tawala
+cd ~/Projects/Tawala
 node scripts/triage-library-json.mjs
-node scripts/triage-library-json.mjs "/path/to/other/folder"
+node scripts/audit-field-refs.mjs
 ```
 
 ---

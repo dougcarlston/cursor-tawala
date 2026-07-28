@@ -19,6 +19,8 @@
  * Report goes to stdout. Exit 0 always (informational); use findings for smoke triage.
  *
  * Spec notes: Tawala_Key_Documents/LIBRARY_PROJECTS_TRIAGE_JUL22.md
+ * Field-reference audit (Form/Record/Get/ForEach): scripts/audit-field-refs.mjs
+ *   node scripts/audit-field-refs.mjs
  */
 
 import fs from "node:fs";
