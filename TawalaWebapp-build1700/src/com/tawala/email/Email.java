@@ -24,6 +24,8 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import com.scissor.Log;
+
 @SequenceGenerator(name = "SEQ_GEN", sequenceName = "seq_email_id")
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
@@ -190,18 +192,28 @@ abstract public class Email {
 		}
 
 		// Server-owned verified From (SMTP / visible sender). Process "From" is Reply-To.
+		// Never copy Reply-To display names into SMTP From — aliases may contain '<' '>'
+		// (e.g. Signup Sheet Send: "<<Form 1:FirstName>> <<Form 1:LastName>>").
 		EmailRuntimeConfig mailConfig = EmailRuntimeConfig.get();
-		InternetAddress replyTo = new InternetAddress(from);
-		String personal = replyTo.getPersonal();
-		if (personal == null || personal.trim().length() == 0) {
-			personal = mailConfig.getFromName();
-			if (from != null && from.indexOf('@') < 0 && from.trim().length() > 0) {
-				personal = from.trim();
-			}
+		String smtpAddress = EmailRuntimeConfig.normalizeEmailAddress(mailConfig
+				.getFromAddress());
+		String smtpName = mailConfig.getFromName();
+		InternetAddress smtpFrom;
+		if (smtpName == null || smtpName.trim().length() == 0) {
+			smtpFrom = new InternetAddress(smtpAddress);
+		} else {
+			smtpFrom = new InternetAddress(smtpAddress, smtpName.trim());
 		}
-		InternetAddress smtpFrom = new InternetAddress(mailConfig.getFromAddress(), personal);
 		mimeMessage.setFrom(smtpFrom);
-		mimeMessage.setReplyTo(new Address[] { replyTo });
+
+		// Reply-To is process-supplied and may still contain unresolved field tokens
+		// or a malformed/empty address (e.g. "<<Form 1:FirstName>> <<Form 1:LastName>>").
+		// Resend hard-rejects (550) any Reply-To with stray '<'/'>' or no valid mailbox,
+		// so sanitize down to a bare, validated address (or omit the header entirely).
+		Address replyTo = buildSafeReplyTo(from);
+		if (replyTo != null) {
+			mimeMessage.setReplyTo(new Address[] { replyTo });
+		}
 
 		if (to != null) {
 			mimeMessage.setRecipients(MimeMessage.RecipientType.TO, to);
@@ -222,6 +234,55 @@ abstract public class Email {
 
 	abstract protected void createBody(MimeMessage mimeMessage)
 			throws MessagingException, IOException;
+
+	/**
+	 * Sanitizes a process-supplied "From" value into a safe Reply-To address.
+	 * Returns null (omit the header) rather than ever emitting a value Resend
+	 * would reject with 550 Invalid reply_to field.
+	 */
+	static Address buildSafeReplyTo(String from) {
+		if (from == null || from.trim().length() == 0) {
+			return null;
+		}
+
+		String personal = null;
+		String address = null;
+		try {
+			InternetAddress parsed = new InternetAddress(from.trim());
+			address = parsed.getAddress();
+			personal = parsed.getPersonal();
+		} catch (Exception e) {
+			// Whole value failed to parse as an RFC822 address (e.g. wholly unresolved
+			// field tokens). Fall through with address == null; handled below.
+		}
+
+		// Unresolved field tokens ("<<Form 1:FirstName>>") or any stray angle bracket
+		// in either part means the value isn't a real display name / address.
+		if (personal != null && (personal.indexOf('<') >= 0 || personal.indexOf('>') >= 0)) {
+			personal = null;
+		}
+		if (address != null && (address.indexOf('<') >= 0 || address.indexOf('>') >= 0)) {
+			address = null;
+		}
+
+		if (address == null || address.trim().length() == 0) {
+			Log.warn(Email.class, "Omitting Reply-To: no valid address in '" + from + "'");
+			return null;
+		}
+
+		try {
+			InternetAddress safe = new InternetAddress(address.trim());
+			safe.validate();
+			if (personal != null && personal.trim().length() > 0) {
+				safe.setPersonal(personal.trim());
+			}
+			return safe;
+		} catch (Exception e) {
+			Log.warn(Email.class, "Omitting Reply-To: invalid address '" + address
+					+ "' derived from '" + from + "'");
+			return null;
+		}
+	}
 
 	public Date getCreatedDate() {
 		return createdDate;

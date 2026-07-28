@@ -141,7 +141,8 @@ public class ClientApiController implements Controller {
 					"A valid test recipient address is required.");
 		}
 		try {
-			String from = config.getFromName() + " <" + config.getFromAddress() + ">";
+			// Reply-To only — SMTP From comes from server mail.properties.
+			String from = config.getFromAddress();
 			UserProjectEmail email = new UserProjectEmail(null, from, to.trim(),
 					null, "Tawala email delivery test",
 					UniqueBodyEmail.Type.TEXT,

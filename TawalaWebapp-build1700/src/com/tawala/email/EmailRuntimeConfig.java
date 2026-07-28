@@ -1,5 +1,7 @@
 package com.tawala.email;
 
+import javax.mail.internet.InternetAddress;
+
 import com.scissor.Log;
 
 /**
@@ -121,7 +123,21 @@ public class EmailRuntimeConfig {
 
 	public void setFromAddress(String fromAddress) {
 		if (fromAddress != null && fromAddress.trim().length() > 0) {
-			this.fromAddress = fromAddress.trim();
+			this.fromAddress = normalizeEmailAddress(fromAddress.trim());
+		}
+	}
+
+	/** Bare mailbox for SMTP From — strips accidental `Name <email>` env values. */
+	static String normalizeEmailAddress(String value) {
+		if (value == null || value.trim().length() == 0) {
+			return value;
+		}
+		try {
+			InternetAddress parsed = new InternetAddress(value.trim());
+			parsed.validate();
+			return parsed.getAddress();
+		} catch (Exception e) {
+			return value.trim();
 		}
 	}
 
