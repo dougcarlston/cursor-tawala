@@ -22,7 +22,7 @@ Select **Send** in the Statements palette. **Add** inserts at the blue-arrow ins
 | **To:** | Field text box | **Addressee** — owner: **must be a field** from Fields palette (drag or double-click). Example: `Start:UserEmail` (green highlight when field-bound). |
 | **Cc:** | Field text box | Optional; field drag/double-click or typed literal — **not validated** in Designer (owner: probably should be, like **From**). |
 | **From (Address):** | Field text box | **Addressor** — may be **typed directly** (e.g. `doug@carlston.net`); **not validated** in Designer (owner: probably should be). May also accept a dragged field. On **Deploy (:8080)** with server-owned SMTP, this becomes **Reply-To**; the verified server From is the SMTP/visible sender. |
-| **(Name):** | Field text box | Optional display name for From; literal or field. |
+| **(Name):** | Field text box | Optional display name for From; literal text or **one** field/variable. Cannot combine multiple fields (e.g. First + Last name) directly — the runtime `<from>` alias is a single XML attribute (`aliasField`/`aliasLiteral`), unlike **Subject** which supports chunked literal+field combinations. Combine multiple fields into one Process variable with **Set** first, then reference that single variable here. |
 | **Subject:** | Expression text box | Free text; may embed field references. Example: `A test Message`. |
 | **Document to be used as Body text:** | Dropdown | Project document used as email body (e.g. Document 2). |
 
@@ -119,6 +119,34 @@ Send Document Document 2 to Start:UserEmail
 5. Project → Email Delivery… → Send Test → appears in Mailpit.
 
 **Owner Jul 20:** Browser Designer Process **Send** worked as expected for self-addressed mail on :8080. Recipient *lists* not yet tried.
+
+**Fixed Jul 27 (owner report: Signup Sheet email blank + unresolved `<<Form 1:FirstName>>
+<<Form 1:LastName>>` in From alias at queue time):** Two unrelated findings from that
+investigation:
+
+1. **Root cause of the blank body data** was authoring, not a runtime bug: bare (unqualified)
+   field names like `<<FirstName>>` are **always** treated as process **variables** by the Java
+   runtime (`Reference.isVariable()` is `true` whenever there's no `Form:` qualifier) — never as
+   a fallback to the current Form's submitted data. A Document/Send body must use `Form 1:FirstName`
+   (or `Record:Form 1:FirstName` for record-list functions) to pull real submitted values; a bare
+   name only resolves if something else (a `Set` command) explicitly populated that variable.
+   No code changed for this — it's a template/content fix (use the qualified name).
+2. **Root cause of the unresolved `<<Form 1:FirstName>> <<Form 1:LastName>>` From alias** was a
+   real `designer-web` bug: `buildFromAddress` (`statementBuilders.ts`) silently exported any
+   From **(Name)** value containing multiple `<<…>>` tokens (or literal text mixed with a token)
+   as `aliasLiteral` — i.e. the raw, never-evaluated `<<…>>` text became the literal display name,
+   because Java's `<from>` XML only supports one field **or** literal text, never Subject-style
+   combinations. The Java-side `Email.buildSafeReplyTo` sanitizer (added earlier) only stops that
+   bad value from bouncing SMTP delivery — it does not fix the missing personalization, and it
+   never touches the email body (confirmed: body/subject rendering happens in `Send.execute()`
+   before the `Email` object exists; the sanitizer only touches the Reply-To header at send time).
+   **Fixed:** `validateSendFromName` (`sendEmailValidation.ts`) now rejects From (Name) values
+   that mix literal text with a token or combine more than one token, with a message pointing at
+   the supported pattern (`Set` a variable first, then reference that single variable) — blocking
+   Add/Save in `SendStatementBuilder` instead of silently emitting broken XML. **Smoke:** open
+   Send → From (Name) → type `<<Form 1:FirstName>> <<Form 1:LastName>>` → row shows a validation
+   error and Add/Save is disabled; typing `<<FromName>>` (single token) or plain text remains
+   valid.
 
 ---
 

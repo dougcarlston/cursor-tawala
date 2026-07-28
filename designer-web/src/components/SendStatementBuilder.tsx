@@ -24,8 +24,11 @@ function fieldClass(base: string, error?: string): string {
 
 /**
  * Send statement property panel — Email tab per `DESIGNER_PROCESS_STATEMENTS_SEND.md`.
- * To/Cc are email-validated (FIB Email field or literal). From literals are email-validated.
- * From (Name) and Subject accept fields, variables, literals, or combinations.
+ * To/Cc are email-validated (FIB Email field or literal). From (Address) literals are
+ * email-validated. Subject accepts fields, variables, literals, or combinations (the Java
+ * runtime stores it as chunked literal text + `<field>` elements). From (Name) does NOT:
+ * the `<from>` alias is a single XML attribute, so it only accepts plain text or ONE single
+ * field/variable — never multiple fields concatenated (see `validateSendFromName`).
  */
 export function SendStatementBuilder({
   state,
@@ -128,13 +131,22 @@ export function SendStatementBuilder({
               <label className="send-field-label" htmlFor="send-from-name">
                 (Name):
               </label>
-              <FieldTextInput
-                id="send-from-name"
-                className="send-field-input"
-                placeholder=""
-                value={state.fromName}
-                onValueChange={(v) => onStateChange({ ...state, fromName: v })}
-              />
+              <div className="send-field-cell">
+                <FieldTextInput
+                  id="send-from-name"
+                  className={fieldClass("send-field-input", fieldErrors.fromName)}
+                  placeholder=""
+                  value={state.fromName}
+                  onValueChange={(v) => onStateChange({ ...state, fromName: v })}
+                  aria-invalid={fieldErrors.fromName ? true : undefined}
+                  aria-describedby={fieldErrors.fromName ? "send-from-name-error" : undefined}
+                />
+                {fieldErrors.fromName ? (
+                  <p id="send-from-name-error" className="send-field-error">
+                    {fieldErrors.fromName}
+                  </p>
+                ) : null}
+              </div>
             </div>
           </div>
 

@@ -15,6 +15,7 @@ export interface SendFieldErrors {
   to?: string;
   cc?: string;
   fromAddress?: string;
+  fromName?: string;
 }
 
 type BareAddressKind = "empty" | "formField" | "variable" | "literal";
@@ -91,11 +92,43 @@ export function validateSendFromAddress(
   return { valid: true };
 }
 
+/**
+ * From (Name) — display name / alias shown to recipients. Unlike Subject (which the Java
+ * runtime stores as a chunked sequence of literal text + `<field>` elements, see
+ * `Send.SUBJECT_FACTORY` / `<subject>` XML), the `<from>` alias is a single XML attribute
+ * (`aliasField="…"` or `aliasLiteral="…"`) — it can hold ONE field/variable reference, or
+ * plain literal text, but never a mix of the two or multiple fields concatenated together.
+ *
+ * A value that still contains `<<…>>` after trimming but isn't a single whole-string token
+ * (e.g. `<<Form 1:FirstName>> <<Form 1:LastName>>`, or `Hi <<Form 1:FirstName>>`) cannot be
+ * exported as a working alias: it silently becomes a literal display name containing the raw,
+ * never-evaluated `<<…>>` text. That is exactly the "unresolved `<<Form 1:FirstName>>
+ * <<Form 1:LastName>>`" value seen in process From aliases at email-queue time — the runtime
+ * sanitizer in `Email.buildSafeReplyTo` (Java) strips it back out at send-time (so delivery
+ * doesn't bounce), but the intended personalization never worked. Catch it here instead, at
+ * authoring time, with guidance toward the supported pattern (Set a variable first, then
+ * reference that single variable).
+ */
+export function validateSendFromName(value: string): SendFieldValidationResult {
+  const trimmed = value.trim();
+  if (!trimmed) return { valid: true };
+  if (!trimmed.includes("<<")) return { valid: true };
+  if (/^<<[^<>]+>>$/.test(trimmed)) return { valid: true };
+  return {
+    valid: false,
+    message:
+      "From display name can be plain text or a single field/variable, not multiple fields " +
+      "combined — combine them into one variable with a Set command first (e.g. Set FromName " +
+      "to <<Form 1:FirstName>> <<Form 1:LastName>>), then use <<FromName>> here.",
+  };
+}
+
 export function getSendFieldErrors(
   state: {
     to: string;
     cc: string;
     fromAddress: string;
+    fromName: string;
   },
   project: TawalaProject,
   knownVariables: ReadonlySet<string>,
@@ -107,5 +140,7 @@ export function getSendFieldErrors(
   if (!cc.valid && cc.message) errors.cc = cc.message;
   const from = validateSendFromAddress(state.fromAddress, project, knownVariables);
   if (!from.valid && from.message) errors.fromAddress = from.message;
+  const fromName = validateSendFromName(state.fromName);
+  if (!fromName.valid && fromName.message) errors.fromName = fromName.message;
   return errors;
 }

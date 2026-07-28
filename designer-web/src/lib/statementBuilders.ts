@@ -329,7 +329,7 @@ export function sendBuilderIsValid(
     return false;
   }
   const errors = getSendFieldErrors(state, project, knownVariables);
-  return !errors.to && !errors.cc && !errors.fromAddress;
+  return !errors.to && !errors.cc && !errors.fromAddress && !errors.fromName;
 }
 
 export function sendBuilderFromCommand(command: {
