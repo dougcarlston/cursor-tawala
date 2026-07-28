@@ -4,7 +4,7 @@ import {
   isValidEmailLiteral,
 } from "@/lib/emailValidation";
 import { lookupFormFieldBlank } from "@/lib/projectModel";
-import type { TawalaProject } from "@/types/tawala";
+import type { TawalaProcessCommand, TawalaProject } from "@/types/tawala";
 
 export interface SendFieldValidationResult {
   valid: boolean;
@@ -143,4 +143,44 @@ export function getSendFieldErrors(
   const fromName = validateSendFromName(state.fromName);
   if (!fromName.valid && fromName.message) errors.fromName = fromName.message;
   return errors;
+}
+
+function addressValueToText(addr: unknown): string {
+  if (addr == null) return "";
+  if (typeof addr === "string") return addr;
+  if (typeof addr === "object" && !Array.isArray(addr)) {
+    const a = addr as { fieldRef?: string; literal?: string };
+    if (a.fieldRef) return a.fieldRef;
+    if (a.literal != null) return String(a.literal);
+  }
+  return "";
+}
+
+/**
+ * True when a Send command should render in red in the process script list:
+ * incomplete/invalid To or Cc for runtime (e.g. placeholder literal), or missing body document.
+ * Does not block Modify/save — designer allows incomplete Send config.
+ */
+export function isSendCommandVisuallyInvalid(
+  command: TawalaProcessCommand,
+  project: TawalaProject,
+  knownVariables: ReadonlySet<string>,
+): boolean {
+  const to = validateSendRecipientField(
+    addressValueToText(command.to),
+    project,
+    knownVariables,
+    true,
+  );
+  if (!to.valid) return true;
+  const cc = validateSendRecipientField(
+    addressValueToText(command.cc),
+    project,
+    knownVariables,
+    false,
+  );
+  if (!cc.valid) return true;
+  const body = command.body as { document?: string } | undefined;
+  const doc = body?.document ?? (command.document != null ? String(command.document) : "");
+  return !doc.trim();
 }

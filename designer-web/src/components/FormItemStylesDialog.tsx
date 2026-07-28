@@ -12,6 +12,7 @@ import {
   type StylesDialogKind,
   type TextStyleDraft,
 } from "@/lib/formItemStyles";
+import { DesignerDialog } from "./DesignerDialog";
 
 interface Props {
   kind: StylesDialogKind;
@@ -79,15 +80,38 @@ export function FormItemStylesDialog({
   };
 
   return (
-    <div className="modal-overlay configure-function-overlay" role="presentation">
-      <div
-        className={`modal configure-function-dialog form-item-styles-dialog form-item-styles-${kind}`}
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="form-item-styles-title"
-      >
-        <h2 id="form-item-styles-title">{title}</h2>
-        <div className="configure-function-body form-item-styles-body">
+    <DesignerDialog
+      title={title}
+      titleId="form-item-styles-title"
+      onClose={onCancel}
+      overlayClassName="configure-function-overlay"
+      className={`form-item-styles-dialog form-item-styles-${kind} designer-dialog-wide`}
+      footer={
+        <>
+          {hasSelection ? (
+            <button type="button" disabled={!canApplySelected} onClick={applySelected}>
+              Apply to Selected
+            </button>
+          ) : null}
+          <button
+            type="button"
+            disabled={!canApplyAll}
+            title={
+              canApplyAll
+                ? `Apply this style to all ${formItemCount} matching item(s) on this form`
+                : "No matching items on this form"
+            }
+            onClick={applyAll}
+          >
+            Apply to All
+          </button>
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+        </>
+      }
+    >
+      <div className="designer-dialog-panel form-item-styles-body">
           {kind === "fib" && (
             <div className="form-item-styles-fib-main">
               <div className="form-item-styles-fib-controls">
@@ -241,31 +265,8 @@ export function FormItemStylesDialog({
           )}
 
           <p className="form-item-styles-note">{note}</p>
-        </div>
-        <div className="modal-actions form-item-styles-actions">
-          {hasSelection ? (
-            <button type="button" disabled={!canApplySelected} onClick={applySelected}>
-              Apply to Selected
-            </button>
-          ) : null}
-          <button
-            type="button"
-            disabled={!canApplyAll}
-            title={
-              canApplyAll
-                ? `Apply this style to all ${formItemCount} matching item(s) on this form`
-                : "No matching items on this form"
-            }
-            onClick={applyAll}
-          >
-            Apply to All
-          </button>
-          <button type="button" onClick={onCancel}>
-            Cancel
-          </button>
-        </div>
       </div>
-    </div>
+    </DesignerDialog>
   );
 }
 

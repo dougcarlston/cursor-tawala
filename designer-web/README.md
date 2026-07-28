@@ -118,6 +118,7 @@ Deploy converts JSON → XML (`server/jsonToXml.mjs`) and POSTs to `/client` lik
 | Form with Process | `form-with-process.json` |
 | Form, Process and Document | `form-process-document.json` |
 | Sign-up Sheet | `signup-sheet.json` |
+| Sign-up Sheet with E-mail | `signup-sheet-w-email.json` |
 | Get Together | `get-together.json` |
 | Potluck | `potluck.json` |
 | Simple Survey | `simple-survey.json` |
@@ -126,7 +127,7 @@ Deploy converts JSON → XML (`server/jsonToXml.mjs`) and POSTs to `/client` lik
 
 Deploy to **8080** with `TAWALA_JAVA_URL=http://localhost:8080 npm run dev:api` (or `scripts/dev-java.sh`). Survey/report function tables export via `jsonToXml.mjs` (`choiceTallyTable`, `itemizationTable`, `questionCorrelationTable`).
 
-**Not in browser Designer yet:** Sign-up Sheet w Email (blocked on mail backlog), full Potluck process/doc chain, general `.tawala` import (SignupSheets one-off converter only — see above).
+**Not in browser Designer yet:** full Potluck process/doc chain, general `.tawala` import (SignupSheets one-off converter only — see above).
 
 ### Phase 3 notes
 

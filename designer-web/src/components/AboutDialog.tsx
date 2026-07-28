@@ -42,7 +42,7 @@ export function AboutDialog({ open, onClose }: Props) {
       >
         <div className="about-titlebar">
           <h2 id="about-dialog-title">About Tawala Project Designer</h2>
-          <button type="button" className="about-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="designer-dialog-close" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>

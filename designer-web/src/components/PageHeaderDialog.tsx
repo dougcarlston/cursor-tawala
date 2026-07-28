@@ -153,7 +153,7 @@ export function PageHeaderDialog({ open, onClose }: Props) {
 
   return (
     <div
-      className="modal-overlay"
+      className="modal-overlay page-header-overlay"
       role="presentation"
       onClick={(e) => {
         if (e.target === e.currentTarget) onClose();
@@ -168,7 +168,7 @@ export function PageHeaderDialog({ open, onClose }: Props) {
       >
         <div className="modal-header page-header-dialog-titlebar">
           <h2 id="page-header-dialog-title">Page Header</h2>
-          <button type="button" className="about-close" onClick={onClose} aria-label="Close">
+          <button type="button" className="designer-dialog-close" onClick={onClose} aria-label="Close">
             ×
           </button>
         </div>

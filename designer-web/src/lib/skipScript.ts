@@ -24,6 +24,11 @@ export interface ScriptLine {
   insertZone?: string;
   /** Matching branch for a closing `)` — click also sets insertion inside the block. */
   closeZone?: string;
+  /**
+   * Process Send (and similar): incomplete/invalid for runtime — render script text in red.
+   * Does not block Modify/save or closing the Process window.
+   */
+  invalid?: boolean;
 }
 
 interface ConditionShape {

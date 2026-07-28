@@ -1,4 +1,5 @@
 import { useProjectStore } from "@/store/projectStore";
+import { DesignerDialog } from "./DesignerDialog";
 
 export function DeployDialog() {
   const show = useProjectStore((s) => s.showDeployResult);
@@ -8,11 +9,22 @@ export function DeployDialog() {
   if (!show || !lastDeploy) return null;
 
   const failed = lastDeploy.status === "failure";
+  const close = () => setShow(false);
 
   return (
-    <div className="modal-backdrop" role="presentation">
-      <div className="modal modal-wide" role="dialog" aria-modal="true" aria-labelledby="deploy-dialog-title">
-        <h2 id="deploy-dialog-title">{failed ? "Deploy Failed" : "Project Deployed"}</h2>
+    <DesignerDialog
+      title={failed ? "Deploy Failed" : "Project Deployed"}
+      titleId="deploy-dialog-title"
+      onClose={close}
+      closeOnBackdrop
+      className="designer-dialog-wide"
+      footer={
+        <button type="button" onClick={close}>
+          Close
+        </button>
+      }
+    >
+      <div className="designer-dialog-panel">
         <p>
           <strong>{lastDeploy.project ?? "Project"}</strong>
           {lastDeploy.mode === "java"
@@ -45,12 +57,7 @@ export function DeployDialog() {
         ) : (
           <p className="hint">Deploy succeeded. Check server response for URLs.</p>
         )}
-        <div className="modal-actions">
-          <button type="button" onClick={() => setShow(false)}>
-            Close
-          </button>
-        </div>
       </div>
-    </div>
+    </DesignerDialog>
   );
 }

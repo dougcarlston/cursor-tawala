@@ -17,6 +17,10 @@ import {
 } from "@/lib/functionCatalog";
 import { setConfigureFunctionFieldLock } from "@/lib/fieldInsertion";
 import { setFieldsPaletteConditionsForm } from "@/lib/fieldsPaletteContext";
+import {
+  ConfigureFunctionShell,
+  type ConfigureFunctionHelp,
+} from "./ConfigureFunctionShell";
 
 interface Props {
   def: FunctionDef;
@@ -131,99 +135,63 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
     patchColumns(next, j);
   };
 
-  return (
-    <div
-      className="modal-overlay configure-function-overlay configure-function-blocks-chrome"
-      role="presentation"
-    >
-      <div
-        className="modal-dialog fib-validation-dialog configure-function-dialog"
-        role="dialog"
-        aria-labelledby="configure-function-title"
-        aria-modal="true"
+  const columnToolbar = hasColumnCollection ? (
+    <>
+      <ToolbarIconButton tip="Add Column" onClick={addColumn} disabled={columns.length >= MAX_COLUMNS}>
+        <PlusIcon />
+      </ToolbarIconButton>
+      <ToolbarIconButton tip="Remove Column" onClick={removeColumn} disabled={columns.length <= 1}>
+        <MinusIcon />
+      </ToolbarIconButton>
+      <ToolbarIconButton tip="Move Column Up" onClick={() => moveColumn(-1)} disabled={selectedColumn <= 0}>
+        <MoveUpIcon />
+      </ToolbarIconButton>
+      <ToolbarIconButton
+        tip="Move Column Down"
+        onClick={() => moveColumn(1)}
+        disabled={selectedColumn >= columns.length - 1}
       >
-        <div className="modal-header">
-          <h2 id="configure-function-title">
-            <span className="fib-validation-fx">fx</span> Configure Function
-          </h2>
-          <button type="button" className="modal-close" onClick={onCancel} aria-label="Close">
-            ×
-          </button>
-        </div>
-        <div className="fib-validation-body">
-          <div className="fib-validation-fields configure-function-fields">
-            {def.parameters.length === 0 && (
-              <p className="configure-function-empty">
-                This function has no parameters. Click OK to insert it.
-              </p>
-            )}
-            {def.parameters
-              .filter((param) => !param.hidden)
-              .map((param) => (
-              <ParamField
-                key={param.id}
-                param={param}
-                config={config}
-                columns={columns}
-                selectedColumn={selectedColumn}
-                forms={forms.map((f) => f.name)}
-                focused={focused}
-                onFocus={setFocused}
-                onSelectColumn={setSelectedColumn}
-                onPatch={patch}
-                onPatchColumns={patchColumns}
-                onPatchConditions={patchConditions}
-              />
-            ))}
-          </div>
-          <aside className="fib-validation-help">
-            <h3>{def.name}</h3>
-            <p>{def.description}</p>
-            <h4>{help.title}</h4>
-            <p>{help.body}</p>
-            {help.compound && <p className="fib-validation-help-note">A compound expression</p>}
-          </aside>
-        </div>
-        <div className="modal-footer fib-validation-footer configure-function-footer">
-          {hasColumnCollection && (
-            <div className="configure-function-column-toolbar" role="toolbar" aria-label="Columns">
-              <ToolbarIconButton tip="Add Column" onClick={addColumn} disabled={columns.length >= MAX_COLUMNS}>
-                <PlusIcon />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                tip="Remove Column"
-                onClick={removeColumn}
-                disabled={columns.length <= 1}
-              >
-                <MinusIcon />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                tip="Move Column Up"
-                onClick={() => moveColumn(-1)}
-                disabled={selectedColumn <= 0}
-              >
-                <MoveUpIcon />
-              </ToolbarIconButton>
-              <ToolbarIconButton
-                tip="Move Column Down"
-                onClick={() => moveColumn(1)}
-                disabled={selectedColumn >= columns.length - 1}
-              >
-                <MoveDownIcon />
-              </ToolbarIconButton>
-            </div>
-          )}
-          <div className="configure-function-footer-actions">
-            <button type="button" onClick={() => onSave(config)} disabled={!canSave}>
-              OK
-            </button>
-            <button type="button" onClick={onCancel}>
-              Cancel
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+        <MoveDownIcon />
+      </ToolbarIconButton>
+    </>
+  ) : undefined;
+
+  return (
+    <ConfigureFunctionShell
+      titleId="configure-function-title"
+      onClose={onCancel}
+      functionTitle={def.name.toUpperCase()}
+      functionDescription={def.description}
+      help={help}
+      canOk={canSave}
+      onOk={() => onSave(config)}
+      onCancel={onCancel}
+      toolbar={columnToolbar}
+    >
+      {def.parameters.length === 0 && (
+        <p className="configure-function-empty">
+          This function has no parameters. Click OK to insert it.
+        </p>
+      )}
+      {def.parameters
+        .filter((param) => !param.hidden)
+        .map((param) => (
+          <ParamField
+            key={param.id}
+            param={param}
+            config={config}
+            columns={columns}
+            selectedColumn={selectedColumn}
+            forms={forms.map((f) => f.name)}
+            focused={focused}
+            onFocus={setFocused}
+            onSelectColumn={setSelectedColumn}
+            onPatch={patch}
+            onPatchColumns={patchColumns}
+            onPatchConditions={patchConditions}
+          />
+        ))}
+    </ConfigureFunctionShell>
   );
 }
 
@@ -401,11 +369,31 @@ function ParamField({
   );
 }
 
+function hintForParamType(type: FunctionParamDef["type"] | "column"): string | undefined {
+  switch (type) {
+    case "enumeration":
+    case "tawala-form":
+      return "Choose from the drop-down list";
+    case "tawala-blank":
+      return "Blank or hidden field";
+    case "tawala-mcq":
+      return "Multiple choice";
+    case "expression":
+    case "tawala-contents-field":
+    case "column":
+      return "A compound expression";
+    case "tawala-conditions":
+      return undefined;
+    default:
+      return undefined;
+  }
+}
+
 function focusedHelp(
   def: FunctionDef,
   focused: string,
   _config: FunctionConfig,
-): { title: string; body: string; compound?: boolean } {
+): ConfigureFunctionHelp {
   if (focused.startsWith("column-")) {
     const parts = focused.split("-");
     const idx = Number(parts[1]);
@@ -414,7 +402,8 @@ function focusedHelp(
       return {
         title: `Column ${idx + 1} Heading`,
         body: "The heading to display for this column.",
-        compound: true,
+        hint: "A compound expression",
+        required: true,
       };
     }
     if (field === "always") {
@@ -426,21 +415,18 @@ function focusedHelp(
     return {
       title: `Column ${idx + 1} Contents`,
       body: "The Field to display in this column. Drag from the Fields palette or type a qualified name.",
-      compound: true,
+      hint: "A compound expression",
+      required: true,
     };
   }
 
   const param = def.parameters.find((p) => p.id === focused);
   if (param) {
     return {
-      title: param.type === "tawala-conditions" ? "WHERE conditions" : param.name,
+      title: param.type === "tawala-conditions" ? param.name : param.name,
       body: param.description,
-      compound:
-        param.type === "expression" ||
-        param.type === "tawala-blank" ||
-        param.type === "tawala-mcq" ||
-        param.type === "tawala-contents-field" ||
-        param.type === "tawala-conditions",
+      hint: hintForParamType(param.type),
+      required: param.required,
     };
   }
 
@@ -449,7 +435,7 @@ function focusedHelp(
 
 /**
  * Column toolbar control. Native `title` tips are unreliable on disabled buttons and
- * are clipped/suppressed inside `.fib-validation-dialog { overflow: hidden }`, so tips
+ * are clipped/suppressed inside `.cfg-fn-dialog { overflow: hidden }`, so tips
  * use the same `data-tip` wrapper pattern as Project Explorer (`explorer-tip` / `win-tip`).
  */
 function ToolbarIconButton({

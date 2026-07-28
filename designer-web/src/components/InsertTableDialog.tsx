@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import type { InsertTableOptions } from "@/lib/paletteCommands";
+import { DesignerDialog } from "./DesignerDialog";
 
 interface Props {
   onCancel: () => void;
@@ -40,66 +41,61 @@ export function InsertTableDialog({ onCancel, onInsert }: Props) {
   };
 
   return (
-    <div
-      className="modal-backdrop insert-table-backdrop"
-      role="presentation"
-      onMouseDown={(e) => {
-        if (e.target === e.currentTarget) onCancel();
-      }}
+    <DesignerDialog
+      title="Insert Table"
+      titleId="insert-table-title"
+      onClose={onCancel}
+      closeOnBackdrop
+      className="insert-table-dialog"
+      footer={
+        <>
+          <button type="button" onClick={onCancel}>
+            Cancel
+          </button>
+          <button type="submit" form="insert-table-form">
+            OK
+          </button>
+        </>
+      }
     >
-      <div
-        className="modal insert-table-dialog"
-        role="dialog"
-        aria-labelledby="insert-table-title"
-        aria-modal="true"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <h2 id="insert-table-title">Insert Table</h2>
-        <form onSubmit={submit}>
-          <div className="insert-table-fields">
-            <label className="insert-table-field">
-              <span>Table Width (inches):</span>
-              <input
-                ref={widthRef}
-                type="number"
-                min={WIDTH_MIN}
-                max={WIDTH_MAX}
-                step={WIDTH_STEP}
-                value={widthInches}
-                onChange={(e) => setWidthInches(Number(e.target.value))}
-              />
-            </label>
-            <label className="insert-table-field">
-              <span>Rows:</span>
-              <input
-                type="number"
-                min={1}
-                max={200}
-                step={1}
-                value={rows}
-                onChange={(e) => setRows(Number(e.target.value))}
-              />
-            </label>
-            <label className="insert-table-field">
-              <span>Columns:</span>
-              <input
-                type="number"
-                min={1}
-                max={20}
-                step={1}
-                value={columns}
-                onChange={(e) => setColumns(Number(e.target.value))}
-              />
-            </label>
-          </div>
-          <div className="modal-actions">
-            <button type="button" onClick={onCancel}>
-              Cancel
-            </button>
-            <button type="submit">OK</button>
-          </div>
-        </form>
-      </div>
-    </div>
+      <form id="insert-table-form" className="designer-dialog-panel" onSubmit={submit}>
+        <div className="insert-table-fields">
+          <label className="insert-table-field">
+            <span>Table Width (inches):</span>
+            <input
+              ref={widthRef}
+              type="number"
+              min={WIDTH_MIN}
+              max={WIDTH_MAX}
+              step={WIDTH_STEP}
+              value={widthInches}
+              onChange={(e) => setWidthInches(Number(e.target.value))}
+            />
+          </label>
+          <label className="insert-table-field">
+            <span>Rows:</span>
+            <input
+              type="number"
+              min={1}
+              max={200}
+              step={1}
+              value={rows}
+              onChange={(e) => setRows(Number(e.target.value))}
+            />
+          </label>
+          <label className="insert-table-field">
+            <span>Columns:</span>
+            <input
+              type="number"
+              min={1}
+              max={20}
+              step={1}
+              value={columns}
+              onChange={(e) => setColumns(Number(e.target.value))}
+            />
+          </label>
+        </div>
+      </form>
+    </DesignerDialog>
   );
 }

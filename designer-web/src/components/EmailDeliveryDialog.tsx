@@ -6,6 +6,7 @@ import {
 } from "@/api/email";
 import { loadCredentials } from "@/api/deploy";
 import { clearEmailDeliveryDialog } from "@/lib/emailDelivery";
+import { DesignerDialog } from "./DesignerDialog";
 
 /** Project → Email Delivery… — server-owned SMTP status + test send (no secrets in UI). */
 export function EmailDeliveryDialog() {
@@ -68,17 +69,22 @@ export function EmailDeliveryDialog() {
     }
   };
 
+  const close = () => clearEmailDeliveryDialog();
+
   return (
-    <div className="modal-backdrop" role="presentation" onClick={(e) => {
-      if (e.target === e.currentTarget) clearEmailDeliveryDialog();
-    }}>
-      <div
-        className="modal modal-wide email-delivery-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="email-delivery-title"
-      >
-        <h2 id="email-delivery-title">Email Delivery</h2>
+    <DesignerDialog
+      title="Email Delivery"
+      titleId="email-delivery-title"
+      onClose={close}
+      closeOnBackdrop
+      className="designer-dialog-wide email-delivery-dialog"
+      footer={
+        <button type="button" onClick={close}>
+          Close
+        </button>
+      }
+    >
+      <div className="designer-dialog-panel">
         <p className="hint">
           Outbound email uses one <strong>server-owned</strong> SMTP account (Brevo, Postmark,
           Mailpit, or any relay). Provider credentials stay on the Tomcat host — they are never
@@ -93,15 +99,27 @@ export function EmailDeliveryDialog() {
             <dl className="email-delivery-dl">
               <div>
                 <dt>Runtime</dt>
-                <dd>{status.mode === "java" ? "Java / Tomcat (:8080)" : status.mode === "dev" ? "Dev (no Java mail)" : "Offline"}</dd>
+                <dd>
+                  {status.mode === "java"
+                    ? "Java / Tomcat (:8080)"
+                    : status.mode === "dev"
+                      ? "Dev (no Java mail)"
+                      : "Offline"}
+                </dd>
               </div>
               <div>
                 <dt>Configured</dt>
-                <dd>{status.configured ? "Yes" : "No"}{status.enabled ? "" : " (disabled)"}</dd>
+                <dd>
+                  {status.configured ? "Yes" : "No"}
+                  {status.enabled ? "" : " (disabled)"}
+                </dd>
               </div>
               <div>
                 <dt>SMTP host</dt>
-                <dd>{status.host || "—"}{status.port ? `:${status.port}` : ""}</dd>
+                <dd>
+                  {status.host || "—"}
+                  {status.port ? `:${status.port}` : ""}
+                </dd>
               </div>
               <div>
                 <dt>TLS / Auth</dt>
@@ -112,7 +130,9 @@ export function EmailDeliveryDialog() {
               <div>
                 <dt>Verified From</dt>
                 <dd>
-                  {status.fromName ? `${status.fromName} <${status.fromAddress}>` : status.fromAddress || "—"}
+                  {status.fromName
+                    ? `${status.fromName} <${status.fromAddress}>`
+                    : status.fromAddress || "—"}
                 </dd>
               </div>
               <div>
@@ -176,13 +196,7 @@ export function EmailDeliveryDialog() {
             {flash}
           </p>
         ) : null}
-
-        <div className="modal-actions">
-          <button type="button" onClick={() => clearEmailDeliveryDialog()}>
-            Close
-          </button>
-        </div>
       </div>
-    </div>
+    </DesignerDialog>
   );
 }

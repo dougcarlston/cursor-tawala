@@ -5,6 +5,7 @@ import { IfStatementBuilder } from "@/components/IfStatementBuilder";
 import { SetStatementBuilder } from "@/components/SetStatementBuilder";
 import { FieldTextInput } from "@/components/FieldDropInputs";
 import { SkipScriptView } from "@/components/SkipScriptView";
+import { DesignerDialog } from "@/components/DesignerDialog";
 import { useDraggableDialog } from "@/hooks/useDraggableDialog";
 import { formatInsertPathLabel } from "@/lib/skipScript";
 import { buildScriptLines } from "@/lib/skipScript";
@@ -381,24 +382,25 @@ export function SkipInstructionsDialog({
   // Portal to document.body so the dialog is not clipped by MDI overflow / PE stacking
   // (Process IF is embedded in ProcessEditor, so it never hit this).
   return createPortal(
-    <div className="modal-overlay skip-modal-overlay" role="presentation">
-      <div
-        ref={dialogRef}
-        className="modal-dialog skip-instructions-dialog"
-        role="dialog"
-        aria-labelledby="skip-instructions-title"
-        aria-modal="true"
-        style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
-      >
-        <div
-          className="modal-header skip-dialog-titlebar"
-          title="Drag to reposition"
-          {...titleBarProps}
-        >
-          <h2 id="skip-instructions-title">Edit Skip Instructions — {projectName}</h2>
-        </div>
-
-        <div className="skip-dialog-toolbar explorer-toolbar" role="toolbar" aria-label="Edit commands">
+    <DesignerDialog
+      title={`Edit Skip Instructions — ${projectName}`}
+      titleId="skip-instructions-title"
+      onClose={() => finish(commands)}
+      dialogRef={dialogRef}
+      style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
+      titleBarClassName="skip-dialog-titlebar"
+      titleBarProps={{ title: "Drag to reposition", ...titleBarProps }}
+      overlayClassName="skip-modal-overlay"
+      className="skip-instructions-dialog"
+      bodyClassName="skip-designer-body"
+      footerClassName="skip-dialog-footer"
+      footer={
+        <button type="button" onClick={() => finish(commands)}>
+          Close
+        </button>
+      }
+    >
+      <div className="skip-dialog-toolbar explorer-toolbar" role="toolbar" aria-label="Edit commands">
           {SKIP_TOOLBAR.map(({ id, label, icon }) => {
             const isDelete = id === "delete";
             const enabled = isDelete && toolbarDeleteEnabled;
@@ -548,14 +550,7 @@ export function SkipInstructionsDialog({
             </div>
           </div>
         </div>
-
-        <div className="modal-footer skip-dialog-footer">
-          <button type="button" onClick={() => finish(commands)}>
-            Close
-          </button>
-        </div>
-      </div>
-    </div>,
+    </DesignerDialog>,
     document.body,
   );
 }

@@ -169,6 +169,7 @@ export function ProcessEditor({ processName }: Props) {
   const moveProcessCommandBefore = useProjectStore((s) => s.moveProcessCommandBefore);
   const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
   const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
+  const setProcessStatementPanel = useProjectStore((s) => s.setProcessStatementPanel);
   const updateProcessCommands = useProjectStore((s) => s.updateProcessCommands);
   const proc = project.processes?.find((p) => p.name === processName);
   const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
@@ -187,10 +188,13 @@ export function ProcessEditor({ processName }: Props) {
   const scriptRef = useRef<HTMLDivElement>(null);
 
   const commands = proc?.commands ?? [];
-  const scriptLines = useMemo(() => buildProcessScriptLines(commands), [commands]);
   const knownVariables = useMemo(
     () => collectKnownVariables(project, commands),
     [project, commands],
+  );
+  const scriptLines = useMemo(
+    () => buildProcessScriptLines(commands, { project, knownVariables }),
+    [commands, project, knownVariables],
   );
   const formNames = useMemo(() => project.forms.map((f) => f.name), [project.forms]);
   const formLinks = useMemo(
@@ -368,9 +372,20 @@ export function ProcessEditor({ processName }: Props) {
     }
   }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess, commands]);
 
+  const dismissStatementPanel = () => {
+    setProcessStatementPanel("none");
+    setSelectedProcessCommandPath(null);
+    setActiveFieldTarget(null);
+  };
+
   useEffect(() => {
     if (!isActiveProcess) return;
     const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && processStatementPanel !== "none") {
+        e.preventDefault();
+        dismissStatementPanel();
+        return;
+      }
       if (!e.altKey || selectedProcessCommandPath == null) return;
       if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -382,7 +397,12 @@ export function ProcessEditor({ processName }: Props) {
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [isActiveProcess, moveSelectedProcessCommand, selectedProcessCommandPath]);
+  }, [
+    isActiveProcess,
+    moveSelectedProcessCommand,
+    selectedProcessCommandPath,
+    processStatementPanel,
+  ]);
 
   if (!proc) {
     return <div className="placeholder-editor">Process not found</div>;
@@ -586,6 +606,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setSendBuilder}
                   submitLabel={isModifySend ? "Modify" : "Add"}
                   onSubmit={submitSend}
+                  onCancel={dismissStatementPanel}
                   project={project}
                   documentNames={documentNames}
                   knownVariables={knownVariables}

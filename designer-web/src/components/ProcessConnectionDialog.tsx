@@ -2,6 +2,7 @@ import { createPortal } from "react-dom";
 import { formLinksForProcess } from "@/lib/projectModel";
 import { useProjectStore } from "@/store/projectStore";
 import type { TawalaForm } from "@/types/tawala";
+import { DesignerDialog } from "./DesignerDialog";
 
 interface Props {
   processName: string;
@@ -30,67 +31,56 @@ export function ProcessConnectionDialog({ processName, onClose }: Props) {
   };
 
   return createPortal(
-    <div
-      className="modal-overlay process-connection-modal-overlay"
-      role="presentation"
-      onClick={onClose}
+    <DesignerDialog
+      title={`Connect Process — ${processName}`}
+      titleId="process-connection-title"
+      onClose={onClose}
+      closeOnBackdrop
+      overlayClassName="process-connection-modal-overlay"
+      className="process-connection-dialog"
+      footer={
+        <button type="button" onClick={onClose}>
+          Close
+        </button>
+      }
     >
-      <div
-        className="modal-dialog process-connection-dialog"
-        role="dialog"
-        aria-labelledby="process-connection-title"
-        aria-modal="true"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="modal-header">
-          <h2 id="process-connection-title">Connect Process — {processName}</h2>
-          <button type="button" className="modal-close" onClick={onClose} aria-label="Close">
-            ×
-          </button>
-        </div>
-        <div className="modal-body process-connection-dialog-body">
-          {forms.length === 0 ? (
-            <p className="hint">This project has no forms.</p>
-          ) : (
-            <>
-              <p className="hint process-connection-multi-hint">
-                Check every form that should run this process. The same process may be
-                Pre-process and/or Post-process on more than one form.
-              </p>
+      <div className="process-connection-dialog-body">
+        {forms.length === 0 ? (
+          <p className="hint">This project has no forms.</p>
+        ) : (
+          <>
+            <p className="hint process-connection-multi-hint">
+              Check every form that should run this process. The same process may be
+              Pre-process and/or Post-process on more than one form.
+            </p>
 
-              <FormRoleChecklist
-                title="Pre-process"
-                hint="Runs when the form loads"
-                role="Pre"
-                forms={forms}
-                processName={processName}
-                occupantOf={(f) => f.preProcess}
-                onToggle={toggle}
-              />
+            <FormRoleChecklist
+              title="Pre-process"
+              hint="Runs when the form loads"
+              role="Pre"
+              forms={forms}
+              processName={processName}
+              occupantOf={(f) => f.preProcess}
+              onToggle={toggle}
+            />
 
-              <FormRoleChecklist
-                title="Post-process"
-                hint="Runs after the form is submitted"
-                role="Post"
-                forms={forms}
-                processName={processName}
-                occupantOf={(f) => f.process}
-                onToggle={toggle}
-              />
+            <FormRoleChecklist
+              title="Post-process"
+              hint="Runs after the form is submitted"
+              role="Post"
+              forms={forms}
+              processName={processName}
+              occupantOf={(f) => f.process}
+              onToggle={toggle}
+            />
 
-              {links.length === 0 ? (
-                <p className="hint">This process is not connected to any form yet.</p>
-              ) : null}
-            </>
-          )}
-        </div>
-        <div className="modal-footer">
-          <button type="button" onClick={onClose}>
-            Close
-          </button>
-        </div>
+            {links.length === 0 ? (
+              <p className="hint">This process is not connected to any form yet.</p>
+            ) : null}
+          </>
+        )}
       </div>
-    </div>,
+    </DesignerDialog>,
     document.body,
   );
 }

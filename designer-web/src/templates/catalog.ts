@@ -21,7 +21,6 @@ export const TEMPLATE_CATEGORIES = [
 /**
  * Display order matches legacy New Project grid (owner Jul 23):
  * Basic → Activities → Meetings and Gatherings → Polls and Surveys.
- * Sign-up Sheet with E-mail omitted (mail backlog).
  */
 export const PROJECT_TEMPLATES: TemplateEntry[] = [
   {
@@ -53,6 +52,13 @@ export const PROJECT_TEMPLATES: TemplateEntry[] = [
     description: "A sign-up sheet you can modify to meet your needs.",
     samplePath: "signup-sheet.json",
     featured: true,
+  },
+  {
+    id: "signup-sheet-w-email",
+    label: "Sign-up Sheet with E-mail",
+    category: "Activities",
+    description: "A sign-up sheet with e-mail that you can modify to meet your needs.",
+    samplePath: "signup-sheet-w-email.json",
   },
   {
     id: "get-together",

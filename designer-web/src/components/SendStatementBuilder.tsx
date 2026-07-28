@@ -10,6 +10,8 @@ export interface SendStatementBuilderProps {
   onStateChange: (next: SendBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  /** Dismiss the Send panel without saving (Cancel / Escape). Always available. */
+  onCancel?: () => void;
   project: TawalaProject;
   documentNames: readonly string[];
   knownVariables: ReadonlySet<string>;
@@ -24,25 +26,28 @@ function fieldClass(base: string, error?: string): string {
 
 /**
  * Send statement property panel — Email tab per `DESIGNER_PROCESS_STATEMENTS_SEND.md`.
- * To/Cc are email-validated (FIB Email field or literal). From (Address) literals are
- * email-validated. Subject accepts fields, variables, literals, or combinations (the Java
- * runtime stores it as chunked literal text + `<field>` elements). From (Name) does NOT:
- * the `<from>` alias is a single XML attribute, so it only accepts plain text or ONE single
- * field/variable — never multiple fields concatenated (see `validateSendFromName`).
+ * Add/Modify only requires non-empty To, Subject, and Document (placeholder To is allowed —
+ * the script line renders in red). To/Cc/From (Address) format is NOT shown as inline field
+ * errors — legacy Designer does not; incomplete recipients are signaled by the red script line.
+ * From (Name) still hard-blocks when it mixes tokens (see `validateSendFromName`).
+ * Cancel / Escape dismisses without saving — never trap on invalid To.
  */
 export function SendStatementBuilder({
   state,
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   project,
   documentNames,
   knownVariables,
   hasPageHeaderContent = false,
   embedded = false,
 }: SendStatementBuilderProps) {
-  const fieldErrors = useMemo(
-    () => getSendFieldErrors(state, project, knownVariables),
+  // Only From (Name) is a hard authoring error (broken XML alias). To/Cc/From address
+  // incompleteness is soft — red script line only; do not paint fields as hard-invalid.
+  const fromNameError = useMemo(
+    () => getSendFieldErrors(state, project, knownVariables).fromName,
     [state, project, knownVariables],
   );
   const canSubmit = sendBuilderIsValid(state, documentNames, project, knownVariables);
@@ -66,19 +71,12 @@ export function SendStatementBuilder({
               <div className="send-field-cell">
                 <QualifiedFieldInput
                   id="send-to"
-                  className={fieldClass("send-field-input", fieldErrors.to)}
+                  className="send-field-input"
                   placeholder="Form:Field"
                   knownVariables={knownVariables}
                   value={state.to}
                   onValueChange={(v) => onStateChange({ ...state, to: v })}
-                  aria-invalid={fieldErrors.to ? true : undefined}
-                  aria-describedby={fieldErrors.to ? "send-to-error" : undefined}
                 />
-                {fieldErrors.to ? (
-                  <p id="send-to-error" className="send-field-error">
-                    {fieldErrors.to}
-                  </p>
-                ) : null}
               </div>
             </div>
             <div className="send-email-pair send-email-pair-narrow-label">
@@ -88,19 +86,12 @@ export function SendStatementBuilder({
               <div className="send-field-cell">
                 <QualifiedFieldInput
                   id="send-cc"
-                  className={fieldClass("send-field-input", fieldErrors.cc)}
+                  className="send-field-input"
                   placeholder=""
                   knownVariables={knownVariables}
                   value={state.cc}
                   onValueChange={(v) => onStateChange({ ...state, cc: v })}
-                  aria-invalid={fieldErrors.cc ? true : undefined}
-                  aria-describedby={fieldErrors.cc ? "send-cc-error" : undefined}
                 />
-                {fieldErrors.cc ? (
-                  <p id="send-cc-error" className="send-field-error">
-                    {fieldErrors.cc}
-                  </p>
-                ) : null}
               </div>
             </div>
           </div>
@@ -113,18 +104,11 @@ export function SendStatementBuilder({
               <div className="send-field-cell">
                 <FieldTextInput
                   id="send-from-address"
-                  className={fieldClass("send-field-input", fieldErrors.fromAddress)}
+                  className="send-field-input"
                   placeholder=""
                   value={state.fromAddress}
                   onValueChange={(v) => onStateChange({ ...state, fromAddress: v })}
-                  aria-invalid={fieldErrors.fromAddress ? true : undefined}
-                  aria-describedby={fieldErrors.fromAddress ? "send-from-error" : undefined}
                 />
-                {fieldErrors.fromAddress ? (
-                  <p id="send-from-error" className="send-field-error">
-                    {fieldErrors.fromAddress}
-                  </p>
-                ) : null}
               </div>
             </div>
             <div className="send-email-pair send-email-pair-narrow-label">
@@ -134,16 +118,16 @@ export function SendStatementBuilder({
               <div className="send-field-cell">
                 <FieldTextInput
                   id="send-from-name"
-                  className={fieldClass("send-field-input", fieldErrors.fromName)}
+                  className={fieldClass("send-field-input", fromNameError)}
                   placeholder=""
                   value={state.fromName}
                   onValueChange={(v) => onStateChange({ ...state, fromName: v })}
-                  aria-invalid={fieldErrors.fromName ? true : undefined}
-                  aria-describedby={fieldErrors.fromName ? "send-from-name-error" : undefined}
+                  aria-invalid={fromNameError ? true : undefined}
+                  aria-describedby={fromNameError ? "send-from-name-error" : undefined}
                 />
-                {fieldErrors.fromName ? (
+                {fromNameError ? (
                   <p id="send-from-name-error" className="send-field-error">
-                    {fieldErrors.fromName}
+                    {fromNameError}
                   </p>
                 ) : null}
               </div>
@@ -213,6 +197,11 @@ export function SendStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
         <p className="send-delivery-note hint">
           On Deploy (:8080), the server&apos;s verified From is used for SMTP; this From address

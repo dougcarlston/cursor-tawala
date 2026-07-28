@@ -23,10 +23,12 @@ Screenshot: `assets/Format_-_Page_Header-*.png`.
 | Section | Controls |
 |---------|----------|
 | **Text** | Single-line text box (empty when first opened) |
-| **Image** | Large preview rectangle (empty until image chosen); **Browse…** — pick GIF/JPG/PNG from PC; **Remove** — clear image |
+| **Image** | Large preview (~520×220); **Browse…** — pick GIF/JPG/PNG from PC; **Remove** — clear image (no in-dialog crop/resize — Deploy uses full image + theme `object-fit: cover`) |
 | Footer | **OK**, **Cancel** |
 
-On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `__HEADER__`. Deploy XML: `<pageHeader><text>…</text><image id width height/></pageHeader>` plus `<imagedef>`.
+Dialog chrome (browser): **opaque** solid fill (~645px wide); form text must not show through.
+
+On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `__HEADER__` (full-resolution imagedef). Deploy XML: `<pageHeader><text>…</text><image id width height/></pageHeader>` plus `<imagedef>`.
 
 ### Runtime use
 
@@ -34,9 +36,11 @@ On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `_
 - Browser Preview / Node runtime: same markup at the top of the form page.
 - **Send** → **Include Page Header** enabled when the project has header text or image (`DESIGNER_PROCESS_STATEMENTS_SEND.md`).
 
-### Browser (`designer-web`) — Jul 24, 2026
+### Browser (`designer-web`) — Jul 24–28, 2026
 
-**Done:** dialog, JSON schema, `.tawala` import, Deploy export, Preview banner, Send checkbox gate, Design-canvas stand-in.
+**Done:** dialog, JSON schema, `.tawala` import, Deploy export, Preview banner, Send checkbox gate, Design-canvas stand-in; opaque/larger dialog.
+
+**Parked:** in-dialog pan/crop/resize (baking to banner size made Deploy banners soft). Deploy keeps the full photo and theme cover crop.
 
 **Design canvas:** When Page Header has text and/or image, Form Design shows a top row with chip **`<<Project Header>>`** (optional thumb + title text). Click opens the dialog. This is **not** a Form Heading item — authors may still add Main/Sub headings below the banner.
 
@@ -44,9 +48,9 @@ On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `_
 
 ### Smoke
 
-1. **Project → Page Header…** → type a title → Browse a PNG → OK.
+1. **Project → Page Header…** → dialog is **opaque**; type a title → Browse a PNG → OK.
 2. Form **Design** → top row shows `<<Project Header>>` (click reopens dialog); Form Heading items can sit below.
-3. Form **Preview** → short banner (~160px) with **text over the image** (not stacked below; not a full-page photo).
+3. Form **Preview** → short banner (~160px) with **text over the image** (sharp full-res source + `object-fit: cover`).
 4. **Redeploy** → same on 8080 (`h1.pageHeading`; hard-refresh CSS if needed).
 5. Process **Send** → **Include Page Header** enabled.
 6. Unit: `cd designer-web && npm test -- --run src/lib/pageHeader.test.ts server/jsonToXml.test.mjs`
@@ -61,4 +65,4 @@ On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `_
 
 ---
 
-*Last updated: July 24, 2026.*
+*Last updated: July 28, 2026.*

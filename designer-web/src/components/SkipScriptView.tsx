@@ -131,7 +131,7 @@ function ScriptCommandLineRow({
     <div
       role="button"
       tabIndex={-1}
-      className={`${lineClassName}${selected ? " selected" : ""}`}
+      className={`${lineClassName}${selected ? " selected" : ""}${line.invalid ? " skip-script-line-invalid" : ""}`}
       onMouseDown={(e) => {
         // Never focus the label — a focused control shows a text caret that fights
         // block selection chrome. Reorder drag is owned by the parent row (draggable);

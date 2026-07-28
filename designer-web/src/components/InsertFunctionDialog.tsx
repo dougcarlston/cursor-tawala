@@ -4,6 +4,7 @@ import {
   getFunctionDef,
   type FunctionDef,
 } from "@/lib/functionCatalog";
+import { DesignerDialog } from "./DesignerDialog";
 
 interface Props {
   onCancel: () => void;
@@ -51,68 +52,20 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
   };
 
   return (
-    <div
-      className="modal-backdrop insert-function-backdrop"
-      role="presentation"
-      onClick={(e) => {
-        if (e.target === e.currentTarget) onCancel();
-      }}
-    >
-      <div
-        className="modal insert-function-dialog"
-        role="dialog"
-        aria-labelledby="insert-function-title"
-        aria-modal="true"
-        onMouseDown={(e) => e.stopPropagation()}
-      >
-        <h2 id="insert-function-title">Insert Function</h2>
-        <div className="insert-function-body">
-          <label className="insert-function-category">
-            <span>Select a category:</span>
-            <select
-              value={categoryId}
-              onChange={(e) => setCategoryId(e.target.value)}
-              autoFocus
-            >
-              {FUNCTION_CATEGORIES.map((cat) => (
-                <option key={cat.id} value={cat.id}>
-                  {cat.label}
-                </option>
-              ))}
-            </select>
-          </label>
-          <div className="insert-function-list-wrap">
-            <span className="insert-function-list-label">Select a function:</span>
-            <div className="insert-function-list" ref={listRef} role="listbox" aria-label="Functions">
-              {functions.map((fn) => (
-                <button
-                  key={fn.id}
-                  type="button"
-                  role="option"
-                  aria-selected={fn.id === selectedId}
-                  className={`insert-function-item${fn.id === selectedId ? " selected" : ""}`}
-                  onClick={() => setSelectedId(fn.id)}
-                  onDoubleClick={(e) => confirm(e)}
-                >
-                  {fn.name}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="insert-function-description" aria-live="polite">
-            <strong>{selected?.name ?? ""}</strong>
-            <p>{selected?.description ?? ""}</p>
-          </div>
-        </div>
-        <div className="modal-actions">
+    <DesignerDialog
+      title="Insert Function"
+      titleId="insert-function-title"
+      onClose={onCancel}
+      closeOnBackdrop
+      className="insert-function-dialog"
+      footer={
+        <>
           <button type="button" onClick={onCancel}>
             Cancel
           </button>
           <button
             type="button"
             disabled={!selected}
-            // preventDefault on mousedown so the OK click is not retargeted onto
-            // **fx** / chrome when Insert unmounts and Configure mounts underneath.
             onMouseDown={(e) => {
               e.preventDefault();
               e.stopPropagation();
@@ -121,8 +74,47 @@ export function InsertFunctionDialog({ onCancel, onSelect, initialFunctionId }: 
           >
             OK
           </button>
+        </>
+      }
+    >
+      <div className="designer-dialog-panel insert-function-body">
+        <label className="insert-function-category">
+          <span>Select a category:</span>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            autoFocus
+          >
+            {FUNCTION_CATEGORIES.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.label}
+              </option>
+            ))}
+          </select>
+        </label>
+        <div className="insert-function-list-wrap">
+          <span className="insert-function-list-label">Select a function:</span>
+          <div className="insert-function-list" ref={listRef} role="listbox" aria-label="Functions">
+            {functions.map((fn) => (
+              <button
+                key={fn.id}
+                type="button"
+                role="option"
+                aria-selected={fn.id === selectedId}
+                className={`insert-function-item${fn.id === selectedId ? " selected" : ""}`}
+                onClick={() => setSelectedId(fn.id)}
+                onDoubleClick={(e) => confirm(e)}
+              >
+                {fn.name}
+              </button>
+            ))}
+          </div>
+        </div>
+        <div className="insert-function-description" aria-live="polite">
+          <strong>{selected?.name ?? ""}</strong>
+          <p>{selected?.description ?? ""}</p>
         </div>
       </div>
-    </div>
+    </DesignerDialog>
   );
 }

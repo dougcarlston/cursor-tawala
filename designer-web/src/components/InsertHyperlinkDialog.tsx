@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import { FieldTextInput } from "./FieldDropInputs";
 import { FunctionConditionsEditor } from "./FunctionConditionsEditor";
+import { DesignerDialog } from "./DesignerDialog";
 import { setConfigureFunctionFieldLock } from "@/lib/fieldInsertion";
 import {
   DEFAULT_FUNCTION_CONDITIONS,
@@ -48,85 +49,85 @@ export function InsertHyperlinkDialog({ initial, onCancel, onSave }: Props) {
   };
 
   return (
-    <div className="modal-overlay configure-function-overlay" role="presentation">
-      <div
-        className="modal configure-function-dialog insert-link-dialog insert-hyperlink-dialog"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="insert-hyperlink-title"
-      >
-        <h2 id="insert-hyperlink-title">Hyperlink</h2>
-        <div className="configure-function-body">
-          <div className="insert-hyperlink-row">
-            <label htmlFor="insert-hyperlink-url" className="insert-hyperlink-label">
-              Url:
-            </label>
-            <FieldTextInput
-              id="insert-hyperlink-url"
-              configureDialog
-              value={url}
-              onFocus={() => setConfigureFunctionFieldLock(true)}
-              onBlur={() => setConfigureFunctionFieldLock(false)}
-              onValueChange={setUrl}
-            />
-          </div>
-
-          <div className="insert-hyperlink-row">
-            <label htmlFor="insert-hyperlink-display" className="insert-hyperlink-label">
-              Display text:
-            </label>
-            <FieldTextInput
-              id="insert-hyperlink-display"
-              configureDialog
-              value={displayText}
-              onFocus={() => setConfigureFunctionFieldLock(true)}
-              onBlur={() => setConfigureFunctionFieldLock(false)}
-              onValueChange={setDisplayText}
-            />
-          </div>
-          <p className="insert-hyperlink-optional">
-            (optional; if you leave this blank the full URL or filename will be shown)
-          </p>
-
-          <label className="insert-link-checkbox">
-            <input
-              type="checkbox"
-              checked={openNewWindow}
-              onChange={(e) => setOpenNewWindow(e.target.checked)}
-            />
-            <span>Open in new browser window.</span>
-          </label>
-
-          <hr className="insert-hyperlink-sep" />
-
-          <label className="insert-link-checkbox">
-            <input
-              type="checkbox"
-              checked={conditional}
-              onChange={(e) => setConditional(e.target.checked)}
-            />
-            <span>Display link conditionally</span>
-          </label>
-
-          <div className={conditional ? undefined : "insert-link-dimmed"}>
-            <FunctionConditionsEditor
-              variant="displayWhen"
-              paramName="Display link only when"
-              state={conditions}
-              onChange={setConditions}
-              disabled={!conditional}
-            />
-          </div>
-        </div>
-        <div className="modal-actions configure-function-footer insert-link-footer">
+    <DesignerDialog
+      title="Hyperlink"
+      titleId="insert-hyperlink-title"
+      onClose={onCancel}
+      overlayClassName="configure-function-overlay"
+      className="insert-hyperlink-dialog designer-dialog-wide"
+      footer={
+        <>
           <button type="button" disabled={!canSave} onClick={commit}>
             OK
           </button>
           <button type="button" onClick={onCancel}>
             Cancel
           </button>
+        </>
+      }
+    >
+      <div className="designer-dialog-panel">
+        <div className="insert-hyperlink-row">
+          <label htmlFor="insert-hyperlink-url" className="insert-hyperlink-label">
+            Url:
+          </label>
+          <FieldTextInput
+            id="insert-hyperlink-url"
+            configureDialog
+            value={url}
+            onFocus={() => setConfigureFunctionFieldLock(true)}
+            onBlur={() => setConfigureFunctionFieldLock(false)}
+            onValueChange={setUrl}
+          />
+        </div>
+
+        <div className="insert-hyperlink-row">
+          <label htmlFor="insert-hyperlink-display" className="insert-hyperlink-label">
+            Display text:
+          </label>
+          <FieldTextInput
+            id="insert-hyperlink-display"
+            configureDialog
+            value={displayText}
+            onFocus={() => setConfigureFunctionFieldLock(true)}
+            onBlur={() => setConfigureFunctionFieldLock(false)}
+            onValueChange={setDisplayText}
+          />
+        </div>
+        <p className="insert-hyperlink-optional hint">
+          (optional; if you leave this blank the full URL or filename will be shown)
+        </p>
+
+        <label className="insert-link-checkbox">
+          <input
+            type="checkbox"
+            checked={openNewWindow}
+            onChange={(e) => setOpenNewWindow(e.target.checked)}
+          />
+          <span>Open in new browser window.</span>
+        </label>
+
+        <hr className="insert-hyperlink-sep" />
+
+        <label className="insert-link-checkbox">
+          <input
+            type="checkbox"
+            checked={conditional}
+            onChange={(e) => setConditional(e.target.checked)}
+          />
+          <span>Display link conditionally</span>
+        </label>
+
+        <div className={conditional ? undefined : "insert-link-dimmed"}>
+          <FunctionConditionsEditor
+            variant="displayWhen"
+            paramName="Display link only when"
+            state={conditions}
+            onChange={setConditions}
+            disabled={!conditional}
+          />
         </div>
       </div>
-    </div>
+    </DesignerDialog>
   );
 }

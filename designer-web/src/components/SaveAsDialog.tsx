@@ -4,6 +4,7 @@ import {
   confirmSaveAs,
   suggestedProjectFileName,
 } from "@/lib/shellCommands";
+import { DesignerDialog } from "./DesignerDialog";
 
 interface Props {
   open: boolean;
@@ -21,7 +22,6 @@ export function SaveAsDialog({ open }: Props) {
   useEffect(() => {
     if (!open) return;
     setName(suggestedProjectFileName());
-    // Defer so the input is mounted before focus/select.
     const id = window.requestAnimationFrame(() => {
       const el = inputRef.current;
       if (!el) return;
@@ -50,36 +50,42 @@ export function SaveAsDialog({ open }: Props) {
   };
 
   return (
-    <div className="modal-backdrop" role="presentation">
-      <div className="modal save-as-dialog" role="dialog" aria-modal="true" aria-labelledby="save-as-title">
-        <h2 id="save-as-title">Save As</h2>
+    <DesignerDialog
+      title="Save As"
+      titleId="save-as-title"
+      onClose={() => cancelSaveAsDialog()}
+      closeOnBackdrop
+      footer={
+        <>
+          <button type="button" onClick={() => cancelSaveAsDialog()}>
+            Cancel
+          </button>
+          <button type="submit" form="save-as-form">
+            Save As
+          </button>
+        </>
+      }
+    >
+      <form id="save-as-form" className="designer-dialog-panel" onSubmit={submit}>
         <p className="hint">
           Choose a file name. On Chrome, you can then pick a folder. Safari saves to Downloads (no
           folder picker).
         </p>
-        <form onSubmit={submit}>
-          <label>
-            File name
-            <input
-              ref={inputRef}
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              spellCheck={false}
-              autoComplete="off"
-              aria-describedby="save-as-ext-hint"
-            />
-          </label>
-          <p id="save-as-ext-hint" className="hint save-as-ext-hint">
-            A <code>.json</code> extension is added if missing.
-          </p>
-          <div className="modal-actions">
-            <button type="button" onClick={() => cancelSaveAsDialog()}>
-              Cancel
-            </button>
-            <button type="submit">Save As</button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <label>
+          File name
+          <input
+            ref={inputRef}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            spellCheck={false}
+            autoComplete="off"
+            aria-describedby="save-as-ext-hint"
+          />
+        </label>
+        <p id="save-as-ext-hint" className="hint save-as-ext-hint">
+          A <code>.json</code> extension is added if missing.
+        </p>
+      </form>
+    </DesignerDialog>
   );
 }

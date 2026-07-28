@@ -1,15 +1,21 @@
-import type { TawalaProcessCommand } from "@/types/tawala";
+import type { TawalaProcessCommand, TawalaProject } from "@/types/tawala";
 import {
   formatCommentDisplayText,
   formatSetLineText,
   type ScriptLine,
 } from "@/lib/skipScript";
 import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
+import { isSendCommandVisuallyInvalid } from "@/lib/sendEmailValidation";
 import {
   adjustPathAfterCommandRemoval,
   parentInsertPath,
   resolveCommandsAtInsertPath,
 } from "@/lib/skipInsertPath";
+
+export interface ProcessScriptBuildContext {
+  project: TawalaProject;
+  knownVariables: ReadonlySet<string>;
+}
 
 interface ConditionShape {
   op?: string;
@@ -106,6 +112,7 @@ function pushProcessLines(
   commands: TawalaProcessCommand[],
   prefix: string,
   indent: number,
+  ctx?: ProcessScriptBuildContext,
 ): void {
   commands.forEach((cmd, index) => {
     const path = `${prefix}/${index}`;
@@ -136,7 +143,13 @@ function pushProcessLines(
           insertZone: `${path}/then`,
         });
         const thenZone = `${path}/then`;
-        pushProcessLines(lines, (cmd.then as TawalaProcessCommand[] | undefined) ?? [], thenZone, indent + 1);
+        pushProcessLines(
+          lines,
+          (cmd.then as TawalaProcessCommand[] | undefined) ?? [],
+          thenZone,
+          indent + 1,
+          ctx,
+        );
         lines.push({
           path: null,
           lineType: "block-close",
@@ -161,7 +174,7 @@ function pushProcessLines(
             indent,
             insertZone: elseZone,
           });
-          pushProcessLines(lines, elseBranch, elseZone, indent + 1);
+          pushProcessLines(lines, elseBranch, elseZone, indent + 1, ctx);
           lines.push({
             path: null,
             lineType: "block-close",
@@ -188,7 +201,13 @@ function pushProcessLines(
           insertZone: `${path}/do`,
         });
         const doZone = `${path}/do`;
-        pushProcessLines(lines, (cmd.do as TawalaProcessCommand[] | undefined) ?? [], doZone, indent + 1);
+        pushProcessLines(
+          lines,
+          (cmd.do as TawalaProcessCommand[] | undefined) ?? [],
+          doZone,
+          indent + 1,
+          ctx,
+        );
         lines.push({
           path: null,
           lineType: "block-close",
@@ -198,24 +217,31 @@ function pushProcessLines(
         });
         break;
       }
-      default:
+      default: {
+        const invalid =
+          cmd.cmd === "send" && ctx
+            ? isSendCommandVisuallyInvalid(cmd, ctx.project, ctx.knownVariables)
+            : false;
         lines.push({
           path,
           lineType: "command",
           text: formatProcessCommandText(cmd),
           indent,
           command: cmd,
+          ...(invalid ? { invalid: true } : {}),
         });
+      }
     }
   });
 }
 
 export function buildProcessScriptLines(
   commands: TawalaProcessCommand[] | undefined,
+  ctx?: ProcessScriptBuildContext,
 ): ScriptLine[] {
   if (!commands?.length) return [];
   const lines: ScriptLine[] = [];
-  pushProcessLines(lines, commands, "root", 0);
+  pushProcessLines(lines, commands, "root", 0, ctx);
   return lines;
 }
 

@@ -320,6 +320,10 @@ export function sendBuilderIsValid(
   project: TawalaProject,
   knownVariables: ReadonlySet<string>,
 ): boolean {
+  // Legacy Add/Modify: enabled when To, Subject, and Document are present — To/Cc/From
+  // address literals are not required to be valid emails (placeholder To is allowed).
+  // Incomplete recipients stay in the script and render in red. From (Name) multi-token
+  // remains a hard block — it cannot export working XML.
   if (
     !state.to.trim() ||
     !state.subject.trim() ||
@@ -329,7 +333,7 @@ export function sendBuilderIsValid(
     return false;
   }
   const errors = getSendFieldErrors(state, project, knownVariables);
-  return !errors.to && !errors.cc && !errors.fromAddress && !errors.fromName;
+  return !errors.fromName;
 }
 
 export function sendBuilderFromCommand(command: {

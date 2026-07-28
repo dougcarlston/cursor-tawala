@@ -1,0 +1,134 @@
+{
+  "name": "Signup Sheet w Email",
+  "format": "2.0",
+  "themePath": "redrays",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Sign-up Sheet Template"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "<p><span>To use this template, replace the text on this Form with your own text and then click on the Deploy button ( </span><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><img class=\"tawala-embedded-image\" data-tawala-image-id=\"image1\" width=\"22\" height=\"23\" data-image-width=\"22\" data-image-height=\"23\" style=\"width:22px;height:23px\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg==\" alt=\"\" /></span><span>)  up above to create a Web page for your new poll.  You will want to delete this instruction box as well.</span></p><p></p><p><span>Once you have deployed your Web app, you can get the Web link to the Signup Sheet from your My Tawala page on the Tawala Website.  Send the link to your group or place it on your Website to drive traffic to your sheet.</span></p><p></p><p><span>If you want email notification each time someone adds their name to this list, click on 'Process1' in the Project Explorer on the left of the Designer.  Then follow the directions that appear in the Process1 window.</span></p><p></p><p><span>If you do NOT want email notification each time someone adds their name to this list, click on the 'Process1' in the Project Explorer on the left of the Designer and delete it by clicking on the Delete button (</span><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><img class=\"tawala-embedded-image\" data-tawala-image-id=\"image2\" width=\"22\" height=\"23\" data-image-width=\"22\" data-image-height=\"23\" style=\"width:22px;height:23px\" src=\"data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAphJREFUOE+lzm1IE2EAB/AnKIKo8ENQQYHFKEha4kJGL7pUEJtvYRb5ISwTndgLQhlkYsoqCCvMFpyispZanZbbyllL2/K23V5vXu7ttnZzzmlqC6WIcDNhMI6b9uUefl+e5///w7POH1oGDI/vxzJDwDsXYQh45iIMAWI2QuVLSPUdyHV/naa9/+cKnDMRKnIXz7vhoO5Qnk3noUVrXYF9OkIVfPUO253u2shW8cswxEVLvRpiWiAkTwomcE8sAuPBMJWTXNB39ppZmbatnC8XbpgQVywlYMSfI7AfLpILanvEEpc3EI0AHgjTYK75MXG/NYk/vv0IUnPXoPOsFJxtCu+JMlPaOXHZ1RbhvQHZ4Lj/V3QIrIFwvDF3yNoB48kFGCvLXF5vqxISmZfU2eeh6uui5kdyhRJ1fI+tgGUyvKqVv2DQSxs737njGL4nQ84701pzswNq+6TSGIl56gSYJpbWQojlHnYBsT4J35LSyyuCmh+rtUbLt5+0PjD4llblgLUTudX2vVlv9qUrdqZ+TkwbuVZv1tvjywBx/42Hw6ifX+VIzICPFjaVVogvXjFyCq3J+YZGkQYlaX0w4vhDY5Fhk/wq9zZuHze/saIagqChD2r0YZeVW2xl56F3nqm0JHUChvDfVEbdZLC4xruZM8RKv1VSKhKJEL111BZSm6dMT15g3NMYO9dwu2VYYY+tgNS8SLUoHiA3pWAJKXXZp+43No2M6ofH5qIFpSGgb39t5JXgrCx9ZcNbjT/6DmB0gYp8ILHvz3nOya4tr+yXKmRokJoqTDNaqVJVcll7/KykB45GoBsJ0fTLP9Y1CEVQp0TpiU/fm2YtuEPS2/e0vTuagi7VPEMAUs4yBFoHZxgCzdIphv4BrTJlhy6T7DUAAAAASUVORK5CYII=\" alt=\"\" /></span><span> ) above.</span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "First Name: _______________ Last name: _______________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 15,
+              "required": false,
+              "alternateLabel": "FirstName",
+              "height": 1
+            },
+            {
+              "name": "b",
+              "length": 15,
+              "required": false,
+              "alternateLabel": "LastName",
+              "height": 1
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Email: _______________ Telephone: _______________Address: _______________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 15,
+              "required": false,
+              "alternateLabel": "Email",
+              "height": 1
+            },
+            {
+              "name": "b",
+              "length": 15,
+              "required": false,
+              "alternateLabel": "Tel",
+              "height": 1
+            },
+            {
+              "name": "c",
+              "length": 15,
+              "required": false,
+              "alternateLabel": "Address",
+              "height": 1
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "content": "​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:5,&quot;column&quot;:[{&quot;header&quot;:&quot;First&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:FirstName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Last&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:LastName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Email&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Email&gt;&gt;&quot;},{&quot;header&quot;:&quot;Phone&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Tel&gt;&gt;&quot;},{&quot;header&quot;:&quot;Address&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Address&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"font-size: 10pt; color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span>​"
+        }
+      ],
+      "themePath": "redrays",
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "FulllName",
+          "value": "<<Form 1:FirstName>> +\" \" + <<Form 1:LastName>>"
+        },
+        {
+          "cmd": "comment",
+          "text": "Click on the red Send Statement below this comment.  When it opens insert your email address in the box after the word \"To:\" Then click on the Modify button, and you're all done."
+        },
+        {
+          "cmd": "send",
+          "to": {
+            "literal": "<Insert your email address here.>"
+          },
+          "from": {
+            "fieldRef": "Form 1:Email",
+            "aliasField": "FulllName"
+          },
+          "subject": "New Signup on Signup Sheet",
+          "body": {
+            "document": "NewSignup"
+          }
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "NewSignup",
+      "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"top: 71.6pt; position: absolute; left: 7.5pt; width: 262pt;\" data-doc-home-top=\"71.6pt\"><tbody><tr><td style=\"width: 85.6pt;\"><p style=\"text-align:right\"><span><b>Email:</b></span></p></td><td style=\"width: 30.3pt;\" class=\"\"><br></td><td style=\"width: 146.1pt; text-align: center;\" class=\"\">&nbsp;<br><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:Email\" title=\"Form 1:Email\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Form 1:Email&gt;&gt;</span>​</td></tr><tr><td style=\"width: 85.6pt;\"><p style=\"text-align:right\"><span><b>Telephone:</b></span></p></td><td style=\"width: 30.3pt;\"><br></td><td style=\"width: 146.1pt; text-align: center;\" class=\"\"><br>&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:Tel\" title=\"Form 1:Tel\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Form 1:Tel&gt;&gt;</span>​</td></tr><tr><td style=\"width: 85.6pt;\"><p style=\"text-align:right\"><span><b>Address:</b></span></p></td><td style=\"width: 30.3pt;\"><br></td><td style=\"width: 146.1pt; text-align: center;\" class=\"\"><br>&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:Address\" title=\"Form 1:Address\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Form 1:Address&gt;&gt;</span>​</td></tr></tbody></table><p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FulllName\" title=\"FulllName\" draggable=\"true\" style=\"color: rgb(0, 0, 0); font-weight: bold; vertical-align: baseline;\">&lt;&lt;FulllName&gt;&gt;</span>​</b></span><span>&nbsp;has joined the signup sheet.</span></p><p></p><p><span><b>Contact information:</b></span></p><p></p><p></p></p>"
+    }
+  ],
+  "images": [
+    {
+      "id": "image1",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAppJREFUOE9jfPz+PwOF4OG7/xQihvtv/lGIGO6++UchYrj9+h+FiOHmy39o6OuvXyffXdnx5uCk+331N9xrTkcvPHH687ffmCohIgzXX/xDRvc/Pp99v3/h87X7v1x1nxZfdikuYIm+TmVdy8qnN5+/R1MM4TJcff4Xjr78/NF0Jabimv/8Zxt2fzh2+uuz6fcX+bYXG/de0ulZnX6g8d23T8jqIWyGy0//wtGKEyddV+rEn9aru5HTciex+lin75RZwV2vvZvuKi3yVFrkNvfKGmT1EDbDxad/4ah7wxujVjebHWLueyR8O0J9e1f6tZ8ObHyo0zdPcaGL3Fz76C2FyOohbIbzT/7CUcH8v845uUqTpBSXmdjWV4e2PghqeuxTe1NudpTMTAvJKbZ6U/2R1UPYDGcf/YGj/Pl/onufuSR66XV5Ki/2UJve6Vd7x7PiokO6p3qjmXCPpnaXO7J6CJvh9MM/cDRp87fYiT/D227ZZ8eqzHaVn++o0Fex9u5CIFp+bfa805OmHujs3FSHrAXIZjh65xcc7T3/Oar3S3jnW/+agyblXpLTDBXaTVfdmvf19+dnXx9feXfu8PPdZXNykLUA2Qz7b/yAI2D66Vv7Orj1uUPNSYn2CNlWfZPUcKDlr749v/nh8vGX+wumpF27dwVZC5DNsPPyN2R07+mXjhVPtItaFYuibBKCbJI6+nY23/10M3xewK7HG4E+8s9zf/jmPrIWhk3nPqOhT19/LT90oWxCT1DxXN+SvTVLioD6k1sigeS0s91A0sRPB1kLw5qTn/CjzJ74mNogoPudE6yB+p2LbU5fPImshWHZ0fdEomevP2k7KwP1o6lnWHDwLYWIYdae1xQihinbX1KIGHo3PaMQAQBeklDBjxk6fQAAAABJRU5ErkJggg=="
+    },
+    {
+      "id": "image2",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAABYAAAAXCAIAAACAiijJAAAABGdBTUEAALGPC/xhBQAAAphJREFUOE+lzm1IE2EAB/AnKIKo8ENQQYHFKEha4kJGL7pUEJtvYRb5ISwTndgLQhlkYsoqCCvMFpyispZanZbbyllL2/K23V5vXu7ttnZzzmlqC6WIcDNhMI6b9uUefl+e5///w7POH1oGDI/vxzJDwDsXYQh45iIMAWI2QuVLSPUdyHV/naa9/+cKnDMRKnIXz7vhoO5Qnk3noUVrXYF9OkIVfPUO253u2shW8cswxEVLvRpiWiAkTwomcE8sAuPBMJWTXNB39ppZmbatnC8XbpgQVywlYMSfI7AfLpILanvEEpc3EI0AHgjTYK75MXG/NYk/vv0IUnPXoPOsFJxtCu+JMlPaOXHZ1RbhvQHZ4Lj/V3QIrIFwvDF3yNoB48kFGCvLXF5vqxISmZfU2eeh6uui5kdyhRJ1fI+tgGUyvKqVv2DQSxs737njGL4nQ84701pzswNq+6TSGIl56gSYJpbWQojlHnYBsT4J35LSyyuCmh+rtUbLt5+0PjD4llblgLUTudX2vVlv9qUrdqZ+TkwbuVZv1tvjywBx/42Hw6ifX+VIzICPFjaVVogvXjFyCq3J+YZGkQYlaX0w4vhDY5Fhk/wq9zZuHze/saIagqChD2r0YZeVW2xl56F3nqm0JHUChvDfVEbdZLC4xruZM8RKv1VSKhKJEL111BZSm6dMT15g3NMYO9dwu2VYYY+tgNS8SLUoHiA3pWAJKXXZp+43No2M6ofH5qIFpSGgb39t5JXgrCx9ZcNbjT/6DmB0gYp8ILHvz3nOya4tr+yXKmRokJoqTDNaqVJVcll7/KykB45GoBsJ0fTLP9Y1CEVQp0TpiU/fm2YtuEPS2/e0vTuagi7VPEMAUs4yBFoHZxgCzdIphv4BrTJlhy6T7DUAAAAASUVORK5CYII="
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "176",
+  "_convertedFrom": "../Tawala Projects/From PC/Tawala Version/Signup Sheet Template w Email.tawala"
+}

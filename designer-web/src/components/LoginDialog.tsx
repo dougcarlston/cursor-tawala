@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
+import { DesignerDialog } from "./DesignerDialog";
 
 export function LoginDialog() {
   const show = useProjectStore((s) => s.showLogin);
@@ -11,6 +12,8 @@ export function LoginDialog() {
 
   if (!show) return null;
 
+  const close = () => setShow(false);
+
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
     setCredentials({ user, password });
@@ -18,34 +21,40 @@ export function LoginDialog() {
   };
 
   return (
-    <div className="modal-backdrop" role="presentation">
-      <div className="modal" role="dialog" aria-modal="true" aria-labelledby="login-dialog-title">
-        <h2 id="login-dialog-title">Designer Login</h2>
+    <DesignerDialog
+      title="Designer Login"
+      titleId="login-dialog-title"
+      onClose={close}
+      closeOnBackdrop
+      footer={
+        <>
+          <button type="button" onClick={close}>
+            Cancel
+          </button>
+          <button type="submit" form="login-dialog-form">
+            Login &amp; Deploy
+          </button>
+        </>
+      }
+    >
+      <form id="login-dialog-form" className="designer-dialog-panel" onSubmit={submit}>
         <p className="hint">
           Credentials for deploy (not DirtBowl participant login). Dev server accepts{" "}
           <code>dev/dev</code>.
         </p>
-        <form onSubmit={submit}>
-          <label>
-            User ID
-            <input value={user} onChange={(e) => setUser(e.target.value)} autoFocus />
-          </label>
-          <label>
-            Password
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-          <div className="modal-actions">
-            <button type="button" onClick={() => setShow(false)}>
-              Cancel
-            </button>
-            <button type="submit">Login &amp; Deploy</button>
-          </div>
-        </form>
-      </div>
-    </div>
+        <label>
+          User ID
+          <input value={user} onChange={(e) => setUser(e.target.value)} autoFocus />
+        </label>
+        <label>
+          Password
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
+      </form>
+    </DesignerDialog>
   );
 }
