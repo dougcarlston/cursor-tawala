@@ -236,7 +236,7 @@ describe("documentHtmlToXml record-count Where conditions", () => {
   });
 
   it("qualifies FIB Item:blank (FIB1:a) with form-name for Deploy", () => {
-    // Fields palette inserts FIB1:a (already has ':') without Form 1: prefix.
+    // Bare FIB1:a (Item:blank) still needs Record:Form 1:FIB1:a in Where XML.
     const xml = documentHtmlToXml(
       tokenHtml("record-count", {
         "form-name": "Form 1",
@@ -489,6 +489,21 @@ describe("documentHtmlToXml Form Text confirmation table (Potluck T6)", () => {
     });
     expect(xml).toContain('<field name="Potluck Organizer:attendeeName"/>');
     expect(xml).not.toContain("Potluck Organizer:Potluck Organizer:");
+  });
+
+  it("qualifies bare FIB Item:blank tokens (FIB1:a) with form-name", () => {
+    // Designer used to leave <<FIB1:a>> bare because the leaf already contains ':'.
+    const html =
+      `<p>&lt;&lt;FIB1:a&gt;&gt; &lt;&lt;FIB1:b&gt;&gt;</p>` +
+      `<p>&lt;&lt;Form 1:FIB1:c&gt;&gt;</p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText, {
+      formName: "Form 1",
+    });
+    expect(xml).toContain('<field name="Form 1:FIB1:a"/>');
+    expect(xml).toContain('<field name="Form 1:FIB1:b"/>');
+    expect(xml).toContain('<field name="Form 1:FIB1:c"/>');
+    expect(xml).not.toContain('<field name="FIB1:a"/>');
+    expect(xml).not.toContain("Form 1:Form 1:FIB1:c");
   });
 });
 

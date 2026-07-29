@@ -11,8 +11,8 @@
  * always be grabbed and dragged back.
  */
 
-/** Minimize + close (~16+2+16) plus a small margin. */
-export const MDI_TITLEBAR_CONTROLS_W = 56;
+/** Minimize + maximize/restore + close (~16×3 + gaps) plus a small margin. */
+export const MDI_TITLEBAR_CONTROLS_W = 72;
 export const MDI_TITLEBAR_H = 28;
 
 export interface MdiBounds {

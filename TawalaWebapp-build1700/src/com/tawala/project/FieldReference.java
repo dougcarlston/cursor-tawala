@@ -10,6 +10,7 @@ import com.tawala.project.commands.ExecutionContext;
 import com.tawala.project.formatting.Font;
 import com.tawala.project.formatting.Font.SpanHtml;
 import com.tawala.web.oldhtml.Html;
+import com.tawala.web.oldhtml.HtmlReadyString;
 import com.tawala.web.oldhtml.HtmlString;
 
 public class FieldReference extends FormRenderableNotHoldingActiveComponents implements TextRenderable {
@@ -26,7 +27,10 @@ public class FieldReference extends FormRenderableNotHoldingActiveComponents imp
 
 	public Html toHtml(ExecutionContext context) {
 		if (context.isPreviewMode()) {
-			return new HtmlString("<<" + name + ">>");
+			// Escape so the response does not emit raw `<<Name>>`
+			// (browsers parse that as a tag → visual `<>`). HtmlReadyString
+			// skips HtmlString's PrintWriter path which does not html-escape.
+			return new HtmlReadyString(HtmlUtils.htmlEscape("<<" + name + ">>"));
 		} else {
 			if (context.isIncludeCustomizationMarkers()) {
 				SpanHtml result = new Font.SpanHtml();

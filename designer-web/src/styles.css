@@ -1269,8 +1269,8 @@ textarea {
   min-width: 0;
   overflow: auto;
   overflow-y: scroll;
-  /* Left gutter for the floating insert caret during drag. */
-  padding: 0 0 0 18px;
+  /* Left gutter for the floating insert caret; bottom pad past last-item hairline. */
+  padding: 0 0 40px 18px;
   background: #fff;
   position: relative;
 }
@@ -1371,8 +1371,11 @@ textarea {
   border-bottom: 1px solid #c8c8c8;
 }
 
-.form-item-slot:last-child {
-  border-bottom: none;
+/* Keep the last item’s hairline so the Form canvas reads as closed (insert target
+   is the white pad below — not the open bottom of the final row). */
+.form-canvas-end {
+  min-height: 12px;
+  pointer-events: none;
 }
 
 .form-item-slot.selected-slot {
@@ -2449,19 +2452,21 @@ textarea {
   color: #333;
 }
 
-/* Edit Skip Instructions dialog. */
-.skip-instructions-dialog {
-  background: var(--panel);
-  border: 1px solid var(--border-dark);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
-  width: min(780px, 96vw);
-  max-height: 88vh;
-  display: flex;
-  flex-direction: column;
+/* Edit Skip Instructions — layout only; Aero frame/title/close come from DesignerDialog.
+ * Compound selector beats `.designer-dialog { width: min(420px, …) }` later in this file. */
+.designer-dialog.skip-instructions-dialog {
+  width: min(960px, 94vw);
+  max-height: min(88vh, 720px);
 }
 
-.skip-instructions-dialog .modal-header {
-  padding: 6px 10px;
+.skip-designer-body {
+  padding: 0;
+  gap: 0;
+  background: #f0f0f0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
 }
 
 .skip-dialog-titlebar {
@@ -2474,15 +2479,11 @@ textarea {
   pointer-events: none;
 }
 
-.skip-instructions-dialog .modal-header h2 {
-  font-size: 13px;
-  font-weight: normal;
-}
-
 .skip-dialog-toolbar {
   padding: 3px 6px;
-  border-bottom: 1px solid var(--border);
-  background: var(--toolbar-bg);
+  border-bottom: 1px solid #b8b8b8;
+  background: linear-gradient(180deg, #f4f0e6 0%, #e8e4d8 100%);
+  flex-shrink: 0;
 }
 
 .skip-dialog-body {
@@ -2494,31 +2495,49 @@ textarea {
 
 .skip-dialog-palette {
   flex: 0 0 108px;
-  border-right: 1px solid var(--border);
-  padding: 6px 4px;
+  border-right: 1px solid #a0a0a0;
+  padding: 0 4px 6px;
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  background: #f4f4f4;
+  gap: 3px;
+  background: #ececec;
 }
 
+/* Legacy Statements banner — blue bar, white label. */
 .skip-dialog-palette-title {
+  margin: 0 -4px 6px;
+  padding: 5px 8px;
   font-size: 12px;
   font-weight: bold;
-  color: #1a4a9c;
-  margin: 0 4px 6px;
+  color: #fff;
+  text-shadow: 0 1px 0 rgba(0, 40, 80, 0.35);
+  background: linear-gradient(180deg, #6a9fd8 0%, #3d6fb0 55%, #2f5f9e 100%);
+  border-bottom: 1px solid #2a5088;
 }
 
 .skip-dialog-palette button {
   text-align: center;
   font-size: 12px;
-  padding: 5px 4px;
+  padding: 6px 4px;
   width: 100%;
+  border: 1px solid #6b7a8c;
+  border-top-color: #c8d4e4;
+  border-left-color: #c8d4e4;
+  border-radius: 3px;
+  background-color: #c5d6ec;
+  background-image: linear-gradient(180deg, #e8f0fa 0%, #c5d6ec 48%, #a8c0dc 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.75), 0 1px 0 rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  color: #1a1a1a;
+}
+
+.skip-dialog-palette button:hover {
+  background-image: linear-gradient(180deg, #f0f6fc 0%, #d0e0f4 48%, #b4cce8 100%);
 }
 
 .skip-dialog-palette button.active {
-  background: #dce8ff;
-  border-color: #7aa7e0;
+  background-image: linear-gradient(180deg, #d0e4f8 0%, #a8c4e8 48%, #8ab0d8 100%);
+  border-color: #4a72a8;
   font-weight: bold;
 }
 
@@ -2528,7 +2547,7 @@ textarea {
   flex-direction: column;
   min-width: 0;
   overflow: hidden;
-  background: #fff;
+  background: #f0f0f0;
 }
 
 .skip-dialog-stub {
@@ -2651,9 +2670,12 @@ textarea {
 
 .skip-if-else {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
   margin: 8px 0 4px;
+  text-align: left;
 }
 
 .skip-if-add-row {
@@ -2664,7 +2686,16 @@ textarea {
 
 .skip-add-btn {
   font-weight: bold;
-  min-width: 64px;
+  min-width: 72px;
+  padding: 4px 16px;
+  border: 1px solid #7a7a7a;
+  border-top-color: #bbb;
+  border-left-color: #bbb;
+  border-radius: 3px;
+  background-color: #e0e0e0;
+  background-image: linear-gradient(180deg, #f8f8f8 0%, #e4e4e4 48%, #cfcfcf 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 0 rgba(0, 0, 0, 0.08);
+  cursor: pointer;
 }
 
 .skip-add-btn:disabled {
@@ -2681,8 +2712,11 @@ textarea {
 
 .skip-skipto-body label {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   gap: 6px;
+  text-align: left;
 }
 
 .skip-set-body {
@@ -2728,11 +2762,14 @@ textarea {
 
 .skip-set-arithmetic {
   display: flex;
+  flex-direction: row;
   align-items: flex-start;
+  justify-content: flex-start;
   gap: 6px;
   font-size: 11px;
   line-height: 1.35;
   margin: 0;
+  text-align: left;
 }
 
 .skip-set-arithmetic.disabled {
@@ -2959,6 +2996,7 @@ div.skip-script-line[role="button"]:hover {
 .skip-dialog-footer {
   justify-content: center;
   padding: 10px 12px;
+  background: #f0f0f0;
 }
 
 .skip-dialog-footer button {
@@ -4195,8 +4233,10 @@ button.font-color-picker-recent-slot:hover {
   position: absolute;
   display: flex;
   flex-direction: column;
-  min-width: 320px;
-  min-height: 180px;
+  /* Floor matches dense Tile cells (~20-window grid); interactive resize still
+     clamps to 320×180 in CanvasWindow. Do not use 320×180 here — it blocks Tile. */
+  min-width: 100px;
+  min-height: 72px;
   background: var(--panel);
   border: 2px solid #9eb6d4;
   box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.35);
@@ -4353,39 +4393,80 @@ button.font-color-picker-recent-slot:hover {
   cursor: nesw-resize;
 }
 
+/* Minimized MDI squibs — short bars at the bottom of the canvas (not postage-
+   stamp window boxes). Left-to-right: icon, truncated title, Restore / Max / Close. */
 .mdi-taskbar {
   display: flex;
+  flex-direction: row;
+  /* wrap-reverse: first row stays on the bottom edge; overflow rows stack upward toward the canvas. */
+  flex-wrap: wrap-reverse;
   align-items: center;
+  align-content: flex-start;
   gap: 4px;
   flex: 0 0 auto;
-  padding: 3px 6px;
+  padding: 4px 6px;
+  min-height: 28px;
   background: var(--toolbar-bg);
   border-top: 1px solid var(--border);
-  overflow-x: auto;
 }
 
-.mdi-taskbar-item {
+.mdi-squib {
   display: inline-flex;
   align-items: center;
-  gap: 5px;
-  max-width: 220px;
-  padding: 3px 8px;
+  gap: 2px;
+  flex: 0 0 auto;
+  width: 148px;
+  height: 24px;
+  padding: 0 2px 0 3px;
   border: 1px solid var(--border-dark);
-  background: #f5f3e7;
+  border-top-color: #fff;
+  border-left-color: #fff;
+  background: linear-gradient(180deg, #e8eef6 0%, #d4dce8 100%);
+  box-shadow: inset 1px 1px 0 rgba(255, 255, 255, 0.6);
+}
+
+.mdi-squib-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
   cursor: pointer;
-  font-size: 12px;
+  text-align: left;
+  font: inherit;
+  font-size: 11px;
+}
+
+.mdi-squib-icon {
+  flex: 0 0 auto;
+  font-size: 11px;
+  line-height: 1;
+}
+
+.mdi-squib-title {
+  flex: 1;
+  min-width: 0;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  font-weight: 600;
 }
 
-.mdi-taskbar-item:hover {
-  background: #fff;
+.mdi-squib-controls {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 1px;
 }
 
-.mdi-taskbar-icon {
-  font-size: 12px;
-  line-height: 1;
+.mdi-squib .mdi-control {
+  width: 15px;
+  height: 13px;
+  font-size: 9px;
 }
 
 .status-bar {
@@ -5179,10 +5260,13 @@ button.font-color-picker-recent-slot:hover {
 
 .send-checkbox-label {
   display: flex;
+  flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
   gap: 4px;
   font-size: 12px;
   line-height: 1.4;
+  text-align: left;
 }
 
 .send-checkbox-label.disabled {
@@ -5438,11 +5522,14 @@ button.font-color-picker-recent-slot:hover {
 
 .show-reset-checkbox {
   display: flex;
+  flex-direction: row;
   flex-wrap: wrap;
   align-items: baseline;
+  justify-content: flex-start;
   gap: 4px 6px;
   font-size: 12px;
   line-height: 1.4;
+  text-align: left;
 }
 
 .show-reset-sublabel {
@@ -5464,8 +5551,13 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .show-submit-fieldset label {
-  display: block;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
   margin-top: 4px;
+  text-align: left;
 }
 
 .show-where-group {
@@ -5778,26 +5870,22 @@ button.font-color-picker-recent-slot:hover {
   margin-bottom: 6px;
 }
 
-/* Connect Process dialog — portaled to body; must block MDI content underneath. */
+/* Connect Process dialog — same Aero family as Skip (DesignerDialog chrome).
+ * Compound selector beats `.designer-dialog { width: min(420px, …) }` later in this file. */
 .process-connection-modal-overlay {
   pointer-events: auto;
   z-index: 2000;
 }
 
-.process-connection-dialog {
-  background: var(--panel);
-  border: 1px solid var(--border-dark);
-  box-shadow: 4px 4px 12px rgba(0, 0, 0, 0.25);
-  width: min(480px, 92vw);
-  max-height: 80vh;
-  display: flex;
-  flex-direction: column;
+.designer-dialog.process-connection-dialog {
+  width: min(900px, 94vw);
+  max-height: min(80vh, 640px);
 }
 
-.process-connection-dialog .modal-body {
-  padding: 12px;
-  overflow: auto;
-  flex: 1;
+.process-connection-dialog-body {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .process-connection-dialog-body label {
@@ -5868,16 +5956,17 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .process-connection-multi-hint {
-  margin: 0 0 12px;
+  margin: 0 0 4px;
 }
 
 .process-connection-form-checklist {
   list-style: none;
   margin: 0;
   padding: 0;
-  border: 1px solid var(--border, #c8c8c8);
+  border: 1px solid #999;
   background: #fff;
-  max-height: 160px;
+  box-shadow: inset 1px 1px 0 #fff;
+  max-height: 220px;
   overflow: auto;
 }
 
@@ -5891,14 +5980,19 @@ button.font-color-picker-recent-slot:hover {
   border-bottom: none;
 }
 
+/* Compact one-line rows (Project Explorer / Fields density) — not tall centered cells. */
 .process-connection-check {
   display: flex;
+  flex-direction: row;
   align-items: center;
-  gap: 8px;
-  padding: 6px 8px;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 2px 8px;
   margin: 0;
+  min-height: 22px;
   cursor: pointer;
   font-size: 12px;
+  text-align: left;
 }
 
 .process-connection-check:hover {
@@ -5917,15 +6011,22 @@ button.font-color-picker-recent-slot:hover {
 
 .process-connection-check input {
   margin: 0;
+  flex-shrink: 0;
 }
 
 .process-connection-check-form {
-  flex: 1;
+  font-weight: 600;
+  flex-shrink: 0;
 }
 
 .process-connection-check-other {
   color: #888;
   font-size: 11px;
+  font-weight: 400;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
 }
 
 .process-detail-toolbar {
@@ -7150,10 +7251,35 @@ button.font-color-picker-recent-slot:hover {
 .designer-dialog label.insert-link-checkbox,
 .designer-dialog .insert-link-checkbox,
 .designer-dialog label.form-item-styles-check,
-.designer-dialog label.form-item-styles-radio {
+.designer-dialog label.form-item-styles-radio,
+.designer-dialog label.process-connection-check,
+.designer-dialog label.skip-if-else,
+.designer-dialog label.send-checkbox-label,
+.designer-dialog .show-submit-fieldset label,
+.designer-dialog .skip-skipto-body label {
   flex-direction: row;
   align-items: center;
+  justify-content: flex-start;
+  text-align: left;
   gap: 6px;
+}
+
+/* Skip Set: control left of wrapping text (top-aligned). */
+.designer-dialog label.skip-set-arithmetic {
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 6px;
+}
+
+/* Skip Show reset: checkbox left of text + sublabel. */
+.designer-dialog label.show-reset-checkbox {
+  flex-direction: row;
+  align-items: baseline;
+  justify-content: flex-start;
+  text-align: left;
+  gap: 4px 6px;
 }
 
 /* Classic shaded checkbox (Win32-like) — not flat unshaded. */

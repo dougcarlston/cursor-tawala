@@ -17,6 +17,7 @@ import {
   moveProcessCommandAtPath,
   replaceProcessCommandAtPath,
 } from "@/lib/processScript";
+import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
 import { collectKnownVariables } from "@/lib/projectModel";
 import {
@@ -209,6 +210,22 @@ export function SkipInstructionsDialog({
     setInsertIndex(index);
   };
 
+  /** Leave Modify without applying — place insert under/after the left statement. */
+  const cancelEditSelection = () => {
+    if (!selectedCommandPath) return;
+    const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
+    if (cmd?.cmd === "if") {
+      const thenLen = Array.isArray(cmd.then) ? cmd.then.length : 0;
+      setInsertPath(`${selectedCommandPath}/then`);
+      setInsertIndex(thenLen);
+    } else {
+      const { parentPath, childIndex } = parentPathAndChildIndex(selectedCommandPath);
+      setInsertPath(parentPath);
+      setInsertIndex(childIndex + 1);
+    }
+    setSelectedCommandPath(null);
+  };
+
   const insertAtArrow = (cmd: SkipCommand) => {
     const result = insertCommandAtPoint(commands, insertPath, insertIndex, cmd);
     setCommands(result.commands);
@@ -351,6 +368,8 @@ export function SkipInstructionsDialog({
     setPanel(mode);
     // Palette tool that does not match the selected line → leave edit/Modify mode
     // so Add ↓ + insert gaps work (otherwise re-open felt stuck on Modify only).
+    // Prefer insert under the left statement (e.g. Set inside If then) — owner intent
+    // is add, not replace the selected If.
     if (selectedCommandPath) {
       const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
       const matches =
@@ -358,7 +377,18 @@ export function SkipInstructionsDialog({
         (mode === "skipTo" && cmd?.cmd === "skip") ||
         (mode === "set" && cmd?.cmd === "set") ||
         (mode === "comment" && cmd?.cmd === "comment");
-      if (!matches) setSelectedCommandPath(null);
+      if (!matches) {
+        if (cmd?.cmd === "if") {
+          const thenLen = Array.isArray(cmd.then) ? cmd.then.length : 0;
+          setInsertPath(`${selectedCommandPath}/then`);
+          setInsertIndex(thenLen);
+        } else {
+          const { parentPath, childIndex } = parentPathAndChildIndex(selectedCommandPath);
+          setInsertPath(parentPath);
+          setInsertIndex(childIndex + 1);
+        }
+        setSelectedCommandPath(null);
+      }
     }
     // Match Process IF/Set: keep in-progress drafts when re-opening the same panel
     // (clicking away must not wipe a complex If before Add ↓).
@@ -376,6 +406,24 @@ export function SkipInstructionsDialog({
       );
     }
   };
+
+  // Escape leaves Modify / closes the open builder (same idea as Process Send Cancel).
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key !== "Escape") return;
+      if (selectedCommandPath) {
+        e.preventDefault();
+        cancelEditSelection();
+        return;
+      }
+      if (panel !== "none") {
+        e.preventDefault();
+        closeBuilderPanel();
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  });
 
   const toolbarDeleteEnabled = selectedCommandPath != null;
 

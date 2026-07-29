@@ -44,7 +44,7 @@ export function ProcessConnectionDialog({ processName, onClose }: Props) {
         </button>
       }
     >
-      <div className="process-connection-dialog-body">
+      <div className="designer-dialog-panel process-connection-dialog-body">
         {forms.length === 0 ? (
           <p className="hint">This project has no forms.</p>
         ) : (

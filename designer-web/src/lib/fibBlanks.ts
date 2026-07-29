@@ -1,4 +1,4 @@
-import type { BlankValidation, TawalaBlank } from "@/types/tawala";
+import { FIB_PLACEHOLDER, type BlankValidation, type TawalaBlank } from "@/types/tawala";
 
 /**
  * FIB blank validators (legacy `blank-validator` repository; defaults from the Java
@@ -205,6 +205,23 @@ export function selectionIsSingleBlank(
   const selected = plainText.slice(selStart, selEnd);
   if (!/^[_]+$/.test(selected)) return -1;
   return activeBlankIndex(plainText, selStart);
+}
+
+/**
+ * End offset for default-hint-only selection on FIB open/insert.
+ * Returns the length of {@link FIB_PLACEHOLDER} when `plain` is the stock hint
+ * followed only by whitespace / underscore blanks — so the trailing `____` stay
+ * unselected. Returns null when the prompt is custom prose.
+ */
+export function fibHintHighlightEnd(plain: string): number | null {
+  const normalized = String(plain ?? "").replace(/\r\n/g, "\n");
+  if (!normalized.startsWith(FIB_PLACEHOLDER)) return null;
+  const rest = normalized.slice(FIB_PLACEHOLDER.length);
+  // Default insert (space or newline before blanks) or hint-only.
+  if (rest === "" || /^[\s]*(_+[\s]*)*$/.test(rest)) {
+    return FIB_PLACEHOLDER.length;
+  }
+  return null;
 }
 
 /** Map a DOM selection inside a contenteditable root to a plain-text offset. */

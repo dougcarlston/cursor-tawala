@@ -1,5 +1,6 @@
 import {
   buildContext,
+  expandChoiceLabelHtml,
   expandDynamicChoices,
   getFieldValue,
   itemKey,
@@ -369,7 +370,7 @@ function renderMcChoices(item, ctx) {
         .includes(String(val))
         ? " checked"
         : "";
-      return `<label class="preview-mc-choice"><input type="${inputType}" name="${esc(name)}" value="${esc(val)}"${checked} /> ${esc(c.text)}</label>`;
+      return `<label class="preview-mc-choice"><input type="${inputType}" name="${esc(name)}" value="${esc(val)}"${checked} /> ${expandChoiceLabelHtml(c.text, ctx)}</label>`;
     })
     .join("");
 }

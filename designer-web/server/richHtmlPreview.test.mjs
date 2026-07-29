@@ -115,6 +115,23 @@ describe("enhanceRichTextHtml itemization", () => {
   });
 });
 
+describe("enhanceRichTextHtml field placeholders", () => {
+  it("keeps escaped <<ref>> when getField returns empty (no wipe / no raw <<)", () => {
+    const out = enhanceRichTextHtml("Hello <<CoachName>>", () => "");
+    expect(out).toContain("&lt;&lt;CoachName&gt;&gt;");
+    expect(out).not.toMatch(/<<CoachName>>/);
+    expect(out).not.toBe("Hello ");
+  });
+
+  it("substitutes escaped value when getField returns a value", () => {
+    const out = enhanceRichTextHtml("Hello <<CoachName>>", (ref) =>
+      ref === "CoachName" ? "Sam & Co" : "",
+    );
+    expect(out).toContain("Hello Sam &amp; Co");
+    expect(out).not.toContain("&lt;&lt;CoachName&gt;&gt;");
+  });
+});
+
 describe("enhanceRichTextHtml display-image / display-mcq / record-count", () => {
   it("replaces DISPLAY IMAGE with a sized name placeholder", () => {
     const config = JSON.stringify({

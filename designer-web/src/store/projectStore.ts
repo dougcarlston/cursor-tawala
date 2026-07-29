@@ -37,6 +37,7 @@ import type { ProcessStatementPanel } from "@/processStatements";
 import { processPanelKeyForCommand, processPanelKeyForLabel } from "@/processStatements";
 import {
   cascadeBounds as layoutCascade,
+  getMdiArrangeViewport,
   getMdiSurfaceViewport,
   maximizedBounds,
   sanitizeRestoreBounds,
@@ -634,7 +635,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
     const sameEntity = selection.kind === target.kind && selection.name === target.name;
-    const vp = getMdiSurfaceViewport();
+    const vp = getMdiArrangeViewport();
     const fill = maximizedBounds(vp);
     // From a squib: keep prior restoreBounds if any; otherwise sanitize current.
     const restoreBounds =
@@ -700,9 +701,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   cascadeWindows: (viewport) => {
     const s = get();
     const { openWindows } = s;
-    const restored = openWindows.filter((w) => !w.minimized);
+    // Cascade back-to-front: lowest z gets first cascade slot, frontmost ends on top.
+    const restored = openWindows
+      .filter((w) => !w.minimized)
+      .slice()
+      .sort((a, b) => a.z - b.z);
     if (restored.length === 0) return;
-    const vp = viewport ?? getMdiSurfaceViewport();
+    const vp = viewport ?? getMdiArrangeViewport();
     const bounds = layoutCascade(restored.length, vp);
     const baseZ = maxZ(openWindows);
     const byId = new Map(restored.map((w, i) => [w.id, { ...bounds[i]!, z: baseZ + 1 + i }]));
@@ -749,7 +754,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { openWindows } = s;
     const restored = openWindows.filter((w) => !w.minimized);
     if (restored.length === 0) return;
-    const vp = viewport ?? getMdiSurfaceViewport();
+    const vp = viewport ?? getMdiArrangeViewport();
     const layoutBounds =
       direction === "horizontal"
         ? tileHorizontalBounds(restored.length, vp)

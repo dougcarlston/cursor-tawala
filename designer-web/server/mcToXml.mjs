@@ -1,5 +1,8 @@
 import { tabPositionsXmlFromInches } from "./tabPositionsXml.mjs";
-import { richHtmlFragmentToFontXml } from "./fibRichPromptToXml.mjs";
+import {
+  formattedTextToFontXml,
+  richHtmlFragmentToFontXml,
+} from "./fibRichPromptToXml.mjs";
 
 const TAB_MC_DEFAULT = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
@@ -163,7 +166,22 @@ function staticChoicesXml(choices, escAttr, escText, tabsXml) {
   return choices
     .map((c, i) => {
       const label = c.label ?? c.name ?? String.fromCharCode(97 + i);
-      return `<choice label="${escAttr(label)}"><paragraph indent="0" align="left">${tabsXml}${fontXml(c.text ?? "", escText)}</paragraph></choice>`;
+      const raw = String(c.text ?? "");
+      let inner = "";
+      // Choice text may include <<Field>> / chips (legacy) — emit <field/>, don't escape.
+      if (questionLooksRich(raw)) {
+        inner = richHtmlFragmentToFontXml(raw, escAttr, escText);
+      }
+      if (!inner && /<<[^<>]+>>/.test(raw)) {
+        inner = formattedTextToFontXml(
+          raw,
+          { face: "Arial", size: 200, color: "000000" },
+          escAttr,
+          escText,
+        );
+      }
+      if (!inner) inner = fontXml(raw, escText);
+      return `<choice label="${escAttr(label)}"><paragraph indent="0" align="left">${tabsXml}${inner}</paragraph></choice>`;
     })
     .join("");
 }

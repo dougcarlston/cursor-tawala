@@ -262,19 +262,9 @@ function emitGap(ctx: RenderCtx, path: string, index: number, key: string): Reac
   // Indexed gaps (Skip + Process click-to-place): visible ▶ / faint hover lines.
   // Hit-only mode is for Process drag when indexed gaps are off.
   if (ctx.indexedMode) {
-    // Edit mode: hide insert-gap ▶ chrome — arrow lives on the selected statement.
-    // Keep a hit-only target so a click can leave edit mode into insert mode.
-    if (editMode && !dragActive) {
-      return (
-        <SkipInsertionLine
-          key={key}
-          hitOnly
-          insertPath={path}
-          insertIndex={index}
-          onClick={() => ctx.selectPoint(path, index)}
-        />
-      );
-    }
+    // Edit mode: keep inactive insert gaps visible/clickable so the owner can
+    // leave Modify and place a new line (e.g. Set under If) without hunting
+    // zero-height hit targets. Active ▶ stays on the selected statement.
     const active = (!editMode && storedActive) || dragActive;
     return (
       <SkipInsertionLine
@@ -605,7 +595,9 @@ export function SkipScriptView({
 
   if (lines.length === 0) {
     return (
-      <div className="skip-script-area">
+      <div
+        className={`skip-script-area${selectedCommandPath != null ? " skip-script-editing" : ""}`}
+      >
         {hitTargets ? (
           <SkipInsertionLine
             hitOnly
@@ -645,5 +637,11 @@ export function SkipScriptView({
     );
   }
 
-  return <div className="skip-script-area">{elements}</div>;
+  return (
+    <div
+      className={`skip-script-area${selectedCommandPath != null ? " skip-script-editing" : ""}`}
+    >
+      {elements}
+    </div>
+  );
 }

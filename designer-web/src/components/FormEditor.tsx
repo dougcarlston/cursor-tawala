@@ -361,27 +361,32 @@ export function FormEditor({ formName }: Props) {
                 insert. Drag a selected item by its badge to reorder.
               </p>
             ) : (
-              form.items.map((item, i) => (
-                <div
-                  key={`${item.label}-${i}`}
-                  className={`form-item-slot${selectedItemIndex === i ? " selected-slot" : ""}${reorderFromIndex === i ? " dragging" : ""}`}
-                  data-form-item-index={i}
-                  draggable={false}
-                  onDragStart={(e) => {
-                    // Drag is initiated on the selected badge (child has draggable=true);
-                    // this bubbles here so we can attach reorder MIME and UI state.
-                    if (selectedItemIndex !== i || !isFormItemReorderHandle(e.target)) {
-                      e.preventDefault();
-                      return;
-                    }
-                    setReorderFromIndex(i);
-                    setFormItemReorderDrag(e.dataTransfer, i);
-                  }}
-                  onDragEnd={clearDragUi}
-                >
-                  {renderFormItem(item, i)}
-                </div>
-              ))
+              <>
+                {form.items.map((item, i) => (
+                  <div
+                    key={`${item.label}-${i}`}
+                    className={`form-item-slot${selectedItemIndex === i ? " selected-slot" : ""}${reorderFromIndex === i ? " dragging" : ""}`}
+                    data-form-item-index={i}
+                    draggable={false}
+                    onDragStart={(e) => {
+                      // Drag is initiated on the selected badge (child has draggable=true);
+                      // this bubbles here so we can attach reorder MIME and UI state.
+                      if (selectedItemIndex !== i || !isFormItemReorderHandle(e.target)) {
+                        e.preventDefault();
+                        return;
+                      }
+                      setReorderFromIndex(i);
+                      setFormItemReorderDrag(e.dataTransfer, i);
+                    }}
+                    onDragEnd={clearDragUi}
+                  >
+                    {renderFormItem(item, i)}
+                  </div>
+                ))}
+                {/* Visual closure under the last item — hairline stays on the slot;
+                    this sentinel + canvas bottom pad mark the insert/click-outside zone. */}
+                <div className="form-canvas-end" data-form-canvas-end aria-hidden />
+              </>
             )}
           </div>
         </div>

@@ -8,18 +8,20 @@ import {
   readExplorerEntityDrag,
 } from "@/lib/designerDrag";
 import { syncDesignerTargetsToActiveMdiWindow } from "@/lib/fieldInsertion";
-
-const KIND_LABEL = { form: "Form", process: "Process", document: "Document" } as const;
+import { windowMenuLabel } from "@/lib/mdiWindowLayout";
 
 /**
- * MDI canvas host (backlog §2 Multi-window / MDI, Pass 1). Renders every open
- * window absolutely positioned inside the center canvas, plus a taskbar of
- * minimized windows. Accepts Project Explorer entity drops to open/focus windows.
+ * MDI canvas host (backlog §2 Multi-window / MDI). Renders every open window
+ * absolutely positioned inside the center canvas, plus a bottom squib strip of
+ * minimized windows (legacy: short bars with Restore / Maximize / Close).
+ * Accepts Project Explorer entity drops to open/focus windows.
  */
 export function CanvasWindowManager() {
   const openWindows = useProjectStore((s) => s.openWindows);
   const activeWindowId = useProjectStore((s) => s.activeWindowId);
   const restoreWindow = useProjectStore((s) => s.restoreWindow);
+  const maximizeWindow = useProjectStore((s) => s.maximizeWindow);
+  const closeWindow = useProjectStore((s) => s.closeWindow);
   const openWindow = useProjectStore((s) => s.openWindow);
   const [explorerDragOver, setExplorerDragOver] = useState(false);
 
@@ -70,20 +72,53 @@ export function CanvasWindowManager() {
       </div>
       {minimized.length > 0 && (
         <div className="mdi-taskbar" role="toolbar" aria-label="Minimized windows">
-          {minimized.map((win) => (
-            <button
-              key={win.id}
-              type="button"
-              className="mdi-taskbar-item"
-              title={`Restore ${KIND_LABEL[win.kind]} - ${win.name}`}
-              onClick={() => restoreWindow(win.id)}
-            >
-              <span className="mdi-taskbar-icon" aria-hidden>
-                {win.kind === "form" ? "▤" : win.kind === "process" ? "⚙" : "▦"}
-              </span>
-              {KIND_LABEL[win.kind]} - {win.name}
-            </button>
-          ))}
+          {minimized.map((win) => {
+            const label = windowMenuLabel(win.kind, win.name);
+            return (
+              <div key={win.id} className="mdi-squib" title={label}>
+                <button
+                  type="button"
+                  className="mdi-squib-label"
+                  aria-label={`Restore ${label}`}
+                  onClick={() => restoreWindow(win.id)}
+                >
+                  <span className="mdi-squib-icon" aria-hidden>
+                    {win.kind === "form" ? "▤" : win.kind === "process" ? "⚙" : "▦"}
+                  </span>
+                  <span className="mdi-squib-title">{label}</span>
+                </button>
+                <span className="mdi-squib-controls">
+                  <button
+                    type="button"
+                    className="mdi-control"
+                    title="Restore"
+                    aria-label={`Restore ${label}`}
+                    onClick={() => restoreWindow(win.id)}
+                  >
+                    ❐
+                  </button>
+                  <button
+                    type="button"
+                    className="mdi-control"
+                    title="Maximize"
+                    aria-label={`Maximize ${label}`}
+                    onClick={() => maximizeWindow(win.id)}
+                  >
+                    □
+                  </button>
+                  <button
+                    type="button"
+                    className="mdi-control mdi-control-close"
+                    title="Close"
+                    aria-label={`Close ${label}`}
+                    onClick={() => closeWindow(win.id)}
+                  >
+                    ×
+                  </button>
+                </span>
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

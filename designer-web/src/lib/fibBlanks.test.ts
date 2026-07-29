@@ -1,5 +1,14 @@
 import { describe, expect, it } from "vitest";
-import { parseUnderscoreRuns, syncBlanksFromPrompt } from "@/lib/fibBlanks";
+import {
+  FIB_DEFAULT_PROMPT,
+  FIB_DEFAULT_UNDERSCORES,
+  FIB_PLACEHOLDER,
+} from "@/types/tawala";
+import {
+  fibHintHighlightEnd,
+  parseUnderscoreRuns,
+  syncBlanksFromPrompt,
+} from "@/lib/fibBlanks";
 
 describe("FIB underscore → blanks (Design metadata)", () => {
   it("parses underscore runs for blank length", () => {
@@ -34,5 +43,24 @@ describe("FIB underscore → blanks (Design metadata)", () => {
       required: true,
       height: 2,
     });
+  });
+});
+
+describe("fibHintHighlightEnd", () => {
+  it("selects only the stock hint — not trailing underscores (space-separated)", () => {
+    expect(fibHintHighlightEnd(FIB_DEFAULT_PROMPT)).toBe(FIB_PLACEHOLDER.length);
+    expect(FIB_DEFAULT_PROMPT.slice(fibHintHighlightEnd(FIB_DEFAULT_PROMPT)!)).toBe(
+      ` ${FIB_DEFAULT_UNDERSCORES}`,
+    );
+  });
+
+  it("selects only the stock hint when blanks wrap onto the next line", () => {
+    const plain = `${FIB_PLACEHOLDER}\n${FIB_DEFAULT_UNDERSCORES}`;
+    expect(fibHintHighlightEnd(plain)).toBe(FIB_PLACEHOLDER.length);
+  });
+
+  it("returns null for customized question prose with blanks", () => {
+    expect(fibHintHighlightEnd("Name ________")).toBeNull();
+    expect(fibHintHighlightEnd(`${FIB_PLACEHOLDER} Extra prose ________`)).toBeNull();
   });
 });

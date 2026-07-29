@@ -5,9 +5,14 @@
  * Legacy (screenshots July 2026): Cascade stacks restored frames diagonally;
  * Tile Vertically = column-primary (side-by-side, grid when many); Tile
  * Horizontally = row-primary. Minimized windows stay as bottom squibs and are
- * excluded from arrange geometry. The squib strip is a flex sibling of
- * `.mdi-surface`, so `getMdiSurfaceViewport()` already excludes it when present.
+ * excluded from arrange geometry.
+ *
+ * Drag may slide frames under PE / Items / Fields (`overflow: visible`). Cascade /
+ * Tile / Maximize use {@link getMdiArrangeViewport} so title-bar controls stay
+ * clear of those docks and the squib strip.
  */
+
+import { MDI_TITLEBAR_H } from "./mdiWindowClamp";
 
 export interface MdiViewport {
   width: number;
@@ -46,6 +51,118 @@ export function getMdiSurfaceViewport(): MdiViewport {
   return {
     width: Math.max(200, Math.floor(r.width)),
     height: Math.max(160, Math.floor(r.height)),
+  };
+}
+
+export interface ArrangeSurfaceRect {
+  left: number;
+  right: number;
+  top: number;
+  bottom: number;
+  clientWidth: number;
+  clientHeight: number;
+}
+
+export interface ArrangeDockInsets {
+  /** Absolute x of a left dock's right edge (clips arrange left). */
+  left?: number;
+  /** Absolute x of a right dock's left edge (clips arrange right). */
+  right?: number;
+  /** Absolute y of a bottom dock's top edge (clips arrange bottom). */
+  bottom?: number;
+  top?: number;
+}
+
+/**
+ * Pure arrange-size math: intersect the surface box with dock edges, then take
+ * the tighter of layout client size vs clipped screen rect.
+ */
+export function clipArrangeViewport(
+  surface: ArrangeSurfaceRect,
+  docks: ArrangeDockInsets,
+): MdiViewport {
+  let left = surface.left;
+  let right = surface.right;
+  let top = surface.top;
+  let bottom = surface.bottom;
+
+  if (docks.left != null && docks.left > left && docks.left < right + 1) {
+    left = Math.max(left, docks.left);
+  }
+  if (docks.right != null && docks.right < right && docks.right > left - 1) {
+    right = Math.min(right, docks.right);
+  }
+  if (docks.top != null && docks.top > top && docks.top < bottom) {
+    top = Math.max(top, docks.top);
+  }
+  if (docks.bottom != null && docks.bottom < bottom && docks.bottom > top) {
+    bottom = Math.min(bottom, docks.bottom);
+  }
+
+  const layoutW = surface.clientWidth;
+  const layoutH = surface.clientHeight;
+  const clippedW = Math.floor(right - left);
+  const clippedH = Math.floor(bottom - top);
+  return {
+    width: Math.max(200, Math.min(layoutW || clippedW, clippedW)),
+    height: Math.max(160, Math.min(layoutH || clippedH, clippedH)),
+  };
+}
+
+/** Viewport for Cascade/Tile/Maximize — clipped so frames stay clear of dock overlays. */
+export function getMdiArrangeViewport(): MdiViewport {
+  if (typeof document === "undefined") {
+    return { width: 800, height: 560 };
+  }
+  const surface = document.querySelector(".mdi-surface");
+  if (!surface) return { width: 800, height: 560 };
+  const sr = surface.getBoundingClientRect();
+  let left = sr.left;
+  let right = sr.right;
+  let top = sr.top;
+  let bottom = sr.bottom;
+
+  const clipRight = (sel: string) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return;
+    const vOverlap = Math.min(bottom, r.bottom) - Math.max(top, r.top);
+    if (vOverlap < 8) return;
+    if (r.left < right && r.left > left - 1) right = Math.min(right, r.left);
+  };
+  const clipLeft = (sel: string) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return;
+    const vOverlap = Math.min(bottom, r.bottom) - Math.max(top, r.top);
+    if (vOverlap < 8) return;
+    if (r.right > left && r.right < right + 1) left = Math.max(left, r.right);
+  };
+  const clipBottom = (sel: string) => {
+    const el = document.querySelector(sel);
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    if (r.width <= 0 || r.height <= 0) return;
+    if (r.top < bottom && r.top > top) bottom = Math.min(bottom, r.top);
+  };
+
+  clipRight(".designer-right");
+  clipRight(".designer-right-splitter");
+  clipLeft(".designer-left");
+  clipLeft(".designer-left-splitter");
+  clipLeft(".designer-items");
+  clipBottom(".mdi-taskbar");
+
+  const layoutW = (surface as HTMLElement).clientWidth;
+  const layoutH = (surface as HTMLElement).clientHeight;
+  const clippedW = Math.floor(right - left);
+  const clippedH = Math.floor(bottom - top);
+  // Take the tighter of layout box vs dock-clipped rect (fixes overflow:visible paint under Fields).
+  return {
+    width: Math.max(200, Math.min(layoutW || clippedW, clippedW)),
+    height: Math.max(160, Math.min(layoutH || clippedH, clippedH)),
   };
 }
 
@@ -94,15 +211,48 @@ export function maximizedBounds(viewport: MdiViewport): MdiBounds {
   };
 }
 
-/** Overlapping cascade (same step as new-window open). Restored windows only. */
+/**
+ * Overlapping cascade (same step as new-window open). Restored windows only.
+ *
+ * Cascades down-right from a lower-left origin. When the next step would pass
+ * the right edge — or after {@link CASCADE_WRAP} windows in the current stack —
+ * starts a new diagonal whose originY drops below all title-bar offsets of the
+ * finished stack (classic MDI wrap that clears prior title bars).
+ * Vertical room is gated on title-bar visibility so frames may hang off the
+ * bottom; never clamp into a flush-right column.
+ */
 export function cascadeBounds(count: number, viewport: MdiViewport): MdiBounds[] {
   const size = clampCascadeSize(DEFAULT_W, DEFAULT_H, viewport);
+  const maxX = Math.max(PAD, viewport.width - size.w - PAD);
+  // Title bar must stay on-canvas; body may hang past the bottom edge.
+  const maxOriginY = Math.max(PAD, viewport.height - MDI_TITLEBAR_H - PAD);
   const out: MdiBounds[] = [];
+
+  let originY = PAD;
+  let step = 0;
+
   for (let i = 0; i < count; i++) {
-    const offset = (i % CASCADE_WRAP) * CASCADE_STEP;
-    const x = Math.min(PAD + offset, Math.max(PAD, viewport.width - size.w - PAD));
-    const y = Math.min(PAD + offset, Math.max(PAD, viewport.height - size.h - PAD));
-    out.push({ x, y, w: size.w, h: size.h });
+    if (
+      step > 0 &&
+      (step >= CASCADE_WRAP || PAD + step * CASCADE_STEP > maxX)
+    ) {
+      // Always reset to the left — never grow step past maxX (flush-right column).
+      // Drop below all title-bar offsets of the stack just finished, then restart left.
+      // If title-bar wrap room is exhausted, clamp to maxOriginY but still reset step.
+      originY = originY + step * CASCADE_STEP;
+      if (originY > maxOriginY) {
+        originY = maxOriginY;
+      }
+      step = 0;
+    }
+
+    out.push({
+      x: Math.min(PAD + step * CASCADE_STEP, maxX),
+      y: Math.min(originY + step * CASCADE_STEP, maxOriginY),
+      w: size.w,
+      h: size.h,
+    });
+    step += 1;
   }
   return out;
 }

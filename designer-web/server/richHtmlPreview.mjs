@@ -260,7 +260,11 @@ export function enhanceRichTextHtml(content, getField, opts = {}) {
     const key = String(ref).trim();
     if (FUNCTION_DISPLAY_NAME_RE.test(key)) return "";
     if (/^Responses to /i.test(key)) return esc(key);
-    return esc(getField(key) ?? "");
+    const val = getField(key);
+    if (val != null && String(val) !== "") return esc(val);
+    // Keep escaped placeholder when unset — never wipe to "" or emit raw `<<`
+    // (browsers parse unescaped `<<Name>>` as a tag → visual `<>`).
+    return esc(`<<${key}>>`);
   };
   html = html
     .replace(/&lt;&lt;([\s\S]+?)&gt;&gt;/g, replaceTemplate)

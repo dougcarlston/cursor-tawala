@@ -1,4 +1,9 @@
-import { getFieldValue, itemKey, expandDynamicChoices } from "./runtimeEngine.mjs";
+import {
+  expandChoiceLabelHtml,
+  expandDynamicChoices,
+  getFieldValue,
+  itemKey,
+} from "./runtimeEngine.mjs";
 import { buildRegistrationReviewTable } from "./registrationReview.mjs";
 
 function esc(s) {
@@ -272,7 +277,7 @@ export function renderRegistrationMc(item, ctx) {
         .includes(String(val))
         ? " checked"
         : "";
-      return `<label class="preview-mc-choice"><input type="${inputType}" name="${esc(name)}" value="${esc(val)}"${checked} /> ${esc(c.text)}</label>`;
+      return `<label class="preview-mc-choice"><input type="${inputType}" name="${esc(name)}" value="${esc(val)}"${checked} /> ${expandChoiceLabelHtml(c.text, ctx)}</label>`;
     })
     .join("");
 

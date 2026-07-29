@@ -7,7 +7,11 @@ import {
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
-import { insertFieldTokenAtSelection, selectFieldDropTarget } from "@/lib/fieldTokens";
+import {
+  embedPlainFieldTokensAsHtml,
+  insertFieldTokenAtSelection,
+  selectFieldDropTarget,
+} from "@/lib/fieldTokens";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -15,6 +19,7 @@ import {
   setFormattingFocus,
 } from "@/lib/formattingPaletteContext";
 import { ConfigureFunctionDialog } from "./ConfigureFunctionDialog";
+import { FieldTextInput } from "./FieldDropInputs";
 import {
   configFromDynamicChoice,
   dynamicChoiceFromConfig,
@@ -402,15 +407,14 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
                 {choices.map((c, i) => (
                   <div key={i} className="mcq-choice-edit-row">
                     <span className="mcq-choice-letter">{choiceLetter(i)})</span>
-                    <input
+                    <FieldTextInput
                       ref={(el) => {
                         choiceRefs.current[i] = el;
                       }}
-                      type="text"
                       className="mcq-choice-input"
                       value={c.text}
                       placeholder={i === 0 ? "Type a choice; press Enter for the next" : ""}
-                      onChange={(e) => updateChoiceText(i, e.target.value)}
+                      onValueChange={(text) => updateChoiceText(i, text)}
                       onKeyDown={(e) => {
                         if (e.key === "Enter") {
                           e.preventDefault();
@@ -486,7 +490,15 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
                   <li key={i}>
                     <span className={`mcq-choice-marker${multiSelect ? " checkbox" : ""}`} />
                     <span className="mcq-choice-letter">{choiceLetter(i)})</span>{" "}
-                    {c.text || <span className="mcq-choice-empty">(empty choice)</span>}
+                    {c.text ? (
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: embedPlainFieldTokensAsHtml(c.text),
+                        }}
+                      />
+                    ) : (
+                      <span className="mcq-choice-empty">(empty choice)</span>
+                    )}
                   </li>
                 ))}
               </ul>

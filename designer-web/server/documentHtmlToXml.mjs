@@ -70,11 +70,18 @@ function stripTags(html) {
  * Legacy Form Text / Document fields use `Form:Field` (e.g. `Potluck Organizer:attendeeName`).
  * Design may store bare `<<attendeeName>>` from the Fields panel — qualify on Deploy.
  */
+/**
+ * Qualify a Document/Form Text `<<field>>` for Deploy.
+ * FIB blanks like `FIB1:a` already contain `:` but still need `Form:FIB1:a` —
+ * only skip when already prefixed with this form or `Record:`.
+ */
 function qualifyFieldRef(name, formName) {
   const s = String(name ?? "").trim();
-  if (!s || !formName) return s;
-  if (s.includes(":")) return s;
-  return `${formName}:${s}`;
+  const form = String(formName ?? "").trim();
+  if (!s || !form) return s;
+  if (/^Record:/i.test(s)) return s;
+  if (s === form || s.startsWith(`${form}:`)) return s;
+  return `${form}:${s}`;
 }
 
 /**
@@ -853,7 +860,7 @@ function conditionFieldForXml(raw, defaultForm) {
     return s;
   }
   if (defaultForm) {
-    // Fields palette often inserts FIB1:a (already has ':') without the Form prefix.
+    // Bare FIB Item:blank (FIB1:a) or Email — prefix the form for Record:Form:Field.
     if (s === defaultForm || s.startsWith(`${defaultForm}:`)) {
       return `Record:${s}`;
     }

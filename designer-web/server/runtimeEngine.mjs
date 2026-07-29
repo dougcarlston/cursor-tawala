@@ -6,9 +6,19 @@ export function itemKey(item) {
 
 const FIB_NAME_TO_ITEM = { Friend: "Q10" };
 
+function escHtml(s) {
+  return String(s ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
 export function getFieldValue(ctx, fieldRef) {
   if (!fieldRef) return "";
   const f = String(fieldRef);
+  // Bare names (project Variables like CoachName) and qualified form fields both live in
+  // ctx.fields / formFields — Variables are not a separate store.
   if (ctx.fields[f] !== undefined) return ctx.fields[f];
   if (ctx.formFields) {
     const parts = f.split(":");
@@ -41,6 +51,25 @@ export function getFieldValue(ctx, fieldRef) {
     }
   }
   return ctx.fields[f] ?? "";
+}
+
+/**
+ * Expand `<<ref>>` in MCQ choice labels for Preview HTML.
+ * Set → escaped value; unset → escaped `<<ref>>` placeholder (never raw `<<` —
+ * browsers parse that as a tag and display `<>`).
+ */
+export function expandChoiceLabelHtml(text, ctx) {
+  return String(text ?? "")
+    .split(/(<<[^<>]+>>)/g)
+    .map((part) => {
+      const m = /^<<\s*([^<>]+?)\s*>>$/.exec(part);
+      if (!m) return escHtml(part);
+      const key = m[1].trim();
+      const val = getFieldValue(ctx, key);
+      if (val != null && String(val) !== "") return escHtml(val);
+      return escHtml(`<<${key}>>`);
+    })
+    .join("");
 }
 
 export function resolveTemplate(str, ctx) {

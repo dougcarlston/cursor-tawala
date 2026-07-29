@@ -13,6 +13,8 @@ export interface IfStatementBuilderProps {
   onStateChange: (next: IfBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  /** Leave Modify/edit without applying — clears selection so insert gaps work again. */
+  onCancel?: () => void;
   /** Process MDI window — flatter chrome, no extra panel border (double-line divider below). */
   embedded?: boolean;
 }
@@ -27,6 +29,7 @@ export function IfStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   embedded = false,
 }: IfStatementBuilderProps) {
   const { combinator, rows, hasElse } = state;
@@ -144,6 +147,11 @@ export function IfStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

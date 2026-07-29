@@ -247,4 +247,24 @@ describe("mcToXml question rich text", () => {
     expect(xml).toContain("Pick a day");
     expect(xml).toContain("<i>(optional)</i>");
   });
+
+  it("emits <field/> for <<tokens>> in static choice text (not escaped)", () => {
+    const xml = mcToXml(
+      {
+        type: "mc",
+        label: "MCQ1",
+        onlyone: true,
+        question: "Pick one",
+        choices: [
+          { label: "a", text: "Hello <<Form 1:FirstName>>" },
+          { label: "b", text: "Plain" },
+        ],
+      },
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('<field name="Form 1:FirstName"/>');
+    expect(xml).not.toContain("&lt;&lt;Form 1:FirstName&gt;&gt;");
+    expect(xml).toContain("Plain");
+  });
 });

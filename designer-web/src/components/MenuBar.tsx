@@ -322,21 +322,21 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
       <MenuDrop label="Windows">
         <button
           type="button"
-          disabled={openWindows.length === 0}
+          disabled={openWindows.every((w) => w.minimized)}
           onClick={() => cascadeWindows()}
         >
           Cascade
         </button>
         <button
           type="button"
-          disabled={openWindows.length === 0}
+          disabled={openWindows.every((w) => w.minimized)}
           onClick={() => tileWindows("horizontal")}
         >
           Tile Horizontally
         </button>
         <button
           type="button"
-          disabled={openWindows.length === 0}
+          disabled={openWindows.every((w) => w.minimized)}
           onClick={() => tileWindows("vertical")}
         >
           Tile Vertically

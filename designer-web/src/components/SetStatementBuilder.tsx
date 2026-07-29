@@ -7,6 +7,8 @@ export interface SetStatementBuilderProps {
   onStateChange: (next: SetBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  /** Leave Modify/edit without applying — clears selection so insert gaps work again. */
+  onCancel?: () => void;
   knownVariables?: ReadonlySet<string>;
   embedded?: boolean;
 }
@@ -19,6 +21,7 @@ export function SetStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   knownVariables,
   embedded = false,
 }: SetStatementBuilderProps) {
@@ -69,6 +72,11 @@ export function SetStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

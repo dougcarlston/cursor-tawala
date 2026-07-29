@@ -39,13 +39,16 @@ interface Props {
 /**
  * A single MDI child window on the designer canvas (backlog §2, Pass 1). Draggable
  * by its title bar, resizable from all edges/corners, click-to-front, with
- * minimize / close controls. Accepts Items/Statements drops when kind matches.
+ * minimize / maximize / restore / close controls. Accepts Items/Statements drops
+ * when kind matches.
  */
 export function CanvasWindow({ win, active }: Props) {
   const frameRef = useRef<HTMLDivElement>(null);
   const focusWindow = useProjectStore((s) => s.focusWindow);
   const closeWindow = useProjectStore((s) => s.closeWindow);
   const minimizeWindow = useProjectStore((s) => s.minimizeWindow);
+  const maximizeWindow = useProjectStore((s) => s.maximizeWindow);
+  const restoreWindow = useProjectStore((s) => s.restoreWindow);
   const setWindowBounds = useProjectStore((s) => s.setWindowBounds);
   const openWindow = useProjectStore((s) => s.openWindow);
   const insertFormItem = useProjectStore((s) => s.insertFormItem);
@@ -217,6 +220,29 @@ export function CanvasWindow({ win, active }: Props) {
           >
             _
           </button>
+          {win.maximized ? (
+            <button
+              type="button"
+              className="mdi-control"
+              title="Restore"
+              aria-label={`Restore ${win.name}`}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => restoreWindow(win.id)}
+            >
+              ❐
+            </button>
+          ) : (
+            <button
+              type="button"
+              className="mdi-control"
+              title="Maximize"
+              aria-label={`Maximize ${win.name}`}
+              onPointerDown={(e) => e.stopPropagation()}
+              onClick={() => maximizeWindow(win.id)}
+            >
+              □
+            </button>
+          )}
           <button
             type="button"
             className="mdi-control mdi-control-close"
@@ -232,13 +258,14 @@ export function CanvasWindow({ win, active }: Props) {
       <div className="mdi-body legacy-scrollbar">
         <WindowBody kind={win.kind} name={win.name} />
       </div>
-      {RESIZE_DIRS.map((dir) => (
-        <div
-          key={dir}
-          className={`mdi-resize mdi-resize-${dir}`}
-          onPointerDown={startResize(dir)}
-        />
-      ))}
+      {!win.maximized &&
+        RESIZE_DIRS.map((dir) => (
+          <div
+            key={dir}
+            className={`mdi-resize mdi-resize-${dir}`}
+            onPointerDown={startResize(dir)}
+          />
+        ))}
     </div>
   );
 }

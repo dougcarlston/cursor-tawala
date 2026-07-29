@@ -45,12 +45,14 @@ function fakeDataTransfer(): DataTransfer {
 describe("qualifyPaletteFieldName", () => {
   it("qualifies bare form-branch leaves as Form:Field", () => {
     expect(qualifyPaletteFieldName("Email", "Form 1")).toBe("Form 1:Email");
+    expect(qualifyPaletteFieldName("FIB1:a", "Form 1")).toBe("Form 1:FIB1:a");
   });
 
-  it("leaves Variables (no form) and already-qualified names alone", () => {
+  it("leaves Variables (no form) and same-form already-qualified names alone", () => {
     expect(qualifyPaletteFieldName("FullName")).toBe("FullName");
     expect(qualifyPaletteFieldName("FullName", null)).toBe("FullName");
-    expect(qualifyPaletteFieldName("Form 1:Email", "Other")).toBe("Form 1:Email");
+    expect(qualifyPaletteFieldName("Form 1:Email", "Form 1")).toBe("Form 1:Email");
+    expect(qualifyPaletteFieldName("Form 1:FIB1:a", "Form 1")).toBe("Form 1:FIB1:a");
   });
 });
 
@@ -63,6 +65,7 @@ describe("fieldInsertText / paletteLeafInsertName", () => {
 
   it("resolves double-click insert names the same as drag qualification", () => {
     expect(paletteLeafInsertName("Email", "Signup", {})).toBe("Signup:Email");
+    expect(paletteLeafInsertName("FIB1:a", "Signup", {})).toBe("Signup:FIB1:a");
     expect(paletteLeafInsertName("Email", "Signup", {}, "Override:X")).toBe("Override:X");
   });
 });
@@ -75,6 +78,13 @@ describe("setFieldDragData / readFieldDragNameForTarget", () => {
     expect(dt.getData(FIELD_DRAG_FORM_MIME)).toBe("Form 1");
     expect(dt.getData("text/plain")).toBe("<<Form 1:Email>>");
     expect(readFieldDragNameForTarget(dt, {})).toBe("Form 1:Email");
+  });
+
+  it("puts Form:FIB1:a on FIB Item:blank form-branch drags", () => {
+    const dt = fakeDataTransfer();
+    setFieldDragData(dt, "FIB1:a", "Form 2");
+    expect(dt.getData("text/plain")).toBe("<<Form 2:FIB1:a>>");
+    expect(readFieldDragNameForTarget(dt, {})).toBe("Form 2:FIB1:a");
   });
 
   it("keeps Variables bare in text/plain", () => {

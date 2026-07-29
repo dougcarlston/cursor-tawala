@@ -8,7 +8,8 @@
  *  - `text/plain` holding the ready-made token (`<<Form 1:Email>>` or bare `<<FullName>>`),
  *    so any native editable control inserts the correct reference automatically.
  *
- * Form-branch leaves must insert as `Form:Field` (Java: bare names are process variables).
+ * Form-branch leaves must insert as `Form:Field` (Java: bare names / bare `FIB1:a`
+ * Item:blank labels are process variables unless prefixed with a real form name).
  * Variables-folder leaves stay bare. Double-click insert reuses the same qualification via
  * `paletteLeafInsertName` / `insertFieldIntoActiveTarget`.
  */
@@ -111,13 +112,85 @@ export function hasFieldDragFormContext(dataTransfer: DataTransfer | null): bool
 }
 
 /**
- * Legacy `Form:Field` for process/skip If conditions — qualify bare leaves from a form branch.
- * Variables and already-qualified names pass through unchanged.
+ * True when `name` is already Form- or Record-qualified for `formName`.
+ * FIB blanks like `FIB1:a` contain `:` but are NOT form-qualified — Java `Reference`
+ * only sets formName when the first segment is a real form in the project.
+ */
+export function isFormQualifiedFieldName(
+  name: string,
+  formName?: string | null,
+): boolean {
+  const trimmed = name.trim();
+  if (!trimmed) return false;
+  if (/^Record:/i.test(trimmed)) return true;
+  const form = formName?.trim();
+  if (!form) return false;
+  return trimmed === form || trimmed.startsWith(`${form}:`);
+}
+
+/**
+ * Qualify a Fields-palette leaf with its form folder name.
+ * Variables (no form) stay bare. FIB `Item:blank` leaves (`FIB1:a`) must still get
+ * `Form 1:FIB1:a` — a colon alone does not mean the name is already form-qualified.
  */
 export function qualifyPaletteFieldName(name: string, formName?: string | null): string {
   const trimmed = name.trim();
-  if (!trimmed || trimmed.includes(":") || !formName) return trimmed;
-  return `${formName}:${trimmed}`;
+  if (!trimmed || !formName?.trim()) return trimmed;
+  if (isFormQualifiedFieldName(trimmed, formName)) return trimmed;
+  return `${formName.trim()}:${trimmed}`;
+}
+
+/**
+ * Upgrade a bare Document/Send field token when ownership is unambiguous.
+ * - Known form on insert/reconnect → use {@link qualifyPaletteFieldName} instead.
+ * - Exactly one form owns the leaf → qualify with that form.
+ * - Zero or multiple forms own it (e.g. FIB1:a on Form 1 and Form 2) → leave bare.
+ * - Already Form-/Record-qualified names and Variables stay unchanged.
+ */
+export function reconnectBareFieldName(
+  name: string,
+  ownership: ReadonlyMap<string, readonly string[]> | Iterable<readonly [string, readonly string[]]>,
+): string {
+  const trimmed = name.trim();
+  if (!trimmed) return trimmed;
+  if (/^Record:/i.test(trimmed)) return trimmed;
+
+  const map: ReadonlyMap<string, readonly string[]> =
+    ownership instanceof Map
+      ? ownership
+      : new Map(ownership as Iterable<readonly [string, readonly string[]]>);
+
+  // Already Form:Field / Form:FIB1:a for a known project form.
+  const colon = trimmed.indexOf(":");
+  if (colon > 0) {
+    const head = trimmed.slice(0, colon);
+    if (map.has(head)) return trimmed;
+  }
+
+  const owners: string[] = [];
+  for (const [form, fields] of map) {
+    if (fields.some((f) => f === trimmed)) owners.push(form);
+  }
+  if (owners.length === 1) return `${owners[0]}:${trimmed}`;
+  return trimmed;
+}
+
+/** Build form → field-leaf ownership from Fields-palette leaves (for reconnect). */
+export function formFieldOwnershipFromLeaves(
+  forms: Iterable<{ name: string; fields: Iterable<string> }>,
+): Map<string, string[]> {
+  const map = new Map<string, string[]>();
+  for (const form of forms) {
+    const formName = form.name.trim();
+    if (!formName) continue;
+    const leaves: string[] = [];
+    for (const field of form.fields) {
+      const leaf = field.trim();
+      if (leaf) leaves.push(leaf);
+    }
+    map.set(formName, leaves);
+  }
+  return map;
 }
 
 /** Resolve a palette leaf for the active editor target (double-click insert). */

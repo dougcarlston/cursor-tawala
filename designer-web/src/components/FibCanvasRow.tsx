@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
-import { BlankValidation, FibItem, FIB_DEFAULT_PROMPT, FIB_PLACEHOLDER } from "@/types/tawala";
+import { BlankValidation, FibItem, FIB_PLACEHOLDER } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import {
   FIB_VALIDATION_OPTIONS,
   activeBlankIndex,
   defaultValidation,
+  fibHintHighlightEnd,
   htmlToPlainText,
   isAlternateLabelUnique,
   selectionIsSingleBlank,
@@ -117,8 +118,6 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     setFormattingFocus({ kind: "fib", cursorInTable: false });
     const sel = window.getSelection();
     if (!sel) return;
-    const range = document.createRange();
-    const plain = htmlToPlainText(prompt);
     // Prefer caret under the second click (Email blank, etc.) over end-of-content.
     const pending = pendingCaretPointRef.current;
     pendingCaretPointRef.current = null;
@@ -132,24 +131,33 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
         return;
       }
     }
-    // Default insert/edit: highlight question text only; leave trailing underscores unselected.
-    if (plain === FIB_DEFAULT_PROMPT || plain.startsWith(`${FIB_PLACEHOLDER} `)) {
-      const end = FIB_PLACEHOLDER.length;
-      if (setPlainTextRange(el, range, 0, end)) {
-        sel.removeAllRanges();
-        sel.addRange(range);
-        savedRangeRef.current = range.cloneRange();
-        syncActiveBlank(el);
+    // Measure from the live DOM (HTML commits may use <br>/newlines vs the stock space).
+    const applyHintOrCaret = () => {
+      const live = window.getSelection();
+      if (!live || !editorRef.current) return;
+      const root = editorRef.current;
+      const next = document.createRange();
+      const plain = htmlToPlainText(root.innerHTML);
+      const hintEnd = fibHintHighlightEnd(plain);
+      if (hintEnd != null && setPlainTextRange(root, next, 0, hintEnd)) {
+        live.removeAllRanges();
+        live.addRange(next);
+        savedRangeRef.current = next.cloneRange();
+        syncActiveBlank(root);
         return;
       }
-    }
-    // No click point: start of content (not end of last blank).
-    range.selectNodeContents(el);
-    range.collapse(true);
-    sel.removeAllRanges();
-    sel.addRange(range);
-    savedRangeRef.current = range.cloneRange();
-    syncActiveBlank(el);
+      // No click point: start of content (not end of last blank / not full select).
+      next.selectNodeContents(root);
+      next.collapse(true);
+      live.removeAllRanges();
+      live.addRange(next);
+      savedRangeRef.current = next.cloneRange();
+      syncActiveBlank(root);
+    };
+    applyHintOrCaret();
+    // Re-apply once after focus — some browsers expand the selection to the whole
+    // contenteditable (hint + underscores) on the initial focus tick.
+    requestAnimationFrame(applyHintOrCaret);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 

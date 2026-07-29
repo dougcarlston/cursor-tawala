@@ -1,4 +1,5 @@
 import {
+  forwardRef,
   useState,
   type DragEvent,
   type InputHTMLAttributes,
@@ -192,57 +193,63 @@ interface FieldTextInputProps
 }
 
 /** `<input>` that accepts `<<field>>` drops and double-click inserts from the Fields panel. */
-export function FieldTextInput({
-  onValueChange,
-  className,
-  bare,
-  replaceOnInsert,
-  formFieldsOnly,
-  knownVariables,
-  configureDialog,
-  onFocus,
-  onDrop,
-  onDragOver,
-  onDragEnter,
-  onDragLeave,
-  ...rest
-}: FieldTextInputProps) {
-  const { dragOver, handlers } = useFieldDropTarget(onValueChange, {
-    bare,
-    replaceOnInsert,
-    formFieldsOnly,
-    knownVariables,
-    configureDialog,
-  });
-  return (
-    <input
-      {...rest}
-      {...handlers}
-      className={mergeClass(className, dragOver)}
-      onChange={(e) => onValueChange(e.target.value)}
-      onFocus={(e) => {
-        handlers.onFocus(e);
-        onFocus?.(e);
-      }}
-      onDrop={(e) => {
-        handlers.onDrop(e);
-        onDrop?.(e);
-      }}
-      onDragOver={(e) => {
-        handlers.onDragOver(e);
-        onDragOver?.(e);
-      }}
-      onDragEnter={(e) => {
-        handlers.onDragEnter(e);
-        onDragEnter?.(e);
-      }}
-      onDragLeave={(e) => {
-        handlers.onDragLeave(e);
-        onDragLeave?.(e);
-      }}
-    />
-  );
-}
+export const FieldTextInput = forwardRef<HTMLInputElement, FieldTextInputProps>(
+  function FieldTextInput(
+    {
+      onValueChange,
+      className,
+      bare,
+      replaceOnInsert,
+      formFieldsOnly,
+      knownVariables,
+      configureDialog,
+      onFocus,
+      onDrop,
+      onDragOver,
+      onDragEnter,
+      onDragLeave,
+      ...rest
+    },
+    ref,
+  ) {
+    const { dragOver, handlers } = useFieldDropTarget(onValueChange, {
+      bare,
+      replaceOnInsert,
+      formFieldsOnly,
+      knownVariables,
+      configureDialog,
+    });
+    return (
+      <input
+        {...rest}
+        {...handlers}
+        ref={ref}
+        className={mergeClass(className, dragOver)}
+        onChange={(e) => onValueChange(e.target.value)}
+        onFocus={(e) => {
+          handlers.onFocus(e);
+          onFocus?.(e);
+        }}
+        onDrop={(e) => {
+          handlers.onDrop(e);
+          onDrop?.(e);
+        }}
+        onDragOver={(e) => {
+          handlers.onDragOver(e);
+          onDragOver?.(e);
+        }}
+        onDragEnter={(e) => {
+          handlers.onDragEnter(e);
+          onDragEnter?.(e);
+        }}
+        onDragLeave={(e) => {
+          handlers.onDragLeave(e);
+          onDragLeave?.(e);
+        }}
+      />
+    );
+  },
+);
 
 /** Process/skip If condition field box — inserts bare `Form:Field`, not `<<…>>`. */
 export function QualifiedFieldInput({
