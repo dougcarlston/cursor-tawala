@@ -29,7 +29,7 @@ export function DocumentEditor({ documentName }: Props) {
 }
 
 /** Load project document content into the WYSIWYG surface (HTML string preferred). */
-function documentContentToHtml(content: string | RichContentBlock[] | undefined): string {
+export function documentContentToHtml(content: string | RichContentBlock[] | undefined): string {
   if (content == null) return "";
   if (typeof content === "string") return content;
   if (

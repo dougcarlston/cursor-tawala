@@ -417,6 +417,9 @@ textarea {
   flex: 1;
   min-height: 0;
   border-top: 1px solid var(--border);
+  /* Clip MDI frames that slide under docks; docks stack above via z-index. */
+  overflow: hidden;
+  position: relative;
 }
 
 .designer-left {
@@ -428,6 +431,9 @@ textarea {
   border-right: none;
   background: var(--panel);
   overflow: hidden;
+  /* Above MDI windows that slide under the explorer column. */
+  position: relative;
+  z-index: 5;
 }
 
 /* Grey vertical resize bar on Project Explorer's right edge (pairs with Fields splitter). */
@@ -436,7 +442,8 @@ textarea {
   cursor: ew-resize;
   background: linear-gradient(90deg, var(--border) 0%, #d8d8d8 50%, var(--border) 100%);
   border-right: 1px solid var(--border-dark);
-  z-index: 2;
+  position: relative;
+  z-index: 5;
 }
 
 .designer-left-splitter:hover {
@@ -454,6 +461,9 @@ textarea {
   border-right: 1px solid #716f64;
   /* Soft blue-grey column like legacy toolbox chrome */
   background: linear-gradient(90deg, #c8d6e8 0%, #d7e3f2 45%, #e4ecf6 100%);
+  /* Above MDI windows that slide under Items / Statements. */
+  position: relative;
+  z-index: 5;
 }
 
 /* Legacy Items / Statements title bar (Vista-era blue). */
@@ -629,6 +639,10 @@ textarea {
   display: flex;
   flex-direction: column;
   background: var(--panel);
+  position: relative;
+  z-index: 1;
+  /* Let MDI frames paint under adjacent dock columns. */
+  overflow: visible;
 }
 
 .designer-right {
@@ -639,6 +653,9 @@ textarea {
   display: flex;
   flex-direction: column;
   min-height: 0;
+  /* Above MDI windows that slide under Fields / inspector. */
+  position: relative;
+  z-index: 5;
 }
 
 /* Grey vertical resize bar on the Fields column's left margin (FieldsPanel.cs parity). */
@@ -647,6 +664,8 @@ textarea {
   cursor: ew-resize;
   background: linear-gradient(90deg, var(--border) 0%, #d8d8d8 50%, var(--border) 100%);
   border-left: 1px solid var(--border-dark);
+  position: relative;
+  z-index: 5;
 }
 
 .designer-right-splitter:hover {
@@ -4154,13 +4173,15 @@ button.font-color-picker-recent-slot:hover {
   min-height: 0;
   display: flex;
   flex-direction: column;
+  overflow: visible;
 }
 
 .mdi-surface {
   position: relative;
   flex: 1;
   min-height: 0;
-  overflow: hidden;
+  /* Visible so frames can slide under PE / Items / Fields (docks stack above). */
+  overflow: visible;
   /* Legacy MDI workspace — flat medium gray (not a gradient wash). */
   background: #7a7a7a;
 }

@@ -1,6 +1,12 @@
 /**
  * Windows menu layout math for the MDI canvas (`.mdi-surface`).
- * Cascade / Tile Horizontal / Tile Vertical.
+ * Cascade / Tile Horizontal / Tile Vertical + minimize restore sizing.
+ *
+ * Legacy (screenshots July 2026): Cascade stacks restored frames diagonally;
+ * Tile Vertically = column-primary (side-by-side, grid when many); Tile
+ * Horizontally = row-primary. Minimized windows stay as bottom squibs and are
+ * excluded from arrange geometry. The squib strip is a flex sibling of
+ * `.mdi-surface`, so `getMdiSurfaceViewport()` already excludes it when present.
  */
 
 export interface MdiViewport {
@@ -19,8 +25,14 @@ const CASCADE_STEP = 28;
 const CASCADE_WRAP = 8;
 const DEFAULT_W = 640;
 const DEFAULT_H = 460;
-const MIN_W = 280;
-const MIN_H = 200;
+/** Comfortable minimum for cascade / interactive restore (not dense tile cells). */
+export const MDI_RESTORE_MIN_W = 320;
+export const MDI_RESTORE_MIN_H = 180;
+export const MDI_DEFAULT_W = DEFAULT_W;
+export const MDI_DEFAULT_H = DEFAULT_H;
+/** Floor for dense tile cells so ~20 windows can fill a typical canvas. */
+const TILE_CELL_MIN_W = 100;
+const TILE_CELL_MIN_H = 72;
 const PAD = 8;
 
 /** Read live MDI surface size; falls back if the canvas is not mounted. */
@@ -37,16 +49,54 @@ export function getMdiSurfaceViewport(): MdiViewport {
   };
 }
 
-function clampSize(w: number, h: number, viewport: MdiViewport): { w: number; h: number } {
+function clampCascadeSize(w: number, h: number, viewport: MdiViewport): { w: number; h: number } {
   return {
-    w: Math.max(MIN_W, Math.min(w, viewport.width - PAD * 2)),
-    h: Math.max(MIN_H, Math.min(h, viewport.height - PAD * 2)),
+    w: Math.max(MDI_RESTORE_MIN_W, Math.min(w, Math.max(MDI_RESTORE_MIN_W, viewport.width - PAD * 2))),
+    h: Math.max(MDI_RESTORE_MIN_H, Math.min(h, Math.max(MDI_RESTORE_MIN_H, viewport.height - PAD * 2))),
   };
 }
 
-/** Overlapping cascade (same step as new-window open). */
+/**
+ * Capture a restore rect when minimizing. If the frame is already tiny (owner
+ * Windows6 case: highly-shrunk then minimized → tiny box on restore), replace
+ * with a sensible default so restore never permanently inherits a stub size.
+ */
+export function sanitizeRestoreBounds(
+  bounds: MdiBounds,
+  viewport?: MdiViewport,
+): MdiBounds {
+  const vp = viewport ?? { width: 1200, height: 800 };
+  const tooSmall = bounds.w < MDI_RESTORE_MIN_W || bounds.h < MDI_RESTORE_MIN_H;
+  if (!tooSmall) {
+    return {
+      x: bounds.x,
+      y: bounds.y,
+      w: bounds.w,
+      h: bounds.h,
+    };
+  }
+  const size = clampCascadeSize(DEFAULT_W, DEFAULT_H, vp);
+  return {
+    x: Math.max(PAD, Math.min(bounds.x, Math.max(PAD, vp.width - size.w - PAD))),
+    y: Math.max(PAD, Math.min(bounds.y, Math.max(PAD, vp.height - size.h - PAD))),
+    w: size.w,
+    h: size.h,
+  };
+}
+
+/** Bounds that fill the MDI surface (maximize). */
+export function maximizedBounds(viewport: MdiViewport): MdiBounds {
+  return {
+    x: 0,
+    y: 0,
+    w: Math.max(TILE_CELL_MIN_W, viewport.width),
+    h: Math.max(TILE_CELL_MIN_H, viewport.height),
+  };
+}
+
+/** Overlapping cascade (same step as new-window open). Restored windows only. */
 export function cascadeBounds(count: number, viewport: MdiViewport): MdiBounds[] {
-  const size = clampSize(DEFAULT_W, DEFAULT_H, viewport);
+  const size = clampCascadeSize(DEFAULT_W, DEFAULT_H, viewport);
   const out: MdiBounds[] = [];
   for (let i = 0; i < count; i++) {
     const offset = (i % CASCADE_WRAP) * CASCADE_STEP;
@@ -57,28 +107,76 @@ export function cascadeBounds(count: number, viewport: MdiViewport): MdiBounds[]
   return out;
 }
 
-/** Horizontal strips (stacked top → bottom). */
-export function tileHorizontalBounds(count: number, viewport: MdiViewport): MdiBounds[] {
-  if (count <= 0) return [];
-  const h = Math.max(MIN_H, Math.floor((viewport.height - PAD * 2) / count));
-  const w = Math.max(MIN_W, viewport.width - PAD * 2);
+/**
+ * Grid dimensions for tiling.
+ * - Vertical (column-primary): prefer a single row of columns when each cell is
+ *   wide enough; otherwise a near-square column-primary grid (20 → 5×4).
+ * - Horizontal (row-primary): prefer a single column of rows when tall enough;
+ *   otherwise a near-square row-primary grid.
+ */
+export function tileGridDimensions(
+  count: number,
+  viewport: MdiViewport,
+  direction: "horizontal" | "vertical",
+): { cols: number; rows: number } {
+  if (count <= 0) return { cols: 0, rows: 0 };
+  const availW = Math.max(1, viewport.width - PAD * 2);
+  const availH = Math.max(1, viewport.height - PAD * 2);
+
+  if (direction === "vertical") {
+    if (availW / count >= TILE_CELL_MIN_W) {
+      return { cols: count, rows: 1 };
+    }
+    const cols = Math.max(1, Math.ceil(Math.sqrt(count)));
+    const rows = Math.max(1, Math.ceil(count / cols));
+    return { cols, rows };
+  }
+
+  if (availH / count >= TILE_CELL_MIN_H) {
+    return { cols: 1, rows: count };
+  }
+  const rows = Math.max(1, Math.ceil(Math.sqrt(count)));
+  const cols = Math.max(1, Math.ceil(count / rows));
+  return { cols, rows };
+}
+
+function packTileBounds(
+  count: number,
+  viewport: MdiViewport,
+  cols: number,
+  rows: number,
+): MdiBounds[] {
+  if (count <= 0 || cols <= 0 || rows <= 0) return [];
+  const availW = Math.max(1, viewport.width - PAD * 2);
+  const availH = Math.max(1, viewport.height - PAD * 2);
+  // Integer division may leave a remainder; last col/row absorbs it so the grid fills.
+  const cellW = Math.max(1, Math.floor(availW / cols));
+  const cellH = Math.max(1, Math.floor(availH / rows));
   const out: MdiBounds[] = [];
   for (let i = 0; i < count; i++) {
-    out.push({ x: PAD, y: PAD + i * h, w, h });
+    const col = i % cols;
+    const row = Math.floor(i / cols);
+    const x = PAD + col * cellW;
+    const y = PAD + row * cellH;
+    const w =
+      col === cols - 1 ? Math.max(1, viewport.width - PAD - x) : cellW;
+    const h =
+      row === rows - 1 ? Math.max(1, viewport.height - PAD - y) : cellH;
+    out.push({ x, y, w, h });
   }
   return out;
 }
 
-/** Vertical strips (side by side). */
+/** Horizontal strips / row-primary grid (stacked top → bottom). */
+export function tileHorizontalBounds(count: number, viewport: MdiViewport): MdiBounds[] {
+  const { cols, rows } = tileGridDimensions(count, viewport, "horizontal");
+  return packTileBounds(count, viewport, cols, rows);
+}
+
+/** Vertical strips / column-primary grid (side by side). */
 export function tileVerticalBounds(count: number, viewport: MdiViewport): MdiBounds[] {
-  if (count <= 0) return [];
-  const w = Math.max(MIN_W, Math.floor((viewport.width - PAD * 2) / count));
-  const h = Math.max(MIN_H, viewport.height - PAD * 2);
-  const out: MdiBounds[] = [];
-  for (let i = 0; i < count; i++) {
-    out.push({ x: PAD + i * w, y: PAD, w, h });
-  }
-  return out;
+  const { cols, rows } = tileGridDimensions(count, viewport, "vertical");
+  return packTileBounds(count, viewport, cols, rows);
 }
 
 export function windowMenuLabel(kind: "form" | "process" | "document", name: string): string {

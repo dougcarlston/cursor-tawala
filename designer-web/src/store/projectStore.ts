@@ -38,8 +38,11 @@ import { processPanelKeyForCommand, processPanelKeyForLabel } from "@/processSta
 import {
   cascadeBounds as layoutCascade,
   getMdiSurfaceViewport,
+  maximizedBounds,
+  sanitizeRestoreBounds,
   tileHorizontalBounds,
   tileVerticalBounds,
+  type MdiBounds,
 } from "@/lib/mdiWindowLayout";
 import {
   remapProcessUiCache,
@@ -76,6 +79,13 @@ export interface DesignerWindow {
   h: number;
   z: number;
   minimized: boolean;
+  /** True when the frame fills the MDI surface; `restoreBounds` holds the prior rect. */
+  maximized: boolean;
+  /**
+   * Geometry to apply on Restore (from minimize or maximize). Captured on
+   * minimize/maximize; sanitized so tiny pre-minimize sizes are not permanent.
+   */
+  restoreBounds?: MdiBounds;
 }
 
 const WINDOW_DEFAULT_SIZE = { w: 640, h: 460 };
@@ -210,11 +220,15 @@ interface ProjectState {
   focusWindow: (id: string) => void;
   minimizeWindow: (id: string) => void;
   restoreWindow: (id: string) => void;
+  maximizeWindow: (id: string) => void;
   setWindowBounds: (
     id: string,
     bounds: Partial<Pick<DesignerWindow, "x" | "y" | "w" | "h">>,
   ) => void;
-  /** Windows → Cascade / Tile — restores minimized; layouts all open windows. */
+  /**
+   * Windows → Cascade / Tile — layouts restored (non-minimized) windows only;
+   * minimized stay as squibs. Maximized windows are restored into the arrange.
+   */
   cascadeWindows: (viewport?: { width: number; height: number }) => void;
   tileWindows: (
     direction: "horizontal" | "vertical",
@@ -380,6 +394,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       ...cascadeBounds(cascadeIndex),
       z: topZ,
       minimized: false,
+      maximized: false,
     };
     const s = get();
     set({
@@ -494,7 +509,22 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       insertBeforeIndex,
       project,
     } = s;
-    const next = openWindows.map((w) => (w.id === id ? { ...w, minimized: true } : w));
+    const target = openWindows.find((w) => w.id === id);
+    if (!target || target.minimized) return;
+    const vp = getMdiSurfaceViewport();
+    // Prefer an already-captured pre-maximize rect; otherwise sanitize current
+    // geometry so a highly-shrunk frame does not become a permanent tiny restore.
+    const restoreBounds = sanitizeRestoreBounds(
+      target.maximized && target.restoreBounds
+        ? target.restoreBounds
+        : { x: target.x, y: target.y, w: target.w, h: target.h },
+      vp,
+    );
+    const next = openWindows.map((w) =>
+      w.id === id
+        ? { ...w, minimized: true, maximized: false, restoreBounds }
+        : w,
+    );
     let nextActive = activeWindowId;
     if (activeWindowId === id) {
       const visible = next.filter((w) => !w.minimized);
@@ -550,9 +580,84 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!target) return;
     const topZ = maxZ(openWindows) + 1;
     const sameEntity = selection.kind === target.kind && selection.name === target.name;
+    const vp = getMdiSurfaceViewport();
+    const restored = target.restoreBounds
+      ? sanitizeRestoreBounds(target.restoreBounds, vp)
+      : sanitizeRestoreBounds(
+          { x: target.x, y: target.y, w: target.w, h: target.h },
+          vp,
+        );
     set({
       openWindows: openWindows.map((w) =>
-        w.id === id ? { ...w, minimized: false, z: topZ } : w,
+        w.id === id
+          ? {
+              ...w,
+              ...restored,
+              minimized: false,
+              maximized: false,
+              restoreBounds: undefined,
+              z: topZ,
+            }
+          : w,
+      ),
+      activeWindowId: id,
+      selection: { kind: target.kind, name: target.name },
+      selectedItemIndex: sameEntity ? selectedItemIndex : null,
+      insertBeforeIndex: insertIndexWhenSwitchingEntity(
+        project,
+        target.kind,
+        target.name,
+        sameEntity,
+        insertBeforeIndex,
+      ),
+      ...applyProcessWindowTransition(
+        selection,
+        target.kind,
+        target.name,
+        sameEntity,
+        s.processUiByName,
+        pickProcessUi(s),
+      ),
+    });
+  },
+
+  maximizeWindow: (id) => {
+    const s = get();
+    const {
+      openWindows,
+      selection,
+      selectedItemIndex,
+      insertBeforeIndex,
+      project,
+    } = s;
+    const target = openWindows.find((w) => w.id === id);
+    if (!target) return;
+    const topZ = maxZ(openWindows) + 1;
+    const sameEntity = selection.kind === target.kind && selection.name === target.name;
+    const vp = getMdiSurfaceViewport();
+    const fill = maximizedBounds(vp);
+    // From a squib: keep prior restoreBounds if any; otherwise sanitize current.
+    const restoreBounds =
+      target.minimized && target.restoreBounds
+        ? sanitizeRestoreBounds(target.restoreBounds, vp)
+        : target.maximized && target.restoreBounds
+          ? target.restoreBounds
+          : sanitizeRestoreBounds(
+              { x: target.x, y: target.y, w: target.w, h: target.h },
+              vp,
+            );
+    set({
+      openWindows: openWindows.map((w) =>
+        w.id === id
+          ? {
+              ...w,
+              ...fill,
+              minimized: false,
+              maximized: true,
+              restoreBounds,
+              z: topZ,
+            }
+          : w,
       ),
       activeWindowId: id,
       selection: { kind: target.kind, name: target.name },
@@ -578,24 +683,41 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   setWindowBounds: (id, bounds) => {
     const { openWindows } = get();
     set({
-      openWindows: openWindows.map((w) => (w.id === id ? { ...w, ...bounds } : w)),
+      openWindows: openWindows.map((w) =>
+        w.id === id
+          ? {
+              ...w,
+              ...bounds,
+              // Manual drag/resize exits maximized state.
+              maximized: false,
+              restoreBounds: w.maximized ? undefined : w.restoreBounds,
+            }
+          : w,
+      ),
     });
   },
 
   cascadeWindows: (viewport) => {
     const s = get();
     const { openWindows } = s;
-    if (openWindows.length === 0) return;
+    const restored = openWindows.filter((w) => !w.minimized);
+    if (restored.length === 0) return;
     const vp = viewport ?? getMdiSurfaceViewport();
-    const bounds = layoutCascade(openWindows.length, vp);
+    const bounds = layoutCascade(restored.length, vp);
     const baseZ = maxZ(openWindows);
-    const next = openWindows.map((w, i) => ({
-      ...w,
-      ...bounds[i]!,
-      minimized: false,
-      z: baseZ + 1 + i,
-    }));
-    const top = next[next.length - 1]!;
+    const byId = new Map(restored.map((w, i) => [w.id, { ...bounds[i]!, z: baseZ + 1 + i }]));
+    const next = openWindows.map((w) => {
+      const laid = byId.get(w.id);
+      if (!laid) return w;
+      return {
+        ...w,
+        ...laid,
+        minimized: false,
+        maximized: false,
+        restoreBounds: undefined,
+      };
+    });
+    const top = next.find((w) => w.id === restored[restored.length - 1]!.id)!;
     const sameEntity = s.selection.kind === top.kind && s.selection.name === top.name;
     set({
       openWindows: next,
@@ -625,20 +747,29 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   tileWindows: (direction, viewport) => {
     const s = get();
     const { openWindows } = s;
-    if (openWindows.length === 0) return;
+    const restored = openWindows.filter((w) => !w.minimized);
+    if (restored.length === 0) return;
     const vp = viewport ?? getMdiSurfaceViewport();
     const layoutBounds =
       direction === "horizontal"
-        ? tileHorizontalBounds(openWindows.length, vp)
-        : tileVerticalBounds(openWindows.length, vp);
+        ? tileHorizontalBounds(restored.length, vp)
+        : tileVerticalBounds(restored.length, vp);
     const baseZ = maxZ(openWindows);
-    const next = openWindows.map((w, i) => ({
-      ...w,
-      ...layoutBounds[i]!,
-      minimized: false,
-      z: baseZ + 1 + i,
-    }));
-    const top = next[0]!;
+    const byId = new Map(
+      restored.map((w, i) => [w.id, { ...layoutBounds[i]!, z: baseZ + 1 + i }]),
+    );
+    const next = openWindows.map((w) => {
+      const laid = byId.get(w.id);
+      if (!laid) return w;
+      return {
+        ...w,
+        ...laid,
+        minimized: false,
+        maximized: false,
+        restoreBounds: undefined,
+      };
+    });
+    const top = next.find((w) => w.id === restored[0]!.id)!;
     const sameEntity = s.selection.kind === top.kind && s.selection.name === top.name;
     set({
       openWindows: next,

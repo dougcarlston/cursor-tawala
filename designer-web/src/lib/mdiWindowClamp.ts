@@ -1,13 +1,17 @@
 /**
- * Keep MDI child windows inside `.mdi-surface` so title-bar controls stay reachable.
+ * MDI child-window drag/resize clamps for `.mdi-surface`.
  *
- * Project Explorer sits left of the surface (flex sibling) — clamping x ≥ 0 already
- * prevents sliding under it. Fields sits to the right; the old drag clamp only kept
- * ~80px of the *left* edge on-screen, so minimize/close (upper-right) could slide
- * under Fields / off the clipped canvas edge.
+ * Docked palettes (Project Explorer, Items/Statements, Fields) sit as flex
+ * siblings beside the surface and stack above it in z-index. Windows may
+ * extend under those docks so title-bar minimize/close can be dragged clear
+ * of palette occlusion — especially after palettes were hidden, a window was
+ * enlarged, then palettes restored (surface shrinks; frame stays oversized).
+ *
+ * Keep a strip of the title bar intersecting the surface so a window can
+ * always be grabbed and dragged back.
  */
 
-/** Minimize + close (~20+3+20) plus a small margin. */
+/** Minimize + close (~16+2+16) plus a small margin. */
 export const MDI_TITLEBAR_CONTROLS_W = 56;
 export const MDI_TITLEBAR_H = 28;
 
@@ -19,8 +23,10 @@ export interface MdiBounds {
 }
 
 /**
- * Clamp origin so a fitting window stays fully on-canvas (right edge = controls).
- * Left stays ≥ 0 so frames do not slide toward Project Explorer.
+ * Clamp origin so at least {@link MDI_TITLEBAR_CONTROLS_W} of the frame stays
+ * inside the surface horizontally (and the title bar stays reachable
+ * vertically). Negative x / x past `parentW - w` are allowed — that is how
+ * frames slide under left/right palettes.
  */
 export function clampMdiWindowOrigin(
   x: number,
@@ -30,17 +36,22 @@ export function clampMdiWindowOrigin(
   parentW: number,
   parentH: number,
 ): { x: number; y: number } {
-  const maxX = Math.max(0, parentW - w);
+  // Fully left: only the right CONTROLS_W of the frame remains on-canvas.
+  const minX = MDI_TITLEBAR_CONTROLS_W - w;
+  // Fully right: only the left CONTROLS_W remains on-canvas (under Fields side).
+  const maxX = Math.max(minX, parentW - MDI_TITLEBAR_CONTROLS_W);
   const maxY = Math.max(0, parentH - MDI_TITLEBAR_H);
   return {
-    x: Math.max(0, Math.min(x, maxX)),
+    x: Math.max(minX, Math.min(x, maxX)),
     y: Math.max(0, Math.min(y, maxY)),
   };
 }
 
 /**
- * After a resize, keep the frame inside the parent and enforce minimums.
- * East/south growth is capped so controls cannot be pushed under Fields.
+ * After a resize, enforce minimums and keep size from exploding past the
+ * surface. Origin may still sit under palette docks (via
+ * {@link clampMdiWindowOrigin}); width/height stay within the parent so
+ * maximize/tile math remains sane.
  */
 export function clampMdiWindowBounds(
   bounds: MdiBounds,
@@ -55,19 +66,18 @@ export function clampMdiWindowBounds(
 
   if (parentW > 0) {
     w = Math.min(w, Math.max(minW, parentW));
-    x = Math.max(0, x);
+    // Prefer keeping the frame in-surface when resizing, but allow the
+    // subsequent origin clamp to slide under docks if the user already had.
     if (x + w > parentW) {
-      x = Math.max(0, parentW - w);
-      if (x + w > parentW) w = Math.max(minW, parentW - x);
+      x = parentW - w;
     }
   }
   if (parentH > 0) {
     h = Math.min(h, Math.max(minH, parentH));
-    y = Math.max(0, y);
     if (y + h > parentH) {
-      y = Math.max(0, parentH - h);
-      if (y + h > parentH) h = Math.max(minH, parentH - y);
+      y = parentH - h;
     }
+    y = Math.max(0, y);
   }
 
   const origin = clampMdiWindowOrigin(x, y, w, h, parentW, parentH);
