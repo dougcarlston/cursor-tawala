@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - Project ops archive review</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css" />
+  <script src="js/project-ops.js"></script>
+</head>
+<body data-tawala-page="mytawala" data-tawala-user="dev">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd" class="pm-review-bd">
+      <div class="content pm-review-content">
+        <div class="pageTitle"><h1>Archive labels / unimplemented features</h1></div>
+        <p class="pm-review-intro">
+          Memory / review catalog of Project Manager, Library, and Save–Clone labels recovered from legacy JSPs.
+          Working My Tawala stays lean — browse the layout on
+          <a href="mytawala.html">My Projects</a>
+          and
+          <a href="mytawala-project.html?project=simple-survey">Project Details</a>;
+          use this page when recalling ops organization.
+        </p>
+        <div id="pmCatalogHost"></div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js"></script>
+  <script>
+    TawalaChrome.mount();
+    document.getElementById("pmCatalogHost").innerHTML =
+      TawalaProjectOps.renderOpsCatalog();
+  </script>
+</body>
+</html>

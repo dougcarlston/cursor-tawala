@@ -464,7 +464,7 @@ table.projectListing .title a:hover {
   }
 }
 
-/* My Tawala / Project Manager ops (memory-jog menus from legacy JSPs) */
+/* My Tawala / Project Manager — lean listing + separate Project Details */
 .pm-submenu.sub-menu {
   margin: 0 0 12px;
   padding: 6px 0;
@@ -492,7 +492,13 @@ table.projectListing .title a:hover {
   text-decoration: underline;
 }
 
-.pm-actions-bar,
+.pm-actions-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 14px;
+}
+
 .pm-sidebar-ops {
   display: flex;
   flex-wrap: wrap;
@@ -500,9 +506,19 @@ table.projectListing .title a:hover {
   margin: 8px 0 12px;
 }
 
+.pm-sidebar-stack {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: stretch;
+}
+
+.pm-sidebar-stack .pm-action {
+  text-align: left;
+  width: 100%;
+}
+
 .pm-action,
-.pm-icon-action,
-.pm-manage-btn {
+.pm-icon-action {
   font-size: 11px;
   font-weight: bold;
   letter-spacing: 0.02em;
@@ -514,8 +530,7 @@ table.projectListing .title a:hover {
 }
 
 .pm-action:hover,
-.pm-icon-action:hover,
-.pm-manage-btn:hover {
+.pm-icon-action:hover {
   background: #e4d9c8;
 }
 
@@ -536,34 +551,12 @@ table.projectListing .title a:hover {
   flex-wrap: wrap;
   gap: 4px;
   justify-content: flex-end;
-  min-width: 11em;
+  min-width: 7em;
+  white-space: nowrap;
 }
 
 .pm-icon-action {
   padding: 3px 6px;
-}
-
-.pm-manage-btn {
-  background: #a31c1c;
-  border-color: #7a1414;
-  color: #fff;
-}
-
-.pm-manage-btn:hover {
-  background: #7a1414;
-  color: #fff;
-}
-
-.pm-detail {
-  margin-top: 20px;
-  padding: 12px 14px;
-  background: #f8f6f2;
-  border: 1px solid #d8d0c4;
-}
-
-.pm-detail h2 {
-  margin: 0 0 10px;
-  font-size: 1.25em;
 }
 
 .pm-hint {
@@ -573,36 +566,200 @@ table.projectListing .title a:hover {
   white-space: pre-wrap;
 }
 
-.pm-archive-note {
-  font-size: 0.82em;
+.pm-back {
+  margin: 0 0 6px;
+  font-size: 0.9em;
 }
 
-.pm-archive-note .pm-archive-source {
+.pm-detail-bd,
+.pm-review-bd {
+  grid-template-columns: 1fr;
+}
+
+.pm-detail-content,
+.pm-review-content {
+  grid-column: 1 / -1;
+}
+
+.pm-detail-layout {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+  gap: 0 16px;
+  align-items: start;
+  margin-top: 4px;
+}
+
+.pm-detail-header h2 {
+  margin: 0 0 6px;
+  font-size: 1.35em;
+  color: #333;
+}
+
+.pm-detail-meta {
+  margin: 0 0 12px;
+  font-size: 0.92em;
+  color: #555;
+  line-height: 1.4;
+}
+
+.pm-detail-sidebar {
+  background: #f8f6f2;
+  border: 1px solid #d8d0c4;
+  padding: 10px 12px;
+}
+
+.pm-detail-sidebar h3 {
+  margin: 0 0 8px;
+  font-size: 1em;
+  color: #bb4343;
+  border-bottom: 1px solid #d8d0c4;
+  padding-bottom: 4px;
+}
+
+.pm-section {
+  margin: 8px 0;
+  border: 1px solid #d8d0c4;
+  background: #fff;
+}
+
+.pm-section > summary {
+  cursor: pointer;
+  font-weight: bold;
   font-size: 0.95em;
-  color: #666;
+  color: #446787;
+  padding: 8px 10px;
+  background: #f0ebe3;
+  list-style: none;
+}
+
+.pm-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.pm-section > summary::before {
+  content: "▸ ";
+  color: #8a7a68;
+}
+
+.pm-section[open] > summary::before {
+  content: "▾ ";
+}
+
+.pm-section-body {
+  padding: 10px 12px;
+  border-top: 1px solid #d8d0c4;
+}
+
+.pm-chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
   margin-bottom: 8px;
 }
 
-.pm-archive-group {
-  margin: 6px 0;
+.pm-start-points {
+  margin: 0 0 8px;
+  padding-left: 18px;
+  font-size: 0.92em;
 }
 
-.pm-archive-group summary {
-  cursor: pointer;
-  font-weight: bold;
-  color: #664;
+.pm-start-points a {
+  color: #bb4343;
 }
 
-.pm-archive-group ul {
-  margin: 4px 0 8px 1.1em;
+/* Ops archive review page */
+.pm-review-intro {
+  font-size: 0.95em;
+  line-height: 1.45;
+  color: #444;
+  max-width: 52em;
+  margin: 0 0 16px;
+}
+
+.pm-catalog .pm-archive-source {
+  font-size: 0.88em;
+  color: #666;
+  line-height: 1.45;
+  margin-bottom: 14px;
+  max-width: 56em;
+}
+
+.pm-catalog-toc {
+  margin: 0 0 18px;
+  padding: 10px 12px;
+  background: #f8f6f2;
+  border: 1px solid #d8d0c4;
+}
+
+.pm-catalog-toc ul {
+  list-style: none;
+  margin: 0;
   padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
 }
 
-.pm-archive-group li {
-  margin: 2px 0;
+.pm-catalog-toc a {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.pm-catalog-section {
+  margin: 0 0 22px;
+}
+
+.pm-catalog-section h2 {
+  margin: 0 0 4px;
+  font-size: 1.15em;
+  color: #bb4343;
+  border-bottom: 1px solid #d8d0c4;
+  padding-bottom: 4px;
+}
+
+.pm-catalog-where {
+  margin: 0 0 8px;
+  font-size: 0.85em;
+  color: #666;
   line-height: 1.35;
 }
 
-.pm-archive-group code {
+.pm-catalog-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.88em;
+  background: #fff;
+}
+
+.pm-catalog-table th,
+.pm-catalog-table td {
+  border: 1px solid #d8d0c4;
+  padding: 5px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.pm-catalog-table thead th {
+  background: #e8e2d8;
+}
+
+.pm-catalog-table code {
   font-size: 0.95em;
+}
+
+.pm-cat-title,
+.pm-cat-src {
+  color: #555;
+}
+
+.pm-cat-wired {
+  white-space: nowrap;
+  color: #664;
+  font-size: 0.95em;
+}
+
+@media (max-width: 800px) {
+  .pm-detail-layout {
+    grid-template-columns: 1fr;
+  }
 }

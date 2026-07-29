@@ -23,8 +23,10 @@ Shared chrome lives in `js/chrome.js` (header, footer, guest/logged-in status).
 |------|------|
 | Home | `index.html` |
 | Library | `library.html` |
-| Project detail | `library-detail.html?project=…` |
-| My Tawala | `mytawala.html` |
+| Project detail (Library) | `library-detail.html?project=…` |
+| My Tawala — My Projects | `mytawala.html` |
+| My Tawala — Project Details | `mytawala-project.html?project=…` |
+| Ops archive review | `project-ops-review.html` |
 | About / Company Info | `about.html` |
 | FAQ | `faq.html` |
 | Login | `login.html` |
@@ -46,23 +48,21 @@ Links **without** a stub yet are greyed out via class `link-pending` in `chrome.
 
 Test-drive start points stay on `:8080` via `js/demo-urls.js`.
 
-## My Tawala project operations (archive labels)
+## My Tawala layout (lean) vs ops archive
 
-Legacy Project Manager lives under `TawalaWebapp-build1700/web/WEB-INF/jsp/projectmanager/` (not the thin `mytawala/*.jsp` news pages).
+Legacy Project Manager lives under `TawalaWebapp-build1700/web/WEB-INF/jsp/projectmanager/` (not the thin `mytawala/*.jsp` news pages). Mock mirrors the shallow structure:
 
-**Project Actions** bar (`detail.jsp`): **EXPORT · IMPORT · BACKUP · RESTORE · PURGE · DELETE · PUBLISH**
+1. **`mytawala.html`** — My Projects listing only (name, dates, responses, access; row **Purge** / **Delete**). Click project name → Project Details. Sub-menu: **My Projects · My Account · Change Password**.
+2. **`mytawala-project.html?project=…`** — Project Details: **EXPORT…PUBLISH** action bar, left sidebar (REVISE / ONLINE-OFFLINE / Include / Invite), collapsible sections (Start points, Project Data, Versions, Backups…). Start-point test-drives stay on `:8080`.
+3. **`project-ops-review.html`** — full recovered label catalog (listing vs detail bar vs sidebar vs sections vs Save/Clone wizards) for memory / archive review. Linked from My Tawala sidebar; not stacked on the working pages.
 
-Listing icons (`view.jsp`): **Purge** / **Delete**. Sub-menu (`submenu-mytawala.jsp`): **My Projects · My Account · Change Password**.
-
-Also recovered (sidebar / data / versions / backups): REVISE PROJECT, TAKE PROJECT ONLINE/OFFLINE, Include Project in Web Page, Invite…, form-level Export/Import/Purge, Deploy/Delete version, backup schedule ops, DELETE ALL PROJECT EMAILS, publish-to-library dialogs. Save/Clone labels are on customization & Library flows (`Save this project under My Tawala`, `DEPLOY TO MY TAWALA`, Clone and Customize) — not on the Project Actions bar. No exact **Rename** label found there.
-
-Mock UI: `mytawala.html` + `js/project-ops.js` surfaces the full label lists (stubs tagged **not wired**). **PURGE** shows the legacy confirm, then points at local DirtBowl Registration cleanup only:
+Labels live in `js/project-ops.js`. Most ops are stubs (**not wired**). **PURGE** shows the legacy confirm, then points at local DirtBowl Registration cleanup only:
 
 ```bash
 ./scripts/dev-data.sh cleanup-registrations
 ```
 
-Full `purgeProjectResponses` is Java Project Manager / DB — not on designer-web `:3001` or this static mock.
+Full `purgeProjectResponses` is Java Project Manager / DB — not on designer-web `:3001` or this static mock. SportsDashboards spelling (not SportsBoard).
 
 ## Update deploy URLs
 

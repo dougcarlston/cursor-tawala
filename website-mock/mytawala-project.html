@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - Project Details</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css" />
+  <script src="js/demo-urls.js"></script>
+  <script src="js/project-ops.js"></script>
+</head>
+<body data-tawala-page="mytawala" data-tawala-user="dev">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd" class="pm-detail-bd">
+      <div class="content pm-detail-content">
+        <div class="pageTitle"><h1>Project Details</h1></div>
+        <div id="pmSubmenuHost"></div>
+        <div id="pmDetailHost"></div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js"></script>
+  <script>
+    TawalaChrome.mount();
+    TawalaProjectOps.bind(document);
+
+    document.getElementById("pmSubmenuHost").innerHTML =
+      TawalaProjectOps.renderSubmenu("My Projects");
+
+    const id = new URLSearchParams(location.search).get("project") || "";
+    const project = id ? TawalaDemo.get(id) : null;
+    const host = document.getElementById("pmDetailHost");
+    if (!project) {
+      host.innerHTML =
+        '<p class="pm-hint">Unknown project. <a href="mytawala.html">← Back to My Projects</a></p>';
+    } else {
+      document.title = "Tawala - " + project.name;
+      host.innerHTML = TawalaProjectOps.renderDetailPanel({ id, ...project });
+    }
+  </script>
+</body>
+</html>

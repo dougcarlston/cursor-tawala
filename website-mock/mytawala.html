@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
@@ -25,7 +26,11 @@
           <p><a href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer</a> (localhost:5173)</p>
           <p class="pm-hint"><a href="designer.html">Designer stub page</a> (legacy download copy)</p>
         </div>
-        <div id="pmArchiveHost"></div>
+        <div class="block">
+          <h3>Memory / archive</h3>
+          <p><a href="project-ops-review.html">Archive labels / unimplemented features</a></p>
+          <p class="pm-hint">Full Project Manager catalog kept off this page for layout fidelity.</p>
+        </div>
       </div>
 
       <div class="content">
@@ -47,13 +52,11 @@
           <table class="projectListing stripe ruler">
             <thead>
               <tr>
-                <th>&nbsp;</th>
                 <th class="left">Name</th>
                 <th>Created</th>
                 <th>Updated</th>
                 <th>Responses</th>
                 <th>Access</th>
-                <th>Start points</th>
                 <th></th>
               </tr>
             </thead>
@@ -64,8 +67,6 @@
             <div class="stats">Total Projects: <span id="projectCount">0</span> (mock — templates deployed via script)</div>
           </div>
         </div>
-
-        <div id="pmDetailHost"></div>
       </div>
     </div>
 
@@ -87,40 +88,26 @@
 
     document.getElementById("pmSubmenuHost").innerHTML =
       TawalaProjectOps.renderSubmenu("My Projects");
-    document.getElementById("pmArchiveHost").innerHTML =
-      TawalaProjectOps.renderOpsCatalog();
 
     const projects = TawalaDemo.entries();
     const tbody = document.getElementById("projectRows");
     tbody.innerHTML = projects
       .map((p) => {
-        const links = p.startPoints
-          .map(
-            (sp) =>
-              `<a href="${sp.url}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a>`
-          )
-          .join(" · ");
+        const detailHref = `mytawala-project.html?project=${encodeURIComponent(p.id)}`;
         return `<tr>
-        <td></td>
         <td class="info left">
-          <span class="title"><a href="#" data-manage="${escapeHtml(p.id)}">${escapeHtml(p.name)}</a></span><br />
+          <span class="title"><a href="${detailHref}">${escapeHtml(p.name)}</a></span><br />
           <span class="description">${escapeHtml(p.shortDescription)}</span>
         </td>
         <td>${escapeHtml(p.updated || "")}</td>
         <td>${escapeHtml(p.updated || "")}</td>
         <td>—</td>
-        <td>${escapeHtml(p.updated || "")}</td>
-        <td>${links}</td>
+        <td>Active</td>
         <td>${TawalaProjectOps.renderListingControls(p.id)}</td>
       </tr>`;
       })
       .join("");
     document.getElementById("projectCount").textContent = String(projects.length);
-
-    if (projects[0]) {
-      document.getElementById("pmDetailHost").innerHTML =
-        TawalaProjectOps.renderDetailPanel(projects[0]);
-    }
   </script>
 </body>
 </html>

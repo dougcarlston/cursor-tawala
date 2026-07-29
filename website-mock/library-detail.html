@@ -19,6 +19,7 @@
         <div class="block">
           <h3>Library</h3>
           <p><a href="library.html">← Back to search</a></p>
+          <p><a href="mytawala.html">My Tawala</a></p>
           <p><a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a></p>
         </div>
         <div class="block" id="sidebarMeta"></div>
@@ -53,7 +54,7 @@
             <a id="testDrivePrimary" href="#" target="_blank" rel="noopener">
               <img src="images/template/test-drive-button.gif" alt="Test Drive Latest Version" />
             </a>
-            <a href="mytawala.html">View in My Tawala</a>
+            <a id="viewInMyTawala" href="mytawala.html">View in My Tawala</a>
           </p>
           <div class="start-points-heading">Start points</div>
           <ul class="startPointList" id="startPoints"></ul>
@@ -90,6 +91,8 @@
       document.getElementById("testDriveBlurb").textContent =
         "Opens the deployed template on localhost:8080. Redeploy with scripts/deploy-tawala-template.mjs if the link is stale.";
       document.getElementById("testDrivePrimary").href = project.testDriveUrl;
+      document.getElementById("viewInMyTawala").href =
+        "mytawala-project.html?project=" + encodeURIComponent(id);
       document.getElementById("sidebarMeta").innerHTML =
         "<p><b>Category:</b> " +
         escapeHtml(project.category) +

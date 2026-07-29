@@ -3,6 +3,9 @@
  * TawalaWebapp-build1700 (projectmanager/*.jsp, blocks/block-projectManagerProjectDetails.jsp,
  * submenus/submenu-mytawala.jsp, confirmationdialogs.jsp).
  *
+ * Layout-first mock: listing + Project Details pages stay lean; full catalog lives on
+ * project-ops-review.html for memory/archive review.
+ *
  * wired: false → stub / memory jog only
  * wired: "purge-local" → confirm + local cleanup hint (no Tomcat Project Manager purge API in mock)
  */
@@ -28,7 +31,7 @@
     { id: "publish", label: "PUBLISH", title: "Publish project to the Community Library", wired: false },
   ];
 
-  /** Listing-row icon actions (view.jsp) */
+  /** Listing-row icon actions (view.jsp) — lean: Purge / Delete only */
   const LISTING_ACTIONS = [
     { id: "purge", label: "Purge", title: "Purge project data", wired: "purge-local", confirmId: "purge" },
     { id: "delete", label: "Delete", title: "Delete project", wired: false, confirmId: "delete" },
@@ -128,12 +131,70 @@
     "  ./scripts/dev-data.sh cleanup-registrations\n\n" +
     "(Requires docker compose postgres. Does not delete the project or all forms.)";
 
+  /** Catalog sections for the dedicated review page (legacy location → labels). */
+  const OPS_CATALOG_SECTIONS = [
+    {
+      id: "submenu",
+      title: "My Tawala sub-menu",
+      where: "submenu-mytawala.jsp — shallow 3-item bar above listings",
+      items: MYTAWALA_SUBMENU,
+    },
+    {
+      id: "listing",
+      title: "Project listing row",
+      where: "projectmanager/view.jsp — Purge / Delete only beside each project",
+      items: LISTING_ACTIONS,
+    },
+    {
+      id: "actions",
+      title: "Project Details — action bar",
+      where: "projectmanager/detail.jsp — EXPORT · IMPORT · BACKUP · RESTORE · PURGE · DELETE · PUBLISH",
+      items: PROJECT_ACTIONS,
+    },
+    {
+      id: "sidebar",
+      title: "Project Details — left sidebar",
+      where: "blocks/block-projectManagerProjectDetails.jsp + invite / webpage flows",
+      items: PROJECT_SIDEBAR_OPS,
+    },
+    {
+      id: "data",
+      title: "Project Details — Project Data (collapsible)",
+      where: "detail.jsp form table + filters — per-form View / Export / Import / Purge",
+      items: PROJECT_DATA_OPS,
+    },
+    {
+      id: "versions",
+      title: "Project Details — Versions (collapsible)",
+      where: "detail.jsp versions section",
+      items: VERSION_OPS,
+    },
+    {
+      id: "other",
+      title: "Project Details — Backups / emails / publish / admin",
+      where: "detail.jsp + confirmation dialogs — schedule, restore, emails, library publish",
+      items: OTHER_OPS,
+    },
+    {
+      id: "wizards",
+      title: "Related Save / Clone wizards (Library & Customize)",
+      where: "Not on Project Actions bar — customization tiles + Library CloneAndCustomize",
+      items: RELATED_SAVE_CLONE,
+    },
+  ];
+
   function escapeHtml(s) {
     return String(s)
       .replace(/&/g, "&amp;")
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;");
+  }
+
+  function wiredNote(item) {
+    if (item.wired === "purge-local") return "local cleanup hint";
+    if (item.wired === true) return "wired in mock";
+    return "not wired";
   }
 
   function renderSubmenu(active) {
@@ -153,7 +214,7 @@
 
   function actionButton(op, projectId) {
     const cls = op.wired ? "pm-action" : "pm-action pm-action-stub";
-    const badge = op.wired === "purge-local" ? "" : op.wired ? "" : ' <span class="pm-stub-tag">not wired</span>';
+    const badge = op.wired === "purge-local" || op.wired === true ? "" : ' <span class="pm-stub-tag">not wired</span>';
     const data =
       `data-op="${escapeHtml(op.id || op.label)}" data-project="${escapeHtml(projectId || "")}"` +
       (op.confirmId ? ` data-confirm="${escapeHtml(op.confirmId)}"` : "") +
@@ -169,6 +230,7 @@
     );
   }
 
+  /** Lean listing controls — Purge / Delete only (name click → Project Details). */
   function renderListingControls(projectId) {
     return (
       '<div class="controls pm-listing-controls">' +
@@ -180,63 +242,135 @@
           `data-confirm="${escapeHtml(op.confirmId || "")}" data-wired="${escapeHtml(wired)}">${escapeHtml(op.label)}</button>`
         );
       }).join(" ") +
-      `<button type="button" class="pm-manage-btn" data-manage="${escapeHtml(projectId)}" title="Show full Project Actions (legacy Project Details)">Manage…</button>` +
       "</div>"
     );
   }
 
-  function renderOpsCatalog() {
-    function list(title, items) {
-      return (
-        `<details class="pm-archive-group"><summary>${escapeHtml(title)}</summary><ul>` +
-        items
-          .map((i) => {
-            const note = i.wired === "purge-local" ? " — local cleanup hint" : i.wired ? "" : " — not wired";
-            const src = i.source ? ` <em>(${escapeHtml(i.source)})</em>` : "";
-            return `<li><code>${escapeHtml(i.label)}</code>${src}${note}</li>`;
-          })
-          .join("") +
-        "</ul></details>"
-      );
-    }
+  function stubChip(op) {
     return (
-      '<div class="pm-archive-note block">' +
-      "<h3>Archive labels (memory jog)</h3>" +
-      `<p class="pm-archive-source">${escapeHtml(ARCHIVE_NOTE)}</p>` +
-      list("Project Actions bar", PROJECT_ACTIONS) +
-      list("Listing row", LISTING_ACTIONS) +
-      list("Project sidebar", PROJECT_SIDEBAR_OPS) +
-      list("Project Data (per form)", PROJECT_DATA_OPS) +
-      list("Versions", VERSION_OPS) +
-      list("Backups / emails / publish", OTHER_OPS) +
-      list("Related Save / Clone (Library & Customize)", RELATED_SAVE_CLONE) +
-      "</div>"
+      `<button type="button" class="pm-action pm-action-stub" title="${escapeHtml(op.title || op.label)}" ` +
+      `data-op="${escapeHtml(op.id || op.label)}" data-wired="false">${escapeHtml(op.label)} ` +
+      `<span class="pm-stub-tag">not wired</span></button>`
     );
   }
 
+  function renderCollapsibleSection(id, title, innerHtml, open) {
+    return (
+      `<details class="pm-section" id="${escapeHtml(id)}"${open ? " open" : ""}>` +
+      `<summary>${escapeHtml(title)}</summary>` +
+      `<div class="pm-section-body">${innerHtml}</div>` +
+      "</details>"
+    );
+  }
+
+  /**
+   * Full Project Details layout (separate page): action bar + sidebar ops + collapsible sections.
+   * Content under sections is stubbed; start points keep working :8080 test-drives.
+   */
   function renderDetailPanel(project) {
-    if (!project) return "";
+    if (!project) return '<p class="pm-hint">Project not found.</p>';
     const startLinks = (project.startPoints || [])
       .map(
         (sp) =>
-          `<a href="${escapeHtml(sp.url)}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a>`
+          `<li><a href="${escapeHtml(sp.url)}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a></li>`
       )
-      .join(" · ");
+      .join("");
+
+    const dataOps =
+      '<div class="pm-chip-row">' +
+      PROJECT_DATA_OPS.map(stubChip).join("") +
+      "</div>" +
+      '<p class="pm-hint">Form table stub — SHOW ALL / SELECTED filters and per-form View / Export / Import / Purge.</p>';
+
+    const versionOps =
+      '<div class="pm-chip-row">' +
+      VERSION_OPS.map(stubChip).join("") +
+      "</div>" +
+      '<p class="pm-hint">Version list stub — Deploy / Delete / Download.</p>';
+
+    const backupOps =
+      '<div class="pm-chip-row">' +
+      OTHER_OPS.map(stubChip).join("") +
+      "</div>" +
+      '<p class="pm-hint">Backups, project emails, library publish dialogs, and admin UPDATE — labels only.</p>';
+
+    const startSection =
+      `<ul class="pm-start-points">${startLinks || "<li>—</li>"}</ul>` +
+      '<p class="pm-hint">Test-drive links → local Java :8080 (from demo-urls.js).</p>';
+
     return (
-      `<div class="pm-detail section" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
+      `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
+      `<div class="pm-detail-main">` +
+      `<div class="pm-detail-header">` +
+      `<p class="pm-back"><a href="mytawala.html">← My Projects</a></p>` +
       `<h2>${escapeHtml(project.name)}</h2>` +
+      `<p class="pm-detail-meta">${escapeHtml(project.shortDescription || "")}</p>` +
+      "</div>" +
       '<h3 class="sectionHeading">Project Actions</h3>' +
       renderProjectActionsBar(project.id) +
-      '<p class="pm-hint">Legacy titles: Export / Import / Backup / Restore / Purge project data / Delete Project / Publish to Community Library.</p>' +
-      '<h3 class="sectionHeading">Also on Project Details (sidebar)</h3>' +
-      '<div class="pm-sidebar-ops">' +
+      renderCollapsibleSection("pmSecStart", "Start points (test drive)", startSection, true) +
+      renderCollapsibleSection("pmSecData", "Project Data", dataOps, false) +
+      renderCollapsibleSection("pmSecVersions", "Versions", versionOps, false) +
+      renderCollapsibleSection("pmSecOther", "Backups, emails & library publish", backupOps, false) +
+      '<p class="pm-hint" id="pmOpStatus" role="status"></p>' +
+      "</div>" +
+      `<aside class="pm-detail-sidebar" aria-label="Project options">` +
+      "<h3>Project options</h3>" +
+      '<div class="pm-sidebar-ops pm-sidebar-stack">' +
       PROJECT_SIDEBAR_OPS.map((op) => {
-        return `<button type="button" class="pm-action pm-action-stub" title="${escapeHtml(op.title)}" data-wired="false">${escapeHtml(op.label)} <span class="pm-stub-tag">not wired</span></button>`;
+        return (
+          `<button type="button" class="pm-action pm-action-stub" title="${escapeHtml(op.title)}" ` +
+          `data-op="${escapeHtml(op.label)}" data-wired="false">${escapeHtml(op.label)} ` +
+          `<span class="pm-stub-tag">not wired</span></button>`
+        );
       }).join("") +
       "</div>" +
-      `<h3 class="sectionHeading">Start points (test drive → :8080)</h3>` +
-      `<p>${startLinks || "—"}</p>` +
-      '<p class="pm-hint" id="pmOpStatus" role="status"></p>' +
+      `<p class="pm-hint"><a href="project-ops-review.html">Archive labels / unimplemented features</a></p>` +
+      "</aside>" +
+      "</div>"
+    );
+  }
+
+  /** Full catalog for project-ops-review.html — organized by legacy location. */
+  function renderOpsCatalog() {
+    const sections = OPS_CATALOG_SECTIONS.map((sec) => {
+      const rows = sec.items
+        .map((i) => {
+          const src = i.source ? `<td class="pm-cat-src">${escapeHtml(i.source)}</td>` : "<td></td>";
+          const title = i.title ? escapeHtml(i.title) : "";
+          return (
+            `<tr>` +
+            `<td><code>${escapeHtml(i.label)}</code></td>` +
+            `<td class="pm-cat-title">${title}</td>` +
+            src +
+            `<td class="pm-cat-wired">${escapeHtml(wiredNote(i))}</td>` +
+            `</tr>`
+          );
+        })
+        .join("");
+      return (
+        `<section class="pm-catalog-section" id="${escapeHtml(sec.id)}">` +
+        `<h2>${escapeHtml(sec.title)}</h2>` +
+        `<p class="pm-catalog-where">${escapeHtml(sec.where)}</p>` +
+        `<table class="pm-catalog-table stripe">` +
+        "<thead><tr><th>Label</th><th>Title / tooltip</th><th>Source note</th><th>Mock</th></tr></thead>" +
+        `<tbody>${rows}</tbody></table>` +
+        "</section>"
+      );
+    }).join("");
+
+    const toc =
+      '<nav class="pm-catalog-toc" aria-label="Catalog sections"><ul>' +
+      OPS_CATALOG_SECTIONS.map(
+        (sec) => `<li><a href="#${escapeHtml(sec.id)}">${escapeHtml(sec.title)}</a></li>`
+      ).join("") +
+      "</ul></nav>";
+
+    return (
+      '<div class="pm-catalog">' +
+      `<p class="pm-archive-source">${escapeHtml(ARCHIVE_NOTE)}</p>` +
+      toc +
+      sections +
       "</div>"
     );
   }
@@ -266,9 +400,7 @@
     }
 
     if (wired === "purge-local") {
-      setStatus(
-        `PURGE requested for “${projectId || "project"}”. ${LOCAL_PURGE_HELP}`
-      );
+      setStatus(`PURGE requested for “${projectId || "project"}”. ${LOCAL_PURGE_HELP}`);
       window.alert(
         `Purge Project Data\n\nConfirmed for mock project: ${projectId || "(unknown)"}\n\n${LOCAL_PURGE_HELP}`
       );
@@ -284,17 +416,6 @@
   function bind(root) {
     const scope = root || document;
     scope.addEventListener("click", (ev) => {
-      const manage = ev.target.closest("[data-manage]");
-      if (manage) {
-        const id = manage.getAttribute("data-manage");
-        const project = window.TawalaDemo && window.TawalaDemo.get(id);
-        const host = document.getElementById("pmDetailHost");
-        if (host) {
-          host.innerHTML = renderDetailPanel(project);
-          host.scrollIntoView({ behavior: "smooth", block: "start" });
-        }
-        return;
-      }
       if (ev.target.closest("[data-op], .pm-action, .pm-icon-action")) {
         void handleOpClick(ev);
       }
@@ -310,6 +431,7 @@
     VERSION_OPS,
     OTHER_OPS,
     RELATED_SAVE_CLONE,
+    OPS_CATALOG_SECTIONS,
     CONFIRMS,
     ARCHIVE_NOTE,
     LOCAL_PURGE_HELP,
