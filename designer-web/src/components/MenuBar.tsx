@@ -40,6 +40,7 @@ import {
   newProjectAcceleratorLabel,
   openProjectAcceleratorLabel,
   openProjectManagerLocal,
+  openWebsiteMockLibrary,
   pasteAcceleratorLabel,
   redoAcceleratorLabel,
   runShellEditCommand,
@@ -374,6 +375,21 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
       <MenuDrop label="Help">
         <button type="button" onClick={onAbout}>
           About Tawala Designer
+        </button>
+        <div className="menu-separator" />
+        <button
+          type="button"
+          title="Open website-mock Library (localhost:5500)"
+          onClick={() => openWebsiteMockLibrary()}
+        >
+          Website mock (Library)…
+        </button>
+        <button
+          type="button"
+          title="Open website-mock My Tawala / Project Manager (localhost:5500)"
+          onClick={() => openProjectManagerLocal()}
+        >
+          Website mock (My Tawala)…
         </button>
       </MenuDrop>
     </nav>

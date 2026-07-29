@@ -463,3 +463,146 @@ table.projectListing .title a:hover {
     margin-bottom: 8px;
   }
 }
+
+/* My Tawala / Project Manager ops (memory-jog menus from legacy JSPs) */
+.pm-submenu.sub-menu {
+  margin: 0 0 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #d8d0c4;
+}
+
+.pm-submenu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+}
+
+.pm-submenu a,
+.pm-submenu .link-pending {
+  font-size: 0.92em;
+  font-weight: bold;
+}
+
+.pm-submenu a.selected,
+.pm-submenu .link-pending.selected {
+  color: #bb4343;
+  text-decoration: underline;
+}
+
+.pm-actions-bar,
+.pm-sidebar-ops {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 8px 0 12px;
+}
+
+.pm-action,
+.pm-icon-action,
+.pm-manage-btn {
+  font-size: 11px;
+  font-weight: bold;
+  letter-spacing: 0.02em;
+  padding: 5px 10px;
+  border: 1px solid #8a7a68;
+  background: #f0ebe3;
+  color: #333;
+  cursor: pointer;
+}
+
+.pm-action:hover,
+.pm-icon-action:hover,
+.pm-manage-btn:hover {
+  background: #e4d9c8;
+}
+
+.pm-action-stub {
+  opacity: 0.72;
+  border-style: dashed;
+}
+
+.pm-stub-tag {
+  font-weight: normal;
+  font-size: 9px;
+  color: #888;
+  text-transform: lowercase;
+}
+
+.pm-listing-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+  min-width: 11em;
+}
+
+.pm-icon-action {
+  padding: 3px 6px;
+}
+
+.pm-manage-btn {
+  background: #a31c1c;
+  border-color: #7a1414;
+  color: #fff;
+}
+
+.pm-manage-btn:hover {
+  background: #7a1414;
+  color: #fff;
+}
+
+.pm-detail {
+  margin-top: 20px;
+  padding: 12px 14px;
+  background: #f8f6f2;
+  border: 1px solid #d8d0c4;
+}
+
+.pm-detail h2 {
+  margin: 0 0 10px;
+  font-size: 1.25em;
+}
+
+.pm-hint {
+  font-size: 0.85em;
+  color: #555;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.pm-archive-note {
+  font-size: 0.82em;
+}
+
+.pm-archive-note .pm-archive-source {
+  font-size: 0.95em;
+  color: #666;
+  margin-bottom: 8px;
+}
+
+.pm-archive-group {
+  margin: 6px 0;
+}
+
+.pm-archive-group summary {
+  cursor: pointer;
+  font-weight: bold;
+  color: #664;
+}
+
+.pm-archive-group ul {
+  margin: 4px 0 8px 1.1em;
+  padding: 0;
+}
+
+.pm-archive-group li {
+  margin: 2px 0;
+  line-height: 1.35;
+}
+
+.pm-archive-group code {
+  font-size: 0.95em;
+}

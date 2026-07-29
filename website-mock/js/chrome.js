@@ -18,8 +18,18 @@
     signupShort: { href: "signup.html", label: "Sign up free", ready: true },
     logout: { href: "logout.html", label: "Logout", ready: true },
     designer: {
+      href: "http://localhost:5173",
+      label: "Open Web Designer",
+      ready: true,
+    },
+    designerStub: {
       href: "designer.html",
-      label: "Open Tawala Designer",
+      label: "Designer stub",
+      ready: true,
+    },
+    websiteMock: {
+      href: "http://localhost:5500/",
+      label: "Website mock",
       ready: true,
     },
     signupApps: {
@@ -92,7 +102,7 @@
   }
 
   function renderBanner() {
-    return `<strong>Website mock</strong> — static draft from legacy JSP layout. Grey links are not implemented yet. Test-drive links use local Java on port 8080.`;
+    return `<strong>Website mock</strong> — static draft from legacy JSP layout. Grey links are not implemented yet. Test-drive → :8080. Symbiotic hop: <a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500.`;
   }
 
   function mount() {

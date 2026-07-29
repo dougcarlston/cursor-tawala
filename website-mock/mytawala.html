@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css" />
   <script src="js/demo-urls.js"></script>
+  <script src="js/project-ops.js"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -20,13 +21,16 @@
           <p>Logged in as <b>dev</b> (local deploy user).</p>
         </div>
         <div class="block">
-          <h3>Designer</h3>
-          <p><a href="designer.html">Open Tawala Designer</a></p>
+          <h3>Web Designer</h3>
+          <p><a href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer</a> (localhost:5173)</p>
+          <p class="pm-hint"><a href="designer.html">Designer stub page</a> (legacy download copy)</p>
         </div>
+        <div id="pmArchiveHost"></div>
       </div>
 
       <div class="content">
         <div class="pageTitle"><h1>My Tawala</h1></div>
+        <div id="pmSubmenuHost"></div>
 
         <div id="projectManager" class="section">
           <div class="status">
@@ -50,6 +54,7 @@
                 <th>Responses</th>
                 <th>Access</th>
                 <th>Start points</th>
+                <th></th>
               </tr>
             </thead>
             <tbody id="projectRows"></tbody>
@@ -59,6 +64,8 @@
             <div class="stats">Total Projects: <span id="projectCount">0</span> (mock — templates deployed via script)</div>
           </div>
         </div>
+
+        <div id="pmDetailHost"></div>
       </div>
     </div>
 
@@ -76,6 +83,12 @@
     }
 
     TawalaChrome.mount();
+    TawalaProjectOps.bind(document);
+
+    document.getElementById("pmSubmenuHost").innerHTML =
+      TawalaProjectOps.renderSubmenu("My Projects");
+    document.getElementById("pmArchiveHost").innerHTML =
+      TawalaProjectOps.renderOpsCatalog();
 
     const projects = TawalaDemo.entries();
     const tbody = document.getElementById("projectRows");
@@ -90,7 +103,7 @@
         return `<tr>
         <td></td>
         <td class="info left">
-          <span class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></span><br />
+          <span class="title"><a href="#" data-manage="${escapeHtml(p.id)}">${escapeHtml(p.name)}</a></span><br />
           <span class="description">${escapeHtml(p.shortDescription)}</span>
         </td>
         <td>${escapeHtml(p.updated || "")}</td>
@@ -98,10 +111,16 @@
         <td>—</td>
         <td>${escapeHtml(p.updated || "")}</td>
         <td>${links}</td>
+        <td>${TawalaProjectOps.renderListingControls(p.id)}</td>
       </tr>`;
       })
       .join("");
     document.getElementById("projectCount").textContent = String(projects.length);
+
+    if (projects[0]) {
+      document.getElementById("pmDetailHost").innerHTML =
+        TawalaProjectOps.renderDetailPanel(projects[0]);
+    }
   </script>
 </body>
 </html>

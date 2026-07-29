@@ -134,8 +134,8 @@ Good first deploy target — small XML, no documents, one process statement.
 
 | Form | URL |
 |------|-----|
-| Potluck Organizer | http://localhost:8080/p/t03vtb1poh34kkn/2bpec4j.Potluck+Organizer |
-| Report | http://localhost:8080/p/t03vtb1poh34kkn/3i70frf.Report |
+| Potluck Organizer | http://localhost:8080/p/52ozm3kqd58zlss/uhqc1kc.Potluck+Organizer |
+| Report | http://localhost:8080/p/52ozm3kqd58zlss/cni7mae.Report |
 
 **Smoke test:** Submit organizer form → **Details** document (headcount + dish list) via `preProcess`; post-submit **Send Thanks** shows Coming vs NotComing doc from Q2.
 

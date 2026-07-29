@@ -763,12 +763,34 @@ function insertHtmlAtSelection(html: string): boolean {
   return true;
 }
 
+/** Local symbiotic hop: website-mock My Tawala (Project Manager surface). */
+export const LOCAL_WEBSITE_MOCK_MYTAWALA_URL = "http://localhost:5500/mytawala.html";
+export const LOCAL_WEBSITE_MOCK_LIBRARY_URL = "http://localhost:5500/library.html";
+
 export function openProjectManagerLocal(): void {
-  useProjectStore
-    .getState()
-    .setStatus(
-      "Project Manager opens the online Library. Locally use File → New Project… or Open Project…",
-    );
+  try {
+    window.open(LOCAL_WEBSITE_MOCK_MYTAWALA_URL, "_blank", "noopener,noreferrer");
+    useProjectStore
+      .getState()
+      .setStatus("Opened website mock My Tawala (localhost:5500). Start mock: cd website-mock && python3 -m http.server 5500");
+  } catch {
+    useProjectStore
+      .getState()
+      .setStatus(
+        `Could not open ${LOCAL_WEBSITE_MOCK_MYTAWALA_URL}. Start mock: cd website-mock && python3 -m http.server 5500`,
+      );
+  }
+}
+
+export function openWebsiteMockLibrary(): void {
+  try {
+    window.open(LOCAL_WEBSITE_MOCK_LIBRARY_URL, "_blank", "noopener,noreferrer");
+    useProjectStore.getState().setStatus("Opened website mock Library (localhost:5500).");
+  } catch {
+    useProjectStore
+      .getState()
+      .setStatus(`Could not open ${LOCAL_WEBSITE_MOCK_LIBRARY_URL}.`);
+  }
 }
 
 /** Platform accelerator label for File → Save (DESIGNER_MENU_SPEC: Ctrl+S). */

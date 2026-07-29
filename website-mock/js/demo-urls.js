@@ -70,7 +70,7 @@ window.TAWALA_DEMO_URLS = {
     iconLabel: "PL",
     rating: 4,
     comments: 15,
-    updated: "7/2/26",
+    updated: "7/29/26",
     shortDescription: "Potluck invitation — headcount, dish contributions, and a shared report.",
     longDescription:
       "Invite guests to a potluck, collect RSVPs and what each person will bring. " +
@@ -78,11 +78,11 @@ window.TAWALA_DEMO_URLS = {
     startPoints: [
       {
         label: "Potluck Organizer",
-        url: "http://localhost:8080/p/t03vtb1poh34kkn/2bpec4j.Potluck+Organizer",
+        url: "http://localhost:8080/p/52ozm3kqd58zlss/uhqc1kc.Potluck+Organizer",
       },
-      { label: "Report", url: "http://localhost:8080/p/t03vtb1poh34kkn/3i70frf.Report" },
+      { label: "Report", url: "http://localhost:8080/p/52ozm3kqd58zlss/cni7mae.Report" },
     ],
-    testDriveUrl: "http://localhost:8080/p/t03vtb1poh34kkn/2bpec4j.Potluck+Organizer",
+    testDriveUrl: "http://localhost:8080/p/52ozm3kqd58zlss/uhqc1kc.Potluck+Organizer",
   },
   "get-together": {
     name: "Get Together Template",
