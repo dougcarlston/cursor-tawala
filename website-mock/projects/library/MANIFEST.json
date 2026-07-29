@@ -1,0 +1,92 @@
+{
+  "source": "~/Projects/Tawala Projects/WebLibrary",
+  "copied": "2026-07-29",
+  "count": 17,
+  "files": [
+    {
+      "file": "AlexTimon.json",
+      "bytes": 417972,
+      "mtime": 1785282837
+    },
+    {
+      "file": "Automated List Builder.json",
+      "bytes": 92786,
+      "mtime": 1785282837
+    },
+    {
+      "file": "CYO CheckDeposit Request1.json",
+      "bytes": 104053,
+      "mtime": 1785282837
+    },
+    {
+      "file": "CYO Exceptions App.json",
+      "bytes": 276256,
+      "mtime": 1785282837
+    },
+    {
+      "file": "ClientProfiler.json",
+      "bytes": 352851,
+      "mtime": 1785282837
+    },
+    {
+      "file": "DirtBowl.json",
+      "bytes": 871394,
+      "mtime": 1785282837
+    },
+    {
+      "file": "GenericListManager.json",
+      "bytes": 318695,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Horses and Penguins Test.json",
+      "bytes": 28983,
+      "mtime": 1785282838
+    },
+    {
+      "file": "League Age calculator.json",
+      "bytes": 38963,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Lunch Order Menu.json",
+      "bytes": 114734,
+      "mtime": 1785282838
+    },
+    {
+      "file": "MVSC Communicator.json",
+      "bytes": 147809,
+      "mtime": 1785282838
+    },
+    {
+      "file": "MVSC Registration.json",
+      "bytes": 72858,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Multiple Question Survey Template.json",
+      "bytes": 11328,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Online Exam Builder.json",
+      "bytes": 83837,
+      "mtime": 1785282838
+    },
+    {
+      "file": "SportsDashboards Template.json",
+      "bytes": 1004081,
+      "mtime": 1785282839
+    },
+    {
+      "file": "St Patrick SportsDashboards.json",
+      "bytes": 1223897,
+      "mtime": 1785282839
+    },
+    {
+      "file": "Tawala Invoicing.json",
+      "bytes": 58861,
+      "mtime": 1785282839
+    }
+  ]
+}

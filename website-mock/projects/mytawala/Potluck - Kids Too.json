@@ -1,0 +1,1040 @@
+{
+  "name": "Potluck - Kids Too",
+  "format": "2.0",
+  "themePath": "basicyellow",
+  "forms": [
+    {
+      "name": "Setup",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Event Title______________________________________________",
+          "blanks": [
+            {
+              "name": "eventHeader",
+              "length": 46,
+              "alternateLabel": "eventHeader"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Event Date and Time______________________________________________",
+          "blanks": [
+            {
+              "name": "eventDateTime",
+              "length": 46,
+              "alternateLabel": "eventDateTime"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "",
+          "prompt": "Event Location ______________________________________________",
+          "blanks": [
+            {
+              "name": "eventLocation",
+              "length": 46,
+              "alternateLabel": "eventLocation"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "",
+          "prompt": "Message____________________________________________________________________",
+          "blanks": [
+            {
+              "name": "setupBody",
+              "length": 68,
+              "alternateLabel": "setupBody",
+              "height": 6
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Show names of people who can't make the event",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
+          ],
+          "name": "showNotComing"
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here to be notified by mail when someone signs up"
+            }
+          ],
+          "name": "EmailVerification?"
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "",
+          "prompt": "If you checked the box above, please provide your email address:______________________________________________",
+          "blanks": [
+            {
+              "name": "AdminEmail",
+              "length": 46,
+              "alternateLabel": "AdminEmail"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicyellow",
+      "process": "setup-post",
+      "preProcess": "setup-pre"
+    },
+    {
+      "name": "Potluck Organizer",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Fill in the form below to let us know if you can make it and if so what you will bring:"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Name___________________________________",
+          "blanks": [
+            {
+              "name": "attendeeName",
+              "length": 35,
+              "alternateLabel": "attendeeName",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Will you be able to come to the potluck?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "",
+          "prompt": "How many of you will be coming?______ (Adults) ______ (Kids)",
+          "blanks": [
+            {
+              "name": "numAdults",
+              "length": 6,
+              "alternateLabel": "numAdults"
+            },
+            {
+              "name": "numKids",
+              "length": 6,
+              "alternateLabel": "numKids"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "",
+          "prompt": "Potluck Contribution___________________________________",
+          "blanks": [
+            {
+              "name": "contribution",
+              "length": 35,
+              "alternateLabel": "contribution"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "Click the submit button to enter your information. When you're done you can close this window"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Potluck Organizer:Q2",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p><span>You entered the following information:</span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:134px\"><p><span>Name</span></p></td><td style=\"width:342px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:attendeeName\" title=\"Potluck Organizer:attendeeName\" draggable=\"true\">&lt;&lt;Potluck Organizer:attendeeName&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:134px\"><p><span>Number of Adults</span></p></td><td style=\"width:342px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:numAdults\" title=\"Potluck Organizer:numAdults\" draggable=\"true\">&lt;&lt;Potluck Organizer:numAdults&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:134px\"><p><span>Number of Kids</span></p></td><td style=\"width:342px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:numKids\" title=\"Potluck Organizer:numKids\" draggable=\"true\">&lt;&lt;Potluck Organizer:numKids&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:134px\"><p><span>Dish</span></p></td><td style=\"width:342px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:contribution\" title=\"Potluck Organizer:contribution\" draggable=\"true\">&lt;&lt;Potluck Organizer:contribution&gt;&gt;</span></span></p></td></tr></table>"
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Is this information correct",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes, save this information"
+            },
+            {
+              "label": "b",
+              "text": "No, I want to change what I entered"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Potluck Organizer:Q5",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "T1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "themePath": "basicyellow",
+      "process": "mainMenu-post",
+      "preProcess": "mainMenu-pre"
+    },
+    {
+      "name": "Administration",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "If you want to delete a record, enter the name of the person whose record is to be deleted:____________________________",
+          "blanks": [
+            {
+              "name": "Name",
+              "length": 28,
+              "alternateLabel": "Name"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicyellow",
+      "process": "admin-post",
+      "preProcess": "admin-pre"
+    },
+    {
+      "name": "PickRecord",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "text",
+                          "text": "Here are the records that match "
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "field",
+                          "name": "Target"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "text",
+                          "text": ":"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": []
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "bold",
+                      "nodes": [
+                        {
+                          "type": "itemizationTable",
+                          "version": 1,
+                          "form": "Potluck Organizer",
+                          "columns": [
+                            {
+                              "header": "Name",
+                              "field": "Record:Potluck Organizer:attendeeName"
+                            },
+                            {
+                              "header": "Attending?",
+                              "field": "Record:Potluck Organizer:Q2"
+                            },
+                            {
+                              "header": "Adults",
+                              "field": "Record:Potluck Organizer:numAdults"
+                            },
+                            {
+                              "header": "Kids",
+                              "field": "Record:Potluck Organizer:numKids"
+                            },
+                            {
+                              "header": "Contribution",
+                              "field": "Record:Potluck Organizer:contribution"
+                            }
+                          ],
+                          "where": {
+                            "field": "Record:Potluck Organizer:attendeeName",
+                            "op": "equals",
+                            "value": "<<Target>>"
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Delete:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "All matching records"
+            },
+            {
+              "label": "b",
+              "text": "The first record"
+            },
+            {
+              "label": "c",
+              "text": "All but the first record"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicyellow",
+      "process": "PictRecord-post"
+    }
+  ],
+  "processes": [
+    {
+      "name": "mainMenu-pre",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Setup Record List",
+          "sourceForms": [
+            "Setup"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SetupRec",
+          "recordList": "Setup Record List",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_setupBody",
+              "value": "<<SetupRec:Setup:setupBody>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_eventHeader",
+              "value": "<<SetupRec:Setup:eventHeader>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_eventDateTime",
+              "value": "<<SetupRec:Setup:eventDateTime>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_eventLocation",
+              "value": "<<SetupRec:Setup:eventLocation>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SetupRec:Setup:showNotComing",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "showWhosNotComing",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "showWhosNotComing",
+                  "value": "false",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "SetupRec:Setup:EmailVerification?",
+                    "op": "mcContains",
+                    "value": "a"
+                  },
+                  {
+                    "field": "SetupRec:Setup:AdminEmail",
+                    "op": "isNotBlank"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "EmailVerification",
+                  "value": "<<SetupRec:Setup:AdminEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "EmailVerification",
+                  "value": "No Verification",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Header",
+          "reset": true
+        },
+        {
+          "cmd": "showDocument",
+          "document": "introduction",
+          "reset": true
+        },
+        {
+          "cmd": "showDocument",
+          "document": "attendeeCount",
+          "reset": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "WhosComing",
+          "reset": true
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "showWhosNotComing",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "WhosNot",
+              "reset": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "setup-post",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "mainMenu-post",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "EmailVerification",
+            "op": "doesNotEqual",
+            "value": "No Verification"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Potluck Organizer:Q2",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Coming",
+                  "value": "will",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "append",
+                  "value": ""
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Coming",
+                  "value": "will not",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "EmailVerification"
+              },
+              "subject": "<<Customize_eventHeader>> response from <<Potluck Organizer:attendeeName>>",
+              "body": {
+                "document": "ConfirmationEmail",
+                "reset": true,
+                "showHeader": true
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Potluck Organizer:Q2",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "ThankYou Coming",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "showDocument",
+              "document": "ThankYou NotComing",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "admin-pre",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Record List",
+          "sourceForms": [
+            "Setup"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Record",
+          "recordList": "Record List",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_eventHeader",
+              "value": "<<Record:Setup:eventHeader>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Admin Header",
+          "reset": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "attendeeCount",
+          "reset": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "WhosComing",
+          "reset": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "WhosNot",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "setup-pre",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "Setup",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "admin-post",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Name",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 1",
+              "sourceForms": [
+                "Potluck Organizer"
+              ],
+              "where": {
+                "field": "Record List 1:Potluck Organizer:attendeeName",
+                "op": "equals",
+                "value": "<<Administration:Name>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Choice",
+              "recordList": "Record List 1",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Target",
+                  "value": "<<Choice:Potluck Organizer:attendeeName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "NobodywthatName",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Count",
+                "op": "equals",
+                "value": "1"
+              },
+              "then": [
+                {
+                  "cmd": "delete",
+                  "form": "Potluck Organizer",
+                  "from": "Potluck Organizer",
+                  "where": {
+                    "field": "Target",
+                    "op": "equals",
+                    "value": "<<Record:Potluck Organizer:attendeeName>>"
+                  }
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Count",
+                "op": "isGreaterThan",
+                "value": "1"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "PickRecord"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "PictRecord-post",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "PickRecord:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Potluck Organizer",
+              "from": "Potluck Organizer",
+              "where": {
+                "field": "Record:Potluck Organizer:attendeeName",
+                "op": "equals",
+                "value": "<<Target>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "PickRecord:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 2",
+              "sourceForms": [
+                "Potluck Organizer"
+              ],
+              "where": {
+                "field": "Record List 2:Potluck Organizer:attendeeName",
+                "op": "equals",
+                "value": "<<Target>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Item",
+              "recordList": "Record List 2",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "equals",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Item:Potluck Organizer:attendeeName",
+                      "value": "Delete",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "PickRecord:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 3",
+              "sourceForms": [
+                "Potluck Organizer"
+              ],
+              "where": {
+                "field": "Record List 3:Potluck Organizer:attendeeName",
+                "op": "equals",
+                "value": "<<Target>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Item1",
+              "recordList": "Record List 3",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "isGreaterThan",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Item1:Potluck Organizer:attendeeName",
+                      "value": "Delete",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "delete",
+          "form": "Potluck Organizer",
+          "from": "Potluck Organizer",
+          "where": {
+            "field": "Record:Potluck Organizer:attendeeName",
+            "op": "equals",
+            "value": "Delete"
+          }
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Header",
+      "content": "<p><span style=\"font-size:18pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventHeader\" title=\"Customize_eventHeader\" draggable=\"true\">&lt;&lt;Customize_eventHeader&gt;&gt;</span></b></span></p><p></p><p><span><b>When: </b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventDateTime\" title=\"Customize_eventDateTime\" draggable=\"true\">&lt;&lt;Customize_eventDateTime&gt;&gt;</span></span></p><p><span><b>Where:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventLocation\" title=\"Customize_eventLocation\" draggable=\"true\">&lt;&lt;Customize_eventLocation&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "WhosComing",
+      "content": "<p></p><p><span><b>People planning on coming and what they're bringing:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Potluck Organizer\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Potluck%20Organizer%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3APotluck%20Organizer%3AattendeeName%22%7D%2C%7B%22header%22%3A%22Dish%22%2C%22field%22%3A%22Record%3APotluck%20Organizer%3Acontribution%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3APotluck%20Organizer%3AattendeeName%22%2C%22op%22%3A%22isNotBlank%22%7D%2C%7B%22field%22%3A%22Record%3APotluck%20Organizer%3AQ2%22%2C%22op%22%3A%22mcEquals%22%2C%22value%22%3A%22a%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "WhosNot",
+      "content": "<p></p><p><span><b>People who can't come:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Potluck Organizer\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Potluck%20Organizer%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3APotluck%20Organizer%3AattendeeName%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3APotluck%20Organizer%3AattendeeName%22%2C%22op%22%3A%22isNotBlank%22%7D%2C%7B%22field%22%3A%22Record%3APotluck%20Organizer%3AQ2%22%2C%22op%22%3A%22mcDoesNotEqual%22%2C%22value%22%3A%22a%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "attendeeCount",
+      "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:230px\"><br></td><td style=\"width:74px\"><br></td><td style=\"width:120px\"><br></td></tr><tr><td style=\"width:230px\"><p><span><b>Total People coming so far:</b></span></p></td><td style=\"width:74px\"><p style=\"text-align:right\"><span>Adults: </span></p></td><td style=\"width:120px\"><p><span><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"1\" data-function-config=\"{&quot;field&quot;:&quot;Potluck Organizer:numAdults&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\">&lt;&lt;SUM(Potluck Organizer:numAdults)&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:230px\"><br></td><td style=\"width:74px\"><p style=\"text-align:right\"><span>Kids: </span></p></td><td style=\"width:120px\"><p><span><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"2\" data-function-config=\"{&quot;field&quot;:&quot;Potluck Organizer:numKids&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\">&lt;&lt;SUM(Potluck Organizer:numKids)&gt;&gt;</span></span></p></td></tr></table>"
+    },
+    {
+      "name": "introduction",
+      "content": "<p></p><p><span style=\"font-size:12pt\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_setupBody\" title=\"Customize_setupBody\" draggable=\"true\">&lt;&lt;Customize_setupBody&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "ThankYou Coming",
+      "content": "<p></p><p><span><b>Thank you for your response.</b></span></p><p></p><p><span><b>See you at </b></span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventHeader\" title=\"Customize_eventHeader\" draggable=\"true\">&lt;&lt;Customize_eventHeader&gt;&gt;</span></b></span><span><b>!</b></span></p>"
+    },
+    {
+      "name": "ThankYou NotComing",
+      "content": "<p></p><p><span><b>Sorry you won't be able to attend!</b></span></p><p></p><p><span><b>Thank you for responding.</b></span></p>"
+    },
+    {
+      "name": "Admin Header",
+      "content": "<p></p><p><span style=\"font-size:12pt\">Attendance information for </span><span style=\"font-size:12pt\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventHeader\" title=\"Customize_eventHeader\" draggable=\"true\">&lt;&lt;Customize_eventHeader&gt;&gt;</span></span><span style=\"font-size:12pt\"> :</span></p>"
+    },
+    {
+      "name": "NobodywthatName",
+      "content": "<p><span><b><i>No such person found in records.</i></b></span></p>"
+    },
+    {
+      "name": "ConfirmationEmail",
+      "content": "<p><span style=\"font-size:22pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventHeader\" title=\"Customize_eventHeader\" draggable=\"true\">&lt;&lt;Customize_eventHeader&gt;&gt;</span></b></span></p><p></p><p><span><b>When:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventDateTime\" title=\"Customize_eventDateTime\" draggable=\"true\">&lt;&lt;Customize_eventDateTime&gt;&gt;</span></span></p><p><span><b>Where:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_eventLocation\" title=\"Customize_eventLocation\" draggable=\"true\">&lt;&lt;Customize_eventLocation&gt;&gt;</span></span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:attendeeName\" title=\"Potluck Organizer:attendeeName\" draggable=\"true\">&lt;&lt;Potluck Organizer:attendeeName&gt;&gt;</span></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Coming\" title=\"Coming\" draggable=\"true\">&lt;&lt;Coming&gt;&gt;</span></span><span> be coming.</span></p><p></p><p><span>To view all the responses so far </span><span><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></span><span>.</span></p><p></p><p><span><b>Thank you for using Tawala! </b></span></p>"
+    },
+    {
+      "name": "ConfirmationAttend",
+      "content": "<p><span><b>Guests:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:numAdults\" title=\"Potluck Organizer:numAdults\" draggable=\"true\">&lt;&lt;Potluck Organizer:numAdults&gt;&gt;</span></span><span> adults and </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:numKids\" title=\"Potluck Organizer:numKids\" draggable=\"true\">&lt;&lt;Potluck Organizer:numKids&gt;&gt;</span></span><span> kids.</span></p><p></p><p><span><b>Bringing:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Potluck Organizer:contribution\" title=\"Potluck Organizer:contribution\" draggable=\"true\">&lt;&lt;Potluck Organizer:contribution&gt;&gt;</span></span></p>"
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "169",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Potluck - Kids Too.tawala"
+}

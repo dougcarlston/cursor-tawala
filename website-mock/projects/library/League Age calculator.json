@@ -1,0 +1,1298 @@
+{
+  "name": "League Age calculator",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "Setup",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Setup"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#F20000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "League Calculator is a widget that can be linked to your registration page to help parents calculate their child's league age correctly.\nYou can set it up so as to display league age only or to indicate which division a child should be assigned to, if you have division assignments based solely upon league age.  (This widget will not permit you to use two or more factors to indicate the correct division.)"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Show registrants their league age"
+            },
+            {
+              "label": "b",
+              "text": "Show registrants their correct division."
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setup:Q1",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setup:Q1",
+                "op": "mcDoesNotEqual",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Setup (cont.)"
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "freeform",
+          "prompt": "League age is based upon birthdays falling before or after the first day of which month? (1= Jan, 2= Feb etc.) _____",
+          "blanks": [
+            {
+              "name": "LeagueMonth",
+              "length": 5,
+              "alternateLabel": "LeagueMonth"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "freeform",
+          "prompt": "What is the year of the season for which players are registering? _________",
+          "blanks": [
+            {
+              "name": "Season",
+              "length": 9,
+              "alternateLabel": "Season"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Setup",
+      "preProcess": "Pre-Setup"
+    },
+    {
+      "name": "Setup2",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Skip",
+                "op": "equals",
+                "value": "Yes"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Skip",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H2"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Setup (cont.)"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#F20000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Current Divisions:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Setup2",
+                      "columns": [
+                        {
+                          "header": "Division",
+                          "field": "Record:Setup2:DvsnName"
+                        },
+                        {
+                          "header": "Description",
+                          "field": "Record:Setup2:DvsnDesc"
+                        },
+                        {
+                          "header": "Born between",
+                          "field": "Record:Setup2:DisplayLow"
+                        },
+                        {
+                          "header": "and",
+                          "field": "Record:Setup2:DisplayHigh"
+                        }
+                      ],
+                      "where": {
+                        "and": [
+                          {
+                            "field": "Record:Setup2:DvsnName",
+                            "op": "isNotBlank"
+                          },
+                          {
+                            "field": "Record:Setup2:DisplayLow",
+                            "op": "doesNotEqual",
+                            "value": "Bad"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add a new division"
+            },
+            {
+              "label": "b",
+              "text": "Correct or remove a division"
+            },
+            {
+              "label": "c",
+              "text": "Finished entering divisions"
+            }
+          ],
+          "name": "AddEditDone"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setup2:AddEditDone",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "H3"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setup2:AddEditDone",
+                "op": "mcEquals",
+                "value": "c"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Setup (cont.)"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Current Divisions:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Setup2",
+                      "columns": [
+                        {
+                          "header": "Division",
+                          "field": "Record:Setup2:DvsnName"
+                        },
+                        {
+                          "header": "Description",
+                          "field": "Record:Setup2:DvsnDesc"
+                        },
+                        {
+                          "header": "Born between",
+                          "field": "Record:Setup2:DisplayLow"
+                        },
+                        {
+                          "header": "and",
+                          "field": "Record:Setup2:DisplayHigh"
+                        }
+                      ],
+                      "where": {
+                        "and": [
+                          {
+                            "field": "Record:Setup2:DvsnName",
+                            "op": "isNotBlank"
+                          },
+                          {
+                            "field": "Record:Setup2:DisplayLow",
+                            "op": "doesNotEqual",
+                            "value": "Bad"
+                          }
+                        ]
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "Enter name of a division: ____________________",
+          "blanks": [
+            {
+              "name": "DvsnName",
+              "length": 20,
+              "alternateLabel": "DvsnName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "topLabels",
+          "prompt": "Description of division (eg. Ages 6 to 8)____________________",
+          "blanks": [
+            {
+              "name": "DvsnDesc",
+              "length": 20,
+              "alternateLabel": "DvsnDesc"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "freeform",
+          "prompt": "For players born between (mm/dd/yyyy):___/___/_____ and ___/___/_____",
+          "blanks": [
+            {
+              "name": "LoLmtMo",
+              "length": 3,
+              "alternateLabel": "LoLmtMo"
+            },
+            {
+              "name": "LoLmtDay",
+              "length": 3,
+              "alternateLabel": "LoLmtDay"
+            },
+            {
+              "name": "LoLmtYr",
+              "length": 5,
+              "alternateLabel": "LoLmtYr"
+            },
+            {
+              "name": "HiLmtMo",
+              "length": 3,
+              "alternateLabel": "HiLmtMo"
+            },
+            {
+              "name": "HiLmtDay",
+              "length": 3,
+              "alternateLabel": "HiLmtDay"
+            },
+            {
+              "name": "HiLmtYr",
+              "length": 5,
+              "alternateLabel": "HiLmtYr"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "Setup (cont.)"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Setup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Name of division to correct or remove:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "Setup2",
+              "displayExpr": "<<Record:Setup2:DvsnName>> (<<Record:Setup2:DvsnDesc>>)",
+              "valueExpr": "<<Record:Setup2:ID>>"
+            }
+          ],
+          "name": "Dive2Edit"
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Edit this division"
+            },
+            {
+              "label": "b",
+              "text": "Delete this division"
+            }
+          ],
+          "name": "EditDel"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "DisplayLow"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "DisplayHigh"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "ID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Setup2"
+    },
+    {
+      "name": "Widget",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "League Age Widget"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "freeform",
+          "prompt": "Please enter your date of birth (mm/dd/yyyy): ____/____/____",
+          "blanks": [
+            {
+              "name": "Month",
+              "length": 4,
+              "alternateLabel": "Month"
+            },
+            {
+              "name": "Day",
+              "length": 4,
+              "alternateLabel": "Day"
+            },
+            {
+              "name": "Year",
+              "length": 4,
+              "alternateLabel": "Year"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Press the Submit button to see results."
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Widget"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-Setup",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "delete",
+              "form": "Setup2",
+              "from": "Setup2",
+              "where": {
+                "or": [
+                  {
+                    "field": "Record:Setup2:DvsnName",
+                    "op": "isBlank"
+                  },
+                  {
+                    "field": "Record:Setup2:DisplayLow",
+                    "op": "equals",
+                    "value": "Bad"
+                  }
+                ]
+              }
+            },
+            {
+              "cmd": "show",
+              "form": "Setup2"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "Your widget will calculate League Age based on month: <<Setup:LeagueMonth>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Display",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Setup2",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "If AD wants to delete division, do it and return to form"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "Setup2:AddEditDone",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              {
+                "field": "Setup2:EditDel",
+                "op": "mcEquals",
+                "value": "b"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Setup2",
+              "from": "Setup2",
+              "where": {
+                "field": "Record:Setup2:ID",
+                "op": "equals",
+                "value": "<<Setup2:Dive2Edit>>"
+              }
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Record deleted",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Setup2"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "If AD wants to edit division data, show stored form."
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "Setup2:AddEditDone",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              {
+                "field": "Setup2:EditDel",
+                "op": "mcEquals",
+                "value": "a"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Skip",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "edit",
+              "form": "Setup2",
+              "submit": "modify",
+              "condition": {
+                "field": "Record:Setup2:ID",
+                "op": "equals",
+                "value": "<<Setup2:Dive2Edit>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "delete",
+          "form": "Setup2",
+          "from": "Setup2",
+          "where": {
+            "field": "Record:Setup2:DisplayLow",
+            "op": "equals",
+            "value": "Bad"
+          }
+        },
+        {
+          "cmd": "comment",
+          "text": "Create display fields"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup2:LoLmtYr",
+            "op": "isLessThanOrEqualTo",
+            "value": "<<Setup2:HiLmtYr>>"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Setup2:DisplayLow",
+              "value": "<<Setup2:LoLmtMo>>/<<Setup2:LoLmtDay>>/<<Setup2:LoLmtYr>>",
+              "concat": false,
+              "arithmeticAsText": true
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:DisplayHigh",
+              "value": "<<Setup2:HiLmtMo>>/<<Setup2:HiLmtDay>>/<<Setup2:HiLmtYr>>",
+              "concat": false,
+              "arithmeticAsText": true
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Setup2:DisplayLow",
+              "value": "<<Setup2:HiLmtMo>>/<<Setup2:HiLmtDay>>/<<Setup2:HiLmtYr>>",
+              "concat": false,
+              "arithmeticAsText": true
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:DisplayHigh",
+              "value": "<<Setup2:LoLmtMo>>/<<Setup2:LoLmtDay>>/<<Setup2:LoLmtYr>>",
+              "concat": false,
+              "arithmeticAsText": true
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "Digitize dates"
+        },
+        {
+          "cmd": "set",
+          "field": "DigiLow",
+          "value": "<<Setup2:LoLmtYr>> * 10000 + <<Setup2:LoLmtMo>> * 100 + <<Setup2:LoLmtDay>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "DigiHi",
+          "value": "<<Setup2:HiLmtYr>> * 10000 + <<Setup2:HiLmtMo>> * 100 + <<Setup2:HiLmtDay>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "Reverse them if the lower limit is higher than the upper limit."
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "DigiLow",
+            "op": "isGreaterThan",
+            "value": "<<DigiHi>>"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Temp",
+              "value": "<<DigiLow>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "DigiLow",
+              "value": "<<DigiHi>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "DigiHi",
+              "value": "<<Temp>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Temp",
+              "value": "<<Setup2:LoLmtMo>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:LoLmtMo",
+              "value": "<<Setup2:HiLmtMo>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:HiLmtMo",
+              "value": "<<Temp>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Temp",
+              "value": "<<Setup2:LoLmtDay>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:LoLmtDay",
+              "value": "<<Setup2:HiLmtDay>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:HiLmtDay",
+              "value": "<<Temp>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Temp",
+              "value": "<<Setup2:LoLmtYr>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:LoLmtYr",
+              "value": "<<Setup2:HiLmtYr>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Setup2:HiLmtYr",
+              "value": "<<Temp>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "Compare with all other windows to make sure they don't overlap."
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 1",
+          "sourceForms": [
+            "Setup2"
+          ],
+          "where": {
+            "field": "Record List 1:Setup2:DvsnName",
+            "op": "doesNotEqual",
+            "value": "<<Setup2:ID>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Div",
+          "recordList": "Record List 1",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "CDigiLow",
+              "value": "<<Div:Setup2:LoLmtYr>> * 10000 + <<Div:Setup2:LoLmtMo>> * 100 + <<Div:Setup2:LoLmtDay>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CDigiHi",
+              "value": "<<Div:Setup2:HiLmtYr>> * 10000 + <<Div:Setup2:HiLmtMo>> * 100 + <<Div:Setup2:HiLmtDay>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "DigiLow",
+                    "op": "isLessThan",
+                    "value": "<<CDigiHi>>"
+                  },
+                  {
+                    "field": "DigiHi",
+                    "op": "isGreaterThan",
+                    "value": "<<CDigiLow>>"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "CDiv",
+                  "value": "<<Div:Setup2:DvsnName>> (<<Setup2:DvsnDesc>>)",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "RefID",
+                  "value": "<<Div:Setup2:ID>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Setup2:DisplayLow",
+                  "value": "Bad",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "This date range conflicts with that of the Division: <<CDiv>>.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Skip",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "edit",
+                  "form": "Setup2",
+                  "submit": "modify"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "Add another division"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup2:AddEditDone",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Setup2:ID",
+              "value": "<<Setup2:DvsnName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Setup2"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup2:AddEditDone",
+            "op": "mcDoesNotEqual",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Setup2"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "If all is well and you are finished, show completion data and quit."
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup2:AddEditDone",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Setup2",
+              "from": "Setup2",
+              "where": {
+                "field": "Record:Setup2:DisplayLow",
+                "op": "equals",
+                "value": "Bad"
+              }
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Your widget will display the correct division for registrant, based on the age data he or she has entered.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Display",
+              "reset": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Divisions",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-Setup",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "edit",
+          "form": "Setup",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-Widget",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Divs",
+          "value": "no",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Bday",
+          "value": "<<Widget:Month>>/<<Widget:Day>>/<<Widget:Year>>",
+          "concat": false,
+          "arithmeticAsText": true
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 2",
+          "sourceForms": [
+            "Setup"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Set",
+          "recordList": "Record List 2",
+          "do": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Set:Setup:Q1",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Widget:Month",
+                    "op": "isGreaterThanOrEqualTo",
+                    "value": "<<Set:Setup:LeagueMonth>>"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Adjust",
+                      "value": "-1",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Adjust",
+                      "value": "0",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "lgAge",
+                  "value": "<<Set:Setup:Season>> - <<Widget:Year>> + <<Adjust>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ResultLgAge",
+                  "reset": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Divs",
+                  "value": "Yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Divs",
+            "op": "equals",
+            "value": "Yes"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Digidate",
+              "value": "<<Widget:Year>> * 10000 + <<Widget:Month>> * 100 + <<Widget:Day>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "DivSelection",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 3",
+              "sourceForms": [
+                "Setup2"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "DivSelection",
+              "recordList": "Record List 3",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "DigiLow",
+                  "value": "<<DivSelection:Setup2:LoLmtYr>> * 10000 + <<DivSelection:Setup2:LoLmtMo>> * 100 + <<DivSelection:Setup2:LoLmtDay>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "DigiHi",
+                  "value": "<<DivSelection:Setup2:HiLmtYr>> * 10000 + <<DivSelection:Setup2:HiLmtMo>> * 100 + <<DivSelection:Setup2:HiLmtDay>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "and": [
+                      {
+                        "field": "Digidate",
+                        "op": "isGreaterThanOrEqualTo",
+                        "value": "<<DigiLow>>"
+                      },
+                      {
+                        "field": "Digidate",
+                        "op": "isLessThanOrEqualTo",
+                        "value": "<<DigiHi>>"
+                      }
+                    ]
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "DivSelection",
+                      "value": "<<DivSelection:Setup2:DvsnName>> (<<DivSelection:Setup2:DvsnDesc>>)",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "DivSelection",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "you are not eligible for any division because of your age.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "you belong in the division: <<DivSelection>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ResultDiv",
+              "reset": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Divisions",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Display",
+      "content": "<p></p><p><span>You are finished with Setup. Run Setup again to change any settings.</span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "Divisions",
+      "content": "<p><span>Here are the league divisions:</span></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Setup2\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22Setup2%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Division%22%2C%22field%22%3A%22Record%3ASetup2%3ADvsnName%22%7D%2C%7B%22header%22%3A%22Description%22%2C%22field%22%3A%22Record%3ASetup2%3ADvsnDesc%22%7D%2C%7B%22header%22%3A%22Born%20between%22%2C%22field%22%3A%22Record%3ASetup2%3ADisplayLow%22%7D%2C%7B%22header%22%3A%22and%22%2C%22field%22%3A%22Record%3ASetup2%3ADisplayHigh%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3ASetup2%3ADvsnName%22%2C%22op%22%3A%22isNotBlank%22%7D%2C%7B%22field%22%3A%22Record%3ASetup2%3ADisplayLow%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Bad%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p>"
+    },
+    {
+      "name": "ResultLgAge",
+      "content": "<p><span>If your birthday is </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Bday\" title=\"Bday\" draggable=\"true\">&lt;&lt;Bday&gt;&gt;</span></span><span>, your league age is </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"lgAge\" title=\"lgAge\" draggable=\"true\">&lt;&lt;lgAge&gt;&gt;</span></span><span>.</span></p><p></p><p></p>"
+    },
+    {
+      "name": "ResultDiv",
+      "content": "<p><span>If your birthday is </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Bday\" title=\"Bday\" draggable=\"true\">&lt;&lt;Bday&gt;&gt;</span></span><span>, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></span><span>.</span></p>"
+    }
+  ],
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/League Age calculator.tawala"
+}

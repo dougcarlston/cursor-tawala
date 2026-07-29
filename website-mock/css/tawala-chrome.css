@@ -1,4 +1,19 @@
-/* Mock-only chrome: banner, pending links, layout, test-drive boxes — layered on legacy site CSS. */
+/* Mock-only chrome: banner, pending links, layout, test-drive boxes — layered on legacy site CSS.
+ * Button / control tokens mirror designer-web/src/styles.css (:root). */
+
+:root {
+  --tw-bg: #f0f0f0;
+  --tw-panel: #ffffff;
+  --tw-border: #aca899;
+  --tw-border-dark: #716f64;
+  --tw-toolbar-bg: #ece9d8;
+  --tw-accent: #316ac5;
+  --tw-text: #000000;
+  --tw-muted: #444444;
+  --tw-disabled-opacity: 0.45;
+  /* Legacy site link accent (tawala-base) — keep for nav / listing titles */
+  --tw-site-link: #bb4343;
+}
 
 .mock-banner {
   background: #fff3cd;
@@ -7,6 +22,71 @@
   margin: 12px 0;
   font-size: 12px;
   line-height: 1.4;
+}
+
+.mock-banner-where {
+  display: block;
+  margin-top: 6px;
+  padding-top: 6px;
+  border-top: 1px solid #e0c86a;
+}
+
+/* Unmistakable listing identity — My Tawala vs public Library */
+.listing-identity {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 8px 14px;
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--tw-border);
+  background: var(--tw-toolbar-bg);
+  font-size: 0.92em;
+  line-height: 1.35;
+}
+
+.listing-identity .listing-where {
+  font-weight: bold;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-size: 0.85em;
+  color: var(--tw-text);
+}
+
+.listing-identity .listing-pile {
+  color: var(--tw-muted);
+  font-size: 0.9em;
+}
+
+.listing-identity .listing-switch {
+  margin-left: auto;
+  font-size: 0.9em;
+}
+
+body[data-tawala-page="mytawala"] .listing-identity {
+  border-left: 4px solid var(--tw-accent);
+}
+
+body[data-tawala-page="library"] .listing-identity {
+  border-left: 4px solid #bb4343;
+}
+
+body[data-tawala-page="mytawala"] .pageTitle h1::after {
+  content: " · My Projects";
+  font-weight: normal;
+  font-size: 0.55em;
+  color: var(--tw-muted);
+  letter-spacing: 0.02em;
+  vertical-align: middle;
+}
+
+body[data-tawala-page="library"] .pageTitle h1::after {
+  content: " · Public catalog";
+  font-weight: normal;
+  font-size: 0.55em;
+  color: var(--tw-muted);
+  letter-spacing: 0.02em;
+  vertical-align: middle;
 }
 
 .link-pending,
@@ -270,28 +350,96 @@ table.projectListing .description {
   line-height: 1.35;
 }
 
-table.projectListing .title a {
-  color: #bb4343;
-  text-decoration: none;
-  font-weight: bold;
+/* Dense Library / My Tawala name column — descriptions live on detail pages */
+table.projectListing td.info {
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
-table.projectListing .title a:hover {
+.deploy-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  color: var(--tw-muted);
+  background: var(--tw-toolbar-bg);
+  border: 1px solid var(--tw-border);
+  border-radius: 3px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.start-point-pending {
+  color: #666;
+}
+
+.start-point-pending em {
+  font-style: normal;
+  color: #8a7040;
+}
+
+/* Listing project titles: black, unbold, ≥2pt under legacy 1.2em */
+table.projectListing .title a,
+table.projectListing td.info span.title a {
+  color: var(--tw-text);
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 1em; /* was 1.2em in tawala-base */
+  line-height: 1.35;
+}
+
+table.projectListing .title a:hover,
+table.projectListing td.info span.title a:hover {
   text-decoration: underline;
+  color: var(--tw-text);
+}
+
+/* Created / Updated / Access (last accessed) — compact dates */
+table.projectListing td.updated,
+table.projectListing td.date-created,
+table.projectListing td.last-accessed,
+table.projectListing .col-date {
+  font-size: 0.78em;
+  color: var(--tw-muted);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+table.projectListing th.col-date,
+table.projectListing th.sortable-stub {
+  font-size: 0.88em;
+}
+
+table.projectListing th.sortable-stub {
+  color: var(--tw-muted);
+  cursor: default;
+  user-select: none;
+}
+
+table.projectListing td.clone-count {
+  text-align: center;
+  color: var(--tw-muted);
+  font-size: 0.85em;
+}
+
+.rating-stars {
+  display: inline-block;
+  margin-left: 0.45em;
+  vertical-align: middle;
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .rating-stars .star {
   color: #ccc;
-  font-size: 1.05em;
-  letter-spacing: 1px;
+  font-size: 0.95em;
+  letter-spacing: 0;
 }
 
 .rating-stars .star.on {
   color: #c90;
-}
-
-.rating-none {
-  color: #999;
 }
 
 .library-empty {
@@ -306,6 +454,179 @@ table.projectListing .title a:hover {
 .library-clear-search {
   font-size: 0.9em;
   font-weight: normal;
+}
+
+/* Collapsible Library groups — Designer Fields/Explorer [+]/[-] + New Project category type */
+.library-listing-frame {
+  margin-top: 4px;
+  border: 1px solid #d8d0c4;
+  background: #fff;
+}
+
+.library-colhead-bar {
+  background: #ece8e0;
+  border-bottom: 1px solid #d0c8bc;
+}
+
+table.projectListing.library-colheads {
+  margin: 0;
+  border: none;
+  table-layout: fixed;
+  width: 100%;
+}
+
+table.projectListing.library-colheads th {
+  border: none;
+  border-right: 1px solid #d8d0c4;
+  padding: 5px 10px;
+  background: transparent;
+  font-size: 11px;
+  font-weight: 700;
+  color: #444;
+  white-space: nowrap;
+}
+
+table.projectListing.library-colheads th:last-child {
+  border-right: none;
+}
+
+.library-listing-frame .col-name {
+  width: 42%;
+}
+.library-listing-frame .col-used {
+  width: 12%;
+}
+.library-listing-frame .col-comments {
+  width: 10%;
+}
+.library-listing-frame .col-updated {
+  width: 16%;
+}
+.library-listing-frame .col-actions {
+  width: 20%;
+}
+
+.library-groups {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-top: 0;
+}
+
+details.library-category {
+  border: none;
+  border-bottom: 1px solid #e4ddd2;
+  background: transparent;
+}
+
+details.library-category:last-child {
+  border-bottom: none;
+}
+
+details.library-category > summary.library-category-heading {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 8px 2px 6px;
+  cursor: pointer;
+  user-select: none;
+  background: #f7f4ef;
+  border-bottom: 1px solid #b8c4d8;
+  font-weight: 700;
+  font-size: 11px;
+  color: #004392;
+  line-height: 1.3;
+}
+
+details.library-category > summary.library-category-heading::-webkit-details-marker {
+  display: none;
+}
+
+/* Match designer-web .tree-collapse-toggle / .fields-tree-toggle */
+.library-category-toggle {
+  display: inline-block;
+  width: 20px;
+  flex: 0 0 20px;
+  font-family: "Consolas", "Courier New", monospace;
+  font-size: 11px;
+  font-weight: 400;
+  color: #444;
+  text-align: left;
+  white-space: pre;
+  line-height: 1.2;
+}
+
+.library-category-toggle::before {
+  content: "[-]";
+}
+
+details.library-category:not([open]) > summary .library-category-toggle::before {
+  content: "[+]";
+}
+
+.library-category-name {
+  flex: 1 1 auto;
+  font-size: 11px;
+  font-weight: 700;
+  color: #004392;
+  letter-spacing: 0;
+  text-transform: none;
+}
+
+.library-category-count {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: normal;
+  font-size: 10px;
+  color: var(--tw-muted);
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  padding: 0 2px;
+  line-height: 1.4;
+}
+
+.library-category-body {
+  padding: 0;
+  background: #fff;
+}
+
+.library-category-body table.projectListing.library-category-table {
+  margin: 0;
+  border: none;
+  table-layout: fixed;
+  width: 100%;
+}
+
+.library-category-body table.projectListing th,
+.library-category-body table.projectListing td {
+  border-left: none;
+  border-right: none;
+}
+
+.library-category-body table.projectListing tr:last-child td {
+  border-bottom: none;
+}
+
+table.projectListing td.library-row-actions {
+  padding: 4px 6px;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+.library-listing-controls {
+  min-width: 14em;
+  justify-content: flex-start;
+}
+
+a.pm-icon-action.library-row-action {
+  display: inline-block;
+  text-decoration: none;
+  box-sizing: border-box;
+}
+
+a.pm-icon-action.library-row-action:hover {
+  text-decoration: none;
 }
 
 #projectDetails h1 {
@@ -492,6 +813,67 @@ table.projectListing .title a:hover {
   text-decoration: underline;
 }
 
+/* Library sidebar picker + compact chrome stubs (expand/collapse, admin) */
+.library-picker {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  font-size: 0.92em;
+}
+
+.library-picker li {
+  margin: 0.25em 0;
+}
+
+.library-picker a.selected {
+  font-weight: bold;
+  color: #bb4343;
+}
+
+.library-chrome-stubs {
+  margin: 0 0 8px;
+}
+
+.library-tree-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+  padding: 4px 6px;
+  background: #ddd;
+  border: 1px solid #ccc;
+}
+
+.library-admin-stubs {
+  margin: 6px 0 0;
+  gap: 4px;
+}
+
+.library-admin-stubs .pm-action {
+  font-size: 10px;
+  padding: 3px 7px;
+}
+
+.pageCtl {
+  font-size: 0.88em;
+  color: var(--tw-muted);
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+}
+
+.pageCtl select:disabled,
+.pageCtl input:disabled {
+  opacity: var(--tw-disabled-opacity);
+  cursor: default;
+}
+
+.pageCtl .pm-action {
+  padding: 3px 10px;
+  font-size: 11px;
+}
+
 .pm-actions-bar {
   display: flex;
   flex-wrap: wrap;
@@ -519,31 +901,45 @@ table.projectListing .title a:hover {
 
 .pm-action,
 .pm-icon-action {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   font-size: 11px;
   font-weight: bold;
   letter-spacing: 0.02em;
   padding: 5px 10px;
-  border: 1px solid #8a7a68;
-  background: #f0ebe3;
-  color: #333;
+  border: 1px solid #6b97c5;
+  border-radius: 3px;
+  /* Designer dialog / accent active control — not grey */
+  color: #1a3a5c;
+  background-color: #e8f0fa;
+  background-image: linear-gradient(180deg, #f5f9fd 0%, #dce8f6 48%, #c5d8ee 100%);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.85),
+    0 1px 0 rgba(0, 0, 0, 0.06);
   cursor: pointer;
 }
 
-.pm-action:hover,
-.pm-icon-action:hover {
-  background: #e4d9c8;
+.pm-action:hover:not(:disabled),
+.pm-icon-action:hover:not(:disabled) {
+  background-color: #d8e6f6;
+  background-image: linear-gradient(180deg, #f8fbfe 0%, #cfe0f4 48%, #b4cce8 100%);
+  border-color: var(--tw-accent);
 }
 
-.pm-action-stub {
-  opacity: 0.72;
-  border-style: dashed;
+.pm-action:active:not(:disabled),
+.pm-icon-action:active:not(:disabled) {
+  background-image: linear-gradient(180deg, #c8d0d8 0%, #e0e8f0 100%);
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.18);
 }
 
-.pm-stub-tag {
-  font-weight: normal;
-  font-size: 9px;
-  color: #888;
-  text-transform: lowercase;
+.pm-action:disabled,
+.pm-icon-action:disabled {
+  opacity: var(--tw-disabled-opacity);
+  cursor: default;
+  color: var(--tw-muted);
+  border-color: var(--tw-border);
+  background-color: #e8e8e8;
+  background-image: none;
+  box-shadow: none;
 }
 
 .pm-listing-controls {

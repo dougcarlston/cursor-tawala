@@ -1,0 +1,130 @@
+{
+  "name": "PayPal Tester",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "Start",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Status"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Paid"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Start"
+    },
+    {
+      "name": "Success",
+      "startPoint": false,
+      "items": [],
+      "themePath": "mvsc",
+      "preProcess": "Pre-Success"
+    },
+    {
+      "name": "Failure",
+      "startPoint": false,
+      "items": [],
+      "themePath": "mvsc",
+      "preProcess": "Pre-Failure"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-Start",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "PayPal Page",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Pre-Success",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "Your PayPal transaction was successfully completed.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Message",
+          "reset": false
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "Start"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Failure",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "Your PayPal transaction was not completed.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Message",
+          "reset": false
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "Start"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "PayPal Page",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\">Click the button below to verify that your PayPal account is properly configured.</span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\">If PayPal requires the payee to create an account, then this PayPal account is still unverified.</span></p><p></p><p><span>pay-logo\n\nSuccessFailureRecord:Start:StatusRecord:Start:Paidpaypal</span></p>"
+    },
+    {
+      "name": "Message",
+      "content": "<p></p><p><span style=\"font-size:12pt;color:#C00000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+    }
+  ],
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/PayPal Tester.tawala"
+}

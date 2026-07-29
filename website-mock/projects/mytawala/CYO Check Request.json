@@ -1,0 +1,1452 @@
+{
+  "name": "CYO Check Request",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "Start",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "ID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Start",
+      "dataEntryOnly": true
+    },
+    {
+      "name": "Admin",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Admin"
+    },
+    {
+      "name": "CheckReqForm",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Temp",
+                "op": "equals",
+                "value": "skip"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Temp",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Check Request Form"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Send requests and questions via mail, email or fax to the CYO Office\n825 NE 20th Ave. #120 Portland, OR 97232\nallyh@cyocamphoward.org  | Fax: (503) 231-9531"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Date: ____________________",
+          "blanks": [
+            {
+              "name": "Date",
+              "length": 20,
+              "alternateLabel": "Date"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Payee Name: ____________________",
+          "blanks": [
+            {
+              "name": "Payee",
+              "length": 20,
+              "alternateLabel": "Payee"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Payee Address: ____________________",
+          "blanks": [
+            {
+              "name": "Address",
+              "length": 20,
+              "alternateLabel": "Address"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "City: ___________________",
+          "blanks": [
+            {
+              "name": "City",
+              "length": 19,
+              "alternateLabel": "City"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "State: ____________________",
+          "blanks": [
+            {
+              "name": "State",
+              "length": 20,
+              "alternateLabel": "State"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Zip: ____________________",
+          "blanks": [
+            {
+              "name": "Zip",
+              "length": 20,
+              "alternateLabel": "Zip"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Purpose: _______________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Purpose",
+              "length": 71,
+              "alternateLabel": "Purpose",
+              "height": 10
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q8",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Club: ____________________",
+          "blanks": [
+            {
+              "name": "Club",
+              "length": 20,
+              "alternateLabel": "Club"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q9",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Sport: ____________________",
+          "blanks": [
+            {
+              "name": "Sport",
+              "length": 20,
+              "alternateLabel": "Sport"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q10",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Amount: $ ____________________",
+          "blanks": [
+            {
+              "name": "Amount",
+              "length": 20,
+              "alternateLabel": "Amount"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q11",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add attachment(s) to this Form"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "error",
+          "content": "Press the Submit button to continue to Page 2.You are NOT finished yet."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Payee",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Payee must be filled in.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Club",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Name of requesting club must be filled in.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Amount",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Amount of check request must be filled in.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Q11",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "H3"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Attachments"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CheckReqForm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Click here to return to Page 1&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Click here to return to Page 1</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "You may upload up to three files to be included with your request.   Use the \"Browse...\" buttons below to select a file or files on your computer. When you click the Submit button the file(s) will be uploaded to the server so they will be accessible by CYO/Camp Howard."
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "Delivery Instructions"
+        },
+        {
+          "type": "text",
+          "label": "T6",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T7",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CheckReqForm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Go back to Page 1&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Go back to Page 1</span></u></span></p>",
+          "displayCondition": {
+            "field": "CheckReqForm:Q11",
+            "op": "mcIsBlank"
+          }
+        },
+        {
+          "type": "mc",
+          "label": "Q12",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Mail to <<CheckReqForm:Address>>"
+            },
+            {
+              "label": "b",
+              "text": "Pick up at CYO office"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "fib",
+          "label": "Q13",
+          "style": "freeform",
+          "prompt": "If CYO office pick up, enter date: ____________________ and time: ____________________",
+          "blanks": [
+            {
+              "name": "Pickupdate",
+              "length": 20,
+              "alternateLabel": "Pickupdate"
+            },
+            {
+              "name": "PickupTime",
+              "length": 20,
+              "alternateLabel": "PickupTime"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T8",
+          "style": "normal",
+          "content": "Press the Submit button below to send in your completed form."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "comment",
+              "text": "If CR:Q12 is blank"
+            },
+            {
+              "cmd": "comment",
+              "text": "Set Message to \"Please choose to pick up check or have it mailed.\""
+            },
+            {
+              "cmd": "comment",
+              "text": "Skip to H3"
+            },
+            {
+              "cmd": "comment",
+              "text": "If CRF:12 equals a AND CRF:Address is blank"
+            },
+            {
+              "cmd": "comment",
+              "text": "Set Message to \"Please enter the payee address.\""
+            },
+            {
+              "cmd": "comment",
+              "text": "Skip to H1"
+            },
+            {
+              "cmd": "comment",
+              "text": "If CRF:Q12 equals b"
+            },
+            {
+              "cmd": "comment",
+              "text": "If CRF:Pickupdate is blank"
+            },
+            {
+              "cmd": "comment",
+              "text": "Set Message to \"Please enter pickup date.\""
+            },
+            {
+              "cmd": "comment",
+              "text": "Skip to H3"
+            },
+            {
+              "cmd": "comment",
+              "text": "If CRF:Pickuptime is blank"
+            },
+            {
+              "cmd": "comment",
+              "text": "Set Message to \"Please enter pickup time.\""
+            },
+            {
+              "cmd": "comment",
+              "text": "Skip to H3"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Status"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "ID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Process 7"
+    },
+    {
+      "name": "SetCheckRequestStatus",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Review check requests"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "instructional",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Pending check requests:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 720,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "CheckReqForm",
+                      "columns": [
+                        {
+                          "header": "Date",
+                          "field": "Record:CheckReqForm:Date"
+                        },
+                        {
+                          "header": "Payee",
+                          "field": "Record:CheckReqForm:Payee"
+                        },
+                        {
+                          "header": "Amount",
+                          "field": "Record:CheckReqForm:Amount"
+                        },
+                        {
+                          "header": "Club",
+                          "field": "Record:CheckReqForm:Club"
+                        },
+                        {
+                          "header": "Sport",
+                          "field": "Record:CheckReqForm:Sport"
+                        },
+                        {
+                          "header": "Mail/Pick up",
+                          "field": "Record:CheckReqForm:Q12"
+                        },
+                        {
+                          "header": "Status",
+                          "field": "Record:CheckReqForm:Status"
+                        }
+                      ],
+                      "where": {
+                        "field": "Record:CheckReqForm:Status",
+                        "op": "equals",
+                        "value": "Pending"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Review next pending request in detail"
+            },
+            {
+              "label": "b",
+              "text": "Review specific check request in detail"
+            },
+            {
+              "label": "c",
+              "text": "View table of all requests whether pending, approved, denied or deleted"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SetCheckRequestStatus:Q1",
+                "op": "mcDoesNotEqual",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Review specific check request in detail"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "Enter part or all of the Payee name or requesting Club: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "Select specific check request"
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Please select matching record (if any are found) :",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "CheckReqForm",
+              "displayExpr": "From <<Record:CheckReqForm:Club>> <<Record:CheckReqForm:Sport>> to <<Record:CheckReqForm:Payee>> for $<<Record:CheckReqForm:Amount>>",
+              "valueExpr": "<<Record:CheckReqForm:ID>>",
+              "sortExpr": "<<Record:CheckReqForm:Club>>|<<Record:CheckReqForm:Sport>>"
+            }
+          ],
+          "paddingBottom": false
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ReviewCheckRequest"
+    },
+    {
+      "name": "ApproveChkRequest",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Set/Review Check Request Status"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel without taking action&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel without taking action</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Request Number:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><br></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Date:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Edate\" title=\"Edate\" draggable=\"true\">&lt;&lt;Edate&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Payee:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Epayee\" title=\"Epayee\" draggable=\"true\">&lt;&lt;Epayee&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Address:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Eaddress\" title=\"Eaddress\" draggable=\"true\">&lt;&lt;Eaddress&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Ecity\" title=\"Ecity\" draggable=\"true\">&lt;&lt;Ecity&gt;&gt;</span></span><span>,</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Estate\" title=\"Estate\" draggable=\"true\">&lt;&lt;Estate&gt;&gt;</span></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Ezip\" title=\"Ezip\" draggable=\"true\">&lt;&lt;Ezip&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Amount:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span>$</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Eamount\" title=\"Eamount\" draggable=\"true\">&lt;&lt;Eamount&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Club:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"EClub\" title=\"EClub\" draggable=\"true\">&lt;&lt;EClub&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Sport:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Esport\" title=\"Esport\" draggable=\"true\">&lt;&lt;Esport&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Delivery:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Edelivery\" title=\"Edelivery\" draggable=\"true\">&lt;&lt;Edelivery&gt;&gt;</span></span></p></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:649px\"><p><span><b>Purpose:</b></span></p></td></tr><tr><td style=\"width:649px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Epurpose\" title=\"Epurpose\" draggable=\"true\">&lt;&lt;Epurpose&gt;&gt;</span></span></p></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:132px\"><p style=\"text-align:right\"><span><b>Attachments:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><br></td></tr><tr><td style=\"width:132px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;Eform1&gt;&gt;&quot;,&quot;displayText&quot;:&quot;(Link appears here)&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;EQ11&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;a&quot;},{&quot;field&quot;:&quot;Eform1&quot;,&quot;op&quot;:&quot;doesNotEqual&quot;,&quot;value&quot;:&quot;omit&quot;}]}\" style=\"color:#000080;text-decoration:underline\">(Link appears here)</span>\n</u></span></p></td></tr><tr><td style=\"width:132px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;Eform2&gt;&gt;&quot;,&quot;displayText&quot;:&quot;(Link appears here)&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;EQ11&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;a&quot;},{&quot;field&quot;:&quot;Eform2&quot;,&quot;op&quot;:&quot;doesNotEqual&quot;,&quot;value&quot;:&quot;omit&quot;}]}\" style=\"color:#000080;text-decoration:underline\">(Link appears here)</span>\n</u></span></p></td></tr><tr><td style=\"width:132px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;Eform3&gt;&gt;&quot;,&quot;displayText&quot;:&quot;(Link appears here)&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;EQ11&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;a&quot;},{&quot;field&quot;:&quot;Eform3&quot;,&quot;op&quot;:&quot;doesNotEqual&quot;,&quot;value&quot;:&quot;omit&quot;}]}\" style=\"color:#000080;text-decoration:underline\">(Link appears here)</span>\n</u></span></p></td></tr></table>",
+          "displayCondition": {
+            "field": "EQ11",
+            "op": "equals",
+            "value": "a"
+          }
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span>Current check request status: </span><span style=\"color:#D50000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Estatus\" title=\"Estatus\" draggable=\"true\">&lt;&lt;Estatus&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Approve check request"
+            },
+            {
+              "label": "b",
+              "text": "Decline check request"
+            },
+            {
+              "label": "c",
+              "text": "Reset check request to Pending"
+            },
+            {
+              "label": "d",
+              "text": "Take no action at this time"
+            },
+            {
+              "label": "e",
+              "text": "Delete check request from records"
+            },
+            {
+              "label": "f",
+              "text": "Undelete a previously deletedx check request"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ApproveChkRequest"
+    },
+    {
+      "name": "ShowChkTble",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ChkRequestTable"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-ReForm",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "CheckReqForm:Status",
+          "value": "Pending",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "CheckReqForm:Q12",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "The check will be mailed to Payee.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "You may pick up the check on <<CheckReqForm:Pickupdate>> at <<CheckReqForm:PickupTime>>.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYou",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Start"
+        },
+        {
+          "cmd": "comment",
+          "text": "Get Record List 1 from Start"
+        },
+        {
+          "cmd": "comment",
+          "text": "For each Seed in Record List 1"
+        },
+        {
+          "cmd": "comment",
+          "text": "Set Seed:Start:ID to <<Seed:Start:ID>> +1"
+        },
+        {
+          "cmd": "comment",
+          "text": "Set CRF:ID to Seed:Start:ID"
+        }
+      ]
+    },
+    {
+      "name": "Post-Admin",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "AdminDash",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-ReviewCheckRequest",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetCheckRequestStatus:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "ShowChkTble"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetCheckRequestStatus:Q1",
+            "op": "mcIsBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Admin"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetCheckRequestStatus:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 2",
+              "sourceForms": [
+                "CheckReqForm"
+              ],
+              "where": {
+                "field": "Record List 2:CheckReqForm:Status",
+                "op": "equals",
+                "value": "Pending"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "SetCheckRequestStatus:Q1",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              {
+                "field": "SetCheckRequestStatus:Q3",
+                "op": "mcIsNotBlank"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 2",
+              "sourceForms": [
+                "CheckReqForm"
+              ],
+              "where": {
+                "field": "SetCheckRequestStatus:Q3",
+                "op": "mcEquals",
+                "value": "<<Record List 2:CheckReqForm:ID>>"
+              }
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "No search criteria entered.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "SetCheckRequestStatus"
+            }
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SuchPend",
+          "recordList": "Record List 2",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Edate",
+              "value": "<<SuchPend:CheckReqForm:Date>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Epayee",
+              "value": "<<SuchPend:CheckReqForm:Payee>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Eaddress",
+              "value": "<<SuchPend:CheckReqForm:Address>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Ecity",
+              "value": "<<SuchPend:CheckReqForm:City>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Estate",
+              "value": "<<SuchPend:CheckReqForm:State>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Ezip",
+              "value": "<<SuchPend:CheckReqForm:Zip>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Epurpose",
+              "value": "<<SuchPend:CheckReqForm:Purpose>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "EClub",
+              "value": "<<SuchPend:CheckReqForm:Club>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Esport",
+              "value": "<<SuchPend:CheckReqForm:Sport>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Eamount",
+              "value": "<<SuchPend:CheckReqForm:Amount>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "EQ11",
+              "value": "<<SuchPend:CheckReqForm:Q11>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SuchPend:CheckReqForm:Q11",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Eform1",
+                  "value": "<<SuchPend:CheckReqForm:F1>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Eform2",
+                  "value": "<<SuchPend:CheckReqForm:F2>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Eform3",
+                  "value": "<<SuchPend:CheckReqForm:F3>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Eform1",
+                  "value": "omit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Eform2",
+                  "value": "omit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Eform3",
+                  "value": "omit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SuchPend:CheckReqForm:Q12",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Edelivery",
+                  "value": "Mail",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Edelivery",
+                  "value": "Pickup on <<SuchPend:CheckReqForm:Pickupdate>> at <<SuchPend:CheckReqForm:PickupTime>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "<<SuchPend:CheckReqForm:Status>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Eid",
+              "value": "<<SuchPend:CheckReqForm:ID>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "ApproveChkRequest"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "No record found.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "SetCheckRequestStatus"
+        }
+      ]
+    },
+    {
+      "name": "Post-ChkRequestTable",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "ChkRequestTable",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-ApproveChkRequest",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Approved",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> set to 'Approved.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Declined",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> set to 'Declined.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Pending",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> reset to 'Pending.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "ApproveChkRequest:Q1",
+                "op": "mcEquals",
+                "value": "d"
+              },
+              {
+                "field": "ApproveChkRequest:Q1",
+                "op": "mcIsBlank"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SetCheckRequestStatus"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Deleted",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> set to 'Deleted.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "f"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Pending",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> reset to 'Pending.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 3",
+          "sourceForms": [
+            "CheckReqForm"
+          ],
+          "where": {
+            "field": "Record List 3:CheckReqForm:ID",
+            "op": "equals",
+            "value": "<<Eid>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SuchStatusChange",
+          "recordList": "Record List 3",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "SuchStatusChange:CheckReqForm:Status",
+              "value": "<<Estatus>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "SetCheckRequestStatus"
+        }
+      ]
+    },
+    {
+      "name": "Post-Start",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:ID",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Start:ID",
+              "value": "10000",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Admin"
+        }
+      ]
+    },
+    {
+      "name": "Process 7",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "Form Completed",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Document 1",
+          "reset": false
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "AdminDash",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:18pt\">Check &amp; Deposit Manager</span></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:689px\"><p style=\"text-align:center\"><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SetCheckRequestStatus&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Review/approve check requests&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Review/approve check requests</span></u></span></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:689px\"><p style=\"text-align:center\"><span style=\"color:#C40000\">Match deposit forms to deposits</span></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:689px\"><p style=\"text-align:center\"><span style=\"color:#C40000\">Setup</span></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:689px\"><p style=\"text-align:center\"><span style=\"color:#C40000\">Send check/deposit form links</span></p></td><td style=\"width:40px\"><br></td></tr></table><p style=\"text-align:center\"></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:360px\"><p><span>Check Requests:</span></p></td><td style=\"width:360px\"><br></td></tr><tr><td style=\"width:360px\"><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CheckReqForm\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22CheckReqForm%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ADate%22%7D%2C%7B%22header%22%3A%22Payee%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APayee%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AAmount%22%7D%2C%7B%22header%22%3A%22Club%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AClub%22%7D%2C%7B%22header%22%3A%22Sport%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ASport%22%7D%2C%7B%22header%22%3A%22Mail%2FPickup%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AQ12%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Deleted%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p></td><td style=\"width:360px\"><br></td></tr><tr><td style=\"width:360px\"><br></td><td style=\"width:360px\"><br></td></tr><tr><td style=\"width:360px\"><br></td><td style=\"width:360px\"><br></td></tr></table>"
+    },
+    {
+      "name": "ThankYou",
+      "content": "<p></p><p><span>To: </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Club\" title=\"CheckReqForm:Club\" draggable=\"true\">&lt;&lt;CheckReqForm:Club&gt;&gt;</span></span><span> - </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Sport\" title=\"CheckReqForm:Sport\" draggable=\"true\">&lt;&lt;CheckReqForm:Sport&gt;&gt;</span></span></p><p></p><p><span>Thank you.  Your check request in the amount of $</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Amount\" title=\"CheckReqForm:Amount\" draggable=\"true\">&lt;&lt;CheckReqForm:Amount&gt;&gt;</span></span><span> to </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Payee\" title=\"CheckReqForm:Payee\" draggable=\"true\">&lt;&lt;CheckReqForm:Payee&gt;&gt;</span></span><span>  has been received.</span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></span></p><p></p>"
+    },
+    {
+      "name": "ChkRequestTable",
+      "content": "<p></p><p><span style=\"font-size:18pt\">Table of Check Requests</span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SetCheckRequestStatus&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Review Check Requests&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Review Check Requests</span></u></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CheckReqForm\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22CheckReqForm%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ADate%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%7D%2C%7B%22header%22%3A%22Payee%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APayee%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AAmount%22%7D%2C%7B%22header%22%3A%22Club%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AClub%22%7D%2C%7B%22header%22%3A%22Sport%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ASport%22%7D%2C%7B%22header%22%3A%22Payee%20Address%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AAddress%22%7D%2C%7B%22header%22%3A%22City%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ACity%22%7D%2C%7B%22header%22%3A%22State%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AState%22%7D%2C%7B%22header%22%3A%22Zip%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AZip%22%7D%2C%7B%22header%22%3A%22Pickup%2FSend%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AQ12%22%7D%2C%7B%22header%22%3A%22Pickup%20Date%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APickupdate%22%7D%2C%7B%22header%22%3A%22Pickup%20Time%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APickupTime%22%7D%2C%7B%22header%22%3A%22Request%20ID%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AID%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SetCheckRequestStatus&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Review Check Requests&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Review Check Requests</span></u></span></p>"
+    },
+    {
+      "name": "Document 1",
+      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Date\" title=\"CheckReqForm:Date\" draggable=\"true\">&lt;&lt;CheckReqForm:Date&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Payee\" title=\"CheckReqForm:Payee\" draggable=\"true\">&lt;&lt;CheckReqForm:Payee&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Address\" title=\"CheckReqForm:Address\" draggable=\"true\">&lt;&lt;CheckReqForm:Address&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:City\" title=\"CheckReqForm:City\" draggable=\"true\">&lt;&lt;CheckReqForm:City&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:State\" title=\"CheckReqForm:State\" draggable=\"true\">&lt;&lt;CheckReqForm:State&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Zip\" title=\"CheckReqForm:Zip\" draggable=\"true\">&lt;&lt;CheckReqForm:Zip&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Purpose\" title=\"CheckReqForm:Purpose\" draggable=\"true\">&lt;&lt;CheckReqForm:Purpose&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Club\" title=\"CheckReqForm:Club\" draggable=\"true\">&lt;&lt;CheckReqForm:Club&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Sport\" title=\"CheckReqForm:Sport\" draggable=\"true\">&lt;&lt;CheckReqForm:Sport&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Amount\" title=\"CheckReqForm:Amount\" draggable=\"true\">&lt;&lt;CheckReqForm:Amount&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Q11\" title=\"CheckReqForm:Q11\" draggable=\"true\">&lt;&lt;CheckReqForm:Q11&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Q12\" title=\"CheckReqForm:Q12\" draggable=\"true\">&lt;&lt;CheckReqForm:Q12&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Pickupdate\" title=\"CheckReqForm:Pickupdate\" draggable=\"true\">&lt;&lt;CheckReqForm:Pickupdate&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:PickupTime\" title=\"CheckReqForm:PickupTime\" draggable=\"true\">&lt;&lt;CheckReqForm:PickupTime&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Status\" title=\"CheckReqForm:Status\" draggable=\"true\">&lt;&lt;CheckReqForm:Status&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:ID\" title=\"CheckReqForm:ID\" draggable=\"true\">&lt;&lt;CheckReqForm:ID&gt;&gt;</span></span></p><p></p><p></p>"
+    }
+  ],
+  "images": [
+    {
+      "id": "__HEADER__8cdf3eb62bf7e5e",
+      "imageFormat": "PNG",
+      "data": "iVBORw0KGgoAAAANSUhEUgAAAJsAAACXCAIAAACNwb6gAAAXWWlDQ1BJQ0MgUHJvZmlsZQAAeAHVWWdUFMu2rp4IA0Macs4555xBco4mHPKQsxIERQUBRQQkCChBQEAxEARUJCmgSBIBARFQlKSigEThNXo859513/33/rxeq6u/3nvXrpreVbXDAMCyRAwK8kPQAOAfEBZic0CX28n5IDd2HCABA6AC7ABHdAsN0rGyMgP/9foxDKB95iuJfV3/Vex/Z9C6e4S6AQBZwWxX91A3fxjXAoDQdQsKCQMAuQHT+4+HBcEY1QVj+hB4gjCe2Mdev/HyPnb9hdGoXzJ2NnoAoJkBIKMkEkO8AMDzw3TuCDcvWA9eHwAMXYA7KQAAghOMNd28ie4AsOTAMuL+/oH7uAPGwq7/osfrXzCR6Pq3TiLR62/8+7fAPeGB9UmhQX7EyF8v/5eNv184/L1+XXRwSxngZ7FvG0b4nnMn6pvCT3b43g3y+2UzWAZi9Qiwt4Vp+1g8wNXC8i+s6RliaANjuC9kFRSmu4/hbwZ5BoVZ2f1Fj43y1rOAMSVMz/QINfijp9CHaLJvMyqYfj8k3MYexvwwbgmNsDWAMbyioA9R3naOf8msunvo/0VHIDxJhsa/ZRB0pDDj/bHoYZvz+gaa7s8BHguhCEyBH/AA4SAEbgOABDADekD/r1YCeAIizImAeaHAF3yEsT/cIxDuEwhj7r/k9P6DYvirnxfc7981cgM3WDb87zF/j8YNj/lHJwm4w/gPnQiPsc/bn12oCyn+nzH/SOzr+zUb6SrpeemdP3NCCaJkUQooXZQGShOlArhRjChWIIGSRymjdFBaKDWYpwIMwQdYs9efOe7r97/vGZETGKnq4A1z93+76x8ucPglTfr7/T9mAEi9Sw+W/swAgDCPE/A+AEAvMCgyhOTlHcatA+9cD3Fu4wA3SXFuWWkZmX32/5tr/8z6PdkVm19nEcTY9w8t8D4AqrXwmrL4h+aGBaCODwBa039o/JzwshUB4EmmW3hIxG99qP0HGuAANbxCWQAn4APC8HeWBYpADWgDA2ACLIEdcAZH4fXjDa/BEHAcxIDTIAGkgDRwBVwF10EJuAlug/vgAXgEWsEz8AL0g9dgHEyBWbAIlsEPsA1BEBbCQwSIBeKCBCAxSBZShjQhA8gMsoGcoWOQFxQAhUMx0BkoBUqHrkJFUAV0D2qEWqFuaAB6A01D89B3aAuBRFAi6BEcCEGEFEIZoYMwRdghjiC8EMGIKMRZRCoiB1GMuIWoR7QiXiBeI6YQi4g1JEBSIBmRPEgJpDJSD2mJPIj0RIYgY5HJyCxkMbIa2YTsRL5CTiGXkJsoDIqA4kZJwOvUCGWPckMFo2JRF1BXUTdR9agO1CvUNGoZtYvGo9nRYmhVtDHaCe2FPo5OQGehy9B16Kfo1+hZ9A8MBsOIEcIoYYwwzhgfTDTmAqYAcwfTghnAvMesYbFYFqwYVgNriSViw7AJ2FzsLewT7CB2FrtBRkHGRSZLZkh2kCyALJ4si6ySrJlskOwT2TY5DbkAuSq5Jbk7eST5JfIb5E3kfeSz5Ns4WpwQTgNnh/PBncbl4KpxT3ETuBUKCgpeChUKawoSxSmKHIq7FF0U0xSblHSUopR6lIcpwylTKcspWyjfUK7g8XhBvDb+ID4Mn4qvwLfjJ/EbVAQqSSpjKneqOKo8qnqqQaov1OTUAtQ61Eepo6izqGuo+6iXaMhpBGn0aIg0sTR5NI00IzRrtARaGVpLWn/aC7SVtN20c3RYOkE6Azp3urN0JXTtdO8JSAIfQY/gRjhDuEF4Spilx9AL0RvT+9Cn0N+m76VfZqBjkGdwYDjBkMfwmGGKEckoyGjM6Md4ifE+4zDjFhMHkw6TB1MSUzXTINM6MxuzNrMHczLzHebXzFss3CwGLL4sl1kesLxlRbGKslqzHme9xvqUdYmNnk2NzY0tme0+2xg7gl2U3YY9mr2EvYd9jYOT4wBHEEcuRzvHEicjpzanD2cmZzPnPBeBS5OLxJXJ9YRrgZuBW4fbjzuHu4N7mYedx4gnnKeIp5dnm1eI1543nvcO71s+HJ8ynydfJl8b3zI/F785fwx/Ff+YALmAsoC3QLZAp8C6oJCgo2Ci4APBOSFmIWOhKKEqoQlhvLCWcLBwsfCQCEZEWcRXpECkXxQhqiDqLZon2ieGEFMUI4kViA2Io8VVxAPEi8VHJCgldCQiJKokpiUZJc0k4yUfSH6R4pc6KHVZqlNqV1pB2k/6hvS4DJ2MiUy8TJPMd1lRWTfZPNkhObycoVycXIPcN3kxeQ/5a/KjCgQFc4VEhTaFn4pKiiGK1YrzSvxKx5TylUaU6ZWtlC8od6mgVXRV4lQeqWyqKqqGqd5X/aomoearVqk2py6k7qF+Q/29Bq8GUaNIY0qTW/OYZqHmlBaPFlGrWGtGm0/bXbtM+5OOiI6Pzi2dL7rSuiG6dbrreqp6J/Va9JH6B/ST9XsN6AzsDa4aTBryGnoZVhkuH1A4EH2gxQhtZGp02WjEmMPYzbjCeNlEyeSkSYcppamt6VXTGTNRsxCzJnOEuYl5hvmEhYBFgMUDS2BpbJlh+dZKyCrY6qE1xtrKOs/6o42MTYxNpy3B1sW20vaHna7dJbtxe2H7cPs2B2qHww4VDuuO+o7pjlNOUk4nnV44szqTnBsOYg86HCw7uHbI4NCVQ7OHFQ4nHB4+InTkxJHuo6xH/Y4+dqF2IbrUHEMfczxWeWyHaEksJq65Grvmuy676blluy26a7tnus97aHike3zy1PBM95zz0vDK8Jr31vLO8l4i6ZGukr75GPlc91n3tfQt993zc/S740/mf8y/MYAuwDegI5Az8ETgQJBYUELQVLBq8JXg5RDTkLJQKPRIaEMYPRwc9oQLh58Ln47QjMiL2DjucLzmBO2JgBM9kaKRSZGfogyjSqNR0W7RbTE8Madjpk/qnCyKhWJdY9vi+OLOxs2eOnDq5mncad/TL+Ol49PjV884nmk6y3H21Nn35w6cq0qgSghJGElUS7x+HnWedL43SS4pN2k32T35eYp0SlbKzgW3C88vylzMubiX6pnae0nx0rU0TFpA2vBlrcs302nTo9LfZ5hn1GdyZyZnrl5xudKdJZ91PRuXHZ49lWOW05DLn5uWu3PV++rrPN28O/ns+Un56wXuBYPXtK9VX+e4nnJ9q5BUOFp0oKi+WLA4qwRTElHy8YbDjc5S5dKKMtaylLKf5QHlUzdtbnZUKFVUVLJXXqpCVIVXzd86fKv/tv7thmqJ6qI7jHdS7oK74XcX7h27N3zf9H5bjXJNda1AbX4doS65HqqPrF9+4P1gqsG5YaDRpLGtSa2p7qHkw/JHPI/yHjM8vtSMaz7bvPck6slaS1DLUqtX6/s2l7bxdqf2oQ7rjt6npk+7nhk+a+/U6XzSpdH1qFu1u/G58vMHLxRf1Pco9NS9VHhZ16vYW9+n1NfQr9LfNKA+0DyoNdj6Sv/VsyHjoRevLV4PDNsPj44cHpkadR+de+P35ttYxNj2+KkJ9ETyW5q3WZPsk8XvRN7dmVKcejytP90zYzsz/t7t/eKH0A87s2c/4j9mfeL6VDEnO/do3nC+f+HQwuxi0OL2UsJn2s/5X4S/1H7V/tqz7LQ8+y3k2973CyssK+Wr8qtta1Zrkz/8f2yvJ2+wbNzcVN7s3HLc+rR9fAe7k/NT5GfTrunuxJ7/3l4QMYT4KxZAwi3C0xOA7+VwDuEM5w79AOCofucUvyTgdAWCZWBMCZRBEuzTLaA7CE7ERSQemYESQnWhwzDimC/YFrIS8jTcOYpzlJn4cqoRGhZaD7oaeojBmfEeM47FmfUm2xcOIU5LLh/uCJ5I3ji+JP4MgTzBYqEy4VKRUtFCsVzxNIlEyTipSOkImQjZGLkT8gcVpBTRim+V6pRTVUiqhmr86gj1GY02zRKtc9o+Ona6mnpi+iwG5AY7hl8PfDJ6ZzxuMmo6bDZsPmoxYjlk9cp60GbQdshu1P6twwfHRacV591D5Idpj9AepXGhOUZDpHOld2N2Z/fg9RT2kvZWJZn7hPkW+HX4LwRSB8kH24dEhGaE3Qnvjpg5vh1JHyUebRjjcjIyNiPu9qlnp9/Fb5ylPSeaoJvofD4k6WJyVUrPhe+p7JfM0mIv16YvZQpdccnKyH6as35VJM85/3zBg2uzhXRFWsW+JRdvlJY2l42Uf6/AV4pWGd3yup1YXXHnxd2v95lqtGo961Lqqx/0Niw1kT3keaT82KLZ4YlNi3mrcZt+u3aH+lPlZ3KdUl1i3RzdO8+HX9zpSXh5qFeyd6+vt//qgOeg7Cvwamyo/nXGcNCI5aj0G9o3K2PD400ThW8TJv3f2U2pTfPMYGeW3vd/qJ3N+Rjz6cic+jzb/ObC8GLN0qXPvl8Mv/J83Vve/S604rx6ZW1iXXYjY3NvO3xnZff43h5sfzScPcsCF5AH5iAFKAlaQjghBpFH4PjpGtoaQ8B8wD4mKyXPw2VR5FO247eo1WniaDsISHothmjGaqZ3LPSssFdmT+Qo5+zkmuH+wvORd4jvMX+pwAXBICELYSHhHZFe0XwxL3FZ8U2JFskEKXNpLul1mT7ZMrloeTMFVoUPilVKQcqyyt9V7qqGqmmpM6h/1xjSbNDK147TOaqrrIfTG9BPNdAxWDZ8cuCWUYFxukmyaaJZonmyRZpljtV163KbatsbdtH2Fg68DhuOr5xqnfMPXjyUdPjikdyjt10aj90j3nQtcst1T/e44Jngddo7hnTcJ9Q3yC/A3y/AJ5AURAomhfiE+oUFwoF0+PHIEycj46MSoy/GZJ4siC2PqznVero/fubM2jnyBM5ExfNWSb7JCSlFFx5ffJO6lkZ3WSrdPMMnM/7KlayK7Ec5A7mzV7fzaQuEr2lddywMKkoqrijpujFXRl4uctOkwrfyQtXtW323l+/Q3ZW/Z38/vOZKbU3dQP3nBmwjT5PqQ+tHro+Dm089udSS11redq+9qaMVPq96O191dXU3P699caun7GVhb35fbn/OQPZg3qubQw2vu4bfjCyMbo/hx7kmZN7qTzq+C5nKnm6Zmf9AmNX66Pcpd65zfm2Rf+no58qvuOVz31lWetaurSdvpm6X/uz5y/4sQB0EgwaIEj4D8qF12P5P4dh6CBWC5kYvYB5hK8jqyF/jVinp8RJUdtRRNAW0zXTv6FEMooymTF7M0SxxrNFsUexRHOGc/lyu3NY8arzsvD/42vhjBaQEJgVThJSFpoUTRERFnom6iu6IZYqLi3dKuEkCyXwpVanX0kEyeJkKWUPZGbl4eQH5VwpnFGUVp5UuK+soL6tcV7VSA2q31Q9pkGs0apK02LT6tM/paOis6d7R89MX018wqDD0PiAMnxNlxh4mAiYfTEvMiOac5m8trlkSrfitFqzv2UTZGtgR7Kbt7zrEOpo7sTktODcePH/I8bDA4dUjHUezXHyOaRGZiMuuL9zK3RM8PDz1vfi9kd4zpFafQt84v6P+KgH0AV8De4Iqg5NDfEPNw6TCCeHrEWPHH50oiIyJOhitGEMb8/XkWOzruIFTL0+/iO8603m281xnQmfis/PtSW3J7SmdF15eHE6durSYtnZ5K307YxP2rotZk9l9Oc25dVf78xYLMNf4rmsVHi6KhP1m7Y2e0pmyrZsMFXKVdlUnbl27/ax68S7dPeX7LjUJtdV1w/W7DUKNNk2xDysfjTSjnsi1EFvT2lral57SP1PpPNIV250Pe7SBnu+9Jn2lA5hBv1dvXlsO94xavXk7wTVZO90+GzI/8OXFqvrm7r79f9eW9n0CRhGAkm4AHOGE2ooVgIIVuEwC16uoA+F3PAB2KgDBNwKg5xoAsl78239g4ZqMCNCEM0tfcAY+RWpAD/gIwZUcSBGyhEhwFngNaoJGoFUEHUIGYY0IRVxBNCGmkORIBaQ7MhvZhyKDKwwnUU2oLbQa+hS6E0ODOYK5hdnFWmPLsDtktmSV5AhyH/IJnBXuGYUWRSOlAmUNXg5fR6VK1UJtRN1H40QzQxtAu0V3nsBEKKNXou9iOMTwlfEsEyvTA2Y75hWWTFZF1jdsJ9l52bs5gjnZOJ9yBXPzcb/lyea146PjG4Q9loMgq+A72GcFiCiJbIreE/MRFxB/L3FD0lNKTGpV+olMqqyLnLw8pfxHhTbFQqVTykQVfVURNWq1DTh+7td8onVX+4ZOru5lvQv6iQbxhicPHDcKMvYyOWxqZaZvrmQhaslhRWuNs8HaYu3I7Skd6BzZnASd5Q7qHbI/TDoSdzTbpfnYV1ceNzv38x7NnqveoiRXn6u+Q/5UAcaBCUFPgjdDlcKOhz88jjxhFVkUtR5jffJeHP2pqHjkmcxzwgnN5x2SllMuXpRM7U8LT2fP2LyykD2VO5n3qWCzkLlY+0ZgWfHN2sqOW6+rP93dqMHVcTyQbtR/6PTY78mZ1mvtj59Od+GeK/f49hb1j73ieR040jbGOhExOTqt9f7WR/Y5tQX84sjnrK8myyvf01YF1u6tK27Ub8lsl/9k3039dX4QgDhc5XEBkSADrhx0gfdgF2KDlCBryA9KhEqgFmgS2kVwwfm9ByIFcR8xhkQjZZAuyEvIVuQqShTlgSpHfUYroc+gBzGCmDjMBFYTW0ZGS3aabI3cn3wazoafU+hTdFAaUw7hPfA/qa5Sq1OP0PjTAtoMOmG6FsIRegT9XYYARl0mLqZnzAEs9CwPWYlsWLbb7LbsWxwlnBac21xV3Gd4PHiN+MT4KfhnBZoEzwtZCzMKj4rkiIaIWYlLSdBKrEmOSbVKV8pckT0jFyLvpmCvaKykraysIqMqoSaqLqIhoimmJaWtoKOha6hno3/UwM8w+kCKUZ5xlckj05dmk+bfLFFWLNbiNtq2Dnb+9gkORY6Pncadtw+xH9Y64n402aXp2LKrsJure77HmBeTtyMp22fMj9PfNaAi8FuwXMiJ0OZwTITV8bwTc1FK0edjxmOl4s6dehuveCbj7PcE28SGJO7klJSti/6pM2mHLg9nHMqcyzqRg8stzFPLH7t2slCgaLDkdKlC2eLNtsq8W2HVFneF7kM143V1D9Ia/R5qP0Y1P29JbzvUIfR0tbOtO+OF50uVPur+j4PlQ67DnCNjb7LH7d7STfZPpc1Yf6CfHf2UPa+5MLpE/Dz6VXM5+9vMCueq1Vr0j/z1+o2XmxNb89vfdzZ+7uz+Oj/g6qkYMIIrSrEgG9wD3XClaB2igUQhQ8gVioP3fjM0BVd6hBBm8M7PR3QifiBFYetfQfaicHBdJhnVj2ZD+6KfYqQw17AEbCoZgawYro28wUVRcFF0U0bhpfGLVFXUJBpOmlHaLDonAhdhgb6R4TKjL5MRsxALlmWOtYftLnsmRwynN5cjtymPHq8mnwa/noC5oJOQu3CwSJxoqliBeJXEI8kBqXkZtCy/nKG8n0K2YrvSsgqnqplalPpNjREtjLaSjo9ukd64AbOh04F8o/cm8nCUMWEha3ne6p2Nkm263WcHc8d7zqwHkw/tHYk+unMsnPjcjdc9ymMIjjMvkhZ9Tf1uBxAC44IWQxxCW8NFIzLgCNMjqi9G9+STON1TPfHHzvw8V5JodX4j2TNl+KJRalOa1OXSDI7M7CxC9qVcxqvF+ZIFjdd1C7uLLUuGSp3Kxm+6V3ypirqNqc66K3ivoca0dqo+ogHfWPJQ7dFQc0ALeWtpu17HzLP4Lv7uFy+iX0r1zvWXDfoMKQxjRibe3B9XnGicVH3XOK0wc/sDz2zax6051/nORVE414j5EvDVfFlweeHbne/OK4iVG6sKq8/W7NeGftj+GFw3WX+8IbVRvEm9Gbk5s2W2VbvNvH1ye3rHYKf8J9lP75/du6K7ibuze3p7Rfv7P9RTTnbfewCIUhcOJif39lYEAcCmA/Dz8t7edvHe3s8SONmA/wNp8fv9f8W+MAauuefn7qOnpxv2H/92/Q+Q8pfYRCTa5AAAAAlwSFlzAAALEwAACxMBAJqcGAAAIABJREFUeAHt3XW8ZEeZBuAN7ou7BXd3DcHd3YO7O4QAwd2dAMEJ7s7i7i4TfHF33WfmhUr96pxTfbpv37HN+aOnuk7p935e1Xf2+Ne//vVfhz67EQUOsxvt5dCtbKXAoYjubnxwKKK7G6KH2902VO3nH//4x9///neOgsI///nPPfbYIy8Pc5itfOzrYQ972MMf/vClvuq6Cxd3E0T/9Kc//e53v/vNb37z29/+1ucf/vCHX/7yl7///e//+Mc//u1vf/vrX//qM0CC9ghHOIIyOI90pCMd7WhHO/KRj3zMYx5T4b+3Pcc4xjGOfvSje7WLorqrIgokmP3kJz/54Q9/+LOf/ex73/vej3/8Y1jmgd+f//znuPHAUyCLHnAq61tEViHQegtXcB7rWMc68YlPfNKTnvQ4xzmOzxOc4ASAPuIRj7irALxHtr1LLBf1ofj9738fft/+9re/9a1v/e+2h4BCBdGBAQaoeMBw1KMe9ShHOQqoDne4wxHEQGu/2tPDgZZM/+Uvf8EHv/71r33+6le/UgA5VWzAE53oRCc5yUlOdrKTnf70p99zzz2VoR5Z32kptmsgSuCg+NnPfvajH/3owQcfrEwuKc/Tnva0Jz/5yU996lNHpMDpiSKFB5hRfwgACaaNIbpVbLcJLggp6uCKaX7605+S/u985zvf/OY3v/vd72p8whOeEKKnPOUpz3Oe81zgAhcgxGbfOUHdqREllJTql7/85S984Quf+9znfJIh4J3qVKc6xSlOcbrTne4MZzgDRI93vOPVWhEkH/rQhwjfJS5xCVJV0504fvKTn/z0pz8NM7jCHk9ACFp1M2Utf/GLX0QTfP3rX4er8o9+9CMyer7zne8c5zjH2c9+doIL6abjDv+6kyLKzfnGN76B9B//+MchSnoiJegISIjGvI26qQC48Y1vDNcnP/nJV7ziFQuJgfTyl7/8JS95yRe/+EVwYgKe8LGPfeyLXvSid7rTnYxcWjYFbIQDIPq1r30NVxFcg1vPWc5ylgte8IJnPetZscXO40ntdJ4R2n3+858H5Cc+8QmgsogIRybOdrazAZKI0LdMHU07CicwQEVhakawamw+8IEPPOpRjzImIdtrr71INgXwtre97UUvehGwn/KUpzDDdftSVu8hkZe61KV0MYIVMgH/s+1RT8qNCVrLK712WIE52UkexHrTm950t7vd7cIXvjBBvOxlL/vABz7wzW9+M3iIVBaJhuTvale72g9+8IOpZdO34EfQBzzgAaUNW3ita11LJQDe8pa3EDIoQv2Zz3wmp4kD9d73vrc0XljgW5HXV77ylfe85z0xB/a65CUvabr3v//9uG1h901tsFPIKDeERL7jHe/42Mc+Bg/Mfu1rXxvXk06hYc3s3r761a/myNzylrdsbGRpxjryUalHrFAqcQAZJdbXuc51Ln/5y0e+j3vc4/pKq4OWzS6NFxboWJxBZ5BaBv7DH/4wl+1lL3uZwsUvfnHonvOc57SMheNsRoMdjCgDyVWh+ggf7j7vec+LHOc///nJaO3slJ2f+9znFkuwZO973/tqG1kaKEArYHNkWEqhi0pWkKcDictc5jK1umZH73Of+8hFUML1IAvLOIBW/9SnPkXlWrZhwfnud7+bDueXXe5yl6NjznjGM2b2haOts8GmaoD+4GSIYeOYICu5ec5znvPVr36V/Aky2Sqw/fznP29GgBDxtX+oizeat+Urda0NWedhpfL5z3++GrCBtjTbSMFK3vnOd3K2b3/722MdQ1HFJPURj3gEAT3+8Y9vnQcddFBZwEbmWqrvjpFR+8TRr3/96xlOVL75zW/OyAn1tmzZcuCBB9Jj5EkcKey70IUuJAjhH4WLhZjcy9e85jXSCwLTM5/5zKlvPnVUw1iaKNoPAGqMKQBtGq/2FZVFyfxqGpsJoOcpAPLKUlDIr3rVq6CLKe2IvKqsFcNqM87stQMQ5VPwd1772teSRVbn6le/OueCSWNKn/3sZ3MuiCZvRVqHO0MOtN9nn32KVoQxkKho/vAUomIb4GljKLRGCxhTgMSa/0VvF+poQOF7ZQ3STKV+ToFQasY6WG3aUzBSWgzHmc50JivHsk996lOZletd73p77733dvKEl5LoDTbm18Dyhje8oSyBHYoXoZWEHF4GrUQMPXaXu9zliU984mMf+9hrXOMaPCNYPvzhD0+WxwLgRJpR8PrXv37xgZuFfeQjHyExBPrtb397XhEXxpWg3PnOd2a8U2nqF77whZQzOKM5m3E6X039ile8woCC0fTFHC94wQuue93r7r///uwrvPnPd7zjHaEr2N1vv/04a50B1/Xqv9Y10MJx6EkgcSLk0m5zm9twbey59MLLQghIP+95zyO7Qgs6TdjHShECYGCF0liEA1ExAye5VCqAKmPiD5ZMG7Y5DQxoKADIDOCPd73rXch9wAEHhDlucIMbcI7qoRaWIfrSl76UJhAr41SsCTPoYiOewVvf+lYj8J6AzY7wkqgKfjV/PkcIC8dfucH2QJQocP8Sb1zsYhd72tOexiey27Jo5Rvd6EYsHG+iCFDewkYX2Fz5ylcuYvrGN76RNJNCmg1U2nzwgx8UPDzoQQ9CMh1ZUHyj1/3vf/8yC/649KUvTUPS8Be5yEUofOEHdlEQNZVmMwsULLcWoqIsevumN72pYentq171quIrB0FlHNhbHn6SaxRqY1lZlPJ27YVNt6MozqeHopTeFa5wBSoXCwMDuctjV9jcp2xtkwFHBX4Tk4kokIvhPNe5zsUuYgvs/5WvfIUnJdxkwNhIrpBAgrgztySG0JdZaFdihBtAy/NSL7qQrMArNEdpNr8QewE8alawa0mkkIsnxKr9IEYakLbGoFDy3HsnDTwDNfPnmt9ycxHFnizZIx/5SDED70D6lKoEgPQ6ji7bVohHGtZuVs/R0BhaHMsgmpwqRMFDKFlW8Q9/B9LRotiCMaaBHcXQe5bB1zULVczOkarEpjm3gQRRayad89WwuND4+EmWCkgQ5ZQN+5ra8rCmBTzucY97xjOeQd+wHaYeNt5gzSYiyrGUb+PjsHa3utWtonWZQ9aLl3/rW98aDFm9DYOKBSLHYhKio6ZsjItIm0GU65FKLXE994dqhQo5Jo5gRi+v3vOe9wBMep3upcMVkN5jTABokNwFPcH4OUPleRkf0ygYRKSUBmUBowW6R8bfK41pBVYD5zXesunsHeQ0h10QSipBe05DNDaynOY0pxkdf+XKzUKUFnXQ8axnPQspuZeULXpxCmhgGaLPfOYzCMr2yIBn6dJpz33uc4kyRXrve9+71HvLUQKMQolKla90pSvRZkkt0X7EVFIClsgHeLMTSgTVkgZGRFLra0DNK66QtQVjQxkcqFwwdMcoHlKlZlR8zShTz/3RUW7kfve7n6xCzYWGTVzEgcCj1oN9Ob0MOS8J8A4GOMb2dfe7390urHNdz6acptkMiyWRzaIo2C2aWrF9wozV4cUQDnr4wQ9+MLHwCpUlzZGGDEU/h3l5/A972MPQzrYBFjVFPuDHdAn1ctZGHyAZMPTyyXxiICAB0oPuhi2IcsTMyLWBqKGQlTTT4cybYeX2kpcAp5Wzx3IaxqyhxTfYkbfMNksMNXJmfOK77777criMbM1UMWFlU2iUm9zkJlCkOSAqfuMq26BZ1oXo+n1d677tbW+LHFe5ylWEZagWDwJB8whjbnazm/E5sSrxpSFTL/niKAPS6ilVbWweTbVEFISDOnK/+MUvRk2EIEOUrewupsEiyMfQUs6IxYJGEP8zZ+9fLSkPy2AOpSExCv/lXve6F7VBn/OHkdvCBDw0gYGwAsNB9KkZNqWZCJwGIYiWLWJxICNO44txy5EFZ+M2KUnN6J7HPOYxwKauJZh6S1zm3ZoRJZ3cH/6I5AAPCKXkhnhG5KBeFWtKNKkpgkUuy1s0ffzjH8/LEMnwlYKueEDyRUaJcPOToxKxy6Mf/WhSwhYKBjgaaFRPsXIZ/1HIyP2lL32J50WLyD/QxnQmr8qBuUVSuUJqC1NuJtJXVgGcumA+/B3IcbYshxFoC/EStrNgKxccUycsMX++GWq1r+tEFAvTJ9bHtNCWSMNkSmkCT6Roq1miOESqE7cCjD7UnoIqb8kKhhXtyLbLer/uda8Dp+MRCpzjQ2Tve9/7GpZ61LKRj9VI0OlFJyM6FUoHUAx0L5GlFQiZqAkzNWxky1wEWNodXZqQrIwPVGkmW0YQ3VOPJx7ykIeQATQhyqXxyoV1IvqkJz2JDgGhiDu0xssSYCwQMKgy+oqDSsnQV3SmPTNReFYvRsXbbANdMAfDI8TE5rIBUKcA8b7uuL60nLltdCfErGOeFbI2uvMAJIl4ZLxWhvMOd7gDz7xZgIXx7+xIkEb3Nm/RBC9ClEkqGUGbZcJvcYtb0Ek+2d2m17Jf1+brSpQkk/fQhz5UwGdXTL2YmpyxSdhZZE3tMCoIwc2RzQGtMIZY8268xdd0NbBxgHQuhpXDI69YW5aO34+ODGrtofS9CXJvZNosdwcBqT2CMoE4jMCReLqUquiP461VYSmcR1VwX5mSWG4LtjaGICOAB/CsiWGB2gwLUYvRxjgWkLe2w7KKnrkRTqIwOoVkuqbvEl+XZYHR9jbJ+Fkll4Ec1G1wN2sE2ihYBpLHwcuImkXlN7zhDQJQHMBvBIAN827wAeEmmnSdHIUauNbD9ssmxWFiRIPQgWIhsCET8+YhDbQct5N7ZXx0pF37A9ZvbdA62XtntLARkDg7ywg8snvc4x52SjMPFTJWtlMUuN3tbtdsx1eenXNDzCFN2PStZ19YXoPW5X9K7yETVyVhwBOe8AR2DjaZHn0xNZ7FvHbLFyhWUwOBh/NO6R4+CNMIbIzP0hBfKlcwt6yO1YULbTqyiFFQ0KQKnhTUePIV0hTGXe96VynGhcSqG1gqZ436wRkORAkW5WmpeJrYUQDchdIeKcAp3WheCxt6tiDE3II0rM9slSOjMsL8wkYRxbAsCjhlovmHvqIm1cEkxNfPUkBITVFcdksWyWXNpN6yuGgqPousc5jRqwZ+5paMwy9j6kyUB4p5tmH6b1z/U7cVaWVCjCmHdrE/KRgEppiVU8M0kkvsiL8dLRhTACYxxHYQPpk/X3EY3/7pT396bcjRwbx8QzDzpPhcLAth5Wn3Z596u1FEmTryJPyKUMpY+oqgHIR63aa3XDKHeRERbHyEGlQMTlDwu1fGZPmKiE8tfVhPOql0KQVTgHMrev+RyzqhE5uUVwVsvQQVxQUdDj5VQ9NyhgkrDUzJA0yqmTdnZBxMseNgIJFO8udt7fsI2xBKY32dO3EGPTwMEbkssQhnatJO/YYQtX8AMFSyOTH7PAKUIqZWNpzVBvAgPkVuW+UlxSWWc6Bp1TsGF2KW8HQ4QqcGB3CGuVcWkDxRVCv8qFbWjoUTJ/BB+KsoqL4BVXuJ1qVsatZDWAUhLmBIKQhv+PAEzi3UXGTETDwMSsvWCkjpYsGYGPZkQIBn43YhT0LNYAI51M5+p16tjqidkyoUFCCSP2vl9fmKmpTnFF2oYmS1VdSkrjE4B9htBESn91w+WtZqlo3R0tSDYQHjQSZlsNFgQiNiREMKLjlZHG/ekKMCohBcrdmjCzrSnGXMpQoowKmBKKPDb8Lu8qBcPGXTxcpmQHwswLNrQFokwyn3hCeilug2joWVCO2GIdDCJa2OqFWSTkkc+pb+5O9wIBEIS/I1uDmiSZw4XIGAko7iJvAdEFrmRQIWRzM5K8NpAc52TA1L2PhEKV/pLgapcb8tCcNR7IQgCkN7vOhR4P1OseNwL00NfpUScaJH8kgqBSuJ5rMeEFdJ/lHFnA+Ot0wn2eVn1UNpI32ILPwJfmX9amF5RUQ5QSwWd4CPAwZpHQYSRZyxlJQCqBpjWVZDUOgWaULeRLK72GIU/tKlX+AQUaRQDJw+8ZZMIcva6UjLURh6BVGeiwJflBXo9Oq/AgCEmGRCZvCamWzQekDolUl5yDwm/mCNNzEl6wahSNggwQx57c/YvJ2FqGk8pSelEc1JbZpeTC3SYBppXVqC5DnapVcxoFNPLUnDEC0hHcipHUlw+xw2KNPNKVAJJHKbmG39QC9U42Qu7EvXsf3pK2DVl+hg0IUdOw2wODsaUDmxBVQ4sVChjAQvN6IRTfpW7O6IQlzAHlmGXfAAyE9nuubVLESbPs6wWAuEoCchLdnBwmMoKU1fKUAIcXo5TWAmOjwRqfnasyWgtK69SRhx9zcIJ1FzrQSKIAkqBNSS5uhwU9NsMRZW6zEC0Wm2vOxXU/MJOLF8JUk0X01kp9xd+kOGgRqol4duiIYvCS6yOBtgs+hengpFKMs9fwFLIwoYokn+pBHwkZmIrLWyiDVmLIpjKWbM+tBIrsSZFw1jY+wo5cwV4lhuXDotAGORdQozcKbgaH0mFTCo3AhhkiVg4OkMxmJm304zgJFCNlWSj8FGJSQS+CJI43xFNGksLjHvTBchDcnWhbvH4sqqkoHOXPWrpRGVmeTLmZXzBp4yVl1OJYC1wV+2RK1ZbtLxbL6NsaAbtJ1lai5lZAufAZWwmpFnWxr0C8wY7UcgKDePjquFT8NZjIw52EKuooLBeRsWWYclpuZDUXhW7hVedxrBloWeVkLEuRocz+H4ozXLIWqa5JEds9T2fHToVFqc6ylSoAJQtlOGBbmJbAlGO31nvnINmNpEkTzK/P6Zy5s5xcrNpL1cQCGXrBIng9LCcJaXjJgTGAqPYcKR5MRRMVmsVR0xpUIwBAISjznLWA5RUkXRy8EupS3timSLwBhaKxPkOJaSzp2zvjltMBkUOTUFUZw+p+N2aEMGWBmwcbgckiNCxJHhF4+Clr2wcifewh7qoVZ14CSjgh8bFGWJWecseAlETUY/cPENTQLoECzGNEoPLYTH4girPVAs/L3Gx5uz0E4brnWDKGbvtN/Or9CNdAr2yCIbJI4HJGOPFKymYEm2iImNU5K1EVPcL/WGVuSBQBMkAYWoYeHilzgf5X05grcCbirVYXEsvGXhPrEwPxu7YSU2UsEn38dXDZgB7d3ncNfGmShW9RYG63rwUzNUch1N5Y76yodwHwqTyVIJAXg9PrmN9Bz6uMTE93FuqFm9Qp4RqaV1rnnNazoY5nbI+wsZ+Ml1s5HyQsxLA+sgoC6L4CYRPWixGF884Pnk+zAG0tMYyiodDsvAiQ0sjjtK23jFp69D2zL4RgpiOxuL1vWpLA25kQE3oy9REx3gb1E7gogFpFm4Y3UMU+Yl1gJlWDLACK6Nn+zxPxhjSajSbLQw9y45he5cl7RxsqEIVDwFG58Iyh/DgOJOJtaUUrUYkKqBH6Stz5mDCIybDlrxq6WMMNeqVfhM13pMeeZVB9usfhaJUNQbRcU5R0lajWhSv8MpUZX4kkvWykkOS8yXjG+FpMP2dc1cRGVH6Xp+DQXCMZMMokaEzzQ+r8d8ZFFIJ7lKUVilwE6QJ1BxkUBHl+uxG0RVOgNhGHBDvY6NlG1ed1QooGKajQy4GX0tT65AIok/4coVT2JqFrsgu+JpB+CJACW/2DVHlkkxTnX8d73+cx7pDFA5uSxagt5w3kn3ElkhsBAFYIw8xcI2yDlYOspahLSWSulp8Sg7ij3lfiUcCPFaNHCiF8ugcn3aGH013NRa5hoOO6fG1I5iEMcxi+WhgKO3YUe0levmePopLcmBosZIh4BoK7CRhmPLODTDvqVmlq8LG9IpUjYoFVo6U248N3ASStZbtiVZLjq2hIO8J6LsiMY6tLcx8ZkEhZMvx/oum1Ep9Zhl8PkFMS7PK3BClAphszHczBEYCPek+O15aJTYhZnd+81sTcgnP8BTtWV5QbiiJKKxo+kLb4GDi1GCHHR2okV4aGll8SsPWTzK9YWCMIag8zE7k85CVPKdOTQ6896MRQS9lU1GU9oPtNYBvICEszgCuIyfVgu3qJmKxnFOnfAjSIYjNxN1vsKAc8tNA6rHGpBjfhaQE0B0MJlHmCi04DF0ppv5CgUEGwTOJRU8bbNwJYJcHiZJgICbYclmuVnOBSESZNcueJfCPEet3E9bY3019lsgLr2bBdxP0TbCTi1jFqKMH1SELnU6o4yo0k0ZwFgNLYENncYEUQE1FiOLtpGa9LITUSxWcKMAqHhQSENQOAJl2PkF3JDfjRBQcAKV0UKUoic6Q1m8SNGydcwj6BIkdLrMeUXKQSJvAB6746/K7alEBHtHLo4rqaWfwAwkawYbQpFgrhAC0mca80BJJKQ5pFxOZBQ+CCUoy6llLEbU0ETQYcvooVjGNTeEwENdWBxQcw4jF4/KtYDW69CLC815I/1CWBtz/Swd62Zzyq77QiXRlAWY1Eqw4MK+RJm5gqUuOtI0DEffUPXHFJnIiLEydkTsKAAnnSpttnQkbcQU63AsBKauDdt4Er+4s2ZrveSM+JUyOeqN4ycn9OWoGc74ixGlIYkR5blQMVL0KGsnCMRPYz9wqOU2Alo2lgIp4fixxy7XYEYegcxUv0szgq/iJeaHBQVMsIEurw29ho1LjUwpsdALlh4drdwdBmJU2swvUAl2TZiYAGoWZnQslh2Opob7mviEwEAL6ToaxaswBMvlON34js1H9aXVLkbUXS9Mkcxfvb3hQr21PhqGQaJhJEfYMzfb6vxWPUJdZhh4B/qSVLhyiSnhukG/jH85hMQ02AQeUDkewJGjfXna7ulH04YJfJKbOZLdDIjcWFA4IL60ZSYAg3LNamlrunhL89ksCa7Ft2nWfNVSWB+rjwmat/m6AFFD0KVInNt++tC9DoSJbH09DBMVgGkJmhOKQggEcpm4s7FmTfaJB/32XUcyJ5ydeeBgHH4EZ5IFDajg8ZDUZOAYJyc/3FrNOGI2JYbWUgOaNloXQ+CkZXPOzJtfvmJiyonGFqSJ3DqeS7aMYoSEadC3IUL/q+l4RrITYvrRlgsQJXPO02XvYkTxuxiZyKIFeSrrPuigg1z9kqkKeD6pXJDYp2B5dOKpSorFopkiPqekBBdR9tEyptqXeloIjcglkCAUMY0IcjpIA2iTiRQA4BjNPODURTOfvD/8N19imCHXR6Ry6E+GCf9hmsZkluU1BQKAt3TEvlP61o5Qj7vrqooMosS9oN+kZElHNrgZM18XICp8FDzRDxZK+Jg6jM9LEjlxu4tcipP4F4C3w0Qp5kMgRwdzVO5wZXqRTn4gSmEg83IcynTD9qmxW9c44iJBy1KDq0+YRRYhpxAsFfLoomC6wqNTU6ReM3o1JhN/8GtIDAWzcIX1sNpzsxl73K/emEwVW8APcgoiXHEnW9iK2pQ5NYkOfv2uGX0DUWqmHq2UFyCqs+Hc2UFiysq4SEwxUk0lvjQW1iZSyEQIOCnYnFUjB7rPV7llTSkYhGhS4DKL2MUyeM6+Ns2arzlNpM2AFAHdqny3uTy+BkifnkDrU0sEEqHN0QS241YYx8R6rAqJpVCYtBW2STQ5rtwc4S+1JH4TygPYyBQ4vYIRs1TLS17XNTy9mF5eNN05uuAFiMrvGF0sDD+hkjlMPBwI3mIs01gBMdWAi0vLlVRDQ/f5X1EKSO6QYmdCT2FwQPrRBfdSDJe/kxNcI6MR0wglc+uVhyPDPxLDUEL9VZE/GktSmjVhDuQEsDgkas7uj9C8tTV2iuT5MzhiPwiFz0iCbcr2eYVpWDeOMTkWvNqaQRRoTW0i3M2wC85HOda2TZ3iZb4ouSGjWH4bNQ75IBMMHseSquR9EFMFXoY1Fdod0nqZEgAM4qdC+FfgLzpiURQoOgfdo4OjAqeMvtLMKUc8iOGcuF7u28PY0z3wHrYpNfQhF8ZofFqMy/1BUxPhldJm2YKtYXpKmzDYCGdTdkkNr4eLh9QUL9NG60JX47JZ9AenUyx3HrRv5u0halB9LJrUQ5QeMKhDGNzajOIr/kqlt+DEuaSkVA7bL1VjD3JP9syZ5BfwFOSQuSGO8CRQhkPhMHT3lgHG4FraCH1l/V4JFo2D/xCLQPSxtB1XonhnvH1E4Mj4Axm2FsU+nHqpGjwBG2JD+HiwpNZOo0XoOYIkhOM5N2S0YMrZwrDXcLoeonK2fC2zQhQtSImzF0E0uy3Lg7nq4WS5GDnTWAdFr8CmWlzdZoNlWtcayIqfPVmDvAknAmzcbLanGdyCoSUD5/od9oqdU+mxKoQL7Zpe9VcMLUVgy+4SIIWf5XAOpO4QZF37gg3dRtooNixYzw5FlOTuygjSq5Zd3upVXpXKQwqNFq6/4g68LKFF36pn/2WNzURHiWHkl8mKHB4WdjUQy2cRlLucKibwp2/gWg+4rjKzzZQKi1HBYqxQ+DQVA0xNKlRnoUffwpLhYMCYGPjZLH3LZC47xejgdSXApH95Khi0rlfGhdx7TCmlSsEQEm6mxn40oZdcGApzFZtevvY8IzLHCyAQrIim9omVeEZWgE1slZjSYEI9NTQSA8AtokDYMMqwnBYNZ11LDV/G+Rf1axke3NbP+TWTCh5IXlNpj1QZv5detSkGjIwiKB5qWq7lK47nlMFG0JUB1eAz3MZpcoTMcUNnSSj2Ep05xtjLygWpcv18Oug2K+khalCjMBuFl21Yma4T7VKA8LZtC5KXoodZGjlokk3ROSIYusTN3Bv/av+2Z53+YibDxtb62cWoBzicy16aSiwic5nsD+kXnqKsHTXN1vjVGvglyOXkykR+8S8GpXIYC3uhfqJsKT8CQ16ZT4acY4ztqGuSM8xw9exoIMEXxWyYgOcpkMA1wnmKCJubLGLKpye7ZBSVeWul1yEqft0lU9u2bDuRQhRRFuPK0jN4OGxoXOv5a8vEyrr+w/0RaxIL2sxlGrYqzmDda71la0A0JOWv4CdKkSEDs4dDiqp8Ee5bvAFCiaoqiRDKW5sulHOzpB6iDCchQDKEq7vFrSALiDdCAAAgAElEQVSdVC6GtSwNCoHwgV5W2fSqR1hvGQvTuqwD799NAL/A9TtcpKFIqOKFc3GGhd20H17ECoIigQ1Cb5/1Uy1BFDbWL9ZksDATHxh5qVz+oA3GjyMkWZVPvQgriWo22EM0Zqazt1EpxAdYDIkLxs2Um/QVaXAx15e8ElZpLKlKOk2NQ73RSVkQLg+3TtZaG/EfOHEwCo6234xKVKJO5fYQTazFWtFzHmso+A3nhSiJYt09zdve0k1DBPHIUtjoZQ4ctFSvZlkrf0UdyReOtzQTB1LwKgHr1jL3G7+XYTGrBn5RxLfCstwr+Tz2jCorbbZPAWy4H9FYMQuw/jnzQpRaxgTc76Z9D1F6AKI6L4UNm2SOPpvz0DiQRtYsi4u4s2Gjct8s2k6i7dVbW8oq05eCYmwYQvwuHchZdRGVEpbaluhhEShYWAredYG0v3nBk4SllTQTla8sFo+PP0IDIYtJY3RoBda6v9kyyGjBpFC0ktBttM1oZVarY/O2hyhKab0UnNpnjuFM9cTeihDQFC08MPCp0sUcR//91Bp2dtTDhMAPPPqihUU6KqBmy2qpFp6hNCxVBlT21VGgO82YiRPEsXQZmgfkyjjZnWIjjeXhZBOlEmlmLoJFhixBgpPCbRFRyFMyfvUe55cNZcyh/uyPQDPrtZxnZMSsvj908xaV9ZqiURqDAQlQGe+rAQNKeaQPEdovLMKAzcj5KqfhqA6tC3jqMYTzkLomw9KoohFEF7o5PWU1jSxmd55DgmGJLqOzWIy8vBwygSaXUW4qM4VP46inaZx/YRFMI/AwLPUwOmCnEq2WpbMFeLLHZuSejJIV3Wyj6dP/an16oXinmQYUIOlBYmX78YlGkhIuhUhUTYmpYeVNmJwgoZdZ8ClqMp+jM1oPoy4jD3WZPJzk4jgsp6YwCKFnfQX44tFgmYnqT4ybrwrWI+THjm43yjSJpkZXMlUZHTP1dqo+TDBkhUnLYaBgk9TX1LjDerZQJeEbTlY3phUZMI4ljtEyjwbyeRjf17pxKScZBhs1OEAz3c3oBLeDkMa0AmdYgdnzdBpDKNdO5fejCbLCsgbzplzW7Ct04erk2Eo42KXxwoLB0cqY1MnCxqWBqWN3y2LKqx6iKGWh0gU2WTosLFiZXmK7KVTKCK47O3ELXdIYVAcffDD5mBJx1zKsJ1gaR8HGWF/ZkzLsVAHt0mWqgXrLIJfkjLawiwgizvbKRHmwuOUpexuw9dI43elqJ7jios4s9St9Od6mCJvWrzplvSzApEOr0dO6eNlMsAktOhPUryCK0GyMWev6YRnH8E1iqEyU9uaiFWX1ZImbLrLztHRpqT2achRlEiJ/Tfvma7ikTzhy5uyTD2UWK0Eynx5DydpL87IIvCFDgRx4Dmfs1JhBVDON3WoQ47pvUCqbldRfbQGP0hkdtVG3T9neeYjoTPc0b3uIBhubzJaanlNfZQ1ZKb7oQkSNwEkhYa5llM2jjhjRsQNPp2FA18mEELaho/ZBVPJvpt1Cu3ScWrl6apO/Zr9lPXrZjjSFcEisYkkWkKnR1FIlY11mSBf1HvV+feaSw0zNwfEWO8VaddZWv7IqakAva6vrlXuIwgbjYMbQouk59VUvnohe3PGFq8RibiNItScaMSZ68XR4sygiW11mYVzRLl8DKkHRQKJnyKelV10IXxK+urIuG1CmnlXDVabQ3salUl2c4Coj37CvzcqYO6iQ1g+VwgqSebLEEh0L10ZgJGnl/LgU9WL6ZXORbL6Ip2nZs6OCaDrNfFR2063zlWTLqDlSnSmmGFnEgoKhBR5HUBc1wFzPQnSc/YbW6jVDcWfdctl1s4XljnKTKE+InJUYH71yJw+5h3Cai8iC3Amj9EWopG/WRvdygPvr0dLhCbvmFKuzsOEgbDmBIaBLI0oIsBt2GA46VWPnjqJwuvOEiMVUy9QjSsK4mHoUga4Vs6axfJrhKkFLGQchNGbYkHKU0KVlXchi8ERdWZflBRE3A5rCShxsyfQu1DRYX6KRlbVgs1i/QUDFxavHH5Y1loeCDX0+fDtVoxdEaF3o0BxNs56MElBeAGw8dtj07HyFqFl5rT47zcorigvtIhkqA6prLlyPtCE6fo0FjLSxGCOzoE6ayiAzC1McgIcELcY3svE9FCZlC63+yGmMuK7vammE1OA5y+5ngswlFWVfey6Tb6Jy3UFgfWUzQpB6hT1EbZ5+p+hnSlsZV9LHKmnOmJZSP1VAO1qLax1q+sTm2JAp0gWt3S2KBCOWGsNian8nQLOpMZet37JlCwayZTQyrIk429IRC8fRnprxsB1IbPGli4hWLFS+Dgs2RTPrO3r/bdg+NbbPovkcPVNaQBHSZsV2Wy90aqZSb3325lcAfQ4t7RXEpg44C8cpeGQbTO380nUTLBI4fVqM7MQKAmoiw9bzlrJknjikvFWgRR2GlAb9AiawHi5SYWI18sD9bAP6aIBWS+2Fbufz44NVEJXs1nO+/sy2LdGhsfyOxNhMViAcrr/wMkIRnyjCVBBTfm9iL4MjtP3gM40L9fu0Lm8z8lQviOIVb9PAeniqKZcR+gU8B1Ftto2xlW/MyFhM9TIdBx42eqHYVLNhPQq4eUOxQWf4doGM0u98V9qDfhh2nqqxN4EmRe/IInScalnX81pdOUBKWwUnuhiHviWpuEqlxj497lmxW3XfOeXAY6jRxoirPm1MYRny+6Mtm0qNU2PN6aLGOB7czOdv2pevSCpBIVRzY0vfUr+wIMdEWpyqsonDxgsG4lUDleqjkYadOzUQ5Y47lMBQnWb1K7sSyFtloRGi6O4JwBpn/4IWr+q+c8rRFlO0S94uw/qEqKh64bABL82MjM9woe7m8srDeZ4aBKIuxsp2QXSqzbCehDCiPGQCCtRhgwWIcnfpBI44l2ym/swc3FcyxwTmNyrDiUdrrFK0EDENRVAHpTzaW4ACAR0mSkZHayqz/qmwD69kCp+mBsxUy3rYcEBqlMU5qfFpEPVTus1bIRn/gMCwUPWY/TL+dpeYu4rCFjlsvABRHfQ0PTMzX3/qheiun2MF/tH8jgjBP8qFNIP46lEo1HGHaI7/qcvwyVDYZfhKTfAr0yEcH3u05VSlRWKLLDWfZdhhF+zFJ8LuEixLZYssjG1mOwQUw2HVLEY0U+KmKXYbHVelP/yPTHI9Yf+pZk09r8fvW6y4kD5U1kzBz7gWBojNgOVroXKpqQvchXzVjCZA8fmOejrqwhijknV6DOJz6ggBMHLX9uiQuF7GwjI+k0ymDKaSZYsRRWJqQbwfSzM6JZ0s6eWoy70etiF38LECdxErMOPReKN9m0qEYE1Nqt6GfVVAZWzhkrAzmab9/K99hGRoM9Q2OLYaQv7k/MG11IVvr2C1BvHV4ocnSGkgE+fqE5XrZ5kuCbuRmr7edh5jcrVkK5knKbPRlosRxWWu8Mi8c8yG+hNa7vK4IeAHfpJ5wJA6cerplgb32tUCGt/RylJiaq1ujiMK0nis2yfqyOkPk16ju+pUjtoe7bmpZsxcprPTTuAxOj7pROuMgPQK1jzqMGvp9wccHGpMG38Fz5GqO1DOZfupYGSEAlvGmZoixWJErcyVHOJCCumKejP++wpAChlt3sogQbaQTLTj1wru2yVR56IJIQ42dfepMsryeA0YuqQZ/lgqDB8ObsBhZamhTth+M1pnHnfGOmqpdExBR1G7jSc68tVDk49aO+kwQbbp3ESELttkyzwVkurEyf03HuVQeEwkLifQZEzStFnAIV//s/7ev1xwCRROL0kt7fK/kSCThBwWs39WhP8mmYn14Cpqlgj0x4mswPGv1ZS+CwtE3KmCreqrAE6fDqIXduw08Gd8bNtlsNE2omd3zDQwF1R8wkMoPNp4WMm8+Qk+YKw53ckAulNRTWNS4aDXvvbZZx+wAR7AfnfmOr88aBaAdO4POzmou2vp9AkKFDXd2wxbvm5VaHMeFyotwm+Y8JT2Mr3yduB0pu9yHnJYXMbRALdySr3VizViLciu5Ig1zZlLG+eUIDQjAnnQly9Ap83sPtosWeLO/+VitSGo6UyKKVkQAIyO1lQKEAUFEE1foBrB33Jqmvkqsqfz6EzHheUtojkOIX/OcOKjGYEP6Kqbu6VphmlIkbfadCjZU0S2Vx43DezQTw+iePk7NK3V+5MvxBe5i07Dm9KhrvppT3sIRYgsN501bZR2GXxYsMNUolF5axulvEIBXfSqB2wGsUcwpFleOY1B0KbZ8CtaUypUri17a50eNOFeNI3tiwWFnAwMz7G8RTQYq3G67gfIxFf2AMZSNPKdHuaTZ+fvLKK5n8d0djESopZp6oLJ8CBE/aBAgliUaRuwZM9RoW6pbD42FcbskD1YEL/ObxaEknzugn3Tq/4aspbPFOZ0rAdpygsH4UtTPKwG+Uhf+tCJN2yA3YxWvvJW/PVZF4tCZVh6pUwQh8kgAqol3SMMAz+9xRjRcOqpPZhBUdmMfG/+sKFIP+rxSCgtOpIzsffee5fZh4W5iOIgh4XspYteknCx2yqxzHBQuyKdsNTAW/4epnNvg+WHqzzUsMuwBgDo4lEwHTgLoYeN59QE0SH/lb4I7SYbhyAtfZqU6VLpzqZdO0gojRVs0w/uOYDCNrnWLFUvj3Nlh33NXLD3Ry/99F0IQEb9JscvrlAJqLRXzFYYIrNwnaDoE3OQKLfmuMfsa8xtvZK6PBdRfbCJFeSiHheOohDqMpmN2Fmi9Dp1oYC1rQldXDZg/K0Jf1nTHGwQyKT5jDar171COTrfqjp9GQjeJr1nhcHGAkgJVj7wwAO5TvwGyVvCxA0UaYCHbBkQNXzqkrI/k9G4o6CiOQkotvBLEL0wN2Okvd3RfwI2vI4JCAkLKpGEdEQCoh4cw2wpkKvQRMfxJ+ue84mJnEubhhKgEAKqpF1OT42QaImOTVqHus9pmlf2Q7hpEi4Svg4/dia1WxJjLvrHp03am7RZp8vCV3xRJMBtnZYWxv8Cm5YIjRd9QtcTJWFVWRLSq/Q1BSv0aAxafAzvZhZBJDfHXogmrkJA9mvPbVcXIMS5FQdyrel5ZMR82lgMunkIMSaDsQQLY9eM3Hyd6+umG5bEobweZ7kuMOIpe+BP+wumcgscASkSG0MOvwPnKdTIWSJORwJCYHvNOpqvfqKrZR5UQDvsKZvRNFvqaxCl9/q9UJMDksxAEA2o2yDbejE/XyNM0FWAorcpuGoqsgRDPQtI/KFdfUGSKz7eMp8Cgf333z8xqz3CjDamCGmFujuBJpqUrXimrh8tL4coVNgAK2OiaR4/pbaNMK8FRfNwr2kVaypw6sUldo2KoxRPCnH7vIaRA2c+De5syw2P0T3MrAyi8pQL2wOVHyDsw5pFTGGWPfr0BGDbt8LU2D6etsgGTqNBAlokkqKuZ9cSGWky+83FFIOQE1P77V6SqUSWwWKY+ZWYoO4+Wl4OUUO4bUwBuh5Ns3vkg5QpWJlCyT9HXfzhOi6GIvWii/8/gn4WvDpzFdK46wzp0TWpRH2UQtDykAanSFPt59TjP6PN/PO5YGD2eEOQyBroRuT2BFqSGmH16RXV5Wr/MOaGmUrEsR0/jitc3iwYJU3nD2PmWoIBCQafQ/jE9eVkMWQ86qbX6NelEcVTjgvsk10ECQ7COLS/iekTb2ucrBLbUpuIgtndrZJUovcATNVg2Kkd4hvUdAjDjaKpOGXUTqOLRvfTqdxvv/0sw1lQp039Chh2JPIWafiZKSkBXtDNJwHl5nBEaU7hHFQa6TQa+2IL4JQSQhyGQ2NOkN1x/p1/YJ1Mqi9KivLVS0kiF3OuveCVAOCJTp6oXvbSiOpM5bJqzKHsYD1WU+abWVOowPFjBmgnkYBeDCqY/ZB2yNQZJIxih/UzpFczY/+rDA4kuBj9Zs1bPAcqwHDsKU/sSEMSFz6/4zAAcCmYyVHWxBDEy06xMleIwqd48UGEW4EpoeGMXCa1R8DjXW6KtCUB4KDwKHnaM7e/CqLIzRWyUNMol9WUAsyQzzpoD9LsR/MCKU4m0aSywEmgRXhG4Crbaum4qQW2fAVEy5IQlDzZLw/Ao0AbdaiMF51KkU4n/4JaAQL8SJ6EGuo5p2KG0Aeu1JW/2FMmSsH4GELGSvKI8OCbpsHU11UQNZYUPHPIyy2hS5nArVd6ktljcmyA8chqUCG/UYErN519FaQClVIa+vpltDUWVpPR1RZAzjCQ3UmridbInIgTQTgcvhJ6eNOishNOmdSjJO3azOVcRCAksCmp3abB6NcVEaVkHKpYMZCsvgztr9bhuPgO8SmEMUW1MrfYjc7h4nPkSCrrAntxfWlThlp7gaogo0NpWPtEADMX4kj08CToZFlfzM3oMpy1fvaKhyhSQrHGivEuhXD8I9JMGOYvckVETYCDcBbrmLvztoHjLNrSEc5v83iVFC/8OIEFdcrW6nkZ0gVUlkFATvOIr0Vd89e9QkvMZ2GM3wp953cBEqeasqVdc8ypBsDIgo9RqRmKAhOA8jB4y2VtKMMnkoyTQjdI06X/dXVEzeqcj4S5ZMtw0pzx0ChVGwAPq8Ntg5Yam3R3lymlqxkPpoVltTKDsDEcByTwOQzm+qtf6q0garMRBY+/FE46iZ0LAhFHiFL4EOUwD33JUMAr4sjDyI5oLxc2uJ/imVFPpbPx1RE1KG1AJwDV0aMylevsgkfHpGdKqoMvhwEBRgnbKpqGGUuQY0u4gUfnLauDEOVVZ90rvAqirkGt0HdhF7twT0O4ZReOXBzOl13gbKl8iEJoNHbi0LrMgIwOPk1EjnnUyCUWoMMWTt002BCixuKpsha0qPNbexi6ZLxwmySa9ukGGoDttrYlZUFyufjUxgh0naMoDTZY4HniJxm+DY4z7G7jTj35PkyMnBr1Q2fKtJSWMOMTUU7+FJZMaqlXiIxSb/bupoehqFnK1nGk9ELdcmZ5o4iaRgzOw3ZpQU7H+uqJCRxbiz1lsLhFRXbTRpDHi5PuopyFet5iC46V9pKFTcKsHna1stAQola7WvepXvYlZ5tjEwU8LfcCDz6q7F16wQknqQGqswr5k8LTiOBikS273MPddRojZSFDxLhOzdivXwOiJhCixBCKSTIfJexGD88IEWld66sdNopI+By7q0Ee8RnXgKNPk+siUcLVWtaKdHbrUMhEqzH+6LBwwoIAgJOsrCsjmtkaNgWJSvkE3kP6qneYmFMpviGWpYokO6VOtSSgLgIyn9Cl0uRhanKNzj5VuR5ETS9qBgO3Nu6cn2RbmbVSyHz3GhihmHXbFfoSbqEL30o+E59Suf5ArsYMCV7WQEC2Lj3pB4oGlFieosX8eqpItojzgo/tGgsyePx5jEtnWj9ngj9oR1ROfvVmcBzAirspod5KygNOZxuEwY0AjiQWWcF8lsWvB1HD8Qt42yAkfLZEuRFQvgDGxJ5lPgXrRgj7gSLzY5/pjm3ZIYkVJ5SUkpOmHBrbv2iddqoHWaHsFzUm3Tii2Ncfb2fqbJYisd+4RfIq1s9jB60n99BkD2S266CFi+Dcm3OLm7G7U3QjIBFx95XudS1mhd2VLmtD1IjgcT4KyPirAmQ2ku9eJlMQcYcW4A9y5S2Pl5MFPwyLIuptnhcdYeVTSKhuhHlpEYgOUzNlAQsLgGHv88MbIsg/F25ZqjRvzkxwKr6hPA3FG5IOMyNtxIlt6KCXsI3nwe7iaYl+NohOtt+Fy+g3WCeiZoqpiJ9moY0xIHksBDUFdbo00lmvj2mhdpyo176u0Fa9gB11ZDDgLafRuGD1IFNlbrYRZG2mGkzVmwu3sR2Oo41ghU5OrMH6WWWGUCVZdDzCghaXx2jyfBRPuogsR9eskjYycnzduvvUevr1a0bUZHQICypdSb816yNhRI2yKlKoPbp4skqaCkcTghrRvMLyTCxGRiDKjbHxFZuPkildmk8xHwWQi2HNq6mvEgL0DVnMz1cYESLI2TEp6WSY7dR67EjBHeNmHM0Yo9gO4st/bBr4SkxxMIkXLjdyPGw8p2b9iJqV6rAB2pJtKGip5zUwHsjKLYxxZXElSnhGbqDZP3LjdFYzWrfeAOagzbQnB84XcTRSihmQwx1XurS42XWvukwHIn1xPutXdTkw0K6ORXPhyIJxEgtCmLS0Eutk8CwA/zGfuW4uToNfPZSy0XhGGmiMIZzBlQZeceyt3y64irWtLW1WKGwKotYR9wdry4wXUNGdviVhUEmlu0hUNEIjh/MmMNOxHrutN4OI8gMMMF9aF69IJ+vFE+ZJIZZHqOBUXDxgcGaJngR/PYiEDoUv9q8rla1EY4G/hI6f60gFYDsDAhKiolhenqFqCyKvIqEj3BJZWrOOoDW4AKlRS8ZXY+MxtFbLq1Jpgw4n5LS59+AccnCzyPlfNwtRK5DFpYty3ykSiSWjdUlhNAxqMqhxiDSWFB3VPOQjJPYpp19vj1igkUCCq+VtHqZOrlFO0YGG0EKO3sgaILp7M0bzFYtQm+7nmV1jfJa+tAtQ5Qo4erQuPPAHeRWHFLcl4pV7QBZDvBwi6S51N3q2Y5vSDhwfqoVy1n3Lli1sp0ktb2hi6g0uW95ERK3bDQzEpaCkDuwKrs5kkJW01QqZRYxBAsxQ+Uin0VfoFaIT09FNMrQuV/jlHnsJS3lH2ASk/qep6RK4cp2shLDWuS3Rc/nTU+6zO/0dzg713JLkH3GFRgWOiAta6BVkkRgypu3gp5xYDMdcuWbrjfX+hjf4Fl8TEatHa4xMTN1OZoeAZPNoxIKSBnrM9SVmhlquZ+Sauudg25IyCMcfcS4rvVK3IfF8LiyP31NPSYoKknd00053zAQbZLUSaoC4eOgP3KYgEPSJ1rqwx9y6cI/RcBhRdjKoBq14ZG7bFFVflmFkGyT62MiPpSjS8qoumEL85kgRBzDAMhLNfuvGK5ZX5oX5Hd1YEIlbHxFELxzK+w9RyCsj6hU7OkwLixAQ11takVeFmsp86XpqUHGm1DN79c8RWSnxBoYoEiPLw4gWVSm0QFZGFwBulrucJuon2Wxn7eDozpRaJHuPAyzY1YvGQmc9mNIpYVqOirKlsrj0E6NL0+CweiPrKm+i1q2XyDVw9oLoTBSzRNr4jYI5nkWSEsSUWq67ACCuJleQ00QIciuaiNTNuFF8IuoOqOV8UQNnPmoA4JKArwAGCTcEPL6Ck3oIM2mWx1crxGo4qUwBUaGkcagWYyqQQpa4NCgF62dEWUptsGyzHTqDaiHolJNUSem19sJ2QtS6qb6kF3iSzFXYXJDgRIJmBli9N8oZ9ggNg9yZpm8pKMRqUgQUuDZRkpyX4mXkLqe5qAQjEzvZCQPSeL5q5iiXyiWXtJ8jej+6FqLgDDXwLouhovfdd1/1bB50uUgGoaIbxkp7DXJmxzYXNwr7yo7JBWIXYUw5kClTrLew/RC1bnujM2k20sBldatRjc/GvxV3JseLdiycc1MSJmgRhpOARC+FCiycZuppM7j6BVVeiVnVc5EyeIMoexb7WjiJVuepYg4XM8rgCrrLWEFUokCZocUB1o8bhiniDMuppl2kz3THOrKhUdekvNbn9SxrLG9XRLNuN4wwLBoRGrstNM1b2knCATY4Gomh4qEwJduYHyq6IQpNqwHxwisKuQZAVvIbB0TMsHrFlos4h+QD1V577aU7U92YN8ujJC3GgMr8AABbiRoqQRDSjEbZuu1nuiKahqVd8OWo9W26b/zrDkDUoqk19oxAYHYBYhJG6pEjiUBUcIghtOdMRVuq0Vg42+SGYOYVFU0tM4FcYt4pDU9k1dO9oREpD6KSbUOqkWwgaX/AAQc0b8HAwzI1rmI+JRZgqaUn9jI6YNhLlMxUa4zbhFVNg837umMQzX4EmpxDe0YsgVqOLBCXWyEzEPunJTmQ58sJTNGiGQE18+cwxEVq9EJ6mVhSkgC3/MqFjg1nCKXSt3ySvGTbDV7McHkLUYbcsPCDogKBc6bLN1YWbbsVVoOKKSnwhLDMBAatrXIZdvMKOxJRu4Ki/42DPKEOV8UNqyjhoYISMyCoJD5bVcghF8hEqc/fy3BOrkzx8o0NCFTQpjEZDaIc19I9BagzARirwF83SMgR8GQhTJQ8IoNKi6inNnKiSc16ld8KsBpA5eHXQ22f8g5GNJskhQiRxJDgEmVZ03r/UPRDLWgVu5i3rgTE4uamK2lgaAUzSTU4gKN+yxSCWiMQqXpkVjNSLmMeZqrfKkMUf8CbQyegKm8tibHEgsJQZcE0h5kfhznEaUJwHUvj7VnYKRDNhjmxUi0CA3TndPBHSjYA+9OWXoGqpg5drTEHqkT0/uCDGjD7pEtLUMhUC5NUCgrrEVxlghb1SFXW9aVsBFEmlWv2Ok5NA2+FT47bcqYkT2LAhh3LUNunsBMhmg3DFXi8GAqNtIn/nH9B1FvHUnVWSE1kUeaBDkx31OfjMG/AS+iZemogiEoipsanqDfmGR+QZlGjK8dOjUxawk2YUQAUOMkr5zaEUl8/5JK5jN/raicHKq5AGX+HFHY6REMFZo9TyhkGDPkQVMhFNMYVWXkoxJFCVk5HnjDDRvXpWP95MRY3iBbvV3tH0JoZgX5my0tm34yO3jIgZuJFc+IS1ZjIUCCnhPUl35IG4C8slV478PPfR0gWt1M9vF8eEw9WIhS92EuPC9wyD84U+VAsFiGW2adO2T/lrF8AI5Jh1XwFbdkUd1RU4ytal0rwKJNCDKQAWn4sc8sYk7k0g5mjTdqClDsvkgeWvMQ3FDUBdc4jtg6vlGF3bGHTz142vj3sz2nka8ifOWMxoHyNO5JCQ84ntRnTWyaiD7WkomndJPq98tWFEqCqZPbSWJgoxGT8YIaHAElSKfwEKpA2HW9Izlnq0ZmJ2IYciy8drUsK5upCmXcnKewCiBZKcZTYUcLqkDz3CL0CA9mV0BkvsywAAAEISURBVJFb8ICEkCUYLR1nFkDIfSWLnvytInAyjRQAx0e0yh8WPuGhpCNmDrudm+1KiBbSMKj0qjMcAHsc47jNm7dCIJoTrjAgbZSwgJVWJHbcJZ8xxhorQEvsgVHcSqFIwSn+iXKGou54hUNEH+AYrFMWsDMXdklEa4ISLGCQKv4LaOWGwMMuuofAl9EyxjLm02exuF4p5+GCsYswYy9ZX1Io204P0+ca1NPt/OVdHtEhiUEIY/InLpSyV4Aul5XwecX98Qknx64E2gNOogw85Z1ZnQ53OlqzGyI6us//P5X/Pkb4/7Ph3X6nhyK6u0F8KKKHIrq7UWB328+hMnooorsbBXa3/fwf/AZJvD/g+sgAAAAASUVORK5CYII="
+    }
+  ],
+  "pageHeader": {
+    "text": "CYO/Camp Howard",
+    "imageId": "__HEADER__8cdf3eb62bf7e5e",
+    "width": 155,
+    "height": 151
+  },
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/CYO Check Request.tawala"
+}

@@ -78,21 +78,40 @@
     TawalaChrome.mount();
 
     const id = new URLSearchParams(location.search).get("project") || "simple-survey";
-    const project = TawalaDemo.get(id);
+    const project = TawalaDemo.getLibrary(id);
     if (!project) {
       document.querySelector("#doc .content").innerHTML =
         "<p>Unknown project. <a href='library.html'>Back to library</a></p>";
     } else {
-      document.title = "Tawala - " + project.name;
-      document.getElementById("projectName").textContent = project.name;
+      document.title = "Tawala - " + TawalaDemo.displayName(project.name);
+      document.getElementById("projectName").textContent = TawalaDemo.displayName(project.name);
       document.getElementById("projectIcon").textContent = project.iconLabel || "?";
       document.getElementById("shortDescription").textContent = project.shortDescription;
       document.getElementById("longDescription").textContent = project.longDescription;
-      document.getElementById("testDriveBlurb").textContent =
-        "Opens the deployed template on localhost:8080. Redeploy with scripts/deploy-tawala-template.mjs if the link is stale.";
-      document.getElementById("testDrivePrimary").href = project.testDriveUrl;
-      document.getElementById("viewInMyTawala").href =
-        "mytawala-project.html?project=" + encodeURIComponent(id);
+
+      const deployed = TawalaDemo.isDeployed(project);
+      const primary = document.getElementById("testDrivePrimary");
+      const viewMine = document.getElementById("viewInMyTawala");
+      if (deployed) {
+        document.getElementById("testDriveBlurb").textContent =
+          "Opens the deployed template on localhost:8080. Redeploy with scripts/deploy-tawala-template.mjs if the link is stale.";
+        primary.href = project.testDriveUrl;
+        primary.hidden = false;
+        document.getElementById("sidebarTestDrive").innerHTML =
+          "<h3>Quick start</h3><p><a href=\"" +
+          project.testDriveUrl +
+          "\" target=\"_blank\" rel=\"noopener\">Test drive now</a></p>";
+      } else {
+        document.getElementById("testDriveBlurb").textContent =
+          "Not deployed on local :8080 yet. Open this project in the Web Designer, then Deploy when you want a live test-drive.";
+        primary.removeAttribute("href");
+        primary.hidden = true;
+        document.getElementById("sidebarTestDrive").innerHTML =
+          "<h3>Status</h3><p><span class=\"deploy-badge\">Not deployed yet</span></p>";
+      }
+      // Library projects are not personal My Tawala rows — link to My Projects home.
+      viewMine.href = "mytawala.html";
+      viewMine.textContent = "Open My Tawala";
       document.getElementById("sidebarMeta").innerHTML =
         "<p><b>Category:</b> " +
         escapeHtml(project.category) +
@@ -101,15 +120,8 @@
         "</p><p><b>Updated:</b> " +
         escapeHtml(project.updated || "") +
         "</p>";
-      document.getElementById("sidebarTestDrive").innerHTML =
-        "<h3>Quick start</h3><p><a href=\"" +
-        project.testDriveUrl +
-        "\" target=\"_blank\" rel=\"noopener\">Test drive now</a></p>";
-      document.getElementById("startPoints").innerHTML = project.startPoints
-        .map(
-          (sp) =>
-            `<li><a href="${sp.url}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a></li>`
-        )
+      document.getElementById("startPoints").innerHTML = (project.startPoints || [])
+        .map((sp) => `<li>${TawalaDemo.startPointHtml(sp)}</li>`)
         .join("");
     }
   </script>

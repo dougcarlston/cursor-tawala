@@ -1,0 +1,2853 @@
+{
+  "name": "CYO CheckDeposit Request1",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "Admin",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Admin"
+    },
+    {
+      "name": "IDNo",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "IDentification"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-IDNo",
+      "preProcess": "Pre-IDNo"
+    },
+    {
+      "name": "CheckReqForm",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Temp",
+                "op": "equals",
+                "value": "skip"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Temp",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Check Request Form"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Send requests and questions via mail, email or fax to the CYO Office\n825 NE 20th Ave. #120 Portland, OR 97232\nallyh@cyocamphoward.org  | Fax: (503) 231-9531"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Date: ____________________",
+          "blanks": [
+            {
+              "name": "Date",
+              "length": 20,
+              "alternateLabel": "Date"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Payee Name: ____________________",
+          "blanks": [
+            {
+              "name": "Payee",
+              "length": 20,
+              "alternateLabel": "Payee"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Payee Address: ____________________",
+          "blanks": [
+            {
+              "name": "Address",
+              "length": 20,
+              "alternateLabel": "Address"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "City: ___________________",
+          "blanks": [
+            {
+              "name": "City",
+              "length": 19,
+              "alternateLabel": "City"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "State: ____________________",
+          "blanks": [
+            {
+              "name": "State",
+              "length": 20,
+              "alternateLabel": "State"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Zip: ____________________",
+          "blanks": [
+            {
+              "name": "Zip",
+              "length": 20,
+              "alternateLabel": "Zip"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Purpose: _______________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Purpose",
+              "length": 71,
+              "alternateLabel": "Purpose",
+              "height": 10
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q8",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Club: ____________________",
+          "blanks": [
+            {
+              "name": "Club",
+              "length": 20,
+              "alternateLabel": "Club"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q9",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Sport: ____________________",
+          "blanks": [
+            {
+              "name": "Sport",
+              "length": 20,
+              "alternateLabel": "Sport"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q10",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Amount: $ ____________________",
+          "blanks": [
+            {
+              "name": "Amount",
+              "length": 20,
+              "alternateLabel": "Amount"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q11",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Method of check delivery:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Mail"
+            },
+            {
+              "label": "b",
+              "text": "Pick up"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "fib",
+          "label": "Q12",
+          "style": "freeform",
+          "prompt": "If you will pick up check at CYO office, enter date: ____________________ and time: ____________________",
+          "blanks": [
+            {
+              "name": "Pickupdate",
+              "length": 20,
+              "alternateLabel": "Pickupdate"
+            },
+            {
+              "name": "PickupTime",
+              "length": 20,
+              "alternateLabel": "PickupTime"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q13",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add attachment(s) to this Form"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "Press the Submit button below to continue."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Payee",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Payee must be filled in.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Club",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Name of requesting Club must be filled in.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Amount",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Amount of check request must be filled in.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Q11",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Please choose to pick up check or have it mailed.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "CheckReqForm:Q11",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  {
+                    "field": "CheckReqForm:Address",
+                    "op": "isBlank"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Please enter the payee address.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CheckReqForm:Q11",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CheckReqForm:Pickupdate",
+                    "op": "isBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "Please enter pick up date.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "skip",
+                      "to": "H1"
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CheckReqForm:PickupTime",
+                    "op": "isBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "Please enter pick up time.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "skip",
+                      "to": "H1"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Status"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "ID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ReqForm",
+      "preProcess": "Pre-CheckRegForm"
+    },
+    {
+      "name": "CRF2",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Attachments"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CheckReqForm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Click here to return to Page 1&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Click here to return to Page 1</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "You may upload up to three files to be included with your request.   Use the \"Browse...\" buttons below to select a file or files on your computer. When you click the Submit button the file(s) will be uploaded to the server so they will be accessible by CYO/Camp Howard."
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "RequestID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CRF2"
+    },
+    {
+      "name": "SetCheckRequestStatus",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Review check requests"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "instructional",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "Check requests:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "CheckReqForm",
+                      "columns": [
+                        {
+                          "header": "Date",
+                          "field": "Record:CheckReqForm:Date"
+                        },
+                        {
+                          "header": "Status",
+                          "field": "Record:CheckReqForm:Status"
+                        },
+                        {
+                          "header": "Payee",
+                          "field": "Record:CheckReqForm:Payee"
+                        },
+                        {
+                          "header": "Amount",
+                          "field": "Record:CheckReqForm:Amount"
+                        },
+                        {
+                          "header": "Club",
+                          "field": "Record:CheckReqForm:Club"
+                        },
+                        {
+                          "header": "Sport",
+                          "field": "Record:CheckReqForm:Sport"
+                        },
+                        {
+                          "header": "Mail/Pickup",
+                          "field": "Record:CheckReqForm:Q11"
+                        }
+                      ]
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Review next pending request in detail"
+            },
+            {
+              "label": "b",
+              "text": "Review specific check request in detail"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SetCheckRequestStatus:Q1",
+                "op": "mcDoesNotEqual",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Review specific check request in detail"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "Enter part or all of the Payee name or requesting Club: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "Select specific check request"
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Please select matching record (if any are found) :",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "CheckReqForm",
+              "displayExpr": "From <<Record:CheckReqForm:Club>> <<Record:CheckReqForm:Sport>> to <<Record:CheckReqForm:Payee>> for $<<Record:CheckReqForm:Amount>>",
+              "valueExpr": "<<Record:CheckReqForm:ID>>",
+              "sortExpr": "<<Record:CheckReqForm:Club>>|<<Record:CheckReqForm:Sport>>",
+              "where": {
+                "or": [
+                  {
+                    "field": "Record:CheckReqForm:Payee",
+                    "op": "contains",
+                    "value": "<<SetCheckRequestStatus:Q2:a>>"
+                  },
+                  {
+                    "field": "Record:CheckReqForm:Club",
+                    "op": "contains",
+                    "value": "<<SetCheckRequestStatus:Q2:a>>"
+                  }
+                ]
+              },
+              "conditionsRows": [
+                {
+                  "field": "Record:CheckReqForm:Payee",
+                  "op": "contains",
+                  "value": "<<SetCheckRequestStatus:Q2:a>>"
+                },
+                {
+                  "field": "Record:CheckReqForm:Club",
+                  "op": "contains",
+                  "value": "<<SetCheckRequestStatus:Q2:a>>"
+                }
+              ],
+              "conditionsCombinator": "or"
+            }
+          ],
+          "paddingBottom": false
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ReviewCheckRequest"
+    },
+    {
+      "name": "ApproveChkRequest",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Set/Review Check Request Status"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel without taking action&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel without taking action</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Request Number:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Eid\" title=\"Eid\" draggable=\"true\">&lt;&lt;Eid&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Date:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Edate\" title=\"Edate\" draggable=\"true\">&lt;&lt;Edate&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Payee:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Epayee\" title=\"Epayee\" draggable=\"true\">&lt;&lt;Epayee&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Address:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Eaddress\" title=\"Eaddress\" draggable=\"true\">&lt;&lt;Eaddress&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Ecity\" title=\"Ecity\" draggable=\"true\">&lt;&lt;Ecity&gt;&gt;</span></span><span>,</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Estate\" title=\"Estate\" draggable=\"true\">&lt;&lt;Estate&gt;&gt;</span></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Ezip\" title=\"Ezip\" draggable=\"true\">&lt;&lt;Ezip&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Amount:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span>$</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Eamount\" title=\"Eamount\" draggable=\"true\">&lt;&lt;Eamount&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Club:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"EClub\" title=\"EClub\" draggable=\"true\">&lt;&lt;EClub&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Sport:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Esport\" title=\"Esport\" draggable=\"true\">&lt;&lt;Esport&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:130px\"><p style=\"text-align:right\"><span><b>Delivery:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:502px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Edelivery\" title=\"Edelivery\" draggable=\"true\">&lt;&lt;Edelivery&gt;&gt;</span></span></p></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:649px\"><p><span><b>Purpose:</b></span></p></td></tr><tr><td style=\"width:649px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Epurpose\" title=\"Epurpose\" draggable=\"true\">&lt;&lt;Epurpose&gt;&gt;</span></span></p></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:132px\"><p style=\"text-align:right\"><span><b>Attachments:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><br></td></tr><tr><td style=\"width:132px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;Eform1&gt;&gt;&quot;,&quot;displayText&quot;:&quot;&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;Eform1&quot;,&quot;op&quot;:&quot;doesNotEqual&quot;,&quot;value&quot;:&quot;omit&quot;}]}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;Eform1&gt;&gt;</span>\n</u></span></p></td></tr><tr><td style=\"width:132px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;Eform2&gt;&gt;&quot;,&quot;displayText&quot;:&quot;&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;Eform2&quot;,&quot;op&quot;:&quot;doesNotEqual&quot;,&quot;value&quot;:&quot;omit&quot;}]}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;Eform2&gt;&gt;</span>\n</u></span></p></td></tr><tr><td style=\"width:132px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:498px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;Eform3&gt;&gt;&quot;,&quot;displayText&quot;:&quot;&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;Eform3&quot;,&quot;op&quot;:&quot;doesNotEqual&quot;,&quot;value&quot;:&quot;omit&quot;}]}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;Eform3&gt;&gt;</span>\n</u></span></p></td></tr></table>",
+          "displayCondition": {
+            "field": "EQ11",
+            "op": "equals",
+            "value": "a"
+          }
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span>Current check request status: </span><span style=\"color:#D50000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Estatus\" title=\"Estatus\" draggable=\"true\">&lt;&lt;Estatus&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Approve check request"
+            },
+            {
+              "label": "b",
+              "text": "Decline check request"
+            },
+            {
+              "label": "c",
+              "text": "Reset check request to Pending"
+            },
+            {
+              "label": "d",
+              "text": "Take no action at this time"
+            },
+            {
+              "label": "e",
+              "text": "Delete check request from records"
+            },
+            {
+              "label": "f",
+              "text": "Undelete a previously deleted check request"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ApproveChkRequest"
+    },
+    {
+      "name": "Pickups",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Mark pickups and mailed checks"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "stored",
+          "question": "Select check(s) to mark as picked up or mailed (as appropriate)",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "CheckReqForm",
+              "displayExpr": "<<Record:CheckReqForm:Payee>> for $<<Record:CheckReqForm:Amount>>",
+              "valueExpr": "<<Record:CheckReqForm:ID>>",
+              "sortExpr": "<<Record:CheckReqForm:ID>>",
+              "where": {
+                "field": "Record:CheckReqForm:Status",
+                "op": "equals",
+                "value": "Approved"
+              },
+              "conditionsRows": [
+                {
+                  "field": "Record:CheckReqForm:Status",
+                  "op": "equals",
+                  "value": "Approved"
+                }
+              ],
+              "conditionsCombinator": "and"
+            }
+          ],
+          "name": "PickedUp"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Note: If a check was marked as picked up or mailed in error, please check here."
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Pickups:Q2",
+                "op": "mcDoesNotEqual",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Unmark mismarked check"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "topLabels",
+          "prompt": "Select part or all of payee or requesting club name to search for mismarked check: ____________________",
+          "blanks": [
+            {
+              "name": "SearchCrit",
+              "length": 20,
+              "alternateLabel": "SearchCrit"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "Unmark mismarked check"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">cancel</span></u></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Select check to change from current status:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "CheckReqForm",
+              "displayExpr": "<<Record:CheckReqForm:Payee>> for $<<Record:CheckReqForm:Amount>> (<<Record:CheckReqForm:Status>>)",
+              "valueExpr": "<<Record:CheckReqForm:ID>>",
+              "sortExpr": "<<Record:CheckReqForm:ID>>",
+              "where": {
+                "and": [
+                  {
+                    "field": "Record:CheckReqForm:Payee",
+                    "op": "contains",
+                    "value": "<<Pickups:SearchCrit>>"
+                  },
+                  {
+                    "and": [
+                      {
+                        "field": "Record:CheckReqForm:Status",
+                        "op": "doesNotEqual",
+                        "value": "Pending"
+                      },
+                      {
+                        "and": [
+                          {
+                            "field": "Record:CheckReqForm:Status",
+                            "op": "doesNotEqual",
+                            "value": "Approved"
+                          },
+                          {
+                            "and": [
+                              {
+                                "field": "Record:CheckReqForm:Status",
+                                "op": "doesNotEqual",
+                                "value": "Deleted"
+                              },
+                              {
+                                "field": "Record:CheckReqForm:Status",
+                                "op": "doesNotEqual",
+                                "value": "Denied"
+                              }
+                            ]
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "name": "Mismarked"
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Mark this check:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Held for pick up"
+            },
+            {
+              "label": "b",
+              "text": "Picked up"
+            },
+            {
+              "label": "c",
+              "text": "Mailed"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Pickups:Q5",
+                "op": "mcDoesNotEqual",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "freeform",
+          "prompt": "Enter pickup date (if changed): ____________________ and time: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20
+            },
+            {
+              "name": "b",
+              "length": 20
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Pickups"
+    },
+    {
+      "name": "CheckReqHistory",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CheckReqHistory"
+    },
+    {
+      "name": "Communicator",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Send Links to Check and Deposit Forms"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Use this form to send an email with the links to the Check and Deposit Forms to a club or club representative."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#B90000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "To (name): ____________________",
+          "blanks": [
+            {
+              "name": "ToName",
+              "length": 20,
+              "alternateLabel": "ToName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "To (email): ____________________",
+          "blanks": [
+            {
+              "name": "ToEmail",
+              "length": 20,
+              "alternateLabel": "ToEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "From (name): ____________________",
+          "blanks": [
+            {
+              "name": "FromName",
+              "length": 20,
+              "alternateLabel": "FromName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "From (email):____________________",
+          "blanks": [
+            {
+              "name": "FromEmail",
+              "length": 20,
+              "alternateLabel": "FromEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Subject: ____________________",
+          "blanks": [
+            {
+              "name": "Subj",
+              "length": 20,
+              "alternateLabel": "Subj"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "topLabels",
+          "prompt": "Message and Closing: ____________________________________________________________",
+          "blanks": [
+            {
+              "name": "Body",
+              "length": 60,
+              "alternateLabel": "Body",
+              "height": 5
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "[Links to Check Request Form and Deposit Form will appear here.]"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Communicator:ToName",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Many ISP's will not deliver to an email address unless the name is also provided.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Communicator:ToEmail",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Please enter addressee's email.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Communicator:FromName",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Many ISP's will not deliver email unless you provide the senders name and email..",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Communicator:FromEmail",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Many ISP's will not deliver email unless you provide the senders name and email..",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Review Message and Send"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p><span><i>This is what your message will look like:</i></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:240px\"><p style=\"text-align:right\"><span><b><i>To:</i></b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:462px\"><p><span><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:ToName\" title=\"Communicator:ToName\" draggable=\"true\">&lt;&lt;Communicator:ToName&gt;&gt;</span></i></span><span><i>  (</i></span><span><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:ToEmail\" title=\"Communicator:ToEmail\" draggable=\"true\">&lt;&lt;Communicator:ToEmail&gt;&gt;</span></i></span><span><i>)</i></span></p></td></tr><tr><td style=\"width:240px\"><p style=\"text-align:right\"><span><b><i>From</i></b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:462px\"><p><span><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:FromName\" title=\"Communicator:FromName\" draggable=\"true\">&lt;&lt;Communicator:FromName&gt;&gt;</span></i></span><span><i> (</i></span><span><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:FromEmail\" title=\"Communicator:FromEmail\" draggable=\"true\">&lt;&lt;Communicator:FromEmail&gt;&gt;</span></i></span><span><i>) </i></span></p></td></tr><tr><td style=\"width:240px\"><p style=\"text-align:right\"><span><b><i>Date:</i></b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:462px\"><p><span><i>Today's date</i></span></p></td></tr><tr><td style=\"width:240px\"><p style=\"text-align:right\"><span><b><i>Subject:</i></b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:462px\"><p><span><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:Subj\" title=\"Communicator:Subj\" draggable=\"true\">&lt;&lt;Communicator:Subj&gt;&gt;</span></i></span></p></td></tr></table><p style=\"text-align:right\"><span style=\"font-family:Arial;font-size:10pt;color:#000000\">ffhg</span></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:720px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:Body\" title=\"Communicator:Body\" draggable=\"true\">&lt;&lt;Communicator:Body&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:720px\"><p></p></td></tr><tr><td style=\"width:720px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><i>[Links to Check Request Form and Deposit Form will appear here.]</i></span></p></td></tr></table>"
+        },
+        {
+          "type": "mc",
+          "label": "Q7",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Send email"
+            },
+            {
+              "label": "b",
+              "text": "Edit email further"
+            },
+            {
+              "label": "c",
+              "text": "Abandon email"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Communicator:Q7",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Communicator",
+      "dataEntryOnly": true
+    },
+    {
+      "name": "DepositForm",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Temp",
+                "op": "equals",
+                "value": "skip"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Temp",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Deposit Form"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Drop off deposits with ID number below to the CYO Office\n825 NE 20th Ave. #120 Portland, OR 97232\nIf you have any questions, please contact:\nallyh@cyocamphoward.org  | Fax: (503) 231-9531"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Club: ____________________",
+          "blanks": [
+            {
+              "name": "Club",
+              "length": 20,
+              "alternateLabel": "Club"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Sport/Event/Other: ____________________",
+          "blanks": [
+            {
+              "name": "Sport",
+              "length": 20,
+              "alternateLabel": "Sport"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Date Dropped Off: ____________________",
+          "blanks": [
+            {
+              "name": "DateDroppedoff",
+              "length": 20,
+              "alternateLabel": "DateDroppedoff"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Name of Person Dropping Off: ____________________",
+          "blanks": [
+            {
+              "name": "DropoffPerson",
+              "length": 20,
+              "alternateLabel": "DropoffPerson"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "topLabels",
+          "prompt": "Email to whom Receipt should be sent:____________________",
+          "blanks": [
+            {
+              "name": "ReceiptEmail",
+              "length": 20,
+              "alternateLabel": "ReceiptEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Purpose: _______________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Purpose",
+              "length": 71,
+              "alternateLabel": "Purpose",
+              "height": 10
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q7",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Please check and complete all of the following that apply:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Cash"
+            },
+            {
+              "label": "b",
+              "text": "Coins"
+            },
+            {
+              "label": "c",
+              "text": "Checks"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "error",
+          "content": "You are NOT finished yet.  Press Submit to continue."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "DepositForm:Q7",
+                    "op": "mcDoesNotContain",
+                    "value": "a"
+                  },
+                  {
+                    "field": "DepositForm:Q7",
+                    "op": "mcDoesNotContain",
+                    "value": "b"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "main",
+          "content": "Deposit Form"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;DepositForm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Click here to return to Page 1&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Click here to return to Page 1</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C40000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q8",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Total in cash: $ ____________________",
+          "blanks": [
+            {
+              "name": "DepCash",
+              "length": 20,
+              "alternateLabel": "DepCash"
+            }
+          ],
+          "displayCondition": {
+            "field": "DepositForm:Q7",
+            "op": "mcContains",
+            "value": "a"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q9",
+          "style": "rightAlignLabelsJustified",
+          "prompt": "Total in coins: $ ____________________",
+          "blanks": [
+            {
+              "name": "DepCoins",
+              "length": 20,
+              "alternateLabel": "DepCoins"
+            }
+          ],
+          "displayCondition": {
+            "field": "DepositForm:Q7",
+            "op": "mcContains",
+            "value": "b"
+          }
+        },
+        {
+          "type": "text",
+          "label": "T6",
+          "style": "error",
+          "content": "Press Submit to continue."
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "DepStatus"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "DepID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-DepositForm"
+    },
+    {
+      "name": "ListChecks",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Deposit Form"
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "List Checks for Deposit"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Checks listed so far:"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Name on Check: ____________________",
+          "blanks": [
+            {
+              "name": "DepName",
+              "length": 20,
+              "alternateLabel": "DepName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Check Number: ____________________",
+          "blanks": [
+            {
+              "name": "DepChkNumber",
+              "length": 20,
+              "alternateLabel": "DepChkNumber"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Amount: ____________________",
+          "blanks": [
+            {
+              "name": "DepAmt",
+              "length": 20,
+              "alternateLabel": "DepAmt"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here if this is the last check you are depositing at this time."
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "MatchDepID"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Process 13"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-Admin",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "AdminDash",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Pre-CheckRegForm",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Temp",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 7",
+          "sourceForms": [
+            "IDNo"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Item",
+          "recordList": "Record List 7",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Temp",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Temp",
+            "op": "doesNotEqual",
+            "value": "Yes"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "IDNo"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-ReqForm",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "CheckReqForm:Amount",
+          "value": "<<CheckReqForm:Amount>> + 0.00",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "CheckReqForm:Status",
+          "value": "Pending",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "CheckReqForm:Q11",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "The check will be mailed to Payee upon approval.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "If approved, you may pick up the check on <<CheckReqForm:Pickupdate>> at <<CheckReqForm:PickupTime>>.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 1",
+          "sourceForms": [
+            "IDNo"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Seed",
+          "recordList": "Record List 1",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Seed:IDNo:IDentification",
+              "value": "<<Seed:IDNo:IDentification>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CheckReqForm:ID",
+              "value": "<<Seed:IDNo:IDentification>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "CheckReqForm:Q13",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "CRF2"
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYouCR",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-ReviewCheckRequest",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetCheckRequestStatus:Q1",
+            "op": "mcIsBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Admin"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetCheckRequestStatus:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 2",
+              "sourceForms": [
+                "CheckReqForm"
+              ],
+              "where": {
+                "field": "Record List 2:CheckReqForm:Status",
+                "op": "equals",
+                "value": "Pending"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetCheckRequestStatus:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SetCheckRequestStatus:Q3",
+                "op": "mcIsNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "get",
+                  "recordList": "Record List 2",
+                  "sourceForms": [
+                    "CheckReqForm"
+                  ],
+                  "where": {
+                    "field": "SetCheckRequestStatus:Q3",
+                    "op": "mcEquals",
+                    "value": "<<Record List 2:CheckReqForm:ID>>"
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "No search criteria entered.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "SetCheckRequestStatus"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SuchPend",
+          "recordList": "Record List 2",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Eid",
+              "value": "<<SuchPend:CheckReqForm:ID>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Edate",
+              "value": "<<SuchPend:CheckReqForm:Date>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Epayee",
+              "value": "<<SuchPend:CheckReqForm:Payee>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Eaddress",
+              "value": "<<SuchPend:CheckReqForm:Address>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Ecity",
+              "value": "<<SuchPend:CheckReqForm:City>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Estate",
+              "value": "<<SuchPend:CheckReqForm:State>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Ezip",
+              "value": "<<SuchPend:CheckReqForm:Zip>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Epurpose",
+              "value": "<<SuchPend:CheckReqForm:Purpose>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "EClub",
+              "value": "<<SuchPend:CheckReqForm:Club>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Esport",
+              "value": "<<SuchPend:CheckReqForm:Sport>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Eamount",
+              "value": "<<SuchPend:CheckReqForm:Amount>> + 0.00",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "EQ11",
+              "value": "<<SuchPend:CheckReqForm:Q13>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SuchPend:CheckReqForm:Q13",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "get",
+                  "recordList": "Record List 4",
+                  "sourceForms": [
+                    "CRF2"
+                  ],
+                  "where": {
+                    "field": "Record List 4:CRF2:RequestID",
+                    "op": "equals",
+                    "value": "<<SuchPend:CheckReqForm:ID>>"
+                  }
+                },
+                {
+                  "cmd": "foreach",
+                  "recordName": "Attach",
+                  "recordList": "Record List 4",
+                  "do": [
+                    {
+                      "cmd": "set",
+                      "field": "Eform1",
+                      "value": "<<Attach:CRF2:F1>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Eform2",
+                      "value": "<<Attach:CRF2:F2>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Eform3",
+                      "value": "<<Attach:CRF2:F3>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Eform1",
+                  "value": "omit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Eform2",
+                  "value": "omit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Eform3",
+                  "value": "omit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "SuchPend:CheckReqForm:Q11",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Edelivery",
+                  "value": "Mail",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Edelivery",
+                  "value": "Pickup on <<SuchPend:CheckReqForm:Pickupdate>> at <<SuchPend:CheckReqForm:PickupTime>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "<<SuchPend:CheckReqForm:Status>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Eid",
+              "value": "<<SuchPend:CheckReqForm:ID>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "ApproveChkRequest"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "No record found.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "SetCheckRequestStatus"
+        }
+      ]
+    },
+    {
+      "name": "Pre-IDNo",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "IDNo",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-IDNo",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "IDNo:IDentification",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "IDNo:IDentification",
+              "value": "10000",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Admin"
+        }
+      ]
+    },
+    {
+      "name": "Post-ApproveChkRequest",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Approved",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> set to 'Approved.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Declined",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> set to 'Declined.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Pending",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> reset to 'Pending.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "ApproveChkRequest:Q1",
+                "op": "mcEquals",
+                "value": "d"
+              },
+              {
+                "field": "ApproveChkRequest:Q1",
+                "op": "mcIsBlank"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SetCheckRequestStatus"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Deleted",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> set to 'Deleted.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ApproveChkRequest:Q1",
+            "op": "mcEquals",
+            "value": "f"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Estatus",
+              "value": "Pending",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Status of Check Request <<Eid>> reset to 'Pending.'",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 3",
+          "sourceForms": [
+            "CheckReqForm"
+          ],
+          "where": {
+            "field": "Record List 3:CheckReqForm:ID",
+            "op": "equals",
+            "value": "<<Eid>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SuchStatusChange",
+          "recordList": "Record List 3",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "SuchStatusChange:CheckReqForm:Status",
+              "value": "<<Estatus>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "SetCheckRequestStatus"
+        }
+      ]
+    },
+    {
+      "name": "Post-CRF2",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "CRF2:RequestID",
+          "value": "<<CheckReqForm:ID>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYouCR",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Pickups",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Pickups:PickedUp",
+            "op": "mcIsNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 5",
+              "sourceForms": [
+                "CheckReqForm"
+              ],
+              "where": {
+                "field": "Record List 5:CheckReqForm:ID",
+                "op": "equals",
+                "value": "<<Pickups:PickedUp>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "PickedCheck",
+              "recordList": "Record List 5",
+              "do": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "PickedCheck:CheckReqForm:Q11",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "PickedCheck:CheckReqForm:Status",
+                      "value": "Mailed",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "Check for <<PickedCheck:CheckReqForm:Payee>> in amount of $<<PickedCheck:CheckReqForm:Amount>> marked as mailed.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "PickedCheck:CheckReqForm:Status",
+                      "value": "Picked Up",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "Check for <<PickedCheck:CheckReqForm:Payee>> in amount of $<<PickedCheck:CheckReqForm:Amount>> marked as picked up.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "Message",
+                  "reset": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "Admin"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "This section deals with mismarked checks."
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Pickups:Q2",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 6",
+              "sourceForms": [
+                "CheckReqForm"
+              ],
+              "where": {
+                "field": "Pickups:Mismarked",
+                "op": "mcEquals",
+                "value": "<<Record List 6:CheckReqForm:ID>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Mistake",
+              "recordList": "Record List 6",
+              "do": [
+                {
+                  "cmd": "comment",
+                  "text": "Held for pick up"
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Pickups:Q5",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Mistake:CheckReqForm:Status",
+                      "value": "Approved",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Mistake:CheckReqForm:Q11",
+                      "value": "b",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "Pickups:Q6:a",
+                        "op": "isNotBlank"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "Mistake:CheckReqForm:Pickupdate",
+                          "value": "<<Pickups:Q6:a>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "Pickups:Q6:b",
+                        "op": "isNotBlank"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "Mistake:CheckReqForm:PickupTime",
+                          "value": "<<Pickups:Q6:b>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "New pickup for check to <<Mistake:CheckReqForm:Payee>> in amount of $<<Mistake:CheckReqForm:Amount>> set to <<Mistake:CheckReqForm:Pickupdate>> at <<Mistake:CheckReqForm:PickupTime>>.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "Message",
+                      "reset": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "comment",
+                      "text": "Change to picked up."
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "Pickups:Q5",
+                        "op": "mcEquals",
+                        "value": "b"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "Mistake:CheckReqForm:Status",
+                          "value": "Picked Up",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        },
+                        {
+                          "cmd": "set",
+                          "field": "Message",
+                          "value": "Check to <<Mistake:CheckReqForm:Payee>> in amount of $<<Mistake:CheckReqForm:Amount>> marked as Picked Up.",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ],
+                      "else": [
+                        {
+                          "cmd": "comment",
+                          "text": "Change to mailed."
+                        },
+                        {
+                          "cmd": "set",
+                          "field": "Mistake:CheckReqForm:Status",
+                          "value": "Mailed",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        },
+                        {
+                          "cmd": "set",
+                          "field": "Message",
+                          "value": "Check to <<Mistake:CheckReqForm:Payee>> in amount of $<<Mistake:CheckReqForm:Amount>> mailed..",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "Message",
+                      "reset": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Admin"
+        }
+      ]
+    },
+    {
+      "name": "Post-Communicator",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Communicator:Q7",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Admin"
+            }
+          ]
+        },
+        {
+          "cmd": "send",
+          "to": {
+            "fieldRef": "Communicator:ToEmail"
+          },
+          "from": {
+            "fieldRef": "Communicator:FromEmail",
+            "aliasField": "Communicator:FromName"
+          },
+          "subject": "<<Communicator:Subj>>",
+          "body": {
+            "document": "SentLinks",
+            "reset": false,
+            "showHeader": true
+          }
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": "Links message sent to <<Communicator:ToEmail>>.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Message",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Admin"
+        }
+      ]
+    },
+    {
+      "name": "Post-CheckReqHistory",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "CheckReqHistory",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-DepositForm",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "DepositForm:DepStatus",
+          "value": "Submitted",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 8",
+          "sourceForms": [
+            "IDNo"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Seedling",
+          "recordList": "Record List 8",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Seedling:IDNo:IDentification",
+              "value": "<<Seedling:IDNo:IDentification>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "DepositForm:DepID",
+              "value": "<<Seedling:IDNo:IDentification>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Total",
+          "value": "<<DepositForm:DepCash>> + <<DepositForm:DepCoins>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "EClub",
+          "value": "<<DepositForm:Club>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Esport",
+          "value": "<<DepositForm:Sport>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Eid",
+          "value": "<<DepositForm:DepID>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "DepositForm:Q7",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "ListChecks"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYouDep",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Process 13",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "ListChecks:MatchDepID",
+          "value": "<<Eid>>",
+          "concat": false,
+          "arithmeticAsText": false
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "AdminDash",
+      "content": "<p style=\"text-align:center\"></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:720px\"><p style=\"text-align:center\"><span style=\"font-size:18pt\">Check &amp; Deposit Manager</span></p></td></tr></table><p style=\"text-align:center\"></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:246px\"><p style=\"text-align:center\"><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SetCheckRequestStatus&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Review/approve check requests&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Review/approve check requests</span></u></span></p></td><td style=\"width:474px\"><p style=\"text-align:center\"><span style=\"color:#C60000\">Receive deposits &amp; conform to forms </span><span style=\"color:#C60000\"><i>(not implemented)</i></span></p></td></tr><tr><td style=\"width:246px\"><p style=\"text-align:center\"><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Pickups&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Mark checks picked up or mailed&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Mark checks picked up or mailed</span></u></span></p></td><td style=\"width:474px\"><br></td></tr><tr><td style=\"width:246px\"><p style=\"text-align:center\"><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CheckReqHistory&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Show full check request history&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Show full check request history</span></u></span></p></td><td style=\"width:474px\"><p style=\"text-align:center\"><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Communicator&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Send check request form and deposit form links&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Send check request form and deposit form links</span></u></span></p></td></tr></table><p style=\"text-align:center\"></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:707px\"><p><span>Outstanding Check Requests:</span></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:707px\"><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CheckReqForm\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22CheckReqForm%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ADate%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%7D%2C%7B%22header%22%3A%22Payee%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APayee%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AAmount%22%7D%2C%7B%22header%22%3A%22Club%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AClub%22%7D%2C%7B%22header%22%3A%22Sport%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ASport%22%7D%2C%7B%22header%22%3A%22Mail%2FPickup%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AQ11%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Deleted%22%7D%2C%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Picked%20Up%22%7D%2C%7B%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Mailed%22%7D%5D%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:707px\"><p></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:707px\"><p><span style=\"color:#000000\">Pickups:</span></p></td><td style=\"width:40px\"><br></td></tr><tr><td style=\"width:707px\"><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CheckReqForm\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22CheckReqForm%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Payee%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APayee%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AAmount%22%7D%2C%7B%22header%22%3A%22Club%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AClub%22%7D%2C%7B%22header%22%3A%22Pickup%20Date%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APickupdate%22%7D%2C%7B%22header%22%3A%22Pickup%20Time%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APickupTime%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3ACheckReqForm%3AQ11%22%2C%22op%22%3A%22mcEquals%22%2C%22value%22%3A%22b%22%7D%2C%7B%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22Approved%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p></td><td style=\"width:40px\"><br></td></tr></table>"
+    },
+    {
+      "name": "ThankYouCR",
+      "content": "<p></p><p><span>To: </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Club\" title=\"CheckReqForm:Club\" draggable=\"true\">&lt;&lt;CheckReqForm:Club&gt;&gt;</span></span><span> - </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Sport\" title=\"CheckReqForm:Sport\" draggable=\"true\">&lt;&lt;CheckReqForm:Sport&gt;&gt;</span></span></p><p></p><p><span>Thank you.  Your check request in the amount of $</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Amount\" title=\"CheckReqForm:Amount\" draggable=\"true\">&lt;&lt;CheckReqForm:Amount&gt;&gt;</span></span><span> to </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CheckReqForm:Payee\" title=\"CheckReqForm:Payee\" draggable=\"true\">&lt;&lt;CheckReqForm:Payee&gt;&gt;</span></span><span>  has been received.</span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></span></p><p></p><p><span>CYO Office</span></p><p><span>825 NE 20th Ave. #120 Portland, OR 97232</span></p><p><span>Email: allyh@cyocamphoward.org  </span></p><p><span>Fax: (503) 231-9531</span></p>"
+    },
+    {
+      "name": "Message",
+      "content": "<p><span style=\"color:#CC0000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+    },
+    {
+      "name": "SentLinks",
+      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Communicator:Body\" title=\"Communicator:Body\" draggable=\"true\">&lt;&lt;Communicator:Body&gt;&gt;</span></span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CheckReqForm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Link to Check Request Form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Link to Check Request Form</span></u></span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;DepositForm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Link to Deposit Form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Link to Deposit Form</span></u></span></p>"
+    },
+    {
+      "name": "CheckReqHistory",
+      "content": "<p></p><p><span style=\"font-size:18pt\"><b>Check Request History</b></span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CheckReqForm\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22CheckReqForm%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ADate%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AStatus%22%7D%2C%7B%22header%22%3A%22Payee%22%2C%22field%22%3A%22Record%3ACheckReqForm%3APayee%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AAmount%22%7D%2C%7B%22header%22%3A%22Club%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AClub%22%7D%2C%7B%22header%22%3A%22Sport%22%2C%22field%22%3A%22Record%3ACheckReqForm%3ASport%22%7D%2C%7B%22header%22%3A%22Mail%2FPickup%22%2C%22field%22%3A%22Record%3ACheckReqForm%3AQ11%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Admin&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p>"
+    },
+    {
+      "name": "ThankYouDep",
+      "content": "<p></p><p><span>To: </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DepositForm:Club\" title=\"DepositForm:Club\" draggable=\"true\">&lt;&lt;DepositForm:Club&gt;&gt;</span></span><span> - </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DepositForm:Sport\" title=\"DepositForm:Sport\" draggable=\"true\">&lt;&lt;DepositForm:Sport&gt;&gt;</span></span></p><p></p><p><span>Thank you.  Your deposit form in the amount of $</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Total\" title=\"Total\" draggable=\"true\">&lt;&lt;Total&gt;&gt;</span></span><span>  has been received.  We will send you an email confirmation once the physical deposit has been received at the office and the amounts confirmed.</span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></span></p><p></p><p><span>Please mark the deposit envelope or container you bring your deposits into the office with, with your Form Identification Number, which is: </span><span style=\"font-size:18pt;color:#D50000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DepositForm:DepID\" title=\"DepositForm:DepID\" draggable=\"true\">&lt;&lt;DepositForm:DepID&gt;&gt;</span></b></span><span><b>.  This is important and will make it easier for us to match with your actual deposit with this form.</b></span></p><p></p><p><span>CYO Office</span></p><p><span>825 NE 20th Ave. #120 Portland, OR 97232</span></p><p><span>Email: allyh@cyocamphoward.org  </span></p><p><span>Fax: (503) 231-9531</span></p>"
+    }
+  ],
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/CYO CheckDeposit Request1.tawala"
+}

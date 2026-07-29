@@ -20,6 +20,7 @@
         <div class="block">
           <h3>Your account</h3>
           <p>Logged in as <b>dev</b> (local deploy user).</p>
+          <p class="pm-hint"><b>My Tawala</b> = your private projects. Public templates live in <a href="library.html">Library</a>.</p>
         </div>
         <div class="block">
           <h3>Web Designer</h3>
@@ -35,28 +36,33 @@
 
       <div class="content">
         <div class="pageTitle"><h1>My Tawala</h1></div>
+        <div class="listing-identity" role="status">
+          <span class="listing-where">My Projects</span>
+          <span class="listing-pile">Your private / unfinished projects — MyTawala pile (<code>projects/mytawala/</code>). Row actions: Purge / Delete.</span>
+          <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
+        </div>
         <div id="pmSubmenuHost"></div>
 
         <div id="projectManager" class="section">
           <div class="status">
             <form onsubmit="return false;">
               <div class="pageCtl">
-                <select><option>All</option><option>Active</option></select> projects,
-                <input type="text" class="text" value="25" size="3" /> per page,
-                sorted by <select><option>Name</option><option>Last updated</option></select>
-                <input type="submit" value="View" />
+                <select disabled title="Filter projects"><option>All</option><option>Active</option></select> projects,
+                <input type="text" class="text" value="25" size="3" disabled title="Projects per page" /> per page,
+                sorted by <select disabled title="Sort order"><option>Name</option><option>Last updated</option></select>
+                <button type="submit" class="pm-action" disabled title="Apply listing filter">View</button>
               </div>
             </form>
           </div>
 
-          <table class="projectListing stripe ruler">
+          <table class="projectListing stripe ruler" aria-label="My Projects — private My Tawala list">
             <thead>
               <tr>
                 <th class="left">Name</th>
-                <th>Created</th>
-                <th>Updated</th>
+                <th class="col-date">Created</th>
+                <th class="col-date">Updated</th>
                 <th>Responses</th>
-                <th>Access</th>
+                <th class="col-date" title="Last accessed date (legacy Project Manager)">Access</th>
                 <th></th>
               </tr>
             </thead>
@@ -64,7 +70,7 @@
           </table>
 
           <div class="status" style="margin-top:12px;">
-            <div class="stats">Total Projects: <span id="projectCount">0</span> (mock — templates deployed via script)</div>
+            <div class="stats">Total Projects: <span id="projectCount">0</span> — private My Tawala pile (not WebLibrary / public Library)</div>
           </div>
         </div>
       </div>
@@ -89,20 +95,27 @@
     document.getElementById("pmSubmenuHost").innerHTML =
       TawalaProjectOps.renderSubmenu("My Projects");
 
-    const projects = TawalaDemo.entries();
+    const projects = TawalaDemo.myTawalaEntries();
     const tbody = document.getElementById("projectRows");
     tbody.innerHTML = projects
       .map((p) => {
         const detailHref = `mytawala-project.html?project=${encodeURIComponent(p.id)}`;
+        const deployNote = TawalaDemo.isDeployed(p)
+          ? ""
+          : ' <span class="deploy-badge" title="Not deployed on local :8080 yet">Not deployed</span>';
+        const title = TawalaDemo.displayName(p.name);
+        /* Legacy Access = lastAccessed date, not Active/Inactive status */
+        const accessed =
+          p.lastAccessed || p.accessed || "—";
+        const created = p.created || p.updated || "—";
         return `<tr>
         <td class="info left">
-          <span class="title"><a href="${detailHref}">${escapeHtml(p.name)}</a></span><br />
-          <span class="description">${escapeHtml(p.shortDescription)}</span>
+          <span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>${deployNote}
         </td>
-        <td>${escapeHtml(p.updated || "")}</td>
-        <td>${escapeHtml(p.updated || "")}</td>
+        <td class="date-created col-date">${escapeHtml(created)}</td>
+        <td class="updated col-date">${escapeHtml(p.updated || "—")}</td>
         <td>—</td>
-        <td>Active</td>
+        <td class="last-accessed col-date" title="Last accessed">${escapeHtml(accessed)}</td>
         <td>${TawalaProjectOps.renderListingControls(p.id)}</td>
       </tr>`;
       })

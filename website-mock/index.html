@@ -74,10 +74,10 @@
     apps.innerHTML = TawalaDemo.featured()
       .map(
         (p) => `<div class="webapp">
-          <a href="library-detail.html?project=${encodeURIComponent(p.id)}" class="icon-tile" title="${escapeHtml(p.name)}">
+          <a href="library-detail.html?project=${encodeURIComponent(p.id)}" class="icon-tile" title="${escapeHtml(TawalaDemo.displayName(p.name))}">
             <span class="icon-label">${escapeHtml(p.iconLabel || "?")}</span>
           </a>
-          <div class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></div>
+          <div class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(TawalaDemo.displayName(p.name))}</a></div>
           <p>${escapeHtml(p.shortDescription)}</p>
           <div class="links"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">Tell me more…</a></div>
         </div>`
@@ -89,24 +89,28 @@
     list.innerHTML = more.length
       ? more
           .map(
-            (p) => `<div class="webapp">
-              <div class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></div>
-              <p>${escapeHtml(p.longDescription)}</p>
+            (p) => {
+              const blurb = p.shortDescription || p.longDescription || "";
+              return `<div class="webapp">
+              <div class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(TawalaDemo.displayName(p.name))}</a></div>
+              <p>${escapeHtml(blurb)}</p>
               <div class="links"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">Tell me more… ${arrow}</a></div>
-            </div>`
+            </div>`;
+            }
           )
           .join("")
       : "<p class=\"note\">All library projects are featured above.</p>";
 
     const td = document.getElementById("homeTestDriveLinks");
     td.innerHTML = TawalaDemo.featured()
+      .filter((p) => TawalaDemo.isDeployed(p))
       .map(
         (p) =>
           `<a class="test-drive-link" href="${p.testDriveUrl}" target="_blank" rel="noopener">${escapeHtml(
-            p.name.replace(/ Template$/, "")
+            TawalaDemo.displayName(p.name).replace(/ Template$/, "")
           )}</a>`
-      )
-      .join("");
+        )
+        .join("");
   </script>
 </body>
 </html>

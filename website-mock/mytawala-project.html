@@ -35,13 +35,17 @@
       TawalaProjectOps.renderSubmenu("My Projects");
 
     const id = new URLSearchParams(location.search).get("project") || "";
-    const project = id ? TawalaDemo.get(id) : null;
+    const project = id ? TawalaDemo.getMyTawala(id) : null;
     const host = document.getElementById("pmDetailHost");
     if (!project) {
-      host.innerHTML =
-        '<p class="pm-hint">Unknown project. <a href="mytawala.html">← Back to My Projects</a></p>';
+      const lib = id ? TawalaDemo.getLibrary(id) : null;
+      host.innerHTML = lib
+        ? '<p class="pm-hint">That project is in the <a href="library-detail.html?project=' +
+          encodeURIComponent(id) +
+          '">Library</a>, not My Tawala. <a href="mytawala.html">← Back to My Projects</a></p>'
+        : '<p class="pm-hint">Unknown project. <a href="mytawala.html">← Back to My Projects</a></p>';
     } else {
-      document.title = "Tawala - " + project.name;
+      document.title = "Tawala - " + TawalaDemo.displayName(project.name);
       host.innerHTML = TawalaProjectOps.renderDetailPanel({ id, ...project });
     }
   </script>

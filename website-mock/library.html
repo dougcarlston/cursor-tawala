@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css" />
   <script src="js/demo-urls.js"></script>
+  <script src="js/project-ops.js"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -17,43 +18,21 @@
     <div id="bd">
       <div class="sidebar-left">
         <div class="block">
-          <h3>Libraries</h3>
-          <p><b>Tawala Public Library</b></p>
-          <div class="sub-menu pm-submenu" style="margin-top:8px;border:0;padding:0;">
-            <ul style="flex-direction:column;gap:4px;">
-              <li><span class="link-pending" title="Search the library for projects — not wired">Search</span></li>
-              <li><span class="link-pending" title="View and edit categories — not wired">Edit Categories</span></li>
-              <li><span class="link-pending" title="View recent changes — not wired">Recent Changes</span></li>
-            </ul>
-          </div>
+          <h3>Select a Library</h3>
+          <ul class="library-picker">
+            <li><a href="library.html" class="selected" title="Tawala Public Library">Tawala Public Library</a></li>
+            <li><span class="link-pending" title="Additional community libraries" aria-disabled="true">More libraries…</span></li>
+          </ul>
           <p style="margin-top:10px;"><a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a></p>
-          <p class="pm-hint"><a href="mytawala.html">My Tawala</a> · <a href="project-ops-review.html">Ops archive</a></p>
+          <p class="pm-hint"><a href="mytawala.html"><b>My Tawala</b></a> (private projects) · <a href="project-ops-review.html">Ops archive</a></p>
         </div>
         <div class="block category-tree">
           <h3>Categories</h3>
-          <ul>
-            <li><a href="library.html">All projects</a></li>
-            <li>Activities
-              <ul>
-                <li><a href="library.html?cat=activities">Sign-up sheets</a></li>
-              </ul>
-            </li>
-            <li>Polls
-              <ul>
-                <li><a href="library.html?cat=polls">Surveys</a></li>
-              </ul>
-            </li>
-            <li>Meetings
-              <ul>
-                <li><a href="library.html?cat=meetings">Potluck &amp; scheduling</a></li>
-              </ul>
-            </li>
-            <li>Basic
-              <ul>
-                <li><a href="library.html?cat=basic">Designer demos</a></li>
-              </ul>
-            </li>
-          </ul>
+          <div id="libraryChromeHost"></div>
+          <p class="pm-hint" style="margin:6px 0 8px;">
+            <a href="library.html" title="Show projects in all categories">Show All Categories</a>
+          </p>
+          <ul id="categoryNav"></ul>
         </div>
         <div class="block">
           <h3>Next level</h3>
@@ -63,30 +42,46 @@
 
       <div class="content">
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
+        <div class="listing-identity" role="status">
+          <span class="listing-where">Public Library</span>
+          <span class="listing-pile">Shared catalog — WebLibrary pile (<code>projects/library/</code>) + Main Menu templates. Groups use Designer Fields/Explorer <code>[+]</code>/<code>[-]</code> toggles and New Project category type. No Purge/Delete.</span>
+          <span class="listing-switch">Your private projects? <a href="mytawala.html">My Tawala</a></span>
+        </div>
+        <div id="librarySubmenuHost"></div>
 
         <div id="library">
           <div id="search">
             <span class="category"><h3 id="listingTitle">All projects</h3></span>
             <form method="get" id="searchForm" onsubmit="return filterLibrary(event)">
               <span class="searchInput">
-                <input class="text" type="text" name="query" id="query" size="32" placeholder="Search projects…" />
+                <input class="text" type="text" name="query" id="query" size="32" placeholder="Search public library…" />
                 <input class="button" type="submit" value="Search" />
               </span>
             </form>
           </div>
 
-          <table class="projectListing stripe ruler">
-            <thead>
-              <tr>
-                <th class="left">Name</th>
-                <th class="left">Rating</th>
-                <th>Comments</th>
-                <th class="left">Updated</th>
-              </tr>
-            </thead>
-            <tbody id="projectRows"></tbody>
-          </table>
+          <div class="library-listing-frame" id="libraryListingFrame">
+            <div class="library-colhead-bar" role="row">
+              <table class="projectListing library-colheads" aria-label="Column headers">
+                <colgroup>
+                  <col class="col-name" /><col class="col-used" /><col class="col-comments" />
+                  <col class="col-updated" /><col class="col-actions" />
+                </colgroup>
+                <thead>
+                  <tr>
+                    <th class="left" scope="col" title="Name">Name</th>
+                    <th scope="col" title="Times this project was used (clone count)">Times used</th>
+                    <th scope="col" title="Comments">Comments</th>
+                    <th class="left col-date" scope="col" title="Updated">Updated</th>
+                    <th scope="col" title="Library actions">Actions</th>
+                  </tr>
+                </thead>
+              </table>
+            </div>
+            <div id="libraryGroups" class="library-groups" aria-label="Public Library catalog by category"></div>
+          </div>
           <p id="libraryEmpty" class="library-empty" hidden>No projects match your search. <a href="library.html">Show all projects</a></p>
+          <p class="pm-hint" id="libraryCountHint" style="margin-top:10px;"></p>
         </div>
       </div>
     </div>
@@ -104,31 +99,105 @@
         .replace(/"/g, "&quot;");
     }
 
-    function renderRows(rows) {
-      const tbody = document.getElementById("projectRows");
+    function renderCategoryNav() {
+      const cats = TawalaDemo.libraryCategories();
+      document.getElementById("categoryNav").innerHTML =
+        '<li><a href="library.html">All projects</a></li>' +
+        cats
+          .map((c) => {
+            const hint =
+              c.source === "new-project"
+                ? "Designer New Project group"
+                : "WebLibrary catalog group";
+            return (
+              `<li><a href="library.html?cat=${encodeURIComponent(c.slug)}" title="${escapeHtml(hint)}">` +
+              `${escapeHtml(c.label)}</a></li>`
+            );
+          })
+          .join("");
+    }
+
+    function projectRowHtml(p) {
+      const deployNote = TawalaDemo.isDeployed(p)
+        ? ""
+        : ' <span class="deploy-badge" title="Not deployed on local :8080 yet">Not deployed</span>';
+      const title = TawalaDemo.displayName(p.name);
+      const timesUsed =
+        p.cloneCount != null && p.cloneCount !== ""
+          ? escapeHtml(String(p.cloneCount))
+          : "—";
+      const detailHref = `library-detail.html?project=${encodeURIComponent(p.id)}`;
+      return `<tr class="link" onclick="location.href='${detailHref}'">
+        <td class="info left">
+          <span class="title"><a href="${detailHref}" onclick="event.stopPropagation()">${escapeHtml(title)}</a></span>
+          ${TawalaDemo.starsHtml(p.rating)}${deployNote}
+        </td>
+        <td class="clone-count">${timesUsed}</td>
+        <td class="comments">${p.comments || 0}</td>
+        <td class="updated left col-date">${escapeHtml(p.updated || "")}</td>
+        <td class="library-row-actions">${TawalaProjectOps.renderLibraryListingControls(p)}</td>
+      </tr>`;
+    }
+
+    function tableForRows(rows) {
+      return (
+        `<table class="projectListing stripe ruler library-category-table" aria-label="Projects in category">` +
+        `<colgroup>` +
+        `<col class="col-name" /><col class="col-used" /><col class="col-comments" />` +
+        `<col class="col-updated" /><col class="col-actions" />` +
+        `</colgroup>` +
+        `<tbody>${rows.map(projectRowHtml).join("")}</tbody>` +
+        `</table>`
+      );
+    }
+
+    function categorySectionHtml(slug, label, list) {
+      return (
+        `<details class="library-category" data-slug="${escapeHtml(slug)}" open>` +
+          `<summary class="library-category-heading">` +
+          `<span class="library-category-toggle" aria-hidden="true"></span>` +
+          `<span class="library-category-name">${escapeHtml(label)}</span>` +
+          `<span class="library-category-count">${list.length}</span>` +
+          `</summary>` +
+          `<div class="library-category-body">${tableForRows(list)}</div>` +
+          `</details>`
+      );
+    }
+
+    function renderGroups(rows, catSlug) {
+      const host = document.getElementById("libraryGroups");
+      const frame = document.getElementById("libraryListingFrame");
       const empty = document.getElementById("libraryEmpty");
-      const table = tbody.closest("table");
       if (!rows.length) {
-        tbody.innerHTML = "";
+        host.innerHTML = "";
+        if (frame) frame.hidden = true;
         empty.hidden = false;
-        table.hidden = true;
         return;
       }
       empty.hidden = true;
-      table.hidden = false;
-      tbody.innerHTML = rows
-        .map(
-          (p) => `<tr class="link" onclick="location.href='library-detail.html?project=${encodeURIComponent(p.id)}'">
-            <td class="info left">
-              <span class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}" onclick="event.stopPropagation()">${escapeHtml(p.name)}</a></span><br />
-              <span class="description">${escapeHtml(p.shortDescription)}</span>
-            </td>
-            <td class="rating left">${TawalaDemo.starsHtml(p.rating)}</td>
-            <td class="comments">${p.comments || 0}</td>
-            <td class="updated left">${escapeHtml(p.updated || "")}</td>
-          </tr>`
-        )
-        .join("");
+      if (frame) frame.hidden = false;
+
+      const categories = TawalaDemo.libraryCategories();
+      const byLabel = new Map(categories.map((c) => [c.label, []]));
+      const orphan = [];
+      rows.forEach((p) => {
+        if (byLabel.has(p.category)) byLabel.get(p.category).push(p);
+        else orphan.push(p);
+      });
+
+      const sections = [];
+      categories.forEach((c) => {
+        if (catSlug && c.slug !== catSlug) return;
+        const list = byLabel.get(c.label) || [];
+        if (!list.length) return;
+        sections.push(categorySectionHtml(c.slug, c.label, list));
+      });
+
+      if (orphan.length && !catSlug) {
+        sections.push(categorySectionHtml("other", "Other", orphan));
+      }
+
+      host.innerHTML = sections.join("");
     }
 
     function highlightCategory(cat) {
@@ -144,16 +213,17 @@
       const params = new URLSearchParams(location.search);
       const cat = params.get("cat");
       const q = (params.get("query") || "").toLowerCase();
-      let rows = TawalaDemo.entries();
-      if (cat === "polls") rows = rows.filter((p) => p.category === "Polls");
-      if (cat === "activities") rows = rows.filter((p) => p.category === "Activities");
-      if (cat === "meetings") rows = rows.filter((p) => p.category === "Meetings");
-      if (cat === "basic") rows = rows.filter((p) => p.category.includes("Basic"));
+      let rows = TawalaDemo.libraryEntries();
+      const catMeta = cat ? TawalaDemo.categoryBySlug(cat) : null;
+      if (catMeta) {
+        rows = rows.filter((p) => p.category === catMeta.label);
+      }
       if (q) {
         rows = rows.filter(
           (p) =>
-            p.name.toLowerCase().includes(q) ||
+            TawalaDemo.displayName(p.name).toLowerCase().includes(q) ||
             (p.shortDescription || "").toLowerCase().includes(q) ||
+            (p.longDescription || "").toLowerCase().includes(q) ||
             (p.category || "").toLowerCase().includes(q)
         );
       }
@@ -165,14 +235,20 @@
           '" <a class="library-clear-search" href="library.html' +
           (cat ? "?cat=" + encodeURIComponent(cat) : "") +
           '">(clear)</a>';
-      } else if (cat === "polls") title.textContent = 'All projects in "Polls" category';
-      else if (cat === "activities") title.textContent = 'All projects in "Activities" category';
-      else if (cat === "meetings") title.textContent = 'All projects in "Meetings" category';
-      else if (cat === "basic") title.textContent = 'All projects in "Basic" category';
-      else title.textContent = "All projects";
+      } else if (catMeta) {
+        title.textContent = 'All projects in "' + catMeta.label + '" category';
+      } else {
+        title.textContent = "All projects";
+      }
       document.getElementById("query").value = params.get("query") || "";
       highlightCategory(cat);
-      renderRows(rows);
+      renderGroups(rows, catMeta ? catMeta.slug : null);
+      const hint = document.getElementById("libraryCountHint");
+      if (hint) {
+        hint.textContent =
+          rows.length +
+          " project(s) in this public Library view — WebLibrary / Main Menu catalog (not My Tawala).";
+      }
     }
 
     function filterLibrary(e) {
@@ -186,6 +262,12 @@
     }
 
     TawalaChrome.mount();
+    TawalaProjectOps.bind(document);
+    renderCategoryNav();
+    document.getElementById("librarySubmenuHost").innerHTML =
+      TawalaProjectOps.renderLibrarySubmenu("Search");
+    document.getElementById("libraryChromeHost").innerHTML =
+      TawalaProjectOps.renderLibraryChromeStubs();
     applyFilters();
   </script>
 </body>

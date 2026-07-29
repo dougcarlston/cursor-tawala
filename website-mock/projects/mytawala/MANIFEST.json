@@ -1,0 +1,72 @@
+{
+  "source": "~/Projects/Tawala Projects/MyTawala",
+  "copied": "2026-07-29",
+  "count": 13,
+  "files": [
+    {
+      "file": "BBBulkMail.json",
+      "bytes": 24222,
+      "mtime": 1785282837
+    },
+    {
+      "file": "CYO Check Request.json",
+      "bytes": 89402,
+      "mtime": 1785282837
+    },
+    {
+      "file": "CYO CheckDeposit Request.json",
+      "bytes": 72539,
+      "mtime": 1785282837
+    },
+    {
+      "file": "CampaignDashboards.json",
+      "bytes": 891300,
+      "mtime": 1785282837
+    },
+    {
+      "file": "Designer Candidate App 01.json",
+      "bytes": 14082,
+      "mtime": 1785282837
+    },
+    {
+      "file": "Dirtbowl Communicator.json",
+      "bytes": 204764,
+      "mtime": 1785282838
+    },
+    {
+      "file": "DisplayLabelTest.json",
+      "bytes": 2287,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Emailer With Signup.dgmod.json",
+      "bytes": 115662,
+      "mtime": 1785282838
+    },
+    {
+      "file": "PayPal Tester.json",
+      "bytes": 3364,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Potluck - Kids Too.json",
+      "bytes": 36968,
+      "mtime": 1785282838
+    },
+    {
+      "file": "RealDirtwHeader.json",
+      "bytes": 721415,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Shared To-Do.json",
+      "bytes": 49623,
+      "mtime": 1785282838
+    },
+    {
+      "file": "Single Question Poll or Survey.json",
+      "bytes": 26279,
+      "mtime": 1785282839
+    }
+  ]
+}

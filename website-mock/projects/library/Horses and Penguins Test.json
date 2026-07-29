@@ -1,0 +1,999 @@
+{
+  "name": "Horses and Penguins Test",
+  "format": "2.0",
+  "themePath": "redrays",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "The Katie & Megan Test"
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Designed to show you how much more an 8-year-old knows than you do."
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "freeform",
+          "prompt": "Please enter your name: _______________(first) _______________(last)",
+          "blanks": [
+            {
+              "name": "first",
+              "length": 15,
+              "alternateLabel": "first"
+            },
+            {
+              "name": "last",
+              "length": 15,
+              "alternateLabel": "last"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "How much do you know about horses?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Almost nothing"
+            },
+            {
+              "label": "b",
+              "text": "Quite a bit"
+            },
+            {
+              "label": "c",
+              "text": "Lots"
+            },
+            {
+              "label": "d",
+              "text": "More than Megan and Katie, I bet!"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "How much do you know about penguins?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Almost nothing"
+            },
+            {
+              "label": "b",
+              "text": "Quite a bit"
+            },
+            {
+              "label": "c",
+              "text": "Lots"
+            },
+            {
+              "label": "d",
+              "text": "More than Katie and Megan, I bet!"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "The Exam"
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "1) Let's start with some easy ones.  Which lives longer, a typical penguin or a typical horse?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "The penguin"
+            },
+            {
+              "label": "b",
+              "text": "The horse"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "2) Which can move faster?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "A horse in water"
+            },
+            {
+              "label": "b",
+              "text": "A penguin on land (not sliding)"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "3) Here are a number of descriptive words.  Choose whether they are most typically used to describe horses or penguins:"
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": true,
+          "required": false,
+          "style": "horizontal",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "a) Jackass",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Horse"
+            },
+            {
+              "label": "b",
+              "text": "Penguin"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q7",
+          "onlyone": true,
+          "required": false,
+          "style": "horizontal",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "b) Pinto",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Horse"
+            },
+            {
+              "label": "b",
+              "text": "Penguin"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q8",
+          "onlyone": true,
+          "required": false,
+          "style": "horizontal",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "c) Emperor",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Horse"
+            },
+            {
+              "label": "b",
+              "text": "Penguin"
+            }
+          ],
+          "paddingBottom": false
+        },
+        {
+          "type": "mc",
+          "label": "Q9",
+          "onlyone": true,
+          "required": false,
+          "style": "horizontal",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "d) Appaloosa",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Horse"
+            },
+            {
+              "label": "b",
+              "text": "Penguin"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q10",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "4) What is a frog?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Part of a penguin"
+            },
+            {
+              "label": "b",
+              "text": "Part of a horse"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q11",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "5) How many penguin species live in Antarctica?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "None"
+            },
+            {
+              "label": "b",
+              "text": "One"
+            },
+            {
+              "label": "c",
+              "text": "Between two and four"
+            },
+            {
+              "label": "d",
+              "text": "Five or more"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q12",
+          "style": "topLabels",
+          "prompt": "6) Which species of penguin lives farthest north? ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q13",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "7) Is it true that only grey horses have dapples?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No, almost any color horse can have dapples"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q14",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "8) Which weighs more, the biggest penguin or the smallest full-grown horse?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "The biggest penguin"
+            },
+            {
+              "label": "b",
+              "text": "The smallest horse"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q15",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "9) Is blackpoint dun a breed or horse or a color?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "A breed"
+            },
+            {
+              "label": "b",
+              "text": "A color"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q16",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "10) Is it arctic terns that eat penguins or penguins that eat arctic terns?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Terns eat penguins"
+            },
+            {
+              "label": "b",
+              "text": "Penguins eat terns"
+            },
+            {
+              "label": "c",
+              "text": "Neither one eats the other"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q17",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "11) What was the first bird called a penguin?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "A dodo"
+            },
+            {
+              "label": "b",
+              "text": "A puffin"
+            },
+            {
+              "label": "c",
+              "text": "A great auk"
+            },
+            {
+              "label": "d",
+              "text": "A lemonade penguin"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q18",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "12) Are there more species of penguins or more breeds of horses?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "More species of penguins"
+            },
+            {
+              "label": "b",
+              "text": "More breeds of horses"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q19",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "13) What is the smallest horse in the world?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "The Shetland pony"
+            },
+            {
+              "label": "b",
+              "text": "The Falabella"
+            },
+            {
+              "label": "c",
+              "text": "The Connemara pony"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q20",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "14) Do all penguins have yellow beaks?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No, most of them don't"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q21",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "15) Don't you think Katie & Megan make up interesting questions?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Oh, absolutely."
+            },
+            {
+              "label": "b",
+              "text": "What's so interesting about penguins?  Horses I can understand."
+            },
+            {
+              "label": "c",
+              "text": "What's so interesting about horses?  Penguins I can understand."
+            },
+            {
+              "label": "d",
+              "text": "Frankly, I can't understand all the fuss about either horses OR penguins."
+            }
+          ]
+        }
+      ],
+      "themePath": "redrays",
+      "process": "Process 1"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process 1",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Score",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q4",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q5",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q6",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Word",
+              "value": "a Jackass",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Animal",
+              "value": "horse",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q7",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Word",
+              "value": "a Pinto",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Animal",
+              "value": "a Penguin",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q8",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Word",
+              "value": "an Emperor",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Animal",
+              "value": "horse",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q9",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Word",
+              "value": "an Appaloosa",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Animal",
+              "value": "penguin",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q10",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q11",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q12:a",
+            "op": "contains",
+            "value": "Galapagos"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q13",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q14",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q15",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q16",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q17",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q18",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q19",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q20",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Wrong",
+          "value": "17 - <<Score>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Score",
+          "value": "<<Score>> * 100 / 17",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Score",
+            "op": "isGreaterThan",
+            "value": "90"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Document 2",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Score",
+            "op": "isLessThanOrEqualTo",
+            "value": "40"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Document 1",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "Score",
+                "op": "isLessThanOrEqualTo",
+                "value": "90"
+              },
+              {
+                "field": "Score",
+                "op": "isGreaterThan",
+                "value": "40"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Document 3",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q2",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Document 4",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Form 1:Q3",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Document 5",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Document 6",
+          "reset": false
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Document 1",
+      "content": "<p><span>Well, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span></span><span>, you sound quite self-confident!  However, your score of  </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span>% wasn't too impressive.  You got </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span></span><span> questions wrong!  I think you need to talk with Katie and Megan a bit more about penguins and horses.  After all, anyone who thinks that </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Word\" title=\"Word\" draggable=\"true\">&lt;&lt;Word&gt;&gt;</span></span><span> is a </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Animal\" title=\"Animal\" draggable=\"true\">&lt;&lt;Animal&gt;&gt;</span></span><span> needs some educating.</span></p>"
+    },
+    {
+      "name": "Document 2",
+      "content": "<p><span>Top notch work, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span></span><span>!  I wonder if you're related to Katie and Megan.  After all, not many people can get all these questions right!  Your score was </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span>%!  You got  </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span></span><span> questions wrong.</span></p>"
+    },
+    {
+      "name": "Document 3",
+      "content": "<p><span>Well, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span></span><span>, your score of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span>% is not perfect but it's not too bad either.  You only missed </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span></span><span> questions.</span></p>"
+    },
+    {
+      "name": "Document 4",
+      "content": "<p><span>But I don't think you know more about horses than Katie!</span></p>"
+    },
+    {
+      "name": "Document 5",
+      "content": "<p><span>And I really doubt that you know more about penguins than Megan!</span></p>"
+    },
+    {
+      "name": "Document 6",
+      "content": "<p><span>Thank you for trying our test!  It's been a lot of fun, at least for us!  Here are all of the correct answers.</span></p><p></p><p><span>1) Horses live 20-25 years, penguins 15-20 years.</span></p><p><span>2) A penguin on land is faster than a horse in water.</span></p><p><span>3) A Jackass is a penguin, as is an Emperor.  Pintos and Appaloosas are horses.</span></p><p><span>4) A frog is part of a horse's hoof.</span></p><p><span>5) There are at least 5 different penguin species in Antarctica.</span></p><p><span>6) The Galapagos penguin lives farthest north, in the Galapagos Islands of Ecuador.</span></p><p><span>7) Any color horse can have dapples.</span></p><p><span>8) The biggest penguins may weight 75-80 pounds.  The smallest adult horse weighs in at about 150 pounds.</span></p><p><span>9) Blackpoint dun is a color, not a breed.</span></p><p><span>10) They don't eat each other, although they don't like each other much either!</span></p><p><span>11) The greak auk was originally called a penguin.  There's no such thing, by the way, as a lemonade penguin.</span></p><p><span>12) There are more breeds of horse than species of penguin.</span></p><p><span>13) The Falabella horse is reputedly the smallest.</span></p><p><span>14) Most penguins do NOT have yellow beaks.</span></p>"
+    }
+  ],
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Horses and Penguins Test.tawala"
+}

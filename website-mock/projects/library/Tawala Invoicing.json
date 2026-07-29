@@ -1,0 +1,968 @@
+{
+  "name": "Tawala Invoicing",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "Start",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Tawala Services Invoicing"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Create Invoice"
+            },
+            {
+              "label": "b",
+              "text": "Show client account"
+            },
+            {
+              "label": "c",
+              "text": "Show all Invoices"
+            },
+            {
+              "label": "d",
+              "text": "Show unpaid Invoices"
+            },
+            {
+              "label": "e",
+              "text": "Show all paid Invoices"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "Start:Q1",
+                    "op": "mcDoesNotEqual",
+                    "value": "a"
+                  },
+                  {
+                    "field": "Start:Q1",
+                    "op": "mcDoesNotEqual",
+                    "value": "b"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "Type part or all of the Client Organization Name to check our current files: ____________________",
+          "blanks": [
+            {
+              "name": "SearchCrit",
+              "length": 20,
+              "alternateLabel": "SearchCrit"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "The following existing clients match your criteria.  If there are no matches, press Submit to create a new client record.",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "CreateInvoice",
+              "displayExpr": "<<Record:CreateInvoice:Client>> (<<Record:CreateInvoice:ContactName>>)",
+              "valueExpr": "<<Record:CreateInvoice:Client>>",
+              "sortExpr": "<<Record:CreateInvoice:Client>>",
+              "where": {
+                "and": [
+                  {
+                    "field": "Record:CreateInvoice:Client",
+                    "op": "contains",
+                    "value": "<<Start:SearchCrit>>"
+                  },
+                  {
+                    "field": "Record:CreateInvoice:PrimaryRecord",
+                    "op": "equals",
+                    "value": "Yes"
+                  }
+                ]
+              },
+              "conditionsRows": [
+                {
+                  "field": "Record:CreateInvoice:Client",
+                  "op": "contains",
+                  "value": "<<Start:SearchCrit>>"
+                },
+                {
+                  "field": "Record:CreateInvoice:PrimaryRecord",
+                  "op": "equals",
+                  "value": "Yes"
+                }
+              ],
+              "conditionsCombinator": "and"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Start"
+    },
+    {
+      "name": "CreateInvoice",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Create Invoice"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Client: (e.g. Mill Valley Dirt Bowl) ____________________",
+          "blanks": [
+            {
+              "name": "Client",
+              "length": 20,
+              "alternateLabel": "Client"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Application Name: (e.g. SportsDashboards) ____________________",
+          "blanks": [
+            {
+              "name": "AppName",
+              "length": 20,
+              "alternateLabel": "AppName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Billing Date: ____________________",
+          "blanks": [
+            {
+              "name": "Date",
+              "length": 20,
+              "alternateLabel": "Date"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Contact Name: ____________________",
+          "blanks": [
+            {
+              "name": "ContactName",
+              "length": 20,
+              "alternateLabel": "ContactName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Contact Email: ____________________",
+          "blanks": [
+            {
+              "name": "ContactEmail",
+              "length": 20,
+              "alternateLabel": "ContactEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "freeform",
+          "prompt": "Contact Address: ________________________________________________City: ____________________ State: ___ Zip: ______",
+          "blanks": [
+            {
+              "name": "ContactAddress",
+              "length": 48,
+              "alternateLabel": "ContactAddress"
+            },
+            {
+              "name": "ContactCity",
+              "length": 20,
+              "alternateLabel": "ContactCity"
+            },
+            {
+              "name": "ContactST",
+              "length": 3,
+              "alternateLabel": "ContactST"
+            },
+            {
+              "name": "ContactZip",
+              "length": 6,
+              "alternateLabel": "ContactZip"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Amount Billed: $ ____________________",
+          "blanks": [
+            {
+              "name": "BillableAmt",
+              "length": 20,
+              "alternateLabel": "BillableAmt"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q8",
+          "style": "leftAlignLabelsJustified",
+          "prompt": "Description: ____________________",
+          "blanks": [
+            {
+              "name": "Description",
+              "length": 20,
+              "alternateLabel": "Description"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span><i>Here is what your invoice will look like:</i></span></p><p></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>From:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span>Tawala Systems, Inc.</span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span>120 Locust Ave.</span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span>San Rafael, CA 94901</span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>To:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:ContactName\" title=\"CreateInvoice:ContactName\" draggable=\"true\">&lt;&lt;CreateInvoice:ContactName&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:Client\" title=\"CreateInvoice:Client\" draggable=\"true\">&lt;&lt;CreateInvoice:Client&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:ContactAddress\" title=\"CreateInvoice:ContactAddress\" draggable=\"true\">&lt;&lt;CreateInvoice:ContactAddress&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:ContactCity\" title=\"CreateInvoice:ContactCity\" draggable=\"true\">&lt;&lt;CreateInvoice:ContactCity&gt;&gt;</span></span><span>, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:ContactST\" title=\"CreateInvoice:ContactST\" draggable=\"true\">&lt;&lt;CreateInvoice:ContactST&gt;&gt;</span></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:ContactZip\" title=\"CreateInvoice:ContactZip\" draggable=\"true\">&lt;&lt;CreateInvoice:ContactZip&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:ContactEmail\" title=\"CreateInvoice:ContactEmail\" draggable=\"true\">&lt;&lt;CreateInvoice:ContactEmail&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p></p></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Date:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:Date\" title=\"CreateInvoice:Date\" draggable=\"true\">&lt;&lt;CreateInvoice:Date&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Invoice Number:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Invoice\" title=\"Invoice\" draggable=\"true\">&lt;&lt;Invoice&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:367px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Description:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:367px\"><p><span style=\"color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:AppName\" title=\"CreateInvoice:AppName\" draggable=\"true\">&lt;&lt;CreateInvoice:AppName&gt;&gt;</span></span><span> - </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:Description\" title=\"CreateInvoice:Description\" draggable=\"true\">&lt;&lt;CreateInvoice:Description&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:367px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Amount Due:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:367px\"><p><span>$</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:BillableAmt\" title=\"CreateInvoice:BillableAmt\" draggable=\"true\">&lt;&lt;CreateInvoice:BillableAmt&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:367px\"><br></td></tr></table><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:567px\"><p><span>Invoice immediately due and payable.  Please pay via Paypal link below only.</span></p></td></tr><tr><td style=\"width:567px\"><p></p></td></tr><tr><td style=\"width:567px\"><p><span>Thank you very much,</span></p><p><span>Tawala Systems</span></p></td></tr><tr><td style=\"width:567px\"><p></p></td></tr><tr><td style=\"width:567px\"><p><span>Address any questions regarding this invoice to </span><span style=\"color:#000080\"><u>billing@tawala.com</u></span><span>.</span></p></td></tr></table>"
+        },
+        {
+          "type": "mc",
+          "label": "Q9",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Send out this invoice"
+            },
+            {
+              "label": "b",
+              "text": "Edit the invoice"
+            },
+            {
+              "label": "c",
+              "text": "Cancel this invoice and return to Main Menu"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateInvoice:Q9",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Status"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "OnlinePaymentAmt"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "InvoiceNumber"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "PrimaryRecord"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CreateInvoice",
+      "preProcess": "Pre-CreateInvoice"
+    },
+    {
+      "name": "CreateInvoiceNo",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "InvoiceNo"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CreateInvoiceNo",
+      "preProcess": "Pre-CreateInvoiceNo"
+    },
+    {
+      "name": "PaymentFailure",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-PaymentFailure"
+    },
+    {
+      "name": "Thanks",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-Thanks"
+    },
+    {
+      "name": "PayBill",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Invoice"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Amount"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Process 8"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-Start",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "CreateInvoiceNo"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Start:Q3",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "No client chosen.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "Message",
+                  "reset": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "Start"
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ClientHistory",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "ShowAll",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:Q1",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "UnpaidBills",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:Q1",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "PaidBills",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-CreateInvoice",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Primary",
+          "value": "Yes",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Start:Q3",
+            "op": "mcIsNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 1",
+              "sourceForms": [
+                "CreateInvoice"
+              ],
+              "where": {
+                "field": "Start:Q3",
+                "op": "mcEquals",
+                "value": "<<Record List 1:CreateInvoice:Client>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "SuchClient",
+              "recordList": "Record List 1",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:Client",
+                  "value": "<<SuchClient:CreateInvoice:Client>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:ContactName",
+                  "value": "<<SuchClient:CreateInvoice:ContactName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:ContactEmail",
+                  "value": "<<SuchClient:CreateInvoice:ContactEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:ContactAddress",
+                  "value": "<<SuchClient:CreateInvoice:ContactAddress>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:ContactCity",
+                  "value": "<<SuchClient:CreateInvoice:ContactCity>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:ContactST",
+                  "value": "<<SuchClient:CreateInvoice:ContactST>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreateInvoice:ContactZip",
+                  "value": "<<SuchClient:CreateInvoice:ContactZip>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Primary",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-CreateInvoiceNo",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "CreateInvoiceNo:InvoiceNo",
+          "value": "<<CreateInvoiceNo:InvoiceNo>> + 1",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Invoice",
+          "value": "<<CreateInvoiceNo:InvoiceNo>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "CreateInvoice"
+        }
+      ]
+    },
+    {
+      "name": "Pre-CreateInvoiceNo",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "CreateInvoiceNo",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-CreateInvoice",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Primary",
+            "op": "equals",
+            "value": "Yes"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "CreateInvoice:PrimaryRecord",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "CreateInvoice:InvoiceNumber",
+          "value": "<<Invoice>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "CreateInvoice:Q9",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "CreateInvoice:ContactEmail"
+              },
+              "subject": "Invoice for Services",
+              "body": {
+                "document": "Invoice Message",
+                "reset": false,
+                "showHeader": true
+              }
+            },
+            {
+              "cmd": "set",
+              "field": "CreateInvoice:Status",
+              "value": "Invoice Sent",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Invoice <<Invoice>> to <<CreateInvoice:Client>> in amount of $<<CreateInvoice:BillableAmt>> has been sent.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Message",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Start"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "CreateInvoice:Q9",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "CreateInvoice:Status",
+              "value": "Cancelled",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Invoice <<Invoice>> to <<CreateInvoice:Client>> in amount of $<<CreateInvoice:BillableAmt>> has been cancelled.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Message",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Start"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "CreateInvoice"
+        }
+      ]
+    },
+    {
+      "name": "Post-PaymentFailure",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "FailedPay",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Thanks",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "Thankyou",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Process 8",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Record List 2",
+          "sourceForms": [
+            "CreateInvoice"
+          ],
+          "where": {
+            "field": "_InviteeID",
+            "op": "equals",
+            "value": "<<Record List 2:CreateInvoice:InvoiceNumber>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SuchInvoice",
+          "recordList": "Record List 2",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "ClientName",
+              "value": "<<SuchInvoice:CreateInvoice:Client>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CName",
+              "value": "<<SuchInvoice:CreateInvoice:ContactName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CAddress",
+              "value": "<<SuchInvoice:CreateInvoice:ContactAddress>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CCity",
+              "value": "<<SuchInvoice:CreateInvoice:ContactCity>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CST",
+              "value": "<<SuchInvoice:CreateInvoice:ContactST>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CZIP",
+              "value": "<<SuchInvoice:CreateInvoice:ContactZip>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CEmail",
+              "value": "\\<<SuchInvoice:CreateInvoice:ContactEmail>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CDate",
+              "value": "<<SuchInvoice:CreateInvoice:Date>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Invoice",
+              "value": "<<SuchInvoice:CreateInvoice:InvoiceNumber>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CApp",
+              "value": "<<SuchInvoice:CreateInvoice:AppName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CDes",
+              "value": "\\<<SuchInvoice:CreateInvoice:Description>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Amt",
+              "value": "<<SuchInvoice:CreateInvoice:BillableAmt>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Invoice",
+      "content": "<p></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"margin-left:16.5pt\"><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>From:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span>Tawala Systems, Inc.</span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span>120 Locust Ave.</span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span>San Rafael, CA 94901</span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>To:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CName\" title=\"CName\" draggable=\"true\">&lt;&lt;CName&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ClientName\" title=\"ClientName\" draggable=\"true\">&lt;&lt;ClientName&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CAddress\" title=\"CAddress\" draggable=\"true\">&lt;&lt;CAddress&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CAddress\" title=\"CAddress\" draggable=\"true\">&lt;&lt;CAddress&gt;&gt;</span></span></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CCity\" title=\"CCity\" draggable=\"true\">&lt;&lt;CCity&gt;&gt;</span></span><span>, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CST\" title=\"CST\" draggable=\"true\">&lt;&lt;CST&gt;&gt;</span></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CZIP\" title=\"CZIP\" draggable=\"true\">&lt;&lt;CZIP&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Email:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CEmail\" title=\"CEmail\" draggable=\"true\">&lt;&lt;CEmail&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p></p></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Date:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CDate\" title=\"CDate\" draggable=\"true\">&lt;&lt;CDate&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Invoice Number:</b></span></p></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Invoice\" title=\"Invoice\" draggable=\"true\">&lt;&lt;Invoice&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><p></p></td><td style=\"width:369px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Description:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:369px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CApp\" title=\"CApp\" draggable=\"true\">&lt;&lt;CApp&gt;&gt;</span></span><span> - </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CDes\" title=\"CDes\" draggable=\"true\">&lt;&lt;CDes&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:369px\"><br></td></tr><tr><td style=\"width:181px\"><p style=\"text-align:right\"><span><b>Amount Due:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:369px\"><p><span>$</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Amt\" title=\"Amt\" draggable=\"true\">&lt;&lt;Amt&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:181px\"><br></td><td style=\"width:40px\"><br></td><td style=\"width:369px\"><br></td></tr></table><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\" style=\"margin-left:16.5pt\"><tr><td style=\"width:567px\"><p><span>Invoice immediately due and payable.  Please pay via Paypal link below only.</span></p></td></tr><tr><td style=\"width:567px\"><p></p></td></tr><tr><td style=\"width:567px\"><p><span>Thank you very much,</span></p><p><span>Tawala Systems</span></p></td></tr><tr><td style=\"width:567px\"><p></p></td></tr><tr><td style=\"width:567px\"><p><span>Please address any questions regarding this invoice to billing@tawala.com.</span></p></td></tr></table>"
+    },
+    {
+      "name": "Thankyou",
+      "content": "<p></p><p><span>Thank you for your payment.</span></p><p></p><p><span>Yours,</span></p><p></p><p><span>Tawala Systems</span></p>"
+    },
+    {
+      "name": "FailedPay",
+      "content": "<p></p><p><span>Your payment failed to go through.  Please try again.</span></p><p></p><p><span>Yours,</span></p><p></p><p><span>Tawala Systems</span></p>"
+    },
+    {
+      "name": "Message",
+      "content": "<p><span style=\"font-size:14pt;color:#800000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+    },
+    {
+      "name": "ShowAll",
+      "content": "<p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Start&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CreateInvoice\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22CreateInvoice%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Invoice%20%23%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AInvoiceNumber%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%7D%2C%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADate%22%7D%2C%7B%22header%22%3A%22Client%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AClient%22%7D%2C%7B%22header%22%3A%22Application%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AAppName%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ABillableAmt%22%7D%2C%7B%22header%22%3A%22Description%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADescription%22%7D%2C%7B%22header%22%3A%22Contact%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactName%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactEmail%22%7D%2C%7B%22header%22%3A%22Address%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactAddress%22%7D%2C%7B%22header%22%3A%22City%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactCity%22%7D%2C%7B%22header%22%3A%22State%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactST%22%7D%2C%7B%22header%22%3A%22Zip%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactZip%22%7D%2C%7B%22header%22%3A%22Online%20Payment%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AOnlinePaymentAmt%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "ClientHistory",
+      "content": "<p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Start&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CreateInvoice\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22CreateInvoice%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Invoice%20%23%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AInvoiceNumber%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%7D%2C%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADate%22%7D%2C%7B%22header%22%3A%22Client%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AClient%22%7D%2C%7B%22header%22%3A%22Application%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AAppName%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ABillableAmt%22%7D%2C%7B%22header%22%3A%22Description%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADescription%22%7D%2C%7B%22header%22%3A%22Contact%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactName%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactEmail%22%7D%2C%7B%22header%22%3A%22Address%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactAddress%22%7D%2C%7B%22header%22%3A%22City%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactCity%22%7D%2C%7B%22header%22%3A%22State%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactST%22%7D%2C%7B%22header%22%3A%22Zip%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactZip%22%7D%2C%7B%22header%22%3A%22Online%20Payment%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AOnlinePaymentAmt%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3ACreateInvoice%3AClient%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CStart%3AQ3%3E%3E%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "UnpaidBills",
+      "content": "<p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Start&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CreateInvoice\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22CreateInvoice%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Invoice%20%23%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AInvoiceNumber%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%7D%2C%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADate%22%7D%2C%7B%22header%22%3A%22Client%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AClient%22%7D%2C%7B%22header%22%3A%22Application%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AAppName%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ABillableAmt%22%7D%2C%7B%22header%22%3A%22Description%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADescription%22%7D%2C%7B%22header%22%3A%22Contact%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactName%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactEmail%22%7D%2C%7B%22header%22%3A%22Address%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactAddress%22%7D%2C%7B%22header%22%3A%22City%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactCity%22%7D%2C%7B%22header%22%3A%22State%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactST%22%7D%2C%7B%22header%22%3A%22Zip%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactZip%22%7D%2C%7B%22header%22%3A%22Online%20Payment%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AOnlinePaymentAmt%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Processed%22%7D%2C%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Completed%22%7D%2C%7B%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22Canceled_Reversal%22%7D%5D%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "PaidBills",
+      "content": "<p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Start&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Main Menu&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Main Menu</span></u></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"CreateInvoice\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22CreateInvoice%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Invoice%20%23%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AInvoiceNumber%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%7D%2C%7B%22header%22%3A%22Date%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADate%22%7D%2C%7B%22header%22%3A%22Client%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AClient%22%7D%2C%7B%22header%22%3A%22Application%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AAppName%22%7D%2C%7B%22header%22%3A%22Amount%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ABillableAmt%22%7D%2C%7B%22header%22%3A%22Description%22%2C%22field%22%3A%22Record%3ACreateInvoice%3ADescription%22%7D%2C%7B%22header%22%3A%22Contact%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactName%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactEmail%22%7D%2C%7B%22header%22%3A%22Address%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactAddress%22%7D%2C%7B%22header%22%3A%22City%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactCity%22%7D%2C%7B%22header%22%3A%22State%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactST%22%7D%2C%7B%22header%22%3A%22Zip%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AContactZip%22%7D%2C%7B%22header%22%3A%22Online%20Payment%22%2C%22field%22%3A%22Record%3ACreateInvoice%3AOnlinePaymentAmt%22%7D%5D%2C%22where%22%3A%7B%22or%22%3A%5B%7B%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22Completed%22%7D%2C%7B%22or%22%3A%5B%7B%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22Canceled_Reversal%22%7D%2C%7B%22field%22%3A%22Record%3ACreateInvoice%3AStatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22Processed%22%7D%5D%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "Invoice Message",
+      "content": "<p></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:Date\" title=\"CreateInvoice:Date\" draggable=\"true\">&lt;&lt;CreateInvoice:Date&gt;&gt;</span></span></p><p></p><p><span>Dear Client,</span></p><p></p><p><span>Your Tawala Sports Services Invoice </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:InvoiceNumber\" title=\"CreateInvoice:InvoiceNumber\" draggable=\"true\">&lt;&lt;CreateInvoice:InvoiceNumber&gt;&gt;</span></span><span> in the amount of $</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateInvoice:BillableAmt\" title=\"CreateInvoice:BillableAmt\" draggable=\"true\">&lt;&lt;CreateInvoice:BillableAmt&gt;&gt;</span></span><span> is now due.</span></p><p></p><p><span>To view your bill and pay it online, please </span><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;PayBill&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;&lt;&lt;CreateInvoice:InvoiceNumber&gt;&gt;&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;CreateInvoice:InvoiceNumber&quot;}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;CreateInvoice:InvoiceNumber&gt;&gt;</span></u></span></p><p></p><p><span>Sincerely yours,</span></p><p></p><p><span>Tawala Sports Services</span></p><p><span>Tawala Systems, Inc.</span></p>"
+    }
+  ],
+  "images": [
+    {
+      "id": "__HEADER__8cab9fa34d14ca0",
+      "imageFormat": "PNG",
+      "data": "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"
+    }
+  ],
+  "pageHeader": {
+    "imageId": "__HEADER__8cab9fa34d14ca0",
+    "width": 581,
+    "height": 74
+  },
+  "_originalFormat": "1.10",
+  "_designerBuild": "204",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Tawala Invoicing.tawala"
+}

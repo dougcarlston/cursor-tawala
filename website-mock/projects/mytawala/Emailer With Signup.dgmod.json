@@ -1,0 +1,3227 @@
+{
+  "name": "Emailer With Signup.dgmod",
+  "format": "2.0",
+  "themePath": "mvsc",
+  "forms": [
+    {
+      "name": "EmailerStart",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Mass Emailer"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Please enter your administrator password: ______________________________",
+          "blanks": [
+            {
+              "name": "CheckPW",
+              "length": 30,
+              "alternateLabel": "CheckPW",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-EmailerStart",
+      "preProcess": "Pre-EmailerStart"
+    },
+    {
+      "name": "JoinMailingList",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Join Mailing List"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "To add your name and email address to the mailing list, fill in the information below and click Submit.",
+          "displayCondition": {
+            "field": "Action",
+            "op": "isBlank"
+          }
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Initialize Mailing List"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "<p><span>There are currently no records in the mailing list. To create the first record, fill in the information below and click Submit.</span></p><p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Click here to skip this step&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Click here to skip this step</span></u></span><span> and go to the Mass Emailer page.</span></p>",
+          "displayCondition": {
+            "field": "Action",
+            "op": "equals",
+            "value": "InitializeList"
+          }
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "<<Action>> Mailing List Record"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p>",
+          "displayCondition": {
+            "or": [
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "Add"
+              },
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "Edit"
+              }
+            ]
+          }
+        },
+        {
+          "type": "heading",
+          "label": "H4",
+          "level": "sub",
+          "content": "Update your mailing list record"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "instructional",
+          "content": "To update your name or email address, change in the information below and click Submit.",
+          "displayCondition": {
+            "field": "Action",
+            "op": "equals",
+            "value": "MemberEdit"
+          }
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span style=\"color:#C00000\"><i>__________________________________________________________________________________</i></span></p><p></p><p><span style=\"font-size:12pt;color:#C00000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p><p><span style=\"color:#C00000\"><i>__________________________________________________________________________________</i></span></p>",
+          "displayCondition": {
+            "field": "Message",
+            "op": "isNotBlank"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "freeform",
+          "prompt": "First Name:______________________________",
+          "blanks": [
+            {
+              "name": "FirstName",
+              "length": 30,
+              "alternateLabel": "FirstName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "freeform",
+          "prompt": "Last Name:______________________________",
+          "blanks": [
+            {
+              "name": "LastName",
+              "length": 30,
+              "alternateLabel": "LastName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "freeform",
+          "prompt": "Email:______________________________",
+          "blanks": [
+            {
+              "name": "Email",
+              "length": 30,
+              "alternateLabel": "Email",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "freeform",
+          "prompt": "Re-enter Email:______________________________",
+          "blanks": [
+            {
+              "name": "ConfirmEmail",
+              "length": 30,
+              "alternateLabel": "ConfirmEmail",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "JoinMailingList:ConfirmEmail",
+                "op": "doesNotEqual",
+                "value": "<<JoinMailingList:Email>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Email entries do not match",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-JoinMailingList",
+      "preProcess": "Pre-JoinMailingList"
+    },
+    {
+      "name": "CreateMessage",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Mass Emailer"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Send a personalized email to everyone in your mailing list.Your list has List records."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:40px\"><br></td><td style=\"width:341px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Manage Mailing List&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Manage Mailing List</span></u></span></p></td><td style=\"width:223px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreatePassword&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Change Your Password&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Change Your Password</span></u></span></p></td></tr><tr><td style=\"width:40px\"><br></td><td style=\"width:341px\"><p></p></td><td style=\"width:223px\"><br></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p><span style=\"font-size:12pt;color:#CA0000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>",
+          "displayCondition": {
+            "field": "Message",
+            "op": "isNotBlank"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "From (Name):_________________________________________________________",
+          "blanks": [
+            {
+              "name": "FromName",
+              "length": 57,
+              "alternateLabel": "FromName"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "topLabels",
+          "prompt": "From (Email):_________________________________________________________",
+          "blanks": [
+            {
+              "name": "FromEmail",
+              "length": 57,
+              "alternateLabel": "FromEmail"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "topLabels",
+          "prompt": "Subject:_________________________________________________________",
+          "blanks": [
+            {
+              "name": "Subject",
+              "length": 57,
+              "alternateLabel": "Subject"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Choose salutation for emails:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Family (e.g. Dear Chamberlain family,)"
+            },
+            {
+              "label": "b",
+              "text": "No salutation"
+            }
+          ],
+          "name": "Salutation"
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "topLabels",
+          "prompt": "Enter the body of your message, including your closing: _________________________________________________________",
+          "blanks": [
+            {
+              "name": "Body",
+              "length": 57,
+              "alternateLabel": "Body",
+              "height": 40
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "instructional",
+          "content": "You may optionally upload up to three files to be included with your email. These files will not actually be attached to the email, but links to them will appear at the bottom of the email message. When your recipients click on the links they will be able to view the files.\nUse the \"Browse...\" buttons below to select a file or files on your computer. When you click the Submit button the file(s) will be uploaded to the server so they will be accessible by your recipients.\nNote: The combined size of the files may not exceed 4 MB."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:FromName",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Error: You must specify the person from whom this communication comes.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:FromEmail",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Error: You must specify a return email address.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:Subject",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Error: You must specify a subject.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "DearSir",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:Salutation",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "DearSir",
+                  "value": "Dear Chamberlain Family,",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T6",
+          "style": "normal",
+          "content": "<p><span><i>Here is what your email will look like:</i></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:60px\"><p><span><b>To:  </b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:491px\"><p><span><b>{</b></span><span><b>Email List</b></span><span><b>}</b></span></p></td></tr><tr><td style=\"width:60px\"><p><span><b>From:</b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:491px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateMessage:FromName\" title=\"CreateMessage:FromName\" draggable=\"true\">&lt;&lt;CreateMessage:FromName&gt;&gt;</span></span><span> (</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateMessage:FromEmail\" title=\"CreateMessage:FromEmail\" draggable=\"true\">&lt;&lt;CreateMessage:FromEmail&gt;&gt;</span></span><span>)</span></p></td></tr><tr><td style=\"width:60px\"><p><span><b>Subject: </b></span></p></td><td style=\"width:40px\"><br></td><td style=\"width:491px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateMessage:Subject\" title=\"CreateMessage:Subject\" draggable=\"true\">&lt;&lt;CreateMessage:Subject&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:60px\"><p></p></td><td style=\"width:40px\"><br></td><td style=\"width:491px\"><br></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T7",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:561px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DearSir\" title=\"DearSir\" draggable=\"true\">&lt;&lt;DearSir&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:561px\"><p></p></td></tr><tr><td style=\"width:561px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"CreateMessage:Body\" title=\"CreateMessage:Body\" draggable=\"true\">&lt;&lt;CreateMessage:Body&gt;&gt;</span></span></p></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T8",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:561px\"><p></p></td></tr><tr><td style=\"width:561px\"><p><span style=\"color:#0000FF\"><i><u>Links to included file(s) will appear here</u></i></span></p></td></tr></table>",
+          "displayCondition": {
+            "or": [
+              {
+                "field": "CreateMessage:F1",
+                "op": "isNotBlank"
+              },
+              {
+                "or": [
+                  {
+                    "field": "CreateMessage:F2",
+                    "op": "isNotBlank"
+                  },
+                  {
+                    "field": "CreateMessage:F3",
+                    "op": "isNotBlank"
+                  }
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "type": "text",
+          "label": "T9",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:561px\"><p></p></td></tr><tr><td style=\"width:561px\"><p><span style=\"font-size:8pt\">This email was sent to &lt;</span><span style=\"font-size:8pt\"><i>user's email</i></span><span style=\"font-size:8pt\">&gt;.</span></p><p><span style=\"font-size:8pt\">You can </span><span style=\"font-size:8pt;color:#0000FF\"><u>unsubscribe</u></span><span style=\"font-size:8pt\"> from this email list.</span></p><p><span style=\"font-size:8pt\">You can </span><span style=\"font-size:8pt;color:#0000FF\"><u>change</u></span><span style=\"font-size:8pt\"> your email address.</span></p><p><span style=\"font-size:8pt\">You can </span><span style=\"font-size:8pt;color:#0000FF\"><u>add</u></span><span style=\"font-size:8pt\"> another email address to this list.</span></p></td></tr><tr><td style=\"width:561px\"><p></p></td></tr></table>"
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Select:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Proceed to send emails"
+            },
+            {
+              "label": "b",
+              "text": "Edit the email"
+            },
+            {
+              "label": "c",
+              "text": "Send out only a test email to myself"
+            },
+            {
+              "label": "d",
+              "text": "Cancel for now but save the email"
+            }
+          ],
+          "name": "SendEditOrCancel"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:SendEditOrCancel",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "CreateMessage:SendEditOrCancel",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:SendEditOrCancel",
+                "op": "mcEquals",
+                "value": "c"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "H3"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:SendEditOrCancel",
+                "op": "mcDoesNotEqual",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "CreateMessage:SendEditOrCancel",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Send Email Now"
+        },
+        {
+          "type": "text",
+          "label": "T10",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T11",
+          "style": "instructional",
+          "content": "Click Submit to begin sending this email to the List people on your list.\nNote: It might take several minutes to send all the emails.\nDo not click Submit a second time! Wait for the Start page to reappear."
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "main",
+          "content": "Send Test Message to myself"
+        },
+        {
+          "type": "text",
+          "label": "T12",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T13",
+          "style": "instructional",
+          "content": "Click Submit to send this message to yourself. \nPlease check your mail for your copy of this message after you press Submit.  If it looks OK, press Submit one more time and send out to your entire list.  \nYou will be able to edit the message before it out goes out to the entire list."
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CreateMessage",
+      "dataEntryOnly": true
+    },
+    {
+      "name": "List",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "FirstName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "LastName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Email"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Status"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-List",
+      "preProcess": "Pre-List"
+    },
+    {
+      "name": "ManageList",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ManageList"
+    },
+    {
+      "name": "AddRecord",
+      "startPoint": false,
+      "items": [],
+      "themePath": "mvsc",
+      "preProcess": "Pre-AddRecord"
+    },
+    {
+      "name": "EditRecordSetup",
+      "startPoint": false,
+      "items": [],
+      "themePath": "mvsc",
+      "preProcess": "Pre-EditRecordSetup"
+    },
+    {
+      "name": "DeleteRecordSetup",
+      "startPoint": false,
+      "items": [],
+      "themePath": "mvsc",
+      "preProcess": "Pre-DeleteRecordSetup"
+    },
+    {
+      "name": "EditOrDeleteRecords",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "<<Action>> Mailing List Records"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p>"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "To search for a record:\nEnter all or part of alast name OR first name OR email address in the box below.(Multiple word searches not supported.)\nLeave the box blank to see all mailing list records."
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p><span style=\"font-size:12pt;color:#CA0000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>",
+          "displayCondition": {
+            "field": "Message",
+            "op": "isNotBlank"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "freeform",
+          "prompt": "Search for: ______________________________",
+          "blanks": [
+            {
+              "name": "SearchString",
+              "length": 30,
+              "alternateLabel": "SearchString"
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "EditOrDeleteRecords:SearchString",
+                "op": "contains",
+                "value": " "
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Please enter only a single word, or part of a word to search on. Multiple word searches are not supported.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Action",
+                "op": "equals",
+                "value": "Delete"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "-- edit record(s)"
+                },
+                {
+                  "cmd": "skip",
+                  "to": "DeleteHeading"
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "-- edit record: falls through"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H2",
+          "level": "sub",
+          "content": "Edit Mailing List Record"
+        },
+        {
+          "type": "text",
+          "label": "T4",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:244px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;EditOrDeleteRecords&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Revise Search Criteria&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Revise Search Criteria</span></u></span></p></td><td style=\"width:476px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p></td></tr><tr><td style=\"width:244px\"><br></td><td style=\"width:476px\"><br></td></tr></table>"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Select the record to edit:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "List",
+              "displayExpr": "<<Record:List:LastName>>, <<Record:List:FirstName>>  (<<Record:List:Email>>)",
+              "valueExpr": "<<Record:List:Email>>",
+              "sortExpr": "<<Record:List:LastName>>#<<Record:List:FirstName>>",
+              "where": {
+                "or": [
+                  {
+                    "field": "Record:List:FirstName",
+                    "op": "contains",
+                    "value": "<<EditOrDeleteRecords:SearchString>>"
+                  },
+                  {
+                    "or": [
+                      {
+                        "field": "Record:List:LastName",
+                        "op": "contains",
+                        "value": "<<EditOrDeleteRecords:SearchString>>"
+                      },
+                      {
+                        "field": "Record:List:Email",
+                        "op": "contains",
+                        "value": "<<EditOrDeleteRecords:SearchString>>"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "name": "RecordToEdit"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H3",
+          "level": "sub",
+          "content": "Delete Mailing List Records"
+        },
+        {
+          "type": "text",
+          "label": "T5",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:244px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;EditOrDeleteRecords&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Revise Search Criteria&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Revise Search Criteria</span></u></span></p></td><td style=\"width:476px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p></td></tr><tr><td style=\"width:244px\"><br></td><td style=\"width:476px\"><br></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T6",
+          "style": "instructional",
+          "content": "Note: All records with email addresses that match your selection(s) will be deleted.\nYou will get a chance to review your choice prior to deletion."
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "stored",
+          "question": "Select the record(s) to delete:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "List",
+              "displayExpr": "<<Record:List:LastName>>, <<Record:List:FirstName>>  (<<Record:List:Email>>)",
+              "valueExpr": "<<Record:List:Email>>",
+              "sortExpr": "<<Record:List:LastName>>#<<Record:List:FirstName>>",
+              "where": {
+                "or": [
+                  {
+                    "field": "Record:List:FirstName",
+                    "op": "contains",
+                    "value": "<<EditOrDeleteRecords:SearchString>>"
+                  },
+                  {
+                    "or": [
+                      {
+                        "field": "Record:List:LastName",
+                        "op": "contains",
+                        "value": "<<EditOrDeleteRecords:SearchString>>"
+                      },
+                      {
+                        "field": "Record:List:Email",
+                        "op": "contains",
+                        "value": "<<EditOrDeleteRecords:SearchString>>"
+                      }
+                    ]
+                  }
+                ]
+              }
+            }
+          ],
+          "name": "RecordsToDelete"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "EditOrDeleteRecords:RecordsToDelete",
+                "op": "mcIsBlank"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H4",
+          "level": "sub",
+          "content": "Delete Mailing List Records"
+        },
+        {
+          "type": "text",
+          "label": "T7",
+          "style": "normal",
+          "content": "<table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:244px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;EditOrDeleteRecords&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Revise Search Criteria&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Revise Search Criteria</span></u></span></p></td><td style=\"width:476px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p></td></tr><tr><td style=\"width:244px\"><br></td><td style=\"width:476px\"><br></td></tr></table>"
+        },
+        {
+          "type": "text",
+          "label": "T8",
+          "style": "instructional",
+          "content": "Note: All records with matching email addresses are listed for deletion."
+        },
+        {
+          "type": "text",
+          "label": "T9",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "text",
+                      "text": "The following record(s) will be deleted:"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "List",
+                      "columns": [
+                        {
+                          "header": "First Name",
+                          "field": "Record:List:FirstName"
+                        },
+                        {
+                          "header": "Last Name",
+                          "field": "Record:List:LastName"
+                        },
+                        {
+                          "header": "Email",
+                          "field": "Record:List:Email"
+                        }
+                      ],
+                      "where": {
+                        "field": "EditOrDeleteRecords:RecordsToDelete",
+                        "op": "mcContains",
+                        "value": "<<Record:List:Email>>"
+                      }
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes, delete the record(s)"
+            },
+            {
+              "label": "b",
+              "text": "No, I made the wrong selection and would like to select other records"
+            },
+            {
+              "label": "c",
+              "text": "No, cancel this action entirely"
+            }
+          ],
+          "name": "ConfirmDelete"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-EditOrDeleteRecords",
+      "preProcess": "SetMessageToBlank"
+    },
+    {
+      "name": "ViewOptOuts",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-ViewOptOuts"
+    },
+    {
+      "name": "CreatePassword",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "Mass Emailer Password"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Cancel&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Cancel</span></u></span></p>",
+          "displayCondition": {
+            "field": "_InviteeID",
+            "op": "equals",
+            "value": "Admin"
+          }
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "You must create an administrator password to use the Mass Emailer for sending messages."
+        },
+        {
+          "type": "text",
+          "label": "T3",
+          "style": "normal",
+          "content": "<p><span style=\"font-size:12pt;color:#C00000\"><i>__________________________________________________________________________________</i></span></p><p></p><p><span style=\"font-size:12pt;color:#C00000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></b></span></p><p><span style=\"font-size:12pt;color:#C00000\"><i>__________________________________________________________________________________</i></span></p>",
+          "displayCondition": {
+            "field": "Message",
+            "op": "isNotBlank"
+          }
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "rightAlignLabels",
+          "prompt": "Password: ______________________________",
+          "blanks": [
+            {
+              "name": "PW",
+              "length": 30,
+              "alternateLabel": "PW",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "rightAlignLabels",
+          "prompt": "Enter again: ______________________________",
+          "blanks": [
+            {
+              "name": "CheckPW",
+              "length": 30,
+              "alternateLabel": "CheckPW",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreatePassword:CheckPW",
+                "op": "doesNotEqual",
+                "value": "<<CreatePassword:PW>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Password entries do not match",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "skip",
+                  "to": "H1"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CreatePassword",
+      "preProcess": "Pre-CreatePassword"
+    },
+    {
+      "name": "OptOut",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-OptOut"
+    },
+    {
+      "name": "OptOutList",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "FirstName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "LastName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Email"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Status"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-OptOutList"
+    },
+    {
+      "name": "MemberEditRecord",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Email"
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-MemberEditRecord"
+    },
+    {
+      "name": "CheckForEmptyList",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "mvsc",
+      "process": "Post-CheckForEmptyList"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Pre-EmailerStart",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Password",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "PasswordList",
+          "sourceForms": [
+            "CreatePassword"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Record",
+          "recordList": "PasswordList",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Password",
+              "value": "<<Record:CreatePassword:PW>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Password",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "CreatePassword"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-EmailerStart",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "EmailerStart:CheckPW",
+            "op": "doesNotEqual",
+            "value": "<<Password>>"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "EmailerStart"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "CheckForEmptyList"
+        }
+      ]
+    },
+    {
+      "name": "Pre-JoinMailingList",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "Edit"
+              },
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "MemberEdit"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "JoinMailingList:FirstName",
+              "value": "<<FirstName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "JoinMailingList:LastName",
+              "value": "<<LastName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "JoinMailingList:Email",
+              "value": "<<Email>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "JoinMailingList:ConfirmEmail",
+              "value": "<<Email>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-JoinMailingList",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "Edit"
+              },
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "MemberEdit"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "-- admin or end user editing an existing record"
+            },
+            {
+              "cmd": "comment",
+              "text": "-- update the record"
+            },
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "EditList",
+              "sourceForms": [
+                "List"
+              ],
+              "where": {
+                "field": "EditList:List:Email",
+                "op": "equals",
+                "value": "<<Email>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "EditRecord",
+              "recordList": "EditList",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "equals",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "EditRecord:List:FirstName",
+                      "value": "<<JoinMailingList:FirstName>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "EditRecord:List:LastName",
+                      "value": "<<JoinMailingList:LastName>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "EditRecord:List:Email",
+                      "value": "<<JoinMailingList:Email>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "Action",
+                        "op": "equals",
+                        "value": "Edit"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "EditRecord:List:Status",
+                          "value": "Edited by admin",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ],
+                      "else": [
+                        {
+                          "cmd": "set",
+                          "field": "EditRecord:List:Status",
+                          "value": "Edited by user",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "comment",
+                      "text": "-- if multiple records exist, we only need one copy so mark the others for deletion"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "EditRecord:List:Status",
+                      "value": "xxxDELETExxx",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "-- delete any duplicates"
+            },
+            {
+              "cmd": "delete",
+              "form": "List",
+              "from": "List",
+              "where": {
+                "field": "Record:List:Status",
+                "op": "equals",
+                "value": "xxxDELETExxx"
+              }
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Action",
+                "op": "equals",
+                "value": "Edit"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "-- admin; return to management page"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Record has been edited",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ThankYou",
+                  "reset": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "ManageList"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "-- user; all done"
+                },
+                {
+                  "cmd": "set",
+                  "field": "ThankYouMessage",
+                  "value": "Thank you. Your mailing list information has been updated.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ThankYou",
+                  "reset": false
+                }
+              ]
+            }
+          ],
+          "else": [
+            {
+              "cmd": "comment",
+              "text": "-- otherwise we are adding a new record to the the List"
+            },
+            {
+              "cmd": "set",
+              "field": "FirstName",
+              "value": "<<JoinMailingList:FirstName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "LastName",
+              "value": "<<JoinMailingList:LastName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Email",
+              "value": "<<JoinMailingList:Email>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "List"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-CreateMessage",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Action",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        }
+      ]
+    },
+    {
+      "name": "Post-CreateMessage",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "CreateMessage:SendEditOrCancel",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              {
+                "field": "CreateMessage:SendEditOrCancel",
+                "op": "mcEquals",
+                "value": "c"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:FromEmail",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "-- The From field is required, so if it's blank when you get here, you've probably timed out"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "ERROR: Your session has timed out. You need to send your email within 45 minutes after previewing it.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "CreateMessage"
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "Initiate email"
+            },
+            {
+              "cmd": "set",
+              "field": "MessageBody",
+              "value": "<<CreateMessage:Body>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "AttachedFile",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "CreateMessage:SendEditOrCancel",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "get",
+                  "recordList": "Record List 2",
+                  "sourceForms": [
+                    "List"
+                  ]
+                },
+                {
+                  "cmd": "foreach",
+                  "recordName": "Recipient",
+                  "recordList": "Record List 2",
+                  "do": [
+                    {
+                      "cmd": "set",
+                      "field": "DearSir",
+                      "value": " ",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "and": [
+                          {
+                            "field": "CreateMessage:Salutation",
+                            "op": "mcEquals",
+                            "value": "a"
+                          },
+                          {
+                            "field": "Recipient:List:LastName",
+                            "op": "isNotBlank"
+                          }
+                        ]
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "DearSir",
+                          "value": "Dear <<Recipient:List:LastName>> family,",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "-- Email variable is for the opt out and edit links in the footer"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Email",
+                      "value": "<<Recipient:List:Email>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "-- DisplayEmail is for the \"sent to\" email address in the footer"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "DisplayEmail",
+                      "value": "<<Recipient:List:Email>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "-- append file \"attachments,\" if any"
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "CreateMessage:F1",
+                        "op": "isNotBlank"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "AttachedFile",
+                          "value": "<<CreateMessage:F1>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        },
+                        {
+                          "cmd": "append",
+                          "value": ""
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "CreateMessage:F2",
+                        "op": "isNotBlank"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "AttachedFile",
+                          "value": "<<CreateMessage:F2>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        },
+                        {
+                          "cmd": "append",
+                          "value": ""
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "CreateMessage:F3",
+                        "op": "isNotBlank"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "AttachedFile",
+                          "value": "<<CreateMessage:F3>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        },
+                        {
+                          "cmd": "append",
+                          "value": ""
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "-- append opt-out and edit links"
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    },
+                    {
+                      "cmd": "send",
+                      "to": {
+                        "fieldRef": "Recipient:List:Email"
+                      },
+                      "from": {
+                        "fieldRef": "CreateMessage:FromEmail",
+                        "aliasField": "CreateMessage:FromName"
+                      },
+                      "subject": "<<CreateMessage:Subject>>",
+                      "body": {
+                        "document": "Email",
+                        "reset": true,
+                        "showHeader": true
+                      }
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Count",
+                      "value": "<<Count>> + 1",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Your message has been sent to <<Count>> recipients.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "comment",
+                  "text": "-- copy of message for the sender"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Email",
+                  "value": "noreply@tawala.com",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "DisplayEmail",
+                  "value": "<<CreateMessage:FromEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:F1",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "AttachedFile",
+                      "value": "<<CreateMessage:F1>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:F2",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "AttachedFile",
+                      "value": "<<CreateMessage:F2>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:F3",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "AttachedFile",
+                      "value": "<<CreateMessage:F3>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "cmd": "append",
+                  "value": ""
+                },
+                {
+                  "cmd": "send",
+                  "to": {
+                    "fieldRef": "CreateMessage:FromEmail"
+                  },
+                  "from": {
+                    "fieldRef": "CreateMessage:FromEmail",
+                    "aliasLiteral": "SportsDashboards Mass Emailer"
+                  },
+                  "subject": "A copy of the following email has been sent out to the <<Count>> email recipients in your list",
+                  "body": {
+                    "document": "Email",
+                    "reset": true,
+                    "showHeader": true
+                  }
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:Salutation",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "DearSir",
+                      "value": "Dear {Last Name} family,",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "DearSir",
+                      "value": " ",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "Email",
+                  "value": "<<CreateMessage:FromEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "DisplayEmail",
+                  "value": "<<CreateMessage:FromEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:F1",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "AttachedFile",
+                      "value": "<<CreateMessage:F1>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:F2",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "AttachedFile",
+                      "value": "<<CreateMessage:F2>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CreateMessage:F3",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "AttachedFile",
+                      "value": "<<CreateMessage:F3>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "append",
+                      "value": ""
+                    }
+                  ]
+                },
+                {
+                  "cmd": "append",
+                  "value": ""
+                },
+                {
+                  "cmd": "send",
+                  "to": {
+                    "fieldRef": "CreateMessage:FromEmail"
+                  },
+                  "from": {
+                    "fieldRef": "CreateMessage:FromEmail",
+                    "aliasLiteral": "SportsDashboards Mass Emailer"
+                  },
+                  "subject": "A copy of the following email has been sent out to the <<Count>> email recipients in your list",
+                  "body": {
+                    "document": "Email",
+                    "reset": true,
+                    "showHeader": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "CreateMessage"
+        }
+      ]
+    },
+    {
+      "name": "Pre-List",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "-- these are set in Post-JoinMailingList"
+        },
+        {
+          "cmd": "comment",
+          "text": "-- currently that's the only entry point to this form"
+        },
+        {
+          "cmd": "set",
+          "field": "List:FirstName",
+          "value": "<<FirstName>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "List:LastName",
+          "value": "<<LastName>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "List:Email",
+          "value": "<<Email>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "List:Status",
+          "value": "Web signup",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "Add"
+              },
+              {
+                "field": "Action",
+                "op": "equals",
+                "value": "InitializeList"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "List:Status",
+              "value": "Added by admin",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-List",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Action",
+            "op": "equals",
+            "value": "InitializeList"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Action",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "CreateMessage"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Action",
+            "op": "equals",
+            "value": "Add"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Action",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Record has been added",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Message",
+              "reset": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "ManageList"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "ThankYouMessage",
+          "value": "Thank you. You have been added to our mailing list.",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYou",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-ManageList",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Action",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "FirstName",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "LastName",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Email",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Source",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ManageList",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Pre-AddRecord",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Action",
+          "value": "Add",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "JoinMailingList"
+        }
+      ]
+    },
+    {
+      "name": "Pre-EditRecordSetup",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Action",
+          "value": "Edit",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "EditOrDeleteRecords"
+        }
+      ]
+    },
+    {
+      "name": "Pre-DeleteRecordSetup",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Action",
+          "value": "Delete",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "EditOrDeleteRecords"
+        }
+      ]
+    },
+    {
+      "name": "Post-EditOrDeleteRecords",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Action",
+            "op": "equals",
+            "value": "Edit"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "EditList",
+              "sourceForms": [
+                "List"
+              ],
+              "where": {
+                "field": "EditList:List:Email",
+                "op": "equals",
+                "value": "<<EditOrDeleteRecords:RecordToEdit>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "EditRecord",
+              "recordList": "EditList",
+              "do": [
+                {
+                  "cmd": "comment",
+                  "text": "-- match found"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "FirstName",
+                  "value": "<<EditRecord:List:FirstName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "LastName",
+                  "value": "<<EditRecord:List:LastName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Email",
+                  "value": "<<EditRecord:List:Email>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Count",
+                "op": "isGreaterThan",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "isGreaterThan",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "NOTE: <<Count>> records with the email address <<EditOrDeleteRecords:RecordToEdit>> were found!",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "Message",
+                      "reset": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "When you submit this update, the duplicates will be deleted.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "Message",
+                      "reset": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": " ",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "show",
+                  "form": "JoinMailingList"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": "Record with email address <<EditOrDeleteRecords:RecordToEdit>> not found!",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Message",
+              "reset": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Action",
+            "op": "equals",
+            "value": "Delete"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "EditOrDeleteRecords:ConfirmDelete",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "-- select other records"
+                },
+                {
+                  "cmd": "show",
+                  "form": "EditOrDeleteRecords"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "EditOrDeleteRecords:ConfirmDelete",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  {
+                    "field": "EditOrDeleteRecords:RecordsToDelete",
+                    "op": "mcIsNotBlank"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "record stored to be added to opt out list"
+                },
+                {
+                  "cmd": "get",
+                  "recordList": "Record List 3",
+                  "sourceForms": [
+                    "List"
+                  ],
+                  "where": {
+                    "field": "EditOrDeleteRecords:RecordsToDelete",
+                    "op": "mcContains",
+                    "value": "<<Record List 3:List:Email>>"
+                  }
+                },
+                {
+                  "cmd": "foreach",
+                  "recordName": "Record to lose",
+                  "recordList": "Record List 3",
+                  "do": [
+                    {
+                      "cmd": "set",
+                      "field": "Email",
+                      "value": "<<Record to lose:List:Email>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "FirstName",
+                      "value": "<<Record to lose:List:FirstName>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "LastName",
+                      "value": "<<Record to lose:List:LastName>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Source",
+                      "value": "Manually deleted",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "comment",
+                  "text": "-- records selected and deletion confirmed"
+                },
+                {
+                  "cmd": "delete",
+                  "form": "List",
+                  "from": "List",
+                  "where": {
+                    "field": "EditOrDeleteRecords:RecordsToDelete",
+                    "op": "mcContains",
+                    "value": "<<Record:List:Email>>"
+                  }
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "Record(s) have been deleted",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "comment",
+                  "text": "Set From and go to OptOut"
+                },
+                {
+                  "cmd": "set",
+                  "field": "From",
+                  "value": "RecordDelete",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "OptOutList"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "-- no records selected or deletion cancelled"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Message",
+                  "value": "No records have been deleted",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Message",
+              "reset": false
+            },
+            {
+              "cmd": "set",
+              "field": "Message",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "ManageList"
+        }
+      ]
+    },
+    {
+      "name": "Post-ViewOptOuts",
+      "commands": [
+        {
+          "cmd": "showDocument",
+          "document": "ViewOptOuts",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Pre-CreatePassword",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "_InviteeID",
+            "op": "equals",
+            "value": "Admin"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "PasswordList",
+              "sourceForms": [
+                "CreatePassword"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Record",
+              "recordList": "PasswordList",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "CreatePassword:PW",
+                  "value": "<<Record:CreatePassword:PW>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CreatePassword:CheckPW",
+                  "value": "<<Record:CreatePassword:PW>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-CreatePassword",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "CheckForEmptyList"
+        }
+      ]
+    },
+    {
+      "name": "Post-OptOut",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "_InviteeID",
+            "op": "equals",
+            "value": "noreply@tawala.com"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "-- this is Admin clicking Opt-out link in copy sent to self"
+            },
+            {
+              "cmd": "set",
+              "field": "ThankYouMessage",
+              "value": "You got here from the Administrator's copy of the message. No records have been removed.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "comment",
+              "text": "-- list member has clicked Opt-out link"
+            },
+            {
+              "cmd": "set",
+              "field": "Email",
+              "value": "no match",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "ActiveList",
+              "sourceForms": [
+                "List"
+              ],
+              "where": {
+                "field": "ActiveList:List:Email",
+                "op": "equals",
+                "value": "<<_InviteeID>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "ActiveRecord",
+              "recordList": "ActiveList",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "FirstName",
+                  "value": "<<ActiveRecord:List:FirstName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "LastName",
+                  "value": "<<ActiveRecord:List:LastName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Email",
+                  "value": "<<ActiveRecord:List:Email>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Source",
+                  "value": "<<ActiveRecord:List:Status>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Email",
+                "op": "doesNotEqual",
+                "value": "no match"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "-- matching record(s) found; delete it"
+                },
+                {
+                  "cmd": "delete",
+                  "form": "List",
+                  "from": "List",
+                  "where": {
+                    "field": "Record:List:Email",
+                    "op": "equals",
+                    "value": "<<_InviteeID>>"
+                  }
+                },
+                {
+                  "cmd": "comment",
+                  "text": "-- but we'll keep a copy of the data"
+                },
+                {
+                  "cmd": "show",
+                  "form": "OptOutList"
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "-- someone could have clicked the link for record previously deleted"
+            },
+            {
+              "cmd": "comment",
+              "text": "-- let's just confirm that they are removed"
+            },
+            {
+              "cmd": "set",
+              "field": "ThankYouMessage",
+              "value": "Thank you. Your email address has been removed from our mailing list.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYou",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-OptOutList",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "OptOutList:FirstName",
+          "value": "<<FirstName>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "OptOutList:LastName",
+          "value": "<<LastName>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "OptOutList:Email",
+          "value": "<<Email>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "OptOutList:Status",
+          "value": "<<Source>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "From",
+            "op": "equals",
+            "value": "RecordDelete"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "From",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "CreateMessage"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "ThankYouMessage",
+              "value": "Thank you. Your email address has been removed from our mailing list.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ThankYou",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-MemberEditRecord",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "_InviteeID",
+            "op": "equals",
+            "value": "noreply@tawala.com"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "-- this is Admin clicking Edit link in copy sent to self"
+            },
+            {
+              "cmd": "set",
+              "field": "ThankYouMessage",
+              "value": "You got here from the Administrator's copy of the message. There is no record to edit.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "comment",
+              "text": "-- for tracking purposes"
+            },
+            {
+              "cmd": "set",
+              "field": "MemberEditRecord:Email",
+              "value": "<<_InviteeID>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "EditList",
+              "sourceForms": [
+                "List"
+              ],
+              "where": {
+                "field": "EditList:List:Email",
+                "op": "equals",
+                "value": "<<_InviteeID>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "EditRecord",
+              "recordList": "EditList",
+              "do": [
+                {
+                  "cmd": "comment",
+                  "text": "-- match found"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "FirstName",
+                  "value": "<<EditRecord:List:FirstName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "LastName",
+                  "value": "<<EditRecord:List:LastName>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Email",
+                  "value": "<<EditRecord:List:Email>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Count",
+                "op": "isGreaterThan",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "isGreaterThan",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "NOTE: <<Count>> records with the email address <<_InviteeID>> were found!",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "Message",
+                      "reset": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": "When you submit this update, the duplicates will be deleted.",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "Message",
+                      "reset": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Message",
+                      "value": " ",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "Action",
+                  "value": "MemberEdit",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "JoinMailingList"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "ThankYouMessage",
+              "value": "Sorry. No record was found for the email address <<_InviteeID>>.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "ThankYou",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-CheckForEmptyList",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "MailingList",
+          "sourceForms": [
+            "List"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Member",
+          "recordList": "MailingList",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "<<Count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Count",
+            "op": "equals",
+            "value": "0"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Action",
+              "value": "InitializeList",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "JoinMailingList"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "CreateMessage"
+        }
+      ]
+    },
+    {
+      "name": "SetMessageToBlank",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Message",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Email",
+      "content": "<p></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DearSir\" title=\"DearSir\" draggable=\"true\">&lt;&lt;DearSir&gt;&gt;</span></span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MessageBody\" title=\"MessageBody\" draggable=\"true\">&lt;&lt;MessageBody&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "EmailAttachment",
+      "content": "<p></p><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"hyperlink-token\" data-hyperlink-config=\"{&quot;url&quot;:&quot;&lt;&lt;AttachedFile&gt;&gt;&quot;,&quot;displayText&quot;:&quot;&quot;,&quot;openNewWindow&quot;:true,&quot;conditional&quot;:true,&quot;conditions&quot;:[{&quot;field&quot;:&quot;AttachedFile&quot;,&quot;op&quot;:&quot;isNotBlank&quot;,&quot;value&quot;:&quot;&quot;}]}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;AttachedFile&gt;&gt;</span>\n</u></span></p>"
+    },
+    {
+      "name": "EmailFooter",
+      "content": "<p></p><p></p><p><span style=\"font-size:8pt;color:#000000\">This email was sent to </span><span style=\"font-size:8pt;color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DisplayEmail\" title=\"DisplayEmail\" draggable=\"true\">&lt;&lt;DisplayEmail&gt;&gt;</span></span><span style=\"font-size:8pt;color:#000000\">.</span></p><p><span style=\"font-size:8pt;color:#000000\">You can </span><span style=\"font-size:8pt;color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;OptOut&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;unsubscribe&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;Email&quot;}\" style=\"color:#000080;text-decoration:underline\">unsubscribe</span></u></span><span style=\"font-size:8pt;color:#000000\"> from this email list.</span></p><p><span style=\"font-size:8pt;color:#000000\">You can </span><span style=\"font-size:8pt;color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;MemberEditRecord&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;change&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;Email&quot;}\" style=\"color:#000080;text-decoration:underline\">change</span></u></span><span style=\"font-size:8pt;color:#000000\">your email address.</span></p><p><span style=\"font-size:8pt;color:#000000\">You can </span><span style=\"font-size:8pt;color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;JoinMailingList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;add&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">add</span></u></span><span style=\"font-size:8pt;color:#000000\"> another email address to this list</span><span style=\"font-size:9pt;color:#000000\">.</span></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:720px\"><p></p></td></tr></table>"
+    },
+    {
+      "name": "ManageList",
+      "content": "<p><span style=\"font-size:16pt\"><b>Manage Mailing List</b></span></p><p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Mass Emailer&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Mass Emailer</span></u></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:40px\"><br></td><td style=\"width:72px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;AddRecord&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Add&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Add</span></u></span></p></td><td style=\"width:70px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;EditRecordSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Edit&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Edit</span></u></span></p></td><td style=\"width:139px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;DeleteRecordSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Delete&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Delete</span></u></span></p></td><td style=\"width:277px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ViewOptOuts&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Opt-Out List&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Opt-Out List</span></u></span></p></td></tr></table><p></p><p><span>Total Records: </span><span>List</span></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"List\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22List%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%22%2C%22field%22%3A%22Record%3AList%3AFirstName%22%7D%2C%7B%22header%22%3A%22Last%22%2C%22field%22%3A%22Record%3AList%3ALastName%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3AList%3AEmail%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3AList%3AStatus%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:40px\"><br></td><td style=\"width:72px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;AddRecord&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Add&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Add</span></u></span></p></td><td style=\"width:70px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;EditRecordSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Edit&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Edit</span></u></span></p></td><td style=\"width:139px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;DeleteRecordSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Delete&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Delete</span></u></span></p></td><td style=\"width:277px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ViewOptOuts&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Opt-Out List&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Opt-Out List</span></u></span></p></td></tr></table><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:298px\"><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Mass Emailer&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Mass Emailer</span></u></span></p></td><td style=\"width:422px\"><br></td></tr><tr><td style=\"width:298px\"><p></p></td><td style=\"width:422px\"><br></td></tr></table>"
+    },
+    {
+      "name": "ViewOptOuts",
+      "content": "<p><span style=\"font-size:16pt\"><b>Opt-Out List</b></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:40px\"><br></td><td style=\"width:255px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Back to List Management&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Back to List Management</span></u></span></p></td><td style=\"width:449px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Mass Emailer&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Mass Emailer</span></u></span></p></td></tr></table><p></p><p><span>People who have unsubscribed from the list. Total opt-outs:  </span><span>OptOutList</span></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"OptOutList\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22OptOutList%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%22%2C%22field%22%3A%22Record%3AOptOutList%3AFirstName%22%7D%2C%7B%22header%22%3A%22Last%22%2C%22field%22%3A%22Record%3AOptOutList%3ALastName%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3AOptOutList%3AEmail%22%7D%2C%7B%22header%22%3A%22Status%22%2C%22field%22%3A%22Record%3AOptOutList%3AStatus%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:40px\"><br></td><td style=\"width:255px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;ManageList&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Back to List Management&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Back to List Management</span></u></span></p></td><td style=\"width:449px\"><p><span style=\"color:#0066CC\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CreateMessage&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Mass Emailer&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Mass Emailer</span></u></span></p></td></tr><tr><td style=\"width:40px\"><br></td><td style=\"width:255px\"><p></p></td><td style=\"width:449px\"><br></td></tr></table>"
+    },
+    {
+      "name": "ThankYou",
+      "content": "<p></p><p><span style=\"font-size:14pt;color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ThankYouMessage\" title=\"ThankYouMessage\" draggable=\"true\">&lt;&lt;ThankYouMessage&gt;&gt;</span></span></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:720px\"><p></p></td></tr></table>"
+    },
+    {
+      "name": "Message",
+      "content": "<p><span style=\"font-size:14pt;color:#CA0000\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Message\" title=\"Message\" draggable=\"true\">&lt;&lt;Message&gt;&gt;</span></i></b></span></p>"
+    }
+  ],
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Emailer With Signup.dgmod.tawala"
+}

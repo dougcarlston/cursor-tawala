@@ -1,0 +1,73 @@
+{
+  "name": "DisplayLabelTest",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Form 1",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Your name: ____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 20
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Days you can attend:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Monday"
+            },
+            {
+              "label": "b",
+              "text": "Tuesday"
+            },
+            {
+              "label": "c",
+              "text": "Wednesday"
+            },
+            {
+              "label": "d",
+              "text": "Thursday"
+            },
+            {
+              "label": "e",
+              "text": "Friday"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:169px\"><p style=\"text-align:right\"><span>Your name:</span></p></td><td style=\"width:40px\"><br></td><td style=\"width:538px\"><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:Q1:a\" title=\"Form 1:Q1:a\" draggable=\"true\">&lt;&lt;Form 1:Q1:a&gt;&gt;</span></span></p></td></tr><tr><td style=\"width:169px\"><p style=\"text-align:right\"><span>You can attend on:</span></p></td><td style=\"width:40px\"><br></td><td style=\"width:538px\"><p><span>Record:Form 1:Q2</span></p></td></tr></table>"
+        }
+      ],
+      "themePath": "default"
+    }
+  ],
+  "processes": [],
+  "documents": [],
+  "_originalFormat": "1.9",
+  "_designerBuild": "200",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/DisplayLabelTest.tawala"
+}

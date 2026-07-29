@@ -1,0 +1,2782 @@
+{
+  "name": "Online Exam Builder",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "SetupVariables",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Exam Title: ________________________________________",
+          "blanks": [
+            {
+              "name": "Title",
+              "length": 40,
+              "alternateLabel": "Title",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Exam Date or Version: _________________",
+          "blanks": [
+            {
+              "name": "Date",
+              "length": 17,
+              "alternateLabel": "Date"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "",
+          "prompt": "Pre-test instructions to examinee:_________________________________________________________________",
+          "blanks": [
+            {
+              "name": "PreInstructions",
+              "length": 65,
+              "alternateLabel": "PreInstructions",
+              "height": 3
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "",
+          "prompt": "Comments or instructions to examinee upon completion of test:_________________________________________________________________",
+          "blanks": [
+            {
+              "name": "PostInstructions",
+              "length": 65,
+              "alternateLabel": "PostInstructions",
+              "height": 3
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Upon completion of test:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Give examinee score"
+            },
+            {
+              "label": "b",
+              "text": "Give examinee correct answers"
+            },
+            {
+              "label": "c",
+              "text": "Notify me by email"
+            }
+          ],
+          "name": "UponCompletionOptions"
+        },
+        {
+          "type": "fib",
+          "label": "Q6",
+          "style": "",
+          "prompt": "If you checked the email notification box above, please provide your email address:________________________________________",
+          "blanks": [
+            {
+              "name": "EmailToNotify",
+              "length": 40,
+              "alternateLabel": "EmailToNotify"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "ShowScore"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "ShowCorrectAnswers"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "NotifyByEmail"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "LastSessionId"
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-SetupVariables",
+      "preProcess": "Pre-SetupVariables"
+    },
+    {
+      "name": "Question",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Please enter exam question here:"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "______________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Question",
+              "length": 70,
+              "alternateLabel": "Question",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Question type:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Multiple choice"
+            },
+            {
+              "label": "b",
+              "text": "Fill-in-the-blank"
+            }
+          ],
+          "name": "TypeChoice"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:TypeChoice",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "MCQ choices"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "",
+          "prompt": "<<Question:Question>> Please enter correct answer:_______________________",
+          "blanks": [
+            {
+              "name": "FIBAnswer",
+              "length": 23,
+              "alternateLabel": "FIBAnswer",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add another question"
+            },
+            {
+              "label": "b",
+              "text": "Edit this question"
+            },
+            {
+              "label": "c",
+              "text": "Finish setup"
+            }
+          ],
+          "name": "Navigation choice1"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Navigation choice1",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "Beginning"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q5",
+          "style": "",
+          "prompt": "<<Question:Question>>Response Choices: (leave blank any fields you don't need)________________________________________________________________________________________________________________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Choice1",
+              "length": 28,
+              "alternateLabel": "Choice1",
+              "required": true
+            },
+            {
+              "name": "Choice2",
+              "length": 28,
+              "alternateLabel": "Choice2",
+              "required": true
+            },
+            {
+              "name": "Choice3",
+              "length": 28,
+              "alternateLabel": "Choice3"
+            },
+            {
+              "name": "Choice4",
+              "length": 28,
+              "alternateLabel": "Choice4"
+            },
+            {
+              "name": "Choice5",
+              "length": 28,
+              "alternateLabel": "Choice5"
+            },
+            {
+              "name": "Choice6",
+              "length": 28,
+              "alternateLabel": "Choice6"
+            }
+          ]
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "Please enter correct answer:"
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "<<Question:Question>>",
+          "choices": [
+            {
+              "label": "a",
+              "text": "<<Question:Choice1>>"
+            },
+            {
+              "label": "b",
+              "text": "<<Question:Choice2>>"
+            },
+            {
+              "label": "c",
+              "text": "<<Question:Choice3>>"
+            },
+            {
+              "label": "d",
+              "text": "<<Question:Choice4>>"
+            },
+            {
+              "label": "e",
+              "text": "<<Question:Choice5>>"
+            },
+            {
+              "label": "f",
+              "text": "<<Question:Choice6>>"
+            }
+          ],
+          "name": "MCQAnswer"
+        },
+        {
+          "type": "mc",
+          "label": "Q7",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Add another question"
+            },
+            {
+              "label": "b",
+              "text": "Edit this question"
+            },
+            {
+              "label": "c",
+              "text": "Finish setup"
+            }
+          ],
+          "name": "Navigation choice2"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip3",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Navigation choice2",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "Beginning"
+                }
+              ]
+            },
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "SequenceNumber"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "QuestionId"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Type"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "DisplayChoices"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Answer"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "CorrectAnswers"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "TotalAnswers"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "CorrectPercentage"
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Questions"
+    },
+    {
+      "name": "Exam",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Name: _____________________________________________________",
+          "blanks": [
+            {
+              "name": "name",
+              "length": 53,
+              "alternateLabel": "name",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "You will be asked questions one at a time.  Please review your answer carefully before continuing as you will not have a chance to change your responses later.  Do not use the back arrow on your browser to try to change a response.\nPress the Submit button below when you are ready to begin."
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "id"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "status"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "score"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "scorePercentage"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "incorrectAnswers"
+        }
+      ],
+      "themePath": "default",
+      "process": "SetupExam",
+      "preProcess": "SetupCustomizationVariables"
+    },
+    {
+      "name": "Answer",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "QType",
+                "op": "equals",
+                "value": "MCQ"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "AnswerToMCQ"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "<<QNumber>>) <<Q>> _________________________________________________________",
+          "blanks": [
+            {
+              "name": "AnswerToFIB",
+              "length": 57,
+              "alternateLabel": "AnswerToFIB",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "<<QNumber>>) <<Q>>",
+          "choices": [
+            {
+              "label": "a",
+              "text": "<<A>>"
+            },
+            {
+              "label": "b",
+              "text": "<<B>>"
+            },
+            {
+              "label": "c",
+              "text": "<<C>>"
+            },
+            {
+              "label": "d",
+              "text": "<<D>>"
+            },
+            {
+              "label": "e",
+              "text": "<<E>>"
+            },
+            {
+              "label": "f",
+              "text": "<<F>>"
+            }
+          ],
+          "name": "AnswerToMCQ"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "QuestionId"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Answer"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "SessionId"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Correct"
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Answer",
+      "preProcess": "Pre-Answer"
+    },
+    {
+      "name": "Administration",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "<<Customize_Title>> Administration"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Scores"
+            },
+            {
+              "label": "b",
+              "text": "See copy of exam"
+            },
+            {
+              "label": "c",
+              "text": "Analysis of questions"
+            },
+            {
+              "label": "d",
+              "text": "Review single examinee's responses"
+            },
+            {
+              "label": "e",
+              "text": "Revise exam"
+            },
+            {
+              "label": "f",
+              "text": "Delete all answers"
+            },
+            {
+              "label": "g",
+              "text": "Delete a question"
+            },
+            {
+              "label": "h",
+              "text": "Edit a question"
+            }
+          ],
+          "name": "MenuOption"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administration:MenuOption",
+                "op": "mcDoesNotEqual",
+                "value": "f"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Are you sure you would like to delete all answers?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
+          ],
+          "name": "Delete Confirmation"
+        },
+        {
+          "type": "skipInstructions",
+          "label": "skip2",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administration:Delete Confirmation",
+                "op": "mcDoesNotEqual",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "Beginning"
+                }
+              ]
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Administration",
+      "preProcess": "SetupCustomizationVariables"
+    },
+    {
+      "name": "CustomizationPreview",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Display Customization Preview",
+      "preProcess": "SetupCustomizationVariables"
+    },
+    {
+      "name": "Setup",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Your exam is now set up!"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "If you want to revise it:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Update the description or other text"
+            },
+            {
+              "label": "b",
+              "text": "Add a question"
+            },
+            {
+              "label": "c",
+              "text": "Delete a question"
+            },
+            {
+              "label": "d",
+              "text": "Edit a question"
+            }
+          ],
+          "name": "Navigation"
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Setup",
+      "preProcess": "Pre-Setup"
+    },
+    {
+      "name": "Scoring",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Scoring"
+    },
+    {
+      "name": "Delete Question",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Question # to delete: __________",
+          "blanks": [
+            {
+              "name": "questionNumber",
+              "length": 10,
+              "alternateLabel": "questionNumber"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Delete Question",
+      "preProcess": "Pre-Delete Question"
+    },
+    {
+      "name": "Edit Question",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Question # to edit: __________",
+          "blanks": [
+            {
+              "name": "questionNumber",
+              "length": 10,
+              "alternateLabel": "questionNumber"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-Edit Question",
+      "preProcess": "Pre-Edit Question"
+    },
+    {
+      "name": "ShowExamineeDetail",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Examinees:\nRecord:Exam:name"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "topLabels",
+          "prompt": "Enter Name: ____________________",
+          "blanks": [
+            {
+              "name": "Testee",
+              "length": 20,
+              "alternateLabel": "Testee"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Post-ShowExamineeDetail",
+      "preProcess": "SetupCustomizationVariables"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-SetupVariables",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- variables for display in Final Poll and PollPost documents"
+        },
+        {
+          "cmd": "set",
+          "field": "Customize_Title",
+          "value": "<<SetupVariables:Title>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Customize_Date",
+          "value": "<<SetupVariables:Date>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Customize_PreInstructions",
+          "value": "<<SetupVariables:PreInstructions>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Customize_PostInstructions",
+          "value": "<<SetupVariables:PostInstructions>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetupVariables:UponCompletionOptions",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:ShowScore",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:ShowScore",
+              "value": "No",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetupVariables:UponCompletionOptions",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:ShowCorrectAnswers",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:ShowCorrectAnswers",
+              "value": "No",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetupVariables:UponCompletionOptions",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:NotifyByEmail",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:NotifyByEmail",
+              "value": "No",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "FirstViewOfSetup",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- display the form that creates questions to maintain the flow."
+            },
+            {
+              "cmd": "set",
+              "field": "FirstViewOfSetup",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Question"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "Post-Questions",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Question:QuestionId",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "-- Generate new question id and sequence number. They can be different"
+            },
+            {
+              "cmd": "set",
+              "field": "QNumber",
+              "value": "1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SequenceNumber",
+              "value": "1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "comment",
+              "text": "- Replace with MAX() when functions become available in processes"
+            },
+            {
+              "cmd": "get",
+              "recordList": "AllRecords",
+              "sourceForms": [
+                "Question"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "CurrentRecord",
+              "recordList": "AllRecords",
+              "do": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CurrentRecord:Question:SequenceNumber",
+                    "op": "isGreaterThanOrEqualTo",
+                    "value": "<<SequenceNumber>>"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "SequenceNumber",
+                      "value": "<<CurrentRecord:Question:SequenceNumber>> + 1",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "CurrentRecord:Question:QuestionId",
+                    "op": "isGreaterThanOrEqualTo",
+                    "value": "<<QNumber>>"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "QNumber",
+                      "value": "<<CurrentRecord:Question:QuestionId>> + 1",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Question:QuestionId",
+              "value": "<<QNumber>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Question:SequenceNumber",
+              "value": "<<SequenceNumber>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Question:TypeChoice",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- set the question type in the stored record for this question"
+            },
+            {
+              "cmd": "set",
+              "field": "Question:Type",
+              "value": "MCQ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Question:DisplayChoices",
+              "value": "a) <<Question:Choice1>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Question:DisplayChoices",
+              "value": "<<Question:DisplayChoices>> b) <<Question:Choice2>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Choice3",
+                "op": "isNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Question:DisplayChoices",
+                  "value": "<<Question:DisplayChoices>> c) <<Question:Choice3>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Choice4",
+                "op": "isNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Question:DisplayChoices",
+                  "value": "<<Question:DisplayChoices>> d) <<Question:Choice4>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Choice5",
+                "op": "isNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Question:DisplayChoices",
+                  "value": "<<Question:DisplayChoices>> e) <<Question:Choice5>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Choice6",
+                "op": "isNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Question:DisplayChoices",
+                  "value": "<<Question:DisplayChoices>> f) <<Question:Choice6>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Question:Answer",
+              "value": "<<Question:MCQAnswer>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Navigation choice2",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "- customizer wants to add another question"
+                },
+                {
+                  "cmd": "show",
+                  "form": "Question"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Question:TypeChoice",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- set the question type in the stored record for this question"
+            },
+            {
+              "cmd": "set",
+              "field": "Question:Type",
+              "value": "FIB",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Question:Answer",
+              "value": "<<Question:FIBAnswer>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Question:Navigation choice1",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "- customizer wants to add another question"
+                },
+                {
+                  "cmd": "show",
+                  "form": "Question"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- customizer is done adding questions"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "EditQuestionMode",
+                "op": "equals",
+                "value": "yes"
+              },
+              {
+                "field": "AdministrationMode",
+                "op": "equals",
+                "value": "yes"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "Setup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SetupCustomizationVariables",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- set the display variables for Final Poll and PostPoll documents"
+        },
+        {
+          "cmd": "get",
+          "recordList": "Records",
+          "sourceForms": [
+            "SetupVariables"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Configuration",
+          "recordList": "Records",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_Title",
+              "value": "<<Configuration:SetupVariables:Title>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date",
+              "value": "<<Configuration:SetupVariables:Date>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_PreInstructions",
+              "value": "<<Configuration:SetupVariables:PreInstructions>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_PostInstructions",
+              "value": "<<Configuration:SetupVariables:PostInstructions>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ShowScore",
+              "value": "<<Configuration:SetupVariables:ShowScore>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ShowCorrectAnswers",
+              "value": "<<Configuration:SetupVariables:ShowCorrectAnswers>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "Configuration:SetupVariables:NotifyByEmail",
+                    "op": "equals",
+                    "value": "yes"
+                  },
+                  {
+                    "field": "Configuration:SetupVariables:EmailToNotify",
+                    "op": "isNotBlank"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "EmailConfirm",
+                  "value": "<<Configuration:SetupVariables:EmailToNotify>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "SetupExam",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- set up the initial question number and the total question count"
+        },
+        {
+          "cmd": "set",
+          "field": "QNumber",
+          "value": "1",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "LastQuestionId",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "IncorrectAnswers",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- until we have functions in processes we count records by hand...."
+        },
+        {
+          "cmd": "set",
+          "field": "QuestionTotal",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "AllPollRecords",
+          "sourceForms": [
+            "Question"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Record",
+          "recordList": "AllPollRecords",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "QuestionTotal",
+              "value": "<<QuestionTotal>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- generate new session id"
+        },
+        {
+          "cmd": "get",
+          "recordList": "Records",
+          "sourceForms": [
+            "SetupVariables"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "record",
+          "recordList": "Records",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "record:SetupVariables:LastSessionId",
+              "value": "<<record:SetupVariables:LastSessionId>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Exam:id",
+              "value": "<<record:SetupVariables:LastSessionId>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Exam:status",
+          "value": "in progress",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Score",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- now get the first answer"
+        },
+        {
+          "cmd": "show",
+          "form": "Answer"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Answer",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- fetch the current question to display in the PollLoop form"
+        },
+        {
+          "cmd": "get",
+          "recordList": "QuestionRecords",
+          "sourceForms": [
+            "Question"
+          ],
+          "where": {
+            "field": "QuestionRecords:Question:SequenceNumber",
+            "op": "equals",
+            "value": "<<QNumber>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Query",
+          "recordList": "QuestionRecords",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Q",
+              "value": "<<Query:Question:Question>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "QType",
+              "value": "<<Query:Question:Type>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "A",
+              "value": "<<Query:Question:Choice1>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "B",
+              "value": "<<Query:Question:Choice2>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "C",
+              "value": "<<Query:Question:Choice3>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "D",
+              "value": "<<Query:Question:Choice4>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "E",
+              "value": "<<Query:Question:Choice5>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "F",
+              "value": "<<Query:Question:Choice6>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "CorrectAnswer",
+              "value": "<<Query:Question:Answer>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "LastQuestionId",
+              "value": "<<Query:Question:QuestionId>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Answer",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- validate the session and restart the poll if expired"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Exam:id",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Session Expired Notification",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Exam"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- store the user's response"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "QType",
+            "op": "equals",
+            "value": "FIB"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Answer:Answer",
+              "value": "<<Answer:AnswerToFIB>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Answer:Answer",
+              "value": "<<Answer:AnswerToMCQ>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- Check the answer"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Answer:Answer",
+            "op": "equals",
+            "value": "<<CorrectAnswer>>"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Answer:Correct",
+              "value": "yes",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Score",
+              "value": "<<Score>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Answer:Correct",
+              "value": "no",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "IncorrectAnswers",
+                "op": "isBlank"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "IncorrectAnswers",
+                  "value": "<<LastQuestionId>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "IncorrectAnswers",
+                  "value": "<<IncorrectAnswers>>, <<LastQuestionId>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Answer:QuestionId",
+          "value": "<<LastQuestionId>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Answer:SessionId",
+          "value": "<<Exam:id>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- set up for the next question"
+        },
+        {
+          "cmd": "set",
+          "field": "QNumber",
+          "value": "<<QNumber>> + 1",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "QNumber",
+            "op": "isLessThanOrEqualTo",
+            "value": "<<QuestionTotal>>"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- and present it to the user"
+            },
+            {
+              "cmd": "show",
+              "form": "Answer"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- Calculate the statistics and \"close\" the exam"
+        },
+        {
+          "cmd": "set",
+          "field": "ScorePercentage",
+          "value": "<<Score>> * 100 / <<QuestionTotal>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "ExamRecords",
+          "sourceForms": [
+            "Exam"
+          ],
+          "where": {
+            "field": "ExamRecords:Exam:id",
+            "op": "equals",
+            "value": "<<Exam:id>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "ExamRecord",
+          "recordList": "ExamRecords",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "ExamRecord:Exam:status",
+              "value": "completed",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ExamRecord:Exam:score",
+              "value": "<<Score>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ExamRecord:Exam:incorrectAnswers",
+              "value": "<<IncorrectAnswers>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ExamRecord:Exam:scorePercentage",
+              "value": "<<ScorePercentage>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- we end up here if there are no more questions"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "EmailConfirm",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "EmailConfirm"
+              },
+              "subject": "<<Exam:name>> completed \"<<Customize_Title>>\" - <<ScorePercentage>>%",
+              "body": {
+                "document": "Email Confirmation",
+                "reset": false,
+                "showHeader": true
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "- This is an ugly trick in order to cause last record creation before some queries are run"
+        },
+        {
+          "cmd": "show",
+          "form": "Scoring"
+        }
+      ]
+    },
+    {
+      "name": "Post-Administration",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "AdministrationMode",
+          "value": "yes",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- process the Administrator's choice from the Form"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- View scores"
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Student Scores",
+              "reset": false
+            },
+            {
+              "cmd": "comment",
+              "text": "- check for incomplete tests and display them if exist"
+            },
+            {
+              "cmd": "set",
+              "field": "hasIncompleteExams",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "IncompleteExamRecords",
+              "sourceForms": [
+                "Exam"
+              ],
+              "where": {
+                "field": "IncompleteExamRecords:Exam:status",
+                "op": "equals",
+                "value": "in progress"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Record",
+              "recordList": "IncompleteExamRecords",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "hasIncompleteExams",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "hasIncompleteExams",
+                "op": "equals",
+                "value": "true"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "Incomplete Tests",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- See all questions"
+            },
+            {
+              "cmd": "showDocument",
+              "document": "QuestionPreview",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- See question statistics"
+            },
+            {
+              "cmd": "get",
+              "recordList": "QuestionRecords",
+              "sourceForms": [
+                "Question"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "QuestionRecord",
+              "recordList": "QuestionRecords",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "QuestionRecord:Question:TotalAnswers",
+                  "value": "0",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "QuestionRecord:Question:CorrectAnswers",
+                  "value": "0",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "get",
+                  "recordList": "AnswerRecords",
+                  "sourceForms": [
+                    "Answer"
+                  ],
+                  "where": {
+                    "field": "AnswerRecords:Answer:QuestionId",
+                    "op": "equals",
+                    "value": "<<QuestionRecord:Question:QuestionId>>"
+                  }
+                },
+                {
+                  "cmd": "foreach",
+                  "recordName": "AnswerRecord",
+                  "recordList": "AnswerRecords",
+                  "do": [
+                    {
+                      "cmd": "set",
+                      "field": "QuestionRecord:Question:TotalAnswers",
+                      "value": "<<QuestionRecord:Question:TotalAnswers>> + 1",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "AnswerRecord:Answer:Correct",
+                        "op": "equals",
+                        "value": "yes"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "QuestionRecord:Question:CorrectAnswers",
+                          "value": "<<QuestionRecord:Question:CorrectAnswers>> + 1",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "QuestionRecord:Question:CorrectPercentage",
+                  "value": "<<QuestionRecord:Question:CorrectAnswers>> * 100 / <<QuestionRecord:Question:TotalAnswers>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Question Analysis Report",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Show all responses of a single examinee"
+            },
+            {
+              "cmd": "show",
+              "form": "ShowExamineeDetail"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Change the setup"
+            },
+            {
+              "cmd": "show",
+              "form": "Setup"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "f"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Delete all answers"
+            },
+            {
+              "cmd": "delete",
+              "form": "Answer",
+              "from": "Answer"
+            },
+            {
+              "cmd": "delete",
+              "form": "Exam",
+              "from": "Exam"
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "g"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Delete a question"
+            },
+            {
+              "cmd": "show",
+              "form": "Delete Question"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "h"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Edit a question"
+            },
+            {
+              "cmd": "show",
+              "form": "Edit Question"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-SetupVariables",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "show previously stored record"
+        },
+        {
+          "cmd": "edit",
+          "form": "SetupVariables",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Display Customization Preview",
+      "commands": [
+        {
+          "cmd": "delete",
+          "form": "CustomizationPreview",
+          "from": "CustomizationPreview"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Exam Start",
+          "reset": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "QuestionPreview",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Setup",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Navigation",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SetupVariables"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Navigation",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Question"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Navigation",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Delete Question"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Navigation",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Edit Question"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Setup",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "QuestionRecords",
+          "sourceForms": [
+            "Question"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Record",
+          "recordList": "QuestionRecords",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "FirstViewOfSetup",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "FirstViewOfSetup",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- start with the setup of the title, descriptions, etc."
+            },
+            {
+              "cmd": "show",
+              "form": "SetupVariables"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Scoring",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ShowCorrectAnswers",
+            "op": "equals",
+            "value": "Yes"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- show them"
+            },
+            {
+              "cmd": "showDocument",
+              "document": "End of Exam With Explanation",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "ShowScore",
+                "op": "equals",
+                "value": "yes"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "End Of Exam With The Score",
+                  "reset": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "showDocument",
+                  "document": "Exam End",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "This will prevent Refresh button from affecting the statistics of the project"
+        },
+        {
+          "cmd": "set",
+          "field": "Exam:id",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Delete Question",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "--- Find out the question's sequence number"
+        },
+        {
+          "cmd": "get",
+          "recordList": "QuestionList",
+          "sourceForms": [
+            "Question"
+          ],
+          "where": {
+            "field": "QuestionList:Question:QuestionId",
+            "op": "equals",
+            "value": "<<Delete Question:questionNumber>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "CurrentRecord",
+          "recordList": "QuestionList",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "RemovedSequenceNumber",
+              "value": "<<CurrentRecord:Question:SequenceNumber>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "RemovedSequenceNumber",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "AdministrationMode",
+                "op": "equals",
+                "value": "yes"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "Administration"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "show",
+                  "form": "Setup"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "-- ... and shift the sequence numbers for the questions with higher numbers"
+        },
+        {
+          "cmd": "get",
+          "recordList": "QuestionList",
+          "sourceForms": [
+            "Question"
+          ],
+          "where": {
+            "field": "QuestionList:Question:SequenceNumber",
+            "op": "isGreaterThan",
+            "value": "<<RemovedSequenceNumber>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "CurrentRecord",
+          "recordList": "QuestionList",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "CurrentRecord:Question:SequenceNumber",
+              "value": "<<CurrentRecord:Question:SequenceNumber>> - 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "-- Purge the question and related answers"
+        },
+        {
+          "cmd": "delete",
+          "form": "Answer",
+          "from": "Answer",
+          "where": {
+            "field": "Record:Answer:QuestionId",
+            "op": "equals",
+            "value": "<<Delete Question:questionNumber>>"
+          }
+        },
+        {
+          "cmd": "delete",
+          "form": "Question",
+          "from": "Question",
+          "where": {
+            "field": "Record:Question:QuestionId",
+            "op": "equals",
+            "value": "<<Delete Question:questionNumber>>"
+          }
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "AdministrationMode",
+            "op": "equals",
+            "value": "yes"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "QuestionPreview",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "Setup"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Edit Question",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Edit Question:questionNumber",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "AdministrationMode",
+                "op": "equals",
+                "value": "yes"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "QuestionPreview",
+                  "reset": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "Administration"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "show",
+                  "form": "Setup"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "EditQuestionMode",
+          "value": "yes",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "edit",
+          "form": "Question",
+          "submit": "modify",
+          "condition": {
+            "field": "Record:Question:QuestionId",
+            "op": "equals",
+            "value": "<<Edit Question:questionNumber>>"
+          }
+        },
+        {
+          "cmd": "comment",
+          "text": "-- If we get here it means that nothing matched and we need to put an error message."
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Question Number is Incorrect",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Edit Question"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Delete Question",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "AdministrationMode",
+            "op": "equals",
+            "value": "yes"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "QuestionPreview",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-Edit Question",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "AdministrationMode",
+            "op": "equals",
+            "value": "yes"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "QuestionPreview",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-ShowExamineeDetail",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ShowExamineeDetail:Testee",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "DisplaySessionID",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "Exam Records",
+          "sourceForms": [
+            "Exam"
+          ],
+          "where": {
+            "field": "Exam Records:Exam:name",
+            "op": "equals",
+            "value": "<<ShowExamineeDetail:Testee>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "FormerTestee",
+          "recordList": "Exam Records",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "DisplaySessionID",
+              "value": "<<FormerTestee:Exam:id>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "DisplaySessionID",
+            "op": "equals",
+            "value": " "
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "NameNotFound",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "showDocument",
+              "document": "DisplayIndividualResult",
+              "reset": true
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "ShowExamineeDetail"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Exam Start",
+      "content": "<p></p><p><span style=\"font-size:14pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Title\" title=\"Customize_Title\" draggable=\"true\">&lt;&lt;Customize_Title&gt;&gt;</span></b></span></p><p><span style=\"font-size:12pt\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Date\" title=\"Customize_Date\" draggable=\"true\">&lt;&lt;Customize_Date&gt;&gt;</span></span></p><p></p><p><span style=\"font-size:12pt\"><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_PreInstructions\" title=\"Customize_PreInstructions\" draggable=\"true\">&lt;&lt;Customize_PreInstructions&gt;&gt;</span></i></b></span></p>"
+    },
+    {
+      "name": "Exam End",
+      "content": "<p><span style=\"color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_PostInstructions\" title=\"Customize_PostInstructions\" draggable=\"true\">&lt;&lt;Customize_PostInstructions&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "QuestionPreview",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:11pt\"><b>Here are all the questions you entered so far:</b></span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p>"
+    },
+    {
+      "name": "Session Expired Notification",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:12pt\"><b>Your session has expired. </b></span></p>"
+    },
+    {
+      "name": "Email Confirmation",
+      "content": "<p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Exam:name\" title=\"Exam:name\" draggable=\"true\">&lt;&lt;Exam:name&gt;&gt;</span></span><span> just completed </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Title\" title=\"Customize_Title\" draggable=\"true\">&lt;&lt;Customize_Title&gt;&gt;</span></span><span>, answering correctly </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ScorePercentage\" title=\"ScorePercentage\" draggable=\"true\">&lt;&lt;ScorePercentage&gt;&gt;</span></span><span>% of questions (</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span> out of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"QuestionTotal\" title=\"QuestionTotal\" draggable=\"true\">&lt;&lt;QuestionTotal&gt;&gt;</span></span><span>).</span></p><p></p><p><span>To view exam reports or change its setup go to </span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;this link&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">this link</span></u></span><span>.</span></p><p></p><p><span>Thank you for using Tawala!</span></p>"
+    },
+    {
+      "name": "End Of Exam With The Score",
+      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_PostInstructions\" title=\"Customize_PostInstructions\" draggable=\"true\">&lt;&lt;Customize_PostInstructions&gt;&gt;</span></span></p><p></p><p><span>You correctly answered </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ScorePercentage\" title=\"ScorePercentage\" draggable=\"true\">&lt;&lt;ScorePercentage&gt;&gt;</span></span><span>% of questions (</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span> out of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"QuestionTotal\" title=\"QuestionTotal\" draggable=\"true\">&lt;&lt;QuestionTotal&gt;&gt;</span></span><span>).</span></p>"
+    },
+    {
+      "name": "End of Exam With Explanation",
+      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_PostInstructions\" title=\"Customize_PostInstructions\" draggable=\"true\">&lt;&lt;Customize_PostInstructions&gt;&gt;</span></span></p><p></p><p><span>You correctly answered </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ScorePercentage\" title=\"ScorePercentage\" draggable=\"true\">&lt;&lt;ScorePercentage&gt;&gt;</span></span><span>% of questions (</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span> out of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"QuestionTotal\" title=\"QuestionTotal\" draggable=\"true\">&lt;&lt;QuestionTotal&gt;&gt;</span></span><span>).</span></p><p></p><p><span>Below are the details on how you answered each question:</span></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3ASequenceNumber%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Correct%20Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%2C%7B%22header%22%3A%22Your%20Answer%22%2C%22field%22%3A%22Record%3AAnswer%3AAnswer%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3AAnswer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CExam%3Aid%3E%3E%22%7D%2C%7B%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AAnswer%3AQuestionId%3E%3E%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "Student Scores",
+      "content": "<p><span>Completed Tests:</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Exam\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Exam%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AExam%3Aname%22%7D%2C%7B%22header%22%3A%22Number%20of%20Correct%20Answers%22%2C%22field%22%3A%22Record%3AExam%3Ascore%22%7D%2C%7B%22header%22%3A%22Percent%20Correct%22%2C%22field%22%3A%22Record%3AExam%3AscorePercentage%22%7D%2C%7B%22header%22%3A%22Question%20Number(s)%20Incorrectly%20Answered%22%2C%22field%22%3A%22Record%3AExam%3AincorrectAnswers%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AExam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22completed%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "Incomplete Tests",
+      "content": "<p><span>These examinees are still working on the test, or they have never finished:</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Exam\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Exam%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AExam%3Aname%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AExam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22in%20progress%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "Question Analysis Report",
+      "content": "<p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22%23%20of%20Correct%20Answers%22%2C%22field%22%3A%22Record%3AQuestion%3ACorrectAnswers%22%7D%2C%7B%22header%22%3A%22Total%20Answers%22%2C%22field%22%3A%22Record%3AQuestion%3ATotalAnswers%22%7D%2C%7B%22header%22%3A%22Percent%20Correct%22%2C%22field%22%3A%22Record%3AQuestion%3ACorrectPercentage%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "Question Number is Incorrect",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:12pt\">There is no question with #</span><span style=\"font-size:12pt\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Delete Question:questionNumber\" title=\"Delete Question:questionNumber\" draggable=\"true\">&lt;&lt;Delete Question:questionNumber&gt;&gt;</span></span><span style=\"font-size:12pt\">. Please try again.</span></p>"
+    },
+    {
+      "name": "NameNotFound",
+      "content": "<p style=\"text-align:center\"><span><b>Name not found!</b></span></p>"
+    },
+    {
+      "name": "DisplayIndividualResult",
+      "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ShowExamineeDetail:Testee\" title=\"ShowExamineeDetail:Testee\" draggable=\"true\">&lt;&lt;ShowExamineeDetail:Testee&gt;&gt;</span></b></span><span><b>'s responses:</b></span></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3ASequenceNumber%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%20(if%20applicable)%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Correct%20Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%2C%7B%22header%22%3A%22Examinee's%20Answer%22%2C%22field%22%3A%22Record%3AAnswer%3AAnswer%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3AAnswer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CDisplaySessionID%3E%3E%22%7D%2C%7B%22field%22%3A%22Record%3AAnswer%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AQuestion%3AQuestionId%3E%3E%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "176",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Online Exam Builder.tawala"
+}

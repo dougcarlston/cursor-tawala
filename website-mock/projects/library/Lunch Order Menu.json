@@ -1,0 +1,3497 @@
+{
+  "name": "Lunch Order Menu",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "Main Menu",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Sandwich Order Form"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Your name: (First)______________(Last)____________________",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 14,
+              "required": true
+            },
+            {
+              "name": "b",
+              "length": 20,
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "You may select one of the Specialty Sandwiches from the list below,\nor build your own sandwich \"from scratch.\" \nIf you order a Specialty Sandwich you may still select your choice of bread, extras and condiments later."
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Choose one:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Reuben - Corned beef with sauerkraut and Swiss cheese"
+            },
+            {
+              "label": "b",
+              "text": "Vegetarian - Bell pepper, cucumber, carrots, tomato, onion and Swiss cheese"
+            },
+            {
+              "label": "c",
+              "text": "Chicken Cordon Bleu - Grilled chicken breast with a slice of ham and Swiss cheese"
+            },
+            {
+              "label": "d",
+              "text": "Dusty Dog - Smoked chicken and apple sausage with Swiss cheese"
+            },
+            {
+              "label": "e",
+              "text": "Basil Cream Chicken - Tangy basil cream dressing with chicken breast and Monterey Jack cheese"
+            },
+            {
+              "label": "f",
+              "text": "I'd prefer to BUILD MY OWN sandwich"
+            }
+          ]
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "FirstName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "LastName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Specialty"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "SpecialtyCheese"
+        }
+      ],
+      "themePath": "default",
+      "process": "Process Main"
+    },
+    {
+      "name": "Meat Menu",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Select the meat you want on your sandwich (you may select one or more)."
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "No meat, please"
+            }
+          ],
+          "name": "No Meat"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Roast Beef"
+            },
+            {
+              "label": "b",
+              "text": "Roast Turkey"
+            },
+            {
+              "label": "c",
+              "text": "Idaho Ham"
+            },
+            {
+              "label": "d",
+              "text": "Pastrami"
+            },
+            {
+              "label": "e",
+              "text": "Turkey Pastrami"
+            },
+            {
+              "label": "f",
+              "text": "Corned Beef"
+            },
+            {
+              "label": "g",
+              "text": "Italian Dry Salami"
+            },
+            {
+              "label": "h",
+              "text": "Italian Bologna (Mortadella)"
+            },
+            {
+              "label": "i",
+              "text": "German Salami"
+            },
+            {
+              "label": "j",
+              "text": "Chicken Salad"
+            },
+            {
+              "label": "k",
+              "text": "Tuna Salad"
+            },
+            {
+              "label": "l",
+              "text": "Liverwurst"
+            }
+          ],
+          "name": "Meat Choice"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "count"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "separator"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Meat"
+        }
+      ],
+      "themePath": "default",
+      "process": "Process Meat"
+    },
+    {
+      "name": "Final Menu - Specialty",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>OK, </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>, now select your bread and add whatever else you would like to add to your </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Specialty\" title=\"Specialty\" draggable=\"true\">&lt;&lt;Specialty&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b> sandwhich.</b></span></p><p></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Bread:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Sourdough Bread"
+            },
+            {
+              "label": "b",
+              "text": "Sourdough Roll"
+            },
+            {
+              "label": "c",
+              "text": "Light Rye"
+            },
+            {
+              "label": "d",
+              "text": "Dark Rye"
+            },
+            {
+              "label": "e",
+              "text": "Wheat"
+            }
+          ],
+          "name": "Bread Choice"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Condiments:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Mayonnaise Spread"
+            },
+            {
+              "label": "b",
+              "text": "Yellow Mustard"
+            },
+            {
+              "label": "c",
+              "text": "Dijon Mustard"
+            }
+          ],
+          "name": "Condiment Choice"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Veggies:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Lettuce"
+            },
+            {
+              "label": "b",
+              "text": "Tomato"
+            },
+            {
+              "label": "c",
+              "text": "Onion"
+            }
+          ],
+          "name": "Veggie Choice"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\">Your sandwich comes with </span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SpecialtyCheese\" title=\"SpecialtyCheese\" draggable=\"true\">&lt;&lt;SpecialtyCheese&gt;&gt;</span></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"> cheese. Add others, if you like:</span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Swiss"
+            },
+            {
+              "label": "b",
+              "text": "Jack"
+            },
+            {
+              "label": "c",
+              "text": "American"
+            },
+            {
+              "label": "d",
+              "text": "Cheddar"
+            },
+            {
+              "label": "e",
+              "text": "Provolone"
+            }
+          ],
+          "name": "Cheese Choice"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Bread"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "count"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "separator"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Cheese"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Condiments"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Veggies"
+        }
+      ],
+      "themePath": "default",
+      "process": "Process Specialty"
+    },
+    {
+      "name": "Final Menu - Build Own",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>OK, </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>, now select your bread and add whatever else you would like to add to your </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Meat\" title=\"Meat\" draggable=\"true\">&lt;&lt;Meat&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b> sandwhich.</b></span></p><p></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Bread:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Sourdough Bread"
+            },
+            {
+              "label": "b",
+              "text": "Sourdough Roll"
+            },
+            {
+              "label": "c",
+              "text": "Light Rye"
+            },
+            {
+              "label": "d",
+              "text": "Dark Rye"
+            },
+            {
+              "label": "e",
+              "text": "Wheat"
+            }
+          ],
+          "name": "Bread Choice"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Cheese:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Swiss"
+            },
+            {
+              "label": "b",
+              "text": "Jack"
+            },
+            {
+              "label": "c",
+              "text": "American"
+            },
+            {
+              "label": "d",
+              "text": "Cheddar"
+            },
+            {
+              "label": "e",
+              "text": "Provolone"
+            }
+          ],
+          "name": "Cheese Choice"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Condiments:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Mayonnaise Spread"
+            },
+            {
+              "label": "b",
+              "text": "Yellow Mustard"
+            },
+            {
+              "label": "c",
+              "text": "Dijon Mustard"
+            }
+          ],
+          "name": "Condiment Choice"
+        },
+        {
+          "type": "mc",
+          "label": "Q4",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Veggies:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Lettuce"
+            },
+            {
+              "label": "b",
+              "text": "Tomato"
+            },
+            {
+              "label": "c",
+              "text": "Onion"
+            }
+          ],
+          "name": "Veggie Choice"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Bread"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "count"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "separator"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Cheese"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Condiments"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "Veggies"
+        }
+      ],
+      "themePath": "default",
+      "process": "Process Build Own"
+    },
+    {
+      "name": "Confirm",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": true,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Is the above order correct?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "process": "Process Confirm"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Process Meat",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "get meat choice (\"No meat\" overrides any other choices)"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Meat Menu:No Meat",
+            "op": "mcDoesNotEqual",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Meat Menu:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "separator",
+              "value": ", ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Meat Menu:separator",
+              "value": "<<separator>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Meat",
+                  "value": "Roast Beef",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:Meat",
+                  "value": "<<Meat>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Roast Turkey",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "comment",
+                      "text": "concatenate multiple choices, building as we process the choices"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Roast Turkey",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "c"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Idaho Ham",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Idaho Ham",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "d"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Pastrami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Pastrami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "e"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Turkey Pastrami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Turkey Pastrami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "f"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Corned Beef",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Corned Beef",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "g"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Italian Dry Salami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Italian Dry Salami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "h"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Italian Bologna",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Italian Bologna",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "i"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "German Salami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>German Salami",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "j"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Chicken Salad",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Chicken Salad",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "k"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Tuna Salad",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Tuna Salad",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "count",
+                  "value": "<<count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Meat Menu:count",
+                  "value": "<<count>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Meat Menu:Meat Choice",
+                "op": "mcContains",
+                "value": "l"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "count",
+                    "op": "equals",
+                    "value": "0"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "Liverwurst",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Meat",
+                      "value": "<<Meat>><<separator>>Liverwurst",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Meat Menu:Meat",
+                      "value": "<<Meat>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Meat",
+              "value": "No Meat",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Meat Menu:Meat",
+              "value": "<<Meat>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "show the next menu page"
+        },
+        {
+          "cmd": "show",
+          "form": "Final Menu - Build Own"
+        }
+      ]
+    },
+    {
+      "name": "Process Main",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "get customer name"
+        },
+        {
+          "cmd": "set",
+          "field": "FirstName",
+          "value": "<<Main Menu:Q1:a>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Main Menu:FirstName",
+          "value": "<<FirstName>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "LastName",
+          "value": "<<Main Menu:Q1:b>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Main Menu:LastName",
+          "value": "<<LastName>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "get main sandwich choice: one of the Specialties, or \"build your own\""
+        },
+        {
+          "cmd": "set",
+          "field": "Specialty",
+          "value": "none",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Main Menu:Specialty",
+          "value": "<<Specialty>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Main Menu:Q2",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Specialty",
+              "value": "Reuben",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:Specialty",
+              "value": "<<Specialty>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SpecialtyCheese",
+              "value": "Swiss",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:SpecialtyCheese",
+              "value": "<<SpecialtyCheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Main Menu:Q2",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Specialty",
+              "value": "Vegetarian",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:Specialty",
+              "value": "<<Specialty>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SpecialtyCheese",
+              "value": "Swiss",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:SpecialtyCheese",
+              "value": "<<SpecialtyCheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Main Menu:Q2",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Specialty",
+              "value": "Chicken Cordon Bleu",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:Specialty",
+              "value": "<<Specialty>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SpecialtyCheese",
+              "value": "Swiss",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:SpecialtyCheese",
+              "value": "<<SpecialtyCheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Main Menu:Q2",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Specialty",
+              "value": "Dusty Dog",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:Specialty",
+              "value": "<<Specialty>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SpecialtyCheese",
+              "value": "Swiss",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:SpecialtyCheese",
+              "value": "<<SpecialtyCheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Main Menu:Q2",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Specialty",
+              "value": "Basil Cream Chicken",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:Specialty",
+              "value": "<<Specialty>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "SpecialtyCheese",
+              "value": "Jack",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Main Menu:SpecialtyCheese",
+              "value": "<<SpecialtyCheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "show the next menu page, based on choice"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Specialty",
+            "op": "equals",
+            "value": "none"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Meat Menu"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Final Menu - Specialty"
+        }
+      ]
+    },
+    {
+      "name": "Process Specialty",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "get the bread choice"
+        },
+        {
+          "cmd": "set",
+          "field": "Bread",
+          "value": "Sourdough Bread",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:Bread",
+          "value": "<<Bread>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Bread Choice",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Sourdough Roll",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Bread Choice",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Light Rye",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Bread Choice",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Dark Rye",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Bread Choice",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Wheat",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "get the cheese choices"
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:count",
+          "value": "<<count>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "separator",
+          "value": ", ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:separator",
+          "value": "<<separator>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Cheese",
+          "value": "None",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:Cheese",
+          "value": "<<Cheese>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Cheese Choice",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Cheese",
+              "value": "Swiss",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Cheese",
+              "value": "<<Cheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Cheese Choice",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "Jack",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "concatenate multiple choices, building as we process the choices"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>Jack",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Cheese Choice",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "American",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>American",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Cheese Choice",
+            "op": "mcContains",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "Cheddar",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>Cheddar",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Cheese Choice",
+            "op": "mcContains",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "Provolone",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>Provolone",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "get the choices of condiments"
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:count",
+          "value": "<<count>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Condiments",
+          "value": "None",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:Condiments",
+          "value": "<<Condiments>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Condiment Choice",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Condiments",
+              "value": "Mayonnaise Spread",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Condiments",
+              "value": "<<Condiments>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Condiment Choice",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "Yellow Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "concatenate multiple choices, building as we process the choices"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "<<Condiments>><<separator>>Yellow Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Condiment Choice",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "Dijon Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "<<Condiments>><<separator>>Dijon Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "get the choices of veggies"
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:count",
+          "value": "<<count>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Veggies",
+          "value": "None",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Specialty:Veggies",
+          "value": "<<Veggies>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Veggie Choice",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Veggies",
+              "value": "Lettuce",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:Veggies",
+              "value": "<<Veggies>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Veggie Choice",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "Tomato",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "concatenate multiple choices, building as we process the choices"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "<<Veggies>><<separator>>Tomato",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Specialty:Veggie Choice",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "Onion",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "<<Veggies>><<separator>>Onion",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Specialty:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Specialty:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "display the order to the customer and get confirmation"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Recap - Specialty",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Confirm"
+        }
+      ]
+    },
+    {
+      "name": "Process Build Own",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "get the bread choice"
+        },
+        {
+          "cmd": "set",
+          "field": "Bread",
+          "value": "Sourdough Bread",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:Bread",
+          "value": "<<Bread>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Bread Choice",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Sourdough Roll",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Bread Choice",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Light Rye",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Bread Choice",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Dark Rye",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Bread Choice",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Bread",
+              "value": "Wheat",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Bread",
+              "value": "<<Bread>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "get the cheese choices"
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:count",
+          "value": "<<count>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "separator",
+          "value": ", ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:separator",
+          "value": "<<separator>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Cheese",
+          "value": "None",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:Cheese",
+          "value": "<<Cheese>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Cheese Choice",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Cheese",
+              "value": "Swiss",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Cheese",
+              "value": "<<Cheese>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Cheese Choice",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "Jack",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "concatenate multiple choices, building as we process the choices"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>Jack",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Cheese Choice",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "American",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>American",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Cheese Choice",
+            "op": "mcContains",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "Cheddar",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>Cheddar",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Cheese Choice",
+            "op": "mcContains",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "Provolone",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Cheese",
+                  "value": "<<Cheese>><<separator>>Provolone",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Cheese",
+                  "value": "<<Cheese>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "get the choices of condiments"
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:count",
+          "value": "<<count>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Condiments",
+          "value": "None",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:Condiments",
+          "value": "<<Condiments>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Condiment Choice",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Condiments",
+              "value": "Mayonnaise Spread",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Condiments",
+              "value": "<<Condiments>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Condiment Choice",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "Yellow Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "concatenate multiple choices, building as we process the choices"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "<<Condiments>><<separator>>Yellow Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Condiment Choice",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "Dijon Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Condiments",
+                  "value": "<<Condiments>><<separator>>Dijon Mustard",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Condiments",
+                  "value": "<<Condiments>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "get the choices of veggies"
+        },
+        {
+          "cmd": "set",
+          "field": "count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:count",
+          "value": "<<count>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Veggies",
+          "value": "None",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Final Menu - Build Own:Veggies",
+          "value": "<<Veggies>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Veggie Choice",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Veggies",
+              "value": "Lettuce",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:Veggies",
+              "value": "<<Veggies>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Veggie Choice",
+            "op": "mcContains",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "Tomato",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "comment",
+                  "text": "concatenate multiple choices, building as we process the choices"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "<<Veggies>><<separator>>Tomato",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Final Menu - Build Own:Veggie Choice",
+            "op": "mcContains",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "Onion",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "Veggies",
+                  "value": "<<Veggies>><<separator>>Onion",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Final Menu - Build Own:Veggies",
+                  "value": "<<Veggies>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "count",
+              "value": "<<count>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Final Menu - Build Own:count",
+              "value": "<<count>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "display the order to the customer and get confirmation"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Recap - Build Own",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Confirm"
+        }
+      ]
+    },
+    {
+      "name": "Process Confirm",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Confirm:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "customer rejected order as displayed; start over"
+            },
+            {
+              "cmd": "show",
+              "form": "Main Menu"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "display the final page"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "All Done",
+          "reset": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Specialty",
+            "op": "equals",
+            "value": "none"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "this sends the order to the email address of the deli"
+            },
+            {
+              "cmd": "send",
+              "subject": "Sandwich order for Tawala meeting",
+              "body": {
+                "document": "Email - Build Own",
+                "reset": false,
+                "showHeader": true
+              }
+            }
+          ],
+          "else": [
+            {
+              "cmd": "comment",
+              "text": "this sends the order to the email address of the deli"
+            },
+            {
+              "cmd": "send",
+              "subject": "Sandwich order for Tawala meeting",
+              "body": {
+                "document": "Email - Build Own",
+                "reset": false,
+                "showHeader": true
+              }
+            },
+            {
+              "cmd": "comment",
+              "text": "(for demo purposes, we also display the contents of the email on screen)"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Recap - Specialty",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>, you have made the following selections:</b></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Specialty Sandwich:</b></span></p></td><td style=\"width:382px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Specialty\" title=\"Specialty\" draggable=\"true\">&lt;&lt;Specialty&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b> (comes with </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SpecialtyCheese\" title=\"SpecialtyCheese\" draggable=\"true\">&lt;&lt;SpecialtyCheese&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b> cheese)</b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Bread:</b></span></p></td><td style=\"width:382px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Bread\" title=\"Bread\" draggable=\"true\">&lt;&lt;Bread&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Condiments:</b></span></p></td><td style=\"width:382px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Condiments\" title=\"Condiments\" draggable=\"true\">&lt;&lt;Condiments&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Veggies:</b></span></p></td><td style=\"width:382px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Veggies\" title=\"Veggies\" draggable=\"true\">&lt;&lt;Veggies&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Additional cheese:</b></span></p></td><td style=\"width:382px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Cheese\" title=\"Cheese\" draggable=\"true\">&lt;&lt;Cheese&gt;&gt;</span></b></span></p></td></tr></table>"
+    },
+    {
+      "name": "Recap - Build Own",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>, you have made the following selections:</b></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Meat:</b></span></p></td><td style=\"width:288px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Meat\" title=\"Meat\" draggable=\"true\">&lt;&lt;Meat&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Bread:</b></span></p></td><td style=\"width:288px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Bread\" title=\"Bread\" draggable=\"true\">&lt;&lt;Bread&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Cheese:</b></span></p></td><td style=\"width:288px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Cheese\" title=\"Cheese\" draggable=\"true\">&lt;&lt;Cheese&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Condiments:</b></span></p></td><td style=\"width:288px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Condiments\" title=\"Condiments\" draggable=\"true\">&lt;&lt;Condiments&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Veggies:</b></span></p></td><td style=\"width:288px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Veggies\" title=\"Veggies\" draggable=\"true\">&lt;&lt;Veggies&gt;&gt;</span></b></span></p></td></tr></table>"
+    },
+    {
+      "name": "Email - Specialty",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Sandwich order for </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"LastName\" title=\"LastName\" draggable=\"true\">&lt;&lt;LastName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>:</b></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Specialty Sandwich:</b></span></p></td><td style=\"width:375px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Specialty\" title=\"Specialty\" draggable=\"true\">&lt;&lt;Specialty&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b> (comes with </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SpecialtyCheese\" title=\"SpecialtyCheese\" draggable=\"true\">&lt;&lt;SpecialtyCheese&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b> cheese)</b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Bread:</b></span></p></td><td style=\"width:375px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Bread\" title=\"Bread\" draggable=\"true\">&lt;&lt;Bread&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Condiments:</b></span></p></td><td style=\"width:375px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Condiments\" title=\"Condiments\" draggable=\"true\">&lt;&lt;Condiments&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Veggies:</b></span></p></td><td style=\"width:375px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Veggies\" title=\"Veggies\" draggable=\"true\">&lt;&lt;Veggies&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:139px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Additional cheese:</b></span></p></td><td style=\"width:375px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Cheese\" title=\"Cheese\" draggable=\"true\">&lt;&lt;Cheese&gt;&gt;</span></b></span></p></td></tr></table>"
+    },
+    {
+      "name": "Email - Build Own",
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Sandwich order for </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"LastName\" title=\"LastName\" draggable=\"true\">&lt;&lt;LastName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>:</b></span></p><p></p><table class=\"user\" border=\"1\" cellpadding=\"4\" cellspacing=\"0\"><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Meat:</b></span></p></td><td style=\"width:224px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Meat\" title=\"Meat\" draggable=\"true\">&lt;&lt;Meat&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Bread:</b></span></p></td><td style=\"width:224px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Bread\" title=\"Bread\" draggable=\"true\">&lt;&lt;Bread&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Cheese:</b></span></p></td><td style=\"width:224px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Cheese\" title=\"Cheese\" draggable=\"true\">&lt;&lt;Cheese&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Condiments:</b></span></p></td><td style=\"width:224px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Condiments\" title=\"Condiments\" draggable=\"true\">&lt;&lt;Condiments&gt;&gt;</span></b></span></p></td></tr><tr><td style=\"width:106px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Veggies:</b></span></p></td><td style=\"width:224px\"><p><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Veggies\" title=\"Veggies\" draggable=\"true\">&lt;&lt;Veggies&gt;&gt;</span></b></span></p></td></tr></table>"
+    },
+    {
+      "name": "All Done",
+      "content": "<p style=\"text-align:center\"><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Thank you, </b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"FirstName\" title=\"FirstName\" draggable=\"true\">&lt;&lt;FirstName&gt;&gt;</span></b></span><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>.</b></span></p><p style=\"text-align:center\"></p><p style=\"text-align:center\"><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>Your order will be sent to the deli,</b></span></p><p style=\"text-align:center\"><span style=\"font-family:Arial;font-size:10pt;color:#004080\"><b>and I'll pick it up.</b></span></p><p style=\"text-align:center\"></p><p style=\"text-align:center\"><span style=\"font-family:Arial;font-size:14pt;color:#005BB7\"><b>Michael's Sourdough</b></span></p><p style=\"text-align:center\"><span style=\"font-family:Arial;font-size:14pt;color:#005BB7\"><b>3095 Kerner Blvd.</b></span></p><p style=\"text-align:center\"><span style=\"font-family:Arial;font-size:14pt;color:#005BB7\"><b>485-0964</b></span></p>"
+    },
+    {
+      "name": "Display Email for Demo",
+      "content": "<p></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#800040\">--------------------------------</span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#800040\">NOTE FOR DEMO USERS</span></p><p><span style=\"font-family:Arial;font-size:10pt;color:#800040\">This project will also send the following email to the deli, notifying them of the order</span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#800040\">--------------------------------</span></p>"
+    }
+  ],
+  "_originalFormat": "1.16",
+  "_designerBuild": "251",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Lunch Order Menu.tawala"
+}

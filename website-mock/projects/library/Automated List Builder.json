@@ -1,0 +1,2727 @@
+{
+  "name": "Automated List Builder",
+  "format": "2.0",
+  "themePath": "basicblue",
+  "forms": [
+    {
+      "name": "CustomizePage1",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Customize Page 1 of 3"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "Enter your information below, then press the Submit button to proceed to Customize Page 2."
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Organization Name: _____________________________________",
+          "blanks": [
+            {
+              "name": "Organization",
+              "length": 37,
+              "alternateLabel": "Organization",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Name of person initiating the list:_________________________",
+          "blanks": [
+            {
+              "name": "Signer",
+              "length": 25,
+              "alternateLabel": "Signer"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "What member information do you want visible to everyone?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Names only"
+            },
+            {
+              "label": "b",
+              "text": "Names and email addresses"
+            }
+          ],
+          "name": "EmailVisible"
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-CustomizePage1",
+      "preProcess": "Pre-CustomizePage1"
+    },
+    {
+      "name": "Questionnaire",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"instructionText\" title=\"instructionText\" draggable=\"true\">&lt;&lt;instructionText&gt;&gt;</span></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "First name:______________________________Last name:______________________________",
+          "blanks": [
+            {
+              "name": "First",
+              "length": 30,
+              "alternateLabel": "First"
+            },
+            {
+              "name": "Last",
+              "length": 30,
+              "alternateLabel": "Last"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Email address:______________________________",
+          "blanks": [
+            {
+              "name": "Email",
+              "length": 30,
+              "alternateLabel": "Email"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "<p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"submitText\" title=\"submitText\" draggable=\"true\">&lt;&lt;submitText&gt;&gt;</span></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "<<checkboxText>>"
+            }
+          ],
+          "name": "addAnother"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "duplicateRecord"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "DisplayEmail"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "OptOut"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "EmailGroupName"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "restoreModifiedEmailAddress"
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Main",
+      "preProcess": "Build List"
+    },
+    {
+      "name": "Display List",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Build List"
+    },
+    {
+      "name": "Confirm2",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span>Thank you!  </span><span><b>You have been confirmed in the list.</b></span></p><p></p><p><span>This is your name and email we have on record:</span></p><p></p><p><span><b>Name:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"InviteeFullName\" title=\"InviteeFullName\" draggable=\"true\">&lt;&lt;InviteeFullName&gt;&gt;</span></span></p><p><span><b>Email:</b></span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"confirmEmail\" title=\"confirmEmail\" draggable=\"true\">&lt;&lt;confirmEmail&gt;&gt;</span></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here if you want to change the way your name appears in the list, or to use a different email address."
+            }
+          ],
+          "name": "ChangeInfo"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here if you have names and email addresses for other people you would like to add to the list."
+            }
+          ],
+          "name": "HaveMoreNames"
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Confirm2"
+    },
+    {
+      "name": "OptOut",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-OptOut"
+    },
+    {
+      "name": "Confirm",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "preProcess": "Pre-Confirm"
+    },
+    {
+      "name": "Administration",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Administration"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "Email List Builder conforms to spam regulations by asking each potential name on the list to confirm their email address and OK their addition to the list. They can choose to opt out of the list altogether. \nThese tools below will help you manage and use your group's Email list.\nReview and Check your list.\n            Show Full List\n            Show Confirmed Names Only\n            Show Unconfirmed Names Only\n            Show Names of people who opted not to be on the list\nAdd, Edit or Delete Records\n            Add new Record & send confirmation email\n            Add new Record without sending confirmation email\n            Delete Existing Record\n            Edit Existing Record\nMinor Cleanup\n            Confirm an unconfirmed Record\n            Delete all remaining unconfirmed Records\nCommunicate with members on your list in a mass emailing\n            Send message to confirmed email addresses\n            Send message to unconfirrmed email addresses"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Show Full List"
+            },
+            {
+              "label": "b",
+              "text": "Show Confirmed Names only"
+            },
+            {
+              "label": "c",
+              "text": "Show Unconfirmed Names only"
+            },
+            {
+              "label": "d",
+              "text": "Show Opt Out Names"
+            },
+            {
+              "label": "e",
+              "text": "Add New Record & send Confirmation Email"
+            },
+            {
+              "label": "f",
+              "text": "Add New Record without Confirming Email"
+            },
+            {
+              "label": "g",
+              "text": "Delete Existing Record"
+            },
+            {
+              "label": "h",
+              "text": "Edit Record"
+            },
+            {
+              "label": "i",
+              "text": "Confirm an unconfirmed Record"
+            },
+            {
+              "label": "j",
+              "text": "Delete all remaining unconfirmed Records"
+            },
+            {
+              "label": "k",
+              "text": "Send message to confirmed email addresses"
+            },
+            {
+              "label": "l",
+              "text": "Send message to unconfirmed email addresses."
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Admin",
+      "preProcess": "Pre-Admin"
+    },
+    {
+      "name": "DeleteOne",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Enter the email address of the record you wish to delete:___________________________________________",
+          "blanks": [
+            {
+              "name": "EmailToDelete",
+              "length": 43,
+              "alternateLabel": "EmailToDelete"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-DeleteOne"
+    },
+    {
+      "name": "Edit",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Enter the email address of the record you wish to edit:___________________________________________",
+          "blanks": [
+            {
+              "name": "EmailToEdit",
+              "length": 43,
+              "alternateLabel": "EmailToEdit"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Edit"
+    },
+    {
+      "name": "ConfirmUnconfirmed",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Enter the email address of the record you wish to edit:___________________________________________",
+          "blanks": [
+            {
+              "name": "RecordToConfirm",
+              "length": 43,
+              "alternateLabel": "RecordToConfirm"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-ConfirmUnconfirmed"
+    },
+    {
+      "name": "DeleteAllUnconfirmed",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "All of the above records will be deleted. Are you sure you want to do this?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes, go ahead and delete them all"
+            },
+            {
+              "label": "b",
+              "text": "No, I've changed my mind"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-DeleteAllUnconfirmed"
+    },
+    {
+      "name": "BulkMailer",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Bulk Mailer"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "Fill in the following blanks and press the Submit button to send out a bulk mailing to all of the confirmed email addresses on your list."
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Message (include your own closing, e.g. \"Yours truly, John\"):____________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Message",
+              "length": 68,
+              "alternateLabel": "Message",
+              "height": 6
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Subject:_________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Subject",
+              "length": 65,
+              "alternateLabel": "Subject"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Address recipients by first name with autogenerated salutation."
+            },
+            {
+              "label": "b",
+              "text": "Omit salutation - it is included in message above."
+            },
+            {
+              "label": "c",
+              "text": "I've changed my mind and don't want to send out a bulk mailing now."
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-BulkMailer"
+    },
+    {
+      "name": "CustomizePage2",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Each time you or another user adds a name to the list, an email will be sent to the new prospective member.\nEnter your information below, then press the Submit button to proceed to Customize Page 3."
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Text for the email, describing what you are doing and why:______________________________________________________________________________________________________",
+          "blanks": [
+            {
+              "name": "BodyText",
+              "length": 102,
+              "alternateLabel": "BodyText",
+              "height": 3
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Email address of person signing the email:__________________",
+          "blanks": [
+            {
+              "name": "SignerEmail",
+              "length": 18,
+              "alternateLabel": "SignerEmail",
+              "required": true
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-CustomizePage2",
+      "preProcess": "Pre-CustomizePage2"
+    },
+    {
+      "name": "ConfirmChangeInfo",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Your name now appears as: <<InviteeFullName>>Enter any changes below (or leave blank to keep the existing name):_____________________ (First) ________________________ (Last)",
+          "blanks": [
+            {
+              "name": "NewFirst",
+              "length": 21,
+              "alternateLabel": "NewFirst"
+            },
+            {
+              "name": "NewLast",
+              "length": 24,
+              "alternateLabel": "NewLast"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Your email address: <<confirmEmail>> Enter any change below (or leave blank to keep the existing address):____________________________________________________(Email)",
+          "blanks": [
+            {
+              "name": "NewEmail",
+              "length": 52,
+              "alternateLabel": "NewEmail"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-ConfirmChangeInfo"
+    },
+    {
+      "name": "Setup",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "Congratulations! Your Automated Email List Builder is underway. Emails have already been sent to the addresses you entered."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "instructional",
+          "content": "You can still make any of the following changes:\n    -  change the text in the sign-up form\n    -  change the text of email invitation\n    -  change any other setup options\n    -  add more names and email addresses to the list"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here if you want to re-run the customizer to change your setup or add more names to the list"
+            }
+          ],
+          "name": "ChangeSetup"
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Setup",
+      "preProcess": "Pre-Setup"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Post-CustomizePage2",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "customizePageNo",
+          "value": "3",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "SetupReturnToPage1",
+          "reset": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Setup Step3",
+          "reset": false
+        },
+        {
+          "cmd": "comment",
+          "text": "this flag controls Document display in the Build List and Post-Main processes"
+        },
+        {
+          "cmd": "set",
+          "field": "setupMode",
+          "value": "true",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "Questionnaire"
+        }
+      ]
+    },
+    {
+      "name": "Post-Main",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "if administrator is editing an existing record (FromEdit flag is set in Post-Edit Process)"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "FromEdit",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "check for duplicate if a new email address has been entered"
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Questionnaire:Email",
+                "op": "doesNotEqual",
+                "value": "<<PreEditEmail>>"
+              },
+              "then": [
+                {
+                  "cmd": "get",
+                  "recordList": "Record List 12",
+                  "sourceForms": [
+                    "Questionnaire"
+                  ],
+                  "where": {
+                    "field": "Record List 12:Questionnaire:Email",
+                    "op": "equals",
+                    "value": "<<Questionnaire:Email>>"
+                  }
+                },
+                {
+                  "cmd": "foreach",
+                  "recordName": "TestforDupe",
+                  "recordList": "Record List 12",
+                  "do": [
+                    {
+                      "cmd": "comment",
+                      "text": "kludge: even though we found a dupe, the new email address has already been submitted"
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "because we can't modify an input field here, we clean this up in Pre-Administration"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Questionnaire:restoreModifiedEmailAddress",
+                      "value": "true",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "bail"
+                    },
+                    {
+                      "cmd": "showDocument",
+                      "document": "AlreadyExistsInList",
+                      "reset": false
+                    },
+                    {
+                      "cmd": "show",
+                      "form": "Administration"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "Questionnaire:DisplayEmail",
+              "value": "<<Questionnaire:Email>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ConfirmEdit",
+              "reset": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Questionnaire:addAnother",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "AdminAllRecords",
+                  "reset": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "Edit"
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "FromEdit",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Questionnaire:Email",
+                "op": "isNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "see if the email has previously been entered"
+                },
+                {
+                  "cmd": "comment",
+                  "text": "this flag will also serve to delete duplicate records (created here) in BuildList"
+                },
+                {
+                  "cmd": "set",
+                  "field": "Questionnaire:duplicateRecord",
+                  "value": "false",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "get",
+                  "recordList": "Record List 5",
+                  "sourceForms": [
+                    "Questionnaire"
+                  ],
+                  "where": {
+                    "field": "Record List 5:Questionnaire:Email",
+                    "op": "equals",
+                    "value": "<<Questionnaire:Email>>"
+                  }
+                },
+                {
+                  "cmd": "foreach",
+                  "recordName": "AlreadyInList",
+                  "recordList": "Record List 5",
+                  "do": [
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "AlreadyInList:Questionnaire:OptOut",
+                        "op": "doesNotEqual",
+                        "value": "Yes"
+                      },
+                      "then": [
+                        {
+                          "cmd": "set",
+                          "field": "Questionnaire:duplicateRecord",
+                          "value": "true:published",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ],
+                      "else": [
+                        {
+                          "cmd": "set",
+                          "field": "Questionnaire:duplicateRecord",
+                          "value": "true:declined",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Questionnaire:duplicateRecord",
+                    "op": "doesNotEqual",
+                    "value": "false"
+                  },
+                  "then": [
+                    {
+                      "cmd": "comment",
+                      "text": "if we have a duplicate email, show the appropriate message and bail"
+                    },
+                    {
+                      "cmd": "if",
+                      "condition": {
+                        "field": "Questionnaire:duplicateRecord",
+                        "op": "equals",
+                        "value": "true:declined"
+                      },
+                      "then": [
+                        {
+                          "cmd": "showDocument",
+                          "document": "AlreadyDeclined",
+                          "reset": false
+                        }
+                      ],
+                      "else": [
+                        {
+                          "cmd": "showDocument",
+                          "document": "AlreadyExistsInList",
+                          "reset": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "show",
+                      "form": "Questionnaire"
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Confirmation",
+                    "op": "equals",
+                    "value": "off"
+                  },
+                  "then": [
+                    {
+                      "cmd": "comment",
+                      "text": "the administrator is \"manually\" confirming an entry"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Questionnaire:DisplayEmail",
+                      "value": "<<Questionnaire:Email>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Questionnaire:OptOut",
+                      "value": "No",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "comment",
+                      "text": "a new record has been added"
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "email will not be displayed until confirmed by member"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Questionnaire:DisplayEmail",
+                      "value": "** unconfirmed **",
+                      "concat": false,
+                      "arithmeticAsText": true
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "display name (default condition)"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Questionnaire:OptOut",
+                      "value": "No",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "token for Private Invitation in Solicitation Document"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "InvitationEmail",
+                      "value": "<<Questionnaire:Email>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "set up variables for Solicitation Document"
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "emailGroupName",
+                      "value": "<<Customize_Organization>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Questionnaire:EmailGroupName",
+                      "value": "<<Customize_Organization>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "emailFirstName",
+                      "value": "<<Questionnaire:First>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "emailText",
+                      "value": "<<OurText>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "email sender info comes from customization settings"
+                    },
+                    {
+                      "cmd": "get",
+                      "recordList": "SetupRecords1",
+                      "sourceForms": [
+                        "CustomizePage1"
+                      ]
+                    },
+                    {
+                      "cmd": "foreach",
+                      "recordName": "CustomizationSetting",
+                      "recordList": "SetupRecords1",
+                      "do": [
+                        {
+                          "cmd": "set",
+                          "field": "SenderName",
+                          "value": "<<CustomizationSetting:CustomizePage1:Signer>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "get",
+                      "recordList": "SetupRecords2",
+                      "sourceForms": [
+                        "CustomizePage2"
+                      ]
+                    },
+                    {
+                      "cmd": "foreach",
+                      "recordName": "CustomizationSetting2",
+                      "recordList": "SetupRecords2",
+                      "do": [
+                        {
+                          "cmd": "set",
+                          "field": "SenderEmailAddress",
+                          "value": "<<CustomizationSetting2:CustomizePage2:SignerEmail>>",
+                          "concat": false,
+                          "arithmeticAsText": false
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "comment",
+                      "text": "send the solicitation email"
+                    },
+                    {
+                      "cmd": "send",
+                      "to": {
+                        "fieldRef": "Questionnaire:Email"
+                      },
+                      "from": {
+                        "fieldRef": "SenderEmailAddress",
+                        "aliasField": "SenderName"
+                      },
+                      "subject": "Email List for <<Customize_Organization>>",
+                      "body": {
+                        "document": "Solicitation",
+                        "reset": false,
+                        "showHeader": true
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Questionnaire:addAnother",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "setupMode",
+                    "op": "equals",
+                    "value": "true"
+                  },
+                  "then": [
+                    {
+                      "cmd": "showDocument",
+                      "document": "SetupReturnToPage1",
+                      "reset": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "show",
+                  "form": "Questionnaire"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "FromAdmin",
+                "op": "equals",
+                "value": "true"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Confirmation",
+                  "value": "on",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "Administration"
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "setupMode",
+                "op": "equals",
+                "value": "true"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "this flag causes the Setup Form to be displayed"
+                },
+                {
+                  "cmd": "comment",
+                  "text": "which actually indicates the end of customization for the Web UI"
+                },
+                {
+                  "cmd": "set",
+                  "field": "customizationComplete",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "show",
+                  "form": "Setup"
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "showDocument",
+                  "document": "Thank you",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Build List",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "FromEdit",
+            "op": "doesNotEqual",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "SetupRecords1",
+              "sourceForms": [
+                "CustomizePage1"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Datum",
+              "recordList": "SetupRecords1",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Customize_Organization",
+                  "value": "<<Datum:CustomizePage1:Organization>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Customize_Signer",
+                  "value": "<<Datum:CustomizePage1:Signer>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "comment",
+                  "text": "this flag controls whether email addresses are displayed to the public in the Questionnaire"
+                },
+                {
+                  "cmd": "set",
+                  "field": "displayEmailAddresses",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Datum:CustomizePage1:EmailVisible",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "displayEmailAddresses",
+                      "value": "false",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "get",
+              "recordList": "SetupRecords2",
+              "sourceForms": [
+                "CustomizePage2"
+              ]
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Datum2",
+              "recordList": "SetupRecords2",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "OurText",
+                  "value": "<<Datum2:CustomizePage2:BodyText>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "comment",
+              "text": "delete duplicate records"
+            },
+            {
+              "cmd": "delete",
+              "form": "Questionnaire",
+              "from": "Questionnaire",
+              "where": {
+                "field": "Record:Questionnaire:duplicateRecord",
+                "op": "doesNotEqual",
+                "value": "false"
+              }
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "setupMode",
+                "op": "doesNotEqual",
+                "value": "true"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "displayEmailAddresses",
+                    "op": "equals",
+                    "value": "true"
+                  },
+                  "then": [
+                    {
+                      "cmd": "showDocument",
+                      "document": "Report",
+                      "reset": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "showDocument",
+                      "document": "Report NamesOnly",
+                      "reset": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "instructionText",
+              "value": "Enter the name and email address of a group member not yet on the list:",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "submitText",
+              "value": "Click the Submit button below to add this member to the list.",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "checkboxText",
+              "value": "Check here if you wish to add another member name and email address.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "instructionText",
+              "value": "Enter any changes below:",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "submitText",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "checkboxText",
+              "value": "Check here to edit another record.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-ConfirmChangeInfo",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "ConfirmChangeInfo:NewFirst",
+                "op": "isNotBlank"
+              },
+              {
+                "or": [
+                  {
+                    "field": "ConfirmChangeInfo:NewLast",
+                    "op": "isNotBlank"
+                  },
+                  {
+                    "field": "ConfirmChangeInfo:NewEmail",
+                    "op": "isNotBlank"
+                  }
+                ]
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 3",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 3:Questionnaire:Email",
+                "op": "equals",
+                "value": "<<_InviteeID>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Matching Record",
+              "recordList": "Record List 3",
+              "do": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ConfirmChangeInfo:NewFirst",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Matching Record:Questionnaire:First",
+                      "value": "<<ConfirmChangeInfo:NewFirst>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ConfirmChangeInfo:NewLast",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Matching Record:Questionnaire:Last",
+                      "value": "<<ConfirmChangeInfo:NewLast>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ConfirmChangeInfo:NewEmail",
+                    "op": "isNotBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Matching Record:Questionnaire:duplicateRecord",
+                      "value": "false",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "get",
+                      "recordList": "Record List 11",
+                      "sourceForms": [
+                        "Questionnaire"
+                      ],
+                      "where": {
+                        "field": "Record List 11:Questionnaire:Email",
+                        "op": "equals",
+                        "value": "<<ConfirmChangeInfo:NewEmail>>"
+                      }
+                    },
+                    {
+                      "cmd": "foreach",
+                      "recordName": "IteminList",
+                      "recordList": "Record List 11",
+                      "do": [
+                        {
+                          "cmd": "showDocument",
+                          "document": "AlreadyExistsInList",
+                          "reset": false
+                        },
+                        {
+                          "cmd": "show",
+                          "form": "ConfirmChangeInfo"
+                        }
+                      ]
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Matching Record:Questionnaire:Email",
+                      "value": "<<ConfirmChangeInfo:NewEmail>>",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Matching Record:Questionnaire:DisplayEmail",
+                      "value": "<<ConfirmChangeInfo:NewEmail>>",
+                      "concat": false,
+                      "arithmeticAsText": true
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ConfimationWithAdditionalNames",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "showDocument",
+              "document": "Thank you",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-OptOut",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Record List 6",
+          "sourceForms": [
+            "Questionnaire"
+          ],
+          "where": {
+            "field": "Record List 6:Questionnaire:Email",
+            "op": "equals",
+            "value": "<<_InviteeID>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Matching Record6",
+          "recordList": "Record List 6",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Matching Record6:Questionnaire:DisplayEmail",
+              "value": "** Opted out **",
+              "concat": false,
+              "arithmeticAsText": true
+            },
+            {
+              "cmd": "set",
+              "field": "Matching Record6:Questionnaire:OptOut",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Decline Thank You",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Pre-Confirm",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "InviteeFullName",
+          "value": "no match",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 7",
+          "sourceForms": [
+            "Questionnaire"
+          ],
+          "where": {
+            "field": "Record List 7:Questionnaire:Email",
+            "op": "equals",
+            "value": "<<_InviteeID>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Matching Record7",
+          "recordList": "Record List 7",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "InviteeFullName",
+              "value": "<<Matching Record7:Questionnaire:First>> <<Matching Record7:Questionnaire:Last>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "comment",
+              "text": "this works around a bug with inserting _InviteeID into a FIB"
+            },
+            {
+              "cmd": "set",
+              "field": "confirmEmail",
+              "value": "<<_InviteeID>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Matching Record7:Questionnaire:DisplayEmail",
+              "value": "<<_InviteeID>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Matching Record7:Questionnaire:OptOut",
+              "value": "No",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "InviteeFullName",
+            "op": "equals",
+            "value": "no match"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "No Match Found",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "Confirm2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Admin",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "FromAdmin",
+          "value": "true",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "AdminAllRecords",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "ConfirmedRecords",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "UnconfirmedRecords",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "ReportOptOuts",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "f"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Confirmation",
+              "value": "off",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "g"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "AdminAllRecords",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "DeleteOne"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "h"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "AdminAllRecords",
+              "reset": false
+            },
+            {
+              "cmd": "comment",
+              "text": "- not working"
+            },
+            {
+              "cmd": "show",
+              "form": "Edit"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "i"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "UnconfirmedRecords",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "ConfirmUnconfirmed"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "j"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "UnconfirmedRecords",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "DeleteAllUnconfirmed"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "or": [
+              {
+                "field": "Administration:Q1",
+                "op": "mcEquals",
+                "value": "k"
+              },
+              {
+                "field": "Administration:Q1",
+                "op": "mcEquals",
+                "value": "l"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "BulkMailer"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-DeleteOne",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "DeleteOne:EmailToDelete",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "counter",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 8",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 8:Questionnaire:Email",
+                "op": "equals",
+                "value": "<<DeleteOne:EmailToDelete>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "record",
+              "recordList": "Record List 8",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "counter",
+                  "value": "<<counter>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "counter",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "unmatchedEmail",
+                  "value": "<<DeleteOne:EmailToDelete>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "NoMatchFound",
+                  "reset": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "delete",
+                  "form": "Questionnaire",
+                  "from": "Questionnaire",
+                  "where": {
+                    "field": "Record:Questionnaire:Email",
+                    "op": "equals",
+                    "value": "<<DeleteOne:EmailToDelete>>"
+                  }
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "ConfirmDelete",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-Edit",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Edit:EmailToEdit",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "counter",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "comment",
+              "text": "look for the record that has the requested email address"
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 9",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 9:Questionnaire:Email",
+                "op": "equals",
+                "value": "<<Edit:EmailToEdit>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "record",
+              "recordList": "Record List 9",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "counter",
+                  "value": "<<counter>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "counter",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "unmatchedEmail",
+                  "value": "<<Edit:EmailToEdit>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "NoMatchFound",
+                  "reset": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "FromEdit",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "comment",
+                  "text": "remember the current email address; needed in Post-Main when looking for duplicates"
+                },
+                {
+                  "cmd": "set",
+                  "field": "PreEditEmail",
+                  "value": "<<Edit:EmailToEdit>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "edit",
+                  "form": "Questionnaire",
+                  "submit": "modify",
+                  "condition": {
+                    "field": "Record:Questionnaire:Email",
+                    "op": "equals",
+                    "value": "<<Edit:EmailToEdit>>"
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-ConfirmUnconfirmed",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "ConfirmUnconfirmed:RecordToConfirm",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "counter",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 10",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 10:Questionnaire:Email",
+                "op": "equals",
+                "value": "<<ConfirmUnconfirmed:RecordToConfirm>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "record",
+              "recordList": "Record List 10",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "counter",
+                  "value": "<<counter>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "record:Questionnaire:DisplayEmail",
+                  "value": "<<record:Questionnaire:Email>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "UnconfirmToConfirm",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "counter",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "unmatchedEmail",
+                  "value": "<<ConfirmUnconfirmed:RecordToConfirm>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "showDocument",
+                  "document": "NoMatchFound",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-DeleteAllUnconfirmed",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "DeleteAllUnconfirmed:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Questionnaire",
+              "from": "Questionnaire",
+              "where": {
+                "field": "Record:Questionnaire:DisplayEmail",
+                "op": "equals",
+                "value": "** unconfirmed **"
+              }
+            },
+            {
+              "cmd": "showDocument",
+              "document": "ConfirmDeleteAll",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-BulkMailer",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "BulkMailer:Q3",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "administrator chnaged mind; does not want to send"
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "email sender info comes from customization settings"
+        },
+        {
+          "cmd": "get",
+          "recordList": "SetupRecords1",
+          "sourceForms": [
+            "CustomizePage1"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SetupRecord",
+          "recordList": "SetupRecords1",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "SenderName",
+              "value": "<<SetupRecord:CustomizePage1:Signer>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "get",
+          "recordList": "SetupRecords2",
+          "sourceForms": [
+            "CustomizePage2"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "SetupRecord2",
+          "recordList": "SetupRecords2",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "SenderEmailAddress",
+              "value": "<<SetupRecord2:CustomizePage2:SignerEmail>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "Body",
+          "value": "<<BulkMailer:Message>>",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "Count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Q1",
+            "op": "mcEquals",
+            "value": "k"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Type",
+              "value": "confirmed",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 13",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "and": [
+                  {
+                    "field": "Record List 13:Questionnaire:DisplayEmail",
+                    "op": "doesNotEqual",
+                    "value": "** unconfirmed **"
+                  },
+                  {
+                    "field": "Record List 13:Questionnaire:OptOut",
+                    "op": "doesNotEqual",
+                    "value": "Yes"
+                  }
+                ]
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Record",
+              "recordList": "Record List 13",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Salutation",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "BulkMailer:Q3",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Salutation",
+                      "value": "Dear <<Record:Questionnaire:First>>,",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "Addressee",
+                  "value": "<<Record:Questionnaire:Email>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "send",
+                  "to": {
+                    "fieldRef": "Addressee"
+                  },
+                  "from": {
+                    "fieldRef": "SenderEmailAddress",
+                    "aliasField": "SenderName"
+                  },
+                  "subject": "<<BulkMailer:Subject>>",
+                  "body": {
+                    "document": "Bulk Mailing",
+                    "reset": false,
+                    "showHeader": true
+                  }
+                }
+              ]
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Type",
+              "value": "unconfirmed",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 14",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 14:Questionnaire:DisplayEmail",
+                "op": "equals",
+                "value": "** unconfirmed **"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Record",
+              "recordList": "Record List 14",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Salutation",
+                  "value": " ",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "BulkMailer:Q3",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Salutation",
+                      "value": "Dear <<Record:Questionnaire:First>>,",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "Addressee",
+                  "value": "<<Record:Questionnaire:Email>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "send",
+                  "to": {
+                    "fieldRef": "Addressee"
+                  },
+                  "from": {
+                    "fieldRef": "SenderEmailAddress",
+                    "aliasField": "SenderName"
+                  },
+                  "subject": "<<BulkMailer:Subject>>",
+                  "body": {
+                    "document": "Bulk Mailing",
+                    "reset": false,
+                    "showHeader": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Bulk Confirmation",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Admin",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "kludge: if a record was being edited and a duplicate email address was entered in the Edit Form"
+        },
+        {
+          "cmd": "get",
+          "recordList": "Record List 15",
+          "sourceForms": [
+            "Questionnaire"
+          ],
+          "where": {
+            "field": "Record List 15:Questionnaire:restoreModifiedEmailAddress",
+            "op": "equals",
+            "value": "true"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "FixupRecord",
+          "recordList": "Record List 15",
+          "do": [
+            {
+              "cmd": "comment",
+              "text": "we reset the original email address here"
+            },
+            {
+              "cmd": "comment",
+              "text": "this could go away if we allow the designer to directly modify an input field in Post-Edit"
+            },
+            {
+              "cmd": "set",
+              "field": "FixupRecord:Questionnaire:Email",
+              "value": "<<PreEditEmail>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "FixupRecord:Questionnaire:restoreModifiedEmailAddress",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-CustomizePage1",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "CustomizePage1",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-CustomizePage1",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "customizePageNo",
+          "value": "2",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "showDocument",
+          "document": "SetupReturnToPage1",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "CustomizePage2"
+        }
+      ]
+    },
+    {
+      "name": "Pre-CustomizePage2",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "CustomizePage2",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-Confirm2",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Confirm2:ChangeInfo",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Confirm2:HaveMoreNames",
+                "op": "mcContains",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "comment",
+                  "text": "this flad is used int the Post-ConfirmChangeInfo process"
+                },
+                {
+                  "cmd": "set",
+                  "field": "ConfimationWithAdditionalNames",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "show",
+              "form": "ConfirmChangeInfo"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Confirm2:HaveMoreNames",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Thank you",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Post-Setup",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:ChangeSetup",
+            "op": "mcContains",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "CustomizePage1"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "Pre-Setup",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "this flag gets set if the customizer has already gone through the entire customization process"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "customizationComplete",
+            "op": "doesNotEqual",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "if it's not set, this is the first time in, so start the customization process"
+            },
+            {
+              "cmd": "show",
+              "form": "CustomizePage1"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "otherwise the \"Setup\" Form will appear. which indicates the end of customization to the Web UI"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Thank you",
+      "content": "<p></p><p><span>Thank you.  To see the current list for </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Organization\" title=\"Customize_Organization\" draggable=\"true\">&lt;&lt;Customize_Organization&gt;&gt;</span></span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Display List&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;fromQuestionnaire&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">fromQuestionnaire</span></u></span><span>.</span></p>"
+    },
+    {
+      "name": "Solicitation",
+      "content": "<p><span>Dear </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"emailFirstName\" title=\"emailFirstName\" draggable=\"true\">&lt;&lt;emailFirstName&gt;&gt;</span></span><span>,</span></p><p></p><p><span>Re: </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"emailGroupName\" title=\"emailGroupName\" draggable=\"true\">&lt;&lt;emailGroupName&gt;&gt;</span></span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"emailText\" title=\"emailText\" draggable=\"true\">&lt;&lt;emailText&gt;&gt;</span></span></p><p></p><p><span>To include your own name and email address in the list </span><span><b><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Confirm&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;&lt;&lt;InvitationEmail&gt;&gt;&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;InvitationEmail&quot;}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;InvitationEmail&gt;&gt;</span></u></b></span><span>.</span></p><p></p><p><span>If you do not wish to be in the list, </span><span><b><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;OptOut&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;&lt;&lt;InvitationEmail&gt;&gt;&quot;,&quot;isPrivate&quot;:true,&quot;authToken&quot;:&quot;InvitationEmail&quot;}\" style=\"color:#000080;text-decoration:underline\">&lt;&lt;InvitationEmail&gt;&gt;</span></u></b></span><span> to have your name and email address removed.</span></p><p></p><p><span>Yours,</span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SenderName\" title=\"SenderName\" draggable=\"true\">&lt;&lt;SenderName&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "Report",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:18pt\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Organization\" title=\"Customize_Organization\" draggable=\"true\">&lt;&lt;Customize_Organization&gt;&gt;</span></span></p><p></p><p><span>Here is our list so far.</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AFirst%22%7D%2C%7B%22header%22%3A%22Last%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ALast%22%7D%2C%7B%22header%22%3A%22Email%20Address%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ADisplayEmail%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire%3AOptOut%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22No%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p><p><span>   -  </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Signer\" title=\"Customize_Signer\" draggable=\"true\">&lt;&lt;Customize_Signer&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "Setup Step3",
+      "content": "<p><span><i>Send automated emails to your &quot;seed&quot; group by filling out the form below. You must have at least one address to start building the list</i></span></p><p><span><i>Note: An invitation email will be sent immediately to each address you enter.</i></span></p>"
+    },
+    {
+      "name": "Decline Thank You",
+      "content": "<p><span>Your name and email address will not appear in the list.</span></p><p></p><p><span>Thank you for responding.</span></p>"
+    },
+    {
+      "name": "No Match Found",
+      "content": "<p><span>We're sorry, but we could not find your email address in our list of pending entries. It's possible that you have already confirmed your name and email address.</span></p><p></p><p><span>If your name is not on the list and you would like to sign up, add your information below. For your protection you will receive another &quot;invitation email,&quot; which will require you to confirm again.</span></p>"
+    },
+    {
+      "name": "AlreadyExistsInList",
+      "content": "<p><span>The email address </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Questionnaire:Email\" title=\"Questionnaire:Email\" draggable=\"true\">&lt;&lt;Questionnaire:Email&gt;&gt;</span></b></span><span> is already in the list.</span></p>"
+    },
+    {
+      "name": "AlreadyDeclined",
+      "content": "<p><span>The email addess </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Questionnaire:Email\" title=\"Questionnaire:Email\" draggable=\"true\">&lt;&lt;Questionnaire:Email&gt;&gt;</span></b></span><span> was previously invited to join and has declined.</span></p>"
+    },
+    {
+      "name": "ReportOptOuts",
+      "content": "<p><span><b>The following people have declined to join the list:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AFirst%22%7D%2C%7B%22header%22%3A%22Last%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ALast%22%7D%2C%7B%22header%22%3A%22Email%20Address%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AEmail%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire%3AOptOut%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22Yes%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "Report NamesOnly",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:18pt\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Organization\" title=\"Customize_Organization\" draggable=\"true\">&lt;&lt;Customize_Organization&gt;&gt;</span></span></p><p></p><p><span>Here is our list so far.</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AFirst%22%7D%2C%7B%22header%22%3A%22Last%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ALast%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire%3AOptOut%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22No%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p><p><span>   -  </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Signer\" title=\"Customize_Signer\" draggable=\"true\">&lt;&lt;Customize_Signer&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "AdminAllRecords",
+      "content": "<p><span><b>All Records:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AFirst%22%7D%2C%7B%22header%22%3A%22Last%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ALast%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AEmail%22%7D%2C%7B%22header%22%3A%22Opted%20Out%3F%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AOptOut%22%7D%2C%7B%22header%22%3A%22Currently%20Displayed%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ADisplayEmail%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "ConfirmedRecords",
+      "content": "<p><span><b>The following people have confirmed their information:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AFirst%22%7D%2C%7B%22header%22%3A%22Last%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ALast%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AEmail%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3AQuestionnaire%3ADisplayEmail%22%2C%22op%22%3A%22doesNotEqual%22%2C%22value%22%3A%22**%20unconfirmed%20**%22%7D%2C%7B%22field%22%3A%22Record%3AQuestionnaire%3AOptOut%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22No%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "UnconfirmedRecords",
+      "content": "<p><span><b>The following emails have not yet responded to the solicitation:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22First%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AFirst%22%7D%2C%7B%22header%22%3A%22Last%20Name%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ALast%22%7D%2C%7B%22header%22%3A%22Email%22%2C%22field%22%3A%22Record%3AQuestionnaire%3AEmail%22%7D%2C%7B%22header%22%3A%22Display%20Status%22%2C%22field%22%3A%22Record%3AQuestionnaire%3ADisplayEmail%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire%3ADisplayEmail%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22**%20unconfirmed%20**%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+    },
+    {
+      "name": "NoMatchFound",
+      "content": "<p><span>No matching record found for </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"unmatchedEmail\" title=\"unmatchedEmail\" draggable=\"true\">&lt;&lt;unmatchedEmail&gt;&gt;</span></b></span><span>.</span></p>"
+    },
+    {
+      "name": "ConfirmDelete",
+      "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"DeleteOne:EmailToDelete\" title=\"DeleteOne:EmailToDelete\" draggable=\"true\">&lt;&lt;DeleteOne:EmailToDelete&gt;&gt;</span></b></span><span> has been deleted from the database.</span></p>"
+    },
+    {
+      "name": "UnconfirmToConfirm",
+      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ConfirmUnconfirmed:RecordToConfirm\" title=\"ConfirmUnconfirmed:RecordToConfirm\" draggable=\"true\">&lt;&lt;ConfirmUnconfirmed:RecordToConfirm&gt;&gt;</span></span><span> has been changed to confirmed.</span></p>"
+    },
+    {
+      "name": "ConfirmDeleteAll",
+      "content": "<p><span>All unconfirmed records have been deleted.</span></p>"
+    },
+    {
+      "name": "Bulk Mailing",
+      "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Salutation\" title=\"Salutation\" draggable=\"true\">&lt;&lt;Salutation&gt;&gt;</span></b></span></p><p></p><p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Body\" title=\"Body\" draggable=\"true\">&lt;&lt;Body&gt;&gt;</span></b></span></p>"
+    },
+    {
+      "name": "Bulk Confirmation",
+      "content": "<p><span><b>You have successfully sent out </b></span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Count\" title=\"Count\" draggable=\"true\">&lt;&lt;Count&gt;&gt;</span></b></span><span><b> copies of your mailing to </b></span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Type\" title=\"Type\" draggable=\"true\">&lt;&lt;Type&gt;&gt;</span></b></span><span><b> addressees on your list.</b></span></p>"
+    },
+    {
+      "name": "ConfirmEdit",
+      "content": "<p><span>The record for </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Edit:EmailToEdit\" title=\"Edit:EmailToEdit\" draggable=\"true\">&lt;&lt;Edit:EmailToEdit&gt;&gt;</span></b></span><span> has been updated in the database.</span></p>"
+    },
+    {
+      "name": "SetupReturnToPage1",
+      "content": "<p style=\"text-align:right\"><span>Customize Page </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"customizePageNo\" title=\"customizePageNo\" draggable=\"true\">&lt;&lt;customizePageNo&gt;&gt;</span></span><span> of 3</span></p><p style=\"text-align:right\"><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;CustomizePage1&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Return to Page 1&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Return to Page 1</span></u></span></p>"
+    }
+  ],
+  "_originalFormat": "1.8",
+  "_designerBuild": "169",
+  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Automated List Builder.tawala"
+}

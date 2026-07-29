@@ -49,7 +49,7 @@
     if (!item) return "";
     const text = labelOverride || item.label;
     if (!item.ready) {
-      return `<span class="link-pending" aria-disabled="true" title="Not available in mock yet">${text}</span>`;
+      return `<span class="link-pending" aria-disabled="true" title="Unavailable">${text}</span>`;
     }
     return `<a href="${item.href}">${text}</a>`;
   }
@@ -101,8 +101,27 @@
     </div>`;
   }
 
-  function renderBanner() {
-    return `<strong>Website mock</strong> — static draft from legacy JSP layout. Grey links are not implemented yet. Test-drive → :8080. Symbiotic hop: <a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500.`;
+  function renderBanner(activePage) {
+    const base =
+      `<strong>Website mock</strong> — static draft from legacy JSP. Grey = not implemented. Test-drive → :8080. ` +
+      `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500.`;
+    if (activePage === "mytawala") {
+      return (
+        base +
+        ` <span class="mock-banner-where"><b>You are on My Tawala</b> — private projects (` +
+        `<code>projects/mytawala/</code> / MyTawala pile). Not the public Library. ` +
+        `<a href="library.html">Go to Library →</a></span>`
+      );
+    }
+    if (activePage === "library") {
+      return (
+        base +
+        ` <span class="mock-banner-where"><b>You are on Library</b> — public catalog (` +
+        `<code>projects/library/</code> / WebLibrary pile). Not your private My Tawala list. ` +
+        `<a href="mytawala.html">Go to My Tawala →</a></span>`
+      );
+    }
+    return base;
   }
 
   function mount() {
@@ -118,7 +137,7 @@
 
     if (bannerEl && showBanner) {
       bannerEl.className = "mock-banner";
-      bannerEl.innerHTML = renderBanner();
+      bannerEl.innerHTML = renderBanner(activePage);
     } else if (bannerEl) {
       bannerEl.remove();
     }
