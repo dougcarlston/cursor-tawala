@@ -423,7 +423,7 @@ export function SkipInstructionsDialog({
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  });
+  }, [selectedCommandPath, panel, commands]);
 
   const toolbarDeleteEnabled = selectedCommandPath != null;
 
@@ -495,6 +495,7 @@ export function SkipInstructionsDialog({
                 onStateChange={setIfBuilder}
                 submitLabel={isModifyIf ? "Modify" : "Add ↓"}
                 onSubmit={submitIf}
+                onCancel={isModifyIf ? cancelEditSelection : undefined}
               />
             )}
 
@@ -522,6 +523,15 @@ export function SkipInstructionsDialog({
                   >
                     {isModifySkipTo ? "Modify" : "Add ↓"}
                   </button>
+                  {isModifySkipTo ? (
+                    <button
+                      type="button"
+                      className="skip-cancel-btn"
+                      onClick={cancelEditSelection}
+                    >
+                      Cancel
+                    </button>
+                  ) : null}
                 </div>
               </div>
             )}
@@ -532,6 +542,7 @@ export function SkipInstructionsDialog({
                 onStateChange={setSetBuilder}
                 submitLabel={isModifySet ? "Modify" : "Add ↓"}
                 onSubmit={submitSet}
+                onCancel={isModifySet ? cancelEditSelection : undefined}
                 knownVariables={knownVariables}
               />
             )}
@@ -556,6 +567,15 @@ export function SkipInstructionsDialog({
                     >
                       {isModifyComment ? "Modify" : "Add ↓"}
                     </button>
+                    {isModifyComment ? (
+                      <button
+                        type="button"
+                        className="skip-cancel-btn"
+                        onClick={cancelEditSelection}
+                      >
+                        Cancel
+                      </button>
+                    ) : null}
                   </div>
                 </div>
               </div>
@@ -572,7 +592,8 @@ export function SkipInstructionsDialog({
                   {selectedCommandPath ? (
                     <>
                       Editing selected statement — change the builder and click{" "}
-                      <strong>Modify</strong>, or click an insert gap to add a new line.
+                      <strong>Modify</strong>, click <strong>Cancel</strong> to leave
+                      edit mode, or click an insert gap to add a new line.
                     </>
                   ) : (
                     <>

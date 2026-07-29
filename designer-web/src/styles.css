@@ -2681,6 +2681,8 @@ textarea {
 .skip-if-add-row {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
   margin-top: 6px;
 }
 
@@ -2780,6 +2782,8 @@ textarea {
 .skip-comment-add-row {
   display: flex;
   justify-content: flex-end;
+  align-items: center;
+  gap: 10px;
   margin-top: 2px;
 }
 
@@ -5295,6 +5299,45 @@ button.font-color-picker-recent-slot:hover {
 
 .skip-cancel-btn {
   min-width: 64px;
+  padding: 4px 12px;
+  border: 1px solid #7a7a7a;
+  border-top-color: #bbb;
+  border-left-color: #bbb;
+  border-radius: 3px;
+  background-color: #e8e8e8;
+  background-image: linear-gradient(180deg, #fafafa 0%, #e8e8e8 48%, #d4d4d4 100%);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 0 rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+/* While editing a statement, keep insert gaps discoverable (add under If / between lines). */
+.skip-script-area.skip-script-editing .skip-insertion-line:not(.active) {
+  min-height: 10px;
+}
+
+.skip-script-area.skip-script-editing .skip-insertion-line:not(.active) .skip-insertion-arrow {
+  visibility: visible;
+  opacity: 0.4;
+  color: #7aa7e0;
+}
+
+.skip-script-area.skip-script-editing .skip-insertion-line:not(.active) .skip-insertion-rule {
+  border-top-color: #c5d8f0;
+  border-top-style: dashed;
+}
+
+.skip-script-area.skip-script-editing .skip-insertion-line:not(.active):hover {
+  background: #e8f0fc;
+}
+
+.skip-script-area.skip-script-editing .skip-insertion-line:not(.active):hover .skip-insertion-arrow {
+  opacity: 0.9;
+  color: #0040c0;
+}
+
+.skip-script-area.skip-script-editing .skip-insertion-line:not(.active):hover .skip-insertion-rule {
+  border-top-color: #7aa7e0;
+  border-top-style: solid;
 }
 
 .send-delivery-note {

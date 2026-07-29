@@ -47,14 +47,14 @@ describe("SkipScriptView insert gaps on re-edit", () => {
       );
     });
 
-    // Edit mode: insert-gap ▶ chrome is hit-only (no visible button.skip-insertion-line).
-    expect(host.querySelectorAll("button.skip-insertion-line").length).toBe(0);
-    const hits = host.querySelectorAll(".process-insert-hit");
-    expect(hits.length).toBeGreaterThanOrEqual(3);
+    // Edit mode: insert gaps stay visible as inactive ▶ / dashed lines (not hit-only).
+    const gapButtons = host.querySelectorAll("button.skip-insertion-line");
+    expect(gapButtons.length).toBeGreaterThanOrEqual(3);
+    expect(host.querySelector(".skip-script-area.skip-script-editing")).toBeTruthy();
 
-    // Click a hit target — must still fire insert-point callback (leave edit mode).
+    // Click a gap — must still fire insert-point callback (leave edit mode).
     act(() => {
-      hits[0]!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      gapButtons[0]!.dispatchEvent(new MouseEvent("click", { bubbles: true }));
     });
     expect(picks.length).toBe(1);
 
@@ -127,9 +127,9 @@ describe("SkipScriptView insert gaps on re-edit", () => {
       '[data-process-insert-path="root"][data-process-insert-index="2"]',
     );
     expect(afterIf).toBeTruthy();
-    // Edit mode → hit-only DIV (no visible insert-gap ▶ button).
-    expect(afterIf?.tagName).toBe("DIV");
-    expect(afterIf?.classList.contains("process-insert-hit")).toBe(true);
+    // Edit mode → visible inactive insert-gap button (not zero-height hit-only DIV).
+    expect(afterIf?.tagName).toBe("BUTTON");
+    expect(afterIf?.classList.contains("skip-insertion-line")).toBe(true);
 
     const area = host.querySelector(".skip-script-area");
     const html = area?.innerHTML ?? "";

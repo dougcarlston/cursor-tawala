@@ -256,7 +256,7 @@ function emitGap(ctx: RenderCtx, path: string, index: number, key: string): Reac
   const storedActive = ctx.insertPath === path && ctx.insertIndex === index;
   const dragActive =
     ctx.highlightInsertPath === path && ctx.highlightInsertIndex === index;
-  // Edit mode: no insert-gap arrow (arrow sits on the selected statement instead).
+  // Edit mode: inactive gaps stay visible; active ▶ is on the selected statement.
   const editMode = ctx.selectedCommandPath != null;
 
   // Indexed gaps (Skip + Process click-to-place): visible ▶ / faint hover lines.
