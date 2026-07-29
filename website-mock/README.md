@@ -45,4 +45,4 @@ node scripts/deploy-tawala-template.mjs "Simple Survey Template"
 node scripts/deploy-tawala-template.mjs "Sign-up Sheet"
 ```
 
-Edit `js/demo-urls.js` with the new start-point URLs from the script output.
+Edit `js/demo-urls.js` with the new start-point URLs from the script output. Home, Library, detail, and My Tawala all read that file (via `TawalaDemo` helpers) — keep Phase 2 `:8080` URLs only.

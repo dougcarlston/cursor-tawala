@@ -15,7 +15,7 @@
     <div id="tawala-chrome-header"></div>
 
     <div id="subheading">
-      <div id="tagLine">Surveys, Sign Ups, Event Planning — all in seconds and for FREE</div>
+      <div id="tagLine"><span>Surveys, Sign Ups, Event Planning — all in seconds and for FREE</span></div>
       <div id="subtagline">
         A wide set of easy-to-use email and Web tools that you can put to work immediately with absolutely no technical knowledge.
       </div>
@@ -25,32 +25,7 @@
       <div id="featuredFree">
         <p><b>Tawala Featured Solutions</b>&nbsp;&nbsp; All absolutely free. No registration required!</p>
       </div>
-      <div id="apps">
-        <div class="webapp">
-          <a href="library-detail.html?project=simple-survey" class="icon" title="Simple Survey">📊</a>
-          <div class="title"><a href="library-detail.html?project=simple-survey">Simple Survey Template</a></div>
-          <p>One multiple-choice question with an instant results report.</p>
-          <div class="links"><a href="library-detail.html?project=simple-survey">Tell me more…</a></div>
-        </div>
-        <div class="webapp">
-          <a href="library-detail.html?project=signup-sheet" class="icon" title="Sign-up Sheet">📋</a>
-          <div class="title"><a href="library-detail.html?project=signup-sheet">Sign-up Sheet Template</a></div>
-          <p>Collect contact info; see signups in a live table on the same page.</p>
-          <div class="links"><a href="library-detail.html?project=signup-sheet">Tell me more…</a></div>
-        </div>
-        <div class="webapp">
-          <a href="library-detail.html?project=potluck" class="icon" title="Potluck">🍽</a>
-          <div class="title"><a href="library-detail.html?project=potluck">Potluck Template</a></div>
-          <p>Coordinate who brings what; RSVPs and dishes on a shared report.</p>
-          <div class="links"><a href="library-detail.html?project=potluck">Tell me more…</a></div>
-        </div>
-        <div class="webapp">
-          <a href="library-detail.html?project=get-together" class="icon" title="Get Together">📅</a>
-          <div class="title"><a href="library-detail.html?project=get-together">Get Together Template</a></div>
-          <p>Find a date that works for everyone — availability and top pick.</p>
-          <div class="links"><a href="library-detail.html?project=get-together">Tell me more…</a></div>
-        </div>
-      </div>
+      <div id="apps"></div>
       <div class="featuredLinks">
         <div class="link1"><a href="library.html">Browse the Project Library →</a></div>
         <div class="link2"><a href="mytawala.html">Open My Tawala (deployed projects) →</a></div>
@@ -61,19 +36,8 @@
       <div id="yui-main">
         <div class="content">
           <div class="block">
-            <h4>Featured Solutions</h4>
-            <div id="featuredList">
-              <div class="webapp" style="border:none;background:transparent;padding:0;min-height:0;">
-                <div class="title"><a href="library-detail.html?project=simple-survey">Simple Survey Template</a></div>
-                <p>Replace the sample MCQ, deploy, and share the Survey link. Respondents see tallies on the Report form.</p>
-                <div class="links"><a href="library-detail.html?project=simple-survey">Tell me more… →</a></div>
-              </div>
-              <div class="webapp" style="border:none;background:transparent;padding:0;min-height:0;margin-top:12px;">
-                <div class="title"><a href="library-detail.html?project=signup-sheet">Sign-up Sheet Template</a></div>
-                <p>Inline itemization table lists First, Last, Email, Phone, and Address as people sign up.</p>
-                <div class="links"><a href="library-detail.html?project=signup-sheet">Tell me more… →</a></div>
-              </div>
-            </div>
+            <h4>More Solutions</h4>
+            <div id="featuredList"></div>
           </div>
         </div>
       </div>
@@ -84,11 +48,8 @@
         </div>
         <div class="block">
           <h3>Quick test drive</h3>
-          <p class="note" style="font-size:11px;color:#666;margin:0 0 8px;">Opens deployed templates on localhost:8080.</p>
-          <a class="test-drive-link" id="homeSurveyLink" href="#">Simple Survey</a>
-          <a class="test-drive-link" id="homeSignupLink" href="#">Sign-up Sheet</a>
-          <a class="test-drive-link" id="homePotluckLink" href="#">Potluck</a>
-          <a class="test-drive-link" id="homeGetTogetherLink" href="#">Get Together</a>
+          <p class="test-drive-note">Opens deployed templates on localhost:8080.</p>
+          <div id="homeTestDriveLinks"></div>
         </div>
       </div>
     </div>
@@ -97,14 +58,55 @@
   </div>
   <script src="js/chrome.js"></script>
   <script>
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    const arrow = '<img src="images/template/red-bullet-arrow-right.gif" alt="" width="8" height="8" />';
+
     TawalaChrome.mount();
-    ["homeSurveyLink", "homeSignupLink", "homePotluckLink", "homeGetTogetherLink"].forEach((id, i) => {
-      const keys = ["simple-survey", "signup-sheet", "potluck", "get-together"];
-      const el = document.getElementById(id);
-      el.href = TAWALA_DEMO_URLS[keys[i]].testDriveUrl;
-      el.target = "_blank";
-      el.rel = "noopener";
-    });
+
+    const apps = document.getElementById("apps");
+    apps.innerHTML = TawalaDemo.featured()
+      .map(
+        (p) => `<div class="webapp">
+          <a href="library-detail.html?project=${encodeURIComponent(p.id)}" class="icon-tile" title="${escapeHtml(p.name)}">
+            <span class="icon-label">${escapeHtml(p.iconLabel || "?")}</span>
+          </a>
+          <div class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></div>
+          <p>${escapeHtml(p.shortDescription)}</p>
+          <div class="links"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">Tell me more…</a></div>
+        </div>`
+      )
+      .join("");
+
+    const list = document.getElementById("featuredList");
+    const more = TawalaDemo.moreSolutions();
+    list.innerHTML = more.length
+      ? more
+          .map(
+            (p) => `<div class="webapp">
+              <div class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></div>
+              <p>${escapeHtml(p.longDescription)}</p>
+              <div class="links"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">Tell me more… ${arrow}</a></div>
+            </div>`
+          )
+          .join("")
+      : "<p class=\"note\">All library projects are featured above.</p>";
+
+    const td = document.getElementById("homeTestDriveLinks");
+    td.innerHTML = TawalaDemo.featured()
+      .map(
+        (p) =>
+          `<a class="test-drive-link" href="${p.testDriveUrl}" target="_blank" rel="noopener">${escapeHtml(
+            p.name.replace(/ Template$/, "")
+          )}</a>`
+      )
+      .join("");
   </script>
 </body>
 </html>

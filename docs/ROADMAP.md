@@ -61,7 +61,7 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 
 ## Phase 3 — Website mock
 
-**Next (July 2026) — operational site.** Designer Sign-up Sheet / Get Together gate is **met**; DirtBowl Registration page 1 parity substantially complete. Resume Chat 3 for **library mock fidelity** and **correct test-drive links** to stable `:8080` template URLs. Serve `website-mock/` on `:5500`; keep `js/demo-urls.js` → Phase 2 only. Do not thrash `designer-web`/Tomcat unless link wiring requires it. Parked Designer polish stays out (`.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Active / next — operational site** (library fidelity + 8080 test-drive links). Designer Sign-up Sheet / Get Together gate is **met**; DirtBowl Registration page 1 parity substantially complete. Serve `website-mock/` on `:5500`; keep `js/demo-urls.js` → Phase 2 only. Do not thrash `designer-web`/Tomcat unless link wiring requires it. Parked Designer polish stays out (`.cursor/rules/tawala-designer-parked-post-website.mdc`).
 
 **Goal:** Fully operational browseable draft of tawala.com / MyTawala / Library from legacy JSP/CSS — fidelity + working Test drive links.
 
@@ -69,11 +69,11 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 
 | Page | Status |
 |------|--------|
-| Home / landing | **Draft** — `website-mock/index.html` |
-| Project Library search | **Draft** — `website-mock/library.html` |
-| Project detail | **Draft** — `website-mock/library-detail.html` |
-| MyTawala dashboard | **Draft** — `website-mock/mytawala.html` |
-| Link “Test drive” → Phase 2 URLs | **Wired** — `website-mock/js/demo-urls.js` |
+| Home / landing | **Improved** — featured strip + more-solutions list from `demo-urls.js`; CSS icon tiles (no emoji) |
+| Project Library search | **Improved** — listing from catalog; shortDescription under name; CSS star ratings; category + search |
+| Project detail | **Improved** — catalog-driven detail; legacy test-drive GIF; start-point list |
+| MyTawala dashboard | **Improved** — rows from same catalog + live start-point URLs |
+| Link “Test drive” → Phase 2 URLs | **Verified** — all primary + Report start points HTTP 200 on `:8080` (Jul 29) |
 | Stub pages (About, FAQ, Login, …) | **Draft** — `about.html`, `faq.html`, `login.html`, `signup.html`, `terms.html`, `privacy.html`, `designer.html`, `logout.html` |
 | Pending links greyed out | **Wired** — `js/chrome.js` (`link-pending`) |
 | Legacy site CSS | **Imported** — `css/legacy/tawala-base.css`, `pages/homepage.css`, `pages/library.css` |

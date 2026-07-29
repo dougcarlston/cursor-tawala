@@ -87,72 +87,13 @@
 
   <script src="js/chrome.js"></script>
   <script>
-    const PROJECTS = [
-      {
-        id: "simple-survey",
-        name: "Simple Survey Template",
-        category: "Polls",
-        rating: "★★★★☆",
-        comments: 12,
-        updated: "2026-06-27",
-      },
-      {
-        id: "signup-sheet",
-        name: "Sign-up Sheet Template",
-        category: "Activities",
-        rating: "★★★★★",
-        comments: 8,
-        updated: "2026-06-27",
-      },
-      {
-        id: "form-with-process",
-        name: "Form with process",
-        category: "Basic (Designer demo)",
-        rating: "—",
-        comments: 0,
-        updated: "2026-07-02",
-      },
-      {
-        id: "potluck",
-        name: "Potluck Template",
-        category: "Meetings",
-        rating: "★★★★☆",
-        comments: 15,
-        updated: "2026-07-02",
-      },
-      {
-        id: "get-together",
-        name: "Get Together Template",
-        category: "Meetings",
-        rating: "★★★★☆",
-        comments: 11,
-        updated: "2026-07-02",
-      },
-      {
-        id: "signup-sheet-email",
-        name: "Sign-up Sheet Template w Email",
-        category: "Activities",
-        rating: "★★★★☆",
-        comments: 4,
-        updated: "2026-07-02",
-      },
-      {
-        id: "multiple-question-survey",
-        name: "Multiple Question Survey Template",
-        category: "Polls",
-        rating: "★★★★☆",
-        comments: 9,
-        updated: "2026-07-02",
-      },
-      {
-        id: "form-process-document",
-        name: "Form with process connecting a document",
-        category: "Basic (Designer demo)",
-        rating: "—",
-        comments: 0,
-        updated: "2026-07-02",
-      },
-    ];
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
 
     function renderRows(rows) {
       const tbody = document.getElementById("projectRows");
@@ -168,11 +109,14 @@
       table.hidden = false;
       tbody.innerHTML = rows
         .map(
-          (p) => `<tr class="link" onclick="location.href='library-detail.html?project=${p.id}'">
-            <td><span class="title">${p.name}</span><br /><small>${p.category}</small></td>
-            <td class="rating">${p.rating}</td>
-            <td>${p.comments}</td>
-            <td>${p.updated}</td>
+          (p) => `<tr class="link" onclick="location.href='library-detail.html?project=${encodeURIComponent(p.id)}'">
+            <td class="info left">
+              <span class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}" onclick="event.stopPropagation()">${escapeHtml(p.name)}</a></span><br />
+              <span class="description">${escapeHtml(p.shortDescription)}</span>
+            </td>
+            <td class="rating left">${TawalaDemo.starsHtml(p.rating)}</td>
+            <td class="comments">${p.comments || 0}</td>
+            <td class="updated left">${escapeHtml(p.updated || "")}</td>
           </tr>`
         )
         .join("");
@@ -191,19 +135,29 @@
       const params = new URLSearchParams(location.search);
       const cat = params.get("cat");
       const q = (params.get("query") || "").toLowerCase();
-      let rows = PROJECTS;
+      let rows = TawalaDemo.entries();
       if (cat === "polls") rows = rows.filter((p) => p.category === "Polls");
       if (cat === "activities") rows = rows.filter((p) => p.category === "Activities");
-      if (cat === "templates") rows = rows.filter((p) => p.category === "Templates");
       if (cat === "meetings") rows = rows.filter((p) => p.category === "Meetings");
       if (cat === "basic") rows = rows.filter((p) => p.category.includes("Basic"));
-      if (q) rows = rows.filter((p) => p.name.toLowerCase().includes(q));
+      if (q) {
+        rows = rows.filter(
+          (p) =>
+            p.name.toLowerCase().includes(q) ||
+            (p.shortDescription || "").toLowerCase().includes(q) ||
+            (p.category || "").toLowerCase().includes(q)
+        );
+      }
       const title = document.getElementById("listingTitle");
       if (q) {
-        title.innerHTML = `Search results for "${params.get("query")}" <a class="library-clear-search" href="library.html${cat ? "?cat=" + cat : ""}">(clear)</a>`;
+        title.innerHTML =
+          'Search results for "' +
+          escapeHtml(params.get("query")) +
+          '" <a class="library-clear-search" href="library.html' +
+          (cat ? "?cat=" + encodeURIComponent(cat) : "") +
+          '">(clear)</a>';
       } else if (cat === "polls") title.textContent = 'All projects in "Polls" category';
       else if (cat === "activities") title.textContent = 'All projects in "Activities" category';
-      else if (cat === "templates") title.textContent = 'All projects in "Templates" category';
       else if (cat === "meetings") title.textContent = 'All projects in "Meetings" category';
       else if (cat === "basic") title.textContent = 'All projects in "Basic" category';
       else title.textContent = "All projects";

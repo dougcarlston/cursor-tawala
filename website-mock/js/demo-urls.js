@@ -1,11 +1,18 @@
 /**
  * Local 8080 start URLs — update after redeploying templates.
  * Regenerate: node scripts/deploy-tawala-template.mjs "<Template Name>"
+ *
+ * Phase 2 template URLs only. Library / home / My Tawala read this catalog.
  */
 window.TAWALA_DEMO_URLS = {
   "simple-survey": {
     name: "Simple Survey Template",
     category: "Polls",
+    featured: true,
+    iconLabel: "SS",
+    rating: 4,
+    comments: 12,
+    updated: "6/27/26",
     shortDescription: "A one-question survey with an instant results report.",
     longDescription:
       "Replace the sample question with your own multiple-choice question. " +
@@ -19,6 +26,11 @@ window.TAWALA_DEMO_URLS = {
   "signup-sheet": {
     name: "Sign-up Sheet Template",
     category: "Activities",
+    featured: true,
+    iconLabel: "SU",
+    rating: 5,
+    comments: 8,
+    updated: "6/27/26",
     shortDescription: "Collect names and contact info; see signups in a table on the same page.",
     longDescription:
       "First name, last name, email, phone, and address fields feed an itemization table " +
@@ -34,6 +46,11 @@ window.TAWALA_DEMO_URLS = {
   "form-with-process": {
     name: "Form with process",
     category: "Basic (Designer demo)",
+    featured: false,
+    iconLabel: "FP",
+    rating: 0,
+    comments: 0,
+    updated: "7/2/26",
     shortDescription: "Designer demo — empty form linked to an empty process (not a sample app).",
     longDescription:
       "Shows how to attach Process 1 to Form 1 in the Designer. " +
@@ -49,6 +66,11 @@ window.TAWALA_DEMO_URLS = {
   potluck: {
     name: "Potluck Template",
     category: "Meetings",
+    featured: true,
+    iconLabel: "PL",
+    rating: 4,
+    comments: 15,
+    updated: "7/2/26",
     shortDescription: "Potluck invitation — headcount, dish contributions, and a shared report.",
     longDescription:
       "Invite guests to a potluck, collect RSVPs and what each person will bring. " +
@@ -65,6 +87,11 @@ window.TAWALA_DEMO_URLS = {
   "get-together": {
     name: "Get Together Template",
     category: "Meetings",
+    featured: true,
+    iconLabel: "GT",
+    rating: 4,
+    comments: 11,
+    updated: "7/2/26",
     shortDescription: "Find the best date for an event — availability plus top preference.",
     longDescription:
       "Two MCQs: which dates work (multi-select) and top preference (single). " +
@@ -78,6 +105,11 @@ window.TAWALA_DEMO_URLS = {
   "form-process-document": {
     name: "Form with process connecting a document",
     category: "Basic (Designer demo)",
+    featured: false,
+    iconLabel: "FD",
+    rating: 0,
+    comments: 0,
+    updated: "7/2/26",
     shortDescription: "Designer demo — empty form whose process shows a document after submit.",
     longDescription:
       "Form 1 is linked to Process 1, which runs Show Document Document 1 after submit. " +
@@ -93,6 +125,11 @@ window.TAWALA_DEMO_URLS = {
   "signup-sheet-email": {
     name: "Sign-up Sheet Template w Email",
     category: "Activities",
+    featured: false,
+    iconLabel: "SE",
+    rating: 4,
+    comments: 4,
+    updated: "7/2/26",
     shortDescription: "Sign-up sheet like the basic template, plus a Send process for new signups.",
     longDescription:
       "Same FIB fields and itemization table as the Sign-up Sheet template. " +
@@ -108,6 +145,11 @@ window.TAWALA_DEMO_URLS = {
   "multiple-question-survey": {
     name: "Multiple Question Survey Template",
     category: "Polls",
+    featured: false,
+    iconLabel: "MQ",
+    rating: 4,
+    comments: 9,
+    updated: "7/2/26",
     shortDescription: "Multi-question poll with bar-graph tallies and a response table on Report.",
     longDescription:
       "Survey collects name, several multiple-choice questions, and optional results link. " +
@@ -123,5 +165,34 @@ window.TAWALA_DEMO_URLS = {
       },
     ],
     testDriveUrl: "http://localhost:8080/p/grniytf6dvmobqe/y7ucha7.Survey",
+  },
+};
+
+/** Helpers shared by library / home / My Tawala / detail pages. */
+window.TawalaDemo = {
+  get(id) {
+    return window.TAWALA_DEMO_URLS[id] || null;
+  },
+  entries() {
+    return Object.keys(window.TAWALA_DEMO_URLS).map((id) => ({
+      id,
+      ...window.TAWALA_DEMO_URLS[id],
+    }));
+  },
+  featured() {
+    return this.entries().filter((p) => p.featured);
+  },
+  /** Non-featured library projects (home “Featured Solutions” list below the 4 icons). */
+  moreSolutions() {
+    return this.entries().filter((p) => !p.featured);
+  },
+  starsHtml(rating) {
+    const n = Number(rating) || 0;
+    if (n <= 0) return '<span class="rating-none">—</span>';
+    let html = '<span class="rating-stars" aria-label="' + n + " of 5 stars\">";
+    for (let i = 1; i <= 5; i++) {
+      html += '<span class="star' + (i <= n ? " on" : "") + '">★</span>';
+    }
+    return html + "</span>";
   },
 };

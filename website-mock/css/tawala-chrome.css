@@ -128,15 +128,33 @@ body[data-tawala-page="home"] #featuredApps #apps .webapp {
   min-height: 185px;
 }
 
-body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon {
-  display: block;
+body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon-tile {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   position: absolute;
-  top: 12px;
+  top: 10px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 2.4em;
-  line-height: 1;
+  width: 88px;
+  height: 72px;
+  background: linear-gradient(180deg, #5a8fc4 0%, #3a6aa0 100%);
+  border: 1px solid #2d5a94;
+  border-radius: 6px;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.25);
   text-decoration: none;
+}
+
+body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon-tile .icon-label {
+  color: #fff;
+  font-size: 1.35em;
+  font-weight: bold;
+  letter-spacing: 0.04em;
+  font-family: arial, helvetica, sans-serif;
+}
+
+body[data-tawala-page="home"] #featuredApps #apps .webapp a.icon-tile:hover {
+  background: linear-gradient(180deg, #6a9fd4 0%, #4a7ab0 100%);
 }
 
 body[data-tawala-page="home"] #featuredApps .featuredLinks {
@@ -243,13 +261,37 @@ table.projectListing tbody tr.link:hover {
 }
 
 table.projectListing .rating {
-  color: #c90;
   white-space: nowrap;
 }
 
-table.projectListing small {
+table.projectListing .description {
   color: #666;
-  font-weight: normal;
+  font-size: 0.92em;
+  line-height: 1.35;
+}
+
+table.projectListing .title a {
+  color: #bb4343;
+  text-decoration: none;
+  font-weight: bold;
+}
+
+table.projectListing .title a:hover {
+  text-decoration: underline;
+}
+
+.rating-stars .star {
+  color: #ccc;
+  font-size: 1.05em;
+  letter-spacing: 1px;
+}
+
+.rating-stars .star.on {
+  color: #c90;
+}
+
+.rating-none {
+  color: #999;
 }
 
 .library-empty {
@@ -269,6 +311,46 @@ table.projectListing small {
 #projectDetails h1 {
   color: #bb4343;
   margin-top: 0;
+}
+
+.project-heading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.project-heading h1 {
+  margin: 0;
+}
+
+.project-icon-tile {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 40px;
+  flex-shrink: 0;
+  background: linear-gradient(180deg, #5a8fc4 0%, #3a6aa0 100%);
+  border: 1px solid #2d5a94;
+  border-radius: 4px;
+  color: #fff;
+  font-weight: bold;
+  font-size: 0.95em;
+  letter-spacing: 0.04em;
+}
+
+.start-points-heading {
+  margin-top: 10px;
+  font-weight: bold;
+  font-size: 0.92em;
+  color: #446787;
+}
+
+.test-drive-link {
+  display: block;
+  margin: 4px 0;
+  font-size: 0.92em;
 }
 
 .sectionHeading {

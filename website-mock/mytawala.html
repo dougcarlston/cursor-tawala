@@ -67,84 +67,41 @@
 
   <script src="js/chrome.js"></script>
   <script>
-    const DEPLOYED = [
-      {
-        key: "simple-survey",
-        created: "2026-06-27",
-        updated: "2026-06-27",
-        responses: "—",
-        accessed: "2026-06-27",
-      },
-      {
-        key: "signup-sheet",
-        created: "2026-06-27",
-        updated: "2026-06-27",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-      {
-        key: "form-with-process",
-        created: "2026-07-02",
-        updated: "2026-07-02",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-      {
-        key: "potluck",
-        created: "2026-07-02",
-        updated: "2026-07-02",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-      {
-        key: "get-together",
-        created: "2026-07-02",
-        updated: "2026-07-02",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-      {
-        key: "signup-sheet-email",
-        created: "2026-07-02",
-        updated: "2026-07-02",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-      {
-        key: "multiple-question-survey",
-        created: "2026-07-02",
-        updated: "2026-07-02",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-      {
-        key: "form-process-document",
-        created: "2026-07-02",
-        updated: "2026-07-02",
-        responses: "—",
-        accessed: "2026-07-02",
-      },
-    ];
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
 
     TawalaChrome.mount();
 
+    const projects = TawalaDemo.entries();
     const tbody = document.getElementById("projectRows");
-    tbody.innerHTML = DEPLOYED.map((row) => {
-      const p = TAWALA_DEMO_URLS[row.key];
-      const links = p.startPoints
-        .map((sp) => `<a href="${sp.url}" target="_blank" rel="noopener">${sp.label}</a>`)
-        .join(" · ");
-      return `<tr>
+    tbody.innerHTML = projects
+      .map((p) => {
+        const links = p.startPoints
+          .map(
+            (sp) =>
+              `<a href="${sp.url}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a>`
+          )
+          .join(" · ");
+        return `<tr>
         <td></td>
-        <td class="info left"><span class="title">${p.name}</span></td>
-        <td>${row.created}</td>
-        <td>${row.updated}</td>
-        <td>${row.responses}</td>
-        <td>${row.accessed}</td>
+        <td class="info left">
+          <span class="title"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(p.name)}</a></span><br />
+          <span class="description">${escapeHtml(p.shortDescription)}</span>
+        </td>
+        <td>${escapeHtml(p.updated || "")}</td>
+        <td>${escapeHtml(p.updated || "")}</td>
+        <td>—</td>
+        <td>${escapeHtml(p.updated || "")}</td>
         <td>${links}</td>
       </tr>`;
-    }).join("");
-    document.getElementById("projectCount").textContent = String(DEPLOYED.length);
+      })
+      .join("");
+    document.getElementById("projectCount").textContent = String(projects.length);
   </script>
 </body>
 </html>
