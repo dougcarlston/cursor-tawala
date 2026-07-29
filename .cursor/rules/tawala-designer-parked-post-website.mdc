@@ -1,0 +1,27 @@
+---
+description: Parked Designer polish until the website is operational — do not start these items early
+alwaysApply: true
+---
+
+# Designer parked post-website pass
+
+**Do not start** the items below until the website is operational. Site work affects some Designer functions. Then run another Designer pass.
+
+## Parked until site is up
+
+1. **Document smoothness P0s** — Face/Size multi-chip, invent-with-tables, chip drag, table reflow
+2. **Native `confirm()`** — still browser-native in places; polish later
+3. **Font Color picker** — left intentional as-is; do **not** “fix” without an owner ask
+4. **Skip/Process stubs** — Cut/Copy/Paste/Undo/Redo; Process If/Set still lack Cancel (Send has Cancel)
+
+## Also deferred (site-dependent)
+
+- **MainMenu → Project stubs:** Project Manager and Email Delivery — wait for site; not done
+- **Sample JSON replacement** (Jul 28 conversions) — owner reviewing offline; not blocking
+- **Page Header / banner graphics** — parked; Deploy has sophisticated image processing — do not interfere until understood
+
+## Next focus (separate chat)
+
+**Website — library mock & test-drive links** (`~/Projects/Tawala`) — Designer Sign-up / Get Together gate met; next is a fully operational site (library fidelity + stable `:8080` test-drive links).
+
+Handoff: `docs/CHAT_HANDOFF.md` → Chat 3; also `docs/MORNING_START.md` §5, `docs/ROADMAP.md` Phase 3, `website-mock/README.md`.

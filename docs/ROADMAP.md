@@ -61,9 +61,9 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 
 ## Phase 3 — Website mock
 
-**Parked July 2026 — Sign-up Sheet / Get Together gate met; DirtBowl Registration page 1 parity substantially complete (July 2026). Resume when mock needs polish or test-drive URLs change.**
+**Next (July 2026) — operational site.** Designer Sign-up Sheet / Get Together gate is **met**; DirtBowl Registration page 1 parity substantially complete. Resume Chat 3 for **library mock fidelity** and **correct test-drive links** to stable `:8080` template URLs. Serve `website-mock/` on `:5500`; keep `js/demo-urls.js` → Phase 2 only. Do not thrash `designer-web`/Tomcat unless link wiring requires it. Parked Designer polish stays out (`.cursor/rules/tawala-designer-parked-post-website.mdc`).
 
-**Goal:** Browseable rough draft of tawala.com / MyTawala / Library from legacy JSP/CSS.
+**Goal:** Fully operational browseable draft of tawala.com / MyTawala / Library from legacy JSP/CSS — fidelity + working Test drive links.
 
 **Sources:** `TawalaWebapp-build1700/web/WEB-INF/jsp/` (mytawala, library, community).
 

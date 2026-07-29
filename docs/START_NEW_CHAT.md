@@ -42,7 +42,7 @@ The repo has **three separate work tracks**. The agent must **not** merge them i
 |-------|--------|------------|
 | **1. Browser Designer** (`designer-web/`) | **ACTIVE NOW** | Reimplement legacy C# Designer in the browser. Source of truth: `Tawala_Key_Documents/DESIGNER_*.md` + `TawalaDesigner/` C# code. Run at http://localhost:5173. |
 | **2. 8080 runtime parity** (Tomcat, Docker, `registrationFibToXml.mjs`, project CSS) | **PARKED** unless you reopen | End-user forms on Tomcat must match expected layout (e.g. DirtBowl Registration). DirtBowl **page 1** is substantially complete. Paused: page 2+, Review headers, RegStep2, full theme parity. |
-| **3. Website / library mock & test-drive** (`website-mock/`) | **PARKED** (Phase 3) | Rough draft of tawala.com / Library / MyTawala. Resume when mock needs polish or test-drive URLs change. |
+| **3. Website / library mock & test-drive** (`website-mock/`) | **READY** (Phase 3) — unpark for operational site | Rough draft of tawala.com / Library / MyTawala. Designer Sign-up / Get Together gate met; next is library fidelity + correct `:8080` test-drive links. Opener: [`CHAT_HANDOFF.md`](CHAT_HANDOFF.md) → Chat 3. |
 
 **Rule of thumb:** If you are building Designer UI → track 1 only. If you say “fix Registration on 8080” → track 2. If you say “polish the website mock” → track 3.
 
@@ -232,7 +232,7 @@ Active track: Browser Designer (designer-web/) — ONLY this track unless I say 
 
 Parked tracks (do not work on unless I reopen):
 - 8080 runtime parity (Tomcat/Docker, registrationFibToXml.mjs, project CSS) — DirtBowl Registration page 1 substantially complete
-- Website / library mock (website-mock/) — Phase 3
+- Website / library mock (website-mock/) — Phase 3 READY for operational site (use Chat 3 opener in CHAT_HANDOFF.md when unparking)
 
 Current phase: Form items WYSIWYG on canvas + shared Formatting Palette.
 Done: MDI Pass 1 (e88d3ba), Items/Processes dock swap (14de400), Heading canvas WYSIWYG verified OK.
@@ -275,7 +275,7 @@ The agent should:
 | Where is the app? | `designer-web/` |
 | How do I run it? | `cd designer-web && npm run dev` → http://localhost:5173 |
 | What are we building now? | Formatting Palette shell, then Text canvas row |
-| What is parked? | 8080 parity (except if you reopen), website mock |
+| What is parked? | 8080 parity (except if you reopen). Website mock is **ready** to unpark (Chat 3 opener in CHAT_HANDOFF). |
 | Can the agent commit? | Only when you explicitly ask |
 | Session memory lives in | `docs/CHAT_HANDOFF.md`, `docs/ROADMAP.md` |
 

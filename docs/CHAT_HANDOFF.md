@@ -327,14 +327,16 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Website — library mock & test-drive links`
 
+**Status (July 2026):** Designer gate (Sign-up Sheet / Get Together template deploy) is **largely met**. Next focus is a **fully operational site** — library mock fidelity + correct test-drive links to stable `:8080` template URLs. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+
 ### 5-line paste opener
 
 ```
-Project: AI-Tawala (~/Projects/AI-Tawala)
+Project: Tawala (~/Projects/Tawala)
 Track: Website mock — website-mock/ (Phase 3)
-Goal: Polish library/home pages; keep test-drive links pointed at live 8080 template URLs
-Read first: docs/ROADMAP.md Phase 3, website-mock/README.md, website-mock/js/demo-urls.js
-Constraints: Do not change designer-web or Tomcat deploy logic here; link to Phase 2 URLs only
+Goal: Fully operational site — library mock fidelity + correct test-drive links to stable 8080 template URLs
+Read first: .cursor/rules/tawala-designer-parked-post-website.mdc, website-mock/README.md, docs/ROADMAP.md Phase 3
+Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless links need it; defer parked Designer items + Project Manager/Email Delivery
 ```
 
 ### Work to date
@@ -343,9 +345,10 @@ Constraints: Do not change designer-web or Tomcat deploy logic here; link to Pha
 - Draft pages: home, library, library detail, MyTawala, About/FAQ/Login/signup/terms/privacy/designer stubs.
 - **Test drive** links wired via `website-mock/js/demo-urls.js` → Phase 2 deploy URLs.
 - Legacy CSS imported: `css/legacy/tawala-base.css`, `pages/homepage.css`, `pages/library.css`.
-- Chrome helpers: `js/chrome.js` (pending links greyed with `link-pending`).
+- Chrome helpers: `js/chrome.js` (pending links greyed with `link-pending`) — keep these; do not reinvent chrome.
 - Template images copied from build1700; Jobs removed from footer (owner, July 2026).
 - Owner confirmed all mock pages load; test-drive / library / My Tawala links OK.
+- Prereq for fidelity work: stable `:8080` template URLs (Tomcat up; featured templates deployable).
 
 ### Key files
 
@@ -359,14 +362,23 @@ Constraints: Do not change designer-web or Tomcat deploy logic here; link to Pha
 | Legacy styles | `website-mock/css/legacy/**` |
 | Stub pages | `website-mock/about.html`, `faq.html`, `login.html`, … |
 | README | `website-mock/README.md` |
+| Parked Designer scope | `.cursor/rules/tawala-designer-parked-post-website.mdc` |
 
 ### Immediate phases ahead
 
-1. Owner visual review — home vs library layout, logo, typography.
+1. **Operational site** — library/home fidelity; verify every Test drive link hits the right live `:8080` URL.
 2. Keep `demo-urls.js` in sync when template deploy names or paths change on 8080.
 3. Flesh out stub pages (About, FAQ, Login) when copy is ready.
 4. Wire **Designer** marketing page when browser Designer is demo-ready.
 5. DirtBowl → Library link (backlog — depends on Designer/deploy track).
+
+### Defer / out of scope (this chat)
+
+- **Designer MainMenu** Project Manager + Email Delivery — wait until the site exists.
+- Everything in `.cursor/rules/tawala-designer-parked-post-website.mdc`: Document P0s, native `confirm()`, Font Color picker, Skip/Process stubs.
+- **Page Header / banner graphics** — until Deploy image pipeline is understood.
+- **Owner offline sample JSON review** — not blocking; do not replace samples here.
+- Do **not** thrash `designer-web/` or Tomcat/Docker unless a test-drive link truly requires URL wiring.
 
 ---
 
@@ -375,8 +387,8 @@ Constraints: Do not change designer-web or Tomcat deploy logic here; link to Pha
 | Action | Which chat |
 |--------|------------|
 | **Continue this chat** | Designer (Chat 1) — architecture backlog |
-| **Focus first** | Designer — architecture backlog (MDI, explorer, properties) |
-| **Park** | 8080 (Chat 2) and Website (Chat 3) — resume when deploy breaks or mock needs polish |
+| **Focus first** | Designer — architecture backlog (MDI, explorer, properties) **or** Website (Chat 3) when starting operational site |
+| **Park** | 8080 (Chat 2) until deploy breaks; Website (Chat 3) only until you unpark for library fidelity / test-drive links |
 
 ### Practical split
 

@@ -153,7 +153,9 @@ cd ~/Projects/AI-Tawala/designer-web && npm run dev
 
 ---
 
-## Section 5: Create Chat 3 — Website (create then PARK)
+## Section 5: Create Chat 3 — Website (ready to unpark)
+
+Designer gate (Sign-up / Get Together) is largely met. Use this opener when starting website work — or create + park until you are ready.
 
 1. **New chat**.
 2. **Rename** to:
@@ -163,18 +165,18 @@ cd ~/Projects/AI-Tawala/designer-web && npm run dev
 3. **Paste** this opener and Send:
 
    ```
-   Project: AI-Tawala (~/Projects/AI-Tawala)
+   Project: Tawala (~/Projects/Tawala)
    Track: Website mock — website-mock/ (Phase 3)
-   Goal: Polish library/home pages; keep test-drive links pointed at live 8080 template URLs
-   Read first: docs/ROADMAP.md Phase 3, website-mock/README.md, website-mock/js/demo-urls.js
-   Constraints: Do not change designer-web or Tomcat deploy logic here; link to Phase 2 URLs only
+   Goal: Fully operational site — library mock fidelity + correct test-drive links to stable 8080 template URLs
+   Read first: .cursor/rules/tawala-designer-parked-post-website.mdc, website-mock/README.md, docs/ROADMAP.md Phase 3
+   Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless links need it; defer parked Designer items + Project Manager/Email Delivery
    ```
 
-4. **Park immediately** — no further messages.
+4. If not working the site today — **park** (no further messages). If starting site work — continue in this chat only.
 
 5. **Optional** — note in [`ROADMAP.md`](ROADMAP.md) Phase 3:
    ```
-   Parked July 2026 — resume after Sign-up Sheet and Get Together pass in Designer.
+   Active / next — operational site (library fidelity + 8080 test-drive links). Designer Sign-up / Get Together gate met.
    ```
 
 ---
@@ -183,15 +185,15 @@ cd ~/Projects/AI-Tawala/designer-web && npm run dev
 
 | Chat | Status | When to use |
 |------|--------|-------------|
-| **Designer** (Chat 1) | **ACTIVE** | All work today |
+| **Designer** (Chat 1) | **ACTIVE** (unless you switch to website) | Designer work; parked post-website items stay out |
 | **8080** (Chat 2) | Parked | Brief switch if deploy layout/CSS breaks after Designer deploy |
-| **Website** (Chat 3) | Parked | Wait until Sign-up Sheet + Get Together pass in Designer |
+| **Website** (Chat 3) | **Ready** — unpark for operational site | Library mock fidelity + correct test-drive links; Designer gate met |
 
 **Rules of thumb**
 
-1. **Only work in Chat 1 (Designer)** for normal progress.
-2. **Stuck on 8080 layout after deploy?** Switch to Chat 2, describe the broken URL, then return to Chat 1.
-3. **Website waits** — no library polish until featured templates deploy cleanly from browser Designer.
+1. **One active track** — Designer *or* Website; do not mix in one chat.
+2. **Stuck on 8080 layout after deploy?** Switch to Chat 2, describe the broken URL, then return.
+3. **Website next** — Sign-up / Get Together gate is met; site chat owns library fidelity and `demo-urls.js` → Phase 2 URLs. Leave parked Designer polish (Document P0s, confirm, Font Color, Skip/Process stubs, Page Header/banner, sample JSON) out of Chat 3.
 
 ---
 
