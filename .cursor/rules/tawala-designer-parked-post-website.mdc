@@ -20,6 +20,16 @@ alwaysApply: true
 - **Sample JSON replacement** (Jul 28 conversions) — owner reviewing offline; not blocking
 - **Page Header / banner graphics** — parked; Deploy has sophisticated image processing — do not interfere until understood
 
+## Owner-reported Jul 30 — park (Not blocking for Live Library)
+
+**Do not fix in website chat.** Post-website Designer pass. Detail + screenshots: `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` § “Parked Jul 30 (Not blocking)”.
+
+Owner policy: will not ship projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. These two are explicitly **Not blocking** for Live Library.
+
+1. **FIB Styles — “Align right side” radio squashed** — Main Menu → Project → Styles → FIBs → **Blanks**. Labels radios (Above / Left / Right justified / Freeform) look normal; **Align right side** renders as a narrow vertical blue pill instead of a round radio. Shot: `Tawala_Key_Documents/assets/Bug_-_FIB-Styles-AlignRight-squashed-radio.png`.
+
+2. **Form Text — paragraph blank-line separation lost on Deploy + image breaks highlighting** — Design shows blank lines between paragraphs (e.g. Multiple Question Survey instructional text); Deploy/runtime packs paragraphs with no blank-line gap. Also: inserting an image breaks selection highlight so it will not include paragraphs that contain the image or text beyond it. Shots: `…/Bug_-_Text-paragraph-spacing-Design.png`, `…/Bug_-_Text-paragraph-spacing-Deploy.png`.
+
 ## Next focus (separate chat)
 
 **Website — library mock & test-drive links** (`~/Projects/Tawala`) — Designer Sign-up / Get Together gate met; next is a fully operational site (library fidelity + stable `:8080` test-drive links).

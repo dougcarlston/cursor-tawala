@@ -138,6 +138,45 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(xml).not.toMatch(/<b>Email:/);
   });
 
+  it("topLabels mirrors Design bold on MQS-style Name:/Age: prompts", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      style: "topLabels",
+      prompt: "<b>Name:</b> _________________________",
+      blanks: [{ name: "a", length: 25, alternateLabel: "Name" }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toMatch(/<font[^>]*><b>Name:<\/b><\/font>/);
+    expect(xml).toContain("<blank");
+    expect(xml).not.toMatch(/>Name: <\/font>/);
+  });
+
+  it("topLabels mirrors palette font-weight:bold spans (styleWithCSS)", () => {
+    const item = {
+      type: "fib",
+      label: "Q4",
+      style: "topLabels",
+      prompt: '<span style="font-weight: bold;">Age:</span> __________',
+      blanks: [{ name: "a", length: 10, alternateLabel: "Age" }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain("<b>Age:</b>");
+    expect(xml).toContain("<blank");
+  });
+
+  it("leftAlign mirrors Design bold (does not strip like pre-fix topLabels)", () => {
+    const item = {
+      type: "fib",
+      label: "FIB2",
+      style: "leftAlignLabels",
+      prompt: "<b>Email</b> ________",
+      blanks: [{ name: "a", alternateLabel: "Email", length: 12 }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toMatch(/<font[^>]*><b>Email<\/b><\/font>/);
+  });
+
   it("freeform does not auto-bold Name/Email labels", () => {
     const item = {
       type: "fib",

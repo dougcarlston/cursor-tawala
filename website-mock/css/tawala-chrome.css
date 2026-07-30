@@ -16,19 +16,114 @@
 }
 
 .mock-banner {
-  background: #fff3cd;
-  border: 1px solid #ffc107;
+  background: var(--tw-panel);
+  border: 1px solid var(--tw-border);
+  border-left: 4px solid var(--tw-accent);
   padding: 8px 12px;
   margin: 12px 0;
   font-size: 12px;
   line-height: 1.4;
+  color: var(--tw-text);
+}
+
+.mock-banner a {
+  color: var(--tw-accent);
 }
 
 .mock-banner-where {
   display: block;
   margin-top: 6px;
   padding-top: 6px;
-  border-top: 1px solid #e0c86a;
+  border-top: 1px solid var(--tw-border);
+  color: var(--tw-muted);
+}
+
+/* Pages menu — Designer accent bar (readable white text; not yellow/brown) */
+#hd {
+  background-image: none !important;
+  background: linear-gradient(180deg, #3d78d1 0%, var(--tw-accent) 52%, #2a5cad 100%) !important;
+  border-bottom: 1px solid var(--tw-border-dark);
+  height: 74px;
+  box-sizing: border-box;
+  /* Extra padding below labels so baseline sits clearly above the bar bottom */
+  padding-bottom: 14px;
+}
+
+#headingLogo {
+  background-image: none !important;
+}
+
+#headingStatus {
+  color: #e8f0fa !important;
+  font-size: 12px;
+}
+
+#headingStatus a {
+  color: #ffffff !important;
+  text-decoration: underline;
+  font-size: 14px; /* Login (and status links) match Pages menu size */
+}
+
+#headingStatus a:hover {
+  color: #ffffff !important;
+  opacity: 0.9;
+}
+
+#doc #headingMenu {
+  margin-top: 6px;
+}
+
+#headingMenu,
+#headingMenu ul li {
+  font-size: 14px;
+}
+
+#headingMenu a,
+#headingMenu a:visited {
+  color: #ffffff !important;
+  opacity: 0.92;
+  font-weight: 700;
+  font-size: 14px;
+  letter-spacing: 0.02em;
+  line-height: 22px;
+  padding-bottom: 6px;
+  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.25);
+}
+
+#headingMenu a:hover {
+  color: #ffffff !important;
+  opacity: 1;
+  text-decoration: underline;
+}
+
+#headingMenu ul li.selected a,
+#headingMenu ul li.selected a:visited,
+#headingMenu ul li.selected a:hover {
+  color: #ffffff !important;
+  opacity: 1;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+#headingMenu .link-pending {
+  color: rgba(255, 255, 255, 0.45) !important;
+}
+
+/* Flexible page shell — fluid width; beat legacy fixed 76.92em / min-width 600px */
+#doc {
+  width: auto !important;
+  max-width: 76.92em;
+  min-width: 0 !important;
+  box-sizing: border-box;
+  padding-left: 10px;
+  padding-right: 10px;
+}
+
+#bd > .content {
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Unmistakable listing identity — My Tawala vs public Library */
@@ -36,13 +131,13 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 8px 14px;
-  margin: 0 0 10px;
-  padding: 8px 12px;
+  gap: 6px 12px;
+  margin: 0 0 8px;
+  padding: 6px 10px;
   border: 1px solid var(--tw-border);
-  background: var(--tw-toolbar-bg);
+  background: #f0f0f0;
   font-size: 0.92em;
-  line-height: 1.35;
+  line-height: 1.3;
 }
 
 .listing-identity .listing-where {
@@ -115,9 +210,12 @@ body[data-tawala-page="library"] .pageTitle h1::after {
 /* Two-column body (library, detail, My Tawala) */
 #bd {
   display: grid;
-  grid-template-columns: 200px 1fr;
-  gap: 0 16px;
+  grid-template-columns: 180px minmax(0, 1fr);
+  gap: 0 12px;
   align-items: start;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
 }
 
 #bd.home-layout {
@@ -352,13 +450,14 @@ table.projectListing .description {
 
 /* Dense Library / My Tawala name column — descriptions live on detail pages */
 table.projectListing td.info {
-  padding-top: 5px;
-  padding-bottom: 5px;
+  padding-top: 1px;
+  padding-bottom: 1px;
 }
 
+/* Dev deploy status — detail / ops only; not list-row banners */
 .deploy-badge {
   display: inline-block;
-  margin-left: 6px;
+  margin-left: 0;
   padding: 1px 6px;
   font-size: 0.72em;
   font-weight: 600;
@@ -369,6 +468,34 @@ table.projectListing td.info {
   border-radius: 3px;
   vertical-align: middle;
   white-space: nowrap;
+}
+
+.deploy-hint-quiet {
+  font-size: 0.82em;
+  color: var(--tw-muted);
+  font-style: italic;
+}
+
+/* Vetted Library products (liveReady) — quiet cue, not a banner */
+.library-live-ready {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 0 5px;
+  font-size: 0.68em;
+  font-weight: 600;
+  font-style: normal;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: #2f6b4f;
+  background: #e8f3ec;
+  border: 1px solid #c5ddd0;
+  border-radius: 2px;
+  vertical-align: middle;
+  line-height: 1.55;
+}
+
+tr.library-row-live td.info .title a {
+  color: inherit;
 }
 
 .start-point-pending {
@@ -456,54 +583,64 @@ table.projectListing td.clone-count {
   font-weight: normal;
 }
 
-/* Collapsible Library groups — Designer Fields/Explorer [+]/[-] + New Project category type */
+/* Collapsible Library groups — one shared CSS grid for header + every project row */
 .library-listing-frame {
-  margin-top: 4px;
-  border: 1px solid #d8d0c4;
-  background: #fff;
+  /* Name flexes; Times used / Updated / Actions stay fixed across all sections */
+  --library-cols: minmax(12rem, 1fr) 7em 7.5em 5.5rem;
+  margin-top: 0;
+  width: 100%;
+  max-width: min(52rem, 100%);
+  box-sizing: border-box;
+}
+
+.library-cols {
+  display: grid;
+  grid-template-columns: var(--library-cols);
+  align-items: center;
+  width: 100%;
+  box-sizing: border-box;
+  column-gap: 0;
 }
 
 .library-colhead-bar {
-  background: #ece8e0;
-  border-bottom: 1px solid #d0c8bc;
+  background: #e4e8f0;
+  border-bottom: 1px solid var(--tw-border);
+  min-height: 2.4em;
+  font-size: 0.88em;
 }
 
-table.projectListing.library-colheads {
-  margin: 0;
-  border: none;
-  table-layout: fixed;
-  width: 100%;
-}
-
-table.projectListing.library-colheads th {
-  border: none;
-  border-right: 1px solid #d8d0c4;
-  padding: 5px 10px;
-  background: transparent;
-  font-size: 11px;
+.library-colhead-bar .lib-col {
+  border-right: 1px solid #d0d4dc;
+  padding: 6px 8px 2px 6px;
+  vertical-align: bottom;
+  font-size: 0.82em;
   font-weight: 700;
-  color: #444;
+  color: var(--tw-text);
   white-space: nowrap;
+  line-height: 1.15;
+  align-self: end;
 }
 
-table.projectListing.library-colheads th:last-child {
+.library-colhead-bar .lib-col:last-child {
   border-right: none;
 }
 
-.library-listing-frame .col-name {
-  width: 42%;
+.library-colhead-bar .th-label {
+  display: inline-block;
+  vertical-align: bottom;
+  line-height: 1.15;
 }
-.library-listing-frame .col-used {
-  width: 12%;
+
+.library-colhead-bar .lib-col-used {
+  text-align: center;
 }
-.library-listing-frame .col-comments {
-  width: 10%;
-}
-.library-listing-frame .col-updated {
-  width: 16%;
-}
-.library-listing-frame .col-actions {
-  width: 20%;
+
+.library-colhead-bar .lib-col-actions {
+  text-align: center;
+  padding-left: 4px;
+  padding-right: 4px;
+  letter-spacing: 0.01em;
+  cursor: default;
 }
 
 .library-groups {
@@ -515,7 +652,7 @@ table.projectListing.library-colheads th:last-child {
 
 details.library-category {
   border: none;
-  border-bottom: 1px solid #e4ddd2;
+  border-bottom: none;
   background: transparent;
 }
 
@@ -523,6 +660,7 @@ details.library-category:last-child {
   border-bottom: none;
 }
 
+/* Category headers span full frame width — do not participate in data columns */
 details.library-category > summary.library-category-heading {
   list-style: none;
   display: flex;
@@ -537,6 +675,8 @@ details.library-category > summary.library-category-heading {
   font-size: 11px;
   color: #004392;
   line-height: 1.3;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 details.library-category > summary.library-category-heading::-webkit-details-marker {
@@ -591,41 +731,107 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   background: #fff;
 }
 
-.library-category-body table.projectListing.library-category-table {
-  margin: 0;
-  border: none;
-  table-layout: fixed;
-  width: 100%;
+/* Dense single-line project rows — same grid as header */
+.library-project-row {
+  font-size: 0.88em;
+  line-height: 1.2;
+  cursor: pointer;
+  min-height: 1.55em;
 }
 
-.library-category-body table.projectListing th,
-.library-category-body table.projectListing td {
-  border-left: none;
-  border-right: none;
+.library-project-row:hover {
+  background: #eef3fa;
 }
 
-.library-category-body table.projectListing tr:last-child td {
-  border-bottom: none;
+.library-project-row .lib-col {
+  padding: 1px 6px;
+  min-width: 0;
 }
 
-table.projectListing td.library-row-actions {
-  padding: 4px 6px;
+.library-project-row .lib-col-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.library-project-row .lib-col-name .title,
+.library-project-row .lib-col-name .title a,
+.library-project-row .lib-col-name .rating-stars,
+.library-project-row .lib-col-name .library-live-ready {
   vertical-align: middle;
+}
+
+.library-project-row .lib-col-name .title a {
+  color: var(--tw-text);
+  text-decoration: none;
+  font-weight: normal;
+  font-size: 1em;
+  line-height: 1.35;
+}
+
+.library-project-row .lib-col-name .title a:hover {
+  text-decoration: underline;
+  color: var(--tw-text);
+}
+
+.library-project-row.library-row-live .lib-col-name .title a {
+  color: inherit;
+}
+
+.library-project-row .lib-col-used {
+  text-align: center;
+  color: var(--tw-muted);
+  font-variant-numeric: tabular-nums;
+}
+
+.library-project-row .lib-col-updated {
+  font-size: 0.78em;
+  color: var(--tw-muted);
+  white-space: nowrap;
+  line-height: 1.3;
+}
+
+.library-project-row .lib-col-actions {
+  text-align: right;
+  padding: 0 4px 0 2px;
   white-space: nowrap;
 }
 
-.library-listing-controls {
-  min-width: 14em;
-  justify-content: flex-start;
+.library-row-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 1px;
+  vertical-align: middle;
 }
 
-a.pm-icon-action.library-row-action {
-  display: inline-block;
+.library-row-actions .pm-op-icon-btn,
+.library-row-actions .pm-icon-action {
+  flex: 0 0 auto;
+}
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+a.pm-icon-action.library-row-action,
+a.pm-op-icon-btn.library-row-action {
+  display: inline-flex;
   text-decoration: none;
   box-sizing: border-box;
+  color: #1a3a5c;
 }
 
-a.pm-icon-action.library-row-action:hover {
+a.pm-icon-action.library-row-action:hover,
+a.pm-op-icon-btn.library-row-action:hover {
   text-decoration: none;
 }
 
@@ -635,9 +841,7 @@ a.pm-icon-action.library-row-action:hover {
 }
 
 .project-heading {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+  display: block;
   margin-bottom: 8px;
 }
 
@@ -645,20 +849,9 @@ a.pm-icon-action.library-row-action:hover {
   margin: 0;
 }
 
+/* Letter-tile stand-ins removed from listings/detail — keep rule inert if markup reappears */
 .project-icon-tile {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 48px;
-  height: 40px;
-  flex-shrink: 0;
-  background: linear-gradient(180deg, #5a8fc4 0%, #3a6aa0 100%);
-  border: 1px solid #2d5a94;
-  border-radius: 4px;
-  color: #fff;
-  font-weight: bold;
-  font-size: 0.95em;
-  letter-spacing: 0.04em;
+  display: none !important;
 }
 
 .start-points-heading {
@@ -734,12 +927,32 @@ a.pm-icon-action.library-row-action:hover {
   color: #666;
 }
 
+@media (max-width: 900px) {
+  #bd {
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 0 10px;
+  }
+
+  body[data-tawala-page="mytawala"] .content,
+  body[data-tawala-page="library"] .content,
+  .library-listing-frame,
+  .mytawala-listing-frame {
+    max-width: none;
+  }
+}
+
 @media (max-width: 800px) {
   #doc {
     width: auto;
     max-width: 100%;
     min-width: 0;
     padding: 0 8px;
+  }
+
+  #hd {
+    height: auto;
+    min-height: 74px;
+    padding-bottom: 16px;
   }
 
   #bd,
@@ -776,12 +989,20 @@ a.pm-icon-action.library-row-action:hover {
     flex-direction: column;
     align-items: stretch;
   }
+
+  .library-listing-controls {
+    flex-wrap: wrap;
+  }
 }
 
 @media (max-width: 720px) {
   #headingStatus {
     position: static;
     margin-bottom: 8px;
+  }
+
+  .sidebar-left {
+    max-width: none;
   }
 }
 
@@ -953,6 +1174,196 @@ a.pm-icon-action.library-row-action:hover {
 
 .pm-icon-action {
   padding: 3px 6px;
+}
+
+/* —— My Tawala dense listing: flush rows, sortable + resizable columns, icon ops —— */
+body[data-tawala-page="mytawala"] .content,
+body[data-tawala-page="library"] .content {
+  /* Cap growth on wide screens; shrink fluidly with the viewport */
+  max-width: min(54rem, 100%);
+}
+
+body[data-tawala-page="library"] .library-listing-frame {
+  /* Full content width — shared --library-cols grid; do not shrink-wrap to name text */
+  width: 100%;
+  max-width: min(52rem, 100%);
+}
+
+.mytawala-listing-frame,
+.library-listing-frame {
+  margin: 0;
+  margin-left: -4px;
+  border: 1px solid var(--tw-border);
+  background: var(--tw-panel);
+  overflow-x: auto; /* last resort on tiny screens */
+  max-width: min(52rem, 100%);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+table.projectListing.mytawala-listing {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  margin: 0;
+  font-size: 0.88em;
+  line-height: 1.2;
+}
+
+table.projectListing.mytawala-listing th,
+table.projectListing.mytawala-listing td {
+  border: none;
+  border-bottom: 1px solid #e4e4e4;
+  padding: 1px 6px;
+  vertical-align: middle;
+  text-align: left;
+}
+
+table.projectListing.mytawala-listing thead th {
+  position: relative;
+  background: #e4e8f0;
+  border-bottom: 1px solid var(--tw-border);
+  padding: 6px 8px 2px 6px;
+  vertical-align: bottom;
+  height: 2.4em;
+  font-size: 0.82em;
+  font-weight: 700;
+  color: var(--tw-text);
+  user-select: none;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing thead th .th-label {
+  display: inline-block;
+  vertical-align: bottom;
+  line-height: 1.15;
+}
+
+table.projectListing.mytawala-listing thead th.sortable {
+  cursor: pointer;
+}
+
+table.projectListing.mytawala-listing thead th.sortable:hover {
+  color: var(--tw-accent);
+}
+
+table.projectListing.mytawala-listing thead th.sort-asc .th-label::after,
+table.projectListing.mytawala-listing thead th.sort-desc .th-label::after {
+  content: " ▲";
+  font-size: 0.75em;
+  color: var(--tw-accent);
+}
+
+table.projectListing.mytawala-listing thead th.sort-desc .th-label::after {
+  content: " ▼";
+}
+
+table.projectListing.mytawala-listing thead th.col-op {
+  text-align: center;
+  padding-left: 2px;
+  padding-right: 2px;
+  font-size: 0.72em;
+  letter-spacing: 0.01em;
+  cursor: default;
+}
+
+table.projectListing.mytawala-listing td.col-op {
+  text-align: center;
+  padding: 0 2px;
+  width: 1%;
+}
+
+table.projectListing.mytawala-listing tbody tr:hover {
+  background: #eef3fa;
+}
+
+table.projectListing.mytawala-listing tbody tr:last-child td {
+  border-bottom: none;
+}
+
+table.projectListing.mytawala-listing td.info {
+  padding-top: 1px;
+  padding-bottom: 1px;
+  padding-left: 6px;
+}
+
+table.projectListing.mytawala-listing .col-date {
+  font-size: 0.85em;
+}
+
+.col-resize-handle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 5px;
+  height: 100%;
+  cursor: col-resize;
+  z-index: 2;
+}
+
+.col-resize-handle:hover,
+body.col-resizing .col-resize-handle {
+  background: rgba(49, 106, 197, 0.35);
+}
+
+body.col-resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
+.pm-op-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 20px;
+  padding: 0;
+  margin: 0;
+  line-height: 1;
+  border-radius: 2px;
+}
+
+.pm-op-icon-btn .pm-op-icon {
+  width: 12px;
+  height: 12px;
+  display: block;
+}
+
+.pm-op-icon-btn.is-active:not(:disabled) {
+  color: #1a3a5c;
+  border-color: var(--tw-accent);
+  background-color: #e8f0fa;
+  background-image: linear-gradient(180deg, #f5f9fd 0%, #dce8f6 48%, #c5d8ee 100%);
+}
+
+.pm-op-icon-btn:disabled {
+  color: var(--tw-muted);
+}
+
+body[data-tawala-page="mytawala"] .sidebar-left .block,
+body[data-tawala-page="mytawala"] .content > .block {
+  background: var(--tw-panel);
+  border-color: var(--tw-border);
+}
+
+body[data-tawala-page="mytawala"] .sidebar-left .block h3,
+body[data-tawala-page="mytawala"] .content .block h3 {
+  color: var(--tw-accent);
+  border-bottom-color: var(--tw-border);
+}
+
+body[data-tawala-page="mytawala"] .pageTitle h1 {
+  color: var(--tw-accent);
+  border-bottom-color: var(--tw-accent);
+}
+
+body[data-tawala-page="mytawala"] .pm-submenu.sub-menu {
+  border-bottom-color: var(--tw-border);
+}
+
+body[data-tawala-page="mytawala"] .pm-submenu a.selected,
+body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
+  color: var(--tw-accent);
 }
 
 .pm-hint {
@@ -1152,6 +1563,90 @@ a.pm-icon-action.library-row-action:hover {
   white-space: nowrap;
   color: #664;
   font-size: 0.95em;
+}
+
+/* Anchor styled as Designer action chip (sidebar transfer links) */
+a.pm-action {
+  display: inline-block;
+  text-decoration: none;
+  box-sizing: border-box;
+  text-align: center;
+}
+
+a.pm-action.is-active {
+  color: #1a3a5c;
+}
+
+/* Library category editor (Edit Categories) */
+.library-category-editor {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--tw-border);
+  background: #f7f9fc;
+}
+
+.library-category-editor-inner h3 {
+  margin: 0 0 6px;
+  font-size: 1.05em;
+  color: var(--tw-accent);
+}
+
+.library-category-edit-table {
+  width: 100%;
+  margin-top: 8px;
+  font-size: 0.9em;
+}
+
+.library-category-edit-table th,
+.library-category-edit-table td {
+  padding: 4px 6px;
+  border-bottom: 1px solid #e4e4e4;
+  vertical-align: middle;
+}
+
+.library-cat-select {
+  font-size: 12px;
+  padding: 2px 4px;
+  max-width: 100%;
+}
+
+.library-cat-overridden {
+  margin-left: 4px;
+  font-size: 0.72em;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: #6b5a2e;
+  background: #f5efd8;
+  border: 1px solid #e0d4a8;
+  padding: 0 4px;
+  border-radius: 2px;
+  vertical-align: middle;
+}
+
+/* My Tawala — Designer deploy inbox */
+.deploy-inbox {
+  margin: 0 0 10px;
+  padding: 8px 12px;
+  border: 1px solid var(--tw-border);
+  border-left: 4px solid var(--tw-accent);
+  background: #f0f4fa;
+}
+
+.deploy-inbox-inner h3 {
+  margin: 0 0 4px;
+  font-size: 1em;
+  color: var(--tw-accent);
+}
+
+.deploy-inbox-inner ul {
+  margin: 6px 0;
+  padding-left: 1.2em;
+}
+
+.deploy-inbox-inner li {
+  margin: 2px 0;
+  font-size: 0.92em;
 }
 
 @media (max-width: 800px) {

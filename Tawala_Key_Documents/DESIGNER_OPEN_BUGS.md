@@ -27,6 +27,36 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
+### Parked Jul 30 (Not blocking for Live Library) — **do not fix until post-website Designer pass**
+
+Website chat stays primary. Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc`.
+
+**Owner policy:** will not deploy projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. The two items below are explicitly **Not blocking** for Live Library (ugly / polish only).
+
+#### 1) FIB Styles — “Align right side” radio squashed (Not blocking)
+
+- **Path:** Main Menu → Project → Styles → FIBs → dialog **“Fill in the Blank Styles”**.
+- **Symptom:** Under **Blanks**, the control for **“Align right side”** is squashed — a narrow vertical blue pill instead of a round radio. **Labels** radios (Above / Left justified / Right justified / Freeform) look OK.
+- **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_FIB-Styles-AlignRight-squashed-radio.png` (source chat asset: `SquashedRadioButton-…png`).
+
+#### 2) Form Text — paragraph separation lost on Deploy + image breaks highlighting (Not blocking but ugly)
+
+- **Path:** Forms → Text (repro on Multiple Question Survey template instructional text with inline Deploy/globe icon).
+- **Symptom A:** Paragraphs created with a couple of Return key presses show blank-line separation in Design, but on Deploy/runtime the paragraphs pack together (blank-line separation lost).
+- **Symptom B:** Inserting an image breaks highlighting — selection will not include any paragraphs that include the image or text beyond it.
+- **Screenshots:** Design (separated) `Tawala_Key_Documents/assets/Bug_-_Text-paragraph-spacing-Design.png`; Deploy/runtime (packed) `…/Bug_-_Text-paragraph-spacing-Deploy.png` (source chat assets: `LossofParSpacing-…png`, `ParSpacing2-…png`).
+
+---
+
+### Fixed Jul 30 — FIB prompt bold lost on Deploy (MQS `topLabels`)
+
+- **Symptom:** On Multiple Question Survey, MCQ labels stayed bold after Deploy; FIB “Name:” / “Age:” did not — even when bolded in Design. (Related to parked Text-spacing item only as same template; separate root cause.)
+- **Root cause:** `fibToXml` mirrored Design B/I/U only on the **freeform** path. MQS FIBs use `style="topLabels"` (and left/right-align also stripped HTML via plain `parseFibPrompt` segments). MCQ plain questions auto-get `<b>` in `mcToXml`.
+- **Fix:** `topLabels` / leftAlign / rightAlignJustified now use the same rich walker as freeform when the prompt has formatting. Unit: `server/fibToXml.test.mjs` (topLabels + leftAlign bold cases).
+- **Verify:** Bold FIB Name:/Age: in Design → Redeploy (restart `:3001` after server edits) → Java form shows bold FIB labels.
+
+---
+
 ### Variables treated as text (Library vetting blocker — owner Jul 25) — **Set-statement math/concat fixed Jul 27**
 
 - **Symptom:** Browser Designer treats **variables as text** in most situations where legacy Designer honored typed / non-text variables (process, conditions, function Where, etc.).

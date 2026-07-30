@@ -1,5 +1,6 @@
 import { useProjectStore } from "@/store/projectStore";
 import { DesignerDialog } from "./DesignerDialog";
+import { LOCAL_WEBSITE_MOCK_MYTAWALA_URL } from "@/lib/shellCommands";
 
 export function DeployDialog() {
   const show = useProjectStore((s) => s.showDeployResult);
@@ -11,6 +12,25 @@ export function DeployDialog() {
   const failed = lastDeploy.status === "failure";
   const close = () => setShow(false);
 
+  const openMyTawala = () => {
+    if (failed) return;
+    const receipt = {
+      name: lastDeploy.project ?? "Project",
+      uniqueId: lastDeploy.uniqueId ?? null,
+      startpoints: (lastDeploy.startpoints ?? []).map((sp) => ({
+        form: sp.form,
+        url: sp.url,
+      })),
+      mode: lastDeploy.mode ?? null,
+      at: new Date().toISOString(),
+    };
+    const url =
+      LOCAL_WEBSITE_MOCK_MYTAWALA_URL +
+      "?deployReceipt=" +
+      encodeURIComponent(JSON.stringify(receipt));
+    window.open(url, "_blank", "noopener,noreferrer");
+  };
+
   return (
     <DesignerDialog
       title={failed ? "Deploy Failed" : "Project Deployed"}
@@ -19,9 +39,20 @@ export function DeployDialog() {
       closeOnBackdrop
       className="designer-dialog-wide"
       footer={
-        <button type="button" onClick={close}>
-          Close
-        </button>
+        <>
+          {!failed ? (
+            <button
+              type="button"
+              onClick={openMyTawala}
+              title="Open website-mock My Tawala with this deploy receipt"
+            >
+              Show in My Tawala
+            </button>
+          ) : null}
+          <button type="button" onClick={close}>
+            Close
+          </button>
+        </>
       }
     >
       <div className="designer-dialog-panel">
@@ -53,6 +84,10 @@ export function DeployDialog() {
                 </li>
               ))}
             </ul>
+            <p className="hint">
+              My Tawala pile is separate from this Deploy — use <strong>Show in My Tawala</strong> to
+              drop a receipt into the mock inbox (:5500).
+            </p>
           </>
         ) : (
           <p className="hint">Deploy succeeded. Check server response for URLs.</p>

@@ -7,7 +7,7 @@ import {
   splitFibPromptRows,
   plainForUnderscores,
 } from "./fibPrompt.mjs";
-import { richFibRowHtmlToXml } from "./fibRichPromptToXml.mjs";
+import { richFibRowHtmlToXml, richHtmlFragmentToFontXml } from "./fibRichPromptToXml.mjs";
 import { tabPositionsXmlFromInches } from "./tabPositionsXml.mjs";
 
 const TAB_LEFT_DEFAULT =
@@ -268,6 +268,22 @@ function stripLeadingLegacyHints(rowStr) {
   return { html: s, hints };
 }
 
+/**
+ * Mirror Design B/I/U / face / size / color into Deploy when the soft-row has
+ * underscore blanks + rich HTML. Used by freeform, topLabels, and left/right align —
+ * previously only freeform preserved formatting (MQS topLabels dropped bold).
+ * @returns {string|null} paragraph XML, or null to use the plain-segment path
+ */
+function richFormattedRowParagraph(rowStr, blanks, bi, letters, escAttr, escText, tabsXml) {
+  const hasUnderscores = /_+/.test(plainForUnderscores(rowStr));
+  if (!hasUnderscores || !rowHasRichFormatting(rowStr)) return null;
+  const { html } = stripLeadingLegacyHints(rowStr);
+  const blankXmlFn = (blank) => blankXml(blank, letters.get(blank), escAttr, escText);
+  const { body } = richFibRowHtmlToXml(html, blanks, bi, escAttr, escText, blankXmlFn);
+  if (!body) return null;
+  return paragraph(body, tabsXml);
+}
+
 /** Default/freeform: one paragraph per Design soft-row (preserve multi-blank WYSIWYG lines). */
 function defaultRowXml(row, letters, escAttr, escText) {
   if (isDobRow(row)) {
@@ -335,16 +351,20 @@ function freeformRowsXml(prompt, blanks, letters, escAttr, escText) {
       continue;
     }
 
-    const hasUnderscores = /_+/.test(plainForUnderscores(rowStr));
-    if (hasUnderscores && rowHasRichFormatting(rowStr)) {
+    const richPara = richFormattedRowParagraph(
+      rowStr,
+      blanks,
+      bi,
+      letters,
+      escAttr,
+      escText,
+      TAB_FREEFORM,
+    );
+    if (richPara) {
       const fields = fibRowFields(row.segments);
       const hints = fields.map((f) => f.hint).filter(Boolean);
       if (hints.length >= 2) parts.push(hintParagraph(hints, escText));
-
-      const { html } = stripLeadingLegacyHints(rowStr);
-      const blankXmlFn = (blank) => blankXml(blank, letters.get(blank), escAttr, escText);
-      const { body } = richFibRowHtmlToXml(html, blanks, bi, escAttr, escText, blankXmlFn);
-      if (body) parts.push(paragraph(body, TAB_FREEFORM));
+      parts.push(richPara);
       bi += blankCount;
       continue;
     }
@@ -377,28 +397,19 @@ export function fibToXml(item, escAttr, escText) {
 
     let parts = [];
     if (style === "topLabels") {
-      const rows = parseFibPrompt(prompt, blanks);
       const hasDisplayLabels = blanks.some((b) => b.displayLabel?.trim());
       parts = hasDisplayLabels
         ? topLabelsFromBlanks(item, letters, escAttr, escText)
-        : rows.length > 0
-          ? topLabelsRowsXml(rows, letters, escAttr, escText)
-          : emptyPromptBlanksXml(blanks, escAttr, escText);
+        : topLabelsFromPrompt(prompt, blanks, letters, escAttr, escText);
+      if (parts.length === 0 && blanks.length > 0) {
+        parts = emptyPromptBlanksXml(blanks, escAttr, escText);
+      }
     } else if (!prompt.trim() && blanks.length > 0) {
       parts = emptyPromptBlanksXml(blanks, escAttr, escText);
     } else {
       const right = fibUsesRightAlignLabels(style);
       if (right || left) {
-        const rows = parseFibPrompt(prompt, blanks);
-        for (const row of rows) {
-          for (const sub of paragraphsForAlignedRow(row)) {
-            if (right) {
-              parts.push(rightAlignRowXml(sub, letters, escAttr, escText));
-            } else {
-              parts.push(leftAlignRowXml(sub, letters, escAttr, escText));
-            }
-          }
-        }
+        parts = alignedRowsXml(prompt, blanks, letters, escAttr, escText, right);
       } else {
         // Freeform / default: preserve Design soft-rows + character formatting.
         parts = freeformRowsXml(prompt, blanks, letters, escAttr, escText);
@@ -419,12 +430,94 @@ export function fibToXml(item, escAttr, escText) {
   }
 }
 
+/**
+ * leftAlign / rightAlignJustified: prefer rich HTML when Design stored B/I/U;
+ * otherwise keep the plain-segment path (no auto-bold).
+ */
+function alignedRowsXml(prompt, blanks, letters, escAttr, escText, right) {
+  const rowStrs = splitFibPromptRows(normalizeFibPromptSource(prompt));
+  const rows = parseFibPrompt(prompt, blanks);
+  let bi = 0;
+  const parts = [];
+  const tabsXml = right ? TAB_TOPLABELS : TAB_LEFT;
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowStr = rowStrs[i] ?? "";
+    const blankCount = fibRowFields(row.segments).length;
+
+    const richPara = richFormattedRowParagraph(
+      rowStr,
+      blanks,
+      bi,
+      letters,
+      escAttr,
+      escText,
+      tabsXml,
+    );
+    if (richPara) {
+      parts.push(richPara);
+      bi += blankCount;
+      continue;
+    }
+
+    for (const sub of paragraphsForAlignedRow(row)) {
+      if (right) {
+        parts.push(rightAlignRowXml(sub, letters, escAttr, escText));
+      } else {
+        parts.push(leftAlignRowXml(sub, letters, escAttr, escText));
+      }
+    }
+    bi += blankCount;
+  }
+  return parts;
+}
+
+/** topLabels from Design prompt rows (MQS Name:/Age: — preserve B/I/U when present). */
+function topLabelsFromPrompt(prompt, blanks, letters, escAttr, escText) {
+  const rowStrs = splitFibPromptRows(normalizeFibPromptSource(prompt));
+  const rows = parseFibPrompt(prompt, blanks);
+  if (rows.length === 0) return [];
+  let bi = 0;
+  const parts = [];
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const rowStr = rowStrs[i] ?? "";
+    const blankCount = fibRowFields(row.segments).length;
+
+    const richPara = richFormattedRowParagraph(
+      rowStr,
+      blanks,
+      bi,
+      letters,
+      escAttr,
+      escText,
+      TAB_TOPLABELS,
+    );
+    if (richPara) {
+      parts.push(richPara);
+      bi += blankCount;
+      continue;
+    }
+
+    parts.push(...topLabelsOneRowXml(row, letters, escAttr, escText));
+    bi += blankCount;
+  }
+  return parts;
+}
+
 /** topLabels: one paragraph per blank; displayLabel is shown text, name/alternateLabel is stored field. */
 function topLabelsFromBlanks(item, letters, escAttr, escText) {
   const parts = [];
   const prompt = typeof item.prompt === "string" ? item.prompt.trim() : "";
   if (prompt && !prompt.includes("//") && !prompt.includes("/")) {
-    parts.push(paragraph(fontXml(prompt, escText), TAB_TOPLABELS));
+    if (rowHasRichFormatting(prompt)) {
+      const inner = richHtmlFragmentToFontXml(prompt, escAttr, escText);
+      parts.push(paragraph(inner || fontXml(plainForUnderscores(prompt), escText), TAB_TOPLABELS));
+    } else {
+      parts.push(paragraph(fontXml(prompt, escText), TAB_TOPLABELS));
+    }
   }
   for (const blank of item.blanks ?? []) {
     let body = "";
@@ -440,38 +533,38 @@ function topLabelsFromBlanks(item, letters, escAttr, escText) {
   return parts;
 }
 
-/** topLabels via legacy prompt rows (fallback when no displayLabel on blanks). */
-function topLabelsRowsXml(rows, letters, escAttr, escText) {
-  const parts = [];
-  for (const row of rows) {
-    let body = "";
-    let emittedBlank = false;
-    for (const seg of row.segments) {
-      if (seg.type === "text") {
-        const t = seg.text.trim();
-        if (!t) continue;
-        // Parenthetical notes in the prompt render italic (legacy SignupSheets Max field).
-        if (t.startsWith("(")) {
-          body += fontXml(t.endsWith(":") ? `${t} ` : t, escText, { italic: true });
-        } else {
-          body += fontXml(t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `, escText);
-        }
-        continue;
+/** One topLabels soft-row via plain segments (no Design character formatting). */
+function topLabelsOneRowXml(row, letters, escAttr, escText) {
+  let body = "";
+  let emittedBlank = false;
+  for (const seg of row.segments) {
+    if (seg.type === "text") {
+      const t = seg.text.trim();
+      if (!t) continue;
+      // Parenthetical notes in the prompt render italic (legacy SignupSheets Max field).
+      if (t.startsWith("(")) {
+        body += fontXml(t.endsWith(":") ? `${t} ` : t, escText, { italic: true });
+      } else {
+        body += fontXml(
+          t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `,
+          escText,
+        );
       }
-      const hint = seg.hint?.trim();
-      if (hint) {
-        const label = hint.startsWith("[") ? hint : `[${hint}]`;
-        body += fontXml(label, escText, { bold: true, italic: true });
-        body += fontXml("  ", escText);
-      }
-      body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
-      emittedBlank = true;
+      continue;
     }
-    if (emittedBlank || body) {
-      parts.push(paragraph(body, TAB_TOPLABELS));
+    const hint = seg.hint?.trim();
+    if (hint) {
+      const label = hint.startsWith("[") ? hint : `[${hint}]`;
+      body += fontXml(label, escText, { bold: true, italic: true });
+      body += fontXml("  ", escText);
     }
+    body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
+    emittedBlank = true;
   }
-  return parts;
+  if (emittedBlank || body) {
+    return [paragraph(body, TAB_TOPLABELS)];
+  }
+  return [];
 }
 
 /** Legacy Friend rows: empty prompt, one blank per paragraph (DirtBowl Q10). */

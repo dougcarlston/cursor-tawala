@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/homepage.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css" />
-  <script src="js/demo-urls.js"></script>
+  <script src="js/demo-urls.js?v=20260730-mqst"></script>
 </head>
 <body data-tawala-page="home">
   <div id="doc">
@@ -48,7 +48,7 @@
         </div>
         <div class="block">
           <h3>Quick test drive</h3>
-          <p class="test-drive-note">Opens deployed templates on localhost:8080.</p>
+          <p class="test-drive-note">Purges prior responses, then opens :8080 (needs API :3001 + Postgres).</p>
           <div id="homeTestDriveLinks"></div>
         </div>
       </div>
@@ -106,7 +106,7 @@
       .filter((p) => TawalaDemo.isDeployed(p))
       .map(
         (p) =>
-          `<a class="test-drive-link" href="${p.testDriveUrl}" target="_blank" rel="noopener">${escapeHtml(
+          `<a class="test-drive-link js-testdrive" href="${p.testDriveUrl}" data-testdrive-url="${p.testDriveUrl}" target="_blank" rel="noopener" title="Purge prior responses, then open :8080">${escapeHtml(
             TawalaDemo.displayName(p.name).replace(/ Template$/, "")
           )}</a>`
         )

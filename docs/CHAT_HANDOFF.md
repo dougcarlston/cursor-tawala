@@ -375,10 +375,11 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 ### Defer / out of scope (this chat)
 
 - **Designer MainMenu** Project Manager + Email Delivery — wait until the site exists.
-- Everything in `.cursor/rules/tawala-designer-parked-post-website.mdc`: Document P0s, native `confirm()`, Font Color picker, Skip/Process stubs.
+- Everything in `.cursor/rules/tawala-designer-parked-post-website.mdc`: Document P0s, native `confirm()`, Font Color picker, Skip/Process stubs; **plus Jul 30 parked (Not blocking):** FIB Styles squashed “Align right side” radio; Form Text blank-line loss on Deploy + image breaks highlight — see `DESIGNER_OPEN_BUGS.md` § Parked Jul 30.
 - **Page Header / banner graphics** — until Deploy image pipeline is understood.
 - **Owner offline sample JSON review** — not blocking; do not replace samples here.
 - Do **not** thrash `designer-web/` or Tomcat/Docker unless a test-drive link truly requires URL wiring.
+- **Library Live policy:** owner will not ship Live Library projects that depend on fixing **blocking** Designer bugs first; Jul 30 items above are **Not blocking** for Live.
 
 ---
 

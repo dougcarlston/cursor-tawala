@@ -6,9 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css" />
-  <script src="js/demo-urls.js"></script>
-  <script src="js/project-ops.js"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260730-lib-cols" />
+  <script src="js/demo-urls.js?v=20260730-mqst"></script>
+  <script src="js/transfer.js"></script>
+  <script src="js/project-ops.js?v=20260730-mqst"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -44,10 +45,11 @@
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">Public Library</span>
-          <span class="listing-pile">Shared catalog — WebLibrary pile (<code>projects/library/</code>) + Main Menu templates. Groups use Designer Fields/Explorer <code>[+]</code>/<code>[-]</code> toggles and New Project category type. No Purge/Delete.</span>
+          <span class="listing-pile">Shared catalog — WebLibrary pile + Main Menu templates. Dense icon rows like My Tawala (hover icon for action name). Groups use Designer [+]/[-] toggles.</span>
           <span class="listing-switch">Your private projects? <a href="mytawala.html">My Tawala</a></span>
         </div>
         <div id="librarySubmenuHost"></div>
+        <div id="libraryCategoryEditor" class="library-category-editor" hidden></div>
 
         <div id="library">
           <div id="search">
@@ -61,27 +63,17 @@
           </div>
 
           <div class="library-listing-frame" id="libraryListingFrame">
-            <div class="library-colhead-bar" role="row">
-              <table class="projectListing library-colheads" aria-label="Column headers">
-                <colgroup>
-                  <col class="col-name" /><col class="col-used" /><col class="col-comments" />
-                  <col class="col-updated" /><col class="col-actions" />
-                </colgroup>
-                <thead>
-                  <tr>
-                    <th class="left" scope="col" title="Name">Name</th>
-                    <th scope="col" title="Times this project was used (clone count)">Times used</th>
-                    <th scope="col" title="Comments">Comments</th>
-                    <th class="left col-date" scope="col" title="Updated">Updated</th>
-                    <th scope="col" title="Library actions">Actions</th>
-                  </tr>
-                </thead>
-              </table>
+            <div class="library-colhead-bar library-cols" role="row" aria-label="Column headers">
+              <div class="lib-col lib-col-name" role="columnheader" title="Name"><span class="th-label">Name</span></div>
+              <div class="lib-col lib-col-used" role="columnheader" title="Times this project was used (clone count)"><span class="th-label">Times used</span></div>
+              <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label">Updated</span></div>
+              <div class="lib-col lib-col-actions" role="columnheader" title="Project actions"><span class="th-label">Actions</span></div>
             </div>
             <div id="libraryGroups" class="library-groups" aria-label="Public Library catalog by category"></div>
           </div>
           <p id="libraryEmpty" class="library-empty" hidden>No projects match your search. <a href="library.html">Show all projects</a></p>
           <p class="pm-hint" id="libraryCountHint" style="margin-top:10px;"></p>
+          <p class="pm-hint" id="libraryRenderError" role="alert" hidden></p>
         </div>
       </div>
     </div>
@@ -117,37 +109,44 @@
           .join("");
     }
 
+    function liveCueHtml(p) {
+      /* Guard: older cached demo-urls.js without liveReadyHtml must not empty the catalog. */
+      if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.liveReadyHtml === "function") {
+        return TawalaDemo.liveReadyHtml(p) || "";
+      }
+      return "";
+    }
+
     function projectRowHtml(p) {
-      const deployNote = TawalaDemo.isDeployed(p)
-        ? ""
-        : ' <span class="deploy-badge" title="Not deployed on local :8080 yet">Not deployed</span>';
       const title = TawalaDemo.displayName(p.name);
       const timesUsed =
         p.cloneCount != null && p.cloneCount !== ""
           ? escapeHtml(String(p.cloneCount))
           : "—";
       const detailHref = `library-detail.html?project=${encodeURIComponent(p.id)}`;
-      return `<tr class="link" onclick="location.href='${detailHref}'">
-        <td class="info left">
-          <span class="title"><a href="${detailHref}" onclick="event.stopPropagation()">${escapeHtml(title)}</a></span>
-          ${TawalaDemo.starsHtml(p.rating)}${deployNote}
-        </td>
-        <td class="clone-count">${timesUsed}</td>
-        <td class="comments">${p.comments || 0}</td>
-        <td class="updated left col-date">${escapeHtml(p.updated || "")}</td>
-        <td class="library-row-actions">${TawalaProjectOps.renderLibraryListingControls(p)}</td>
-      </tr>`;
-    }
-
-    function tableForRows(rows) {
+      /* Name-only rows — no letter-tile fallbacks, no “Not deployed” list banners.
+         liveReady → quiet “Live” cue (distinct from placeholders).
+         Actions = single packed-icon column (hover titles).
+         Shared .library-cols grid keeps Name / Times used / Updated / Actions aligned. */
+      const liveCue = liveCueHtml(p);
+      const actionCell =
+        typeof TawalaProjectOps !== "undefined" &&
+        TawalaProjectOps.renderLibraryListingControlCells
+          ? TawalaProjectOps.renderLibraryListingControlCells(p)
+          : '<div class="lib-col lib-col-actions"></div>';
       return (
-        `<table class="projectListing stripe ruler library-category-table" aria-label="Projects in category">` +
-        `<colgroup>` +
-        `<col class="col-name" /><col class="col-used" /><col class="col-comments" />` +
-        `<col class="col-updated" /><col class="col-actions" />` +
-        `</colgroup>` +
-        `<tbody>${rows.map(projectRowHtml).join("")}</tbody>` +
-        `</table>`
+        `<div class="library-project-row library-cols link${liveCue ? " library-row-live" : ""}" ` +
+        `role="link" tabindex="0" onclick="location.href='${detailHref}'" ` +
+        `onkeydown="if(event.key==='Enter')location.href='${detailHref}'">` +
+        `<div class="lib-col lib-col-name info">` +
+        `<span class="title"><a href="${detailHref}" onclick="event.stopPropagation()">${escapeHtml(title)}</a></span>` +
+        `${liveCue}` +
+        `${TawalaDemo.starsHtml(p.rating)}` +
+        `</div>` +
+        `<div class="lib-col lib-col-used clone-count">${timesUsed}</div>` +
+        `<div class="lib-col lib-col-updated updated col-date">${escapeHtml(p.updated || "")}</div>` +
+        `${actionCell}` +
+        `</div>`
       );
     }
 
@@ -159,7 +158,7 @@
           `<span class="library-category-name">${escapeHtml(label)}</span>` +
           `<span class="library-category-count">${list.length}</span>` +
           `</summary>` +
-          `<div class="library-category-body">${tableForRows(list)}</div>` +
+          `<div class="library-category-body" role="list">${list.map(projectRowHtml).join("")}</div>` +
           `</details>`
       );
     }
@@ -209,45 +208,126 @@
       });
     }
 
+    function catalogRows() {
+      let rows =
+        typeof TawalaDemo !== "undefined" && TawalaDemo.libraryEntries
+          ? TawalaDemo.libraryEntries()
+          : [];
+      if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.withCategoryOverrides) {
+        rows = TawalaTransfer.withCategoryOverrides(rows);
+      }
+      return rows;
+    }
+
     function applyFilters() {
-      const params = new URLSearchParams(location.search);
-      const cat = params.get("cat");
-      const q = (params.get("query") || "").toLowerCase();
-      let rows = TawalaDemo.libraryEntries();
-      const catMeta = cat ? TawalaDemo.categoryBySlug(cat) : null;
-      if (catMeta) {
-        rows = rows.filter((p) => p.category === catMeta.label);
+      const errEl = document.getElementById("libraryRenderError");
+      if (errEl) {
+        errEl.hidden = true;
+        errEl.textContent = "";
       }
-      if (q) {
-        rows = rows.filter(
-          (p) =>
-            TawalaDemo.displayName(p.name).toLowerCase().includes(q) ||
-            (p.shortDescription || "").toLowerCase().includes(q) ||
-            (p.longDescription || "").toLowerCase().includes(q) ||
-            (p.category || "").toLowerCase().includes(q)
-        );
+      try {
+        if (typeof TawalaDemo === "undefined" || !window.TAWALA_LIBRARY) {
+          throw new Error("Catalog script failed to load (js/demo-urls.js). Hard-refresh or restart ./serve.sh from website-mock/.");
+        }
+        const params = new URLSearchParams(location.search);
+        const cat = params.get("cat");
+        const q = (params.get("query") || "").toLowerCase();
+        let rows = catalogRows();
+        const catMeta = cat ? TawalaDemo.categoryBySlug(cat) : null;
+        if (catMeta) {
+          rows = rows.filter((p) => p.category === catMeta.label);
+        }
+        if (q) {
+          rows = rows.filter(
+            (p) =>
+              TawalaDemo.displayName(p.name).toLowerCase().includes(q) ||
+              (p.shortDescription || "").toLowerCase().includes(q) ||
+              (p.longDescription || "").toLowerCase().includes(q) ||
+              (p.category || "").toLowerCase().includes(q)
+          );
+        }
+        const title = document.getElementById("listingTitle");
+        if (q) {
+          title.innerHTML =
+            'Search results for "' +
+            escapeHtml(params.get("query")) +
+            '" <a class="library-clear-search" href="library.html' +
+            (cat ? "?cat=" + encodeURIComponent(cat) : "") +
+            '">(clear)</a>';
+        } else if (catMeta) {
+          title.textContent = 'All projects in "' + catMeta.label + '" category';
+        } else {
+          title.textContent = "All projects";
+        }
+        document.getElementById("query").value = params.get("query") || "";
+        highlightCategory(cat);
+        renderGroups(rows, catMeta ? catMeta.slug : null);
+        const hint = document.getElementById("libraryCountHint");
+        if (hint) {
+          hint.textContent =
+            rows.length +
+            " project(s) in this public Library view — WebLibrary / Main Menu catalog (not My Tawala).";
+        }
+      } catch (e) {
+        const host = document.getElementById("libraryGroups");
+        if (host) host.innerHTML = "";
+        if (errEl) {
+          errEl.hidden = false;
+          errEl.textContent =
+            "Library catalog failed to render: " +
+            (e && e.message ? e.message : String(e));
+        }
+        const hint = document.getElementById("libraryCountHint");
+        if (hint) hint.textContent = "0 project(s) — catalog render error (see message above).";
       }
-      const title = document.getElementById("listingTitle");
-      if (q) {
-        title.innerHTML =
-          'Search results for "' +
-          escapeHtml(params.get("query")) +
-          '" <a class="library-clear-search" href="library.html' +
-          (cat ? "?cat=" + encodeURIComponent(cat) : "") +
-          '">(clear)</a>';
-      } else if (catMeta) {
-        title.textContent = 'All projects in "' + catMeta.label + '" category';
-      } else {
-        title.textContent = "All projects";
-      }
-      document.getElementById("query").value = params.get("query") || "";
-      highlightCategory(cat);
-      renderGroups(rows, catMeta ? catMeta.slug : null);
-      const hint = document.getElementById("libraryCountHint");
-      if (hint) {
-        hint.textContent =
-          rows.length +
-          " project(s) in this public Library view — WebLibrary / Main Menu catalog (not My Tawala).";
+    }
+
+    function renderCategoryEditor() {
+      const host = document.getElementById("libraryCategoryEditor");
+      if (!host || typeof TawalaDemo === "undefined") return;
+      const cats = TawalaDemo.libraryCategories();
+      const rows = catalogRows().slice().sort((a, b) =>
+        TawalaDemo.displayName(a.name).localeCompare(TawalaDemo.displayName(b.name))
+      );
+      host.innerHTML =
+        '<div class="library-category-editor-inner">' +
+        "<h3>Library categories</h3>" +
+        '<p class="pm-hint">Assign each public project to a Library group. Changes stay in this browser (localStorage) until written into <code>demo-urls.js</code>.</p>' +
+        '<table class="projectListing library-category-edit-table" aria-label="Edit Library categories">' +
+        "<thead><tr><th class=\"left\">Project</th><th class=\"left\">Category</th></tr></thead><tbody>" +
+        rows
+          .map((p) => {
+            const opts = cats
+              .map((c) => {
+                const sel = c.label === p.category ? " selected" : "";
+                return `<option value="${escapeHtml(c.label)}"${sel}>${escapeHtml(c.label)}</option>`;
+              })
+              .join("");
+            const mark = p.categoryOverridden
+              ? ' <span class="library-cat-overridden" title="Browser override">edited</span>'
+              : "";
+            return (
+              `<tr data-project-id="${escapeHtml(p.id)}">` +
+              `<td class="left"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(
+                TawalaDemo.displayName(p.name)
+              )}</a>${mark}</td>` +
+              `<td class="left"><select class="library-cat-select" data-project="${escapeHtml(p.id)}" aria-label="Category for ${escapeHtml(
+                TawalaDemo.displayName(p.name)
+              )}">${opts}</select></td></tr>`
+            );
+          })
+          .join("") +
+        "</tbody></table>" +
+        '<p class="pm-hint"><button type="button" class="pm-action is-active" id="libraryCatEditorDone">Done</button></p>' +
+        "</div>";
+      host.hidden = false;
+    }
+
+    function hideCategoryEditor() {
+      const host = document.getElementById("libraryCategoryEditor");
+      if (host) {
+        host.hidden = true;
+        host.innerHTML = "";
       }
     }
 
@@ -269,6 +349,41 @@
     document.getElementById("libraryChromeHost").innerHTML =
       TawalaProjectOps.renderLibraryChromeStubs();
     applyFilters();
+
+    document.addEventListener("tawala:edit-categories", () => {
+      renderCategoryEditor();
+    });
+
+    document.addEventListener("click", (ev) => {
+      const editCat = ev.target.closest('[data-op="edit-categories"]');
+      if (editCat) {
+        ev.preventDefault();
+        renderCategoryEditor();
+        return;
+      }
+      if (ev.target.id === "libraryCatEditorDone") {
+        hideCategoryEditor();
+        applyFilters();
+        renderCategoryNav();
+      }
+    });
+
+    document.addEventListener("change", (ev) => {
+      const sel = ev.target.closest("select.library-cat-select");
+      if (!sel || typeof TawalaTransfer === "undefined") return;
+      const id = sel.getAttribute("data-project");
+      const label = sel.value;
+      TawalaTransfer.setProjectCategory(id, label);
+      applyFilters();
+      renderCategoryNav();
+      const markCell = sel.closest("tr") && sel.closest("tr").querySelector("td.left");
+      if (markCell && !markCell.querySelector(".library-cat-overridden")) {
+        markCell.insertAdjacentHTML(
+          "beforeend",
+          ' <span class="library-cat-overridden" title="Browser override">edited</span>'
+        );
+      }
+    });
   </script>
 </body>
 </html>

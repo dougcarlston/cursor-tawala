@@ -7,7 +7,8 @@
  * project-ops-review.html for memory/archive review.
  *
  * wired: false → disabled control (grey only; no “not wired” label)
- * wired: "purge-local" → confirm + local cleanup hint (no Tomcat Project Manager purge API in mock)
+ * wired: "purge-local" → confirm + POST /api/purge-responses (uniqueId from demo-urls)
+ *         (falls back to CLI hint if API/Postgres unavailable)
  */
 (function () {
   /** My Tawala top sub-menu (submenu-mytawala.jsp) */
@@ -30,8 +31,9 @@
     },
     {
       label: "Edit Categories",
-      title: "View and edit categories",
-      wired: false,
+      title: "Assign Library projects to category groups",
+      wired: "edit-categories",
+      id: "edit-categories",
     },
     {
       label: "Recent Changes",
@@ -50,8 +52,8 @@
     {
       id: "edit-categories",
       label: "EDIT CATEGORIES",
-      title: "View and edit categories",
-      wired: false,
+      title: "Assign Library projects to category groups",
+      wired: "edit-categories",
     },
     {
       id: "reindex",
@@ -70,26 +72,31 @@
   /**
    * Public Library listing row actions — recovered from library detail / customizables
    * (Test Drive, Save/Clone into My Tawala). searchLibrary.jsp itself was click-to-detail only.
+   * Single “Actions” column: packed icons in each row (hover titles); header is the word
+   * “Actions” only — no header glyphs.
    * wired: "test-drive" → active when project has a live :8080 URL; else disabled grey.
    */
   const LIBRARY_LISTING_ACTIONS = [
     {
       id: "test-drive",
-      label: "Test drive",
+      label: "Drive",
       title: "Test drive this project (local :8080)",
       wired: "test-drive",
+      icon: "testdrive",
     },
     {
       id: "save-my-tawala",
-      label: "Save to My Tawala",
+      label: "Save",
       title: "Save this project under My Tawala",
       wired: false,
+      icon: "save",
     },
     {
       id: "clone",
-      label: "Clone",
-      title: "Clone and customize into My Tawala",
+      label: "USE IT",
+      title: "USE IT",
       wired: false,
+      icon: "clone",
     },
   ];
 
@@ -103,15 +110,112 @@
     { id: "backup", label: "BACKUP", title: "Backup project data", wired: false },
     { id: "restore", label: "RESTORE", title: "Restore project data", wired: false },
     { id: "purge", label: "PURGE", title: "Purge project data", wired: "purge-local", confirmId: "purge" },
-    { id: "delete", label: "DELETE", title: "Delete Project", wired: false, confirmId: "delete" },
-    { id: "publish", label: "PUBLISH", title: "Publish project to the Community Library", wired: false },
+    { id: "delete", label: "DELETE", title: "Delete Project", wired: "delete-mock", confirmId: "delete" },
+    {
+      id: "publish",
+      label: "PUBLISH",
+      title: "Publish / move this project to the public Library",
+      wired: false,
+    },
+    {
+      id: "pull-library",
+      label: "PULL FROM LIBRARY",
+      title: "Replace this project with a newer public Library version",
+      wired: false,
+    },
   ];
 
-  /** Listing-row icon actions (view.jsp) — lean: Purge / Delete only */
+  /**
+   * My Projects listing row — same ops as Project Actions, icon-per-row / label-in-header.
+   * (Legacy view.jsp was Purge/Delete only; owner asked for the full listing-appropriate strip.)
+   */
   const LISTING_ACTIONS = [
-    { id: "purge", label: "Purge", title: "Purge project data", wired: "purge-local", confirmId: "purge" },
-    { id: "delete", label: "Delete", title: "Delete project", wired: false, confirmId: "delete" },
+    {
+      id: "export",
+      label: "Export",
+      title: "Export project data to Excel format",
+      wired: false,
+      icon: "export",
+    },
+    {
+      id: "import",
+      label: "Import",
+      title: "Import data to project from Excel or CSV file",
+      wired: false,
+      icon: "import",
+    },
+    {
+      id: "backup",
+      label: "Backup",
+      title: "Backup project data",
+      wired: false,
+      icon: "backup",
+    },
+    {
+      id: "restore",
+      label: "Restore",
+      title: "Restore project data",
+      wired: false,
+      icon: "restore",
+    },
+    {
+      id: "purge",
+      label: "Purge",
+      title: "Purge project data",
+      wired: "purge-local",
+      confirmId: "purge",
+      icon: "purge",
+    },
+    {
+      id: "delete",
+      label: "Delete",
+      title: "Delete project",
+      wired: "delete-mock",
+      confirmId: "delete",
+      icon: "delete",
+    },
+    {
+      id: "publish",
+      label: "Publish",
+      title: "Publish / move this project to the public Library",
+      wired: false,
+      icon: "publish",
+    },
+    {
+      id: "pull-library",
+      label: "Pull",
+      title: "Pull / upgrade from the public Library",
+      wired: false,
+      icon: "pull",
+    },
   ];
+
+  /** Compact SVG glyphs for listing icon cells (12×12 viewBox). */
+  const LISTING_ICONS = {
+    export:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6M3.5 4L6 1.5 8.5 4M2 9.5h8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    import:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 7.5v-6M3.5 5L6 7.5 8.5 5M2 9.5h8" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    backup:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 3.5h7v7h-7zM4 3.5V2.5h4v1M4.5 6.5h3M4.5 8.5h3" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    restore:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M2.5 6a3.5 3.5 0 1 0 1-2.4M2.5 2.5v3h3" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    purge:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5h6l-.6 5.5H3.6zM4.5 4.5V3h3v1.5M2.5 4.5h7" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    delete:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 3.5l6 6M9 3.5l-6 6" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>',
+    publish:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 8.5v1.5h8V8.5M6 8V2.5M3.5 4.5L6 2 8.5 4.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    pull:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M2 3.5v-1.5h8v1.5M6 4v5.5M3.5 7.5L6 10 8.5 7.5" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    /* Library listing */
+    testdrive:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.2v7.6L10 6z" fill="currentColor" stroke="none"/></svg>',
+    save:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6M3.5 5L6 7.5 8.5 5M2.5 10h7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    clone:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 3.5h5.5v5.5H4zM2.5 2v5.5H8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  };
 
   /** Sidebar / related project detail ops (block-projectManagerProjectDetails.jsp + invite/webpage) */
   const PROJECT_SIDEBAR_OPS = [
@@ -157,12 +261,13 @@
     { label: "UPDATE (Additional Project Details)", title: "Admin project properties", wired: false },
   ];
 
-  /** Customization / Library flows that save/clone into My Tawala (not the PM action bar) */
+  /** Symbiotic transfer flows — Library ↔ My Tawala ↔ Designer (labels first; wire later). */
   const RELATED_SAVE_CLONE = [
-    { label: "Save this project under My Tawala", source: "customization saveTile/publishTile", wired: false },
-    { label: "Save your project to My Tawala", source: "customization", wired: false },
-    { label: "DEPLOY TO MY TAWALA", source: "library project detail (admin)", wired: false },
-    { label: "Clone and Customize", source: "library CloneAndCustomizeController", wired: false },
+    { label: "Save this project under My Tawala", source: "Library → My Tawala", wired: false },
+    { label: "USE IT", source: "customizables.jsp → CloneAndCustomizeController (web customize, not Designer)", wired: false },
+    { label: "Publish / move to Library", source: "My Tawala → Library", wired: false },
+    { label: "Pull from Library", source: "Library → My Tawala upgrade", wired: false },
+    { label: "Deploy from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
   ];
 
   /** Confirm dialog titles/copy from confirmationdialogs.jsp */
@@ -195,18 +300,24 @@
   };
 
   const ARCHIVE_NOTE =
-    "Archive sources: projectmanager/detail.jsp (Project Actions), view.jsp (listing Purge/Delete), " +
+    "Archive sources: projectmanager/detail.jsp (Project Actions), view.jsp (listing Purge/Delete historically), " +
     "block-projectManagerProjectDetails.jsp (REVISE / ONLINE-OFFLINE / Include / Invite), " +
     "submenu-mytawala.jsp, submenu-library.jsp, confirmationdialogs.jsp. " +
+    "Mock My Tawala listing now shows the full Export…Publish icon strip (labels in headers). " +
     "Catalog is split: Public Library controls vs My Tawala / Project Manager. " +
-    "No separate Rename/Clone labels on the Project Actions bar — Save/Clone appear in customization & Library flows. " +
+    "No separate Rename/Clone labels on the Project Actions bar — Save under My Tawala / USE IT appear in customization & Library flows. " +
     "SportsDashboards (not SportsBoard).";
 
   const LOCAL_PURGE_HELP =
-    "Full project PURGE needs legacy Project Manager → purgeProjectResponses (not exposed on this mock or designer-web :3001). " +
-    "Closest local helper for DirtBowl Registration test rows only:\n\n" +
+    "Purge calls designer-web POST /api/purge-responses (uniqueId from the :8080 URL) → Docker Postgres, " +
+    "same effect as Java Project Manager purgeProjectResponses.\n\n" +
+    "Requires: designer-web API on :3001 and `docker compose` postgres.\n" +
+    "CLI fallback:\n" +
+    "  ./scripts/dev-data.sh purge-by-unique-id <uniqueId>\n" +
+    "DirtBowl Registration-only cleanup (legacy):\n" +
     "  ./scripts/dev-data.sh cleanup-registrations\n\n" +
-    "(Requires docker compose postgres. Does not delete the project or all forms.)";
+    "Limitation: Test drive opens :8080 in a new tab — there is no reliable purge-on-tab-close in this static mock; " +
+    "each Test drive purges on start instead.";
 
   /** Catalog sections — split by product surface (Library vs My Tawala / Project Manager). */
   const OPS_CATALOG_SECTIONS = [
@@ -229,7 +340,7 @@
       id: "library-listing",
       title: "Public Library listing row",
       where:
-        "Library mock — Test drive (when :8080 deployed), Save to My Tawala, Clone. searchLibrary.jsp was click-to-detail only.",
+        "Library mock — icon columns (hover titles): Test drive (when :8080 deployed), Save this project under My Tawala, USE IT. searchLibrary.jsp was click-to-detail only.",
       items: LIBRARY_LISTING_ACTIONS,
     },
     {
@@ -250,7 +361,8 @@
       surface: "mytawala",
       id: "listing",
       title: "My Projects listing row",
-      where: "projectmanager/view.jsp — Purge / Delete only beside each project",
+      where:
+        "mytawala.html — icon strip per row (labels in column headers): Export · Import · Backup · Restore · Purge · Delete · Publish. Legacy view.jsp was Purge/Delete only.",
       items: LISTING_ACTIONS,
     },
     {
@@ -299,7 +411,7 @@
     mytawala: {
       heading: "My Tawala / Project Manager controls",
       blurb:
-        "mytawala.html (listing) + mytawala-project.html (Project Details). Private projects; PURGE is the only partially wired Project Manager action (local cleanup hint).",
+        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; PURGE (via :3001 → Postgres by uniqueId) and DELETE (confirm) are active on the listing.",
     },
   };
 
@@ -312,14 +424,25 @@
   }
 
   function isOpActive(op) {
-    return op.wired === true || op.wired === "purge-local";
+    return (
+      op.wired === true ||
+      op.wired === "purge-local" ||
+      op.wired === "delete-mock" ||
+      op.wired === "edit-categories"
+    );
   }
 
   function wiredNote(item) {
-    if (item.wired === "purge-local") return "active (local cleanup hint)";
-    if (item.wired === "test-drive") return "active when :8080 deployed";
+    if (item.wired === "purge-local") return "active (purge via :3001 API)";
+    if (item.wired === "delete-mock") return "active (confirm + remove row)";
+    if (item.wired === "edit-categories") return "active (local category assignment)";
+    if (item.wired === "test-drive") return "active when :8080 deployed (purge-on-start)";
     if (item.wired === true) return "active";
     return "disabled in mock";
+  }
+
+  function listingIconHtml(iconId) {
+    return LISTING_ICONS[iconId] || "";
   }
 
   function renderSubmenuItems(items, active) {
@@ -330,6 +453,12 @@
           const sel = item.label === active ? " selected" : "";
           if (!item.wired) {
             return `<li><span class="link-pending${sel}" title="${escapeHtml(item.title)}" aria-disabled="true">${escapeHtml(item.label)}</span></li>`;
+          }
+          if (item.wired === "edit-categories" || item.id === "edit-categories") {
+            return (
+              `<li><a class="${sel.trim()}" href="#edit-categories" title="${escapeHtml(item.title)}" ` +
+              `data-op="edit-categories" data-wired="edit-categories">${escapeHtml(item.label)}</a></li>`
+            );
           }
           return `<li><a class="${sel.trim()}" href="${item.href}" title="${escapeHtml(item.title)}">${escapeHtml(item.label)}</a></li>`;
         })
@@ -378,34 +507,79 @@
     );
   }
 
+  /** Single Library “Actions” header — text only (icons live in row cells). */
+  function renderLibraryListingActionHeaders() {
+    return (
+      `<div class="lib-col lib-col-actions" role="columnheader" title="Project actions">` +
+      `<span class="th-label">Actions</span>` +
+      `</div>`
+    );
+  }
+
   /**
-   * Library listing row controls — Test drive when deployed; Save / Clone grey stubs.
-   * No “not wired” text — disabled styling is enough (same pattern as My Tawala Purge/Delete).
+   * Library listing — one Actions grid cell with packed icons (hover titles).
+   * Test drive when deployed; Save / Clone grey stubs.
    */
-  function renderLibraryListingControls(project) {
+  function renderLibraryListingControlCells(project) {
     const deployed =
       typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
-    return (
-      '<div class="controls pm-listing-controls library-listing-controls" onclick="event.stopPropagation()">' +
-      LIBRARY_LISTING_ACTIONS.map((op) => {
-        if (op.wired === "test-drive") {
-          if (deployed) {
-            return (
-              `<a class="pm-icon-action library-row-action" href="${escapeHtml(project.testDriveUrl)}" ` +
-              `target="_blank" rel="noopener" title="${escapeHtml(op.title)}" ` +
-              `data-op="${escapeHtml(op.id)}" data-wired="true">${escapeHtml(op.label)}</a>`
-            );
-          }
+    const icons = LIBRARY_LISTING_ACTIONS.map((op) => {
+      if (op.wired === "test-drive") {
+        if (deployed) {
           return (
-            `<button type="button" class="pm-icon-action" disabled ` +
-            `title="Not deployed on local :8080 yet" data-op="${escapeHtml(op.id)}" data-wired="false">` +
-            `${escapeHtml(op.label)}</button>`
+            `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
+            `href="${escapeHtml(project.testDriveUrl)}" data-testdrive-url="${escapeHtml(project.testDriveUrl)}" ` +
+            `target="_blank" rel="noopener" ` +
+            `title="Purge prior responses, then open :8080" aria-label="${escapeHtml(op.title)}" ` +
+            `data-op="${escapeHtml(op.id)}" data-wired="true">${listingIconHtml(op.icon)}</a>`
           );
         }
         return (
-          `<button type="button" class="pm-icon-action" disabled ` +
-          `title="${escapeHtml(op.title)}" data-op="${escapeHtml(op.id)}" data-wired="false">` +
-          `${escapeHtml(op.label)}</button>`
+          `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+          `title="No local test-drive yet" aria-label="Test drive unavailable" ` +
+          `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
+        );
+      }
+      return (
+        `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+        `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.title)}" ` +
+        `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
+      );
+    }).join("");
+    return (
+      `<div class="lib-col lib-col-actions" onclick="event.stopPropagation()">` +
+      `<span class="library-row-actions">${icons}</span>` +
+      `</div>`
+    );
+  }
+
+  /** @deprecated Prefer renderLibraryListingControlCells — single-cell text controls. */
+  function renderLibraryListingControls(project) {
+    return (
+      '<div class="controls pm-listing-controls library-listing-controls" onclick="event.stopPropagation()">' +
+      LIBRARY_LISTING_ACTIONS.map((op) => {
+        const deployed =
+          typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
+        if (op.wired === "test-drive") {
+          if (deployed) {
+            return (
+              `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
+              `href="${escapeHtml(project.testDriveUrl)}" data-testdrive-url="${escapeHtml(project.testDriveUrl)}" ` +
+              `target="_blank" rel="noopener" ` +
+              `title="Purge prior responses, then open :8080" aria-label="${escapeHtml(op.title)}" ` +
+              `data-op="${escapeHtml(op.id)}" data-wired="true">${listingIconHtml(op.icon)}</a>`
+            );
+          }
+          return (
+            `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+            `title="No local test-drive yet" aria-label="Test drive unavailable" ` +
+            `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
+          );
+        }
+        return (
+          `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+          `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.title)}" ` +
+          `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
         );
       }).join(" ") +
       "</div>"
@@ -434,7 +608,36 @@
     );
   }
 
-  /** Lean listing controls — Purge / Delete only (name click → Project Details). */
+  /** Header cells for listing action columns — label in bar, icon lives in each row. */
+  function renderListingActionHeaders() {
+    return LISTING_ACTIONS.map((op) => {
+      return (
+        `<th class="col-op" scope="col" data-op-col="${escapeHtml(op.id)}" ` +
+        `title="${escapeHtml(op.title)}"><span class="th-label">${escapeHtml(op.label)}</span></th>`
+      );
+    }).join("");
+  }
+
+  /** Per-row icon cells (one &lt;td&gt; per listing action). Name click → Project Details. */
+  function renderListingControlCells(projectId) {
+    return LISTING_ACTIONS.map((op) => {
+      const active = isOpActive(op);
+      const wired = active ? String(op.wired) : "false";
+      const disabled = active ? "" : " disabled";
+      const activeClass = active ? " is-active" : "";
+      return (
+        `<td class="col-op">` +
+        `<button type="button" class="pm-icon-action pm-op-icon-btn${activeClass}"${disabled} ` +
+        `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
+        `data-op="${escapeHtml(op.id)}" data-project="${escapeHtml(projectId)}" ` +
+        `data-confirm="${escapeHtml(op.confirmId || "")}" data-wired="${escapeHtml(wired)}">` +
+        `${listingIconHtml(op.icon)}</button>` +
+        `</td>`
+      );
+    }).join("");
+  }
+
+  /** @deprecated Prefer renderListingControlCells — kept for callers expecting a single controls cell. */
   function renderListingControls(projectId) {
     return (
       '<div class="controls pm-listing-controls">' +
@@ -442,10 +645,13 @@
         const active = isOpActive(op);
         const wired = active ? String(op.wired) : "false";
         const disabled = active ? "" : " disabled";
+        const activeClass = active ? " is-active" : "";
         return (
-          `<button type="button" class="pm-icon-action"${disabled} ` +
-          `title="${escapeHtml(op.title)}" data-op="${escapeHtml(op.id)}" data-project="${escapeHtml(projectId)}" ` +
-          `data-confirm="${escapeHtml(op.confirmId || "")}" data-wired="${escapeHtml(wired)}">${escapeHtml(op.label)}</button>`
+          `<button type="button" class="pm-icon-action pm-op-icon-btn${activeClass}"${disabled} ` +
+          `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
+          `data-op="${escapeHtml(op.id)}" data-project="${escapeHtml(projectId)}" ` +
+          `data-confirm="${escapeHtml(op.confirmId || "")}" data-wired="${escapeHtml(wired)}">` +
+          `${listingIconHtml(op.icon)}</button>`
         );
       }).join(" ") +
       "</div>"
@@ -483,7 +689,7 @@
         if (sp.url) {
           return `<li><a href="${escapeHtml(sp.url)}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a></li>`;
         }
-        return `<li><span class="start-point-pending">${escapeHtml(sp.label)} <em>(not deployed yet)</em></span></li>`;
+        return `<li><span class="start-point-pending" title="No local :8080 URL yet">${escapeHtml(sp.label)}</span></li>`;
       })
       .join("");
 
@@ -505,11 +711,15 @@
       "</div>" +
       '<p class="pm-hint">Backups, project emails, library publish dialogs, and admin UPDATE.</p>';
 
+    const commentsStub =
+      '<p class="pm-hint">Legacy Library listed a community comment count per project. ' +
+      "Comment threads are not wired in this mock — stub for later.</p>";
+
     const startSection =
       `<ul class="pm-start-points">${startLinks || "<li>—</li>"}</ul>` +
       (deployed
-        ? '<p class="pm-hint">Test-drive links → local Java :8080 (from demo-urls.js).</p>'
-        : '<p class="pm-hint"><span class="deploy-badge">Not deployed yet</span> — open in Web Designer, then Deploy for a live test-drive.</p>');
+        ? '<p class="pm-hint">Test-drive links → local Java :8080 (purge prior responses on click, then open).</p>'
+        : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — open in Web Designer, then Deploy for a live test-drive.</p>');
 
     return (
       `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
@@ -529,6 +739,7 @@
       '<h3 class="sectionHeading">Project Actions</h3>' +
       renderProjectActionsBar(project.id) +
       renderCollapsibleSection("pmSecStart", "Start points (test drive)", startSection, true) +
+      renderCollapsibleSection("pmSecComments", "Comments", commentsStub, false) +
       renderCollapsibleSection("pmSecData", "Project Data", dataOps, false) +
       renderCollapsibleSection("pmSecVersions", "Versions", versionOps, false) +
       renderCollapsibleSection("pmSecOther", "Backups, emails & library publish", backupOps, false) +
@@ -639,15 +850,56 @@
       return;
     }
 
+    if (wired === "edit-categories" || op === "edit-categories") {
+      /* library.html listens for data-op=edit-categories and opens the editor. */
+      document.dispatchEvent(new CustomEvent("tawala:edit-categories"));
+      return;
+    }
+
     if (confirmId) {
       const ok = await showConfirm(confirmId);
       if (!ok) return;
     }
 
     if (wired === "purge-local") {
-      setStatus(`PURGE requested for “${projectId || "project"}”. ${LOCAL_PURGE_HELP}`);
-      window.alert(
-        `Purge Project Data\n\nConfirmed for mock project: ${projectId || "(unknown)"}\n\n${LOCAL_PURGE_HELP}`
+      const project =
+        (typeof TawalaDemo !== "undefined" && projectId && TawalaDemo.get(projectId)) || null;
+      const uniqueId =
+        typeof TawalaDemo !== "undefined" && TawalaDemo.uniqueIdForProject
+          ? TawalaDemo.uniqueIdForProject(project)
+          : null;
+      if (!uniqueId || typeof TawalaDemo === "undefined" || !TawalaDemo.purgeResponses) {
+        setStatus(`PURGE for “${projectId || "project"}” — no uniqueId. ${LOCAL_PURGE_HELP}`);
+        window.alert(
+          `Purge Project Data\n\nNo :8080 uniqueId for mock project: ${projectId || "(unknown)"}\n\n${LOCAL_PURGE_HELP}`
+        );
+        return;
+      }
+      setStatus(`Purging responses for “${projectId}” (${uniqueId})…`);
+      const result = await TawalaDemo.purgeResponses(uniqueId);
+      if (result.status === "success") {
+        const n = result.javaDb && result.javaDb.deleted != null ? result.javaDb.deleted : "?";
+        setStatus(`Purged “${projectId}” (${uniqueId}) — deleted ${n} submission row(s).`);
+      } else {
+        setStatus(`PURGE failed for “${projectId}” (${uniqueId}): ${result.error || "unknown"}`);
+        window.alert(
+          `Purge failed for ${projectId} (${uniqueId})\n\n${result.error || "unknown"}\n\n${LOCAL_PURGE_HELP}`
+        );
+      }
+      return;
+    }
+
+    if (wired === "delete-mock") {
+      const row = btn.closest("tr");
+      if (row) row.remove();
+      const countEl = document.getElementById("projectCount");
+      if (countEl) {
+        const n = document.querySelectorAll("#projectRows tr").length;
+        countEl.textContent = String(n);
+      }
+      setStatus(`Deleted “${projectId || "project"}” from this mock listing (page reload restores catalog).`);
+      document.dispatchEvent(
+        new CustomEvent("tawala:project-deleted", { detail: { projectId } })
       );
     }
   }
@@ -669,6 +921,7 @@
     LIBRARY_LISTING_ACTIONS,
     PROJECT_ACTIONS,
     LISTING_ACTIONS,
+    LISTING_ICONS,
     PROJECT_SIDEBAR_OPS,
     PROJECT_DATA_OPS,
     VERSION_OPS,
@@ -682,6 +935,10 @@
     renderLibrarySubmenu,
     renderLibraryChromeStubs,
     renderListingControls,
+    renderListingControlCells,
+    renderListingActionHeaders,
+    renderLibraryListingControlCells,
+    renderLibraryListingActionHeaders,
     renderLibraryListingControls,
     renderDetailPanel,
     renderOpsCatalog,

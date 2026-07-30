@@ -16,6 +16,11 @@ import {
   buildSendTestEmailXml,
   parseEmailStatusXml,
 } from "./emailStatus.mjs";
+import {
+  isValidUniqueId,
+  purgeProjectResponsesByUniqueId,
+  uniqueIdFromRuntimeUrl,
+} from "./purgeProjectResponses.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
 let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
@@ -334,6 +339,63 @@ app.get("/api/health", (_req, res) => {
     host: HOST,
     runtime: JAVA_URL ? "java" : "dev",
   });
+});
+
+/** CORS for website-mock (:5500) calling purge / health from the browser. */
+function allowMockCors(req, res) {
+  const origin = req.headers.origin || "";
+  if (
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin) ||
+    origin === "null"
+  ) {
+    res.setHeader("Access-Control-Allow-Origin", origin === "null" ? "*" : origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Vary", "Origin");
+  }
+}
+
+app.options("/api/purge-responses", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/**
+ * Purge form submissions for a deployed project by uniqueId (`/p/{id}/…`).
+ * Local Docker Postgres (same as Project Manager purgeProjectResponses) + Node session clear.
+ * Used by website-mock Test drive (purge-on-start) and My Tawala PURGE.
+ */
+app.post("/api/purge-responses", async (req, res) => {
+  allowMockCors(req, res);
+  const body = req.body ?? {};
+  const credentials = body.credentials;
+  let uniqueId = body.uniqueId;
+  if (!uniqueId && body.url) {
+    uniqueId = uniqueIdFromRuntimeUrl(body.url);
+  }
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed" });
+    return;
+  }
+  if (!isValidUniqueId(uniqueId)) {
+    res.status(400).json({
+      status: "failure",
+      error: "uniqueId required (1–20 alphanumeric, or pass url with /p/{id}/…)",
+    });
+    return;
+  }
+  try {
+    const result = await purgeProjectResponsesByUniqueId(uniqueId);
+    const code = result.status === "success" ? 200 : 502;
+    res.status(code).json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ status: "failure", uniqueId, error: String(e.message ?? e) });
+  }
 });
 
 /** Server-owned outbound email status (no secrets returned). */

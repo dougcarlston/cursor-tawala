@@ -57,11 +57,11 @@
   function renderNav(activePage) {
     return NAV_ORDER.map((key) => {
       const item = LINKS[key];
-      const selected = key === activePage ? " selected" : "";
+      const selected = key === activePage;
       if (!item.ready) {
-        return `<li><span class="link-pending${selected}" aria-disabled="true">${item.label}</span></li>`;
+        return `<li class="${selected ? "selected" : ""}"><span class="link-pending" aria-disabled="true">${item.label}</span></li>`;
       }
-      return `<li><a href="${item.href}" class="${selected.trim()}">${item.label}</a></li>`;
+      return `<li class="${selected ? "selected" : ""}"><a href="${item.href}"${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
     }).join("\n          ");
   }
 
@@ -102,26 +102,15 @@
   }
 
   function renderBanner(activePage) {
-    const base =
-      `<strong>Website mock</strong> — static draft from legacy JSP. Grey = not implemented. Test-drive → :8080. ` +
-      `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500.`;
-    if (activePage === "mytawala") {
-      return (
-        base +
-        ` <span class="mock-banner-where"><b>You are on My Tawala</b> — private projects (` +
-        `<code>projects/mytawala/</code> / MyTawala pile). Not the public Library. ` +
-        `<a href="library.html">Go to Library →</a></span>`
-      );
-    }
-    if (activePage === "library") {
-      return (
-        base +
-        ` <span class="mock-banner-where"><b>You are on Library</b> — public catalog (` +
-        `<code>projects/library/</code> / WebLibrary pile). Not your private My Tawala list. ` +
-        `<a href="mytawala.html">Go to My Tawala →</a></span>`
-      );
-    }
-    return base;
+    return (
+      `<strong>Website mock</strong> — static draft from legacy JSP. Grey controls = not implemented. Test-drive → :8080. ` +
+      `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500.` +
+      (activePage === "mytawala"
+        ? ` · <b>My Tawala</b> (private) · <a href="library.html">Library</a>`
+        : activePage === "library"
+          ? ` · <b>Library</b> (public) · <a href="mytawala.html">My Tawala</a>`
+          : "")
+    );
   }
 
   function mount() {

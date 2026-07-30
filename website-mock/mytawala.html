@@ -7,8 +7,9 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css" />
-  <script src="js/demo-urls.js"></script>
-  <script src="js/project-ops.js"></script>
+  <script src="js/demo-urls.js?v=20260730-mqst"></script>
+  <script src="js/transfer.js"></script>
+  <script src="js/project-ops.js?v=20260730-mqst"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -28,6 +29,15 @@
           <p class="pm-hint"><a href="designer.html">Designer stub page</a> (legacy download copy)</p>
         </div>
         <div class="block">
+          <h3>Transfers</h3>
+          <p class="pm-hint">Symbiotic hops (Designer palette; grey = stub):</p>
+          <div class="pm-sidebar-ops pm-sidebar-stack" style="margin-top:6px;">
+            <button type="button" class="pm-action" disabled title="Copy a public Library project into My Tawala" data-wired="false">Pull from Library</button>
+            <button type="button" class="pm-action" disabled title="Publish / move a My Tawala project into the public Library" data-wired="false">Publish to Library</button>
+            <a class="pm-action is-active" href="http://localhost:5173" target="_blank" rel="noopener" title="Open Web Designer to Deploy">Deploy from Designer</a>
+          </div>
+        </div>
+        <div class="block">
           <h3>Memory / archive</h3>
           <p><a href="project-ops-review.html">Archive labels / unimplemented features</a></p>
           <p class="pm-hint">Full Project Manager catalog kept off this page for layout fidelity.</p>
@@ -38,39 +48,62 @@
         <div class="pageTitle"><h1>My Tawala</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">My Projects</span>
-          <span class="listing-pile">Your private / unfinished projects — MyTawala pile (<code>projects/mytawala/</code>). Row actions: Purge / Delete.</span>
+          <span class="listing-pile">Private MyTawala pile — click a heading to sort; drag header edges to resize columns.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
         <div id="pmSubmenuHost"></div>
+        <div id="deployInboxHost" class="deploy-inbox" hidden></div>
 
         <div id="projectManager" class="section">
           <div class="status">
             <form onsubmit="return false;">
               <div class="pageCtl">
                 <select disabled title="Filter projects"><option>All</option><option>Active</option></select> projects,
-                <input type="text" class="text" value="25" size="3" disabled title="Projects per page" /> per page,
-                sorted by <select disabled title="Sort order"><option>Name</option><option>Last updated</option></select>
+                <input type="text" class="text" value="25" size="3" disabled title="Projects per page" /> per page
                 <button type="submit" class="pm-action" disabled title="Apply listing filter">View</button>
               </div>
             </form>
           </div>
 
-          <table class="projectListing stripe ruler" aria-label="My Projects — private My Tawala list">
-            <thead>
-              <tr>
-                <th class="left">Name</th>
-                <th class="col-date">Created</th>
-                <th class="col-date">Updated</th>
-                <th>Responses</th>
-                <th class="col-date" title="Last accessed date (legacy Project Manager)">Access</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody id="projectRows"></tbody>
-          </table>
+          <div class="mytawala-listing-frame">
+            <table
+              id="myProjectsTable"
+              class="projectListing mytawala-listing stripe"
+              aria-label="My Projects — private My Tawala list"
+            >
+              <colgroup id="myProjectsCols">
+                <col class="col-name" style="width: 28%" />
+                <col class="col-created" style="width: 10%" />
+                <col class="col-updated" style="width: 10%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+                <col class="col-op" style="width: 6.5%" />
+              </colgroup>
+              <thead>
+                <tr id="myProjectsHead">
+                  <th class="left sortable" scope="col" data-sort="name" title="Sort by name">
+                    <span class="th-label">Name</span>
+                  </th>
+                  <th class="col-date sortable" scope="col" data-sort="created" title="Sort by created">
+                    <span class="th-label">Created</span>
+                  </th>
+                  <th class="col-date sortable" scope="col" data-sort="updated" title="Sort by updated">
+                    <span class="th-label">Updated</span>
+                  </th>
+                </tr>
+              </thead>
+              <tbody id="projectRows"></tbody>
+            </table>
+          </div>
 
           <div class="status" style="margin-top:12px;">
             <div class="stats">Total Projects: <span id="projectCount">0</span> — private My Tawala pile (not WebLibrary / public Library)</div>
+            <p class="pm-hint" id="pmOpStatus" role="status"></p>
           </div>
         </div>
       </div>
@@ -89,38 +122,211 @@
         .replace(/"/g, "&quot;");
     }
 
+    /** Parse listing dates like 7/28/26 for sort; missing → 0. */
+    function parseListDate(s) {
+      if (!s || s === "—") return 0;
+      const m = String(s).match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+      if (!m) return 0;
+      let y = Number(m[3]);
+      if (y < 100) y += 2000;
+      return Date.UTC(y, Number(m[1]) - 1, Number(m[2]));
+    }
+
+    const SORT_STATE = { key: "name", dir: 1 };
+    let projects = TawalaDemo.myTawalaEntries();
+
+    function sortValue(p, key) {
+      if (key === "name") {
+        return TawalaDemo.displayName(p.name).toLowerCase();
+      }
+      if (key === "created") {
+        return parseListDate(p.created || p.updated || "");
+      }
+      if (key === "updated") {
+        return parseListDate(p.updated || "");
+      }
+      return "";
+    }
+
+    function sortedProjects() {
+      const { key, dir } = SORT_STATE;
+      return projects.slice().sort((a, b) => {
+        const va = sortValue(a, key);
+        const vb = sortValue(b, key);
+        if (va < vb) return -1 * dir;
+        if (va > vb) return 1 * dir;
+        return 0;
+      });
+    }
+
+    function updateSortIndicators() {
+      document.querySelectorAll("#myProjectsHead th.sortable").forEach((th) => {
+        th.classList.remove("sort-asc", "sort-desc");
+        th.removeAttribute("aria-sort");
+        if (th.dataset.sort === SORT_STATE.key) {
+          const asc = SORT_STATE.dir === 1;
+          th.classList.add(asc ? "sort-asc" : "sort-desc");
+          th.setAttribute("aria-sort", asc ? "ascending" : "descending");
+        }
+      });
+    }
+
+    function projectRowHtml(p) {
+      const detailHref = `mytawala-project.html?project=${encodeURIComponent(p.id)}`;
+      const title = TawalaDemo.displayName(p.name);
+      const created = p.created || p.updated || "—";
+      return `<tr data-project-id="${escapeHtml(p.id)}">
+        <td class="info left">
+          <span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>
+        </td>
+        <td class="date-created col-date">${escapeHtml(created)}</td>
+        <td class="updated col-date">${escapeHtml(p.updated || "—")}</td>
+        ${TawalaProjectOps.renderListingControlCells(p.id)}
+      </tr>`;
+    }
+
+    function renderRows() {
+      const list = sortedProjects();
+      document.getElementById("projectRows").innerHTML = list.map(projectRowHtml).join("");
+      document.getElementById("projectCount").textContent = String(list.length);
+      updateSortIndicators();
+    }
+
+    function enableColumnResize(table) {
+      const cols = table.querySelectorAll("colgroup col");
+      const headRow = table.querySelector("thead tr");
+      if (!headRow || !cols.length) return;
+
+      headRow.querySelectorAll("th").forEach((th, index) => {
+        if (index >= cols.length - 1) return;
+        const handle = document.createElement("span");
+        handle.className = "col-resize-handle";
+        handle.title = "Drag to resize column";
+        handle.setAttribute("aria-hidden", "true");
+        th.appendChild(handle);
+
+        handle.addEventListener("mousedown", (ev) => {
+          ev.preventDefault();
+          ev.stopPropagation();
+          const startX = ev.pageX;
+          const startW = th.getBoundingClientRect().width;
+          const tableW = table.getBoundingClientRect().width || 1;
+          const nextTh = headRow.children[index + 1];
+          const nextStartW = nextTh ? nextTh.getBoundingClientRect().width : 0;
+
+          function onMove(e) {
+            const dx = e.pageX - startX;
+            const min = 36;
+            let w = Math.max(min, startW + dx);
+            let nextW = nextStartW ? Math.max(min, nextStartW - dx) : 0;
+            if (nextStartW && startW + dx < min) {
+              w = min;
+              nextW = nextStartW + (startW - min);
+            }
+            if (nextStartW && nextStartW - dx < min) {
+              nextW = min;
+              w = startW + (nextStartW - min);
+            }
+            cols[index].style.width = ((w / tableW) * 100).toFixed(2) + "%";
+            if (nextTh && cols[index + 1]) {
+              cols[index + 1].style.width = ((nextW / tableW) * 100).toFixed(2) + "%";
+            }
+          }
+
+          function onUp() {
+            document.removeEventListener("mousemove", onMove);
+            document.removeEventListener("mouseup", onUp);
+            document.body.classList.remove("col-resizing");
+          }
+
+          document.body.classList.add("col-resizing");
+          document.addEventListener("mousemove", onMove);
+          document.addEventListener("mouseup", onUp);
+        });
+      });
+    }
+
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
+
+    if (typeof TawalaTransfer !== "undefined") {
+      TawalaTransfer.ingestDeployReceiptFromUrl(location.search);
+    }
 
     document.getElementById("pmSubmenuHost").innerHTML =
       TawalaProjectOps.renderSubmenu("My Projects");
 
-    const projects = TawalaDemo.myTawalaEntries();
-    const tbody = document.getElementById("projectRows");
-    tbody.innerHTML = projects
-      .map((p) => {
-        const detailHref = `mytawala-project.html?project=${encodeURIComponent(p.id)}`;
-        const deployNote = TawalaDemo.isDeployed(p)
-          ? ""
-          : ' <span class="deploy-badge" title="Not deployed on local :8080 yet">Not deployed</span>';
-        const title = TawalaDemo.displayName(p.name);
-        /* Legacy Access = lastAccessed date, not Active/Inactive status */
-        const accessed =
-          p.lastAccessed || p.accessed || "—";
-        const created = p.created || p.updated || "—";
-        return `<tr>
-        <td class="info left">
-          <span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>${deployNote}
-        </td>
-        <td class="date-created col-date">${escapeHtml(created)}</td>
-        <td class="updated col-date">${escapeHtml(p.updated || "—")}</td>
-        <td>—</td>
-        <td class="last-accessed col-date" title="Last accessed">${escapeHtml(accessed)}</td>
-        <td>${TawalaProjectOps.renderListingControls(p.id)}</td>
-      </tr>`;
-      })
-      .join("");
-    document.getElementById("projectCount").textContent = String(projects.length);
+    function renderDeployInbox() {
+      const host = document.getElementById("deployInboxHost");
+      if (!host || typeof TawalaTransfer === "undefined") return;
+      const inbox = TawalaTransfer.getDeployInbox();
+      if (!inbox.length) {
+        host.hidden = true;
+        host.innerHTML = "";
+        return;
+      }
+      host.hidden = false;
+      host.innerHTML =
+        '<div class="deploy-inbox-inner">' +
+        "<h3>From Web Designer</h3>" +
+        '<p class="pm-hint">Recent Deploy receipts (local :8080). Catalog pile is unchanged until you Save/Publish — inbox is a hop cue only.</p>' +
+        "<ul>" +
+        inbox
+          .map((e) => {
+            const first = (e.startpoints && e.startpoints[0]) || null;
+            const when = e.at ? escapeHtml(String(e.at).replace("T", " ").slice(0, 19)) : "";
+            const link = first && first.url
+              ? `<a href="${escapeHtml(first.url)}" target="_blank" rel="noopener">${escapeHtml(
+                  first.form || "Start"
+                )}</a>`
+              : "<span class=\"deploy-hint-quiet\">No start URL</span>";
+            return (
+              `<li><b>${escapeHtml(e.name)}</b> · ${link}` +
+              (when ? ` <span class="deploy-hint-quiet">${when}</span>` : "") +
+              "</li>"
+            );
+          })
+          .join("") +
+        "</ul>" +
+        '<p class="pm-hint"><button type="button" class="pm-action" id="clearDeployInbox">Clear inbox</button> · ' +
+        '<a href="library.html">Browse Library</a></p>' +
+        "</div>";
+    }
+
+    renderDeployInbox();
+    document.addEventListener("click", (ev) => {
+      if (ev.target.id === "clearDeployInbox" && typeof TawalaTransfer !== "undefined") {
+        TawalaTransfer.clearDeployInbox();
+        renderDeployInbox();
+      }
+    });
+
+    const headRow = document.getElementById("myProjectsHead");
+    headRow.insertAdjacentHTML("beforeend", TawalaProjectOps.renderListingActionHeaders());
+
+    headRow.addEventListener("click", (ev) => {
+      const th = ev.target.closest("th.sortable");
+      if (!th || ev.target.closest(".col-resize-handle")) return;
+      const key = th.dataset.sort;
+      if (!key) return;
+      if (SORT_STATE.key === key) {
+        SORT_STATE.dir *= -1;
+      } else {
+        SORT_STATE.key = key;
+        SORT_STATE.dir = 1;
+      }
+      renderRows();
+    });
+
+    renderRows();
+    enableColumnResize(document.getElementById("myProjectsTable"));
+
+    document.addEventListener("tawala:project-deleted", (ev) => {
+      const id = ev.detail && ev.detail.projectId;
+      if (!id) return;
+      projects = projects.filter((p) => p.id !== id);
+      renderRows();
+    });
   </script>
 </body>
 </html>

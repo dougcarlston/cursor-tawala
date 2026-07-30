@@ -12,9 +12,10 @@
  *
  * Library listing groups mirror Designer File → New Project categories
  * (Activities / Meetings and Gatherings / Polls and Surveys), plus WebLibrary
- * extras (Sports / Business / Advanced). Basic is Designer-only — never listed.
+ * extras (Sports / Business / Entertainment / Advanced). Basic is Designer-only — never listed.
  *
- * Update live URLs after: node scripts/deploy-tawala-template.mjs "<Template Name>"
+ * liveReady: true — owner-vetted product with a working :8080 test-drive (quiet “Live” cue in Library list).
+ * Update live URLs after Deploy (Designer File→Deploy or POST /api/deploy) / deploy-tawala-template.mjs.
  */
 
 /**
@@ -27,6 +28,7 @@ window.TAWALA_LIBRARY_CATEGORIES = [
   { slug: "polls", label: "Polls and Surveys", source: "new-project" },
   { slug: "sports", label: "Sports", source: "weblibrary" },
   { slug: "business", label: "Business", source: "weblibrary" },
+  { slug: "entertainment", label: "Entertainment", source: "weblibrary" },
   { slug: "advanced", label: "Advanced", source: "weblibrary" },
 ];
 window.TAWALA_LIBRARY = {
@@ -298,23 +300,25 @@ window.TAWALA_LIBRARY = {
   },
   "horses-and-penguins-test": {
     "name": "Horses and Penguins Test",
-    "category": "Polls and Surveys",
+    "category": "Entertainment",
     "featured": false,
     "iconLabel": "HA",
     "rating": 0,
     "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (1 forms). Start points: Form 1.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 1 forms, 1 processes, 6 documents. Start points: Form 1.",
+    "updated": "7/30/26",
+    "shortDescription": "Fun quiz — horses vs penguins. Score tracking with Process math.",
+    "longDescription": "Owner-vetted Entertainment try-out. One form, one process (score/wrong math), six answer documents. Theme style2. Start point: Form 1.",
     "jsonFile": "projects/library/Horses and Penguins Test.json",
     "sourcePile": "library",
-    "deployed": false,
+    "liveReady": true,
+    "deployed": true,
     "startPoints": [
       {
-        "label": "Form 1"
+        "label": "Form 1",
+        "url": "http://localhost:8080/p/wg77ytn0bgq1x70/wdq78g1.Form+1"
       }
     ],
-    "testDriveUrl": null
+    "testDriveUrl": "http://localhost:8080/p/wg77ytn0bgq1x70/wdq78g1.Form+1"
   },
   "league-age-calculator": {
     "name": "League Age calculator",
@@ -366,11 +370,12 @@ window.TAWALA_LIBRARY = {
     "iconLabel": "MQ",
     "rating": 4,
     "comments": 9,
-    "updated": "7/2/26",
+    "updated": "7/30/26",
     "shortDescription": "Multi-question poll with bar-graph tallies and a response table on Report.",
-    "longDescription": "Survey collects name, several multiple-choice questions, and optional results link. Report shows choice-tally tables per MCQ plus an itemization table of all responses. Backup in website-mock/projects/library/.",
+    "longDescription": "Owner-vetted Polls and Surveys try-out (corrected port). Survey collects name, several multiple-choice questions, and optional results link. Report shows choice-tally tables per MCQ plus an itemization table of all responses.",
     "jsonFile": "projects/library/Multiple Question Survey Template.json",
     "sourcePile": "library",
+    "liveReady": true,
     "deployed": true,
     "startPoints": [
       {
@@ -906,6 +911,155 @@ window.TawalaDemo = {
   isDeployed(p) {
     return !!(p && p.deployed && p.testDriveUrl);
   },
+  /** Owner-vetted Library product with a live :8080 test-drive (distinct from placeholders). */
+  isLiveReady(p) {
+    return !!(p && p.liveReady && this.isDeployed(p));
+  },
+  /** Quiet “Live” cue for vetted rows — not a banner; placeholders omit this. */
+  liveReadyHtml(p) {
+    try {
+      if (!this.isLiveReady(p)) return "";
+      return (
+        '<span class="library-live-ready" title="Vetted · live on localhost:8080">Live</span>'
+      );
+    } catch {
+      return "";
+    }
+  },
+  /** Extract uniqueId from `/p/{uniqueId}/…` (Library / My Tawala test-drive URLs). */
+  uniqueIdFromUrl(url) {
+    if (!url) return null;
+    const m = String(url).match(/\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/);
+    return m ? m[1] : null;
+  },
+  /** Prefer testDriveUrl, else first start point with a URL. */
+  uniqueIdForProject(p) {
+    if (!p) return null;
+    const fromTest = this.uniqueIdFromUrl(p.testDriveUrl);
+    if (fromTest) return fromTest;
+    const sps = p.startPoints || [];
+    for (let i = 0; i < sps.length; i++) {
+      const id = this.uniqueIdFromUrl(sps[i] && sps[i].url);
+      if (id) return id;
+    }
+    return null;
+  },
+  /**
+   * Dev API base for purge (designer-web :3001). Override with window.TAWALA_DEV_API.
+   */
+  purgeApiBase() {
+    return (typeof window !== "undefined" && window.TAWALA_DEV_API) || "http://localhost:3001";
+  },
+  /**
+   * Purge Postgres submissions (+ Node session if present) for a uniqueId.
+   * Requires designer-web API + Docker Postgres for :8080 projects.
+   */
+  async purgeResponses(uniqueId) {
+    if (!uniqueId) {
+      return { status: "failure", error: "uniqueId required" };
+    }
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/purge-responses";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uniqueId,
+          credentials: { user: "dev", password: "dev" },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          status: "failure",
+          uniqueId,
+          error: data.error || data.javaDb?.error || `HTTP ${res.status}`,
+          ...data,
+        };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        uniqueId,
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+  /**
+   * Purge project response data then open the :8080 form (clean slate each Test drive).
+   * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
+   * then navigates after purge. Failed / timed-out purge never blocks opening the form.
+   * Post-tab-close purge is not available in this static mock.
+   */
+  async openTestDrive(url, opts) {
+    const options = opts || {};
+    const purgeFirst = options.purge !== false;
+    const purgeMs = typeof options.purgeTimeoutMs === "number" ? options.purgeTimeoutMs : 8000;
+    const target = url || null;
+    if (!target) return { opened: false, purge: null };
+
+    // Capture gesture before any await — otherwise browsers block the popup.
+    const tab = window.open("about:blank", "_blank");
+
+    let purge = null;
+    try {
+      if (purgeFirst) {
+        const id = this.uniqueIdFromUrl(target);
+        if (id) {
+          const timedOut = new Promise((resolve) => {
+            setTimeout(
+              () => resolve({ status: "failure", uniqueId: id, error: `purge timed out after ${purgeMs}ms` }),
+              purgeMs
+            );
+          });
+          purge = await Promise.race([this.purgeResponses(id), timedOut]);
+          if (purge.status !== "success") {
+            console.warn("[TawalaDemo] purge before test drive failed:", purge.error || purge);
+          }
+        }
+      }
+    } catch (e) {
+      purge = { status: "failure", error: String((e && e.message) || e) };
+      console.warn("[TawalaDemo] purge before test drive threw:", purge.error);
+    }
+
+    // Always navigate — blank tab must not stick on purge failure.
+    if (tab && !tab.closed) {
+      try {
+        tab.opener = null;
+      } catch {
+        /* ignore */
+      }
+      try {
+        tab.location.href = target;
+        return { opened: true, purge };
+      } catch (navErr) {
+        console.warn("[TawalaDemo] tab navigate failed, falling back:", navErr);
+      }
+    }
+    // Popup blocked or navigate failed — last resort (may also be blocked after await).
+    window.open(target, "_blank", "noopener");
+    return { opened: true, purge, popupBlocked: !tab };
+  },
+  /** Delegated clicks for elements with data-testdrive-url (or .js-testdrive href). */
+  bindTestDriveClicks(root) {
+    const scope = root || document;
+    if (scope.__tawalaTestDriveBound) return;
+    scope.__tawalaTestDriveBound = true;
+    scope.addEventListener("click", (ev) => {
+      const el = ev.target.closest("[data-testdrive-url], a.js-testdrive");
+      if (!el) return;
+      const href =
+        el.getAttribute("data-testdrive-url") ||
+        (el.classList.contains("js-testdrive") ? el.getAttribute("href") : null);
+      if (!href || href === "#") return;
+      ev.preventDefault();
+      void this.openTestDrive(href);
+    });
+  },
   /** Inline stars after the project name (no separate Rating column). Unrated → omit. */
   starsHtml(rating) {
     const n = Number(rating) || 0;
@@ -920,17 +1074,28 @@ window.TawalaDemo = {
     const label = String(sp.label || "Start");
     if (sp.url) {
       return (
-        '<a href="' +
+        '<a class="js-testdrive" href="' +
         sp.url +
-        '" target="_blank" rel="noopener">' +
+        '" data-testdrive-url="' +
+        String(sp.url).replace(/"/g, "&quot;") +
+        '" target="_blank" rel="noopener" title="Purges prior responses for this project, then opens :8080">' +
         label.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
         "</a>"
       );
     }
     return (
-      '<span class="start-point-pending" title="Not deployed on local :8080 yet">' +
+      '<span class="start-point-pending" title="No local :8080 URL yet (dev)">' +
       label.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
-      ' <em>(not deployed yet)</em></span>'
+      "</span>"
     );
   },
 };
+
+/** Bind once when the catalog script loads (Library / home / My Tawala pages). */
+if (typeof document !== "undefined") {
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => window.TawalaDemo.bindTestDriveClicks(document));
+  } else {
+    window.TawalaDemo.bindTestDriveClicks(document);
+  }
+}

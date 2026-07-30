@@ -1,7 +1,7 @@
 {
   "name": "Horses and Penguins Test",
   "format": "2.0",
-  "themePath": "redrays",
+  "themePath": "style2",
   "forms": [
     {
       "name": "Form 1",
@@ -16,8 +16,7 @@
         {
           "type": "heading",
           "label": "H2",
-          "level": "sub",
-          "content": "Designed to show you how much more an 8-year-old knows than you do."
+          "content": "<span class=\"heading-size-sub\">Designed to show you how much more a couple of 8-year-olds know than you do.</span>"
         },
         {
           "type": "fib",
@@ -493,7 +492,7 @@
           ]
         }
       ],
-      "themePath": "redrays",
+      "themePath": "style2",
       "process": "Process 1"
     }
   ],
@@ -990,7 +989,7 @@
     },
     {
       "name": "Document 6",
-      "content": "<p><span>Thank you for trying our test!  It's been a lot of fun, at least for us!  Here are all of the correct answers.</span></p><p></p><p><span>1) Horses live 20-25 years, penguins 15-20 years.</span></p><p><span>2) A penguin on land is faster than a horse in water.</span></p><p><span>3) A Jackass is a penguin, as is an Emperor.  Pintos and Appaloosas are horses.</span></p><p><span>4) A frog is part of a horse's hoof.</span></p><p><span>5) There are at least 5 different penguin species in Antarctica.</span></p><p><span>6) The Galapagos penguin lives farthest north, in the Galapagos Islands of Ecuador.</span></p><p><span>7) Any color horse can have dapples.</span></p><p><span>8) The biggest penguins may weight 75-80 pounds.  The smallest adult horse weighs in at about 150 pounds.</span></p><p><span>9) Blackpoint dun is a color, not a breed.</span></p><p><span>10) They don't eat each other, although they don't like each other much either!</span></p><p><span>11) The greak auk was originally called a penguin.  There's no such thing, by the way, as a lemonade penguin.</span></p><p><span>12) There are more breeds of horse than species of penguin.</span></p><p><span>13) The Falabella horse is reputedly the smallest.</span></p><p><span>14) Most penguins do NOT have yellow beaks.</span></p>"
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 431.3pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\" data-doc-indent=\"0\"><p><span>Thank you for trying our test!  It's been a lot of fun, at least for us!  Here are all of the correct answers.</span></p></p><p class=\"doc-placed-text\" data-doc-home-top=\"59.6pt\" data-doc-indent=\"1\" style=\"position: absolute; left: 43.5pt; top: 59.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 395.3pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span></span></p><p></p><p><span>1) Horses live 20-25 years, penguins 15-20 years.</span></p><p><span>2) A penguin on land is faster than a horse in water.</span></p><p><span>3) A Jackass is a penguin, as is an Emperor.  Pintos and Appaloosas are horses.</span></p><p><span>4) A frog is part of a horse's hoof.</span></p><p><span>5) There are at least 5 different penguin species in Antarctica.</span></p><p><span>6) The Galapagos penguin lives farthest north, in the Galapagos Islands of Ecuador.</span></p><p><span>7) Any color horse can have dapples.</span></p><p><span>8) The biggest penguins may weight 75-80 pounds.  The smallest adult horse weighs in at about 150 pounds.</span></p><p><span>9) Blackpoint dun is a color, not a breed.</span></p><p><span>10) They don't eat each other, although they don't like each other much either!</span></p><p><span>11) The greak auk was originally called a penguin.  There's no such thing, by the way, as a lemonade penguin.</span></p><p><span>12) There are more breeds of horse than species of penguin.</span></p><p><span>13) The Falabella horse is reputedly the smallest.</span></p><p><span>14) Most penguins do NOT have yellow beaks.</span></p></p>"
     }
   ],
   "_originalFormat": "1.16",
