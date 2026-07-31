@@ -439,8 +439,8 @@ Insert contents depend on the **active MDI child** (Form, Process, or Document).
 | Skip Instructions | |
 | *(separator)* | | |
 | Image... → | See Image submenu | Greyed unless cursor in rich text |
-| Invitation... | | Greyed unless cursor in **Text** item |
-| Hyperlink... | | Greyed unless cursor in **Text** item |
+| Invitation... | **Primary link Insert** (Form-in-project); see unified Link framing in `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` | Greyed unless cursor in **Text** item |
+| Hyperlink... | **Transitional** — demote into Invitation/Link as External URL mode | Greyed unless cursor in **Text** item |
 | Function... | | Greyed unless cursor in **Text** item |
 
 Matches **Items** palette (seven items; File Uploader hidden/deferred — Jul 27). **Field** not present (Document only).
@@ -474,11 +474,11 @@ Insert uses internal `*StatementView` names; palette uses short names:
 |------|-------|
 | **Field** | Document only; enabled when field selected in Fields palette |
 | Image... → | Submenu |
-| Invitation... | Start-link invitation dialog |
-| Hyperlink... | URL hyperlink dialog |
+| Invitation... | Start-link / Form-in-project (**primary** in unified Link dialog) |
+| Hyperlink... | External URL (**secondary** mode; fold into Link) |
 | Function... | Insert Function picker; requires ≥1 form in project |
 
-**Insert → Image…**, **Invitation…**, **Hyperlink…**, **Function…** dialogs: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`.
+**Insert → Image…**, **Invitation… / Link…**, **Hyperlink…** (transitional peer), **Function…** dialogs: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` — **Jul 31:** conflate Invitation + Hyperlink; Form link primary, external URL secondary.
 
 ### Browser (`designer-web`) — Jul 17, 2026 (menu review)
 

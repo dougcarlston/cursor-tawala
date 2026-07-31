@@ -31,6 +31,14 @@ Open:
 
 ## Library vs My Tawala (split piles)
 
+### Tenancy (product truth — owner Jul 31, 2026)
+
+There is **one public Library** (shared catalog). Each **account** has its **own separate, private My Tawala**; another account cannot see or access your My Tawala contents. The bridge out of private My Tawala into the public world is **Publish** (to Library) — optional and deliberate. Until Publish, projects stay private to that account’s My Tawala.
+
+**Current priority (owner Jul 31, 2026):** **Libraries are the core of the Website** (Library + My Tawala / catalog ops). Harden **Save / Delete / Purge** (and lifecycle ops) over look-and-feel; solid basis for libraries already exists. **Do not** chase more visual polish now — **Home** L&F is optional and non-critical. Version piles stay deferred until ops are trustworthy (see glossary **Sequencing / hold** below).
+
+**Mock note:** today’s mock is single-browser `localStorage` (no real multi-account auth). The **product model** is still multi-account private My Tawala; do not design as if all My Tawala piles were shared.
+
 Owner working copies live outside the repo under `~/Projects/Tawala Projects/`. Repo backups:
 
 | Role | Owner folder | Repo backup | Catalog in `js/demo-urls.js` |
@@ -101,6 +109,27 @@ Shared helpers: `js/transfer.js` (localStorage on `:5500` only — Designer `:51
 | **Library category assignment** | **Edit Categories** (submenu + admin bar); detail sidebar **Group** select | Wired locally — overrides in `localStorage` until copied into `demo-urls.js`. |
 
 Grey controls use Designer accent palette (`--tw-accent`); disabled = opacity only.
+
+## Save / Deploy / Publish (product glossary)
+
+Short product meanings for Website + Designer hops. Sits next to Project Versioning (legacy memo B7) and the transfer stubs above. Not implemented as multi-account auth in this mock.
+
+| Verb | Scope | Meaning |
+|------|--------|---------|
+| **Save** | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (customize entry / “under My Tawala”). Stays private until Publish. |
+| **Deploy** | Designer → runtime / My Tawala | Put a version live on `:8080` (and optionally surface it in My Tawala via **Show in My Tawala**). Deploy ≠ Publish to Library. |
+| **Publish** | My Tawala → Library | Deliberate bridge from private My Tawala into the **one** public Library catalog. Optional; until then, projects remain account-private. |
+| **Pull** | Library → My Tawala (upgrade) | Refresh / pull an update from Library into a My Tawala copy (stub). |
+| **Versioning** | My Tawala project | Deployed vs non-deployed versions, Library submit rules, test-drive, upload metadata — see triage **B7 Project Versioning**. |
+
+**Pillars (do not conflate):**
+
+1. **Tenancy** — one public Library; per-account private My Tawala; Publish is the only intentional public bridge (see § Tenancy above).
+2. **Versioning** — which revision is active / test-driven / submitted to Library (B7), independent of which account owns the private pile.
+3. **Deploy vs Publish** — Deploy makes a runtime live for an account’s project; Publish shares into the shared Library catalog.
+
+**Sequencing / hold (owner Jul 31, 2026):** Do **not** fill My Tawala with **versions of projects** before more of the **Save, Delete, Purge** handles are operational — My Tawala would get messy very fast otherwise. **Audit trail** belongs on that same trajectory (with versioning + lifecycle controls), not as a later orphan. Keep today’s flat mock: one My Tawala row per project (Deploy receipt / overlay), **not** a version pile per project yet. Multi-version list / “Deploy creates version N” UI stays deferred until Save / Delete / Purge (and related ops) are trustworthy enough to manage the mess. When versioning lands, ship it with (or immediately after) operational Save/Delete/Purge **and** audit-trail visibility — one lifecycle package, not “versions first.” Legacy intent (Deploy creates versions, one deployed, Library = published snapshot) remains the **target** model (B7); gate **My Tawala UI exposure** of versions on ops readiness.
+
 ## My Tawala layout (lean) vs ops archive
 
 Legacy Project Manager lives under `TawalaWebapp-build1700/web/WEB-INF/jsp/projectmanager/` (not the thin `mytawala/*.jsp` news pages). Mock mirrors the shallow structure:

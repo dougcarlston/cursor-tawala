@@ -8,7 +8,7 @@ Three parallel tracks (see `.cursor/rules/tawala-work-scopes.mdc`):
 |-------|-----------------|------------|
 | **1. Legacy Designer spec** | `Tawala_Key_Documents/DESIGNER_*.md` | Screenshots, hover text, click-tests |
 | **2. Template deploy → 8080** | `scripts/deploy-tawala-template.mjs` | Open URLs, report breakage |
-| **3. Website mock** | `website-mock/` | Visual approval |
+| **3. Website mock** | `website-mock/` | Library / My Tawala ops (Save/Delete/Purge); L&F secondary |
 
 ---
 
@@ -61,9 +61,9 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 
 ## Phase 3 — Website mock
 
-**Active / next — operational site** (library fidelity + 8080 test-drive links). Designer Sign-up Sheet / Get Together gate is **met**; DirtBowl Registration page 1 parity substantially complete. Serve `website-mock/` on `:5500`; keep `js/demo-urls.js` → Phase 2 only. Do not thrash `designer-web`/Tomcat unless link wiring requires it. Parked Designer polish stays out (`.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Active / next — Library / My Tawala ops** (Save / Delete / Purge + lifecycle; Publish stub readiness; flat My Tawala — not version piles; L&F deferred, Home polish optional). Designer Sign-up Sheet / Get Together gate is **met**; DirtBowl Registration page 1 parity substantially complete. Serve `website-mock/` on `:5500`; keep `js/demo-urls.js` → Phase 2 only. Do not thrash `designer-web`/Tomcat unless link wiring requires it. Parked Designer polish stays out (`.cursor/rules/tawala-designer-parked-post-website.mdc`).
 
-**Goal:** Fully operational browseable draft of tawala.com / MyTawala / Library from legacy JSP/CSS — fidelity + working Test drive links.
+**Goal:** Operational Library + My Tawala catalog (tenancy + lifecycle ops) on a browseable draft of tawala.com — ops over chrome polish; Test drive links stay on Phase 2 `:8080`.
 
 **Sources:** `TawalaWebapp-build1700/web/WEB-INF/jsp/` (mytawala, library, community).
 
@@ -81,7 +81,7 @@ Matrix detail: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
 
 Serve: `cd website-mock && python3 -m http.server 5500` → http://localhost:5500/
 
-**Owner (July 2026):** All mock pages load; test-drive / library / My Tawala links OK. Stub pages (About, FAQ, Login, …) are placeholders. Home/Library now use legacy CSS + white logo in header. **Jobs** removed from footer (no longer relevant).
+**Owner (Jul 31, 2026):** Libraries are the Website core — next is Save/Delete/Purge (and lifecycle), not more L&F (Home optional). Catalog basis is solid; test-drive / library / My Tawala links OK. Stub pages remain placeholders.
 
 ---
 

@@ -76,42 +76,192 @@ Counts exclude `.DS_Store`. Many folders still contain SVN metadata (`.svn/`); �
 
 Rough dates from in-document SAVE/DATE fields where present (filesystem dates are mostly 2014 zip unpack).
 
+Entries below use a **stacked** layout (not wide tables) for Preview readability.
+
 ### A. Runtime / data model / Process (Designer + :8080)
 
-| # | Title | Path | Date | Tags | Rel. | Why | Integrate into |
-|---|-------|------|------|------|------|-----|----------------|
-| 1 | Fields and Variables | `…/Fields and Variables.doc` | ~2006-03-16 | Designer, Runtime, Process | **High** | Canonical definitions: record types, fields vs variables, CRUD scenarios, validation, persistence — still the mental model for Forms/Processes. | `DESIGNER_VARIABLES_TYPING_HANDOFF.md`, `TAWALA_PROJECT_SUMMARY.md`; cite from process specs |
-| 2 | Dynamic MCQs | `…/Dynamic MCQs.doc` | ~2007 (no footer date) | Designer, Runtime, Process | **High** | Data providers, store value vs letter, reference vs user data; Exam Builder / shopping / Coffee Schedule patterns. | `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`; park unimplemented providers on ROADMAP |
-| 3 | Additional Flow Control Elements in Forms | `…/Additional Flow Control Elements in Forms.doc` | ~2007 | Designer, Process, Runtime | **High** | Form-level FOR EACH / IF, `DisplayMCQ`, Exam Builder + Sign-up Sheet structures — documents intended form control flow beyond Skip. | `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` + process specs; ROADMAP if not shipped |
-| 4 | DirtBowl Notes | `…/DirtBowlNotes.doc` | post-DirtBowl (~2007–08) | Designer, Runtime, Process, MyTawala | **High** | Lessons from real large project: structure pain, validation+documents, MCQ values, process reuse, PayPal, Project Manager gaps — maps to current DirtBowl/:8080 work. | `TAWALA_PROJECT_SUMMARY.md`, open bugs / ROADMAP; do not treat as UI pixel spec |
-| 5 | Improvements to Project Structure | `…/Improvements to Project Structure.doc` | ~2008-01-04 | Designer, Website, Runtime | **High** | Proposes **Pages**, de-emphasize processes, nav/menus, validation messages — explains many Designer quirks and “submitless page” workarounds still visible. | Architecture note / `docs/ROADMAP.md`; mostly **park** for browser Designer unless owner wants page model |
-| 6 | Web Application Performance | `…/Database/WebAppPerformance.doc` | 2006-10-02 | Runtime, Library, MyTawala | **High** | GET/WHERE cost, CLOB submissions, Library indexing/cache, Project Manager export limits — explains runtime/Library scaling assumptions. | Ops / `docs/COMPARING_RUNTIMES.md` / park performance backlog |
+#### 1. Fields and Variables
+- **Path:** `…/Fields and Variables.doc`
+- **Date:** ~2006-03-16
+- **Tags:** Designer, Runtime, Process
+- **Rel.:** High
+- **Why:** Canonical definitions: record types, fields vs variables, CRUD scenarios, validation, persistence — still the mental model for Forms/Processes.
+- **Integrate into:** `DESIGNER_VARIABLES_TYPING_HANDOFF.md`, `TAWALA_PROJECT_SUMMARY.md`; cite from process specs
+
+#### 2. Dynamic MCQs
+- **Path:** `…/Dynamic MCQs.doc`
+- **Date:** ~2007 (no footer date)
+- **Tags:** Designer, Runtime, Process
+- **Rel.:** High
+- **Why:** Data providers, store value vs letter, reference vs user data; Exam Builder / shopping / Coffee Schedule patterns.
+- **Integrate into:** `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md`; park unimplemented providers on ROADMAP
+
+#### 3. Additional Flow Control Elements in Forms
+- **Path:** `…/Additional Flow Control Elements in Forms.doc`
+- **Date:** ~2007
+- **Tags:** Designer, Process, Runtime
+- **Rel.:** High
+- **Why:** Form-level FOR EACH / IF, `DisplayMCQ`, Exam Builder + Sign-up Sheet structures — documents intended form control flow beyond Skip.
+- **Integrate into:** `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` + process specs; ROADMAP if not shipped
+
+#### 4. DirtBowl Notes
+- **Path:** `…/DirtBowlNotes.doc`
+- **Date:** post-DirtBowl (~2007–08)
+- **Tags:** Designer, Runtime, Process, MyTawala
+- **Rel.:** High
+- **Why:** Lessons from real large project: structure pain, validation+documents, MCQ values, process reuse, PayPal, Project Manager gaps — maps to current DirtBowl/:8080 work.
+- **Integrate into:** `TAWALA_PROJECT_SUMMARY.md`, open bugs / ROADMAP; do not treat as UI pixel spec
+
+#### 5. Improvements to Project Structure
+- **Path:** `…/Improvements to Project Structure.doc`
+- **Date:** ~2008-01-04
+- **Tags:** Designer, Website, Runtime
+- **Rel.:** High
+- **Why:** Proposes **Pages**, de-emphasize processes, nav/menus, validation messages — explains many Designer quirks and “submitless page” workarounds still visible.
+- **Integrate into:** Architecture note / `docs/ROADMAP.md`; mostly **park** for browser Designer unless owner wants page model
+
+#### 6. Web Application Performance
+- **Path:** `…/Database/WebAppPerformance.doc`
+- **Date:** 2006-10-02
+- **Tags:** Runtime, Library, MyTawala
+- **Rel.:** High
+- **Why:** GET/WHERE cost, CLOB submissions, Library indexing/cache, Project Manager export limits — explains runtime/Library scaling assumptions.
+- **Integrate into:** Ops / `docs/COMPARING_RUNTIMES.md` / park performance backlog
 
 ### B. Website / Library / MyTawala
 
-| # | Title | Path | Date | Tags | Rel. | Why | Integrate into |
-|---|-------|------|------|------|------|-----|----------------|
-| 7 | Project Versioning | `…/Project Versioning.doc` (+ `Project Version Web UI.GIF`) | ~2006-08-22 | MyTawala, Library, Designer, Website | **High** | Deployed vs non-deployed versions, Library submit rules, test-drive, upload metadata — core MyTawala/Library product contract. | `website-mock` fidelity notes; `docs/ROADMAP.md` Phase 3; Deploy dialog behavior |
-| 8 | Private Invitations | `…/Private Invitations.doc` | ~2007-04-18 | Runtime, Process, Designer, MyTawala | **High** | `PRIVATE INVITATION` / invitation-only forms / InvitationToken — under-documented subsystem vs Insert→Invitation in Designer. | `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md`; runtime invite URL behavior |
-| 9 | Hiding Form Names | `…/Hiding Form Names.doc` | ~2007-09-30 | Runtime, MyTawala | **High** | Form name → random URL tokens on deploy to My Tawala; security of admin URLs. | Runtime/deploy URL docs; website test-drive link design |
-| 10 | Web Application Themes | `…/Web Application Themes.doc` | ~2006-09-11 | Runtime, Designer, Website | **High** | Default/standard/custom CSS themes, per-user vs per-project storage, `tawala.` namespaces — matches theme CSS under Tomcat/docker. | Runtime CSS / Styles UI; `DESIGNER_MENU_SPEC` Styles section |
-| 11 | Customizing Web App Appearance | `…/Customizing Web App Appearance.doc` | ~2007-05-17 | Website, Library, Designer | **High** | Replaceable images/logo, theme pick, preview, preserve in project — Library customizer appearance step. | `website-mock` customize flow; park until site customize UI |
-| 12 | Emailing from Tawala Apps | `…/Emailing from Tawala Apps.doc` | ~2007-05-14 | Process, Runtime, MyTawala | **High** | Async send queue, quotas, bounce, delayed send — explains why SEND ≠ SMTP inline; Email Delivery product. | `docs/EMAIL_DELIVERY_OPS.md`; `DESIGNER_PROCESS_STATEMENTS_SEND.md` |
-| 13 | UI Outline (customizer) | `…/Customizable Web apps/UI Outline.doc` | ~2007 | Website, Library, MyTawala | **High** | End-to-end customizer path: Appearance → Content → Save → Publish → Send; Signup Sheet as lead app; drop-off lessons. | `website-mock/README.md`, Library mock UX |
-| 14 | Essentials of a simple and great Customization UI | `…/Customizable Web apps/Essentials of a simple and great Customization UI.doc` | ~2007 | Website, Library | **High** | Customizer UX principles (WYSIWYG, play vs live, logo/theme, one lead app). | Website mock acceptance criteria |
-| 15 | Customization Goals / Evolution / Form Customization | `…/Customizable Web apps/*.doc` (Bockman, Apr–Jun 2007) | 2007-04–06 | Website, Designer, Library | **High** | Why setup-form customization doesn’t scale; browser Form Customizer; eliminate special setup forms. | ROADMAP / Library product narrative; **park** full Form Customizer |
+#### 7. Project Versioning
+- **Path:** `…/Project Versioning.doc` (+ `Project Version Web UI.GIF`)
+- **Date:** ~2006-08-22
+- **Tags:** MyTawala, Library, Designer, Website
+- **Rel.:** High
+- **Why:** Deployed vs non-deployed versions, Library submit rules, test-drive, upload metadata — core MyTawala/Library product contract.
+- **Integrate into:** `website-mock` fidelity notes; `docs/ROADMAP.md` Phase 3; Deploy dialog behavior
+- **Tenancy (owner Jul 31, 2026):** One public Library; each account’s My Tawala is private (other accounts cannot see it). **Publish** is the deliberate bridge into Library — until then, projects stay in that account’s My Tawala. Product truth in `website-mock/README.md` § Tenancy / Save·Deploy·Publish glossary (mock remains single-browser `localStorage`).
+- **Sequencing (owner Jul 31, 2026):** My Tawala **version piles** stay gated until Save / Delete / Purge (and related ops) are trustworthy; **audit trail** ships with that same lifecycle package — not versions-first. Flat one-row-per-project mock for now; B7 remains the target model. See `website-mock/README.md` glossary **Sequencing / hold**.
+
+#### 8. Private Invitations
+- **Path:** `…/Private Invitations.doc`
+- **Date:** ~2007-04-18
+- **Tags:** Runtime, Process, Designer, MyTawala
+- **Rel.:** High
+- **Why:** Memo title emphasizes invite-only / InvitationToken. **Owner Jul 31:** everyday use is **in-project Form links** (DirtBowl AdminDash); conflate with Insert→Hyperlink so **Form link = primary**, external URL = secondary special case, private InviteeID = tertiary. Not two equal menu peers.
+- **Integrate into:** `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § unified Link/Invitation framing (Jul 31, 2026)
+
+#### 9. Hiding Form Names
+- **Path:** `…/Hiding Form Names.doc`
+- **Date:** ~2007-09-30
+- **Tags:** Runtime, MyTawala
+- **Rel.:** High
+- **Why:** Form name → random URL tokens on deploy to My Tawala; security of admin URLs.
+- **Integrate into:** Runtime/deploy URL docs; website test-drive link design
+
+#### 10. Web Application Themes
+- **Path:** `…/Web Application Themes.doc`
+- **Date:** ~2006-09-11
+- **Tags:** Runtime, Designer, Website
+- **Rel.:** High
+- **Why:** Default/standard/custom CSS themes, per-user vs per-project storage, `tawala.` namespaces — matches theme CSS under Tomcat/docker.
+- **Integrate into:** Runtime CSS / Styles UI; `DESIGNER_MENU_SPEC` Styles section
+
+#### 11. Customizing Web App Appearance
+- **Path:** `…/Customizing Web App Appearance.doc`
+- **Date:** ~2007-05-17
+- **Tags:** Website, Library, Designer
+- **Rel.:** High
+- **Why:** Replaceable images/logo, theme pick, preview, preserve in project — Library customizer appearance step.
+- **Integrate into:** `website-mock` customize flow; park until site customize UI
+
+#### 12. Emailing from Tawala Apps
+- **Path:** `…/Emailing from Tawala Apps.doc`
+- **Date:** ~2007-05-14
+- **Tags:** Process, Runtime, MyTawala
+- **Rel.:** High
+- **Why:** Async send queue, quotas, bounce, delayed send — explains why SEND ≠ SMTP inline; Email Delivery product.
+- **Integrate into:** `docs/EMAIL_DELIVERY_OPS.md`; `DESIGNER_PROCESS_STATEMENTS_SEND.md`
+
+#### 13. UI Outline (customizer)
+- **Path:** `…/Customizable Web apps/UI Outline.doc`
+- **Date:** ~2007
+- **Tags:** Website, Library, MyTawala
+- **Rel.:** High
+- **Why:** End-to-end customizer path: Appearance → Content → Save → Publish → Send; Signup Sheet as lead app; drop-off lessons.
+- **Integrate into:** `website-mock/README.md`, Library mock UX
+- **Note:** Save / Publish here are the customizer verbs; account tenancy (private My Tawala vs one public Library) is clarified under B7 + `website-mock/README.md` § Tenancy.
+
+#### 14. Essentials of a simple and great Customization UI
+- **Path:** `…/Customizable Web apps/Essentials of a simple and great Customization UI.doc`
+- **Date:** ~2007
+- **Tags:** Website, Library
+- **Rel.:** High
+- **Why:** Customizer UX principles (WYSIWYG, play vs live, logo/theme, one lead app).
+- **Integrate into:** Website mock acceptance criteria
+
+#### 15. Customization Goals / Evolution / Form Customization
+- **Path:** `…/Customizable Web apps/*.doc` (Bockman, Apr–Jun 2007)
+- **Date:** 2007-04–06
+- **Tags:** Website, Designer, Library
+- **Rel.:** High
+- **Why:** Why setup-form customization doesn’t scale; browser Form Customizer; eliminate special setup forms.
+- **Integrate into:** ROADMAP / Library product narrative; **park** full Form Customizer
 
 ### C. Strong Medium (still Phase 1 useful)
 
-| Title | Path | Date | Tags | Rel. | Why | Integrate into |
-|-------|------|------|------|------|-----|----------------|
-| Project Backup | `…/Project Backup.doc` | ~2007-11-28 | MyTawala | **Med** | Excel workbook backup/restore on Project Details — Project Manager feature. | MyTawala project ops mock; park if not shipping soon |
-| Web Application Error Handling | `…/Web Application Error Handling.doc` | ~2006-02-14 | Runtime | **Med** | Error classes, logging, prevention at startup. | Runtime ops notes; low priority for mock |
-| Updates to Project Format | `…/Updates to  Project Format.doc` | ~2007-12-26 | Designer, Runtime | **Med** | Proposal: separate `<fields>` from HTML `<ui>` segments for WYSIWYG — may be aspirational vs shipped XML. | Compare to actual project XML before integrating; likely **park** |
-| Customization Improvement | `…/Customization Improvement.doc` | ~2007-05-24 | Website | **Med** | SurveyMonkey / Wufoo / CircleUp competitive notes. | Website UX inspiration only |
-| Desirable features for customization | `…/Customizable Web apps/Desirable features….doc` | 2007-05-24 | Website | **Med** | Workshop framing + feature wishlist. | Fold into website criteria with Essentials/UI Outline |
-| Style Guidelines / Nomenclature | `…/Customizable Web apps/` | ~2007 | Website, Designer | **Med–Low** | Naming/style conventions for customizable apps. | Sample if Styles/Library copy needs consistency |
-| Database Initial Production Model.jpg | `…/Database/` | ~2006 | Runtime | **Med** | Visual schema companion to performance memo. | Keep with WebAppPerformance; no text extract |
+#### Project Backup
+- **Path:** `…/Project Backup.doc`
+- **Date:** ~2007-11-28
+- **Tags:** MyTawala
+- **Rel.:** Med
+- **Why:** Excel workbook backup/restore on Project Details — Project Manager feature.
+- **Integrate into:** MyTawala project ops mock; park if not shipping soon
+
+#### Web Application Error Handling
+- **Path:** `…/Web Application Error Handling.doc`
+- **Date:** ~2006-02-14
+- **Tags:** Runtime
+- **Rel.:** Med
+- **Why:** Error classes, logging, prevention at startup.
+- **Integrate into:** Runtime ops notes; low priority for mock
+
+#### Updates to Project Format
+- **Path:** `…/Updates to  Project Format.doc`
+- **Date:** ~2007-12-26
+- **Tags:** Designer, Runtime
+- **Rel.:** Med
+- **Why:** Proposal: separate `<fields>` from HTML `<ui>` segments for WYSIWYG — may be aspirational vs shipped XML.
+- **Integrate into:** Compare to actual project XML before integrating; likely **park**
+
+#### Customization Improvement
+- **Path:** `…/Customization Improvement.doc`
+- **Date:** ~2007-05-24
+- **Tags:** Website
+- **Rel.:** Med
+- **Why:** SurveyMonkey / Wufoo / CircleUp competitive notes.
+- **Integrate into:** Website UX inspiration only
+
+#### Desirable features for customization
+- **Path:** `…/Customizable Web apps/Desirable features….doc`
+- **Date:** 2007-05-24
+- **Tags:** Website
+- **Rel.:** Med
+- **Why:** Workshop framing + feature wishlist.
+- **Integrate into:** Fold into website criteria with Essentials/UI Outline
+
+#### Style Guidelines / Nomenclature
+- **Path:** `…/Customizable Web apps/`
+- **Date:** ~2007
+- **Tags:** Website, Designer
+- **Rel.:** Med–Low
+- **Why:** Naming/style conventions for customizable apps.
+- **Integrate into:** Sample if Styles/Library copy needs consistency
+
+#### Database Initial Production Model.jpg
+- **Path:** `…/Database/`
+- **Date:** ~2006
+- **Tags:** Runtime
+- **Rel.:** Med
+- **Why:** Visual schema companion to performance memo.
+- **Integrate into:** Keep with WebAppPerformance; no text extract
 
 ### D. Phase 1 Low / skip / caution
 

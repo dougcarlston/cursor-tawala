@@ -14,6 +14,7 @@ Track: Browser Designer — Forms only (designer-web/)
 Goal: Complete Forms canvas WYSIWYG + Formatting Palette for form items (FIB, MCQ, remaining items)
 Read first: docs/CHAT_HANDOFF_FORMS.md, Tawala_Key_Documents/DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md, DESIGNER_FORM_FORMAT_TOOLBAR.md
 Constraints: designer-web/ only; do not mix 8080 CSS or website-mock; no commit unless I ask
+MUST on resume: unify Insert Invitation+Hyperlink (Form link primary) — see DESIGNER_INSERT_MENU_AND_FUNCTIONS.md § Link/Invitation; parked rule MUST DO
 ```
 
 ---
@@ -58,6 +59,7 @@ cd ~/Projects/AI-Tawala/designer-web && npm run dev
 | **Next** | **MCQ canvas row** — question + choices on canvas | Same spec, MCQ section |
 | High | Wire palette **table tools** (#11–13) + `cursorInTable` | `DESIGNER_FORM_FORMAT_TOOLBAR.md` |
 | High | Wire palette **fx** + Insert → Function | `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` |
+| **High (Jul 31)** | **Unify Invitation + Hyperlink** → one Link dialog (Form primary, URL secondary) | Same spec § **Insert → Link / Invitation…**; parked rule MUST DO |
 | Medium | Hidden Field, Page Break, Skip Instructions canvas or popup UX | `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` |
 | Medium | Palette polish (Default Font/Size clear, real icons for Items buttons) | Owner screenshots in `.cursor/.../assets/` |
 | Deferred | Per-item **Properties popups** (D-Form-items) — panel stays until migration complete | `DESIGNER_BACKLOG_ARCHITECTURE.md` §5 |

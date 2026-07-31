@@ -23,8 +23,8 @@ Related: `DESIGNER_MENU_SPEC.md`, `DESIGNER_DOCUMENT_EDITOR.md`, `DESIGNER_UI_RE
 | 7 | Skip Instructions | Active | Always |
 | | *(separator)* | | |
 | 8 | Image… | Greyed | Cursor in a **rich-text** area (owner: “text window”; source: `CanInsertImage`) |
-| 9 | Invitation… | Greyed | Cursor in **Text** item body (`TextItemView`) |
-| 10 | Hyperlink… | Greyed | Cursor in **Text** item body |
+| 9 | Invitation… / **Link…** (unified) | Greyed | Cursor in **Text** item body (`TextItemView`) — **primary Insert for all links** (Jul 31 framing) |
+| 10 | Hyperlink… | Greyed | **Transitional / demoted** — fold into Invitation/Link dialog as “External URL” mode; do not treat as peer to Form links |
 | 11 | Function… | Greyed | Cursor in **Text** item body |
 
 **Field** does **not** appear on the Form Insert menu at all.
@@ -45,8 +45,8 @@ No Image, Invitation, Hyperlink, Function, or Field.
 |------|--------------|
 | **Field** | When a **field leaf** is selected in the **Fields** palette (Document-only menu item). Browser Jul 17: enabled from palette highlight; inserts at last document caret (same as double-click). |
 | **Image…** | When document editor active |
-| **Invitation…** | Available in document context |
-| **Hyperlink…** | Available in document context |
+| **Invitation… / Link…** | Available in document context — **primary** (unified Link; Form-in-project default) |
+| **Hyperlink…** | Available today; **demote** into unified Link as External URL mode |
 | **Function…** | When project has **≥1 form**; same as **fx** on document format toolbar |
 
 **Document Field — intentional UX (owner Jul 17, not a bug):**
@@ -84,51 +84,77 @@ Screenshot: `assets/Insert_-_Image_-_From_the_Web-*.png`
 
 ---
 
-## Insert → Invitation…
+## Insert → Link / Invitation… (unified — Form links first)
 
-**Dialog title:** Insert Invitation
+### Product framing (owner Jul 31, 2026 — do not derail)
 
-Sends a user a **Start link** to this project or another project.
+**Conflate today’s Insert → Invitation… and Insert → Hyperlink… into one Insert concept.** Pride of place goes to **in-project / cross-project Form links** (what legacy called Invitation). External URLs (today’s Hyperlink) and **private InviteeID** are both **secondary special cases** inside that same flow — not peer menu items of equal weight.
+
+**“Private Invitation” is a double misnomer for everyday use.** The memo *Private Invitations.doc* emphasizes invite-only access and `_InviteeID`. In real projects (e.g. DirtBowl **Administrator Dashboard**), nearly every on-page blue link is an Invitation: navigation to a Form in this or another deployed project. Authors stamp the page with those links; they do not use Hyperlink for that.
+
+| Mode (unified dialog) | Role | Priority |
+|----------------------|------|----------|
+| **Link to Form** (default) | Form + Project + Display Text → in-app `<invitation>` navigation. Private checkbox **off**. | **Primary — pride of place** |
+| **External URL** | Url + Display text + optional new window / conditions → `<link>` (today’s Hyperlink). | **Secondary special case** |
+| **Private / InviteeID** | Checkbox under Form-link mode: bind `_InviteeID`; invitation-only forms. | **Tertiary special case** |
+
+**Designer implementation target (next Designer pass — nail this, don’t fork two products):**
+
+1. **One Insert menu entry** for links (prefer label **Link…** or keep **Invitation…** temporarily). Remove or grey **Hyperlink…** as a separate peer once the unified dialog ships.
+2. Dialog opens on **Link to Form** (Form / in / Project / Display Text). Clear secondary control: e.g. radio or tabs — **Form in project** (default) vs **Web address (URL)**.
+3. When **Web address** is selected, show today’s Hyperlink fields (URL, display, new window, optional conditions). When **Form** is selected, show Form/Project/Display + optional **Make this a private invitation** (InviteeID block dimmed unless checked).
+4. **Deploy XML unchanged by mode:** Form link → `<invitation …>`; external → `<link>…</link>`; private Form link may add auth token markup. Do not emit Form navigation as a raw URL in `<link>`.
+5. DirtBowl-class portals remain **dense with Form links**; that is correct.
+6. Cross-project Form links (Project ≠ Current) stay first-class under the primary mode.
+7. Edit of an existing chip reopens the unified dialog on the correct mode (invitation config vs hyperlink config).
+
+**Sources:** `Private Invitations.doc` (triage #8); owner Jul 31, 2026 — Admin Dashboard links = invitations; Hyperlink = external-only special case; **conflate with pride of place to Form links**.
+
+---
+
+### Legacy dialog A — Form link (today: Insert Invitation)
+
+**Dialog title (legacy):** Insert Invitation → target unified title e.g. **Insert Link** with mode **Form in project**.
 
 | Control | Purpose |
 |---------|---------|
 | **Form:** | Dropdown — target form (same row as Project) |
 | **in** | Literal connector between Form and Project |
 | **Project:** | Dropdown — **(Current Project)** or other project |
-| **Display Text:** | Link text shown to the invitee (optional; falls back to form name) |
-| **Make this a private invitation** | Checkbox |
-| Explanatory text (centered) | Exact legacy copy: *Enter text or a field to be placed in the special variable "_InviteeID" when someone responds to this invitation. That text, or the value of the field, will be available in the "_InviteeID" variable when your invitee responds by clicking the Invitation link.* |
+| **Display Text:** | Link text on the page (optional; falls back to form name) |
+| **Make this a private invitation** | Checkbox — **tertiary** InviteeID special case; leave unchecked for ordinary Form links |
+| Explanatory text (centered) | Exact legacy copy (when private checked): *Enter text or a field to be placed in the special variable "_InviteeID" when someone responds to this invitation. That text, or the value of the field, will be available in the "_InviteeID" variable when your invitee responds by clicking the Invitation link.* |
 | Text field below | Private value / field for `_InviteeID`; **dimmed** when private unchecked |
 
 **OK** / **Cancel** (centered)
 
 Screenshot: [`assets/Insert_Invitation.png`](assets/Insert_Invitation.png)
 
-**Deploy:** emits `<font color="000080"><u><invitation form="…" project="…">…</invitation></u></font>` inside Form Text / Document paragraphs. Runtime must show a live `<a href=…>` (not plain text). If Deploy shows plain text only, restart the Designer API on `:3001` so it loads current `documentHtmlToXml.mjs`.
+**Deploy:** `<invitation form="…" project="…">…</invitation>` (plus auth when private). Runtime: live `<a href=…>` to form start URL.
 
 ---
 
-## Insert → Hyperlink…
+### Legacy dialog B — External URL (today: Insert Hyperlink — demote into unified dialog)
 
-**Dialog title:** Hyperlink
-
-Inserts a URL hyperlink into rich text (Form Text item or Document).
+**Dialog title (legacy):** Hyperlink → target unified mode **Web address (URL)**.
 
 | Control | Purpose |
 |---------|---------|
-| **Url:** | Destination URL (label left of field) |
+| **Url:** | Destination URL |
 | **Display text:** | Optional |
 | Italic note | `(optional; if you leave this blank the full URL or filename will be shown)` |
-| **Open in new browser window.** | Checkbox (trailing period matches legacy) |
+| **Open in new browser window.** | Checkbox |
 | Separator | Thin horizontal rule |
 | **Display link conditionally** | Checkbox — enables condition section |
-| **Display link only when** | Field (green box), operator dropdown, value, **+** / **−** |
+| **Display link only when** | Field, operator, value, **+** / **−** |
 
 **OK** / **Cancel** (centered)
 
 Screenshot: [`assets/Insert_Hyperlink.png`](assets/Insert_Hyperlink.png)
 
-**Deploy:** emits `<font color="000080"><u><link>…</link></u></font>`. Runtime must show a live `<a href=…>` (with `target="_blank"` when new-window is set).
+**Deploy:** `<link>…</link>` (`target="_blank"` when new-window set). Runtime: live `<a href=…>`.
+
+**Until unified UI ships:** both menu items may remain wired as today; **docs and future work treat Form link as primary and Hyperlink as secondary mode**, not equals.
 
 ---
 
@@ -750,16 +776,16 @@ Ship this Designer build **without** wiring the four HTML→XML stubs below. Cat
 | 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | **Passed w/ caveats** — owner Jul 19 (`version="2"`; post-process Document is one response behind — legacy persist-after-process). **WHERE re-smoke Passed Jul 19** |
 | 17 | SUM | `sum` | **Yes** | **Passed** — owner Jul 19 (Browser Designer Configure + export + live Deploy total). **WHERE re-smoke Passed Jul 19** |
 
-**Insert siblings (not in the 17):** Invitation…, Hyperlink… — **wired Jul 16** (dialogs + Design tokens + Deploy XML). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
+**Insert siblings (not in the 17):** Invitation… + Hyperlink… — **wired Jul 16** as two peers; **Jul 31 framing:** conflate into one Insert Link (Form primary, external URL secondary). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
 
-### Smoke — Invitation / Hyperlink (Jul 16)
+### Smoke — Invitation / Hyperlink (Jul 16; unified dialog later)
 
 **Owner OK Jul 16** — both live and valid on Deploy (after config double-encode fix).
 
-1. Form Text → Insert → **Invitation…** → Form + Project on one row with **in** between; Display Text; OK → blue underline chip in Design.
+1. Form Text → Insert → **Invitation…** (future **Link…**) → Form + Project on one row with **in** between; Display Text; OK → blue underline chip in Design. **Primary path.**
 2. Redeploy → runtime shows a **live** `<a>` (blue underline), not plain text. Click navigates to the invited form.
-3. Insert → **Hyperlink…** → Url + optional Display text + **Open in new browser window.** → OK → chip → Redeploy opens URL (`target=_blank` when checked).
-4. Private invitation: check private, drop a field into the InviteeID box → Redeploy includes `<authenticationTokenValue>`.
+3. Insert → **Hyperlink…** (or unified mode **Web address**) → Url + optional Display text + **Open in new browser window.** → OK → chip → Redeploy opens URL (`target=_blank` when checked). **Secondary path.**
+4. Private invitation: check private, drop a field into the InviteeID box → Redeploy includes `<authenticationTokenValue>`. **Tertiary.**
 5. If step 2/3 shows plain text only: restart API (`:3001`) so export includes `<invitation>` / `<link>`, then Redeploy.
 6. If links are blue but **invalid** (JS alert / empty href): chips were double-encoded in Design — fixed Jul 16 (`setAttribute` uses raw JSON; Deploy decodes `&amp;quot;`). Hard-refresh Designer, re-insert chips **or** Redeploy existing content after API restart.
 
@@ -776,7 +802,7 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 | Area | Legacy | Browser today |
 |------|--------|----------------|
 | Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink live (Jul 16) |
-| Invitation / Hyperlink dialogs | Yes | **Yes (Jul 16)** — Insert dialogs + Design tokens + Deploy `<invitation>` / `<link>` |
+| Invitation / Hyperlink dialogs | Yes (two menu peers) | **Two peers today (Jul 16)**; **target (Jul 31):** one Insert Link dialog — Form primary, external URL secondary, private InviteeID tertiary; Deploy still `<invitation>` / `<link>` |
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
 | Image from PC / Web URL | Yes | **From your PC** Approach A (Jul 16); **From the Web…** = DISPLAY IMAGE (Jul 17 rename); File Uploader form item omitted from palette |
 | Insert Field (document) | Yes | **Jul 17:** Insert → Field from Fields selection; **Jul 17 fix:** only active MDI Document (stale prior cleared on window activate); status nudge when no caret |
@@ -796,4 +822,4 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 ---
 
-*Last updated: July 24, 2026 — function XML emit matrix synced to `documentHtmlToXml.mjs`; four stubs parked; Insert siblings Invitation/Hyperlink/Image wired.*
+*Last updated: July 31, 2026 — **Conflate Invitation + Hyperlink** into one Insert Link flow: Form-in-project primary; external URL secondary; private InviteeID tertiary. Dual menu items transitional until unified dialog ships.*

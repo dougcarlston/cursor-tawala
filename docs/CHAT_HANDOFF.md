@@ -222,14 +222,16 @@ Owner references:
 
 **Suggested title:** `Designer — architecture backlog & Phase 4`
 
+**When this track resumes (after Website):** read `.cursor/rules/tawala-designer-parked-post-website.mdc` first — especially **MUST DO: conflate Invitation + Hyperlink** (Form link primary).
+
 ### 5-line paste opener
 
 ```
-Project: AI-Tawala (~/Projects/AI-Tawala)
-Track: Browser Designer — designer-web/ (Phase 4)
-Goal: Implement Designer architecture backlog (MDI, explorer, properties UX); not Registration CSS parity
-Read first: docs/DESIGNER_BACKLOG_ARCHITECTURE.md, docs/ROADMAP.md Phase 4, Tawala_Key_Documents/DESIGNER_MENU_SPEC.md
-Constraints: Do not mix 8080 CSS/docker or website-mock work in this chat; preview/deploy local only (5173/3001/8080, not www.tawala.com)
+Project: Tawala (~/Projects/Tawala)
+Track: Browser Designer — designer-web/ (Phase 4 return)
+Goal: Designer pass after website — FIRST: unify Insert Invitation+Hyperlink (Form link primary); then parked polish + backlog
+Read first: .cursor/rules/tawala-designer-parked-post-website.mdc (MUST DO Link conflation), Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md § Link/Invitation unified, docs/ROADMAP.md Phase 4
+Constraints: Do not mix 8080 CSS/docker or website-mock in this chat; preview/deploy local only (5173/3001/8080); Form-in-project links are primary — Hyperlink is external-URL secondary mode only
 ```
 
 ### Work to date
@@ -268,11 +270,13 @@ Constraints: Do not mix 8080 CSS/docker or website-mock work in this chat; previ
 
 ### Immediate phases ahead
 
+0. **MUST (Jul 31 framing):** Unify Insert → Invitation + Hyperlink into one Link dialog — Form-in-project **primary**, external URL secondary, private InviteeID tertiary. Spec: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § unified Link. Do not treat Hyperlink as a peer product.
 1. **Designer architecture backlog** — MDI, explorer collapse, form–process links, properties popups, menu bars ([`DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)).
 2. **Owner verify** — DirtBowl Registration page 1 Q4 email-note alignment on `:8080` vs `:5173`; then commit `project.css` + doc updates.
 3. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
 4. **UX feedback** — canvas layout, inspector after architecture items land.
 5. **Backlog** — DirtBowl → website Library link, FIB free-mix layout, `.tawala` import, outbound email (separate session).
+6. **Parked polish** from `.cursor/rules/tawala-designer-parked-post-website.mdc` (Document P0s, confirm, Font Color, Skip stubs, Jul 30 FIB/Text Deploy bugs).
 
 ---
 
@@ -325,18 +329,18 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 ## Chat 3 — Website mock
 
-**Suggested title:** `Website — library mock & test-drive links`
+**Suggested title:** `Website — library ops (Save/Delete/Purge)`
 
-**Status (July 2026):** Designer gate (Sign-up Sheet / Get Together template deploy) is **largely met**. Next focus is a **fully operational site** — library mock fidelity + correct test-drive links to stable `:8080` template URLs. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Status (Jul 31, 2026):** Designer gate (Sign-up Sheet / Get Together template deploy) is **largely met**. Libraries are the **core of the Website** — owner affirms a **solid basis** for Library + My Tawala; next focus is **catalog / lifecycle ops** (harden Save / Delete / Purge, Publish stub readiness, keep flat My Tawala) — **not** more look-and-feel (Home polish optional / non-blocking). Version piles stay deferred. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
 
 ### 5-line paste opener
 
 ```
 Project: Tawala (~/Projects/Tawala)
 Track: Website mock — website-mock/ (Phase 3)
-Goal: Fully operational site — library mock fidelity + correct test-drive links to stable 8080 template URLs
+Goal: Library + My Tawala catalog ops — harden Save/Delete/Purge (+ lifecycle); Publish stub readiness; flat My Tawala (no version piles yet). L&F deferred; Home polish optional/non-critical
 Read first: .cursor/rules/tawala-designer-parked-post-website.mdc, website-mock/README.md, docs/ROADMAP.md Phase 3
-Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless links need it; defer parked Designer items + Project Manager/Email Delivery
+Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless links need it; defer parked Designer items + Project Manager/Email Delivery + visual polish (except optional Home); product tenancy = 1 public Library + per-account private My Tawala (Publish bridges; mock is still single-user localStorage)
 ```
 
 ### Work to date
@@ -349,6 +353,7 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 - Template images copied from build1700; Jobs removed from footer (owner, July 2026).
 - Owner confirmed all mock pages load; test-drive / library / My Tawala links OK.
 - Prereq for fidelity work: stable `:8080` template URLs (Tomcat up; featured templates deployable).
+- **Tenancy (owner Jul 31, 2026):** one public Library; each account’s My Tawala is private; **Publish** is the only deliberate bridge into Library. Documented in `website-mock/README.md` (§ Tenancy + Save/Deploy/Publish glossary). Mock stays single-browser `localStorage` — do not implement multi-account auth here.
 
 ### Key files
 
@@ -366,16 +371,19 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 
 ### Immediate phases ahead
 
-1. **Operational site** — library/home fidelity; verify every Test drive link hits the right live `:8080` URL.
-2. Keep `demo-urls.js` in sync when template deploy names or paths change on 8080.
-3. Flesh out stub pages (About, FAQ, Login) when copy is ready.
+1. **Library / My Tawala ops (owner Jul 31, 2026 — next focus):** Harden **Save / Delete / Purge** (and related lifecycle ops); advance **Publish** stub readiness; keep **flat** My Tawala (one row per project). Libraries are the core of the Website — not homepage chrome.
+2. Keep `demo-urls.js` in sync when template deploy names or paths change on 8080; verify Test drive links stay on the right live `:8080` URLs.
+3. Flesh out stub pages (About, FAQ, Login) when copy is ready — non-blocking vs ops.
 4. Wire **Designer** marketing page when browser Designer is demo-ready.
 5. DirtBowl → Library link (backlog — depends on Designer/deploy track).
 
 ### Defer / out of scope (this chat)
 
+- **Look-and-feel polish (owner Jul 31, 2026):** Do **not** bother with more visual polish now. **Home page** look-and-feel is optional only and **not critical wiring**. Libraries / catalog ops come first.
+- **My Tawala version piles (owner Jul 31, 2026):** Do not expose multi-version / “Deploy creates version N” UI until Save / Delete / Purge (and related ops) are solid enough; audit trail ships with that same lifecycle package. Keep flat one-row-per-project mock for now. Target model still B7 — see `website-mock/README.md` § Save/Deploy/Publish **Sequencing / hold**.
 - **Designer MainMenu** Project Manager + Email Delivery — wait until the site exists.
 - Everything in `.cursor/rules/tawala-designer-parked-post-website.mdc`: Document P0s, native `confirm()`, Font Color picker, Skip/Process stubs; **plus Jul 30 parked (Not blocking):** FIB Styles squashed “Align right side” radio; Form Text blank-line loss on Deploy + image breaks highlight — see `DESIGNER_OPEN_BUGS.md` § Parked Jul 30.
+- **Also for next Designer chat (not here):** unify Invitation + Hyperlink (Form link primary) — called out in that rule’s **MUST DO** and Chat 1 opener.
 - **Page Header / banner graphics** — until Deploy image pipeline is understood.
 - **Owner offline sample JSON review** — not blocking; do not replace samples here.
 - Do **not** thrash `designer-web/` or Tomcat/Docker unless a test-drive link truly requires URL wiring.
@@ -388,8 +396,8 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 | Action | Which chat |
 |--------|------------|
 | **Continue this chat** | Designer (Chat 1) — architecture backlog |
-| **Focus first** | Designer — architecture backlog (MDI, explorer, properties) **or** Website (Chat 3) when starting operational site |
-| **Park** | 8080 (Chat 2) until deploy breaks; Website (Chat 3) only until you unpark for library fidelity / test-drive links |
+| **Focus first** | Website (Chat 3) — Library / My Tawala ops (Save/Delete/Purge); **or** Designer when site ops pause |
+| **Park** | 8080 (Chat 2) until deploy breaks; Website visual polish (except optional Home) until ops are solid |
 
 ### Practical split
 

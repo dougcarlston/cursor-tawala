@@ -7,6 +7,13 @@ alwaysApply: true
 
 **Do not start** the items below until the website is operational. Site work affects some Designer functions. Then run another Designer pass.
 
+## MUST DO when Designer resumes (owner Jul 31, 2026)
+
+**Conflate Insert → Invitation… and Insert → Hyperlink…** into one Insert Link dialog — **pride of place to Form-in-project links** (today’s Invitation). External URL (Hyperlink) = secondary mode; private InviteeID = tertiary. Deploy XML stays `<invitation>` vs `<link>` by mode. Dual menu peers are transitional only.
+
+- Spec (do not re-debate framing): `Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § **Insert → Link / Invitation… (unified — Form links first)**
+- Also noted in: `docs/CHAT_HANDOFF.md` Chat 1 opener; triage note on *Private Invitations.doc*
+
 ## Parked until site is up
 
 1. **Document smoothness P0s** — Face/Size multi-chip, invent-with-tables, chip drag, table reflow
