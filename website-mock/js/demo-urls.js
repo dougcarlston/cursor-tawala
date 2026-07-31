@@ -882,20 +882,41 @@ window.TawalaDemo = {
     }));
   },
   myTawalaEntries() {
-    return Object.keys(window.TAWALA_MYTAWALA).map((id) => ({
+    const base = Object.keys(window.TAWALA_MYTAWALA).map((id) => ({
       id,
       ...window.TAWALA_MYTAWALA[id],
     }));
+    // Deploy → Show in My Tawala writes a localStorage overlay (transfer.js).
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.withMyTawalaOverlay === "function"
+    ) {
+      return window.TawalaTransfer.withMyTawalaOverlay(base);
+    }
+    return base;
   },
   /** Prefer Library, then My Tawala (detail pages that accept either id). */
   get(id) {
-    return window.TAWALA_LIBRARY[id] || window.TAWALA_MYTAWALA[id] || null;
+    return this.getLibrary(id) || this.getMyTawala(id) || null;
   },
   getLibrary(id) {
     return window.TAWALA_LIBRARY[id] || null;
   },
   getMyTawala(id) {
-    return window.TAWALA_MYTAWALA[id] || null;
+    if (!id) return null;
+    const base = window.TAWALA_MYTAWALA[id] || null;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.getOverlayEntry === "function"
+    ) {
+      const overlay = window.TawalaTransfer.getOverlayEntry(id);
+      if (overlay) {
+        return base ? { ...base, ...overlay, id } : { ...overlay, id };
+      }
+    }
+    return base;
   },
   /** @deprecated Prefer libraryEntries() */
   entries() {

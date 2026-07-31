@@ -518,7 +518,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                   e.preventDefault();
                   e.stopPropagation();
                   registerAsPaletteEditor();
-                  openFunctionTokenForEdit(func, el, rememberSelection);
+                  openFunctionTokenForEdit(func, el, rememberSelection, commit);
                   return;
                 }
                 const field = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);

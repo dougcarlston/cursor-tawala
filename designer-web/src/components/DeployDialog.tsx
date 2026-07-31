@@ -1,6 +1,10 @@
 import { useProjectStore } from "@/store/projectStore";
 import { DesignerDialog } from "./DesignerDialog";
-import { LOCAL_WEBSITE_MOCK_MYTAWALA_URL } from "@/lib/shellCommands";
+import {
+  LOCAL_WEBSITE_MOCK_MYTAWALA_URL,
+  mockProjectIdFromName,
+  websiteMockProjectDetailsUrl,
+} from "@/lib/shellCommands";
 
 export function DeployDialog() {
   const show = useProjectStore((s) => s.showDeployResult);
@@ -14,8 +18,11 @@ export function DeployDialog() {
 
   const openMyTawala = () => {
     if (failed) return;
+    const name = lastDeploy.project ?? "Project";
+    const id = mockProjectIdFromName(name);
     const receipt = {
-      name: lastDeploy.project ?? "Project",
+      id,
+      name,
       uniqueId: lastDeploy.uniqueId ?? null,
       startpoints: (lastDeploy.startpoints ?? []).map((sp) => ({
         form: sp.form,
@@ -24,9 +31,10 @@ export function DeployDialog() {
       mode: lastDeploy.mode ?? null,
       at: new Date().toISOString(),
     };
+    // Project Details deep link + receipt → mock upserts My Tawala pile overlay.
     const url =
-      LOCAL_WEBSITE_MOCK_MYTAWALA_URL +
-      "?deployReceipt=" +
+      websiteMockProjectDetailsUrl(id) +
+      "&deployReceipt=" +
       encodeURIComponent(JSON.stringify(receipt));
     window.open(url, "_blank", "noopener,noreferrer");
   };
@@ -44,7 +52,7 @@ export function DeployDialog() {
             <button
               type="button"
               onClick={openMyTawala}
-              title="Open website-mock My Tawala with this deploy receipt"
+              title="Add/update this project in mock My Tawala and open Project Details"
             >
               Show in My Tawala
             </button>
@@ -85,8 +93,12 @@ export function DeployDialog() {
               ))}
             </ul>
             <p className="hint">
-              My Tawala pile is separate from this Deploy — use <strong>Show in My Tawala</strong> to
-              drop a receipt into the mock inbox (:5500).
+              <strong>Show in My Tawala</strong> opens Project Details on :5500 and adds this deploy
+              to the mock My Projects list (browser overlay). Listing:{" "}
+              <a href={LOCAL_WEBSITE_MOCK_MYTAWALA_URL} target="_blank" rel="noreferrer">
+                My Tawala
+              </a>
+              . Mock must be running: <code>cd website-mock && ./serve.sh</code>
             </p>
           </>
         ) : (

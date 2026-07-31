@@ -598,3 +598,251 @@ describe("Process Set expression typing (numeric vs text)", () => {
     );
   });
 });
+
+describe("MQL (itemizationTable) Where clause Deploy XML", () => {
+  function signupWithWhere(conditions, combinator = "and", where) {
+    return projectToXml({
+      name: "Sign-up Sheet",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "text",
+              label: "T2",
+              style: "normal",
+              content: [
+                {
+                  type: "paragraph",
+                  nodes: [
+                    {
+                      type: "itemizationTable",
+                      version: 1,
+                      form: "Form 1",
+                      columns: [
+                        { header: "First", field: "<<Form 1:firstName>>" },
+                        { header: "Last", field: "<<Form 1:lastName>>" },
+                      ],
+                      showPrint: false,
+                      showExport: false,
+                      conditions,
+                      combinator,
+                      ...(where ? { where } : {}),
+                    },
+                  ],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  it("emits nested Where from Configure conditions rows (Form 1:lastName equals Carlston)", () => {
+    const xml = signupWithWhere([
+      { field: "Form 1:lastName", op: "equals", value: "Carlston" },
+    ]);
+    expect(xml).toContain("<itemization-table");
+    expect(xml).toContain('<form name="Form 1"/>');
+    expect(xml).toMatch(
+      /<conditions><form name="Form 1"\/><conditions><equals field="Record:Form 1:lastName"><string value="Carlston"\/><\/equals><\/conditions><\/conditions>/,
+    );
+  });
+
+  it("prefers Configure conditions rows over a stale imported where tree", () => {
+    const xml = signupWithWhere(
+      [{ field: "Form 1:lastName", op: "equals", value: "Carlston" }],
+      "and",
+      { field: "Record:Form 1:Email", op: "equals", value: "stale@example.com" },
+    );
+    expect(xml).toContain('field="Record:Form 1:lastName"');
+    expect(xml).toContain('<string value="Carlston"/>');
+    expect(xml).not.toContain("stale@example.com");
+  });
+
+  it("still emits imported where tree when conditions rows are empty", () => {
+    const xml = signupWithWhere(
+      [{ field: "", op: "equals", value: "" }],
+      "and",
+      { field: "Record:Form 1:lastName", op: "equals", value: "Carlston" },
+    );
+    expect(xml).toContain('field="Record:Form 1:lastName"');
+    expect(xml).toContain('<string value="Carlston"/>');
+  });
+
+  it("nests multi-row Where with binary <and>", () => {
+    const xml = signupWithWhere(
+      [
+        { field: "Form 1:lastName", op: "equals", value: "Carlston" },
+        { field: "Form 1:firstName", op: "equals", value: "Doug" },
+      ],
+      "and",
+    );
+    expect(xml).toContain("<and>");
+    expect(xml).toContain('field="Record:Form 1:lastName"');
+    expect(xml).toContain('field="Record:Form 1:firstName"');
+  });
+});
+
+describe("MQL modern <<MULTIPLE QUESTION LIST>> function-token Where Deploy XML", () => {
+  function encodeConfig(config) {
+    return JSON.stringify(config)
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+  }
+
+  function signupHtmlWithWhere(conditionsRows, combinator = "and") {
+    const config = {
+      "show-print-control": "false",
+      "show-export-control": "false",
+      numberOfColumns: 2,
+      column: [
+        { header: "First", contents: "<<Form 1:firstName>>" },
+        { header: "Last", contents: "<<Form 1:lastName>>" },
+      ],
+      "form-name": "Form 1",
+      conditionsRows,
+      conditionsCombinator: combinator,
+    };
+    const html =
+      `<p>New Style: <span class="function-token function-table-token" ` +
+      `contenteditable="false" data-function-id="itemization-table" ` +
+      `data-function-config="${encodeConfig(config)}" ` +
+      `title="MULTIPLE QUESTION LIST">` +
+      `&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span></p>`;
+    return projectToXml({
+      name: "Sign-up Sheet",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "text",
+              label: "T2",
+              style: "normal",
+              content: html,
+            },
+          ],
+        },
+      ],
+    });
+  }
+
+  it("emits Where from data-function-config conditionsRows (Form 1:lastName equals Carlston)", () => {
+    const xml = signupHtmlWithWhere([
+      { field: "Form 1:lastName", op: "equals", value: "Carlston" },
+    ]);
+    expect(xml).toContain("<itemization-table");
+    expect(xml).toContain('<form name="Form 1"/>');
+    expect(xml).toMatch(
+      /<conditions><form name="Form 1"\/><conditions><equals field="Record:Form 1:lastName"><string value="Carlston"\/><\/equals><\/conditions><\/conditions>/,
+    );
+  });
+
+  it("nests multi-row Where with binary <and> on the HTML function-token path", () => {
+    const xml = signupHtmlWithWhere(
+      [
+        { field: "Form 1:lastName", op: "equals", value: "Carlston" },
+        { field: "Form 1:firstName", op: "equals", value: "Doug" },
+      ],
+      "and",
+    );
+    expect(xml).toContain("<and>");
+    expect(xml).toContain('field="Record:Form 1:lastName"');
+    expect(xml).toContain('field="Record:Form 1:firstName"');
+  });
+
+  it("Sign-up Sheet template T2 is modern function-token HTML (not structured itemizationTable)", async () => {
+    const { readFileSync } = await import("node:fs");
+    const { fileURLToPath } = await import("node:url");
+    const { dirname, join } = await import("node:path");
+    const here = dirname(fileURLToPath(import.meta.url));
+    const project = JSON.parse(
+      readFileSync(join(here, "../public/samples/templates/signup-sheet.json"), "utf8"),
+    );
+    const t2 = project.forms[0].items.find((i) => i.label === "T2");
+    expect(typeof t2.content).toBe("string");
+    expect(t2.content).toContain('data-function-id="itemization-table"');
+    expect(t2.content).toContain("conditionsRows");
+    expect(Array.isArray(t2.content)).toBe(false);
+
+    // Inject Where and Deploy — same path New Project / TextCanvasRow uses.
+    const withWhere = t2.content.replace(
+      /&quot;conditionsRows&quot;:\[\{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;\}]/,
+      "&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Form 1:lastName&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;Carlston&quot;}]",
+    );
+    const xml = projectToXml({
+      ...project,
+      forms: [
+        {
+          ...project.forms[0],
+          items: project.forms[0].items.map((i) =>
+            i.label === "T2" ? { ...i, content: withWhere } : i,
+          ),
+        },
+      ],
+    });
+    expect(xml).toMatch(
+      /<equals field="Record:Form 1:lastName"><string value="Carlston"\/><\/equals>/,
+    );
+  });
+
+  it("dual-chip HTML: modern Where wins; legacy brace chip is not a second table", () => {
+    function encodeConfig(config) {
+      return JSON.stringify(config)
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;");
+    }
+    const modernConfig = {
+      "show-print-control": "false",
+      "show-export-control": "false",
+      numberOfColumns: 2,
+      column: [
+        { header: "First", contents: "<<Form 1:firstName>>" },
+        { header: "Last", contents: "<<Form 1:lastName>>" },
+      ],
+      "form-name": "Form 1",
+      conditionsRows: [{ field: "Form 1:lastName", op: "equals", value: "Carlston" }],
+      conditionsCombinator: "and",
+    };
+    const legacyNode = encodeURIComponent(
+      JSON.stringify({
+        type: "itemizationTable",
+        form: "Form 1",
+        columns: [
+          { header: "First", field: "Record:Form 1:firstName" },
+          { header: "Last", field: "Record:Form 1:lastName" },
+        ],
+      }),
+    );
+    const html =
+      `<p>New Style: <span class="function-token function-table-token" ` +
+      `data-function-id="itemization-table" data-function-config="${encodeConfig(modernConfig)}">` +
+      `&lt;&lt;MULTIPLE QUESTION LIST&gt;&gt;</span></p>` +
+      `<p>Old Style: <span class="function-table-inline function-table-token" ` +
+      `data-itemization-token="true" data-tawala-structured-node="${legacyNode}">` +
+      `{ MULTIPLE QUESTION LIST }</span></p>`;
+    const xml = projectToXml({
+      name: "Dual",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [{ type: "text", label: "T2", content: html }],
+        },
+      ],
+    });
+    const tables = xml.match(/<itemization-table[\s\S]*?<\/itemization-table>/g) ?? [];
+    expect(tables.length).toBe(1);
+    expect(tables[0]).toContain('field="Record:Form 1:lastName"');
+    expect(tables[0]).toContain('<string value="Carlston"/>');
+    expect(xml).not.toContain("{ MULTIPLE QUESTION LIST }");
+  });
+});

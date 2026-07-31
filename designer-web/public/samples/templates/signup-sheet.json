@@ -80,46 +80,7 @@
           "type": "text",
           "label": "T2",
           "style": "normal",
-          "content": [
-            {
-              "type": "paragraph",
-              "nodes": [
-                {
-                  "type": "itemizationTable",
-                  "version": 1,
-                  "form": "Form 1",
-                  "columns": [
-                    {
-                      "header": "First",
-                      "field": "<<Form 1:firstName>>"
-                    },
-                    {
-                      "header": "Last",
-                      "field": "<<Form 1:lastName>>"
-                    },
-                    {
-                      "header": "Email",
-                      "field": "<<Form 1:Email>>"
-                    },
-                    {
-                      "header": "Address",
-                      "field": "<<Form 1:Address>>"
-                    }
-                  ],
-                  "showPrint": false,
-                  "showExport": false,
-                  "conditions": [
-                    {
-                      "field": "",
-                      "op": "equals",
-                      "value": ""
-                    }
-                  ],
-                  "combinator": "and"
-                }
-              ]
-            }
-          ]
+          "content": "​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;First&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:firstName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Last&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:lastName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Email&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Email&gt;&gt;&quot;},{&quot;header&quot;:&quot;Address&quot;,&quot;contents&quot;:&quot;&lt;&lt;Form 1:Address&gt;&gt;&quot;}],&quot;form-name&quot;:&quot;Form 1&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" data-itemization-form=\"Form 1\" data-itemization-token=\"true\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"font-size: 10pt; color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span>​"
         }
       ],
       "process": "Process 1"

@@ -304,6 +304,89 @@ describe("documentHtmlToXml record-count Where conditions", () => {
     expect(single).toContain("<mcEquals field=\"Record:Form 1:MCQ1\">");
     expect(single).toContain('<string value="d"/>');
   });
+
+  it("emits itemization-table Where equals with Record:Form:Field (Signup Carlston)", () => {
+    const xml = documentHtmlToXml(
+      tokenHtml("itemization-table", {
+        "show-print-control": "false",
+        "show-export-control": "false",
+        numberOfColumns: 2,
+        column: [
+          { header: "First", contents: "<<Form 1:firstName>>" },
+          { header: "Last", contents: "<<Form 1:lastName>>" },
+        ],
+        conditionsRows: [{ field: "Form 1:lastName", op: "equals", value: "Carlston" }],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain("<itemization-table");
+    expect(xml).toMatch(
+      /<conditions><form name="Form 1"\/><conditions><equals field="Record:Form 1:lastName"><string value="Carlston"\/><\/equals><\/conditions><\/conditions>/,
+    );
+  });
+
+  it("emits Where from legacy structured-node brace chip when no modern token", () => {
+    const node = encodeURIComponent(
+      JSON.stringify({
+        type: "itemizationTable",
+        form: "Form 1",
+        columns: [{ header: "Last", field: "Record:Form 1:lastName" }],
+        conditionsRows: [{ field: "Form 1:lastName", op: "equals", value: "Carlston" }],
+        conditionsCombinator: "and",
+      }),
+    );
+    const html =
+      `<p><span class="function-table-inline function-table-token" ` +
+      `data-itemization-token="true" data-tawala-structured-node="${node}">` +
+      `{ MULTIPLE QUESTION LIST }</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain("<itemization-table");
+    expect(xml).toMatch(
+      /<equals field="Record:Form 1:lastName"><string value="Carlston"\/><\/equals>/,
+    );
+  });
+
+  it("still emits itemization-table when class/id use single quotes or spaces around =", () => {
+    const config = JSON.stringify({
+      numberOfColumns: 2,
+      column: [
+        { header: "First", contents: "<<Form 1:firstName>>" },
+        { header: "Last", contents: "<<Form 1:lastName>>" },
+      ],
+      "form-name": "Form 1",
+      "show-print-control": "false",
+      "show-export-control": "false",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+
+    for (const html of [
+      `<p><span class='function-token' data-function-id='itemization-table' data-function-config="${config}">` +
+        `&lt;&lt;MULTIPLE QUESTION LIST&gt;&gt;</span></p>`,
+      `<p><span class = "function-token" data-function-id = "itemization-table" data-function-config="${config}">` +
+        `&lt;&lt;MULTIPLE QUESTION LIST&gt;&gt;</span></p>`,
+    ]) {
+      const xml = documentHtmlToXml(html, escAttr, escText, { formName: "Form 1" });
+      expect(xml).toContain("<itemization-table");
+      expect(xml).toContain('name="Record:Form 1:firstName"');
+      expect(xml).not.toMatch(/field name="[^"]*MULTIPLE QUESTION/);
+    }
+  });
+
+  it("does not export orphan <<MULTIPLE QUESTION LIST(...)>> chip text as a field", () => {
+    const xml = documentHtmlToXml(
+      `<p>&lt;&lt;MULTIPLE QUESTION LIST(false, false, ..., Form 1:lastName equals "Carlston")&gt;&gt;</p>`,
+      escAttr,
+      escText,
+      { formName: "Form 1" },
+    );
+    expect(xml).not.toMatch(/field name="[^"]*MULTIPLE QUESTION/);
+    expect(xml).not.toContain("<itemization-table");
+  });
 });
 
 describe("documentHtmlToXml nested function tokens", () => {

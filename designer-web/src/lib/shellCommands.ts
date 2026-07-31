@@ -766,18 +766,55 @@ function insertHtmlAtSelection(html: string): boolean {
 /** Local symbiotic hop: website-mock My Tawala (Project Manager surface). */
 export const LOCAL_WEBSITE_MOCK_MYTAWALA_URL = "http://localhost:5500/mytawala.html";
 export const LOCAL_WEBSITE_MOCK_LIBRARY_URL = "http://localhost:5500/library.html";
+export const LOCAL_WEBSITE_MOCK_BASE = "http://localhost:5500";
+
+/** Catalog / overlay id — matches website-mock `TawalaTransfer.slugifyProjectId`. */
+export function mockProjectIdFromName(name?: string): string {
+  return (
+    String(name || "project")
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-|-$/g, "") || "project"
+  );
+}
+
+/** My Tawala Project Details deep link for the current (or given) project name/id. */
+export function websiteMockProjectDetailsUrl(projectIdOrName?: string): string {
+  const raw = (projectIdOrName ?? useProjectStore.getState().project.name)?.trim() || "project";
+  const projectId = mockProjectIdFromName(raw);
+  return `${LOCAL_WEBSITE_MOCK_BASE}/mytawala-project.html?project=${encodeURIComponent(projectId)}`;
+}
 
 export function openProjectManagerLocal(): void {
+  const name = useProjectStore.getState().project.name;
+  const url = websiteMockProjectDetailsUrl(name);
   try {
-    window.open(LOCAL_WEBSITE_MOCK_MYTAWALA_URL, "_blank", "noopener,noreferrer");
+    window.open(url, "_blank", "noopener,noreferrer");
     useProjectStore
       .getState()
-      .setStatus("Opened website mock My Tawala (localhost:5500). Start mock: cd website-mock && python3 -m http.server 5500");
+      .setStatus(
+        `Opened Project Details for “${name}” (localhost:5500). Start mock: cd website-mock && ./serve.sh`,
+      );
   } catch {
     useProjectStore
       .getState()
       .setStatus(
-        `Could not open ${LOCAL_WEBSITE_MOCK_MYTAWALA_URL}. Start mock: cd website-mock && python3 -m http.server 5500`,
+        `Could not open ${url}. Start mock: cd website-mock && ./serve.sh`,
+      );
+  }
+}
+
+export function openWebsiteMockMyTawala(): void {
+  try {
+    window.open(LOCAL_WEBSITE_MOCK_MYTAWALA_URL, "_blank", "noopener,noreferrer");
+    useProjectStore
+      .getState()
+      .setStatus("Opened website mock My Tawala (localhost:5500). Start mock: cd website-mock && ./serve.sh");
+  } catch {
+    useProjectStore
+      .getState()
+      .setStatus(
+        `Could not open ${LOCAL_WEBSITE_MOCK_MYTAWALA_URL}. Start mock: cd website-mock && ./serve.sh`,
       );
   }
 }

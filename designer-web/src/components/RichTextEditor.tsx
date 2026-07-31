@@ -568,6 +568,24 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
     if (!el || !(target instanceof Element)) return false;
     if (formattingKind !== "text" && formattingKind !== "document") return false;
 
+    // Prefer present-day function-token chips (`<<MULTIPLE QUESTION LIST(...)>>`) so
+    // Configure writes data-function-config / conditionsRows — the Deploy HTML path.
+    const token = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
+    if (token instanceof HTMLElement) {
+      registerAsPaletteEditor();
+      return openFunctionTokenForEdit(
+        token,
+        el,
+        () => {
+          rememberSelection();
+        },
+        () => {
+          commitFromSurface(el);
+        },
+      );
+    }
+
+    // Legacy `{ MULTIPLE QUESTION LIST }` structured spans (no function-token class).
     const structured = target.closest(`[${STRUCTURED_NODE_DATA_ATTR}]`);
     if (structured instanceof HTMLElement) {
       registerAsPaletteEditor();
@@ -577,12 +595,7 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
       });
     }
 
-    const token = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
-    if (!(token instanceof HTMLElement)) return false;
-    registerAsPaletteEditor();
-    return openFunctionTokenForEdit(token, el, () => {
-      rememberSelection();
-    });
+    return false;
   };
 
   const handleFieldDrop = (e: React.DragEvent<HTMLDivElement>) => {

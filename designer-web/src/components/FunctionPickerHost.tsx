@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { ConfigureFunctionDialog } from "./ConfigureFunctionDialog";
 import { InsertFunctionDialog } from "./InsertFunctionDialog";
+import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import {
   clearFunctionPickerRequest,
   getFunctionPickerRequest,
@@ -8,11 +9,11 @@ import {
   subscribeFunctionPicker,
 } from "@/lib/functionPicker";
 import { getFunctionDef, type FunctionConfig, type FunctionDef } from "@/lib/functionCatalog";
-import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import {
   insertFunctionTokenAtSelection,
   type FunctionTokenRef,
 } from "@/lib/functionTokens";
+import { removeSiblingLegacyMqlTokens } from "@/lib/mqlTokenMigrate";
 import { useProjectStore } from "@/store/projectStore";
 
 /**
@@ -58,7 +59,31 @@ export function FunctionPickerHost() {
     handle.el.focus();
     handle.restoreSelection();
     insertFunctionTokenAtSelection(handle.el, def, nextConfig, editRef);
+    if (def.id === "itemization-table") {
+      // replaceWith detaches editRef.element — locate the new chip by instance id.
+      const instanceId = editRef?.instanceId;
+      let keep =
+        instanceId != null && instanceId > 0
+          ? handle.el.querySelector(
+              `.function-token[data-function-instance="${CSS.escape(String(instanceId))}"]`,
+            )
+          : null;
+      if (!(keep instanceof HTMLElement)) {
+        keep = handle.el.querySelector(
+          `.function-token[data-function-id="itemization-table"]`,
+        );
+      }
+      if (keep instanceof HTMLElement) {
+        removeSiblingLegacyMqlTokens(handle.el, keep);
+      }
+    }
     handle.commit();
+    // Belt-and-suspenders: palette handle can go stale while Configure has focus;
+    // always push the editor HTML if a live handle still owns this element.
+    const live = getActivePaletteEditor();
+    if (live?.el === handle.el && live.commit !== handle.commit) {
+      live.commit();
+    }
     close();
   };
 

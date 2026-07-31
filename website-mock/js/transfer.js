@@ -8,10 +8,12 @@
  * Keys (local to :5500):
  *   tawala.mock.libraryCategoryOverrides — { [projectId]: categoryLabel }
  *   tawala.mock.deployInbox — recent Designer deploy receipts
+ *   tawala.mock.myTawalaOverlay — { [projectId]: catalog-shaped entry } merged into My Tawala pile
  */
 (function () {
   const CATEGORY_KEY = "tawala.mock.libraryCategoryOverrides";
   const INBOX_KEY = "tawala.mock.deployInbox";
+  const PILE_KEY = "tawala.mock.myTawalaOverlay";
   const INBOX_MAX = 12;
 
   function readJson(key, fallback) {
@@ -31,6 +33,28 @@
     } catch {
       return false;
     }
+  }
+
+  /** Match demo-urls.js catalog ids (e.g. "Potluck - Kids Too" → potluck-kids-too). */
+  function slugifyProjectId(name) {
+    return (
+      String(name || "project")
+        .toLowerCase()
+        .replace(/[^a-z0-9]+/g, "-")
+        .replace(/^-|-$/g, "") || "project"
+    );
+  }
+
+  function formatListDate(d) {
+    const dt = d instanceof Date ? d : new Date(d || Date.now());
+    if (Number.isNaN(dt.getTime())) return "—";
+    const y = String(dt.getFullYear()).slice(-2);
+    return `${dt.getMonth() + 1}/${dt.getDate()}/${y}`;
+  }
+
+  function iconLabelFromName(name) {
+    const letters = String(name || "P").replace(/[^A-Za-z0-9]/g, "");
+    return (letters.slice(0, 2) || "P").toUpperCase();
   }
 
   function getCategoryOverrides() {
@@ -76,13 +100,7 @@
   function recordDeploy(receipt) {
     if (!receipt || !receipt.name) return getDeployInbox();
     const entry = {
-      id:
-        receipt.id ||
-        String(receipt.name || "project")
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, "-")
-          .replace(/^-|-$/g, "") ||
-        "deploy",
+      id: receipt.id || slugifyProjectId(receipt.name),
       name: String(receipt.name),
       uniqueId: receipt.uniqueId || null,
       startpoints: Array.isArray(receipt.startpoints) ? receipt.startpoints : [],
@@ -101,9 +119,109 @@
     writeJson(INBOX_KEY, []);
   }
 
+  function getMyTawalaOverlay() {
+    const o = readJson(PILE_KEY, {});
+    return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+  }
+
+  /**
+   * Build / merge a catalog-shaped My Tawala row from a Designer deploy receipt.
+   * Returns { id, ...entry } or null.
+   */
+  function upsertMyTawalaFromDeploy(receipt) {
+    if (!receipt || !receipt.name) return null;
+    const id = receipt.id || slugifyProjectId(receipt.name);
+    const startPoints = (Array.isArray(receipt.startpoints) ? receipt.startpoints : []).map((sp) => ({
+      label: sp.form || sp.label || "Start",
+      url: sp.url || null,
+    }));
+    const firstUrl = (startPoints.find((s) => s && s.url) || {}).url || null;
+    const uniqueId =
+      receipt.uniqueId ||
+      (typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdFromUrl === "function"
+        ? window.TawalaDemo.uniqueIdFromUrl(firstUrl)
+        : null);
+    const now = formatListDate();
+    const overlay = getMyTawalaOverlay();
+    const prev = overlay[id] || null;
+    const entry = {
+      name: String(receipt.name),
+      category: (prev && prev.category) || receipt.category || "My Projects",
+      featured: false,
+      iconLabel: (prev && prev.iconLabel) || iconLabelFromName(receipt.name),
+      rating: (prev && prev.rating) || 0,
+      comments: (prev && prev.comments) || 0,
+      created: (prev && prev.created) || now,
+      updated: now,
+      shortDescription:
+        (prev && prev.shortDescription) || "Deployed from Web Designer (browser overlay).",
+      longDescription:
+        (prev && prev.longDescription) ||
+        "Added via Deploy → Show in My Tawala. Stored in this browser’s localStorage until copied into demo-urls.js / the MyTawala pile.",
+      sourcePile: "deploy-overlay",
+      fromDeployOverlay: true,
+      deployed: !!firstUrl,
+      startPoints: startPoints.length ? startPoints : (prev && prev.startPoints) || [],
+      testDriveUrl: firstUrl || (prev && prev.testDriveUrl) || null,
+      uniqueId: uniqueId || (prev && prev.uniqueId) || null,
+      mode: receipt.mode || (prev && prev.mode) || null,
+      lastDeployAt: receipt.at || new Date().toISOString(),
+    };
+    overlay[id] = entry;
+    writeJson(PILE_KEY, overlay);
+    return { id, ...entry };
+  }
+
+  function removeMyTawalaOverlay(projectId) {
+    if (!projectId) return false;
+    const overlay = getMyTawalaOverlay();
+    if (!Object.prototype.hasOwnProperty.call(overlay, projectId)) return false;
+    delete overlay[projectId];
+    return writeJson(PILE_KEY, overlay);
+  }
+
+  function clearMyTawalaOverlay() {
+    return writeJson(PILE_KEY, {});
+  }
+
+  /** Merge overlay on top of catalog entries (overlay wins on id collision for deploy fields). */
+  function withMyTawalaOverlay(entries) {
+    const overlay = getMyTawalaOverlay();
+    const byId = new Map();
+    (entries || []).forEach((p) => {
+      if (p && p.id) byId.set(p.id, p);
+    });
+    Object.keys(overlay).forEach((id) => {
+      const data = overlay[id];
+      if (!data || typeof data !== "object") return;
+      const existing = byId.get(id);
+      if (existing) {
+        byId.set(id, {
+          ...existing,
+          ...data,
+          id,
+          name: data.name || existing.name,
+          fromDeployOverlay: true,
+        });
+      } else {
+        byId.set(id, { id, ...data, fromDeployOverlay: true });
+      }
+    });
+    return Array.from(byId.values());
+  }
+
+  function getOverlayEntry(projectId) {
+    if (!projectId) return null;
+    const data = getMyTawalaOverlay()[projectId];
+    return data ? { id: projectId, ...data } : null;
+  }
+
   /**
    * Parse ?deployReceipt=… from Designer Deploy dialog “Show in My Tawala”.
    * Accepts base64url JSON or encodeURIComponent(JSON).
+   * Also upserts the My Tawala pile overlay.
    */
   function ingestDeployReceiptFromUrl(search) {
     const params = new URLSearchParams(search || location.search);
@@ -120,7 +238,12 @@
       }
     }
     if (!parsed || typeof parsed !== "object") return null;
+    if (!parsed.id && parsed.name) parsed.id = slugifyProjectId(parsed.name);
     recordDeploy(parsed);
+    upsertMyTawalaFromDeploy(parsed);
+    if (parsed.id && !params.get("project")) {
+      params.set("project", parsed.id);
+    }
     params.delete("deployReceipt");
     const qs = params.toString();
     const next = location.pathname + (qs ? "?" + qs : "") + location.hash;
@@ -130,10 +253,32 @@
     return parsed;
   }
 
-  /** Build My Tawala URL with deploy receipt for Designer to open. */
+  /** Build My Tawala Project Details URL with deploy receipt for Designer to open. */
+  function myTawalaProjectUrlForDeploy(receipt) {
+    const id = receipt.id || slugifyProjectId(receipt.name);
+    const payload = encodeURIComponent(
+      JSON.stringify({
+        id,
+        name: receipt.name,
+        uniqueId: receipt.uniqueId || null,
+        startpoints: receipt.startpoints || [],
+        mode: receipt.mode || null,
+        at: new Date().toISOString(),
+      })
+    );
+    return (
+      "http://localhost:5500/mytawala-project.html?project=" +
+      encodeURIComponent(id) +
+      "&deployReceipt=" +
+      payload
+    );
+  }
+
+  /** @deprecated Prefer myTawalaProjectUrlForDeploy — listing + inbox still works. */
   function myTawalaUrlForDeploy(receipt) {
     const payload = encodeURIComponent(
       JSON.stringify({
+        id: receipt.id || slugifyProjectId(receipt.name),
         name: receipt.name,
         uniqueId: receipt.uniqueId || null,
         startpoints: receipt.startpoints || [],
@@ -147,6 +292,8 @@
   window.TawalaTransfer = {
     CATEGORY_KEY,
     INBOX_KEY,
+    PILE_KEY,
+    slugifyProjectId,
     getCategoryOverrides,
     setProjectCategory,
     clearProjectCategory,
@@ -155,7 +302,14 @@
     getDeployInbox,
     recordDeploy,
     clearDeployInbox,
+    getMyTawalaOverlay,
+    getOverlayEntry,
+    upsertMyTawalaFromDeploy,
+    removeMyTawalaOverlay,
+    clearMyTawalaOverlay,
+    withMyTawalaOverlay,
     ingestDeployReceiptFromUrl,
     myTawalaUrlForDeploy,
+    myTawalaProjectUrlForDeploy,
   };
 })();

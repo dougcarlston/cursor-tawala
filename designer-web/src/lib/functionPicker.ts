@@ -190,28 +190,43 @@ export function selectFunctionToken(
 /**
  * Select a function token and open Configure with its saved parameters.
  * Caller must register the palette editor (and saveSelection) so OK can rewrite the token.
+ *
+ * Pass `commit` explicitly whenever possible — a missing/mismatched palette handle used
+ * to no-op commit, so Design showed the updated chip while Redeploy still used the old
+ * Where (owner Jul 30: Carlston in Design, isNotBlank / unfiltered at runtime).
  */
 export function openFunctionTokenForEdit(
   token: HTMLElement,
   editor: HTMLElement,
-  saveSelection?: () => void,
+  saveSelection?: (() => void) | null,
+  commit?: (() => void) | null,
 ): boolean {
-  if (!selectFunctionToken(token, editor, saveSelection)) return false;
+  if (!selectFunctionToken(token, editor, saveSelection ?? undefined)) return false;
   const ref = tokenRefFromElement(token as HTMLSpanElement);
   if (!ref.functionId || !getFunctionDef(ref.functionId)) return false;
 
   const active = getActivePaletteEditor();
-  const editorHandle: PaletteEditorHandle =
-    active && active.el === editor
-      ? active
-      : {
-          el: editor,
-          commit: () => {},
-          saveSelection: saveSelection ?? (() => {}),
-          restoreSelection: () => {
-            selectFunctionToken(token, editor);
-          },
-        };
+  const commitFn =
+    commit ??
+    (active && active.el === editor ? active.commit : null) ??
+    (() => {
+      // Last resort: still force a palette commit if any handle owns this editor.
+      const again = getActivePaletteEditor();
+      if (again?.el === editor) again.commit();
+    });
+  const saveFn =
+    saveSelection ??
+    (active && active.el === editor ? active.saveSelection : undefined) ??
+    (() => {});
+
+  const editorHandle: PaletteEditorHandle = {
+    el: editor,
+    commit: commitFn,
+    saveSelection: saveFn,
+    restoreSelection: () => {
+      selectFunctionToken(token, editor);
+    },
+  };
 
   requestFunctionPicker({ mode: "edit", existing: ref, editor: editorHandle });
   return true;

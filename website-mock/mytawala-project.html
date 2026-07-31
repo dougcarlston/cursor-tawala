@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css" />
   <script src="js/demo-urls.js?v=20260730-mqst"></script>
+  <script src="js/transfer.js"></script>
   <script src="js/project-ops.js?v=20260730-mqst"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
@@ -34,16 +35,31 @@
     document.getElementById("pmSubmenuHost").innerHTML =
       TawalaProjectOps.renderSubmenu("My Projects");
 
-    const id = new URLSearchParams(location.search).get("project") || "";
+    let ingested = null;
+    if (typeof TawalaTransfer !== "undefined") {
+      ingested = TawalaTransfer.ingestDeployReceiptFromUrl(location.search);
+    }
+
+    const params = new URLSearchParams(location.search);
+    const id =
+      params.get("project") ||
+      (ingested && ingested.id) ||
+      (ingested && ingested.name && typeof TawalaTransfer !== "undefined"
+        ? TawalaTransfer.slugifyProjectId(ingested.name)
+        : "") ||
+      "";
     const project = id ? TawalaDemo.getMyTawala(id) : null;
     const host = document.getElementById("pmDetailHost");
     if (!project) {
       const lib = id ? TawalaDemo.getLibrary(id) : null;
-      host.innerHTML = lib
-        ? '<p class="pm-hint">That project is in the <a href="library-detail.html?project=' +
-          encodeURIComponent(id) +
-          '">Library</a>, not My Tawala. <a href="mytawala.html">← Back to My Projects</a></p>'
-        : '<p class="pm-hint">Unknown project. <a href="mytawala.html">← Back to My Projects</a></p>';
+      if (lib) {
+        location.replace("library-detail.html?project=" + encodeURIComponent(id));
+      } else {
+        host.innerHTML =
+          '<p class="pm-hint">Unknown project' +
+          (id ? " (“" + id.replace(/</g, "&lt;") + "”)" : "") +
+          '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Projects</a>.</p>';
+      }
     } else {
       document.title = "Tawala - " + TawalaDemo.displayName(project.name);
       host.innerHTML = TawalaProjectOps.renderDetailPanel({ id, ...project });

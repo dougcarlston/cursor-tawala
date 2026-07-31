@@ -540,9 +540,6 @@ function convertItemizationTable(tableNode, ctx = {}) {
       formName = formNames[0] ?? "";
       if (nestedCond) {
         where = nestedCond;
-        warn(
-          `Itemization table filter conditions preserved as where (Designer UI limited): ${JSON.stringify(nestedCond)}`,
-        );
       }
     } else if (t === "show-print-control" || t === "show-export-control" || t === "number-of-columns") {
       // ignored — defaults in Designer
@@ -559,7 +556,24 @@ function convertItemizationTable(tableNode, ctx = {}) {
       return col;
     }),
   };
-  if (where) node.where = where;
+  if (where) {
+    node.where = where;
+    // Flatten simple Where trees into Configure Function rows so Design can edit
+    // (Deploy reads `conditions` / `conditionsRows`; nested `where` alone was dropped).
+    const flat = flattenWhereToConditionRows(where);
+    if (flat?.rows?.length) {
+      node.conditions = flat.rows.map((r) => ({
+        field: designFieldFromRecordPath(r.field),
+        op: r.op,
+        value: r.value,
+      }));
+      node.combinator = flat.combinator ?? "and";
+    } else {
+      warn(
+        `Itemization table filter conditions preserved as where (Designer UI limited): ${JSON.stringify(where)}`,
+      );
+    }
+  }
   return node;
 }
 

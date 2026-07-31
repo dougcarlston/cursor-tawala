@@ -24,6 +24,7 @@ import { cascadeDocumentRenameInProject } from "@/lib/documentRenameCascade";
 import { cascadeFormRenameInProject } from "@/lib/formRenameCascade";
 import { nextLinkedProcessName } from "@/lib/projectModel";
 import { addOrReuseImage } from "@/lib/projectImages";
+import { migrateProjectMqlTokens } from "@/lib/mqlTokenMigrate";
 import {
   moveProcessCommandAtPath,
   moveProcessCommandBefore,
@@ -1123,7 +1124,10 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   loadTemplate: async (samplePath) => {
-    const res = await fetch(`/samples/templates/${samplePath}`);
+    // Bust browser/Vite stale JSON — Sign-up Sheet MQL upgrades must load fresh.
+    const res = await fetch(`/samples/templates/${samplePath}?t=${Date.now()}`, {
+      cache: "no-store",
+    });
     if (!res.ok) throw new Error(`Template not found: ${samplePath}`);
     const raw = await res.text();
     get().importJson(raw);
@@ -1715,6 +1719,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     } else {
       project = parsed as TawalaProject;
     }
+    project = migrateProjectMqlTokens(project);
     // Prefer first form; if none, highlight first process/document when present.
     const firstForm = project.forms?.[0]?.name;
     const firstProcess = project.processes?.[0]?.name;

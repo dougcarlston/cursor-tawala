@@ -10,6 +10,10 @@ import {
   type FunctionConfig,
 } from "./functionCatalog";
 import { requestFunctionPicker } from "./functionPicker";
+import {
+  buildFunctionDisplayString,
+  serializeFunctionConfig,
+} from "./functionTokens";
 
 export const STRUCTURED_NODE_DATA_ATTR = "data-tawala-structured-node";
 export const ITEMIZATION_TOKEN_DATA_ATTR = "data-itemization-token";
@@ -85,10 +89,41 @@ function flagToEnum(v: unknown, fallback = "false"): "true" | "false" {
   return fallback === "true" ? "true" : "false";
 }
 
-function itemizationToConfig(node: ItemizationNode): FunctionConfig {
+function whereTreeToConditionRows(where: unknown): FunctionConfig["conditionsRows"] | null {
+  if (!where || typeof where !== "object") return null;
+  const w = where as Record<string, unknown>;
+  if (typeof w.field === "string" && typeof w.op === "string") {
+    return [{ field: w.field, op: w.op, value: String(w.value ?? "") }];
+  }
+  for (const combinator of ["and", "or"] as const) {
+    const list = w[combinator];
+    if (!Array.isArray(list) || list.length === 0) continue;
+    const rows: NonNullable<FunctionConfig["conditionsRows"]> = [];
+    for (const item of list) {
+      const nested = whereTreeToConditionRows(item);
+      if (!nested) return null;
+      rows.push(...nested);
+    }
+    return rows;
+  }
+  return null;
+}
+
+/** Structured / imported MQL node → Configure Function config (incl. Where rows). */
+export function itemizationToConfig(node: ItemizationNode): FunctionConfig {
   const def = getFunctionDef("itemization-table");
   const cols = node.columns ?? [];
   const base = def ? defaultFunctionConfig(def) : {};
+  // Prefer `conditionsRows` (modern function-token) then `conditions` (structured Configure).
+  const fromConditions = Array.isArray(node.conditionsRows)
+    ? (node.conditionsRows as FunctionConfig["conditionsRows"])
+    : Array.isArray(node.conditions)
+      ? (node.conditions as FunctionConfig["conditionsRows"])
+      : null;
+  const filledFromConditions = (fromConditions ?? []).filter((r) => String(r?.field ?? "").trim());
+  const fromWhere = filledFromConditions.length
+    ? null
+    : whereTreeToConditionRows(node.where);
   return {
     ...base,
     "show-print-control": flagToEnum(node.showPrint ?? node["show-print-control"]),
@@ -96,11 +131,97 @@ function itemizationToConfig(node: ItemizationNode): FunctionConfig {
     numberOfColumns: Math.max(1, cols.length),
     column: cols.map((c) => ({ header: c.header ?? "", contents: c.field ?? "" })),
     "form-name": node.form ?? "",
-    conditionsRows: (node.conditions as FunctionConfig["conditionsRows"]) ?? [
-      { field: "", op: "equals", value: "" },
-    ],
-    conditionsCombinator: node.combinator === "or" ? "or" : "and",
+    conditionsRows: (filledFromConditions.length
+      ? fromConditions
+      : fromWhere ?? [{ field: "", op: "equals", value: "" }]) as FunctionConfig["conditionsRows"],
+    conditionsCombinator:
+      node.conditionsCombinator === "or" || node.combinator === "or" ? "or" : "and",
   };
+}
+
+/** Configure / function-token config → structured itemizationTable node for Deploy. */
+export function functionConfigToItemizationNode(config: FunctionConfig): ItemizationNode {
+  const cols = (config.column as ColumnConfig[] | undefined) ?? [];
+  const n = Number(config.numberOfColumns ?? cols.length) || cols.length;
+  let form = String(config["form-name"] ?? "").trim();
+  if (!form) {
+    for (const col of cols) {
+      const bare = String(col?.contents ?? "")
+        .replace(/^<<|>>$/g, "")
+        .replace(/^Record:/i, "")
+        .trim();
+      if (bare.includes(":")) {
+        form = bare.split(":")[0] ?? "";
+        if (form) break;
+      }
+    }
+  }
+  if (!form) {
+    for (const row of config.conditionsRows ?? []) {
+      const bare = String(row?.field ?? "")
+        .replace(/^<<|>>$/g, "")
+        .replace(/^Record:/i, "")
+        .trim();
+      if (bare.includes(":")) {
+        form = bare.split(":")[0] ?? "";
+        if (form) break;
+      }
+    }
+  }
+  return {
+    type: "itemizationTable",
+    form: form || undefined,
+    columns: cols.slice(0, n).map((c) => ({
+      header: c.header ?? "",
+      field: c.contents ?? "",
+    })),
+    showPrint: flagToEnum(config["show-print-control"]) === "true",
+    showExport: flagToEnum(config["show-export-control"]) === "true",
+    conditions: config.conditionsRows ?? [{ field: "", op: "equals", value: "" }],
+    conditionsRows: config.conditionsRows ?? [{ field: "", op: "equals", value: "" }],
+    combinator: config.conditionsCombinator === "or" ? "or" : "and",
+    conditionsCombinator: config.conditionsCombinator === "or" ? "or" : "and",
+  };
+}
+
+/**
+ * Present-day Design chip: `<<MULTIPLE QUESTION LIST(false, false, ...)>>` with
+ * `data-function-config` (Where lives in conditionsRows). Legacy `{ MULTIPLE QUESTION LIST }`
+ * spans with only `data-tawala-structured-node` remain parseable for old projects.
+ */
+export function itemizationFunctionTokenHtml(node: ItemizationNode): string {
+  const def = getFunctionDef("itemization-table");
+  const config = itemizationToConfig(node);
+  const display = def
+    ? buildFunctionDisplayString(def, config)
+    : STRUCTURED_TOKEN_LABELS.itemizationTable;
+  const form = String(node.form ?? config["form-name"] ?? "").trim();
+  return (
+    `<span contenteditable="false" class="function-token function-table-token" ` +
+    `data-function-id="itemization-table" ` +
+    `data-function-config="${escAttr(serializeFunctionConfig(config))}" ` +
+    (form ? `data-itemization-form="${escAttr(form)}" ` : "") +
+    `data-itemization-token="true" ` +
+    `${STRUCTURED_NODE_DATA_ATTR}="${escAttr(encodeStructuredNode(functionConfigToItemizationNode(config)))}" ` +
+    `title="MULTIPLE QUESTION LIST" draggable="true">` +
+    `${escText(display)}</span>`
+  );
+}
+
+function escAttr(text: string): string {
+  return String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+function escText(text: string): string {
+  return String(text ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
 }
 
 function correlationToConfig(node: QuestionCorrelationNode): FunctionConfig {
@@ -142,7 +263,9 @@ function patchNodeFromConfig(
     const nextCols = (nextConfig.column as ColumnConfig[] | undefined) ?? [];
     const n = Number(nextConfig.numberOfColumns ?? nextCols.length) || nextCols.length;
     const form = String(nextConfig["form-name"] ?? node.form ?? "").trim();
-    return {
+    const rows = nextConfig.conditionsRows ?? node.conditions;
+    const combinator = nextConfig.conditionsCombinator === "or" ? "or" : "and";
+    const next: ItemizationNode = {
       ...node,
       form: form || node.form,
       columns: nextCols.slice(0, n).map((c) => ({
@@ -151,9 +274,14 @@ function patchNodeFromConfig(
       })),
       showPrint: flagToEnum(nextConfig["show-print-control"]) === "true",
       showExport: flagToEnum(nextConfig["show-export-control"]) === "true",
-      conditions: nextConfig.conditionsRows ?? node.conditions,
-      combinator: nextConfig.conditionsCombinator === "or" ? "or" : "and",
+      conditions: rows,
+      conditionsRows: rows,
+      combinator,
+      conditionsCombinator: combinator,
     };
+    // Configure edits `conditions` rows; drop imported `where` so Deploy uses rows.
+    delete next.where;
+    return next;
   }
 
   if (node.type === "choiceTallyTable") {
@@ -198,6 +326,19 @@ export function openStructuredFunctionTokenForEdit(
     },
     commitConfig: (_d, nextConfig) => {
       const patched = patchNodeFromConfig(node, nextConfig);
+      // Prefer present-day function-token chrome (`<<NAME(...)>>` + data-function-config)
+      // so Deploy/Preview read Where from the same path as Insert → Function.
+      if (patched.type === "itemizationTable") {
+        const html = itemizationFunctionTokenHtml(patched);
+        const wrap = document.createElement("div");
+        wrap.innerHTML = html;
+        const nextEl = wrap.firstElementChild;
+        if (nextEl instanceof HTMLElement) {
+          tokenEl.replaceWith(nextEl);
+          onPatched();
+          return;
+        }
+      }
       tokenEl.setAttribute(STRUCTURED_NODE_DATA_ATTR, encodeStructuredNode(patched));
       if (patched.type === "itemizationTable" && patched.form) {
         tokenEl.setAttribute("data-itemization-form", patched.form);

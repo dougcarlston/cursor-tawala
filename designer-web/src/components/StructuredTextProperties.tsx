@@ -3,11 +3,19 @@ import { RichTextEditor } from "./RichTextEditor";
 import {
   STRUCTURED_NODE_DATA_ATTR as STRUCTURED_NODE_ATTR,
   encodeStructuredNode,
+  functionConfigToItemizationNode,
+  itemizationFunctionTokenHtml,
   type ChoiceTallyNode,
   type ItemizationNode,
   type QuestionCorrelationNode,
   type StructuredFunctionNode,
 } from "@/lib/structuredItemizationEdit";
+import {
+  FUNCTION_CONFIG_ATTR,
+  FUNCTION_TOKEN_ATTR,
+  FUNCTION_TOKEN_CLASS,
+  parseFunctionConfig,
+} from "@/lib/functionTokens";
 
 interface ItemizationColumn {
   header: string;
@@ -27,7 +35,6 @@ interface StructuredLocation {
 }
 
 const EDITOR_CARET_SLOT_ATTR = "data-tawala-caret-slot";
-const ITEMIZATION_TOKEN_LABEL = "{ MULTIPLE QUESTION LIST }";
 const CORRELATION_TOKEN_LABEL = "{ QUESTION CORRELATION TABLE }";
 const CHOICE_TALLY_TOKEN_LABEL = "{ RESPONSE BAR GRAPH }";
 const EDITOR_CARET_GUARD = "\u200b";
@@ -223,7 +230,8 @@ function richNodesToEditorHtml(nodes: RichTextNode[] = []): string {
         }
         case "itemizationTable": {
           const n = node as ItemizationNode;
-          return `${editorCaretSlotHtml()}<span contenteditable="false" class="function-table-inline function-table-token" data-itemization-token="true" data-itemization-form="${escAttr(n.form ?? "")}" ${STRUCTURED_NODE_ATTR}="${escAttr(encodeStructuredNode(n))}" title="MULTIPLE QUESTION LIST">${escHtml(ITEMIZATION_TOKEN_LABEL)}</span>${editorCaretSlotHtml()}`;
+          // Present-day chip: <<MULTIPLE QUESTION LIST(...)>> + data-function-config (Where).
+          return `${editorCaretSlotHtml()}${itemizationFunctionTokenHtml(n)}${editorCaretSlotHtml()}`;
         }
         case "questionCorrelationTable":
           return structuredTokenHtml(
@@ -295,6 +303,20 @@ function parseInlineNode(node: Node): RichTextNode[] {
   if (node.nodeType !== Node.ELEMENT_NODE) return [];
 
   const el = node as HTMLElement;
+
+  // Present-day Insert→Function / upgraded MQL chip — Where is in data-function-config.
+  if (el.classList.contains(FUNCTION_TOKEN_CLASS)) {
+    const functionId = el.getAttribute(FUNCTION_TOKEN_ATTR) ?? "";
+    const config = parseFunctionConfig(el.getAttribute(FUNCTION_CONFIG_ATTR));
+    if (functionId === "itemization-table") {
+      return [functionConfigToItemizationNode(config)];
+    }
+    // Other function chips in structured Form Text: keep as plain text label for now
+    // (correlation / choice tally still use structured attrs below).
+    const label = stripEditorCaretGuards(el.textContent ?? "");
+    return label ? [{ type: "text", text: label }] : [];
+  }
+
   const restoredNode = decodeStructuredNodeAttr(el.getAttribute(STRUCTURED_NODE_ATTR));
   if (restoredNode) return [restoredNode];
 

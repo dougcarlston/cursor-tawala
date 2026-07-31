@@ -133,7 +133,12 @@
     }
 
     const SORT_STATE = { key: "name", dir: 1 };
-    let projects = TawalaDemo.myTawalaEntries();
+    let projects = [];
+
+    function refreshProjects() {
+      projects = TawalaDemo.myTawalaEntries();
+    }
+    refreshProjects();
 
     function sortValue(p, key) {
       if (key === "name") {
@@ -250,7 +255,8 @@
     TawalaProjectOps.bind(document);
 
     if (typeof TawalaTransfer !== "undefined") {
-      TawalaTransfer.ingestDeployReceiptFromUrl(location.search);
+      const ingested = TawalaTransfer.ingestDeployReceiptFromUrl(location.search);
+      if (ingested) refreshProjects();
     }
 
     document.getElementById("pmSubmenuHost").innerHTML =
@@ -269,12 +275,16 @@
       host.innerHTML =
         '<div class="deploy-inbox-inner">' +
         "<h3>From Web Designer</h3>" +
-        '<p class="pm-hint">Recent Deploy receipts (local :8080). Catalog pile is unchanged until you Save/Publish — inbox is a hop cue only.</p>' +
+        '<p class="pm-hint">Recent Deploy receipts. Each also adds/updates a <b>My Projects</b> row (browser overlay on top of the catalog).</p>' +
         "<ul>" +
         inbox
           .map((e) => {
             const first = (e.startpoints && e.startpoints[0]) || null;
             const when = e.at ? escapeHtml(String(e.at).replace("T", " ").slice(0, 19)) : "";
+            const detail =
+              e.id
+                ? `<a href="mytawala-project.html?project=${encodeURIComponent(e.id)}">Details</a>`
+                : "";
             const link = first && first.url
               ? `<a href="${escapeHtml(first.url)}" target="_blank" rel="noopener">${escapeHtml(
                   first.form || "Start"
@@ -282,6 +292,7 @@
               : "<span class=\"deploy-hint-quiet\">No start URL</span>";
             return (
               `<li><b>${escapeHtml(e.name)}</b> · ${link}` +
+              (detail ? ` · ${detail}` : "") +
               (when ? ` <span class="deploy-hint-quiet">${when}</span>` : "") +
               "</li>"
             );
@@ -324,6 +335,9 @@
     document.addEventListener("tawala:project-deleted", (ev) => {
       const id = ev.detail && ev.detail.projectId;
       if (!id) return;
+      if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.removeMyTawalaOverlay) {
+        TawalaTransfer.removeMyTawalaOverlay(id);
+      }
       projects = projects.filter((p) => p.id !== id);
       renderRows();
     });

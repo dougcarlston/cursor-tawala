@@ -48,6 +48,17 @@ Website chat stays primary. Also listed in `.cursor/rules/tawala-designer-parked
 
 ---
 
+### Fixed Jul 30 — MQL Where clause not wired on Deploy (blocking) — **re-opened then fixed with evidence**
+
+- **Symptom:** Configure Function → MULTIPLE QUESTION LIST → **Limit output to records where** (e.g. `Form 1:lastName equals Carlston`) showed correctly in Design, but Java Deploy/runtime listed **all** signups (or nearly all).
+- **Root cause (1st pass):** Structured `itemizationTable` Deploy only read legacy `where`, not Configure `conditions` / `conditionsRows`.
+- **Root cause (2nd pass):** Present-day chips are HTML `<<MULTIPLE QUESTION LIST(...)>>` + `data-function-config`; Design can also show a legacy `{ MULTIPLE QUESTION LIST }` brace chip in the **same** Text item (owner dual-chip screenshots).
+- **Root cause (3rd pass / DB evidence):** Emission of `equals Carlston` **works** when `conditionsRows` is in the project JSON (proof deploy `MqlWhereProof*` in Postgres has `<equals field="Record:Form 1:lastName"><string value="Carlston"/>`, and Java runtime filtered to Carlston-only). Owner’s latest `Signup-sheet` deploy (`duj5twj0tohr94q`) stored **`<isNotBlank field="Record:Form 1:lastName"/>`** instead — looks like a full table. Design could show Carlston on the live chip while Redeploy used the **store** (Configure OK sometimes no-op’d `commit` when the palette handle didn’t match the editor).
+- **Fix:** (1) Never no-op Configure commit — pass explicit `commit` from TextCanvasRow / RichTextEditor. (2) After MQL Configure, remove sibling legacy brace chips. (3) On Open / New Project, migrate structured / brace MQL → modern function-token HTML. (4) Deploy: legacy structured-node chips emit Where; if modern + legacy coexist, drop the legacy table. Proof script: `node designer-web/scripts/dump-mql-where-xml.mjs`.
+- **Verify:** Restart `:3001` → **New Project → Sign-up Sheet** → chip is `<<MULTIPLE QUESTION LIST(...)>>` (not `{ }`) → Configure Where `lastName equals Carlston` → confirm chip text includes Carlston → **exit the Text row / click another item** so store commits → Redeploy → table shows only Carlston rows. Or: `node designer-web/scripts/dump-mql-where-xml.mjs` must print the equals snippet.
+
+---
+
 ### Fixed Jul 30 — FIB prompt bold lost on Deploy (MQS `topLabels`)
 
 - **Symptom:** On Multiple Question Survey, MCQ labels stayed bold after Deploy; FIB “Name:” / “Age:” did not — even when bolded in Design. (Related to parked Text-spacing item only as same template; separate root cause.)

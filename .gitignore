@@ -30,3 +30,6 @@ designer-web/tsconfig.tsbuildinfo
 
 # Logs
 *.log
+
+# website-mock supervised server
+website-mock/.serve.pid

@@ -78,10 +78,39 @@ function flagToEnum(v: unknown, fallback = "false"): "true" | "false" {
   return fallback === "true" ? "true" : "false";
 }
 
+function whereTreeToConditionRows(where: unknown): FunctionConfig["conditionsRows"] | null {
+  if (!where || typeof where !== "object") return null;
+  const w = where as Record<string, unknown>;
+  if (typeof w.field === "string" && typeof w.op === "string") {
+    return [{ field: w.field, op: w.op, value: String(w.value ?? "") }];
+  }
+  for (const combinator of ["and", "or"] as const) {
+    const list = w[combinator];
+    if (!Array.isArray(list) || list.length === 0) continue;
+    const rows: NonNullable<FunctionConfig["conditionsRows"]> = [];
+    for (const item of list) {
+      const nested = whereTreeToConditionRows(item);
+      if (!nested) return null;
+      rows.push(...nested);
+    }
+    return rows;
+  }
+  return null;
+}
+
 function itemizationToConfig(node: ItemizationNode): FunctionConfig {
   const def = getFunctionDef(ITEMIZATION_FUNCTION_ID);
   const cols = node.columns ?? [];
   const base = def ? defaultFunctionConfig(def) : {};
+  const fromConditions = Array.isArray((node as { conditionsRows?: unknown }).conditionsRows)
+    ? ((node as { conditionsRows: FunctionConfig["conditionsRows"] }).conditionsRows)
+    : Array.isArray(node.conditions)
+      ? (node.conditions as FunctionConfig["conditionsRows"])
+      : null;
+  const filledFromConditions = (fromConditions ?? []).filter((r) => String(r?.field ?? "").trim());
+  const fromWhere = filledFromConditions.length
+    ? null
+    : whereTreeToConditionRows((node as { where?: unknown }).where);
   return {
     ...base,
     "show-print-control": flagToEnum(node.showPrint ?? node["show-print-control"]),
@@ -89,9 +118,9 @@ function itemizationToConfig(node: ItemizationNode): FunctionConfig {
     numberOfColumns: Math.max(1, cols.length),
     column: cols.map((c) => ({ header: c.header ?? "", contents: c.field ?? "" })),
     "form-name": node.form ?? "",
-    conditionsRows: (Array.isArray(node.conditions)
-      ? node.conditions
-      : [{ field: "", op: "equals", value: "" }]) as FunctionConfig["conditionsRows"],
+    conditionsRows: (filledFromConditions.length
+      ? fromConditions
+      : fromWhere ?? [{ field: "", op: "equals", value: "" }]) as FunctionConfig["conditionsRows"],
     conditionsCombinator: node.combinator === "or" ? "or" : "and",
   };
 }
@@ -178,15 +207,20 @@ function patchItemizationFromConfig(
     nodes: (block.nodes ?? []).map((node) => {
       if (node.type !== "itemizationTable") return node;
       const prev = node as ItemizationNode;
-      return {
+      const next = {
         ...prev,
         form: form || prev.form,
         columns: nextColumns,
         showPrint: flagToEnum(config["show-print-control"]) === "true",
         showExport: flagToEnum(config["show-export-control"]) === "true",
         conditions: config.conditionsRows ?? prev.conditions,
+        conditionsRows: config.conditionsRows ?? prev.conditions,
         combinator: config.conditionsCombinator === "or" ? "or" : "and",
       };
+      // Configure edits `conditions` rows; drop imported `where` tree so Deploy
+      // cannot keep a stale filter (or miss a cleared Where).
+      delete (next as { where?: unknown }).where;
+      return next;
     }),
   }));
 }

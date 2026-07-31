@@ -76,6 +76,87 @@ function itemizationContentsFieldName(raw) {
 }
 
 /**
+ * Configure Function Where rows use Form:Field; Deploy RecordSelector needs Record:Form:Field
+ * (legacy ItemizationTableFunctionTest2020 / DirtBowl / SportsDashboards).
+ */
+function conditionFieldForItemizationXml(raw, defaultForm) {
+  let s = String(raw ?? "").trim();
+  if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
+  if (!s) return "";
+  if (/^Record:/i.test(s)) {
+    const rest = s.slice("Record:".length).trim();
+    if (defaultForm && rest && !rest.startsWith(`${defaultForm}:`)) {
+      return `Record:${defaultForm}:${rest}`;
+    }
+    return s;
+  }
+  if (defaultForm) {
+    if (s === defaultForm || s.startsWith(`${defaultForm}:`)) {
+      return `Record:${s}`;
+    }
+    return `Record:${defaultForm}:${s}`;
+  }
+  if (s.includes(":")) return `Record:${s}`;
+  return s;
+}
+
+function normalizeItemizationConditionOp(op) {
+  const raw = String(op ?? "equals").trim() || "equals";
+  const fromLabel = {
+    "does not equal": "doesNotEqual",
+    "does not contain": "doesNotContain",
+    "begins with": "beginsWith",
+    "ends with": "endsWith",
+    "is less than": "isLessThan",
+    "is less than or equal to": "isLessThanOrEqualTo",
+    "is greater than": "isGreaterThan",
+    "is greater than or equal to": "isGreaterThanOrEqualTo",
+    "is blank": "isBlank",
+    "is not blank": "isNotBlank",
+  };
+  return fromLabel[raw.toLowerCase()] ?? raw;
+}
+
+function nestItemizationConditionOps(parts, combinator) {
+  if (parts.length === 0) return "";
+  if (parts.length === 1) return parts[0];
+  let nested = parts[parts.length - 1];
+  for (let i = parts.length - 2; i >= 0; i--) {
+    nested = `<${combinator}>${parts[i]}${nested}</${combinator}>`;
+  }
+  return nested;
+}
+
+/**
+ * Configure stores Where as `conditions` / `conditionsRows` (flat rows).
+ * Legacy XML import stores a nested tree on `where`. Prefer filled Configure rows —
+ * otherwise Deploy silently drops the Where the owner just set in Design.
+ */
+function itemizationFilterXml(n, primaryForm) {
+  const rows = Array.isArray(n.conditionsRows)
+    ? n.conditionsRows
+    : Array.isArray(n.conditions)
+      ? n.conditions
+      : null;
+  const filled = (rows ?? []).filter((r) => String(r?.field ?? "").trim());
+  if (filled.length) {
+    const combinator = n.combinator === "or" || n.conditionsCombinator === "or" ? "or" : "and";
+    const unary = new Set(["isBlank", "isNotBlank", "mcIsBlank", "mcIsNotBlank"]);
+    const parts = filled.map((row) => {
+      const op = normalizeItemizationConditionOp(row.op);
+      const field = conditionFieldForItemizationXml(row.field, primaryForm);
+      if (unary.has(op)) return `<${op} field="${escAttr(field)}"/>`;
+      return `<${op} field="${escAttr(field)}">${conditionValueXml(row.value)}</${op}>`;
+    });
+    return `<conditions>${nestItemizationConditionOps(parts, combinator)}</conditions>`;
+  }
+  if (n.where) {
+    return `<conditions>${conditionToXml(n.where)}</conditions>`;
+  }
+  return "";
+}
+
+/**
  * Record-list table used on Form Text and Documents.
  * Legacy shape: forms + optional nested &lt;conditions&gt; filter (e.g. SheetChosen).
  */
@@ -112,11 +193,25 @@ function itemizationTableToXml(n) {
       formNames.add(bare.split(":")[0]);
     }
   }
+  // Where fields (Configure rows) may name a form not yet inferred from columns.
+  const whereRows = Array.isArray(n.conditionsRows)
+    ? n.conditionsRows
+    : Array.isArray(n.conditions)
+      ? n.conditions
+      : [];
+  for (const row of whereRows) {
+    const bare = String(row?.field ?? "")
+      .replace(/^<<|>>$/g, "")
+      .replace(/^Record:/i, "")
+      .trim();
+    if (bare.includes(":")) formNames.add(bare.split(":")[0]);
+  }
 
   const formTags = [...formNames]
     .map((name) => `<form name="${escAttr(name)}"/>`)
     .join("");
-  const filter = n.where ? `<conditions>${conditionToXml(n.where)}</conditions>` : "";
+  const primaryForm = n.form || [...formNames][0] || "";
+  const filter = itemizationFilterXml(n, primaryForm);
   const nCols = (n.columns ?? []).length;
   const showPrint = n.showPrint === true || n["show-print-control"] === true || n["show-print-control"] === "true";
   const showExport =

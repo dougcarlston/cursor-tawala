@@ -248,8 +248,18 @@ export function renderItemizationTableHtml(node, ctx = {}) {
   const sourceForm = node.form ?? ctx.formName ?? "";
   const aliases = ctx.blankAliases ?? {};
   const all = (sourceForm ? ctx.records?.[sourceForm] : null) ?? [];
+  // Configure stores flat rows on `conditions`; ignore empty placeholder rows.
+  // Imported nested trees stay on `where` — Preview only applies flat rows today.
+  const rawConditions = Array.isArray(node.conditions) ? node.conditions : [];
+  const conditions = rawConditions
+    .map((r) => ({
+      field: String(r?.field ?? "").trim(),
+      op: normalizeConditionOp(r?.op),
+      value: String(r?.value ?? "").trim(),
+    }))
+    .filter((r) => r.field);
   const records = all.filter((row) =>
-    rowMatchesConditions(row, node.conditions, node.combinator ?? "and", sourceForm, aliases),
+    rowMatchesConditions(row, conditions, node.combinator ?? "and", sourceForm, aliases),
   );
   const headerCells = columns.map((c) => `<th>${esc(c.header)}</th>`).join("");
 

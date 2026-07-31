@@ -897,7 +897,21 @@
         const n = document.querySelectorAll("#projectRows tr").length;
         countEl.textContent = String(n);
       }
-      setStatus(`Deleted “${projectId || "project"}” from this mock listing (page reload restores catalog).`);
+      const wasOverlay =
+        typeof TawalaTransfer !== "undefined" &&
+        TawalaTransfer.getOverlayEntry &&
+        TawalaTransfer.getOverlayEntry(projectId);
+      if (
+        typeof TawalaTransfer !== "undefined" &&
+        TawalaTransfer.removeMyTawalaOverlay
+      ) {
+        TawalaTransfer.removeMyTawalaOverlay(projectId);
+      }
+      setStatus(
+        wasOverlay
+          ? `Deleted “${projectId || "project"}” from My Tawala overlay (localStorage).`
+          : `Deleted “${projectId || "project"}” from this mock listing (page reload restores catalog rows).`
+      );
       document.dispatchEvent(
         new CustomEvent("tawala:project-deleted", { detail: { projectId } })
       );

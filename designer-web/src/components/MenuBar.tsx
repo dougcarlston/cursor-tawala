@@ -41,6 +41,7 @@ import {
   openProjectAcceleratorLabel,
   openProjectManagerLocal,
   openWebsiteMockLibrary,
+  openWebsiteMockMyTawala,
   pasteAcceleratorLabel,
   redoAcceleratorLabel,
   runShellEditCommand,
@@ -386,8 +387,8 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
         </button>
         <button
           type="button"
-          title="Open website-mock My Tawala / Project Manager (localhost:5500)"
-          onClick={() => openProjectManagerLocal()}
+          title="Open website-mock My Tawala listing (localhost:5500)"
+          onClick={() => openWebsiteMockMyTawala()}
         >
           Website mock (My Tawala)…
         </button>

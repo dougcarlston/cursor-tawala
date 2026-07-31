@@ -6,18 +6,26 @@ Static rough draft of the legacy Tawala site (home, Library, project detail, My 
 
 ## View locally
 
-Serve **from `website-mock/`** (not the repo root). If the server’s cwd is the repo, `http://localhost:5500/library.html` returns **404** (only `/website-mock/library.html` would work).
+**Always** serve from `website-mock/` (not the repo root). Wrong cwd → `http://localhost:5500/library.html` returns **404**.
 
 ```bash
 cd website-mock
-./serve.sh
-# or: python3 -m http.server 5500 --directory .
+./serve.sh                 # supervised Node static server on 127.0.0.1:5500 (auto-restarts)
+# optional aliases:
+./serve-watch.sh           # same as ./serve.sh
+./serve.sh stop            # free the port / kill our pid
+./serve.sh status          # listener + pid file
+./serve.sh once            # no restart loop (debug)
 ```
 
 Open:
 - Home: http://localhost:5500/
 - **Library:** http://localhost:5500/library.html
 - My Tawala: http://localhost:5500/mytawala.html
+
+**Stop:** `Ctrl+C` in the serve terminal, or from another shell: `cd website-mock && ./serve.sh stop`.
+
+**Hardening:** `serve.sh` binds **127.0.0.1**, always uses `--directory` / `SERVE_ROOT` = this folder, prefers Node (`serve-static.mjs`, no extra deps) with Python `http.server` as fallback, kills a **stale** prior mock listener via `.serve.pid` (or a known `http.server` / `serve-static` on the port), and **restarts on crash** with backoff. Logs: `website-mock/.serve.log`. If an unknown process holds 5500: `SERVE_FORCE=1 ./serve.sh`.
 
 **Prereq:** Java runtime on http://localhost:8080 with templates deployed. Test-drive links read from `js/demo-urls.js`.
 
@@ -73,9 +81,10 @@ Links **without** a stub yet are greyed out via class `link-pending` in `chrome.
 | From | To |
 |------|-----|
 | Mock chrome banner / My Tawala sidebar | Web Designer `http://localhost:5173` |
-| Designer **Project → Project Manager…** or **Help → Website mock (My Tawala)…** | `http://localhost:5500/mytawala.html` |
+| Designer **Project → Project Manager…** (or toolbar) | `mytawala-project.html?project=…` for the open project name (slug id) |
+| Designer **Help → Website mock (My Tawala)…** | `http://localhost:5500/mytawala.html` |
 | Designer **Help → Website mock (Library)…** | `http://localhost:5500/library.html` |
-| Designer **Deploy** dialog → **Show in My Tawala** | `mytawala.html?deployReceipt=…` (inbox on :5500; not the pile) |
+| Designer **Deploy** dialog → **Show in My Tawala** | `mytawala-project.html?project=…&deployReceipt=…` — upserts My Tawala pile overlay + opens Details |
 
 Test-drive start points stay on `:8080` via `js/demo-urls.js`.
 
@@ -85,7 +94,7 @@ Shared helpers: `js/transfer.js` (localStorage on `:5500` only — Designer `:51
 
 | Hop | UI | Status |
 |-----|-----|--------|
-| **Web Designer → My Tawala** | Deploy dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired (receipt inbox + :8080 links). Does **not** auto-add to `TAWALA_MYTAWALA` pile yet. |
+| **Web Designer → My Tawala** | Deploy dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. Overlay survives reload until Delete / clear. Not written into `demo-urls.js`. |
 | **Library → My Tawala** | Listing / detail **Save this project under My Tawala**, **USE IT** (legacy customize entry; was mislabeled “Clone”) | Grey stubs. |
 | **My Tawala → Library** | Listing **Publish**, detail **PUBLISH**, sidebar **Publish to Library** | Grey stubs. |
 | **Library ← My Tawala upgrade** | Listing **Pull**, detail **PULL FROM LIBRARY**, sidebar **Pull from Library** | Grey stubs. |
@@ -142,6 +151,7 @@ When a project is thoroughly vetted and should appear as **Live** in the mock Li
    - `liveReady: true` only when thoroughly vetted (shows quiet **Live** cue)
    - Leave `deployed: false` / no URL for placeholders (`jsonFile` is maintainer-only metadata)
 8. **Browse the mock** — `cd website-mock && ./serve.sh` → http://localhost:5500/library.html
+   - Stop with Ctrl+C or `./serve.sh stop`. Logs in `.serve.log`.
 
 Keep Phase 2 `:8080` URLs only (no www.tawala.com).
 

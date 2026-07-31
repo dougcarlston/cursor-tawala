@@ -24,8 +24,11 @@ function parseStyleAttr(tagHtml) {
 }
 
 function parseClassAttr(tagHtml) {
-  const m = tagHtml.match(/\bclass="([^"]*)"/i);
-  return m ? m[1].split(/\s+/) : [];
+  // Accept single/double quotes and optional spaces around `=` — strict
+  // `class="…"` misses chips some serializers emit, and Deploy then turns the
+  // visible `<<MULTIPLE QUESTION LIST(...)>>` label into a junk `<field>` (`<>`).
+  const m = String(tagHtml ?? "").match(/\bclass\s*=\s*(["'])([\s\S]*?)\1/i);
+  return m ? m[2].split(/\s+/).filter(Boolean) : [];
 }
 
 /** Form Text / Document local image → `<image id width height/>` (not display-image). */
@@ -88,6 +91,15 @@ function qualifyFieldRef(name, formName) {
  * Plain text that may include `<<Field>>` (or entity-decoded from `&lt;&lt;Field&gt;&gt;`)
  * → mix of escaped text and `<field name="…"/>` for Deploy.
  */
+/** True when `<<…>>` is a function chip label, not a Form field ref. */
+function looksLikeFunctionDisplayToken(inner) {
+  const s = String(inner ?? "").trim();
+  if (!s) return false;
+  // `<<MULTIPLE QUESTION LIST(false, false, ...)>>` / `<<SUM(Amount)>>` / `<<RECORD COUNT>>`
+  if (/^[A-Z][A-Z0-9 ]*(?:\(|$)/.test(s)) return true;
+  return false;
+}
+
 function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
   const s = String(plain ?? "");
   if (!s) return "";
@@ -96,7 +108,18 @@ function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
     .map((part) => {
       const m = /^<<\s*([^<>]+?)\s*>>$/.exec(part);
       if (m) {
-        const ref = qualifyFieldRef(m[1].trim(), opts.formName);
+        const inner = m[1].trim();
+        // Orphaned chip labels (span lost / attrs not recognized) must not become
+        // `<field name="Form:MULTIPLE QUESTION LIST(...)"/>` → runtime `<>`.
+        if (looksLikeFunctionDisplayToken(inner)) {
+          if (/MULTIPLE\s+QUESTION\s+LIST/i.test(inner)) {
+            console.warn(
+              "[documentHtmlToXml] Orphaned MULTIPLE QUESTION LIST label skipped (would Deploy as junk field <>). Prefer a function-token with data-function-id=itemization-table.",
+            );
+          }
+          return "";
+        }
+        const ref = qualifyFieldRef(inner, opts.formName);
         return `<field name="${escAttr(ref)}"/>`;
       }
       return escText(part);
@@ -331,18 +354,40 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
     if (open.name === "span") {
       const classes = parseClassAttr(open.attrs);
       if (classes.includes("field-token")) {
-        const nameM = open.attrs.match(/data-field-name="([^"]*)"/i);
-        const name = nameM?.[1] ?? stripTags(inner).replace(/^<<|>>$/g, "");
+        const name =
+          readAttrValue(open.attrs, "data-field-name") ||
+          stripTags(inner).replace(/^<<|>>$/g, "");
         if (name) {
           const ref = qualifyFieldRef(name, opts.formName);
           out += `<field name="${escAttr(ref)}"/>`;
         }
         continue;
       }
-      if (classes.includes("function-token")) {
+      // Prefer class, but also accept `data-function-id` alone — class= parsing used
+      // to require double quotes with no spaces, so valid chips became plain text.
+      const functionId = readAttrValue(open.attrs, "data-function-id");
+      if (classes.includes("function-token") || functionId) {
         // Legacy wraps display components in <font> inside paragraphs.
         out += `<font>${functionTokenToXml(open.attrs, escAttr, escText)}</font>`;
         continue;
+      }
+      // Legacy `{ MULTIPLE QUESTION LIST }` brace chips (converter / old projects):
+      // function-table-token + data-tawala-structured-node, no data-function-id.
+      // When a modern function-token MQL is also present, drop the brace chip entirely
+      // (owner dual-chip: Redeploy must not keep the unfiltered old table).
+      const looksLikeLegacyMql =
+        classes.includes("function-table-token") ||
+        /data-itemization-token\s*=\s*["']true["']/i.test(open.attrs) ||
+        /data-tawala-structured-node\s*=/i.test(open.attrs);
+      if (looksLikeLegacyMql && !classes.includes("function-token")) {
+        if (opts.hasModernMqlToken) {
+          continue;
+        }
+        const structuredXml = structuredItemizationTokenToXml(open.attrs, escAttr, escText);
+        if (structuredXml) {
+          out += `<font>${structuredXml}</font>`;
+          continue;
+        }
       }
       if (classes.includes("invitation-token")) {
         out += `<font color="000080"><u>${invitationTokenToXml(open.attrs, inner, escAttr, escText)}</u></font>`;
@@ -576,10 +621,103 @@ function hyperlinkTokenToXml(attrs, escAttr, escText) {
   );
 }
 
+/**
+ * Legacy brace MQL chip → same itemization-table XML as modern function-tokens.
+ * Reads Where from structured `conditions` / `conditionsRows` / `where`.
+ */
+function structuredItemizationTokenToXml(attrs, escAttr, escText) {
+  const raw = readAttrValue(attrs, "data-tawala-structured-node");
+  if (!raw) return "";
+  let node;
+  try {
+    node = JSON.parse(decodeURIComponent(raw));
+  } catch {
+    try {
+      node = JSON.parse(decodeHtmlAttrEntities(raw));
+    } catch {
+      return "";
+    }
+  }
+  if (!node || node.type !== "itemizationTable") return "";
+
+  const cols = Array.isArray(node.columns) ? node.columns : [];
+  const form = String(node.form ?? "").trim();
+  const config = {
+    "show-print-control": node.showPrint === true || node["show-print-control"] === true || node["show-print-control"] === "true",
+    "show-export-control":
+      node.showExport === true || node["show-export-control"] === true || node["show-export-control"] === "true",
+    numberOfColumns: cols.length,
+    column: cols.map((c) => ({
+      header: c?.header ?? "",
+      contents: c?.field ?? c?.contents ?? "",
+    })),
+    "form-name": form,
+    conditionsRows: Array.isArray(node.conditionsRows)
+      ? node.conditionsRows
+      : Array.isArray(node.conditions)
+        ? node.conditions
+        : [{ field: "", op: "equals", value: "" }],
+    conditionsCombinator: node.conditionsCombinator === "or" || node.combinator === "or" ? "or" : "and",
+  };
+
+  // Prefer filled Configure rows; else flatten a simple imported `where` leaf.
+  const filled = (config.conditionsRows ?? []).filter((r) => String(r?.field ?? "").trim());
+  if (!filled.length && node.where && typeof node.where === "object") {
+    const flat = flattenWhereTree(node.where);
+    if (flat.rows.length) {
+      config.conditionsRows = flat.rows;
+      config.conditionsCombinator = flat.combinator;
+    }
+  }
+
+  // Re-enter the modern emitter via a synthetic function-token attrs string.
+  const fakeAttrs =
+    `data-function-id="itemization-table" data-function-config="${escAttr(JSON.stringify(config))}"`;
+  return functionTokenToXml(fakeAttrs, escAttr, escText);
+}
+
+function readAttrValue(attrs, name) {
+  const re = new RegExp(`${name}\\s*=\\s*(["'])([\\s\\S]*?)\\1`, "i");
+  const m = re.exec(attrs);
+  return m ? m[2] : "";
+}
+
+function flattenWhereTree(where) {
+  const rows = [];
+  let combinator = "and";
+  const walk = (node) => {
+    if (!node || typeof node !== "object") return;
+    if (node.and || node.or) {
+      combinator = node.or ? "or" : "and";
+      const kids = node.and ?? node.or;
+      if (Array.isArray(kids)) kids.forEach(walk);
+      return;
+    }
+    if (node.field) {
+      rows.push({
+        field: String(node.field ?? ""),
+        op: String(node.op ?? "equals"),
+        value: String(node.value ?? ""),
+      });
+    }
+  };
+  walk(where);
+  return { rows, combinator };
+}
+
 function functionTokenToXml(attrs, escAttr, escText) {
-  const idM = attrs.match(/data-function-id="([^"]*)"/i);
-  const id = idM?.[1] ?? "";
+  const id = readAttrValue(attrs, "data-function-id");
   let config = parseFunctionConfigAttr(attrs);
+  // Modern chips from structuredContentToEditorHtml also carry structured-node.
+  // If data-function-config was truncated / unparseable, recover columns from it.
+  if (
+    id === "itemization-table" &&
+    !(Array.isArray(config.column) && config.column.length) &&
+    /data-tawala-structured-node\s*=/i.test(attrs)
+  ) {
+    const recovered = structuredItemizationTokenToXml(attrs, escAttr, escText);
+    if (recovered) return recovered;
+  }
 
   const bareField = (raw) => {
     let s = String(raw ?? "").trim();
@@ -1123,8 +1261,12 @@ function collectBlocksInDeployOrder(html) {
  *   `<<attendeeName>>` becomes `<field name="Form:attendeeName"/>` (legacy Potluck).
  */
 export function documentHtmlToXml(html, escAttr, escText, options = {}) {
-  const opts = { formName: options.formName ?? "" };
   const source = String(html ?? "").trim();
+  const opts = {
+    formName: options.formName ?? "",
+    // Dual-chip: detect modern MQL on the full document, not per paragraph.
+    hasModernMqlToken: /data-function-id\s*=\s*["']itemization-table["']/i.test(source),
+  };
   if (!source) {
     return `<paragraph indent="0" align="left"></paragraph>`;
   }
