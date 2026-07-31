@@ -9,11 +9,14 @@
  *   tawala.mock.libraryCategoryOverrides — { [projectId]: categoryLabel }
  *   tawala.mock.deployInbox — recent Designer deploy receipts
  *   tawala.mock.myTawalaOverlay — { [projectId]: catalog-shaped entry } merged into My Tawala pile
+ *   tawala.mock.myTawalaDeleted — { [projectId]: true } account-private My Tawala removals
+ *     (does not touch public Library / TAWALA_LIBRARY / liveReady)
  */
 (function () {
   const CATEGORY_KEY = "tawala.mock.libraryCategoryOverrides";
   const INBOX_KEY = "tawala.mock.deployInbox";
   const PILE_KEY = "tawala.mock.myTawalaOverlay";
+  const DELETED_KEY = "tawala.mock.myTawalaDeleted";
   const INBOX_MAX = 12;
 
   function readJson(key, fallback) {
@@ -119,9 +122,58 @@
     writeJson(INBOX_KEY, []);
   }
 
+  /** Drop inbox receipts for one My Tawala project id (orphans after Delete). */
+  function removeDeployInboxForProject(projectId) {
+    if (!projectId) return false;
+    const next = getDeployInbox().filter((e) => e && e.id !== projectId);
+    return writeJson(INBOX_KEY, next);
+  }
+
   function getMyTawalaOverlay() {
     const o = readJson(PILE_KEY, {});
     return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+  }
+
+  function getMyTawalaDeleted() {
+    const o = readJson(DELETED_KEY, {});
+    return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+  }
+
+  function isMyTawalaDeleted(projectId) {
+    if (!projectId) return false;
+    return !!getMyTawalaDeleted()[projectId];
+  }
+
+  function markMyTawalaDeleted(projectId) {
+    if (!projectId) return false;
+    const o = getMyTawalaDeleted();
+    o[projectId] = true;
+    return writeJson(DELETED_KEY, o);
+  }
+
+  function clearMyTawalaDeleted(projectId) {
+    if (!projectId) return false;
+    const o = getMyTawalaDeleted();
+    if (!Object.prototype.hasOwnProperty.call(o, projectId)) return false;
+    delete o[projectId];
+    return writeJson(DELETED_KEY, o);
+  }
+
+  /**
+   * Account-private My Tawala Delete: remove this account’s row + Deploy overlay /
+   * inbox receipt. Does not touch public Library catalog, liveReady, or :8080 XML.
+   * Seed rows from TAWALA_MYTAWALA stay hidden via deleted set until re-Deploy restores them.
+   */
+  function deleteMyTawalaProject(projectId) {
+    if (!projectId) {
+      return { ok: false, projectId: null, hadOverlay: false, hadInbox: false };
+    }
+    const hadOverlay = !!getMyTawalaOverlay()[projectId];
+    const hadInbox = getDeployInbox().some((e) => e && e.id === projectId);
+    removeMyTawalaOverlay(projectId);
+    removeDeployInboxForProject(projectId);
+    markMyTawalaDeleted(projectId);
+    return { ok: true, projectId, hadOverlay, hadInbox };
   }
 
   /**
@@ -131,6 +183,8 @@
   function upsertMyTawalaFromDeploy(receipt) {
     if (!receipt || !receipt.name) return null;
     const id = receipt.id || slugifyProjectId(receipt.name);
+    /* Re-Deploy / Show in My Tawala restores a previously deleted row. */
+    clearMyTawalaDeleted(id);
     const startPoints = (Array.isArray(receipt.startpoints) ? receipt.startpoints : []).map((sp) => ({
       label: sp.form || sp.label || "Start",
       url: sp.url || null,
@@ -189,11 +243,13 @@
   /** Merge overlay on top of catalog entries (overlay wins on id collision for deploy fields). */
   function withMyTawalaOverlay(entries) {
     const overlay = getMyTawalaOverlay();
+    const deleted = getMyTawalaDeleted();
     const byId = new Map();
     (entries || []).forEach((p) => {
-      if (p && p.id) byId.set(p.id, p);
+      if (p && p.id && !deleted[p.id]) byId.set(p.id, p);
     });
     Object.keys(overlay).forEach((id) => {
+      if (deleted[id]) return;
       const data = overlay[id];
       if (!data || typeof data !== "object") return;
       const existing = byId.get(id);
@@ -213,7 +269,7 @@
   }
 
   function getOverlayEntry(projectId) {
-    if (!projectId) return null;
+    if (!projectId || isMyTawalaDeleted(projectId)) return null;
     const data = getMyTawalaOverlay()[projectId];
     return data ? { id: projectId, ...data } : null;
   }
@@ -293,6 +349,7 @@
     CATEGORY_KEY,
     INBOX_KEY,
     PILE_KEY,
+    DELETED_KEY,
     slugifyProjectId,
     getCategoryOverrides,
     setProjectCategory,
@@ -302,8 +359,14 @@
     getDeployInbox,
     recordDeploy,
     clearDeployInbox,
+    removeDeployInboxForProject,
     getMyTawalaOverlay,
     getOverlayEntry,
+    getMyTawalaDeleted,
+    isMyTawalaDeleted,
+    markMyTawalaDeleted,
+    clearMyTawalaDeleted,
+    deleteMyTawalaProject,
     upsertMyTawalaFromDeploy,
     removeMyTawalaOverlay,
     clearMyTawalaOverlay,

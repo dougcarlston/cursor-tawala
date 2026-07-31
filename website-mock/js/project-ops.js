@@ -110,7 +110,7 @@
     { id: "backup", label: "BACKUP", title: "Backup project data", wired: false },
     { id: "restore", label: "RESTORE", title: "Restore project data", wired: false },
     { id: "purge", label: "PURGE", title: "Purge project data", wired: "purge-local", confirmId: "purge" },
-    { id: "delete", label: "DELETE", title: "Delete Project", wired: "delete-mock", confirmId: "delete" },
+    { id: "delete", label: "DELETE", title: "Delete Project", wired: "delete-mytawala", confirmId: "delete" },
     {
       id: "publish",
       label: "PUBLISH",
@@ -170,7 +170,7 @@
       id: "delete",
       label: "Delete",
       title: "Delete project",
-      wired: "delete-mock",
+      wired: "delete-mytawala",
       confirmId: "delete",
       icon: "delete",
     },
@@ -184,7 +184,7 @@
     {
       id: "pull-library",
       label: "Pull",
-      title: "Pull / upgrade from the public Library",
+      title: "Replace with newer Library version",
       wired: false,
       icon: "pull",
     },
@@ -242,7 +242,12 @@
     { label: "Deploy", title: "Make this version the active version", wired: false },
     { label: "Delete this version", title: "Delete this version", wired: false, confirmId: "deleteversion" },
     { label: "Download this version of the project", title: "Download this version of the project", wired: false },
-    { label: "Delete Selected Items", title: "Delete selected versions", wired: false },
+    {
+      label: "Delete Selected Items",
+      title: "Delete selected versions",
+      wired: false,
+      confirmId: "deleteselected",
+    },
   ];
 
   /** Backups / emails / publish dialogs (admin-ish; still useful memory jogs) */
@@ -251,13 +256,23 @@
     { label: "CHANGE BACKUP", title: "Change backup schedule", wired: false },
     { label: "CANCEL BACKUP", title: "Stop Backups", wired: false },
     { label: "RESTORE (from online backup)", title: "Restore Project from This Backup", wired: false },
-    { label: "Delete this backup", title: "Delete this backup", wired: false },
-    { label: "DELETE ALL PROJECT BACKUPS", title: "Delete all backups for this project", wired: false },
+    { label: "Delete this backup", title: "Delete this backup", wired: false, confirmId: "deletebackup" },
+    {
+      label: "DELETE ALL PROJECT BACKUPS",
+      title: "Delete all backups for this project",
+      wired: false,
+      confirmId: "deleteallbackups",
+    },
     { label: "View all project emails", title: "View all project emails", wired: false },
-    { label: "DELETE ALL PROJECT EMAILS", title: "Delete All Project Emails", wired: false },
+    {
+      label: "DELETE ALL PROJECT EMAILS",
+      title: "Delete All Project Emails",
+      wired: false,
+      confirmId: "deleteallemails",
+    },
     { label: "Publish as a New Project to the library", title: "Copy this app to the library…", wired: false },
     { label: "Update an Existing Library Project", title: "Update an app in the library with this version", wired: false },
-    { label: "Upgrade Project", title: "Upgrade with newer library version", wired: false },
+    { label: "Upgrade Project", title: "Replace with newer Library version", wired: false },
     { label: "UPDATE (Additional Project Details)", title: "Admin project properties", wired: false },
   ];
 
@@ -279,7 +294,7 @@
     },
     delete: {
       title: "Delete Project",
-      body: "Are you sure you want to delete this project?",
+      body: "Are you sure you want to delete this project from My Tawala?",
       submit: "Delete",
     },
     erase: {
@@ -291,6 +306,21 @@
       title: "Delete Project Version",
       body: "Are you sure you want to delete this project version?",
       submit: "Delete Version",
+    },
+    deleteselected: {
+      title: "Delete Selected Items",
+      body: "Are you sure you want to delete the selected versions?",
+      submit: "Delete",
+    },
+    deletebackup: {
+      title: "Delete Backup",
+      body: "Are you sure you want to delete this backup?",
+      submit: "Delete",
+    },
+    deleteallbackups: {
+      title: "Delete All Project Backups",
+      body: "Are you sure you want to delete all backups for this project?",
+      submit: "Delete All Backups",
     },
     deleteallemails: {
       title: "Delete All Project Emails",
@@ -411,7 +441,7 @@
     mytawala: {
       heading: "My Tawala / Project Manager controls",
       blurb:
-        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; PURGE (via :3001 → Postgres by uniqueId) and DELETE (confirm) are active on the listing.",
+        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; PURGE (via :3001 → Postgres by uniqueId) and DELETE (account-private row remove + overlay/inbox clear) are active on listing and Details.",
     },
   };
 
@@ -427,6 +457,7 @@
     return (
       op.wired === true ||
       op.wired === "purge-local" ||
+      op.wired === "delete-mytawala" ||
       op.wired === "delete-mock" ||
       op.wired === "edit-categories"
     );
@@ -434,7 +465,9 @@
 
   function wiredNote(item) {
     if (item.wired === "purge-local") return "active (purge via :3001 API)";
-    if (item.wired === "delete-mock") return "active (confirm + remove row)";
+    if (item.wired === "delete-mytawala" || item.wired === "delete-mock") {
+      return "active (Delete My Tawala row — overlay/inbox; not Library)";
+    }
     if (item.wired === "edit-categories") return "active (local category assignment)";
     if (item.wired === "test-drive") return "active when :8080 deployed (purge-on-start)";
     if (item.wired === true) return "active";
@@ -889,32 +922,41 @@
       return;
     }
 
-    if (wired === "delete-mock") {
-      const row = btn.closest("tr");
-      if (row) row.remove();
-      const countEl = document.getElementById("projectCount");
-      if (countEl) {
-        const n = document.querySelectorAll("#projectRows tr").length;
-        countEl.textContent = String(n);
-      }
-      const wasOverlay =
-        typeof TawalaTransfer !== "undefined" &&
-        TawalaTransfer.getOverlayEntry &&
-        TawalaTransfer.getOverlayEntry(projectId);
+    if (wired === "delete-mytawala" || wired === "delete-mock") {
+      /* Delete = remove this account’s My Tawala row (not Purge submissions; not Library). */
+      let result = { ok: false, projectId, hadOverlay: false, hadInbox: false };
       if (
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.deleteMyTawalaProject === "function"
+      ) {
+        result = TawalaTransfer.deleteMyTawalaProject(projectId);
+      } else if (
         typeof TawalaTransfer !== "undefined" &&
         TawalaTransfer.removeMyTawalaOverlay
       ) {
+        const hadOverlay = !!(
+          TawalaTransfer.getOverlayEntry && TawalaTransfer.getOverlayEntry(projectId)
+        );
         TawalaTransfer.removeMyTawalaOverlay(projectId);
+        result = { ok: true, projectId, hadOverlay, hadInbox: false };
       }
+      const onListing = !!document.getElementById("projectRows");
+      const onDetails = !!document.getElementById("pmDetailHost");
       setStatus(
-        wasOverlay
-          ? `Deleted “${projectId || "project"}” from My Tawala overlay (localStorage).`
-          : `Deleted “${projectId || "project"}” from this mock listing (page reload restores catalog rows).`
+        `Deleted “${projectId || "project"}” from My Tawala` +
+          (result.hadOverlay || result.hadInbox
+            ? " (cleared Deploy overlay / inbox)."
+            : " (private pile).") +
+          " Public Library unchanged."
       );
       document.dispatchEvent(
-        new CustomEvent("tawala:project-deleted", { detail: { projectId } })
+        new CustomEvent("tawala:project-deleted", {
+          detail: { projectId, result, source: onDetails && !onListing ? "details" : "listing" },
+        })
       );
+      if (onDetails && !onListing) {
+        window.location.href = "mytawala.html";
+      }
     }
   }
 

@@ -138,7 +138,9 @@ Entries below use a **stacked** layout (not wide tables) for Preview readability
 - **Why:** Deployed vs non-deployed versions, Library submit rules, test-drive, upload metadata — core MyTawala/Library product contract.
 - **Integrate into:** `website-mock` fidelity notes; `docs/ROADMAP.md` Phase 3; Deploy dialog behavior
 - **Tenancy (owner Jul 31, 2026):** One public Library; each account’s My Tawala is private (other accounts cannot see it). **Publish** is the deliberate bridge into Library — until then, projects stay in that account’s My Tawala. Product truth in `website-mock/README.md` § Tenancy / Save·Deploy·Publish glossary (mock remains single-browser `localStorage`).
-- **Sequencing (owner Jul 31, 2026):** My Tawala **version piles** stay gated until Save / Delete / Purge (and related ops) are trustworthy; **audit trail** ships with that same lifecycle package — not versions-first. Flat one-row-per-project mock for now; B7 remains the target model. See `website-mock/README.md` glossary **Sequencing / hold**.
+- **Sequencing (owner Jul 31, 2026):** My Tawala **listing** version piles stay gated until Delete / Purge and ops (**EXPORT / IMPORT**, **BACKUP / RESTORE**) are trustworthy; **audit trail** ships with that same lifecycle package — not versions-first in the listing. Versions **existed** in PM **Versions** UI historically; the hold is listing clutter. Flat one-row-per-project mock for now; B7 remains the target model. See `website-mock/README.md` glossary **Sequencing / hold**.
+- **Ops verb split (Java build1700 + memos; owner Jul 31, 2026 reconciled):** **EXPORT / IMPORT** = Excel **response data** only (Import = restore messed-up data into **current** project; field mismatch fails; does **not** roll back definition). **BACKUP / RESTORE** = `.backup` ZIP = **paired project definition + data** (plus properties / links) — Restore re-applies matching definition then data (why restore held up across later field changes). **Deploy** mints My Tawala **definition versions** (shipped Java auto-deploys the new version) — separate from Backup. Designer **File → Save** = local definition only. Shipped PM UI had **no “Save” for submissions** — verbs were EXPORT / IMPORT / BACKUP / RESTORE; owner colloquial “Save” may have meant Backup. Product framing: `website-mock/README.md` glossary.
+- **Paired snapshot (reconciled Jul 31, 2026):** The earlier “perhaps Save must also preserve project” tension is resolved against Java: **Backup / Restore already was** the paired definition + data path; data-alone was **Export / Import**. Not a My Tawala version-pile feature (sequencing hold stands). See glossary + **Project Backup** note below.
 
 #### 8. Private Invitations
 - **Path:** `…/Private Invitations.doc`
@@ -212,8 +214,10 @@ Entries below use a **stacked** layout (not wide tables) for Preview readability
 - **Date:** ~2007-11-28
 - **Tags:** MyTawala
 - **Rel.:** Med
-- **Why:** Excel workbook backup/restore on Project Details — Project Manager feature.
+- **Why:** Project Manager backup/restore on Project Details — paired with the EXPORT/IMPORT vs BACKUP/RESTORE split (see notes).
 - **Integrate into:** MyTawala project ops mock; park if not shipping soon
+- **Note (Java build1700 + owner Jul 31, 2026 reconciled):** Do **not** conflate Excel data tools with Backup. **EXPORT / IMPORT** = Excel **response data** only; **Import** restores messed-up **data** into the current project (field mismatch fails; does **not** roll back definition). **BACKUP / RESTORE** = `.backup` ZIP = **paired project definition + data** (plus properties / links); Restore re-applies matching definition then data. Separate from B7 **Deploy** definition versions and from Designer File→Save. Shipped PM had no submissions “Save” — those four verbs. See `website-mock/README.md` glossary **Ops verb split**.
+- **Paired snapshot (reconciled Jul 31, 2026):** Backup/Restore **already was** the paired definition + data path that earlier notes speculated Save/Import might need; Export/Import stayed data-alone. Not a version-listing feature. See B7 note + glossary.
 
 #### Web Application Error Handling
 - **Path:** `…/Web Application Error Handling.doc`

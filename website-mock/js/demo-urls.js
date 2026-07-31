@@ -887,6 +887,7 @@ window.TawalaDemo = {
       ...window.TAWALA_MYTAWALA[id],
     }));
     // Deploy → Show in My Tawala writes a localStorage overlay (transfer.js).
+    // Deleted ids (account-private) are filtered inside withMyTawalaOverlay.
     if (
       typeof window !== "undefined" &&
       window.TawalaTransfer &&
@@ -905,6 +906,14 @@ window.TawalaDemo = {
   },
   getMyTawala(id) {
     if (!id) return null;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.isMyTawalaDeleted === "function" &&
+      window.TawalaTransfer.isMyTawalaDeleted(id)
+    ) {
+      return null;
+    }
     const base = window.TAWALA_MYTAWALA[id] || null;
     if (
       typeof window !== "undefined" &&

@@ -329,16 +329,16 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 ## Chat 3 — Website mock
 
-**Suggested title:** `Website — library ops (Save/Delete/Purge)`
+**Suggested title:** `Website — library ops (Export/Backup/Purge)`
 
-**Status (Jul 31, 2026):** Designer gate (Sign-up Sheet / Get Together template deploy) is **largely met**. Libraries are the **core of the Website** — owner affirms a **solid basis** for Library + My Tawala; next focus is **catalog / lifecycle ops** (harden Save / Delete / Purge, Publish stub readiness, keep flat My Tawala) — **not** more look-and-feel (Home polish optional / non-blocking). Version piles stay deferred. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Status (Jul 31, 2026):** Designer gate (Sign-up Sheet / Get Together template deploy) is **largely met**. Libraries are the **core of the Website** — owner affirms a **solid basis** for Library + My Tawala; next focus is **catalog / lifecycle ops** (harden Delete / Purge, **EXPORT / IMPORT**, **BACKUP / RESTORE**, Publish stub readiness, keep flat My Tawala) — **not** more look-and-feel (Home polish optional / non-blocking). Version piles stay deferred. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
 
 ### 5-line paste opener
 
 ```
 Project: Tawala (~/Projects/Tawala)
 Track: Website mock — website-mock/ (Phase 3)
-Goal: Library + My Tawala catalog ops — harden Save/Delete/Purge (+ lifecycle); Publish stub readiness; flat My Tawala (no version piles yet). L&F deferred; Home polish optional/non-critical
+Goal: Library + My Tawala catalog ops — harden Delete/Purge + EXPORT/IMPORT + BACKUP/RESTORE (+ lifecycle); Publish stub readiness; flat My Tawala (no version piles yet). L&F deferred; Home polish optional/non-critical
 Read first: .cursor/rules/tawala-designer-parked-post-website.mdc, website-mock/README.md, docs/ROADMAP.md Phase 3
 Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless links need it; defer parked Designer items + Project Manager/Email Delivery + visual polish (except optional Home); product tenancy = 1 public Library + per-account private My Tawala (Publish bridges; mock is still single-user localStorage)
 ```
@@ -354,6 +354,7 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 - Owner confirmed all mock pages load; test-drive / library / My Tawala links OK.
 - Prereq for fidelity work: stable `:8080` template URLs (Tomcat up; featured templates deployable).
 - **Tenancy (owner Jul 31, 2026):** one public Library; each account’s My Tawala is private; **Publish** is the only deliberate bridge into Library. Documented in `website-mock/README.md` (§ Tenancy + Save/Deploy/Publish glossary). Mock stays single-browser `localStorage` — do not implement multi-account auth here.
+- **Ops verb split (Java build1700 + memos; owner Jul 31, 2026 reconciled):** **EXPORT / IMPORT** = Excel **response data** only (Import = restore messed-up data into current project; field mismatch fails; no definition rollback). **BACKUP / RESTORE** = `.backup` ZIP = **paired definition + data** (plus properties / links) — the path that held across later field changes. **Deploy** mints definition versions (Java auto-deploys); Designer File→Save = local definition only. Shipped PM had **no submissions “Save”** — those four verbs; colloquial “Save” may have meant Backup. Earlier “perhaps Save must also preserve project” note → **Backup/Restore already was** that paired snapshot. Ops framing: glossary in `website-mock/README.md`. Sequencing hold on My Tawala **listing** version piles stands (Versions UI existed historically).
 
 ### Key files
 
@@ -371,7 +372,7 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 
 ### Immediate phases ahead
 
-1. **Library / My Tawala ops (owner Jul 31, 2026 — next focus):** Harden **Save / Delete / Purge** (and related lifecycle ops); advance **Publish** stub readiness; keep **flat** My Tawala (one row per project). Libraries are the core of the Website — not homepage chrome.
+1. **Library / My Tawala ops (owner Jul 31, 2026 — next focus):** Harden **Delete / Purge**, **EXPORT / IMPORT**, **BACKUP / RESTORE** (and related lifecycle ops); advance **Publish** stub readiness; keep **flat** My Tawala (one row per project). Library → My Tawala **Save this project** remains the customize-entry stub. Libraries are the core of the Website — not homepage chrome.
 2. Keep `demo-urls.js` in sync when template deploy names or paths change on 8080; verify Test drive links stay on the right live `:8080` URLs.
 3. Flesh out stub pages (About, FAQ, Login) when copy is ready — non-blocking vs ops.
 4. Wire **Designer** marketing page when browser Designer is demo-ready.
@@ -380,7 +381,7 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 ### Defer / out of scope (this chat)
 
 - **Look-and-feel polish (owner Jul 31, 2026):** Do **not** bother with more visual polish now. **Home page** look-and-feel is optional only and **not critical wiring**. Libraries / catalog ops come first.
-- **My Tawala version piles (owner Jul 31, 2026):** Do not expose multi-version / “Deploy creates version N” UI until Save / Delete / Purge (and related ops) are solid enough; audit trail ships with that same lifecycle package. Keep flat one-row-per-project mock for now. Target model still B7 — see `website-mock/README.md` § Save/Deploy/Publish **Sequencing / hold**.
+- **My Tawala version piles (owner Jul 31, 2026):** Do not expose multi-version / “Deploy creates version N” in the **listing** until Delete / Purge and **EXPORT / IMPORT** + **BACKUP / RESTORE** are solid enough; audit trail ships with that same lifecycle package. Versions existed in PM Versions UI historically — hold is listing clutter. Keep flat one-row-per-project mock for now. Target model still B7 — see `website-mock/README.md` § Save/Deploy/Publish **Sequencing / hold**.
 - **Designer MainMenu** Project Manager + Email Delivery — wait until the site exists.
 - Everything in `.cursor/rules/tawala-designer-parked-post-website.mdc`: Document P0s, native `confirm()`, Font Color picker, Skip/Process stubs; **plus Jul 30 parked (Not blocking):** FIB Styles squashed “Align right side” radio; Form Text blank-line loss on Deploy + image breaks highlight — see `DESIGNER_OPEN_BUGS.md` § Parked Jul 30.
 - **Also for next Designer chat (not here):** unify Invitation + Hyperlink (Form link primary) — called out in that rule’s **MUST DO** and Chat 1 opener.
@@ -396,7 +397,7 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 | Action | Which chat |
 |--------|------------|
 | **Continue this chat** | Designer (Chat 1) — architecture backlog |
-| **Focus first** | Website (Chat 3) — Library / My Tawala ops (Save/Delete/Purge); **or** Designer when site ops pause |
+| **Focus first** | Website (Chat 3) — Library / My Tawala ops (Delete/Purge, EXPORT/IMPORT, BACKUP/RESTORE); **or** Designer when site ops pause |
 | **Park** | 8080 (Chat 2) until deploy breaks; Website visual polish (except optional Home) until ops are solid |
 
 ### Practical split

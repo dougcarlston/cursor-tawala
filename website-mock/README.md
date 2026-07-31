@@ -35,7 +35,7 @@ Open:
 
 There is **one public Library** (shared catalog). Each **account** has its **own separate, private My Tawala**; another account cannot see or access your My Tawala contents. The bridge out of private My Tawala into the public world is **Publish** (to Library) — optional and deliberate. Until Publish, projects stay private to that account’s My Tawala.
 
-**Current priority (owner Jul 31, 2026):** **Libraries are the core of the Website** (Library + My Tawala / catalog ops). Harden **Save / Delete / Purge** (and lifecycle ops) over look-and-feel; solid basis for libraries already exists. **Do not** chase more visual polish now — **Home** L&F is optional and non-critical. Version piles stay deferred until ops are trustworthy (see glossary **Sequencing / hold** below).
+**Current priority (owner Jul 31, 2026):** **Libraries are the core of the Website** (Library + My Tawala / catalog ops). Harden **Delete / Purge** and data/backup lifecycle ops (**EXPORT / IMPORT**, **BACKUP / RESTORE**) over look-and-feel; solid basis for libraries already exists. Library → My Tawala **Save this project** remains the customize-entry stub. **Do not** chase more visual polish now — **Home** L&F is optional and non-critical. Version piles stay deferred until ops are trustworthy (see glossary **Sequencing / hold** below).
 
 **Mock note:** today’s mock is single-browser `localStorage` (no real multi-account auth). The **product model** is still multi-account private My Tawala; do not design as if all My Tawala piles were shared.
 
@@ -102,7 +102,7 @@ Shared helpers: `js/transfer.js` (localStorage on `:5500` only — Designer `:51
 
 | Hop | UI | Status |
 |-----|-----|--------|
-| **Web Designer → My Tawala** | Deploy dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. Overlay survives reload until Delete / clear. Not written into `demo-urls.js`. |
+| **Web Designer → My Tawala** | Deploy dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. Overlay survives reload until **Delete** (or clear). Not written into `demo-urls.js`. |
 | **Library → My Tawala** | Listing / detail **Save this project under My Tawala**, **USE IT** (legacy customize entry; was mislabeled “Clone”) | Grey stubs. |
 | **My Tawala → Library** | Listing **Publish**, detail **PUBLISH**, sidebar **Publish to Library** | Grey stubs. |
 | **Library ← My Tawala upgrade** | Listing **Pull**, detail **PULL FROM LIBRARY**, sidebar **Pull from Library** | Grey stubs. |
@@ -114,31 +114,55 @@ Grey controls use Designer accent palette (`--tw-accent`); disabled = opacity on
 
 Short product meanings for Website + Designer hops. Sits next to Project Versioning (legacy memo B7) and the transfer stubs above. Not implemented as multi-account auth in this mock.
 
+**Ops verb split (evidence-backed — Java build1700 + memos; owner Jul 31, 2026 reconciled):** Keep **EXPORT / IMPORT** and **BACKUP / RESTORE** separate. Do **not** conflate either with **Deploy** (definition versions) or Designer **File → Save** (local authoring). Shipped Project Manager UI had **no “Save” for submissions** — the ops verbs were **EXPORT / IMPORT / BACKUP / RESTORE** (plus Delete / Purge / Publish, etc.). Owner colloquial “Save” for protecting a live project may have meant **Backup**; treat that gently when reading older notes.
+
+| Spine | Verbs | What it carries | Contract |
+|-------|--------|-----------------|----------|
+| **Data only** | **EXPORT** / **IMPORT** | Excel **response data** (submissions) only | **Import** = restore messed-up **data** into the **current** project. Field mismatch **fails**; Import does **not** roll back the project definition. Not “export / import a project version” and not a general “move projects around.” |
+| **Paired snapshot** | **BACKUP** / **RESTORE** | `.backup` ZIP = **paired project definition + data** (plus properties / links) | **Restore** re-applies the matching definition, then data — which is why restore “worked pretty well” across later field changes. This **already was** the paired snapshot path; it is **not** the same as Export/Import. |
+| **Definition versions** | **Deploy** | My Tawala **definition versions** | Shipped Java **auto-deploys** the new version. Separate from Backup. See B7. |
+| **Local authoring** | Designer **File → Save** | Local project definition only | Not My Tawala data, not Backup, not Deploy versioning. |
+
+**Reconciled (replaces earlier “evolving perhaps Save must also preserve project” note):** Schema drift makes **data-only Import** fail or lose fidelity when fields no longer match — that is expected for Export/Import. The paired **definition + data** package was **Backup / Restore**, not Export/Import and not a PM “Save.” Do not invent a new Save-as-paired-bundle verb on top of this split.
+
 | Verb | Scope | Meaning |
 |------|--------|---------|
-| **Save** | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (customize entry / “under My Tawala”). Stays private until Publish. |
-| **Deploy** | Designer → runtime / My Tawala | Put a version live on `:8080` (and optionally surface it in My Tawala via **Show in My Tawala**). Deploy ≠ Publish to Library. |
+| **Save** (Library) | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (customize entry / “under My Tawala”). Stays private until Publish. Not a PM submissions verb. |
+| **EXPORT** | My Tawala / Project Manager | Outbound Excel **response data** only. Not definition versioning; not Backup. |
+| **IMPORT** | My Tawala / Project Manager | Restore messed-up **data** into the current project. Field mismatch fails; does **not** roll back definition. Same data spine as Export. |
+| **BACKUP** | My Tawala / Project Manager | Write a `.backup` ZIP — paired **definition + data** (plus properties / links). |
+| **RESTORE** | My Tawala / Project Manager | Re-apply that paired snapshot (matching definition, then data). Distinct from Import. |
+| **Deploy** | Designer → runtime / My Tawala | Mints a My Tawala **definition version** and (in shipped Java) auto-deploys it; optionally surface via **Show in My Tawala**. Deploy ≠ Backup ≠ Publish to Library. |
 | **Publish** | My Tawala → Library | Deliberate bridge from private My Tawala into the **one** public Library catalog. Optional; until then, projects remain account-private. |
-| **Pull** | Library → My Tawala (upgrade) | Refresh / pull an update from Library into a My Tawala copy (stub). |
-| **Versioning** | My Tawala project | Deployed vs non-deployed versions, Library submit rules, test-drive, upload metadata — see triage **B7 Project Versioning**. |
+| **Pull** | Library → My Tawala (upgrade) | Replace a My Tawala project with a newer public Library version (stub). |
+| **Versioning** | My Tawala project | Immutable project-definition snapshots (deployed vs non-deployed, Library submit rules, test-drive, upload metadata) — see triage **B7 Project Versioning**. Historically present in PM **Versions** UI; separate from Export/Import and from Backup/Restore. |
+| **Designer Save** | Designer File → Save | Persist local definition on disk — authoring only. |
 
 **Pillars (do not conflate):**
 
 1. **Tenancy** — one public Library; per-account private My Tawala; Publish is the only intentional public bridge (see § Tenancy above).
-2. **Versioning** — which revision is active / test-driven / submitted to Library (B7), independent of which account owns the private pile.
-3. **Deploy vs Publish** — Deploy makes a runtime live for an account’s project; Publish shares into the shared Library catalog.
+2. **Data ops (Excel)** — **EXPORT / IMPORT** — response data only; Import does not change definition.
+3. **Paired backup ops** — **BACKUP / RESTORE** — `.backup` ZIP with matching definition + data (plus properties / links).
+4. **Versioning** — which project-definition revision is active / test-driven / submitted to Library (B7 / Deploy), independent of Excel data tools and of Backup packages.
+5. **Deploy vs Publish** — Deploy mints/auto-deploys a definition version for an account’s project; Publish shares into the shared Library catalog.
 
-**Sequencing / hold (owner Jul 31, 2026):** Do **not** fill My Tawala with **versions of projects** before more of the **Save, Delete, Purge** handles are operational — My Tawala would get messy very fast otherwise. **Audit trail** belongs on that same trajectory (with versioning + lifecycle controls), not as a later orphan. Keep today’s flat mock: one My Tawala row per project (Deploy receipt / overlay), **not** a version pile per project yet. Multi-version list / “Deploy creates version N” UI stays deferred until Save / Delete / Purge (and related ops) are trustworthy enough to manage the mess. When versioning lands, ship it with (or immediately after) operational Save/Delete/Purge **and** audit-trail visibility — one lifecycle package, not “versions first.” Legacy intent (Deploy creates versions, one deployed, Library = published snapshot) remains the **target** model (B7); gate **My Tawala UI exposure** of versions on ops readiness.
+**Sequencing / hold (owner Jul 31, 2026):** Do **not** fill the My Tawala **listing** with **version piles** before Delete / Purge and the ops above (**EXPORT / IMPORT**, **BACKUP / RESTORE**) are trustworthy — the catalog would get messy very fast. Versions **existed** historically in the PM **Versions** UI; the hold is on **listing clutter**, not on denying that versions existed. **Audit trail** belongs on that same trajectory (with versioning + lifecycle controls), not as a later orphan. Keep today’s flat mock: one My Tawala row per project (Deploy receipt / overlay), **not** a version pile per project yet. Multi-version list / “Deploy creates version N” exposure in the listing stays deferred until those ops are ready enough to manage the mess. When versioning lands in the listing, ship it with (or immediately after) operational data/backup handles **and** audit-trail visibility — one lifecycle package, not “versions first.” Legacy intent (Deploy creates versions, one deployed, Library = published snapshot) remains the **target** model (B7); gate **My Tawala listing exposure** of versions on ops readiness.
 
 ## My Tawala layout (lean) vs ops archive
 
 Legacy Project Manager lives under `TawalaWebapp-build1700/web/WEB-INF/jsp/projectmanager/` (not the thin `mytawala/*.jsp` news pages). Mock mirrors the shallow structure:
 
-1. **`mytawala.html`** — My Projects listing (name, created, updated + Export…Publish icon columns). Click headings to sort; drag header edges to resize. Row **Delete** confirms; **Purge** uses local cleanup hint. Click project name → Project Details. Sub-menu: **My Projects · My Account · Change Password**.
-2. **`mytawala-project.html?project=…`** — Project Details: **EXPORT…PUBLISH** action bar, left sidebar (REVISE / ONLINE-OFFLINE / Include / Invite), collapsible sections (Start points, Project Data, Versions, Backups…). Start-point test-drives stay on `:8080`.
+1. **`mytawala.html`** — My Projects listing (name, created, updated + Export…Publish icon columns). Click headings to sort; drag header edges to resize. Row **Delete** confirms and removes the **account-private** My Tawala row (clears Deploy overlay + inbox receipt; seed rows stay hidden via `localStorage` deleted set). **Purge** clears submissions only (separate). Click project name → Project Details. Sub-menu: **My Projects · My Account · Change Password**.
+2. **`mytawala-project.html?project=…`** — Project Details: **EXPORT…PUBLISH** action bar, left sidebar (REVISE / ONLINE-OFFLINE / Include / Invite), collapsible sections (Start points, Project Data, Versions, Backups…). **DELETE** same as listing, then returns to My Projects. Start-point test-drives stay on `:8080`.
 3. **`project-ops-review.html`** — full recovered label catalog split by surface (**Public Library** vs **My Tawala / Project Manager**) for memory / archive review. Linked from My Tawala sidebar; not stacked on the working pages.
 
-Labels live in `js/project-ops.js`. Inactive Project Manager ops are **disabled** (grey only — no “not wired” text). Active ops (**PURGE**, **DELETE**) use Designer-accent blue styling from `css/tawala-chrome.css` (`--tw-accent` mirrors `designer-web/src/styles.css`). **PURGE** confirms, then POSTs `http://localhost:3001/api/purge-responses` with the project’s `:8080` **uniqueId** (from `testDriveUrl` / start points). That deletes all `submission` rows for that `user_project.unique_random_id` in Docker Postgres — same effect as Java Project Manager `purgeProjectResponses`. Credentials: **`dev` / `dev`**.
+Labels live in `js/project-ops.js`. Inactive Project Manager ops are **disabled** (grey only — no “not wired” text). Active ops (**PURGE**, **DELETE**) use Designer-accent blue styling from `css/tawala-chrome.css` (`--tw-accent` mirrors `designer-web/src/styles.css`).
+
+**DELETE** (wired Jul 31, 2026 — was mock row-remove only): confirm → `TawalaTransfer.deleteMyTawalaProject` removes the private My Tawala entry for this browser account mock — clears `tawala.mock.myTawalaOverlay` + matching `tawala.mock.deployInbox` receipts, and records `tawala.mock.myTawalaDeleted` so catalog seed rows from `TAWALA_MYTAWALA` do not reappear on reload. Does **not** delete public Library / `liveReady` catalog entries, does **not** purge `:8080` submissions (use **PURGE**), and does **not** remove Tomcat project XML. Re-Deploy → **Show in My Tawala** clears the deleted mark and restores the row. Listing and Details share the same handler; Details redirects to `mytawala.html` after Delete.
+
+**PURGE** confirms, then POSTs `http://localhost:3001/api/purge-responses` with the project’s `:8080` **uniqueId** (from `testDriveUrl` / start points). That deletes all `submission` rows for that `user_project.unique_random_id` in Docker Postgres — same effect as Java Project Manager `purgeProjectResponses`. Credentials: **`dev` / `dev`**.
+
+**Smoke Delete:** open http://127.0.0.1:5500/mytawala.html → Delete a seed row → reload → row still gone → Library still lists the public twin if any. Deploy overlay: use Designer **Show in My Tawala**, Delete from listing or Details → overlay + inbox entry gone; Library catalog unchanged.
 
 CLI equivalents:
 

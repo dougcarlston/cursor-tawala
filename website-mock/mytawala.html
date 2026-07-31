@@ -7,9 +7,9 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css" />
-  <script src="js/demo-urls.js?v=20260730-mqst"></script>
-  <script src="js/transfer.js"></script>
-  <script src="js/project-ops.js?v=20260730-mqst"></script>
+  <script src="js/demo-urls.js?v=20260731-delete"></script>
+  <script src="js/transfer.js?v=20260731-delete"></script>
+  <script src="js/project-ops.js?v=20260731-delete"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -32,7 +32,7 @@
           <h3>Transfers</h3>
           <p class="pm-hint">Symbiotic hops (Designer palette; grey = stub):</p>
           <div class="pm-sidebar-ops pm-sidebar-stack" style="margin-top:6px;">
-            <button type="button" class="pm-action" disabled title="Copy a public Library project into My Tawala" data-wired="false">Pull from Library</button>
+            <button type="button" class="pm-action" disabled title="Replace with newer Library version" data-wired="false">Pull from Library</button>
             <button type="button" class="pm-action" disabled title="Publish / move a My Tawala project into the public Library" data-wired="false">Publish to Library</button>
             <a class="pm-action is-active" href="http://localhost:5173" target="_blank" rel="noopener" title="Open Web Designer to Deploy">Deploy from Designer</a>
           </div>
@@ -307,6 +307,7 @@
     renderDeployInbox();
     document.addEventListener("click", (ev) => {
       if (ev.target.id === "clearDeployInbox" && typeof TawalaTransfer !== "undefined") {
+        if (!window.confirm("Are you sure you want to clear the Deploy inbox?")) return;
         TawalaTransfer.clearDeployInbox();
         renderDeployInbox();
       }
@@ -335,11 +336,9 @@
     document.addEventListener("tawala:project-deleted", (ev) => {
       const id = ev.detail && ev.detail.projectId;
       if (!id) return;
-      if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.removeMyTawalaOverlay) {
-        TawalaTransfer.removeMyTawalaOverlay(id);
-      }
-      projects = projects.filter((p) => p.id !== id);
+      refreshProjects();
       renderRows();
+      renderDeployInbox();
     });
   </script>
 </body>
