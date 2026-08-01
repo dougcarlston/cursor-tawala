@@ -190,13 +190,29 @@
       url: sp.url || null,
     }));
     const firstUrl = (startPoints.find((s) => s && s.url) || {}).url || null;
-    const uniqueId =
-      receipt.uniqueId ||
-      (typeof window !== "undefined" &&
+    let uniqueId = receipt.uniqueId || null;
+    if (
+      !uniqueId &&
+      typeof window !== "undefined" &&
       window.TawalaDemo &&
       typeof window.TawalaDemo.uniqueIdFromUrl === "function"
-        ? window.TawalaDemo.uniqueIdFromUrl(firstUrl)
-        : null);
+    ) {
+      uniqueId = window.TawalaDemo.uniqueIdFromUrl(firstUrl);
+      if (!uniqueId) {
+        for (let i = 0; i < startPoints.length; i++) {
+          uniqueId = window.TawalaDemo.uniqueIdFromUrl(startPoints[i] && startPoints[i].url);
+          if (uniqueId) break;
+        }
+      }
+    }
+    if (
+      uniqueId &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.isValidUniqueId === "function" &&
+      !window.TawalaDemo.isValidUniqueId(uniqueId)
+    ) {
+      uniqueId = null;
+    }
     const now = formatListDate();
     const overlay = getMyTawalaOverlay();
     const prev = overlay[id] || null;

@@ -7,7 +7,8 @@
  * project-ops-review.html for memory/archive review.
  *
  * wired: false → disabled control (grey only; no “not wired” label)
- * wired: "purge-local" → confirm + POST /api/purge-responses (uniqueId from demo-urls)
+ * wired: "purge-local" → confirm + POST /api/purge-responses (uniqueId via resolvePurgeUniqueId)
+ * wired: "delete-mytawala" → confirm + remove private My Tawala row (overlay/inbox; not Library)
  *         (falls back to CLI hint if API/Postgres unavailable)
  */
 (function () {
@@ -338,16 +339,8 @@
     "No separate Rename/Clone labels on the Project Actions bar — Save under My Tawala / USE IT appear in customization & Library flows. " +
     "SportsDashboards (not SportsBoard).";
 
-  const LOCAL_PURGE_HELP =
-    "Purge calls designer-web POST /api/purge-responses (uniqueId from the :8080 URL) → Docker Postgres, " +
-    "same effect as Java Project Manager purgeProjectResponses.\n\n" +
-    "Requires: designer-web API on :3001 and `docker compose` postgres.\n" +
-    "CLI fallback:\n" +
-    "  ./scripts/dev-data.sh purge-by-unique-id <uniqueId>\n" +
-    "DirtBowl Registration-only cleanup (legacy):\n" +
-    "  ./scripts/dev-data.sh cleanup-registrations\n\n" +
-    "Limitation: Test drive opens :8080 in a new tab — there is no reliable purge-on-tab-close in this static mock; " +
-    "each Test drive purges on start instead.";
+  /** One-liner for API/plumbing failures only — never dump CLI / DirtBowl / Test-drive notes into Purge alerts. */
+  const LOCAL_PURGE_HELP = "Needs designer-web API on :3001 and Docker Postgres.";
 
   /** Catalog sections — split by product surface (Library vs My Tawala / Project Manager). */
   const OPS_CATALOG_SECTIONS = [
@@ -862,7 +855,14 @@
 
   function setStatus(msg) {
     const el = document.getElementById("pmOpStatus");
-    if (el) el.textContent = msg;
+    if (el) {
+      el.textContent = msg;
+      try {
+        el.scrollIntoView({ block: "nearest", behavior: "smooth" });
+      } catch {
+        /* ignore */
+      }
+    }
   }
 
   async function handleOpClick(ev) {
@@ -895,29 +895,61 @@
     }
 
     if (wired === "purge-local") {
-      const project =
-        (typeof TawalaDemo !== "undefined" && projectId && TawalaDemo.get(projectId)) || null;
-      const uniqueId =
-        typeof TawalaDemo !== "undefined" && TawalaDemo.uniqueIdForProject
-          ? TawalaDemo.uniqueIdForProject(project)
-          : null;
-      if (!uniqueId || typeof TawalaDemo === "undefined" || !TawalaDemo.purgeResponses) {
-        setStatus(`PURGE for “${projectId || "project"}” — no uniqueId. ${LOCAL_PURGE_HELP}`);
-        window.alert(
-          `Purge Project Data\n\nNo :8080 uniqueId for mock project: ${projectId || "(unknown)"}\n\n${LOCAL_PURGE_HELP}`
-        );
+      /* Purge = clear :8080 submission data only — not Delete (row remove). */
+      if (typeof TawalaDemo === "undefined" || !TawalaDemo.purgeResponses) {
+        setStatus(`PURGE unavailable — purge support not loaded.`);
+        window.alert(`Couldn't purge\n\nPurge support isn’t loaded. Refresh the page and try again.`);
         return;
       }
-      setStatus(`Purging responses for “${projectId}” (${uniqueId})…`);
-      const result = await TawalaDemo.purgeResponses(uniqueId);
-      if (result.status === "success") {
-        const n = result.javaDb && result.javaDb.deleted != null ? result.javaDb.deleted : "?";
-        setStatus(`Purged “${projectId}” (${uniqueId}) — deleted ${n} submission row(s).`);
-      } else {
-        setStatus(`PURGE failed for “${projectId}” (${uniqueId}): ${result.error || "unknown"}`);
-        window.alert(
-          `Purge failed for ${projectId} (${uniqueId})\n\n${result.error || "unknown"}\n\n${LOCAL_PURGE_HELP}`
-        );
+      const project =
+        (projectId && TawalaDemo.getMyTawala && TawalaDemo.getMyTawala(projectId)) ||
+        (projectId && TawalaDemo.get && TawalaDemo.get(projectId)) ||
+        null;
+      const displayName =
+        project && TawalaDemo.displayName
+          ? TawalaDemo.displayName(project.name || projectId)
+          : projectId || "project";
+      const uniqueId =
+        typeof TawalaDemo.resolvePurgeUniqueId === "function"
+          ? TawalaDemo.resolvePurgeUniqueId(projectId)
+          : TawalaDemo.uniqueIdForProject
+            ? TawalaDemo.uniqueIdForProject(project)
+            : null;
+      if (!uniqueId) {
+        const hint = project
+          ? `“${displayName}” isn’t linked to a live :8080 deploy yet. Deploy from Designer (or use a deployed project), then try Purge again.`
+          : `Unknown My Tawala project: ${projectId || "(none)"}`;
+        setStatus(`PURGE for “${displayName}” — not linked to a live deploy.`);
+        window.alert(`Couldn't purge “${displayName}”\n\n${hint}`);
+        return;
+      }
+      if (btn.dataset.busy === "1") return;
+      btn.dataset.busy = "1";
+      const prevDisabled = btn.disabled;
+      btn.disabled = true;
+      setStatus(`Purging “${displayName}”…`);
+      try {
+        const result = await TawalaDemo.purgeResponses(uniqueId);
+        if (result.status === "success") {
+          const n =
+            result.javaDb && result.javaDb.deleted != null ? result.javaDb.deleted : "?";
+          const warn = result.warning ? ` (${result.warning})` : "";
+          const msg = `Purged “${displayName}” — deleted ${n} submission row(s).${warn}`;
+          setStatus(msg);
+          window.alert(msg);
+          document.dispatchEvent(
+            new CustomEvent("tawala:project-purged", {
+              detail: { projectId, uniqueId, result, displayName },
+            })
+          );
+        } else {
+          const err = result.error || "unknown error";
+          setStatus(`Couldn't purge “${displayName}”: ${err}`);
+          window.alert(`Couldn't purge “${displayName}”\n\n${err}\n\n${LOCAL_PURGE_HELP}`);
+        }
+      } finally {
+        btn.dataset.busy = "";
+        btn.disabled = prevDisabled;
       }
       return;
     }

@@ -956,15 +956,23 @@ window.TawalaDemo = {
       return "";
     }
   },
+  /** Same contract as designer-web `isValidUniqueId` (1–20 alphanumeric). */
+  isValidUniqueId(uniqueId) {
+    return typeof uniqueId === "string" && /^[A-Za-z0-9]{1,20}$/.test(uniqueId);
+  },
   /** Extract uniqueId from `/p/{uniqueId}/…` (Library / My Tawala test-drive URLs). */
   uniqueIdFromUrl(url) {
     if (!url) return null;
     const m = String(url).match(/\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/);
     return m ? m[1] : null;
   },
-  /** Prefer testDriveUrl, else first start point with a URL. */
+  /**
+   * Prefer explicit deploy uniqueId (overlay / receipt), then testDriveUrl,
+   * then first start point with a URL.
+   */
   uniqueIdForProject(p) {
     if (!p) return null;
+    if (this.isValidUniqueId(p.uniqueId)) return p.uniqueId;
     const fromTest = this.uniqueIdFromUrl(p.testDriveUrl);
     if (fromTest) return fromTest;
     const sps = p.startPoints || [];
@@ -972,6 +980,39 @@ window.TawalaDemo = {
       const id = this.uniqueIdFromUrl(sps[i] && sps[i].url);
       if (id) return id;
     }
+    return null;
+  },
+  /**
+   * Resolve :8080 uniqueId for My Tawala Purge.
+   * Prefer My Tawala overlay/seed, then latest deploy-inbox receipt.
+   * Does not read public Library catalog (avoids purging a twin’s data by slug collision).
+   */
+  resolvePurgeUniqueId(projectId) {
+    if (!projectId) return null;
+    const mine =
+      typeof this.getMyTawala === "function" ? this.getMyTawala(projectId) : null;
+    const fromMine = this.uniqueIdForProject(mine);
+    if (fromMine) return fromMine;
+
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.getDeployInbox === "function"
+    ) {
+      const receipts = window.TawalaTransfer.getDeployInbox().filter(
+        (e) => e && e.id === projectId
+      );
+      for (let i = 0; i < receipts.length; i++) {
+        const r = receipts[i];
+        if (this.isValidUniqueId(r.uniqueId)) return r.uniqueId;
+        const sps = Array.isArray(r.startpoints) ? r.startpoints : [];
+        for (let j = 0; j < sps.length; j++) {
+          const id = this.uniqueIdFromUrl(sps[j] && sps[j].url);
+          if (id) return id;
+        }
+      }
+    }
+
     return null;
   },
   /**
