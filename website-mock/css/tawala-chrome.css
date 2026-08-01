@@ -585,11 +585,13 @@ table.projectListing td.clone-count {
 
 /* Collapsible Library groups — one shared CSS grid for header + every project row */
 .library-listing-frame {
-  /* Name flexes; Times used / Updated / Actions stay fixed across all sections */
-  --library-cols: minmax(12rem, 1fr) 7em 7.5em 5.5rem;
+  /* Name flexes; Times used / Updated / Actions (2 icon slots + sub-labels) stay fixed */
+  --library-cols: minmax(12rem, 1fr) 7em 7.5em 10rem;
+  --library-action-gap: 12px;
+  --library-action-slots: repeat(2, minmax(0, 1fr));
   margin-top: 0;
   width: 100%;
-  max-width: min(52rem, 100%);
+  max-width: min(58rem, 100%);
   box-sizing: border-box;
 }
 
@@ -605,7 +607,7 @@ table.projectListing td.clone-count {
 .library-colhead-bar {
   background: #e4e8f0;
   border-bottom: 1px solid var(--tw-border);
-  min-height: 2.4em;
+  min-height: 3.2em;
   font-size: 0.88em;
 }
 
@@ -637,10 +639,46 @@ table.projectListing td.clone-count {
 
 .library-colhead-bar .lib-col-actions {
   text-align: center;
-  padding-left: 4px;
-  padding-right: 4px;
+  padding: 4px 6px 3px;
   letter-spacing: 0.01em;
   cursor: default;
+  align-self: stretch;
+  white-space: normal; /* allow Test drive / Save a copy to wrap in slots */
+}
+
+.library-actions-head {
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 3px;
+  width: 100%;
+}
+
+.library-actions-head .th-label {
+  display: block;
+  text-align: center;
+}
+
+.library-action-subheads,
+.library-row-actions {
+  display: grid;
+  grid-template-columns: var(--library-action-slots);
+  column-gap: var(--library-action-gap);
+  width: 100%;
+  align-items: center;
+  justify-items: center;
+}
+
+.library-action-subhead {
+  display: block;
+  /* Match Times used / Updated: inherit .lib-col (0.82em of colhead-bar 0.88em) */
+  font-size: 1em;
+  font-weight: 700;
+  line-height: 1.15;
+  text-align: center;
+  color: var(--tw-muted);
+  white-space: normal;
+  max-width: 100%;
 }
 
 .library-groups {
@@ -792,22 +830,18 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
 }
 
 .library-project-row .lib-col-actions {
-  text-align: right;
-  padding: 0 4px 0 2px;
+  text-align: center;
+  padding: 0 6px;
   white-space: nowrap;
 }
 
 .library-row-actions {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 1px;
   vertical-align: middle;
 }
 
 .library-row-actions .pm-op-icon-btn,
 .library-row-actions .pm-icon-action {
-  flex: 0 0 auto;
+  justify-self: center;
 }
 
 .visually-hidden {
@@ -1177,26 +1211,40 @@ a.pm-op-icon-btn.library-row-action:hover {
 }
 
 /* —— My Tawala dense listing: flush rows, sortable + resizable columns, icon ops —— */
-body[data-tawala-page="mytawala"] .content,
+body[data-tawala-page="mytawala"] .content {
+  /* Cap growth on wide screens; shrink fluidly with the viewport (Use + ops strip) */
+  max-width: min(58rem, 100%);
+}
+
 body[data-tawala-page="library"] .content {
-  /* Cap growth on wide screens; shrink fluidly with the viewport */
-  max-width: min(54rem, 100%);
+  /* Actions sub-labels: Test drive | Save a copy */
+  max-width: min(58rem, 100%);
 }
 
 body[data-tawala-page="library"] .library-listing-frame {
   /* Full content width — shared --library-cols grid; do not shrink-wrap to name text */
   width: 100%;
-  max-width: min(52rem, 100%);
+  max-width: min(58rem, 100%);
 }
 
-.mytawala-listing-frame,
+.mytawala-listing-frame {
+  margin: 0;
+  margin-left: -4px;
+  border: 1px solid var(--tw-border);
+  background: var(--tw-panel);
+  overflow-x: auto; /* last resort on tiny screens */
+  max-width: min(56rem, 100%);
+  width: 100%;
+  box-sizing: border-box;
+}
+
 .library-listing-frame {
   margin: 0;
   margin-left: -4px;
   border: 1px solid var(--tw-border);
   background: var(--tw-panel);
   overflow-x: auto; /* last resort on tiny screens */
-  max-width: min(52rem, 100%);
+  max-width: min(58rem, 100%);
   width: 100%;
   box-sizing: border-box;
 }
@@ -1653,4 +1701,310 @@ a.pm-action.is-active {
   .pm-detail-layout {
     grid-template-columns: 1fr;
   }
+}
+
+/* Library admin — category management + drag/drop board (library-admin.html) */
+.lib-admin-name-cell {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.lib-admin-actions {
+  white-space: nowrap;
+}
+
+.lib-admin-actions .pm-action {
+  font-size: 10px;
+  padding: 3px 7px;
+  margin: 1px 2px 1px 0;
+}
+
+.library-admin-cat-add input[type="text"] {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.library-admin-board {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.library-admin-cat-col {
+  flex: 1 1 200px;
+  min-width: 180px;
+  max-width: 260px;
+  border: 1px solid var(--tw-border);
+  background: #fafafa;
+  border-radius: 3px;
+  transition: background-color 0.12s ease, border-color 0.12s ease;
+}
+
+.library-admin-cat-col.drag-over {
+  background: #e8f0fa;
+  border-color: var(--tw-accent);
+}
+
+.library-admin-cat-col-head {
+  padding: 6px 8px;
+  font-size: 0.85em;
+  font-weight: bold;
+  color: var(--tw-accent);
+  background: #eef1f6;
+  border-bottom: 1px solid var(--tw-border);
+}
+
+.library-admin-cat-count {
+  font-weight: normal;
+  color: var(--tw-muted);
+}
+
+.library-admin-cat-col-body {
+  min-height: 48px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.library-admin-cat-col-body .pm-hint {
+  margin: 4px 2px;
+  font-style: italic;
+}
+
+.library-admin-proj-row {
+  background: #fff;
+  border: 1px solid #d8d0c4;
+  border-radius: 2px;
+  padding: 4px 6px;
+  cursor: grab;
+  font-size: 0.85em;
+}
+
+.library-admin-proj-row:active {
+  cursor: grabbing;
+}
+
+.library-admin-proj-name {
+  display: block;
+  margin-bottom: 3px;
+  word-break: break-word;
+}
+
+.library-admin-proj-move {
+  width: 100%;
+  font-size: 11px;
+  padding: 2px 3px;
+}
+
+/* Publish / Pull dialogs (My Tawala) — plain DOM modal, no framework. */
+.tawala-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(20, 24, 32, 0.45);
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 4vh 16px 16px;
+  z-index: 500;
+  overflow-y: auto;
+}
+
+.tawala-modal {
+  background: #fff;
+  border: 1px solid var(--tw-border);
+  border-top: 4px solid var(--tw-accent);
+  border-radius: 3px;
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.28);
+  width: 100%;
+  max-width: 440px;
+  padding: 16px 18px 14px;
+}
+
+/* Publish: wider + shallower so Cancel/Publish stay on-screen (owner Aug 1, 2026). */
+.tawala-modal--publish {
+  max-width: 720px;
+  max-height: min(92vh, 560px);
+  display: flex;
+  flex-direction: column;
+  padding: 12px 18px 10px;
+  box-sizing: border-box;
+}
+
+.tawala-modal--publish > h3 {
+  flex-shrink: 0;
+  margin: 0 0 4px;
+}
+
+.tawala-modal--publish > .tawala-modal-lede {
+  flex-shrink: 0;
+  margin: 0 0 8px;
+}
+
+.tawala-modal-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
+}
+
+.tawala-modal-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 16px;
+  align-items: start;
+}
+
+.tawala-modal-grid .tawala-modal-field {
+  margin: 0;
+}
+
+.tawala-modal-field--full {
+  grid-column: 1 / -1;
+}
+
+.tawala-modal-hint-tight {
+  margin: 6px 0 0;
+  font-size: 0.8em;
+  line-height: 1.35;
+}
+
+.tawala-modal h3 {
+  margin: 0 0 8px;
+  color: var(--tw-accent);
+  font-size: 1.1em;
+}
+
+.tawala-modal-field {
+  display: block;
+  margin: 12px 0 4px;
+  font-size: 0.86em;
+  font-weight: 600;
+  color: #333;
+}
+
+.tawala-modal-field input[type="text"],
+.tawala-modal-field select {
+  display: block;
+  width: 100%;
+  margin-top: 4px;
+  padding: 5px 7px;
+  font-size: 0.95em;
+  font-weight: normal;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  box-sizing: border-box;
+}
+
+.tawala-modal-field input[type="text"]:focus,
+.tawala-modal-field select:focus {
+  outline: none;
+  border-color: var(--tw-accent);
+  box-shadow: 0 0 0 2px rgba(49, 106, 197, 0.18);
+}
+
+.tawala-modal #publishModalError,
+.tawala-modal #pullModalError {
+  color: #a5271f;
+  margin: 6px 0 0;
+}
+
+.tawala-modal-checkbox {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 14px 0 4px;
+  font-size: 0.86em;
+  font-weight: 600;
+  color: #333;
+}
+
+.tawala-modal--publish .tawala-modal-checkbox {
+  margin: 10px 0 2px;
+}
+
+.tawala-modal-checkbox input[type="checkbox"] {
+  margin: 0;
+}
+
+.tawala-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 16px;
+}
+
+.tawala-modal--publish .tawala-modal-actions {
+  flex-shrink: 0;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid var(--tw-border);
+}
+
+@media (max-width: 560px) {
+  .tawala-modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .tawala-modal--publish {
+    max-height: min(94vh, 640px);
+  }
+}
+
+/* Site docs (docs.html) — quiet maintainer guide */
+.site-docs-toc {
+  margin: 0;
+  padding-left: 1.1em;
+  font-size: 0.9em;
+  line-height: 1.55;
+}
+
+.site-docs-toc a {
+  text-decoration: none;
+}
+
+.site-docs-toc a:hover {
+  text-decoration: underline;
+}
+
+.site-docs-pre {
+  margin: 8px 0 0;
+  padding: 8px 10px;
+  font-size: 0.82em;
+  line-height: 1.45;
+  background: #f6f6f6;
+  border: 1px solid #ddd;
+  border-radius: 2px;
+  overflow-x: auto;
+  white-space: pre-wrap;
+}
+
+.site-docs-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92em;
+  margin: 6px 0 0;
+}
+
+.site-docs-table th,
+.site-docs-table td {
+  border: 1px solid #ddd;
+  padding: 6px 8px;
+  text-align: left;
+  vertical-align: top;
+}
+
+.site-docs-table th {
+  background: #f3f3f3;
+  font-weight: bold;
+}
+
+body[data-tawala-page="docs"] .content > .block {
+  scroll-margin-top: 12px;
 }

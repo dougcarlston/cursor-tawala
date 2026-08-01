@@ -6,10 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css" />
-  <script src="js/demo-urls.js?v=20260731-purge"></script>
-  <script src="js/transfer.js?v=20260731-purge"></script>
-  <script src="js/project-ops.js?v=20260731-purge"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-use-mytawala" />
+  <script src="js/demo-urls.js?v=20260801-updated-sort"></script>
+  <script src="js/transfer.js?v=20260801-updated-sort"></script>
+  <script src="js/project-ops.js?v=20260801-use-mytawala"></script>
+  <script src="js/data-ops.js?v=20260801-updated-sort"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -42,6 +43,11 @@
           <p><a href="project-ops-review.html">Archive labels / unimplemented features</a></p>
           <p class="pm-hint">Full Project Manager catalog kept off this page for layout fidelity.</p>
         </div>
+        <div class="block">
+          <h3>Maintainer tools</h3>
+          <p><a href="library-admin.html">Library admin tools</a></p>
+          <p class="pm-hint">Rename, overwrite, or retire public Library entries without an agent — mock-only client gate.</p>
+        </div>
       </div>
 
       <div class="content">
@@ -72,17 +78,18 @@
               aria-label="My Projects — private My Tawala list"
             >
               <colgroup id="myProjectsCols">
-                <col class="col-name" style="width: 28%" />
-                <col class="col-created" style="width: 10%" />
-                <col class="col-updated" style="width: 10%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
-                <col class="col-op" style="width: 6.5%" />
+                <col class="col-name" style="width: 24%" />
+                <col class="col-created" style="width: 9%" />
+                <col class="col-updated" style="width: 9%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
+                <col class="col-op" style="width: 6.4%" />
               </colgroup>
               <thead>
                 <tr id="myProjectsHead">
@@ -122,14 +129,58 @@
         .replace(/"/g, "&quot;");
     }
 
-    /** Parse listing dates like 7/28/26 for sort; missing → 0. */
+    /**
+     * Sort key → epoch ms. Accepts ISO, ms number, or catalog `M/D/YY`.
+     * Date-only strings resolve to local midnight (fine for seed rows).
+     */
     function parseListDate(s) {
-      if (!s || s === "—") return 0;
-      const m = String(s).match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
-      if (!m) return 0;
+      if (s == null || s === "" || s === "—") return 0;
+      if (typeof s === "number" && Number.isFinite(s)) return s > 0 ? s : 0;
+      const str = String(s).trim();
+      if (!str) return 0;
+      if (/^\d{4}-\d{2}-\d{2}/.test(str) || str.includes("T")) {
+        const t = Date.parse(str);
+        return Number.isNaN(t) ? 0 : t;
+      }
+      if (/^\d{10,13}$/.test(str)) {
+        const n = Number(str);
+        return n < 1e12 ? n * 1000 : n;
+      }
+      const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+      if (!m) {
+        const t = Date.parse(str);
+        return Number.isNaN(t) ? 0 : t;
+      }
       let y = Number(m[3]);
       if (y < 100) y += 2000;
-      return Date.UTC(y, Number(m[1]) - 1, Number(m[2]));
+      return new Date(y, Number(m[1]) - 1, Number(m[2])).getTime();
+    }
+
+    /** Prefer real ISO fields; fall back to short listing dates. */
+    function updatedSortMs(p) {
+      return Math.max(
+        parseListDate(p.updatedAt),
+        parseListDate(p.lastDeployAt),
+        parseListDate(p.pulledAt),
+        parseListDate(p.publishedAt),
+        parseListDate(p.updated)
+      );
+    }
+
+    function createdSortMs(p) {
+      const direct = parseListDate(p.createdAt) || parseListDate(p.created);
+      return direct || updatedSortMs(p);
+    }
+
+    /** Keep listing cells as `M/D/YY` even when the source value is ISO. */
+    function displayListDate(s) {
+      if (!s || s === "—") return "—";
+      const str = String(s);
+      if (/^\d{1,2}\/\d{1,2}\/\d{2,4}$/.test(str)) return str;
+      const ms = parseListDate(str);
+      if (!ms) return "—";
+      const dt = new Date(ms);
+      return `${dt.getMonth() + 1}/${dt.getDate()}/${String(dt.getFullYear()).slice(-2)}`;
     }
 
     const SORT_STATE = { key: "name", dir: 1 };
@@ -145,10 +196,10 @@
         return TawalaDemo.displayName(p.name).toLowerCase();
       }
       if (key === "created") {
-        return parseListDate(p.created || p.updated || "");
+        return createdSortMs(p);
       }
       if (key === "updated") {
-        return parseListDate(p.updated || "");
+        return updatedSortMs(p);
       }
       return "";
     }
@@ -160,6 +211,10 @@
         const vb = sortValue(b, key);
         if (va < vb) return -1 * dir;
         if (va > vb) return 1 * dir;
+        const na = TawalaDemo.displayName(a.name).toLowerCase();
+        const nb = TawalaDemo.displayName(b.name).toLowerCase();
+        if (na < nb) return -1;
+        if (na > nb) return 1;
         return 0;
       });
     }
@@ -179,13 +234,14 @@
     function projectRowHtml(p) {
       const detailHref = `mytawala-project.html?project=${encodeURIComponent(p.id)}`;
       const title = TawalaDemo.displayName(p.name);
-      const created = p.created || p.updated || "—";
+      const created = displayListDate(p.created || p.createdAt || p.updated || p.updatedAt || "");
+      const updated = displayListDate(p.updated || p.updatedAt || p.lastDeployAt || "");
       return `<tr data-project-id="${escapeHtml(p.id)}">
         <td class="info left">
           <span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>
         </td>
         <td class="date-created col-date">${escapeHtml(created)}</td>
-        <td class="updated col-date">${escapeHtml(p.updated || "—")}</td>
+        <td class="updated col-date">${escapeHtml(updated)}</td>
         ${TawalaProjectOps.renderListingControlCells(p.id)}
       </tr>`;
     }
@@ -325,7 +381,8 @@
         SORT_STATE.dir *= -1;
       } else {
         SORT_STATE.key = key;
-        SORT_STATE.dir = 1;
+        // Name A→Z; Created/Updated newest-first (dir -1 = descending).
+        SORT_STATE.dir = key === "name" ? 1 : -1;
       }
       renderRows();
     });
@@ -339,6 +396,12 @@
       refreshProjects();
       renderRows();
       renderDeployInbox();
+    });
+
+    document.addEventListener("tawala:project-published", () => {
+      // Publish can add a new My Tawala safety-net row (a retired Library stub) — refresh.
+      refreshProjects();
+      renderRows();
     });
   </script>
 </body>

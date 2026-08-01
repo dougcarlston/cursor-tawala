@@ -110,6 +110,7 @@ Entries below use a **stacked** layout (not wide tables) for Preview readability
 - **Tags:** Designer, Runtime, Process, MyTawala
 - **Rel.:** High
 - **Why:** Lessons from real large project: structure pain, validation+documents, MCQ values, process reuse, PayPal, Project Manager gaps — maps to current DirtBowl/:8080 work.
+- **Owner evidence (Aug 1, 2026 — not from this memo):** *“Every year the sports leagues asked how to move over rosters from previous years so they wouldn't have to re-enter all that data.”* **Refinement:** end-of-season **Excel Export → archive**; reuse was **player data only** (strip graduates, add new kids) — season handoff ≈ selective Export/Import subset, not full Backup/Restore, not Library re-pull. Aligns with EXPORT/IMPORT (Excel) spine; soft open for “roll season” = export archive + import filtered roster. See `website-mock/README.md` § Library Actions / Use framing + Parked / backlog.
 - **Integrate into:** `TAWALA_PROJECT_SUMMARY.md`, open bugs / ROADMAP; do not treat as UI pixel spec
 
 #### 5. Improvements to Project Structure
@@ -138,6 +139,7 @@ Entries below use a **stacked** layout (not wide tables) for Preview readability
 - **Why:** Deployed vs non-deployed versions, Library submit rules, test-drive, upload metadata — core MyTawala/Library product contract.
 - **Integrate into:** `website-mock` fidelity notes; `docs/ROADMAP.md` Phase 3; Deploy dialog behavior
 - **Tenancy (owner Jul 31, 2026):** One public Library; each account’s My Tawala is private (other accounts cannot see it). **Publish** is the deliberate bridge into Library — until then, projects stay in that account’s My Tawala. Product truth in `website-mock/README.md` § Tenancy / Save·Deploy·Publish glossary (mock remains single-browser `localStorage`).
+- **Library quality / community (owner Aug 1, 2026 — open questions; L&F / later product):** Pro vs amateur/community-shared ideas hard to mix with complex professionally designed projects; reviews/ratings as possible promotion mechanism (reputation gameable); community Publish may require much easier Designer (YouTube “easy to load” analogy). Framing only — not initial wiring; do not build ratings now. See `website-mock/README.md` § Library quality / community.
 - **Sequencing (owner Jul 31, 2026):** My Tawala **listing** version piles stay gated until Delete / Purge and ops (**EXPORT / IMPORT**, **BACKUP / RESTORE**) are trustworthy; **audit trail** ships with that same lifecycle package — not versions-first in the listing. Versions **existed** in PM **Versions** UI historically; the hold is listing clutter. Flat one-row-per-project mock for now; B7 remains the target model. See `website-mock/README.md` glossary **Sequencing / hold**.
 - **Ops verb split (Java build1700 + memos; owner Jul 31, 2026 reconciled):** **EXPORT / IMPORT** = Excel **response data** only (Import = restore messed-up data into **current** project; field mismatch fails; does **not** roll back definition). **BACKUP / RESTORE** = `.backup` ZIP = **paired project definition + data** (plus properties / links) — Restore re-applies matching definition then data (why restore held up across later field changes). **Deploy** mints My Tawala **definition versions** (shipped Java auto-deploys the new version) — separate from Backup. Designer **File → Save** = local definition only. Shipped PM UI had **no “Save” for submissions** — verbs were EXPORT / IMPORT / BACKUP / RESTORE; owner colloquial “Save” may have meant Backup. Product framing: `website-mock/README.md` glossary.
 - **Paired snapshot (reconciled Jul 31, 2026):** The earlier “perhaps Save must also preserve project” tension is resolved against Java: **Backup / Restore already was** the paired definition + data path; data-alone was **Export / Import**. Not a My Tawala version-pile feature (sequencing hold stands). See glossary + **Project Backup** note below.
@@ -310,7 +312,7 @@ Owner note: looked useful despite the name. Highest-value targets for Phase 2:
 **Recommendation:** Run Phase 2 after website Library mock is stable enough to know which UX questions remain open. Prioritize Original Specifications + Web Site Requirements over Design image dumps.
 
 ### SportsDashboards / VersionOne — ignore first
-- SportsDashboards: development list spreadsheet only.  
+- SportsDashboards: development list spreadsheet only. **Owner Aug 1, 2026:** annual roster carry-forward ask from sports leagues (see DirtBowl Notes §4) — historical path was Excel Export archive + selective player Import (not Backup/Restore-all); product need for SDT / season handoff on that spine; still ignore the spreadsheet until that backlog opens.  
 - VersionOne: historical story trackers; use only if tracing “why was X built.”
 
 ### Harry Chomsky's Docs — Phase 3 (**recommended later**)

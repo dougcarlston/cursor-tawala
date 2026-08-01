@@ -682,7 +682,14 @@ label.question {
   font-weight: normal;
 }
 
-.mcCheckbox .answer {
+/*
+ * Same specificity shape as the .mcRadio block-indent rule above (class count
+ * must match/beat form-layout-core's `form div.mcCheckbox span.answer`, or
+ * this loses the cascade and checkbox choices stay flush-left while radio
+ * choices — same Style — get indented, breaking side-by-side alignment).
+ */
+.mcCheckbox.vertical .answer,
+.mcCheckbox:not(.horizontal):not(.multicolumn) .answer {
   display: block;
   margin: 0.1rem 0 0.1rem var(--reg-block-indent);
   font-weight: normal;

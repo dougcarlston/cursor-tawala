@@ -40,6 +40,7 @@
     companyInfo: { href: "about.html", label: "Company Info", ready: true },
     terms: { href: "terms.html", label: "Terms &amp; Conditions", ready: true },
     privacy: { href: "privacy.html", label: "Privacy Policy", ready: true },
+    docs: { href: "docs.html", label: "Docs", ready: true },
   };
 
   const NAV_ORDER = ["about", "faq", "library", "mytawala", "home"];
@@ -96,6 +97,7 @@
         <li>${anchor("companyInfo")}</li>
         <li>${anchor("terms")}</li>
         <li>${anchor("privacy")}</li>
+        <li>${anchor("docs")}</li>
         <li><a href="mailto:info@tawala.com">Contact Us</a></li>
       </ul>
     </div>`;
@@ -104,12 +106,15 @@
   function renderBanner(activePage) {
     return (
       `<strong>Website mock</strong> — static draft from legacy JSP. Grey controls = not implemented. Test-drive → :8080. ` +
-      `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500.` +
+      `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500` +
+      ` · <a href="docs.html" title="Mock ops docs (Publish, Export/Import, admin…)">Docs</a>.` +
       (activePage === "mytawala"
         ? ` · <b>My Tawala</b> (private) · <a href="library.html">Library</a>`
         : activePage === "library"
           ? ` · <b>Library</b> (public) · <a href="mytawala.html">My Tawala</a>`
-          : "")
+          : activePage === "docs"
+            ? ` · <b>Docs</b> · <a href="README.md">README.md</a>`
+            : "")
     );
   }
 

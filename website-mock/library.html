@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260730-lib-cols" />
-  <script src="js/demo-urls.js?v=20260730-mqst"></script>
-  <script src="js/transfer.js"></script>
-  <script src="js/project-ops.js?v=20260730-mqst"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-use-mytawala" />
+  <script src="js/demo-urls.js?v=20260801-dataops"></script>
+  <script src="js/transfer.js?v=20260801-dataops"></script>
+  <script src="js/project-ops.js?v=20260801-use-mytawala"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -39,6 +39,10 @@
           <h3>Next level</h3>
           <p><a href="signup.html">Create your own Tawala apps</a> — free account.</p>
         </div>
+        <div class="block">
+          <h3>Maintainer tools</h3>
+          <p><a href="library-admin.html">Library admin tools</a></p>
+        </div>
       </div>
 
       <div class="content">
@@ -63,11 +67,12 @@
           </div>
 
           <div class="library-listing-frame" id="libraryListingFrame">
-            <div class="library-colhead-bar library-cols" role="row" aria-label="Column headers">
+            <div class="library-colhead-bar library-cols" role="row" aria-label="Column headers" id="libraryColHead">
               <div class="lib-col lib-col-name" role="columnheader" title="Name"><span class="th-label">Name</span></div>
               <div class="lib-col lib-col-used" role="columnheader" title="Times this project was used (clone count)"><span class="th-label">Times used</span></div>
               <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label">Updated</span></div>
-              <div class="lib-col lib-col-actions" role="columnheader" title="Project actions"><span class="th-label">Actions</span></div>
+              <!-- Actions + Test drive | Save a copy filled by project-ops.js -->
+              <div class="lib-col lib-col-actions" role="columnheader"><span class="th-label">Actions</span></div>
             </div>
             <div id="libraryGroups" class="library-groups" aria-label="Public Library catalog by category"></div>
           </div>
@@ -126,7 +131,7 @@
       const detailHref = `library-detail.html?project=${encodeURIComponent(p.id)}`;
       /* Name-only rows — no letter-tile fallbacks, no “Not deployed” list banners.
          liveReady → quiet “Live” cue (distinct from placeholders).
-         Actions = single packed-icon column (hover titles).
+         Actions = two spaced icons (Test drive | Save a copy); header sub-labels from project-ops.
          Shared .library-cols grid keeps Name / Times used / Updated / Actions aligned. */
       const liveCue = liveCueHtml(p);
       const actionCell =
@@ -348,6 +353,17 @@
       TawalaProjectOps.renderLibrarySubmenu("Search");
     document.getElementById("libraryChromeHost").innerHTML =
       TawalaProjectOps.renderLibraryChromeStubs();
+    (function fillLibraryActionHeaders() {
+      const head = document.getElementById("libraryColHead");
+      const stub = head && head.querySelector(".lib-col-actions");
+      if (
+        stub &&
+        typeof TawalaProjectOps !== "undefined" &&
+        TawalaProjectOps.renderLibraryListingActionHeaders
+      ) {
+        stub.outerHTML = TawalaProjectOps.renderLibraryListingActionHeaders();
+      }
+    })();
     applyFilters();
 
     document.addEventListener("tawala:edit-categories", () => {

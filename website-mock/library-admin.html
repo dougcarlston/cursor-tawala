@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - Library Admin Tools</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-publish-wide" />
+  <script src="js/demo-urls.js?v=20260801-dataops"></script>
+  <script src="js/transfer.js?v=20260801-dataops"></script>
+</head>
+<body data-tawala-page="library" data-tawala-user="dev">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Library admin</h3>
+          <p><a href="library.html">← Back to Library</a></p>
+          <p><a href="mytawala.html">My Tawala</a></p>
+        </div>
+        <div class="block">
+          <h3>What this page is</h3>
+          <p class="pm-hint">
+            Maintainer-only tools so the public Library can be kept up to date without an
+            agent: rename an entry, overwrite one from a My Tawala project, or retire an
+            entry (always kept safe in My Tawala — never hard-deleted). See
+            <code>README.md</code> § Library admin path for the full how-to.
+          </p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="pageTitle"><h1>Library Admin Tools</h1></div>
+        <div id="adminGateHost"></div>
+        <div id="adminBodyHost" hidden></div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js"></script>
+  <script>
+    function escapeHtml(s) {
+      return String(s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    TawalaChrome.mount();
+
+    // ?admin=1 / ?admin=0 toggles the mock-only client gate, then cleans the URL.
+    (function applyAdminQueryParam() {
+      const params = new URLSearchParams(location.search);
+      if (!params.has("admin")) return;
+      const on = params.get("admin") === "1";
+      TawalaTransfer.setLibraryAdmin(on);
+      params.delete("admin");
+      const qs = params.toString();
+      history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
+    })();
+
+    function renderGate() {
+      const host = document.getElementById("adminGateHost");
+      const bodyHost = document.getElementById("adminBodyHost");
+      const on = TawalaTransfer.isLibraryAdmin();
+      bodyHost.hidden = !on;
+      if (!on) {
+        host.innerHTML =
+          '<div class="deploy-inbox"><div class="deploy-inbox-inner">' +
+          "<h3>Admin mode is off</h3>" +
+          '<p class="pm-hint">Mock-only client gate — no real auth. Turn it on for this browser to rename, ' +
+          "overwrite, or retire Library entries. Anyone can flip it in a static mock; treat it like a " +
+          "maintainer bookmark, not real access control.</p>" +
+          '<p><button type="button" class="pm-action is-active" id="enableAdminBtn">Enable Library admin mode on this browser</button></p>' +
+          '<p class="pm-hint">Or click <a href="library-admin.html?admin=1">library-admin.html?admin=1</a> to enable it directly ' +
+          "(same effect as the button — sets a localStorage flag and cleans the URL).</p>" +
+          "</div></div>";
+      } else {
+        host.innerHTML =
+          '<p class="pm-hint">Library admin mode is <b>ON</b> for this browser — ' +
+          '<button type="button" class="pm-action" id="disableAdminBtn">Turn off</button></p>';
+        renderAdminBody();
+      }
+    }
+
+    document.addEventListener("click", (ev) => {
+      if (ev.target.id === "enableAdminBtn") {
+        TawalaTransfer.setLibraryAdmin(true);
+        renderGate();
+      } else if (ev.target.id === "disableAdminBtn") {
+        TawalaTransfer.setLibraryAdmin(false);
+        renderGate();
+      }
+    });
+
+    function libraryTargetOptionsHtml(selectedId) {
+      const candidates = TawalaTransfer.libraryReplaceCandidates();
+      const opts = candidates
+        .slice()
+        .sort((a, b) => a.name.localeCompare(b.name))
+        .map((c) => {
+          const flag = c.stub ? " — stub" : c.liveReady ? " — live" : "";
+          const sel = c.id === selectedId ? " selected" : "";
+          return `<option value="${escapeHtml(c.id)}"${sel}>${escapeHtml(c.name)}${escapeHtml(flag)}</option>`;
+        })
+        .join("");
+      return '<option value="">— None (add as new Library entry) —</option>' + opts;
+    }
+
+    function myTawalaSourceOptionsHtml() {
+      const entries = TawalaDemo.myTawalaEntries().slice().sort((a, b) => a.name.localeCompare(b.name));
+      if (!entries.length) return '<option value="">(no My Tawala projects)</option>';
+      return entries
+        .map((p) => `<option value="${escapeHtml(p.id)}">${escapeHtml(TawalaDemo.displayName(p.name))}</option>`)
+        .join("");
+    }
+
+    const UNCATEGORIZED_LABEL = "Uncategorized";
+
+    function categoryOptionsHtml(selectedLabel) {
+      const cats = TawalaDemo.libraryCategories();
+      const labels = cats.map((c) => c.label);
+      if (selectedLabel && !labels.includes(selectedLabel) && selectedLabel !== UNCATEGORIZED_LABEL) {
+        labels.push(selectedLabel);
+      }
+      if (!labels.includes(UNCATEGORIZED_LABEL)) labels.push(UNCATEGORIZED_LABEL);
+      return labels
+        .map((label) => {
+          const sel = label === (selectedLabel || UNCATEGORIZED_LABEL) ? " selected" : "";
+          return `<option value="${escapeHtml(label)}"${sel}>${escapeHtml(label)}</option>`;
+        })
+        .join("");
+    }
+
+    function defaultCategoryFor(target, sourceProject) {
+      if (target && target.category) return target.category;
+      if (sourceProject && sourceProject.category && TawalaDemo.categoryByLabel(sourceProject.category)) {
+        return sourceProject.category;
+      }
+      return UNCATEGORIZED_LABEL;
+    }
+
+    function renderPublishForm(defaultTargetId) {
+      const targetCandidates = TawalaTransfer.libraryReplaceCandidates();
+      const initialTarget = defaultTargetId ? targetCandidates.find((c) => c.id === defaultTargetId) : null;
+      const firstSource = TawalaDemo.myTawalaEntries()[0] || null;
+      return (
+        '<div class="section" id="adminPublishSection">' +
+        '<h3 class="sectionHeading">Publish / overwrite from a My Tawala project</h3>' +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">Same operation as the My Tawala <b>Publish</b> action, run from here so a ' +
+        "maintainer doesn’t have to open each project individually. Matching an existing entry ignores " +
+        "the “ (stub)” suffix on both sides.</p>" +
+        '<label class="tawala-modal-field" for="adminSourceProject">My Tawala source project' +
+        `<select id="adminSourceProject">${myTawalaSourceOptionsHtml()}</select>` +
+        "</label>" +
+        '<label class="tawala-modal-field" for="adminPublishName">Library name' +
+        '<input type="text" id="adminPublishName" />' +
+        "</label>" +
+        '<label class="tawala-modal-field" for="adminPublishTarget">Overwrite target (optional)' +
+        `<select id="adminPublishTarget">${libraryTargetOptionsHtml(defaultTargetId || "")}</select>` +
+        "</label>" +
+        '<label class="tawala-modal-field" for="adminPublishCategory">Library category (required)' +
+        `<select id="adminPublishCategory">${categoryOptionsHtml(defaultCategoryFor(initialTarget, firstSource))}</select>` +
+        "</label>" +
+        '<label class="tawala-modal-checkbox" for="adminPublishPurge">' +
+        '<input type="checkbox" id="adminPublishPurge" checked /> Purge responses when publishing' +
+        "</label>" +
+        '<p class="pm-hint">Clears the source project\u2019s :8080 submissions (same as My Tawala <b>Purge</b>) right after publishing, so nobody who opens the published Library project sees prior test/demo answers.</p>' +
+        '<p class="pm-hint" id="adminPublishError" role="alert" style="display:none;"></p>' +
+        '<p><button type="button" class="pm-action is-active" id="adminPublishConfirm">Publish / overwrite</button></p>' +
+        "</div></div>"
+      );
+    }
+
+    function libraryRowFlags(p) {
+      const badges = [];
+      if (p.stub) badges.push('<span class="library-cat-overridden">stub</span>');
+      if (p.liveReady) {
+        badges.push('<span class="library-cat-overridden" style="color:#1a6b3a;background:#e4f5ea;border-color:#bfe3cc;">live</span>');
+      } else if (!p.stub) {
+        // Owner Aug 1, 2026: a lot of non-stub entries (e.g. Sign-up Sheet Template) were
+        // catalogued but never actually vetted — surface that plainly so Retire is an obvious
+        // next step, same destination (My Tawala) as stub cleanup, just without the (stub) mark.
+        badges.push('<span class="library-cat-overridden" style="color:#8a5a00;background:#fff3d6;border-color:#f0d896;">not vetted</span>');
+      }
+      if (p.fromPublishOverlay) badges.push('<span class="library-cat-overridden">published overlay</span>');
+      if (p.sourcePile === "main-menu") badges.push('<span class="library-cat-overridden">main menu</span>');
+      return badges.join(" ");
+    }
+
+    function renderLibraryTable() {
+      const entries = TawalaDemo.libraryEntries().slice().sort((a, b) => a.name.localeCompare(b.name));
+      const rows = entries
+        .map((p) => {
+          return (
+            `<tr data-lib-id="${escapeHtml(p.id)}">` +
+            `<td class="left lib-admin-name-cell"><span class="lib-admin-name">${escapeHtml(
+              TawalaDemo.displayName(p.name)
+            )}</span> ${libraryRowFlags(p)}</td>` +
+            `<td><code>${escapeHtml(p.id)}</code></td>` +
+            `<td>${escapeHtml(p.category || "")}</td>` +
+            `<td>${escapeHtml(p.updated || "—")}</td>` +
+            `<td class="lib-admin-actions">` +
+            `<button type="button" class="pm-action" data-admin-op="rename" data-lib-id="${escapeHtml(p.id)}">Rename</button> ` +
+            `<button type="button" class="pm-action" data-admin-op="overwrite-target" data-lib-id="${escapeHtml(p.id)}">Use as overwrite target ↑</button> ` +
+            `<button type="button" class="pm-action" data-admin-op="retire" data-lib-id="${escapeHtml(p.id)}" title="Remove from public Library, keep safe in My Tawala">Retire</button>` +
+            "</td></tr>"
+          );
+        })
+        .join("");
+      return (
+        '<div class="section">' +
+        '<h3 class="sectionHeading">Current Library entries (' + entries.length + ')</h3>' +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">Retire works on any row — stubs and non-stub <span class="library-cat-overridden" ' +
+        'style="color:#8a5a00;background:#fff3d6;border-color:#f0d896;">not vetted</span> entries alike (e.g. ' +
+        "Main Menu templates catalogued before they were actually checked, like Sign-up Sheet Template). Both " +
+        "land in My Tawala so you can open them in Designer and re-Publish later — stubs keep the " +
+        "<code>(stub)</code> name suffix, non-stub retirements keep their name as-is.</p>" +
+        '<table class="projectListing stripe" style="width:100%;">' +
+        "<thead><tr><th class=\"left\">Name</th><th>Id</th><th>Category</th><th>Updated</th><th>Actions</th></tr></thead>" +
+        `<tbody id="adminLibraryRows">${rows}</tbody>` +
+        "</table>" +
+        '<p class="pm-hint" id="adminOpStatus" role="status"></p>' +
+        "</div></div>"
+      );
+    }
+
+    function renderRetiredSection() {
+      const retired = TawalaTransfer.getLibraryRetired();
+      const ids = Object.keys(retired);
+      if (!ids.length) return "";
+      const overlay = TawalaTransfer.getMyTawalaOverlay();
+      const rows = ids
+        .map((id) => {
+          const myId = overlay[id] ? id : `${id}-retired`;
+          const safety = overlay[id] || overlay[myId] || null;
+          const name = safety ? safety.name : id;
+          const where = safety
+            ? `<a href="mytawala-project.html?project=${encodeURIComponent(overlay[id] ? id : myId)}">My Tawala safety copy</a>`
+            : "My Tawala (see My Projects)";
+          return (
+            `<tr><td class="left">${escapeHtml(name)}</td><td><code>${escapeHtml(id)}</code></td>` +
+            `<td>${where}</td>` +
+            `<td><button type="button" class="pm-action" data-admin-op="restore" data-lib-id="${escapeHtml(id)}">Restore to Library</button></td></tr>`
+          );
+        })
+        .join("");
+      return (
+        '<div class="section">' +
+        `<h3 class="sectionHeading">Retired from Library (${ids.length})</h3>` +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">Removed from the public listing, kept safe in My Tawala — never hard-deleted. ' +
+        "Restore brings the original catalog row back (does not remove the My Tawala safety copy).</p>" +
+        '<table class="projectListing stripe" style="width:100%;">' +
+        "<thead><tr><th class=\"left\">Name</th><th>Library id</th><th>Safety copy</th><th>Actions</th></tr></thead>" +
+        `<tbody>${rows}</tbody>` +
+        "</table></div></div>"
+      );
+    }
+
+    function renderCategoryAdminSection() {
+      const cats = TawalaDemo.libraryCategories();
+      const counts = {};
+      TawalaDemo.libraryEntries().forEach((p) => {
+        counts[p.category] = (counts[p.category] || 0) + 1;
+      });
+      const rows = cats
+        .map((c) => {
+          const count = counts[c.label] || 0;
+          return (
+            `<tr data-cat-slug="${escapeHtml(c.slug)}">` +
+            `<td class="left">${escapeHtml(c.label)}</td>` +
+            `<td><code>${escapeHtml(c.slug)}</code></td>` +
+            `<td>${escapeHtml(c.source || "admin")}</td>` +
+            `<td>${count}</td>` +
+            `<td class="lib-admin-actions">` +
+            `<button type="button" class="pm-action" data-cat-op="rename" data-cat-slug="${escapeHtml(c.slug)}">Rename</button> ` +
+            `<button type="button" class="pm-action" data-cat-op="delete" data-cat-slug="${escapeHtml(c.slug)}" title="Remove from the category picker — projects keep their category label, nothing is deleted">Delete</button>` +
+            "</td></tr>"
+          );
+        })
+        .join("");
+      const deleted = TawalaTransfer.getDeletedLibraryCategories();
+      const deletedSection = deleted.length
+        ? '<div class="section">' +
+          `<h3 class="sectionHeading">Deleted categories (${deleted.length})</h3>` +
+          '<div class="sectionContent">' +
+          '<p class="pm-hint">Removed from the picker — any project still carrying that label shows under "Other" on library.html. Restore brings the group back (does not move projects back on its own; re-drag/select them if you also changed their label).</p>' +
+          '<table class="projectListing stripe" style="width:100%;">' +
+          '<thead><tr><th class="left">Name</th><th>Slug</th><th>Actions</th></tr></thead><tbody>' +
+          deleted
+            .map(
+              (d) =>
+                `<tr><td class="left">${escapeHtml(d.label)}</td><td><code>${escapeHtml(d.slug)}</code></td>` +
+                `<td><button type="button" class="pm-action" data-cat-op="restore" data-cat-slug="${escapeHtml(d.slug)}">Restore</button></td></tr>`
+            )
+            .join("") +
+          "</tbody></table></div></div>"
+        : "";
+      return (
+        '<div class="section" id="adminCategorySection">' +
+        '<h3 class="sectionHeading">Library categories</h3>' +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">Add, rename, or delete the group headings shown on the Library sidebar / Publish dialog. ' +
+        "Delete never edits or reassigns any project — it only drops the group from the picker; anything still " +
+        'labeled with it falls to "Other" on <code>library.html</code> until re-categorized below. Rename migrates ' +
+        "every project currently in that group to the new label automatically. Mock-only overlay (localStorage) — " +
+        "repo <code>demo-urls.js</code> categories stay the base until a maintainer copies a change in by hand.</p>" +
+        '<p class="tawala-modal-field" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">' +
+        '<label style="flex:1 1 220px;max-width:320px;">New category name' +
+        '<input type="text" id="newCategoryName" placeholder="e.g. Fundraising" />' +
+        "</label>" +
+        '<button type="button" class="pm-action is-active" id="addCategoryBtn">Add category</button>' +
+        "</p>" +
+        '<p class="pm-hint" id="adminCatError" role="alert" style="display:none;"></p>' +
+        '<table class="projectListing stripe" style="width:100%;margin-top:8px;">' +
+        "<thead><tr><th class=\"left\">Name</th><th>Slug</th><th>Source</th><th>Projects</th><th>Actions</th></tr></thead>" +
+        `<tbody>${rows}</tbody>` +
+        "</table></div></div>" +
+        deletedSection
+      );
+    }
+
+    /** Drag-and-drop board — plus a per-row <select> fallback in case DnD misbehaves in a
+     * given browser/mock context. Both call the same TawalaTransfer.setProjectCategory. */
+    function renderCategoryBoard() {
+      const cats = TawalaDemo.libraryCategories();
+      const rows = TawalaDemo.libraryEntries()
+        .slice()
+        .sort((a, b) => TawalaDemo.displayName(a.name).localeCompare(TawalaDemo.displayName(b.name)));
+      const byLabel = new Map(cats.map((c) => [c.label, []]));
+      const uncategorized = [];
+      rows.forEach((p) => {
+        if (byLabel.has(p.category)) byLabel.get(p.category).push(p);
+        else uncategorized.push(p);
+      });
+      const moveOptionLabels = [...cats.map((c) => c.label), UNCATEGORIZED_LABEL];
+
+      function projRowHtml(p) {
+        const name = escapeHtml(TawalaDemo.displayName(p.name));
+        const opts = moveOptionLabels
+          .map((label) => {
+            const sel = label === (p.category || "") ? " selected" : "";
+            return `<option value="${escapeHtml(label)}"${sel}>${escapeHtml(label)}</option>`;
+          })
+          .join("");
+        return (
+          `<div class="library-admin-proj-row" draggable="true" data-project-id="${escapeHtml(p.id)}" ` +
+          `title="Drag to another column, or use the select">` +
+          `<span class="library-admin-proj-name">${name}</span>` +
+          `<select class="library-admin-proj-move" data-project-id="${escapeHtml(p.id)}" aria-label="Move ${name} to category">${opts}</select>` +
+          "</div>"
+        );
+      }
+
+      function colHtml(label, list) {
+        return (
+          `<div class="library-admin-cat-col" data-cat-label="${escapeHtml(label)}">` +
+          `<div class="library-admin-cat-col-head">${escapeHtml(label)} <span class="library-admin-cat-count">${list.length}</span></div>` +
+          `<div class="library-admin-cat-col-body">${list.map(projRowHtml).join("") || '<p class="pm-hint">Drop projects here</p>'}</div>` +
+          "</div>"
+        );
+      }
+
+      const colsHtml =
+        cats.map((c) => colHtml(c.label, byLabel.get(c.label) || [])).join("") +
+        colHtml(UNCATEGORIZED_LABEL, uncategorized);
+
+      return (
+        '<div class="section">' +
+        '<h3 class="sectionHeading">Projects by category (drag &amp; drop)</h3>' +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">Drag a project card into another column to change its Library category — or use the ' +
+        "select in the card if drag-and-drop is awkward in your browser. Both write the same localStorage category " +
+        "override as the Library <b>Edit Categories</b> table (see README § Library categories).</p>" +
+        `<div class="library-admin-board" id="libraryAdminBoard">${colsHtml}</div>` +
+        "</div></div>"
+      );
+    }
+
+    let pendingOverwriteTarget = "";
+
+    function renderAdminBody() {
+      const host = document.getElementById("adminBodyHost");
+      host.innerHTML =
+        renderPublishForm(pendingOverwriteTarget) +
+        renderLibraryTable() +
+        renderRetiredSection() +
+        renderCategoryAdminSection() +
+        renderCategoryBoard();
+      const sourceSel = document.getElementById("adminSourceProject");
+      const targetSel = document.getElementById("adminPublishTarget");
+      const nameInput = document.getElementById("adminPublishName");
+      const categorySel = document.getElementById("adminPublishCategory");
+      let categoryTouchedByUser = false;
+      function syncCategoryFromTarget() {
+        if (categoryTouchedByUser || !categorySel) return;
+        const target = targetSel.value
+          ? TawalaTransfer.libraryReplaceCandidates().find((c) => c.id === targetSel.value)
+          : null;
+        const source = sourceSel ? TawalaDemo.getMyTawala(sourceSel.value) : null;
+        categorySel.innerHTML = categoryOptionsHtml(defaultCategoryFor(target, source));
+      }
+      function syncNameFromSource() {
+        const p = TawalaDemo.getMyTawala(sourceSel.value);
+        nameInput.value = p ? TawalaTransfer.stripStubSuffix(TawalaDemo.displayName(p.name)) : "";
+        syncCategoryFromTarget();
+      }
+      if (sourceSel) {
+        sourceSel.addEventListener("change", syncNameFromSource);
+        syncNameFromSource();
+      }
+      if (targetSel) {
+        targetSel.addEventListener("change", syncCategoryFromTarget);
+      }
+      if (categorySel) {
+        categorySel.addEventListener("change", () => {
+          categoryTouchedByUser = true;
+        });
+      }
+      const statusEl = document.getElementById("adminOpStatus");
+      if (statusEl) statusEl.textContent = adminStatusMessage;
+    }
+
+    /* Call sites often set the status message and then call renderAdminBody(), which rebuilds
+     * #adminOpStatus from scratch — remember the last message so a re-render doesn't wipe it. */
+    let adminStatusMessage = "";
+
+    /* Owner Aug 1, 2026: every admin op here writes a localStorage overlay that library.html /
+     * mytawala.html only pick up on their own next render — this page never pushes a live update
+     * to another open tab. Retire/move/rename all "worked" but looked like nothing happened until
+     * the owner manually refreshed Library. Say so every time, inline and as a toast. */
+    const LIBRARY_REFRESH_HINT = "Open or refresh library.html to see it there.";
+    let adminToastTimer = null;
+
+    function showAdminToast(msg) {
+      let el = document.getElementById("adminToast");
+      if (!el) {
+        el = document.createElement("div");
+        el.id = "adminToast";
+        el.setAttribute("role", "status");
+        el.style.cssText =
+          "position:fixed;right:18px;bottom:18px;max-width:300px;background:#1a3a5c;color:#fff;" +
+          "padding:10px 14px;border-radius:4px;font-size:12px;line-height:1.4;" +
+          "box-shadow:0 3px 10px rgba(0,0,0,.3);z-index:9999;opacity:0;" +
+          "transition:opacity .25s ease;pointer-events:none;";
+        document.body.appendChild(el);
+      }
+      el.textContent = msg;
+      el.style.opacity = "1";
+      if (adminToastTimer) clearTimeout(adminToastTimer);
+      adminToastTimer = setTimeout(() => {
+        el.style.opacity = "0";
+      }, 4500);
+    }
+
+    function setAdminStatus(msg) {
+      adminStatusMessage = msg ? `${msg} ${LIBRARY_REFRESH_HINT}` : "";
+      const el = document.getElementById("adminOpStatus");
+      if (el) el.textContent = adminStatusMessage;
+      if (msg) showAdminToast(adminStatusMessage);
+    }
+
+    document.addEventListener("click", async (ev) => {
+      if (ev.target.id === "adminPublishConfirm") {
+        const sourceProjectId = document.getElementById("adminSourceProject").value;
+        const name = document.getElementById("adminPublishName").value.trim();
+        const replaceLibraryId = document.getElementById("adminPublishTarget").value || null;
+        const category = document.getElementById("adminPublishCategory").value.trim();
+        const purgeOnPublish = !!document.getElementById("adminPublishPurge").checked;
+        const errEl = document.getElementById("adminPublishError");
+        if (!sourceProjectId) {
+          errEl.textContent = "Pick a My Tawala source project.";
+          errEl.style.display = "";
+          return;
+        }
+        if (!name) {
+          errEl.textContent = "Enter a Library name.";
+          errEl.style.display = "";
+          return;
+        }
+        if (!category) {
+          errEl.textContent = "Pick a Library category.";
+          errEl.style.display = "";
+          return;
+        }
+        errEl.style.display = "none";
+        const target = replaceLibraryId
+          ? TawalaTransfer.libraryReplaceCandidates().find((c) => c.id === replaceLibraryId)
+          : null;
+        const confirmMsg =
+          `Publish "${name}" to the public Library (category: ${category})?` +
+          (target
+            ? target.stub
+              ? `\n\nThis retires the stub "${target.name}" — removed from Library, kept in My Tawala marked (stub).`
+              : `\n\nThis replaces the existing Library entry "${target.name}" with this version (overlay only).`
+            : "") +
+          (purgeOnPublish
+            ? "\n\nThe source project's :8080 responses will be purged right after publishing."
+            : "\n\nResponses will NOT be purged (checkbox unchecked).");
+        if (!window.confirm(confirmMsg)) return;
+        const result = TawalaTransfer.publishToLibrary({ sourceProjectId, name, replaceLibraryId, category });
+        if (!result.ok) {
+          window.alert("Couldn't publish\n\n" + result.error);
+          return;
+        }
+        pendingOverwriteTarget = "";
+        const parts = [`Published "${name}".`];
+        if (result.retired) parts.push(`Retired stub "${result.retired.name}" → My Tawala.`);
+        if (result.replacedNonStub) parts.push(`Replaced "${result.replacedName}" in place.`);
+
+        if (purgeOnPublish && typeof TawalaDemo.purgeAfterPublish === "function") {
+          setAdminStatus(parts.join(" ") + " Purging responses…");
+          const purgeResult = await TawalaDemo.purgeAfterPublish(sourceProjectId);
+          if (purgeResult.status === "success") {
+            const n =
+              purgeResult.javaDb && purgeResult.javaDb.deleted != null ? purgeResult.javaDb.deleted : "?";
+            parts.push(`Purged prior responses (deleted ${n} submission row(s)).`);
+          } else if (purgeResult.status === "skipped") {
+            parts.push(`⚠️ Responses were NOT purged — source project isn't linked to a live :8080 deploy yet.`);
+          } else {
+            parts.push(`⚠️ Responses were NOT purged — purge failed: ${purgeResult.error || "unknown error"}.`);
+          }
+        } else if (!purgeOnPublish) {
+          parts.push("Responses were not purged (checkbox unchecked).");
+        }
+
+        setAdminStatus(parts.join(" "));
+        renderAdminBody();
+        return;
+      }
+
+      if (ev.target.id === "addCategoryBtn") {
+        const input = document.getElementById("newCategoryName");
+        const errEl = document.getElementById("adminCatError");
+        const result = TawalaTransfer.addLibraryCategory(input.value);
+        if (!result.ok) {
+          errEl.textContent = result.error;
+          errEl.style.display = "";
+          return;
+        }
+        errEl.style.display = "none";
+        setAdminStatus(`Added category "${result.label}".`);
+        renderAdminBody();
+        return;
+      }
+
+      const catOpBtn = ev.target.closest("[data-cat-op]");
+      if (catOpBtn) {
+        const catOp = catOpBtn.dataset.catOp;
+        const slug = catOpBtn.dataset.catSlug;
+        if (catOp === "rename") {
+          const current = TawalaDemo.libraryCategories().find((c) => c.slug === slug);
+          const currentLabel = current ? current.label : slug;
+          const next = window.prompt(`Rename category "${currentLabel}" to:`, currentLabel);
+          if (next === null) return;
+          const result = TawalaTransfer.renameLibraryCategory(slug, next);
+          if (!result.ok) {
+            window.alert("Couldn't rename category\n\n" + result.error);
+            return;
+          }
+          setAdminStatus(
+            `Renamed category "${currentLabel}" → "${result.label}"` +
+              (result.migrated ? ` (moved ${result.migrated} project(s) to the new label).` : ".")
+          );
+          renderAdminBody();
+          return;
+        }
+        if (catOp === "delete") {
+          const current = TawalaDemo.libraryCategories().find((c) => c.slug === slug);
+          const currentLabel = current ? current.label : slug;
+          if (
+            !window.confirm(
+              `Remove category "${currentLabel}" from the picker?\n\n` +
+                'No project is deleted or edited — anything still labeled with it falls under "Other" on library.html until moved. Reversible with Restore.'
+            )
+          ) {
+            return;
+          }
+          const result = TawalaTransfer.deleteLibraryCategory(slug);
+          if (!result.ok) {
+            window.alert("Couldn't delete category\n\n" + result.error);
+            return;
+          }
+          setAdminStatus(`Removed category "${result.label}" from the picker.`);
+          renderAdminBody();
+          return;
+        }
+        if (catOp === "restore") {
+          const result = TawalaTransfer.restoreLibraryCategory(slug);
+          if (!result.ok) {
+            window.alert("Couldn't restore category\n\n" + result.error);
+            return;
+          }
+          setAdminStatus(`Restored category "${slug}".`);
+          renderAdminBody();
+          return;
+        }
+      }
+
+      const opBtn = ev.target.closest("[data-admin-op]");
+      if (!opBtn) return;
+      const op = opBtn.dataset.adminOp;
+      const libId = opBtn.dataset.libId;
+
+      if (op === "overwrite-target") {
+        pendingOverwriteTarget = libId;
+        renderAdminBody();
+        document.getElementById("adminPublishSection").scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
+
+      if (op === "rename") {
+        const current = TawalaDemo.getLibrary(libId);
+        const currentName = current ? TawalaDemo.displayName(current.name) : libId;
+        const next = window.prompt(`Rename Library entry "${currentName}" to:`, currentName);
+        if (next === null) return;
+        const result = TawalaTransfer.renameLibraryEntry(libId, next);
+        if (!result.ok) {
+          window.alert("Couldn't rename\n\n" + result.error);
+          return;
+        }
+        setAdminStatus(`Renamed "${currentName}" → "${result.name}".`);
+        renderAdminBody();
+        return;
+      }
+
+      if (op === "retire") {
+        const current = TawalaDemo.getLibrary(libId);
+        const currentName = current ? TawalaDemo.displayName(current.name) : libId;
+        const isStub = !!(current && current.stub);
+        const msg =
+          `Retire "${currentName}" from the public Library?\n\n` +
+          (isStub
+            ? "It stays safe in My Tawala, still marked (stub)."
+            : "It stays safe in My Tawala (not deleted) — pick this for an unvetted / out-of-date real entry (e.g. a Main Menu template that needs more work) so you can pull it into Designer and re-Publish later.");
+        if (!window.confirm(msg)) return;
+        const result = TawalaTransfer.retireLibraryEntry(libId);
+        if (!result.ok) {
+          window.alert("Couldn't retire\n\n" + result.error);
+          return;
+        }
+        setAdminStatus(`Retired "${result.name}" → My Tawala.`);
+        renderAdminBody();
+        return;
+      }
+
+      if (op === "restore") {
+        const result = TawalaTransfer.restoreLibraryEntry(libId);
+        if (!result.ok) {
+          window.alert("Couldn't restore\n\n" + result.error);
+          return;
+        }
+        setAdminStatus(`Restored "${libId}" to the Library.`);
+        renderAdminBody();
+      }
+    });
+
+    function moveProjectToCategory(projectId, label) {
+      if (!projectId || !label) return;
+      TawalaTransfer.setProjectCategory(projectId, label);
+      const p = TawalaDemo.getLibrary(projectId);
+      const name = p ? TawalaDemo.displayName(p.name) : projectId;
+      setAdminStatus(`Moved "${name}" to "${label}".`);
+      renderAdminBody();
+    }
+
+    /* Select fallback — same effect as a successful drag, works even where HTML5 DnD is
+     * fragile (touch devices, some embedded/mock browser contexts). */
+    document.addEventListener("change", (ev) => {
+      const sel = ev.target.closest("select.library-admin-proj-move");
+      if (!sel) return;
+      moveProjectToCategory(sel.dataset.projectId, sel.value);
+    });
+
+    /* HTML5 drag-and-drop — drag a project card from one column into another. */
+    document.addEventListener("dragstart", (ev) => {
+      const row = ev.target.closest(".library-admin-proj-row");
+      if (!row) return;
+      ev.dataTransfer.setData("text/plain", row.dataset.projectId);
+      ev.dataTransfer.effectAllowed = "move";
+    });
+
+    document.addEventListener("dragover", (ev) => {
+      const col = ev.target.closest(".library-admin-cat-col");
+      if (!col) return;
+      ev.preventDefault();
+      ev.dataTransfer.dropEffect = "move";
+      col.classList.add("drag-over");
+    });
+
+    document.addEventListener("dragleave", (ev) => {
+      const col = ev.target.closest(".library-admin-cat-col");
+      if (!col || col.contains(ev.relatedTarget)) return;
+      col.classList.remove("drag-over");
+    });
+
+    document.addEventListener("drop", (ev) => {
+      const col = ev.target.closest(".library-admin-cat-col");
+      if (!col) return;
+      ev.preventDefault();
+      col.classList.remove("drag-over");
+      const projectId = ev.dataTransfer.getData("text/plain");
+      moveProjectToCategory(projectId, col.dataset.catLabel);
+    });
+
+    renderGate();
+  </script>
+</body>
+</html>

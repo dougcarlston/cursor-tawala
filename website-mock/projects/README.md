@@ -14,8 +14,8 @@ Each folder has a `MANIFEST.json` (file list + sizes). Spelling: **SportsDashboa
 - Catalog + test-drive URLs: `website-mock/js/demo-urls.js`
   - `TAWALA_LIBRARY` → Library / home pages
   - `TAWALA_MYTAWALA` → My Tawala listing / project details
-- Designer-only New Project basics (**Empty/Blank**, **Form with Process**, **Form with Process & Document**) are **not** in either pile and must **not** appear in the Library catalog. They stay File → New Project only (`designer-web/public/samples/templates/`).
-- Main Menu **public** templates (Simple Survey, Sign-up Sheet, Potluck, Get Together, Sign-up w Email) remain in the Library catalog with live `:8080` URLs; their JSON lives under `designer-web/public/samples/templates/`, not in `projects/library/`.
+- Designer-only New Project items (**Empty/Blank**, **Form with Process**, **Form with Process & Document**, **Sign-up Sheet w Email**) are **not** in either pile and must **not** appear in the Library catalog. They stay File → New Project only (`designer-web/public/samples/templates/`). Sign-up Sheet w Email was retired from the public Library (owner Aug 1, 2026); re-Publish when a finished runtime-customizable version exists.
+- Main Menu **public** templates (Simple Survey, Sign-up Sheet, Potluck, Get Together) remain in the Library catalog with live `:8080` URLs; their JSON lives under `designer-web/public/samples/templates/`, not in `projects/library/`.
 
 ## Refresh copies
 

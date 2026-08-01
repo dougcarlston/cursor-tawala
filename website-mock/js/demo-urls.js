@@ -7,8 +7,9 @@
  *
  * Main Menu public templates (Simple Survey, Sign-up, Potluck, Get Together, …)
  * stay in the Library catalog with live :8080 URLs; JSON lives under
- * designer-web/public/samples/templates/. Designer-only New Project basics
- * (Empty/Blank, Form with Process, Form with Process & Document) are NOT listed.
+ * designer-web/public/samples/templates/. Designer-only New Project items
+ * (Empty/Blank, Form with Process, Form with Process & Document, and
+ * Sign-up Sheet w Email — retired from Library Aug 1, 2026) are NOT listed.
  *
  * Library listing groups mirror Designer File → New Project categories
  * (Activities / Meetings and Gatherings / Polls and Surveys), plus WebLibrary
@@ -16,6 +17,14 @@
  *
  * liveReady: true — owner-vetted product with a working :8080 test-drive (quiet “Live” cue in Library list).
  * Update live URLs after Deploy (Designer File→Deploy or POST /api/deploy) / deploy-tawala-template.mjs.
+ *
+ * stub: true (Library only) — placeholder / converted-but-unverified entry kept as a visible
+ * reminder, NOT a real working demo. Owner Aug 1, 2026: the correct route to clean these up is
+ * Designer → Deploy → Publish (checking each equivalent working copy first) — until that route
+ * is used, stubs stay in the catalog with a " (stub)" suffix on the display name so the Library
+ * listing makes obvious what still needs replacing. Never set on liveReady or main-menu (deployed)
+ * entries. There is intentionally NO public Library Delete control — see README.md
+ * "Retiring Library stubs" for the agent-run retirement path (list-library-stubs.mjs).
  */
 
 /**
@@ -44,6 +53,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Replace the sample question with your own multiple-choice question. Respondents pick an answer; the Report form shows live tallies.",
     "jsonFile": "designer-web/public/samples/templates/simple-survey.json",
     "sourcePile": "main-menu",
+    "liveReady": true,
     "deployed": true,
     "startPoints": [
       {
@@ -69,6 +79,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "First name, last name, email, phone, and address fields feed an itemization table so your group can see who has signed up without a separate report form.",
     "jsonFile": "designer-web/public/samples/templates/signup-sheet.json",
     "sourcePile": "main-menu",
+    "liveReady": true,
     "deployed": true,
     "startPoints": [
       {
@@ -90,6 +101,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Invite guests to a potluck, collect RSVPs and what each person will bring. Uses Potluck Organizer (start), Report, documents, and processes for thanks and delete.",
     "jsonFile": "designer-web/public/samples/templates/potluck.json",
     "sourcePile": "main-menu",
+    "liveReady": true,
     "deployed": true,
     "startPoints": [
       {
@@ -115,6 +127,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Two MCQs: which dates work (multi-select) and top preference (single). Report includes a question-correlation table to see the best overlap.",
     "jsonFile": "designer-web/public/samples/templates/get-together.json",
     "sourcePile": "main-menu",
+    "liveReady": true,
     "deployed": true,
     "startPoints": [
       {
@@ -129,7 +142,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": "http://localhost:8080/p/b6do4s50iq64vl8/g6zi1ar.Survey"
   },
   "alextimon": {
-    "name": "AlexTimon",
+    "name": "AlexTimon (stub)",
     "category": "Business",
     "featured": false,
     "iconLabel": "AL",
@@ -140,6 +153,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 26 forms, 29 processes, 16 documents. Start points: Password.",
     "jsonFile": "projects/library/AlexTimon.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -149,7 +163,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "automated-list-builder": {
-    "name": "Automated List Builder",
+    "name": "Automated List Builder (stub)",
     "category": "Activities",
     "featured": false,
     "iconLabel": "AL",
@@ -160,6 +174,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 15 forms, 19 processes, 21 documents. Start points: Questionnaire, Administration, Setup.",
     "jsonFile": "projects/library/Automated List Builder.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -175,7 +190,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "clientprofiler": {
-    "name": "ClientProfiler",
+    "name": "ClientProfiler (stub)",
     "category": "Business",
     "featured": false,
     "iconLabel": "CL",
@@ -186,6 +201,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 26 forms, 29 processes, 16 documents. Start points: Password.",
     "jsonFile": "projects/library/ClientProfiler.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -195,7 +211,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "cyo-checkdeposit-request1": {
-    "name": "CYO CheckDeposit Request1",
+    "name": "CYO CheckDeposit Request1 (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "CC",
@@ -206,6 +222,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 11 forms, 13 processes, 6 documents. Start points: Admin, CheckReqForm, DepositForm.",
     "jsonFile": "projects/library/CYO CheckDeposit Request1.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -221,7 +238,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "cyo-exceptions-app": {
-    "name": "CYO Exceptions App",
+    "name": "CYO Exceptions App (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "CE",
@@ -232,6 +249,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 15 forms, 19 processes, 23 documents. Start points: ExceptionRequest, Setup, ClubData, FullReport, SummaryReport.",
     "jsonFile": "projects/library/CYO Exceptions App.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -253,7 +271,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "dirtbowl": {
-    "name": "DirtBowl",
+    "name": "DirtBowl (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "DI",
@@ -264,6 +282,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 77 forms, 91 processes, 46 documents. Start points: Registration, AdminDash.",
     "jsonFile": "projects/library/DirtBowl.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -276,7 +295,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "genericlistmanager": {
-    "name": "GenericListManager",
+    "name": "GenericListManager (stub)",
     "category": "Advanced",
     "featured": false,
     "iconLabel": "GE",
@@ -287,6 +306,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 34 forms, 44 processes, 20 documents. Start points: Administration, Utility.",
     "jsonFile": "projects/library/GenericListManager.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -321,7 +341,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": "http://localhost:8080/p/wg77ytn0bgq1x70/wdq78g1.Form+1"
   },
   "league-age-calculator": {
-    "name": "League Age calculator",
+    "name": "League Age calculator (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "LA",
@@ -332,6 +352,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 3 forms, 4 processes, 4 documents. Start points: Setup, Widget.",
     "jsonFile": "projects/library/League Age calculator.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -344,7 +365,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "lunch-order-menu": {
-    "name": "Lunch Order Menu",
+    "name": "Lunch Order Menu (stub)",
     "category": "Activities",
     "featured": false,
     "iconLabel": "LO",
@@ -355,6 +376,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 5 forms, 5 processes, 6 documents. Start points: Main Menu.",
     "jsonFile": "projects/library/Lunch Order Menu.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -390,7 +412,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": "http://localhost:8080/p/grniytf6dvmobqe/y7ucha7.Survey"
   },
   "mvsc-communicator": {
-    "name": "MVSC Communicator",
+    "name": "MVSC Communicator (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "MC",
@@ -401,6 +423,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 18 forms, 23 processes, 4 documents. Start points: Start.",
     "jsonFile": "projects/library/MVSC Communicator.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -410,7 +433,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "mvsc-registration": {
-    "name": "MVSC Registration",
+    "name": "MVSC Registration (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "MR",
@@ -421,6 +444,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 1 forms, 0 processes, 0 documents. Start points: Form 1.",
     "jsonFile": "projects/library/MVSC Registration.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -430,7 +454,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "online-exam-builder": {
-    "name": "Online Exam Builder",
+    "name": "Online Exam Builder (stub)",
     "category": "Polls and Surveys",
     "featured": false,
     "iconLabel": "OE",
@@ -441,6 +465,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 11 forms, 17 processes, 13 documents. Start points: Exam, Administration, CustomizationPreview, Setup.",
     "jsonFile": "projects/library/Online Exam Builder.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -458,29 +483,11 @@ window.TAWALA_LIBRARY = {
     ],
     "testDriveUrl": null
   },
-  "signup-sheet-email": {
-    "name": "Sign-up Sheet Template w Email",
-    "category": "Activities",
-    "featured": false,
-    "iconLabel": "SE",
-    "rating": 4,
-    "comments": 4,
-    "updated": "7/2/26",
-    "shortDescription": "Sign-up sheet like the basic template, plus a Send process for new signups.",
-    "longDescription": "Same FIB fields and itemization table as the Sign-up Sheet template. Process 1 sends the NewSignup document by email (placeholder address in template XML).",
-    "jsonFile": "designer-web/public/samples/templates/signup-sheet-w-email.json",
-    "sourcePile": "main-menu",
-    "deployed": true,
-    "startPoints": [
-      {
-        "label": "Form 1",
-        "url": "http://localhost:8080/p/onszvng2ec776jt/uwh7ift.Form+1"
-      }
-    ],
-    "testDriveUrl": "http://localhost:8080/p/onszvng2ec776jt/uwh7ift.Form+1"
-  },
+  // signup-sheet-email — retired from public Library (owner Aug 1, 2026). Still on
+  // Designer → File → New Project (`designer-web/public/samples/templates/signup-sheet-w-email.json`).
+  // Not seeded into TAWALA_MYTAWALA. Re-Publish when a finished runtime-customizable version exists.
   "sportsdashboards-template": {
-    "name": "SportsDashboards Template",
+    "name": "SportsDashboards Template (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "ST",
@@ -491,6 +498,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 79 forms, 94 processes, 47 documents. Start points: Registration, AdminDash.",
     "jsonFile": "projects/library/SportsDashboards Template.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -503,7 +511,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "st-patrick-sportsdashboards": {
-    "name": "St Patrick SportsDashboards",
+    "name": "St Patrick SportsDashboards (stub)",
     "category": "Sports",
     "featured": false,
     "iconLabel": "SP",
@@ -514,6 +522,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 100 forms, 120 processes, 60 documents. Start points: Registration, AdminDash, UtilityToSetPlayerAges, RegistrantDeduping.",
     "jsonFile": "projects/library/St Patrick SportsDashboards.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -532,7 +541,7 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "tawala-invoicing": {
-    "name": "Tawala Invoicing",
+    "name": "Tawala Invoicing (stub)",
     "category": "Advanced",
     "featured": false,
     "iconLabel": "TI",
@@ -543,6 +552,7 @@ window.TAWALA_LIBRARY = {
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 6 forms, 8 processes, 9 documents. Start points: Start.",
     "jsonFile": "projects/library/Tawala Invoicing.json",
     "sourcePile": "library",
+    "stub": true,
     "deployed": false,
     "startPoints": [
       {
@@ -866,7 +876,15 @@ window.TawalaDemo = {
       .replace(/\.tawala$/i, "")
       .replace(/\.json$/i, "");
   },
+  /** Base repo categories + admin Add/Rename/Delete overlay (see transfer.js § category defs). */
   libraryCategories() {
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.effectiveLibraryCategories === "function"
+    ) {
+      return window.TawalaTransfer.effectiveLibraryCategories();
+    }
     return window.TAWALA_LIBRARY_CATEGORIES || [];
   },
   categoryBySlug(slug) {
@@ -876,10 +894,20 @@ window.TawalaDemo = {
     return this.libraryCategories().find((c) => c.label === label) || null;
   },
   libraryEntries() {
-    return Object.keys(window.TAWALA_LIBRARY).map((id) => ({
+    const base = Object.keys(window.TAWALA_LIBRARY).map((id) => ({
       id,
       ...window.TAWALA_LIBRARY[id],
     }));
+    // Publish (My Tawala → Library) writes a localStorage overlay (transfer.js) and can
+    // retire a matching stub out of the listing. See README § Publish.
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.withLibraryOverlay === "function"
+    ) {
+      return window.TawalaTransfer.withLibraryOverlay(base);
+    }
+    return base;
   },
   myTawalaEntries() {
     const base = Object.keys(window.TAWALA_MYTAWALA).map((id) => ({
@@ -902,7 +930,23 @@ window.TawalaDemo = {
     return this.getLibrary(id) || this.getMyTawala(id) || null;
   },
   getLibrary(id) {
-    return window.TAWALA_LIBRARY[id] || null;
+    if (!id) return null;
+    const hasTransfer = typeof window !== "undefined" && window.TawalaTransfer;
+    // A retired stub is gone from the public Library — only a fresh Publish overlay at the
+    // same id (rare) should still resolve here; otherwise callers fall back to My Tawala.
+    if (hasTransfer && typeof window.TawalaTransfer.isLibraryRetired === "function" && window.TawalaTransfer.isLibraryRetired(id)) {
+      const overlayOnly =
+        typeof window.TawalaTransfer.getLibraryOverlayEntry === "function"
+          ? window.TawalaTransfer.getLibraryOverlayEntry(id)
+          : null;
+      return overlayOnly;
+    }
+    const base = window.TAWALA_LIBRARY[id] || null;
+    if (hasTransfer && typeof window.TawalaTransfer.getLibraryOverlayEntry === "function") {
+      const overlay = window.TawalaTransfer.getLibraryOverlayEntry(id);
+      if (overlay) return base ? { ...base, ...overlay, id } : { ...overlay, id };
+    }
+    return base;
   },
   getMyTawala(id) {
     if (!id) return null;
@@ -1060,6 +1104,22 @@ window.TawalaDemo = {
     }
   },
   /**
+   * Purge :8080 submissions for a My Tawala project after Publish (owner Aug 1, 2026 — Publish
+   * to Library must never leave one account's prior test/demo responses visible to whoever
+   * uses the newly-published Library project next). Resolves the same uniqueId as My Tawala
+   * PURGE (`resolvePurgeUniqueId`) and reuses `purgeResponses`. Returns `{ status: "skipped" }`
+   * when the source project has no linked :8080 deploy yet — Publish still succeeds; callers
+   * must surface that responses were NOT cleared rather than staying silent about it.
+   */
+  async purgeAfterPublish(projectId) {
+    const uniqueId = this.resolvePurgeUniqueId(projectId);
+    if (!uniqueId) {
+      return { status: "skipped", reason: "no-uniqueid", uniqueId: null };
+    }
+    const result = await this.purgeResponses(uniqueId);
+    return { ...result, uniqueId };
+  },
+  /**
    * Purge project response data then open the :8080 form (clean slate each Test drive).
    * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
    * then navigates after purge. Failed / timed-out purge never blocks opening the form.
@@ -1114,6 +1174,71 @@ window.TawalaDemo = {
     // Popup blocked or navigate failed — last resort (may also be blocked after await).
     window.open(target, "_blank", "noopener");
     return { opened: true, purge, popupBlocked: !tab };
+  },
+  /**
+   * Export submission data for a deployed project (EXPORT / data half of BACKUP).
+   * Postgres (Java) or dev session store — see designer-web/server/projectResponses.mjs.
+   * @returns {Promise<{status:"success"|"failure", uniqueId:string, source?:"postgres"|"dev-session",
+   *   forms?:Array, fieldsByForm?:Record<string,string[]>, count?:number, error?:string}>}
+   */
+  async exportResponses(uniqueId) {
+    if (!uniqueId) return { status: "failure", error: "uniqueId required" };
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/export-responses";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ uniqueId, credentials: { user: "dev", password: "dev" } }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return { status: "failure", uniqueId, error: data.error || `HTTP ${res.status}`, ...data };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        uniqueId,
+        error: String(e.message || e) + " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+  /**
+   * Replace submission data for a deployed project (IMPORT / data half of RESTORE).
+   * `forms` must match the shape returned by exportResponses() for the given `source`.
+   * @param {string} uniqueId
+   * @param {Array} forms
+   * @param {{source?: "postgres"|"dev-session", mode?: "replace"|"merge"}} opts
+   */
+  async importResponses(uniqueId, forms, opts) {
+    const options = opts || {};
+    if (!uniqueId) return { status: "failure", error: "uniqueId required" };
+    if (!Array.isArray(forms)) return { status: "failure", error: "forms array required" };
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/import-responses";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uniqueId,
+          forms,
+          source: options.source || null,
+          mode: options.mode || "replace",
+          credentials: { user: "dev", password: "dev" },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return { status: "failure", uniqueId, error: data.error || `HTTP ${res.status}`, ...data };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        uniqueId,
+        error: String(e.message || e) + " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
   },
   /** Delegated clicks for elements with data-testdrive-url (or .js-testdrive href). */
   bindTestDriveClicks(root) {

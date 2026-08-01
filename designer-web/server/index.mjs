@@ -21,6 +21,10 @@ import {
   purgeProjectResponsesByUniqueId,
   uniqueIdFromRuntimeUrl,
 } from "./purgeProjectResponses.mjs";
+import {
+  exportProjectResponsesByUniqueId,
+  importProjectResponsesByUniqueId,
+} from "./projectResponses.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
 let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
@@ -392,6 +396,76 @@ app.post("/api/purge-responses", async (req, res) => {
     const result = await purgeProjectResponsesByUniqueId(uniqueId);
     const code = result.status === "success" ? 200 : 502;
     res.status(code).json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ status: "failure", uniqueId, error: String(e.message ?? e) });
+  }
+});
+
+app.options("/api/export-responses", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/**
+ * Export form submissions for a deployed project by uniqueId — Excel-response-data EXPORT
+ * and the data half of BACKUP. Postgres (Java) or dev session store; see projectResponses.mjs.
+ */
+app.post("/api/export-responses", async (req, res) => {
+  allowMockCors(req, res);
+  const body = req.body ?? {};
+  const { credentials, uniqueId } = body;
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed" });
+    return;
+  }
+  if (!isValidUniqueId(uniqueId)) {
+    res.status(400).json({ status: "failure", error: "uniqueId required (1–20 alphanumeric)" });
+    return;
+  }
+  try {
+    const result = await exportProjectResponsesByUniqueId(uniqueId);
+    res.status(result.status === "success" ? 200 : 502).json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ status: "failure", uniqueId, error: String(e.message ?? e) });
+  }
+});
+
+app.options("/api/import-responses", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/**
+ * Import (replace) form submissions for a deployed project by uniqueId — data-only IMPORT
+ * and the data half of RESTORE. Expects the same `forms` shape returned by export-responses
+ * for the matching `source`. Field-mismatch validation happens client-side (website-mock);
+ * this endpoint just writes what it's given.
+ */
+app.post("/api/import-responses", async (req, res) => {
+  allowMockCors(req, res);
+  const body = req.body ?? {};
+  const { credentials, uniqueId, forms, source, mode } = body;
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed" });
+    return;
+  }
+  if (!isValidUniqueId(uniqueId)) {
+    res.status(400).json({ status: "failure", error: "uniqueId required (1–20 alphanumeric)" });
+    return;
+  }
+  try {
+    const result = await importProjectResponsesByUniqueId(uniqueId, forms, { source, mode });
+    res.status(result.status === "success" ? 200 : 502).json(result);
   } catch (e) {
     console.error(e);
     res.status(500).json({ status: "failure", uniqueId, error: String(e.message ?? e) });

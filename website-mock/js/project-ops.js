@@ -10,6 +10,16 @@
  * wired: "purge-local" → confirm + POST /api/purge-responses (uniqueId via resolvePurgeUniqueId)
  * wired: "delete-mytawala" → confirm + remove private My Tawala row (overlay/inbox; not Library)
  *         (falls back to CLI hint if API/Postgres unavailable)
+ * wired: "export-mytawala" → TawalaDataOps.handleExportClick (js/data-ops.js) — Excel response
+ *         data only, no confirm (non-destructive; downloads a JSON file)
+ * wired: "import-mytawala" → TawalaDataOps.handleImportClick — field-mismatch check, then
+ *         confirm + POST /api/import-responses (replace mode)
+ * wired: "backup-mytawala" → TawalaDataOps.handleBackupClick — no confirm (non-destructive;
+ *         downloads a JSON bundle: definition + data + properties, see README § Backup/Restore)
+ * wired: "restore-mytawala" → TawalaDataOps.handleRestoreClick — confirm + overlay properties +
+ *         POST /api/import-responses (replace mode)
+ * wired: "pull-library" → openPullDialog — pick a Library project, confirm, then
+ *         TawalaTransfer.pullFromLibrary refreshes content only (name/deploy/data preserved)
  */
 (function () {
   /** My Tawala top sub-menu (submenu-mytawala.jsp) */
@@ -71,92 +81,101 @@
   ];
 
   /**
-   * Public Library listing row actions — recovered from library detail / customizables
-   * (Test Drive, Save/Clone into My Tawala). searchLibrary.jsp itself was click-to-detail only.
-   * Single “Actions” column: packed icons in each row (hover titles); header is the word
-   * “Actions” only — no header glyphs.
+   * Public Library listing row actions — discovery / acquire only (owner Aug 1, 2026).
+   * Single “Actions” column: two icons + column sub-labels under the Actions header
+   * (Test drive | Save a copy). **Use** lives on My Tawala (operate), not Library.
+   * Test drive still purges-on-start. Save a copy remains a grey stub.
    * wired: "test-drive" → active when project has a live :8080 URL; else disabled grey.
    */
   const LIBRARY_LISTING_ACTIONS = [
     {
       id: "test-drive",
-      label: "Drive",
+      label: "Test drive",
       title: "Test drive this project (local :8080)",
       wired: "test-drive",
       icon: "testdrive",
     },
     {
       id: "save-my-tawala",
-      label: "Save",
+      label: "Save a copy",
       title: "Save this project under My Tawala",
       wired: false,
       icon: "save",
-    },
-    {
-      id: "clone",
-      label: "USE IT",
-      title: "USE IT",
-      wired: false,
-      icon: "clone",
     },
   ];
 
   /**
    * Project Actions bar on Project Details (detail.jsp) — exact button labels.
    * Titles from button title= attributes.
+   *
+   * No PUBLISH here (owner Aug 1, 2026): Publish only appears where the owner has the
+   * My Tawala **listing** row in front of them (icon strip) — Details stays USE…PULL.
+   * See LISTING_ACTIONS below for the wired Publish control.
+   *
+   * USE (owner Aug 1, 2026): open primary :8080 start URL to run the persistent app —
+   * not legacy CloneAndCustomize. Disabled when no deploy URL. Does not purge-on-start
+   * (unlike Library Test drive).
    */
   const PROJECT_ACTIONS = [
-    { id: "export", label: "EXPORT", title: "Export project data to Excel format", wired: false },
-    { id: "import", label: "IMPORT", title: "Import data to project from Excel or CSV file", wired: false },
-    { id: "backup", label: "BACKUP", title: "Backup project data", wired: false },
-    { id: "restore", label: "RESTORE", title: "Restore project data", wired: false },
+    {
+      id: "use",
+      label: "USE",
+      title: "Open / run this project (start link)",
+      wired: "use-project",
+    },
+    { id: "export", label: "EXPORT", title: "Export project response data (Excel-format mock — see README)", wired: "export-mytawala" },
+    { id: "import", label: "IMPORT", title: "Import response data into this project (Excel/JSON mock — field mismatch fails)", wired: "import-mytawala" },
+    { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
+    { id: "restore", label: "RESTORE", title: "Restore this project from a backup", wired: "restore-mytawala" },
     { id: "purge", label: "PURGE", title: "Purge project data", wired: "purge-local", confirmId: "purge" },
     { id: "delete", label: "DELETE", title: "Delete Project", wired: "delete-mytawala", confirmId: "delete" },
     {
-      id: "publish",
-      label: "PUBLISH",
-      title: "Publish / move this project to the public Library",
-      wired: false,
-    },
-    {
       id: "pull-library",
       label: "PULL FROM LIBRARY",
-      title: "Replace this project with a newer public Library version",
-      wired: false,
+      title: "Replace this project's content with a newer public Library version",
+      wired: "pull-library",
     },
   ];
 
   /**
    * My Projects listing row — same ops as Project Actions, icon-per-row / label-in-header.
    * (Legacy view.jsp was Purge/Delete only; owner asked for the full listing-appropriate strip.)
+   * Use is first: primary “run this project” affordance (My Tawala = operate).
    */
   const LISTING_ACTIONS = [
     {
+      id: "use",
+      label: "Use",
+      title: "Open / run this project (start link)",
+      wired: "use-project",
+      icon: "use",
+    },
+    {
       id: "export",
       label: "Export",
-      title: "Export project data to Excel format",
-      wired: false,
+      title: "Export project response data (Excel-format mock — see README)",
+      wired: "export-mytawala",
       icon: "export",
     },
     {
       id: "import",
       label: "Import",
-      title: "Import data to project from Excel or CSV file",
-      wired: false,
+      title: "Import response data into this project (field mismatch fails)",
+      wired: "import-mytawala",
       icon: "import",
     },
     {
       id: "backup",
       label: "Backup",
-      title: "Backup project data",
-      wired: false,
+      title: "Back up this project (definition + data + properties)",
+      wired: "backup-mytawala",
       icon: "backup",
     },
     {
       id: "restore",
       label: "Restore",
-      title: "Restore project data",
-      wired: false,
+      title: "Restore this project from a backup",
+      wired: "restore-mytawala",
       icon: "restore",
     },
     {
@@ -178,15 +197,15 @@
     {
       id: "publish",
       label: "Publish",
-      title: "Publish / move this project to the public Library",
-      wired: false,
+      title: "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)",
+      wired: "publish-mytawala",
       icon: "publish",
     },
     {
       id: "pull-library",
       label: "Pull",
-      title: "Replace with newer Library version",
-      wired: false,
+      title: "Replace this project's content with a newer public Library version",
+      wired: "pull-library",
       icon: "pull",
     },
   ];
@@ -214,8 +233,9 @@
       '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.2v7.6L10 6z" fill="currentColor" stroke="none"/></svg>',
     save:
       '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M6 1.5v6M3.5 5L6 7.5 8.5 5M2.5 10h7" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    clone:
-      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M4 3.5h5.5v5.5H4zM2.5 2v5.5H8" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    /* My Tawala Use — open/run (not CloneAndCustomize) */
+    use:
+      '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.2v7.6L10 6z" fill="currentColor" stroke="none"/></svg>',
   };
 
   /** Sidebar / related project detail ops (block-projectManagerProjectDetails.jsp + invite/webpage) */
@@ -279,8 +299,12 @@
 
   /** Symbiotic transfer flows — Library ↔ My Tawala ↔ Designer (labels first; wire later). */
   const RELATED_SAVE_CLONE = [
-    { label: "Save this project under My Tawala", source: "Library → My Tawala", wired: false },
-    { label: "USE IT", source: "customizables.jsp → CloneAndCustomizeController (web customize, not Designer)", wired: false },
+    { label: "Save this project under My Tawala", source: "Library → My Tawala (acquire)", wired: false },
+    {
+      label: "Use (run start link)",
+      source: "My Tawala listing / Details — open :8080 primary start URL (not Library; not CloneAndCustomize)",
+      wired: "use-project",
+    },
     { label: "Publish / move to Library", source: "My Tawala → Library", wired: false },
     { label: "Pull from Library", source: "Library → My Tawala upgrade", wired: false },
     { label: "Deploy from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
@@ -328,15 +352,27 @@
       body: "Are you sure you want to delete all project emails?",
       submit: "Delete All Emails",
     },
+    importResponses: {
+      title: "Import Project Data",
+      body:
+        "Are you sure you want to import this data? It replaces the current response data for the matching form(s) in this project. Import does not change the project definition.",
+      submit: "Import",
+    },
+    restoreProject: {
+      title: "Restore Project",
+      body:
+        "Are you sure you want to restore this project from a backup? This replaces the project's My Tawala properties and response data with the backed-up version.",
+      submit: "Restore",
+    },
   };
 
   const ARCHIVE_NOTE =
     "Archive sources: projectmanager/detail.jsp (Project Actions), view.jsp (listing Purge/Delete historically), " +
     "block-projectManagerProjectDetails.jsp (REVISE / ONLINE-OFFLINE / Include / Invite), " +
     "submenu-mytawala.jsp, submenu-library.jsp, confirmationdialogs.jsp. " +
-    "Mock My Tawala listing now shows the full Export…Publish icon strip (labels in headers). " +
+    "Mock My Tawala listing shows Use + Export…Publish icon strip (labels in headers). " +
     "Catalog is split: Public Library controls vs My Tawala / Project Manager. " +
-    "No separate Rename/Clone labels on the Project Actions bar — Save under My Tawala / USE IT appear in customization & Library flows. " +
+    "Library Actions = Test drive | Save a copy; Use (run start link) is on My Tawala only. " +
     "SportsDashboards (not SportsBoard).";
 
   /** One-liner for API/plumbing failures only — never dump CLI / DirtBowl / Test-drive notes into Purge alerts. */
@@ -363,14 +399,14 @@
       id: "library-listing",
       title: "Public Library listing row",
       where:
-        "Library mock — icon columns (hover titles): Test drive (when :8080 deployed), Save this project under My Tawala, USE IT. searchLibrary.jsp was click-to-detail only.",
+        "Library mock — Actions sub-labels: Test drive | Save a copy (icons in rows; Test drive when :8080 deployed). Use moved to My Tawala. searchLibrary.jsp was click-to-detail only.",
       items: LIBRARY_LISTING_ACTIONS,
     },
     {
       surface: "library",
       id: "wizards",
-      title: "Related Save / Clone wizards (Library → My Tawala)",
-      where: "Not on Project Actions bar — customization tiles + Library CloneAndCustomize",
+      title: "Related Save / transfer hops",
+      where: "Library Save a copy (stub) + My Tawala Use (run) + Publish/Pull/Deploy hops",
       items: RELATED_SAVE_CLONE,
     },
     {
@@ -385,14 +421,17 @@
       id: "listing",
       title: "My Projects listing row",
       where:
-        "mytawala.html — icon strip per row (labels in column headers): Export · Import · Backup · Restore · Purge · Delete · Publish. Legacy view.jsp was Purge/Delete only.",
+        "mytawala.html — icon strip per row (labels in column headers): Use · Export · Import · Backup · Restore · Purge · Delete · Publish · Pull. Use opens :8080 start URL when deployed (no purge).",
       items: LISTING_ACTIONS,
     },
     {
       surface: "mytawala",
       id: "actions",
       title: "Project Details — action bar",
-      where: "projectmanager/detail.jsp — EXPORT · IMPORT · BACKUP · RESTORE · PURGE · DELETE · PUBLISH",
+      where:
+        "projectmanager/detail.jsp — USE · EXPORT · IMPORT · BACKUP · RESTORE · PURGE · DELETE · PULL FROM LIBRARY. " +
+        "USE = open/run primary :8080 start link (owner Aug 1, 2026). " +
+        "No PUBLISH here — Publish only lives on the My Tawala listing row.",
       items: PROJECT_ACTIONS,
     },
     {
@@ -429,12 +468,12 @@
     library: {
       heading: "Public Library controls",
       blurb:
-        "library.html (+ library-detail.html for descriptions / test-drive). Browse & try public catalog; Save/Clone into My Tawala are grey stubs.",
+        "library.html (+ library-detail.html for descriptions / test-drive). Browse & acquire: Test drive + Save a copy. Use (run) is on My Tawala.",
     },
     mytawala: {
       heading: "My Tawala / Project Manager controls",
       blurb:
-        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; PURGE (via :3001 → Postgres by uniqueId) and DELETE (account-private row remove + overlay/inbox clear) are active on listing and Details.",
+        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; Use opens the :8080 start link when deployed; PURGE and DELETE are active on listing and Details.",
     },
   };
 
@@ -452,7 +491,13 @@
       op.wired === "purge-local" ||
       op.wired === "delete-mytawala" ||
       op.wired === "delete-mock" ||
-      op.wired === "edit-categories"
+      op.wired === "edit-categories" ||
+      op.wired === "publish-mytawala" ||
+      op.wired === "export-mytawala" ||
+      op.wired === "import-mytawala" ||
+      op.wired === "backup-mytawala" ||
+      op.wired === "restore-mytawala" ||
+      op.wired === "pull-library"
     );
   }
 
@@ -462,6 +507,15 @@
       return "active (Delete My Tawala row — overlay/inbox; not Library)";
     }
     if (item.wired === "edit-categories") return "active (local category assignment)";
+    if (item.wired === "publish-mytawala") return "active (Publish dialog → Library overlay)";
+    if (item.wired === "export-mytawala") return "active (download JSON — data only, see README)";
+    if (item.wired === "import-mytawala") return "active (field-mismatch check + POST :3001)";
+    if (item.wired === "backup-mytawala") return "active (download JSON — definition + data + properties)";
+    if (item.wired === "restore-mytawala") return "active (properties overlay + POST :3001 data)";
+    if (item.wired === "pull-library") return "active (Pull dialog → overlay content refresh from Library)";
+    if (item.wired === "use-project") {
+      return "active when :8080 start URL exists (open/run — no purge; My Tawala only)";
+    }
     if (item.wired === "test-drive") return "active when :8080 deployed (purge-on-start)";
     if (item.wired === true) return "active";
     return "disabled in mock";
@@ -533,18 +587,30 @@
     );
   }
 
-  /** Single Library “Actions” header — text only (icons live in row cells). */
+  /**
+   * Library “Actions” header — group label plus two sub-labels aligned over icon slots.
+   * Labels: Test drive | Save a copy (Use is on My Tawala).
+   */
   function renderLibraryListingActionHeaders() {
+    const subs = LIBRARY_LISTING_ACTIONS.map(
+      (op) =>
+        `<span class="library-action-subhead" title="${escapeHtml(op.title)}">${escapeHtml(op.label)}</span>`
+    ).join("");
     return (
-      `<div class="lib-col lib-col-actions" role="columnheader" title="Project actions">` +
+      `<div class="lib-col lib-col-actions" role="columnheader">` +
+      `<div class="library-actions-head">` +
       `<span class="th-label">Actions</span>` +
+      `<span class="library-action-subheads" role="group" aria-label="Action columns">` +
+      subs +
+      `</span>` +
+      `</div>` +
       `</div>`
     );
   }
 
   /**
-   * Library listing — one Actions grid cell with packed icons (hover titles).
-   * Test drive when deployed; Save / Clone grey stubs.
+   * Library listing — one Actions grid cell with spaced icons (sub-labels in header).
+   * Test drive when deployed; Save a copy grey stub.
    */
   function renderLibraryListingControlCells(project) {
     const deployed =
@@ -568,7 +634,7 @@
       }
       return (
         `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-        `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.title)}" ` +
+        `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
         `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
       );
     }).join("");
@@ -612,8 +678,47 @@
     );
   }
 
+  /** Resolve a My Tawala project for Use / deploy checks. */
+  function resolveMyTawalaProject(projectId) {
+    if (!projectId || typeof TawalaDemo === "undefined") return null;
+    if (typeof TawalaDemo.getMyTawala === "function") {
+      const p = TawalaDemo.getMyTawala(projectId);
+      if (p) return p;
+    }
+    if (typeof TawalaDemo.get === "function") return TawalaDemo.get(projectId) || null;
+    return null;
+  }
+
+  /** Primary :8080 start URL for Use (operate) — no purge-on-start. */
+  function projectUseUrl(project) {
+    if (!project) return null;
+    if (project.testDriveUrl) return project.testDriveUrl;
+    const sp = (project.startPoints || []).find((s) => s && s.url);
+    return sp ? sp.url : null;
+  }
+
   /** Active ops are clickable; inactive ops are disabled (no “not wired” label — grey is enough). */
   function actionButton(op, projectId) {
+    if (op.wired === "use-project") {
+      const project = resolveMyTawalaProject(projectId);
+      const url = projectUseUrl(project);
+      const deployed =
+        (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!url;
+      if (deployed && url) {
+        return (
+          `<a class="pm-action is-active" href="${escapeHtml(url)}" target="_blank" rel="noopener" ` +
+          `title="${escapeHtml(op.title)}" data-op="${escapeHtml(op.id)}" ` +
+          `data-project="${escapeHtml(projectId || "")}" data-wired="use-project">` +
+          `${escapeHtml(op.label)}</a>`
+        );
+      }
+      return (
+        `<button type="button" class="pm-action" disabled ` +
+        `title="No local deploy URL yet — Deploy from Designer first" ` +
+        `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
+        `data-project="${escapeHtml(projectId || "")}" data-wired="false">${escapeHtml(op.label)}</button>`
+      );
+    }
     const active = isOpActive(op);
     const data =
       `data-op="${escapeHtml(op.id || op.label)}" data-project="${escapeHtml(projectId || "")}"` +
@@ -646,7 +751,32 @@
 
   /** Per-row icon cells (one &lt;td&gt; per listing action). Name click → Project Details. */
   function renderListingControlCells(projectId) {
+    const project = resolveMyTawalaProject(projectId);
     return LISTING_ACTIONS.map((op) => {
+      if (op.wired === "use-project") {
+        const url = projectUseUrl(project);
+        const deployed =
+          (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!url;
+        if (deployed && url) {
+          return (
+            `<td class="col-op">` +
+            `<a class="pm-icon-action pm-op-icon-btn is-active" href="${escapeHtml(url)}" ` +
+            `target="_blank" rel="noopener" title="${escapeHtml(op.title)}" ` +
+            `aria-label="${escapeHtml(op.label)}" data-op="${escapeHtml(op.id)}" ` +
+            `data-project="${escapeHtml(projectId)}" data-wired="use-project">` +
+            `${listingIconHtml(op.icon)}</a>` +
+            `</td>`
+          );
+        }
+        return (
+          `<td class="col-op">` +
+          `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+          `title="No local deploy URL yet — Deploy from Designer first" ` +
+          `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
+          `data-project="${escapeHtml(projectId)}" data-wired="false">${listingIconHtml(op.icon)}</button>` +
+          `</td>`
+        );
+      }
       const active = isOpActive(op);
       const wired = active ? String(op.wired) : "false";
       const disabled = active ? "" : " disabled";
@@ -668,6 +798,27 @@
     return (
       '<div class="controls pm-listing-controls">' +
       LISTING_ACTIONS.map((op) => {
+        if (op.wired === "use-project") {
+          const project = resolveMyTawalaProject(projectId);
+          const url = projectUseUrl(project);
+          const deployed =
+            (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!url;
+          if (deployed && url) {
+            return (
+              `<a class="pm-icon-action pm-op-icon-btn is-active" href="${escapeHtml(url)}" ` +
+              `target="_blank" rel="noopener" title="${escapeHtml(op.title)}" ` +
+              `aria-label="${escapeHtml(op.label)}" data-op="${escapeHtml(op.id)}" ` +
+              `data-project="${escapeHtml(projectId)}" data-wired="use-project">` +
+              `${listingIconHtml(op.icon)}</a>`
+            );
+          }
+          return (
+            `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+            `title="No local deploy URL yet — Deploy from Designer first" ` +
+            `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
+            `data-project="${escapeHtml(projectId)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
+          );
+        }
         const active = isOpActive(op);
         const wired = active ? String(op.wired) : "false";
         const disabled = active ? "" : " disabled";
@@ -865,6 +1016,418 @@
     }
   }
 
+  const PUBLISH_MODAL_ID = "tawalaPublishModal";
+
+  function closePublishModal() {
+    const el = document.getElementById(PUBLISH_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handlePublishModalKeydown, true);
+  }
+
+  function handlePublishModalKeydown(ev) {
+    if (ev.key === "Escape") closePublishModal();
+  }
+
+  /** Option label spelling out what picking this target will actually do (collision safety). */
+  function publishTargetOptionLabel(candidate, matchFlag) {
+    const name = escapeHtml(candidate.name);
+    const action = candidate.stub
+      ? "retires to My Tawala, kept marked (stub)"
+      : "replaces in place — overlay only";
+    return `${name} — ${action}${matchFlag ? ` (${matchFlag} match)` : ""}`;
+  }
+
+  /** "Uncategorized" is always offered even though it isn't a real Library group — Publish
+   * falls back to it when there's no replace-target and no sensible source category. */
+  const UNCATEGORIZED_LABEL = "Uncategorized";
+
+  function publishCategoryOptionsHtml(selectedLabel) {
+    const cats =
+      typeof TawalaDemo !== "undefined" && typeof TawalaDemo.libraryCategories === "function"
+        ? TawalaDemo.libraryCategories()
+        : [];
+    const labels = cats.map((c) => c.label);
+    if (selectedLabel && !labels.includes(selectedLabel) && selectedLabel !== UNCATEGORIZED_LABEL) {
+      labels.push(selectedLabel);
+    }
+    if (!labels.includes(UNCATEGORIZED_LABEL)) labels.push(UNCATEGORIZED_LABEL);
+    return labels
+      .map((label) => {
+        const sel = label === (selectedLabel || UNCATEGORIZED_LABEL) ? " selected" : "";
+        return `<option value="${escapeHtml(label)}"${sel}>${escapeHtml(label)}</option>`;
+      })
+      .join("");
+  }
+
+  /** Owner Aug 1, 2026 — category is easy to miss on Publish; pick a sane default so the
+   * select is never blank: replace-target's current category first, else the source
+   * project's own category (if it's a real Library group), else "Uncategorized". */
+  function defaultPublishCategory(target, sourceProject) {
+    if (target && target.category) return target.category;
+    if (
+      sourceProject &&
+      sourceProject.category &&
+      typeof TawalaDemo !== "undefined" &&
+      typeof TawalaDemo.categoryByLabel === "function" &&
+      TawalaDemo.categoryByLabel(sourceProject.category)
+    ) {
+      return sourceProject.category;
+    }
+    return UNCATEGORIZED_LABEL;
+  }
+
+  function publishTargetOptionsHtml(matches, allCandidates) {
+    const matchIds = new Set(matches.map((m) => m.id));
+    const exact = matches.filter((m) => m.matchKind === "exact");
+    const loose = matches.filter((m) => m.matchKind === "loose");
+    const rest = allCandidates
+      .filter((c) => !matchIds.has(c.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    let html = '<option value="">— None (add as new Library entry) —</option>';
+    if (exact.length || loose.length) {
+      html += '<optgroup label="Possible matches">';
+      html += exact.map((m) => `<option value="${escapeHtml(m.id)}">${publishTargetOptionLabel(m, "exact")}</option>`).join("");
+      html += loose.map((m) => `<option value="${escapeHtml(m.id)}">${publishTargetOptionLabel(m, "possible")}</option>`).join("");
+      html += "</optgroup>";
+    }
+    if (rest.length) {
+      html += '<optgroup label="Other Library projects">';
+      html += rest.map((c) => `<option value="${escapeHtml(c.id)}">${publishTargetOptionLabel(c, null)}</option>`).join("");
+      html += "</optgroup>";
+    }
+    return html;
+  }
+
+  /**
+   * Publish dialog (My Tawala → Library, owner Aug 1, 2026). Editable name (default = current
+   * project name, " (stub)" suffix stripped since a Publish target is never itself a stub).
+   * Target picker lists every current Library entry — stub or not — with an explicit label of
+   * what choosing it will do, so a name/slug collision (e.g. a Deploy-named "Signup sheet" vs
+   * the catalog "Sign-up Sheet Template") never silently replaces the wrong row. Preselects only
+   * on an *exact* id/name match; anything looser is surfaced but left for the owner to confirm.
+   */
+  function openPublishDialog(projectId) {
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
+      window.alert("Publish isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    const project = projectId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    if (!project) {
+      window.alert(`Can't publish — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+    closePublishModal();
+
+    const currentName = TawalaDemo.displayName(project.name || projectId);
+    const defaultName = TawalaTransfer.stripStubSuffix(currentName);
+    const allCandidates =
+      typeof TawalaTransfer.libraryReplaceCandidates === "function"
+        ? TawalaTransfer.libraryReplaceCandidates()
+        : [];
+
+    function optionsForName(nameVal) {
+      const matches =
+        typeof TawalaTransfer.findMatchingLibraryTargets === "function"
+          ? TawalaTransfer.findMatchingLibraryTargets(nameVal, projectId, project.name)
+          : [];
+      const exact = matches.filter((m) => m.matchKind === "exact");
+      return { html: publishTargetOptionsHtml(matches, allCandidates), preselectId: exact.length === 1 ? exact[0].id : "" };
+    }
+
+    const initial = optionsForName(defaultName);
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = PUBLISH_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="publishModalTitle">' +
+      `<h3 id="publishModalTitle">Publish to Library</h3>` +
+      `<p class="pm-hint tawala-modal-lede">Publishing “${escapeHtml(currentName)}” copies it into the public Library (mock — browser overlay; see README § Publish).</p>` +
+      '<div class="tawala-modal-body">' +
+      '<div class="tawala-modal-grid">' +
+      '<label class="tawala-modal-field" for="publishNameInput">Library name' +
+      `<input type="text" id="publishNameInput" value="${escapeHtml(defaultName)}" />` +
+      "</label>" +
+      '<label class="tawala-modal-field" for="publishCategorySelect">Library category (required)' +
+      `<select id="publishCategorySelect" title="Defaults to the replace target\u2019s category, or Uncategorized">${publishCategoryOptionsHtml(defaultPublishCategory(null, project))}</select>` +
+      "</label>" +
+      '<label class="tawala-modal-field tawala-modal-field--full" for="publishStubSelect">Replace an existing Library project (optional)' +
+      `<select id="publishStubSelect">${initial.html}</select>` +
+      "</label>" +
+      "</div>" +
+      '<p class="pm-hint tawala-modal-hint-tight">Stubs retire to My Tawala marked <code>(stub)</code> (never hard-deleted). Non-stubs overlay in place. No public Library Delete.</p>' +
+      '<label class="tawala-modal-checkbox" for="publishPurgeCheckbox">' +
+      '<input type="checkbox" id="publishPurgeCheckbox" checked /> Purge responses when publishing' +
+      "</label>" +
+      '<p class="pm-hint tawala-modal-hint-tight">Clears this project\u2019s :8080 submissions after Publish (same as My Tawala <b>Purge</b>). Leave checked unless you have a reason not to.</p>' +
+      '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="publishModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="publishModalConfirm">Publish</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", handlePublishModalKeydown, true);
+
+    const nameInput = backdrop.querySelector("#publishNameInput");
+    const stubSelect = backdrop.querySelector("#publishStubSelect");
+    const categorySelect = backdrop.querySelector("#publishCategorySelect");
+    stubSelect.value = initial.preselectId;
+    nameInput.focus();
+    nameInput.select();
+
+    /* Category follows the replace-target pick until the owner explicitly overrides it —
+     * mirrors "Default: current category of replace-target if replacing" from the spec. */
+    let categoryTouchedByUser = false;
+    categorySelect.addEventListener("change", () => {
+      categoryTouchedByUser = true;
+    });
+    function syncCategoryToTarget() {
+      if (categoryTouchedByUser) return;
+      const target = stubSelect.value ? allCandidates.find((c) => c.id === stubSelect.value) : null;
+      const label = defaultPublishCategory(target, project);
+      categorySelect.innerHTML = publishCategoryOptionsHtml(label);
+    }
+    syncCategoryToTarget();
+    stubSelect.addEventListener("change", syncCategoryToTarget);
+
+    nameInput.addEventListener("input", () => {
+      const prevChoice = stubSelect.value;
+      const next = optionsForName(nameInput.value);
+      stubSelect.innerHTML = next.html;
+      // Keep an explicit owner choice even if it drops out of the "exact" bucket on edit;
+      // only fall back to the fresh preselect when nothing was chosen yet.
+      const stillPresent = Array.from(stubSelect.options).some((o) => o.value === prevChoice);
+      stubSelect.value = prevChoice && stillPresent ? prevChoice : next.preselectId;
+      syncCategoryToTarget();
+    });
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closePublishModal();
+    });
+    backdrop.querySelector("#publishModalCancel").addEventListener("click", closePublishModal);
+
+    backdrop.querySelector("#publishModalConfirm").addEventListener("click", async () => {
+      const nameVal = nameInput.value.trim();
+      const errEl = backdrop.querySelector("#publishModalError");
+      if (!nameVal) {
+        errEl.textContent = "Enter a name for the published Library project.";
+        errEl.style.display = "";
+        return;
+      }
+      const replaceLibraryId = stubSelect.value || "";
+      const target = replaceLibraryId ? allCandidates.find((c) => c.id === replaceLibraryId) : null;
+      const categoryVal = categorySelect.value.trim();
+      if (!categoryVal) {
+        errEl.textContent = "Pick a Library category for the published project.";
+        errEl.style.display = "";
+        return;
+      }
+      const purgeOnPublish = !!backdrop.querySelector("#publishPurgeCheckbox").checked;
+      const confirmMsg =
+        `Publish “${nameVal}” to the public Library (category: ${categoryVal})?` +
+        (target
+          ? target.stub
+            ? `\n\nThis retires the stub “${target.name}” — removed from Library, kept in My Tawala marked (stub).`
+            : `\n\nThis replaces the existing Library entry “${target.name}” with this version (overlay only, old entry not moved to My Tawala).`
+          : "") +
+        (purgeOnPublish
+          ? "\n\nThis project's :8080 responses will be purged right after publishing."
+          : "\n\nResponses will NOT be purged (checkbox unchecked).");
+      if (!window.confirm(confirmMsg)) return;
+
+      const result = TawalaTransfer.publishToLibrary({
+        sourceProjectId: projectId,
+        name: nameVal,
+        replaceLibraryId: replaceLibraryId || null,
+        category: categoryVal,
+      });
+      closePublishModal();
+      if (!result || !result.ok) {
+        const msg = `Couldn't publish “${nameVal}”\n\n${(result && result.error) || "Unknown error"}`;
+        setStatus(msg.split("\n")[0]);
+        window.alert(msg);
+        return;
+      }
+      const parts = [`Published “${nameVal}” to the Library.`];
+      if (result.retired) {
+        parts.push(`Retired stub “${result.retired.name}” → moved to My Tawala (kept marked (stub)).`);
+      } else if (result.replacedNonStub) {
+        parts.push(`Replaced existing Library entry “${result.replacedName || replaceLibraryId}” in place.`);
+      }
+
+      let purgeResult = null;
+      if (purgeOnPublish && typeof TawalaDemo.purgeAfterPublish === "function") {
+        setStatus(parts.join(" ") + " Purging responses…");
+        purgeResult = await TawalaDemo.purgeAfterPublish(projectId);
+        if (purgeResult.status === "success") {
+          const n =
+            purgeResult.javaDb && purgeResult.javaDb.deleted != null ? purgeResult.javaDb.deleted : "?";
+          parts.push(`Purged prior responses (deleted ${n} submission row(s)) — no one else will see them.`);
+        } else if (purgeResult.status === "skipped") {
+          parts.push(
+            `⚠️ Responses were NOT purged — “${nameVal}” isn’t linked to a live :8080 deploy yet.`
+          );
+        } else {
+          parts.push(
+            `⚠️ Responses were NOT purged — purge failed: ${purgeResult.error || "unknown error"}.`
+          );
+        }
+      } else if (!purgeOnPublish) {
+        parts.push("Responses were not purged (checkbox unchecked).");
+      }
+
+      const msg = parts.join(" ");
+      setStatus(msg);
+      window.alert(msg);
+      document.dispatchEvent(
+        new CustomEvent("tawala:project-published", {
+          detail: { sourceProjectId: projectId, result, purge: purgeResult },
+        })
+      );
+    });
+  }
+
+  const PULL_MODAL_ID = "tawalaPullModal";
+
+  function closePullModal() {
+    const el = document.getElementById(PULL_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handlePullModalKeydown, true);
+  }
+
+  function handlePullModalKeydown(ev) {
+    if (ev.key === "Escape") closePullModal();
+  }
+
+  /** Option label — Pull always shows what's already known: name + last-updated. */
+  function pullTargetOptionLabel(candidate, matchFlag) {
+    const name = escapeHtml(candidate.name);
+    const updated = candidate.updated ? ` (updated ${escapeHtml(candidate.updated)})` : "";
+    return `${name}${updated}${matchFlag ? ` — ${matchFlag} match` : ""}`;
+  }
+
+  function pullTargetOptionsHtml(matches, allCandidates) {
+    const matchIds = new Set(matches.map((m) => m.id));
+    const exact = matches.filter((m) => m.matchKind === "exact");
+    const loose = matches.filter((m) => m.matchKind === "loose");
+    const rest = allCandidates
+      .filter((c) => !matchIds.has(c.id))
+      .sort((a, b) => a.name.localeCompare(b.name));
+
+    let html = '<option value="">— Pick a Library project —</option>';
+    if (exact.length || loose.length) {
+      html += '<optgroup label="Possible matches">';
+      html += exact.map((m) => `<option value="${escapeHtml(m.id)}">${pullTargetOptionLabel(m, "exact")}</option>`).join("");
+      html += loose.map((m) => `<option value="${escapeHtml(m.id)}">${pullTargetOptionLabel(m, "possible")}</option>`).join("");
+      html += "</optgroup>";
+    }
+    if (rest.length) {
+      html += '<optgroup label="Other Library projects">';
+      html += rest.map((c) => `<option value="${escapeHtml(c.id)}">${pullTargetOptionLabel(c, null)}</option>`).join("");
+      html += "</optgroup>";
+    }
+    return html;
+  }
+
+  /**
+   * Pull dialog (Library → My Tawala upgrade, owner Aug 1, 2026 — was a grey stub). Picks a
+   * Library project to refresh THIS My Tawala project's content from — see
+   * TawalaTransfer.pullFromLibrary for exactly what gets overwritten vs preserved (this
+   * project's own name / deploy identity / submissions are never touched).
+   */
+  function openPullDialog(projectId) {
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
+      window.alert("Pull isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    const project = projectId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    if (!project) {
+      window.alert(`Can't pull — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+    closePullModal();
+
+    const displayName = TawalaDemo.displayName(project.name || projectId);
+    const allCandidates =
+      typeof TawalaTransfer.libraryReplaceCandidates === "function"
+        ? TawalaTransfer.libraryReplaceCandidates()
+        : [];
+    if (!allCandidates.length) {
+      window.alert("No Library projects are available to pull from right now.");
+      return;
+    }
+    const matches =
+      typeof TawalaTransfer.findPullCandidates === "function"
+        ? TawalaTransfer.findPullCandidates(projectId, project.name)
+        : [];
+    const exact = matches.filter((m) => m.matchKind === "exact");
+    const preselectId = exact.length === 1 ? exact[0].id : "";
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = PULL_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal" role="dialog" aria-modal="true" aria-labelledby="pullModalTitle">' +
+      `<h3 id="pullModalTitle">Pull from Library</h3>` +
+      `<p class="pm-hint">Refreshes “${escapeHtml(displayName)}” with a public Library project's current description, category, and reference start points (mock — browser overlay only).</p>` +
+      '<label class="tawala-modal-field" for="pullSourceSelect">Pull content from' +
+      `<select id="pullSourceSelect">${pullTargetOptionsHtml(matches, allCandidates)}</select>` +
+      "</label>" +
+      '<p class="pm-hint">Keeps this project\u2019s own name, rating, comments, and — importantly — its own <code>:8080</code> deploy / submission data. Only descriptive content is refreshed; use EXPORT/BACKUP first if you want a safety copy.</p>' +
+      '<p class="pm-hint" id="pullModalError" role="alert" style="display:none;"></p>' +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="pullModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="pullModalConfirm">Pull</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", handlePullModalKeydown, true);
+
+    const sourceSelect = backdrop.querySelector("#pullSourceSelect");
+    sourceSelect.value = preselectId;
+    sourceSelect.focus();
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closePullModal();
+    });
+    backdrop.querySelector("#pullModalCancel").addEventListener("click", closePullModal);
+
+    backdrop.querySelector("#pullModalConfirm").addEventListener("click", () => {
+      const libraryId = sourceSelect.value;
+      const errEl = backdrop.querySelector("#pullModalError");
+      if (!libraryId) {
+        errEl.textContent = "Pick a Library project to pull from.";
+        errEl.style.display = "";
+        return;
+      }
+      const source = allCandidates.find((c) => c.id === libraryId);
+      const sourceName = source ? source.name : libraryId;
+      const confirmMsg =
+        `Pull “${sourceName}” into “${displayName}”?\n\n` +
+        "This overwrites the description, category, and reference start points on this My Tawala project. " +
+        "Your own name, rating, comments, and :8080 deploy / submission data are not touched.";
+      if (!window.confirm(confirmMsg)) return;
+
+      const result = TawalaTransfer.pullFromLibrary({ myTawalaProjectId: projectId, libraryId });
+      closePullModal();
+      if (!result || !result.ok) {
+        const msg = `Couldn't pull “${sourceName}”\n\n${(result && result.error) || "Unknown error"}`;
+        setStatus(msg.split("\n")[0]);
+        window.alert(msg);
+        return;
+      }
+      const msg = `Pulled “${result.sourceName}” into “${displayName}” — description, category, and reference start points refreshed.`;
+      setStatus(msg);
+      window.alert(msg);
+      document.dispatchEvent(
+        new CustomEvent("tawala:project-pulled", { detail: { projectId, result } })
+      );
+    });
+  }
+
   async function handleOpClick(ev) {
     const btn = ev.target.closest("[data-op], .pm-action, .pm-icon-action");
     if (!btn || !btn.dataset || btn.disabled) return;
@@ -874,6 +1437,9 @@
     const op = btn.dataset.op || "";
 
     if (wired === "false" || !wired) return;
+
+    /* Use = native <a> to :8080 start URL (no purge). Let the browser follow href. */
+    if (wired === "use-project") return;
 
     if (op === "expand-all" || op === "collapse-all") {
       const open = op === "expand-all";
@@ -886,6 +1452,43 @@
     if (wired === "edit-categories" || op === "edit-categories") {
       /* library.html listens for data-op=edit-categories and opens the editor. */
       document.dispatchEvent(new CustomEvent("tawala:edit-categories"));
+      return;
+    }
+
+    if (wired === "publish-mytawala") {
+      openPublishDialog(projectId);
+      return;
+    }
+
+    if (wired === "pull-library") {
+      openPullDialog(projectId);
+      return;
+    }
+
+    if (
+      wired === "export-mytawala" ||
+      wired === "import-mytawala" ||
+      wired === "backup-mytawala" ||
+      wired === "restore-mytawala"
+    ) {
+      if (typeof TawalaDataOps === "undefined") {
+        setStatus("Data ops unavailable — js/data-ops.js didn't load.");
+        window.alert("Couldn't run this action\n\nData ops support script didn't load. Refresh the page and try again.");
+        return;
+      }
+      if (btn.dataset.busy === "1") return;
+      btn.dataset.busy = "1";
+      const prevDisabled = btn.disabled;
+      btn.disabled = true;
+      try {
+        if (wired === "export-mytawala") await TawalaDataOps.handleExportClick(projectId);
+        else if (wired === "import-mytawala") await TawalaDataOps.handleImportClick(projectId);
+        else if (wired === "backup-mytawala") await TawalaDataOps.handleBackupClick(projectId);
+        else if (wired === "restore-mytawala") await TawalaDataOps.handleRestoreClick(projectId);
+      } finally {
+        btn.dataset.busy = "";
+        btn.disabled = prevDisabled;
+      }
       return;
     }
 
@@ -1030,6 +1633,7 @@
     renderLibraryListingControls,
     renderDetailPanel,
     renderOpsCatalog,
+    openPublishDialog,
     bind,
   };
 })();
