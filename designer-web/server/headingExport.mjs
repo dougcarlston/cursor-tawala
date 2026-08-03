@@ -16,10 +16,22 @@ function decodeEntities(text) {
     .replace(/&quot;/g, '"');
 }
 
+/**
+ * Only matches real HTML tags (start with a letter, optionally after `/`, and the opening
+ * `<` is not itself preceded by another `<`) — NOT a literal `<<VariableName>>` token.
+ * A naive `/<[^>]*>/` eats `<Name>` out of `<<Name>>` (the *second* `<` still looks like a
+ * tag start even once the first `<` is excluded) and leaves a stray `<`/`>` behind (owner
+ * bug Aug 1, 2026: `<<Customize_Title>> Administration` collapsed to `> Administration`).
+ * Heading has no field-token chrome, so these tokens reach here as plain literal text and
+ * must survive tag-stripping intact. Same reasoning applies to the `<br>`/`<div>`/`<p>`
+ * literals below — all guarded with the same negative lookbehind.
+ */
+const HTML_TAG_RE = /(?<!<)<\/?[a-zA-Z][^>]*>/g;
+
 function stripTags(html) {
   return String(html ?? "")
     .replace(/\u200b/g, "")
-    .replace(/<[^>]*>/g, "");
+    .replace(HTML_TAG_RE, "");
 }
 
 /**
@@ -35,10 +47,10 @@ export function headingPlainText(content) {
   return decodeEntities(
     String(content ?? "")
       .replace(/\u200b/g, "")
-      .replace(/<br\s*\/?>/gi, "\n")
-      .replace(/<\/(div|p|h[1-6])>/gi, "\n")
-      .replace(/<(div|p)[^>]*>/gi, "")
-      .replace(/<[^>]*>/g, ""),
+      .replace(/(?<!<)<br\s*\/?>/gi, "\n")
+      .replace(/(?<!<)<\/(div|p|h[1-6])>/gi, "\n")
+      .replace(/(?<!<)<(div|p)[^>]*>/gi, "")
+      .replace(HTML_TAG_RE, ""),
   )
     .replace(/\r\n/g, "\n")
     .replace(/\n{3,}/g, "\n\n")
@@ -123,8 +135,11 @@ export function headingSegments(item) {
 
   /** @type {{ kind: 'text', type: 'Main' | 'Sub', text: string } | { kind: 'br' }}[] */
   const tokens = [];
+  // Plain-text alternative also matches a literal `<<Name>>` token whole, so the trailing
+  // catch-all (real tags only, via `HTML_TAG_RE`-equivalent `<\/?[a-zA-Z]…`) never eats its
+  // first `<` and turns it into a stray `>` (owner bug Aug 1, 2026).
   const re =
-    /<span\b[^>]*class=["'][^"']*heading-size-(main|sub)[^"']*["'][^>]*>([\s\S]*?)<\/span>|<br\s*\/?>|<\/(?:div|p)>|<(?:div|p)[^>]*>|([^<]+)|<[^>]+>/gi;
+    /<span\b[^>]*class=["'][^"']*heading-size-(main|sub)[^"']*["'][^>]*>([\s\S]*?)<\/span>|<br\s*\/?>|<\/(?:div|p)>|<(?:div|p)[^>]*>|(<<[^<>]*>>|[^<]+)|<\/?[a-zA-Z][^>]*>/gi;
   let m;
   while ((m = re.exec(html))) {
     if (m[1]) {
@@ -214,6 +229,30 @@ export function headingSegments(item) {
 }
 
 /**
+ * Heading text may carry literal `<<VariableName>>` tokens (e.g. a Process
+ * `Set Customize_Title` value shown in a title like `<<Customize_Title>> Administration`).
+ * Design/Preview show these as literal placeholder text (no field-token chrome; Heading
+ * has no rich-text field insertion like Text/Document), but legacy `TextItem.Text`
+ * (`HeadingItem` extends `TextItem`) converts any `<<Name>>` run straight into a
+ * `<field name="Name"/>` XML element — **unqualified**, no form-name prefix — via
+ * `Regex.Replace(text, "<<([^>]+)>>", "<field name=\"$1\"/>")`. Deploy must mirror that
+ * exactly or Java never resolves the token and the raw `<<...>>` reaches the browser as
+ * unescaped HTML (renders as a stray `>` — see owner bug Aug 1, 2026).
+ */
+function headingTextToXml(text, escAttr, escText) {
+  const s = String(text ?? "");
+  if (!s) return "";
+  return s
+    .split(/(<<[^<>]+>>)/g)
+    .map((part) => {
+      const m = /^<<\s*([^<>]+?)\s*>>$/.exec(part);
+      if (!m) return escText(part);
+      return `<field name="${escAttr(m[1].trim())}"/>`;
+    })
+    .join("");
+}
+
+/**
  * One or more legacy `<heading>` elements for Deploy.
  * Extra segments after the first get labels `H1.2`, `H1.3`, … so they stay unique.
  */
@@ -226,7 +265,7 @@ export function headingToXml(item, escAttr, escText) {
   return segs
     .map((seg, i) => {
       const lab = i === 0 ? label : `${label}.${i + 1}`;
-      return `<heading label="${escAttr(lab)}" type="${seg.type}">${escText(seg.text)}</heading>`;
+      return `<heading label="${escAttr(lab)}" type="${seg.type}">${headingTextToXml(seg.text, escAttr, escText)}</heading>`;
     })
     .join("");
 }

@@ -365,7 +365,9 @@ Example (SportsDashboards template in test fixtures):
 | Table tools gated on `CursorInTable` | Yes | N/A |
 | Text inline rich edit (Properties) | N/A (canvas only) | `RichTextEditor` with embedded mini-toolbar (B/I/U + size only) |
 | FIB underscore → blanks | Yes | Design idle keeps `_`; Preview/`fibPrompt` strips `_` into blank inputs. Smoke + `npm test`. |
-| FIB alternate label | Yes | `blank.name` / `alternateLabel` partial |
+| Legacy import — sequential FIB blanks | Yes — each `_` run → own blank / field | **Gap (batch queue C1):** conversion often glues sequential blanks into one field and severs multi-blank alternate labels. See `DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**. Repro: Online Exam Builder. |
+| Legacy import — MCQ alternate labels | Yes — field name ≠ design Qn label | **Gap (batch queue C2):** alts lost; reverts to Q1, Q2, …. Same open-bugs section. |
+| FIB alternate label | Yes | `blank.name` / `alternateLabel` partial; multi-blank alts blocked by C1 |
 | FIB height | Yes | Not exposed |
 | FIB validation types | Yes | Not exposed |
 | MCQ inline choice entry | Yes | JSON choices array |
@@ -389,4 +391,4 @@ Example (SportsDashboards template in test fixtures):
 
 ---
 
-*Last updated: July 24, 2026 — MCQ question rich-text Deploy (`mcToXml`); earlier Jul 23 Deploy/Preview focus first FIB when it precedes first MCQ; MCQ Configure Function.*
+*Last updated: Aug 2, 2026 — conversion batch queue C1/C2 cross-link (`DESIGNER_OPEN_BUGS.md`). Prior: Aug 1 sequential FIB blank park; July 24 MCQ rich-text Deploy; Jul 23 first-FIB focus.*

@@ -69,6 +69,9 @@ const choiceLetter = (i: number) => String.fromCharCode(97 + (i % 26));
  * MCQ item — canvas-inline WYSIWYG (spec: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` MCQ section;
  * legacy `McqItemView`). Q-badge, rich question (B/I/U via palette), inline lettered choices
  * where Enter adds the next choice, and a property strip (multi-select, required, choice source).
+ *
+ * C5 (DESIGNER_OPEN_BUGS): question idle/edit inject raw plain `<<field>>` via innerHTML —
+ * must use embedPlainFieldTokensAsHtml first (choices already do); else browser tag-parses.
  */
 export function McqCanvasRow({ item, index, formName, selected }: Props) {
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);

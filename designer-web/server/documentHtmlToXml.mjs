@@ -3,6 +3,8 @@
  * Handles paragraphs, tables, field/function tokens, and basic inline formatting.
  */
 
+import { conditionOperandXml } from "./conditionOperandXml.mjs";
+
 /** Empty paragraph used as a Deploy spacer (matches Form Text / response-totals habit). */
 const BLANK_PARAGRAPH_XML =
   `<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>`;
@@ -605,7 +607,7 @@ function hyperlinkTokenToXml(attrs, escAttr, escText) {
           if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
             return `<${op} field="${escAttr(field)}"/>`;
           }
-          return `<${op} field="${escAttr(field)}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+          return `<${op} field="${escAttr(field)}">${conditionOperandXml(row.value, escAttr)}</${op}>`;
         })
         .join("");
       conditions = `<displayConditions>${inner}</displayConditions>`;
@@ -888,15 +890,40 @@ function formFromFieldRef(raw) {
   let s = String(raw ?? "").trim();
   if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
   if (/^Record:/i.test(s)) s = s.slice("Record:".length).trim();
-  const parts = s.split(":").filter(Boolean);
-  if (parts.length >= 2) return parts[0];
-  return "";
+  if (!s.includes(":")) return "";
+  // FIB Item:blank (FIB1:a, Q3:email) uses letter/short blank after first colon —
+  // not a Form:Field pair for multi-form itemization.
+  const colon = s.indexOf(":");
+  const first = s.slice(0, colon).trim();
+  const rest = s.slice(colon + 1).trim();
+  if (!first || !rest) return "";
+  // Single-letter blank slots (legacy a/b/c blanks) never name a form.
+  if (/^[a-z]$/i.test(rest.split(":")[0] ?? "")) return "";
+  return first;
 }
 
 /** Prefer explicit form-name; else infer from MCQ/blank field refs (Tables functions). */
 function inferFormName(config) {
+  const forms = inferFormNames(config);
+  return forms[0] ?? "";
+}
+
+/**
+ * Itemization often joins multiple forms (Online Exam: Question + Answer).
+ * Emit every distinct form referenced by columns / conditions / field refs.
+ */
+function inferFormNames(config) {
+  const found = [];
+  const add = (form) => {
+    const f = String(form ?? "").trim();
+    if (f && !found.includes(f)) found.push(f);
+  };
   const explicit = String(config["form-name"] ?? "").trim();
-  if (explicit) return explicit;
+  if (explicit) add(explicit);
+  // Comma-separated multi-form (rare) or array formNames
+  if (Array.isArray(config.forms)) {
+    for (const f of config.forms) add(f);
+  }
   const candidates = [
     config.field,
     config["field-name"],
@@ -908,50 +935,42 @@ function inferFormName(config) {
     config["popular-choice-display-field-name"],
     config["simple-list-field"],
   ];
-  for (const c of candidates) {
-    const form = formFromFieldRef(c);
-    if (form) return form;
-  }
+  for (const c of candidates) add(formFromFieldRef(c));
   const cols = config.column ?? config.columns;
   if (Array.isArray(cols)) {
-    for (const col of cols) {
-      const form = formFromFieldRef(col?.contents ?? col?.field);
-      if (form) return form;
-    }
+    for (const col of cols) add(formFromFieldRef(col?.contents ?? col?.field));
   }
   if (Array.isArray(config.conditionsRows)) {
-    for (const row of config.conditionsRows) {
-      const form = formFromFieldRef(row?.field);
-      if (form) return form;
-    }
+    for (const row of config.conditionsRows) add(formFromFieldRef(row?.field));
   }
-  return "";
+  return found;
 }
 
 function conditionsXml(config, escAttr, escText) {
-  const form = inferFormName(config);
+  const forms = inferFormNames(config);
+  const form = forms[0] ?? "";
   const rows = config.conditionsRows;
   const combinator = config.conditionsCombinator === "or" ? "or" : "and";
-  const formTag = form ? `<form name="${escAttr(form)}"/>` : "";
+  const formTags = forms.map((f) => `<form name="${escAttr(f)}"/>`).join("");
   if (Array.isArray(rows)) {
     const filled = rows.filter((r) => r?.field?.trim());
     if (!filled.length) {
-      return form ? `<conditions>${formTag}</conditions>` : `<conditions/>`;
+      return formTags ? `<conditions>${formTags}</conditions>` : `<conditions/>`;
     }
     const parts = filled.map((row) => {
       const op = normalizeXmlConditionOp(row.op);
-      const field = conditionFieldForXml(row.field, form);
+      const field = conditionFieldForXml(row.field, form, forms);
       if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
         return `<${op} field="${escAttr(field)}"/>`;
       }
-      return `<${op} field="${escAttr(field)}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+      return `<${op} field="${escAttr(field)}">${conditionOperandXml(row.value, escAttr)}</${op}>`;
     });
     // Legacy: inner <conditions>; multi-row is nested binary <and>/<or> (DirtBowl).
     const body = nestConditionOps(parts, combinator);
-    return `<conditions>${formTag}<conditions>${body}</conditions></conditions>`;
+    return `<conditions>${formTags}<conditions>${body}</conditions></conditions>`;
   }
-  if (form) {
-    return `<conditions>${formTag}</conditions>`;
+  if (formTags) {
+    return `<conditions>${formTags}</conditions>`;
   }
   return `<conditions/>`;
 }
@@ -985,26 +1004,38 @@ function nestConditionOps(parts, combinator) {
 }
 
 /** Deploy Where fields use Record:Form:Field (DirtBowl / SportsDashboards). */
-function conditionFieldForXml(raw, defaultForm) {
+function conditionFieldForXml(raw, defaultForm, knownForms = []) {
   let s = String(raw ?? "").trim();
   if (s.startsWith("<<") && s.endsWith(">>")) s = s.slice(2, -2).trim();
   if (!s) return "";
   if (/^Record:/i.test(s)) {
     const rest = s.slice("Record:".length).trim();
+    // Already Record:Form:… with a known form prefix
+    const known = [defaultForm, ...knownForms].filter(Boolean);
+    if (known.some((f) => rest === f || rest.startsWith(`${f}:`))) return s;
     // Record:FIB1:a (item:blank, form missing) → Record:Form 1:FIB1:a
     if (defaultForm && rest && !rest.startsWith(`${defaultForm}:`)) {
       return `Record:${defaultForm}:${rest}`;
     }
     return s;
   }
-  if (defaultForm) {
-    // Bare FIB Item:blank (FIB1:a) or Email — prefix the form for Record:Form:Field.
-    if (s === defaultForm || s.startsWith(`${defaultForm}:`)) {
+  if (s.includes(":")) {
+    const first = s.split(":")[0];
+    // Multi-form MQL: Answer:SessionId next to Question columns → Record:Answer:SessionId
+    const known = [defaultForm, ...knownForms].filter(Boolean);
+    if (known.includes(first)) {
       return `Record:${s}`;
     }
+    // FIB Item:blank (FIB1:a) relative to form-name → Record:Form 1:FIB1:a
+    if (defaultForm) {
+      return `Record:${defaultForm}:${s}`;
+    }
+    return `Record:${s}`;
+  }
+  if (defaultForm) {
+    // Bare field / blank letter → prefix default form
     return `Record:${defaultForm}:${s}`;
   }
-  if (s.includes(":")) return `Record:${s}`;
   return s;
 }
 

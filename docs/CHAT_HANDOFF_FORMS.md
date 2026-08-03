@@ -37,6 +37,8 @@ cd ~/Projects/AI-Tawala/designer-web && npm run dev
 **Active track:** Browser Designer — **Forms** slice only.  
 **Parked:** 8080 runtime parity, `website-mock/`.
 
+**Aug 2 — legacy `.tawala` import bugs (inventory only, batch-fix later):** sequential FIB blanks glued + multi-alt lost; MCQ alternate labels lost (Q1/Q2); function tables; Heading field-token (Deploy fixed). → `DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**.
+
 ### Done — Forms shell & canvas-inline items
 
 | Area | Status |

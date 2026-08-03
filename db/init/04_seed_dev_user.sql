@@ -1,6 +1,10 @@
 -- Dev Designer user for Java backend (/client API) when using docker-compose Postgres.
 -- Password: dev  (MD5 hash matches com.tawala.domain.User.hashPassword)
 -- Safe to re-run: uses ON CONFLICT DO NOTHING.
+--
+-- email is deliberately @localhost (see designer@localhost too). Process Send with no
+-- explicit From uses the project owner as Reply-To; Resend rejects @localhost, so
+-- Email.buildSafeReplyTo omits Reply-To for these users (SMTP From stays server-owned).
 
 INSERT INTO users (
     user_id,

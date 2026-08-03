@@ -623,18 +623,106 @@ function resolveTheme(project, form) {
   return form.themePath || project.themePath || "default";
 }
 
-export function prepareFormContext(project, form, session) {
+export function prepareFormContext(project, form, session, options = {}) {
   const ctx = buildContext(session, form.name);
   ctx.formName = form.name;
   ctx.blankAliases = blankAliasesFromForm(form);
   ctx.project = project;
 
-  if (form.preProcess) {
+  if (form.preProcess && !options.skipPreProcess) {
     runProcessByName(project, form.preProcess, ctx);
     Object.assign(session.fields, ctx.fields);
   }
 
   return ctx;
+}
+
+/**
+ * Completes a form the way Java does when next segment is null: record response,
+ * run post-process, then navigate (show form / document).
+ * Extracted so initial skip-to-end-of-form can reuse the same path.
+ */
+function completeFormWithProcess(project, form, formName, session, baseUrl, uniqueId, ctx) {
+  appendFormRecord(session, formName, form);
+
+  if (form.process) {
+    const nav = runProcessByName(project, form.process, ctx);
+    Object.assign(session.fields, ctx.fields);
+    clearFormAnswers(session, formName, form);
+    if (nav.type === "form") {
+      const destForm = project.forms?.find((f) => f.name === nav.form);
+      if (nav.form !== formName) clearFormAnswers(session, nav.form, destForm);
+      formState(session, nav.form).segmentIndex = 0;
+      formState(session, nav.form).skipStartLabel = null;
+      return renderFormPage(project, nav.form, baseUrl, uniqueId, session);
+    }
+    if (nav.type === "documents") {
+      const thenForm = nav.thenForm || null;
+      let appendHtml = "";
+      if (thenForm) {
+        formState(session, thenForm).segmentIndex = 0;
+        formState(session, thenForm).skipStartLabel = null;
+        const thenFormDef = project.forms?.find((f) => f.name === thenForm);
+        if (thenForm !== formName) clearFormAnswers(session, thenForm, thenFormDef);
+        clearFormAnswers(session, formName, form);
+        appendHtml = buildFormPageParts(project, thenForm, baseUrl, uniqueId, session, {
+          embedded: true,
+        }).body;
+      }
+      return renderDocumentsPage(project, nav.documents, session, baseUrl, uniqueId, {
+        fromForm: formName,
+        thenForm: appendHtml ? null : thenForm,
+        appendHtml,
+        freshThenForm: true,
+        freshBack: true,
+      });
+    }
+    return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
+      note: `Post-process “${form.process}” finished without a show step in dev runtime.`,
+    });
+  }
+
+  clearFormAnswers(session, formName, form);
+  return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
+    note: isRegistrationForm(formName)
+      ? "Dev runtime recorded field values."
+      : "Your response has been recorded.",
+  });
+}
+
+/**
+ * Java Form.firstPage / findNextSegment: skip-instructions at the *start* of a form
+ * (no visible items before them) run before anything is shown. Skip to __EndOfForm__
+ * immediately runs the post-process (Online Exam Builder’s empty Scoring form trick).
+ * Returns HTML when navigation finished the form; null to continue normal render.
+ */
+function maybeHandleInitialSkips(project, form, formName, baseUrl, uniqueId, session, options = {}) {
+  if (options.designerPreview || options.embedded || options.skipInitialSkips) return null;
+
+  const { segments, initialSkips } = buildFormSegments(form);
+  if (!initialSkips?.length) return null;
+
+  // preProcess is not run yet — match Java: pre then initial skip then maybe post
+  const ctx = prepareFormContext(project, form, session);
+  Object.assign(session.fields, ctx.fields);
+
+  const skipTarget = runCommands(initialSkips, ctx);
+  Object.assign(session.fields, ctx.fields);
+
+  if (skipTarget === "__EndOfForm__") {
+    return completeFormWithProcess(project, form, formName, session, baseUrl, uniqueId, ctx);
+  }
+
+  if (skipTarget && skipTarget !== "__PROCESS_DONE__") {
+    const dest = findSegmentForSkip(segments, skipTarget);
+    const state = formState(session, formName);
+    state.segmentIndex = dest.index;
+    state.skipStartLabel = dest.startLabel;
+    // preProcess already ran; tell build path not to re-run it
+    options._preProcessAlreadyRan = true;
+  }
+
+  return null;
 }
 
 function getSegmentItems(form, session, options = {}) {
@@ -688,7 +776,9 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
   }
 
   const theme = resolveTheme(project, form);
-  const ctx = prepareFormContext(project, form, session);
+  const ctx = prepareFormContext(project, form, session, {
+    skipPreProcess: Boolean(options._preProcessAlreadyRan),
+  });
 
   if (options.fromLabel) {
     const dest = findSegmentForSkip(buildFormSegments(form).segments, options.fromLabel);
@@ -768,6 +858,24 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
 }
 
 export function renderFormPage(project, formName, baseUrl, uniqueId, session, options = {}) {
+  const form = project.forms?.find((f) => f.name === formName);
+  if (form) {
+    // Mutate a local options object so initial-skip can set _preProcessAlreadyRan
+    // without affecting external callers' option objects.
+    const opts = { ...options };
+    const autoHtml = maybeHandleInitialSkips(
+      project,
+      form,
+      formName,
+      baseUrl,
+      uniqueId,
+      session,
+      opts,
+    );
+    if (autoHtml != null) return autoHtml;
+    const parts = buildFormPageParts(project, formName, baseUrl, uniqueId, session, opts);
+    return pageShell(parts.title, parts.body, parts.banner, parts.theme);
+  }
   const parts = buildFormPageParts(project, formName, baseUrl, uniqueId, session, options);
   return pageShell(parts.title, parts.body, parts.banner, parts.theme);
 }
@@ -799,7 +907,9 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
       ctx.fields.Message = pageErr;
       state.segmentIndex = 0;
       state.skipStartLabel = "T1";
-      return renderFormPage(project, formName, baseUrl, uniqueId, session);
+      return renderFormPage(project, formName, baseUrl, uniqueId, session, {
+        skipInitialSkips: true,
+      });
     }
     session.fields.Message = " ";
     ctx.fields.Message = " ";
@@ -810,7 +920,9 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
     if (fibErr) {
       session.fields.Message = fibErr;
       ctx.fields.Message = fibErr;
-      return renderFormPage(project, formName, baseUrl, uniqueId, session);
+      return renderFormPage(project, formName, baseUrl, uniqueId, session, {
+        skipInitialSkips: true,
+      });
     }
     if (session.fields.Message && session.fields.Message !== " ") {
       session.fields.Message = " ";
@@ -821,76 +933,30 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
   const skipTarget = runSkipBlocks(prevSegment.skipBlocks, ctx);
   Object.assign(session.fields, ctx.fields);
 
-  const finishFormAndMaybeProcess = () => {
-    // Persist this response for itemization tables before clearing answers.
-    appendFormRecord(session, formName, form);
-
-    if (form.process) {
-      const nav = runProcessByName(project, form.process, ctx);
-      Object.assign(session.fields, ctx.fields);
-      // Clear after process so Object.assign(ctx.fields) cannot restore submitted answers.
-      // Records (for Document MQL tables) are kept separately.
-      clearFormAnswers(session, formName, form);
-      if (nav.type === "form") {
-        const destForm = project.forms?.find((f) => f.name === nav.form);
-        if (nav.form !== formName) clearFormAnswers(session, nav.form, destForm);
-        formState(session, nav.form).segmentIndex = 0;
-        formState(session, nav.form).skipStartLabel = null;
-        return renderFormPage(project, nav.form, baseUrl, uniqueId, session);
-      }
-      if (nav.type === "documents") {
-        const thenForm = nav.thenForm || null;
-        let appendHtml = "";
-        if (thenForm) {
-          formState(session, thenForm).segmentIndex = 0;
-          formState(session, thenForm).skipStartLabel = null;
-          const thenFormDef = project.forms?.find((f) => f.name === thenForm);
-          if (thenForm !== formName) clearFormAnswers(session, thenForm, thenFormDef);
-          // Ensure aliases for *this* form are gone before stacking the blank questionnaire.
-          clearFormAnswers(session, formName, form);
-          appendHtml = buildFormPageParts(project, thenForm, baseUrl, uniqueId, session, {
-            embedded: true,
-          }).body;
-        }
-        return renderDocumentsPage(project, nav.documents, session, baseUrl, uniqueId, {
-          fromForm: formName,
-          thenForm: appendHtml ? null : thenForm,
-          appendHtml,
-          freshThenForm: true,
-          freshBack: true,
-        });
-      }
-      return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
-        note: `Post-process “${form.process}” finished without a show step in dev runtime.`,
-      });
-    }
-
-    clearFormAnswers(session, formName, form);
-    return renderSubmitAck(project, form, session, baseUrl, uniqueId, {
-      note: isRegistrationForm(formName)
-        ? "Dev runtime recorded field values."
-        : "Your response has been recorded.",
-    });
-  };
-
   if (skipTarget === "__EndOfForm__") {
-    return finishFormAndMaybeProcess();
+    return completeFormWithProcess(project, form, formName, session, baseUrl, uniqueId, ctx);
   }
 
   if (skipTarget) {
     const dest = findSegmentForSkip(segments, skipTarget);
     state.segmentIndex = dest.index;
     state.skipStartLabel = dest.startLabel;
-    return renderFormPage(project, formName, baseUrl, uniqueId, session);
+    return renderFormPage(project, formName, baseUrl, uniqueId, session, {
+      skipInitialSkips: true,
+      _preProcessAlreadyRan: true,
+    });
   }
 
   if (segIdx + 1 < segments.length) {
     state.segmentIndex = segIdx + 1;
     state.skipStartLabel = null;
-    return renderFormPage(project, formName, baseUrl, uniqueId, session);
+    return renderFormPage(project, formName, baseUrl, uniqueId, session, {
+      skipInitialSkips: true,
+      _preProcessAlreadyRan: true,
+    });
   }
 
-  return finishFormAndMaybeProcess();
+  return completeFormWithProcess(project, form, formName, session, baseUrl, uniqueId, ctx);
 }
 
 function applySubmissionToSession(session, formName, body, form) {

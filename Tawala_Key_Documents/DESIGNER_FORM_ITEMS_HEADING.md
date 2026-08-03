@@ -187,6 +187,39 @@ Heading styling is controlled by **Heading Type** (Main/Sub) and theme/global he
 4. Edge: Main+Sub as adjacent spans with **no** `<br>` (wrap-looking Design) still splits on export.
 5. Unit: `cd designer-web && npm test -- --run server/headingExport.test.mjs`
 
+### Process-variable token in Heading title (owner bug Aug 1, 2026)
+
+A Heading may show a literal `<<VariableName>>` token set by a Process (e.g.
+`SetupCustomizationVariables`: `Get Records` → `ForEach` → `Set Customize_Title to
+<<Configuration:SetupVariables:Title>>`), then a Heading like `<<Customize_Title>>
+Administration` on the target form. Real example: **Online Exam Builder** →
+`Administration` form. Legacy `HeadingItem` extends `TextItem`, whose `Text` setter
+converts any `<<Name>>` run straight into `<field name="Name"/>` XML —
+**unqualified**, no form-name prefix (it is a Process variable, not a field of the
+form it happens to sit on).
+
+- **Root cause (fixed):** `headingExport.mjs`'s tag-stripping regexes matched the
+  *second* `<` of a literal `<<Name>>` as if it were a real tag start (`<Name>` looked
+  like `<div>`), deleting the field name and leaving a stray `<`/`>` — Deploy showed
+  `> Administration` instead of the resolved title. Fixed with a negative lookbehind
+  (`(?<!<)`) on every tag-matching regex in that file, plus a dedicated
+  `<<[^<>]*>>` alternative in the segment tokenizer, so literal tokens survive intact.
+  `headingToXml` now also emits `<field name="…"/>` for each surviving `<<Name>>` run
+  (mirroring the legacy `TextItem.Text` regex) instead of just escaping it as text.
+- **Smoke:** Heading content `<<Customize_Title>> Administration` on any form → Deploy
+  XML must contain `<field name="Customize_Title"/> Administration` inside the
+  `<heading>` element (no form-name prefix). Unit:
+  `cd designer-web && npm test -- --run server/headingExport.test.mjs server/jsonToXml.test.mjs`.
+- **Still open:** Design canvas shows the literal `<<Customize_Title>>` text (no
+  field-token chrome/resolution) — matches legacy (Heading has no Insert-menu field
+  UI); Preview tab likewise does not resolve the token to its runtime value. Deploy/Java
+  is the only path that resolves it. Do not "fix" Design/Preview to pre-resolve this
+  without an owner ask (isolation rule).
+- **Convert queue (C4):** Deploy path is closed. If a fresh `.tawala` Open **mangles**
+  the token in stored JSON (not just Design’s literal display), file under
+  `DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)** — batch
+  with other convert bugs; do not one-off.
+
 ---
 
 ## Source

@@ -39,7 +39,11 @@ describe("resolveTheme", () => {
     expect(BASE_FORM_CSS).toMatch(
       /\.preview-itemization-table table\s*\{[^}]*width:\s*max-content/,
     );
-    expect(BASE_FORM_CSS).toContain("--tawala-list-table-max-width");
+    expect(BASE_FORM_CSS).toContain("--tawala-list-table-max-width: 100%");
+    // Wrapper owns cap; inner table max-width: none (Deploy form-layout-core parity).
+    expect(BASE_FORM_CSS).toMatch(
+      /\.preview-itemization-table table\s*\{[^}]*max-width:\s*none/,
+    );
   });
 
   it("includes Text Instructional / Error styles for Preview + Documents", () => {

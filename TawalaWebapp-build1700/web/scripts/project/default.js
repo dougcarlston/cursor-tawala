@@ -976,7 +976,10 @@ Tawala.DataTable = function() {
 			this.dataTable = new YAHOO.widget.DataTable( this.container, this.columnDefs, 
 															this.dataSource, dataTableOptions, {renderLoopSize: 100});
 			
-			// Content-fit: clear YUI’s stretch widths so columns hug text (CSS caps at ~6in).
+			// Content-fit: clear YUI stretch widths so columns hug text.
+			// CSS caps the wrapper at 100% of the form/document content column
+			// (form-layout-core --tawala-list-table-max-width), so multi-column
+			// lists expand into free theme space instead of a fixed ~6in box.
 			if(!this.fixTableWidth) {
 				this.fitTableToContent();
 			}
@@ -990,10 +993,22 @@ Tawala.DataTable = function() {
 			try {
 				if(!this.container) { return; }
 				YAHOO.util.Dom.setStyle(this.container, "width", "auto");
-				YAHOO.util.Dom.setStyle(this.container, "maxWidth", "");
+				// Cap at content column (CSS var); clear any fixed px max from YUI.
+				YAHOO.util.Dom.setStyle(this.container, "maxWidth", "100%");
 				var tables = this.container.getElementsByTagName("table");
 				for(var ti = 0; ti < tables.length; ti++) {
 					YAHOO.util.Dom.setStyle(tables[ti], "width", "auto");
+					YAHOO.util.Dom.setStyle(tables[ti], "maxWidth", "none");
+				}
+				// Scrollable DataTable dual-pane (hd/bd) stamps pixel widths that
+				// keep multi-column lists skinny with a horizontal slider.
+				var parts = this.container.getElementsByTagName("div");
+				for(var pi = 0; pi < parts.length; pi++) {
+					var cls = parts[pi].className || "";
+					if(cls.indexOf("yui-dt-bd") >= 0 || cls.indexOf("yui-dt-hd") >= 0) {
+						YAHOO.util.Dom.setStyle(parts[pi], "width", "auto");
+						YAHOO.util.Dom.setStyle(parts[pi], "maxWidth", "100%");
+					}
 				}
 			} catch(ignore) {}
 		},

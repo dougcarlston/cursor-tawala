@@ -181,21 +181,49 @@ form div.fib:not(.vertical) > div > script {
 /*
  * List tables (MQL / Response Totals / similar table.component):
  * - Expand columns so cell text stays on one line (no wrap / “doubled” lines).
- * - Cap overall width at ~6in (or 100% of the form if narrower).
- * - Shrink to content and hug the left — no empty full-width frame.
+ * - Grow with content up to the **full form/document content column**
+ *   (never a fixed inch ceiling like the old 6in cap that left empty theme
+ *   chrome to the right while forcing a horizontal slider).
+ * - Horizontal scroll only if content still exceeds the page content column.
+ * Narrow Signup-style lists stay content-fit (no empty stretch box).
  * Manual column drag-resize (YUI) still allowed when Print/Export is on.
+ *
+ * Cap reference is the project content column (#form / document / container),
+ * not an absolute width. Override with --tawala-list-table-max-width if needed.
  */
 :root {
-	--tawala-list-table-max-width: 6in;
+	--tawala-list-table-max-width: 100%;
 }
 
+/*
+ * Ensure form/document column can use the full project container when a wide
+ * list table needs the space (themes that only color body leave empty chrome
+ * to the right of a shrink-wrapped content box).
+ */
+#form,
+form#form,
+div.document,
+div.tawalaDocument {
+	max-width: 100%;
+	box-sizing: border-box;
+}
+
+/* Plain tables (no YUI/preview scroll wrapper): content-fit, cap at content column. */
 form table.component,
 div.document table.component,
-div.tawalaDocument table.component,
+div.tawalaDocument table.component {
+	width: max-content !important;
+	max-width: min(var(--tawala-list-table-max-width, 100%), 100%) !important;
+	table-layout: auto !important;
+}
+
+/* Inside YUI / Preview wrappers: wrapper owns the max-width + overflow-x.
+ * Pinning max-width on nowrap tables created a narrow slider while empty
+ * theme chrome sat free to the right (esp. multi-column exam result lists). */
 div.tawalaDataTable table,
 .preview-itemization-table table {
 	width: max-content !important;
-	max-width: min(var(--tawala-list-table-max-width, 6in), 100%) !important;
+	max-width: none !important;
 	table-layout: auto !important;
 }
 
@@ -215,9 +243,27 @@ div.tawalaDataTable .yui-dt-liner,
 
 div.tawalaDataTable,
 .preview-itemization-table {
+	/* Content-fit when narrow; expand up to full content column when multi-col. */
 	width: fit-content !important;
-	max-width: min(var(--tawala-list-table-max-width, 6in), 100%) !important;
+	max-width: min(var(--tawala-list-table-max-width, 100%), 100%) !important;
 	overflow-x: auto;
+	box-sizing: border-box !important;
+}
+
+/* YUI scrollable dual-pane often stamps pixel widths that recreate a narrow
+ * boxed table + slider even when the form still has free horizontal space. */
+div.tawalaDataTable .yui-dt,
+div.tawalaDataTable .yui-dt-hd,
+div.tawalaDataTable .yui-dt-bd,
+div.tawalaDataTable .yui-dt-scrollable,
+div.tawalaDataTable .yui-dt-hd table,
+div.tawalaDataTable .yui-dt-bd table {
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+div.tawalaDataTable:not(.dtFixTableWidth) .yui-dt-hd,
+div.tawalaDataTable:not(.dtFixTableWidth) .yui-dt-bd {
+	width: auto !important;
 }
 
 /*

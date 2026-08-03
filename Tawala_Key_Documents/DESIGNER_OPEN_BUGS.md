@@ -46,6 +46,47 @@ Website chat stays primary. Also listed in `.cursor/rules/tawala-designer-parked
 - **Symptom B:** Inserting an image breaks highlighting — selection will not include any paragraphs that include the image or text beyond it.
 - **Screenshots:** Design (separated) `Tawala_Key_Documents/assets/Bug_-_Text-paragraph-spacing-Design.png`; Deploy/runtime (packed) `…/Bug_-_Text-paragraph-spacing-Deploy.png` (source chat assets: `LossofParSpacing-…png`, `ParSpacing2-…png`).
 
+### Legacy `.tawala` → JSON conversion (batch fix queue) — **Aug 2, 2026 morning**
+
+**Owner strategy:** Systematically find conversion bugs while opening / reconverting Library apps (before another large trove of `.tawala` imports). **Accumulate a solid list → fix them all at once with tests** — not manual one-off rewrites per project. Owner will stop hand-debugging big programs once this inventory is complete enough to batch.
+
+**Do not implement code fixes in inventory-only sessions.** When the batch is scheduled: one converter pass + unit fixtures per bug below (and any new rows the owner adds).
+
+**Primary converter paths (cite when fixing):**
+
+| Path | Role |
+|------|------|
+| `designer-web/src/lib/tawalaXmlToJson.mjs` | Shared core (`convertTawalaXmlToProject`) — CLI + File → Open |
+| `designer-web/src/lib/tawalaXmlToJson.test.ts` | Focused conversion smokes |
+| `scripts/tawala-to-json.mjs` | CLI: `node scripts/tawala-to-json.mjs <in.tawala\|xml> [out.json]` |
+| `scripts/convert-signupsheets-xml-to-json.mjs` | Batch wrapper around CLI |
+| Designer **File → Open** | Via `shellCommands.ts` → same `tawalaXmlToJson` (accepts `.json` / `.tawala` / `.tawala.xml`) |
+| Mapping reference | `TAWALA_XML_TO_JSON_MAPPING.md` |
+| Library reconvert ops | `LIBRARY_PROJECTS_TRIAGE_JUL22.md` · folders under `~/Projects/Tawala Projects/` (`files to reconvert to JSON/`, `Being Reconverted/`, Library sort) |
+| Related scanners (do not invent labels) | `scripts/audit-field-refs.mjs`, `scripts/triage-library-json.mjs` |
+
+**Repro / stress sources (owner):** **Online Exam Builder** (sequential FIBs; Heading `<<Customize_Title>>`; Form **Answer** MCQ/FIB `<<QNumber>>` / `<<Q>>` / `<<A>>`… tokens — C1 + C5); Library file `website-mock/projects/library/Online Exam Builder.json` (Priority Library / demo stub per `website-mock` MANIFEST); **Priority Library Projects** and Deep Backup reconverts; Jul 25 SportsDashboards / Signup-family reconverts for function-table follow-ups.
+
+**Ops note (not conversion):** Online Exam Builder **Customize_Title Deploy** worked after a **stale `:3001` API restart** (fresh process required after `headingExport` / server edits — not a product regression).
+
+---
+
+#### Batch queue (open)
+
+| # | Bug | Symptom | Notes / separation | Status |
+|---|-----|---------|--------------------|--------|
+| **C1** | **Sequential / contiguous FIB blanks elided** | Multiple adjacent `_` runs / `<blank>`s collapse into **one** field after convert | **Destroys connection with multiple alternate labels** — each blank should keep its own `blank.name` / `alternateLabel` (legacy multi-blank FIB). Process/Fields/MQL refs that keyed off distinct alts break. **Fix Aug 3:** `convertFib` separates adjacent underscore runs (paragraph breaks + no glued `_`+`_`); preserves FIB `alternateLabel` as `name` (e.g. MCQ choices). Regression: Online Exam-style 6 Choice blanks in `tawalaXmlToJson.test.ts`. | **Fixed Aug 3** |
+| **C2** | **Form MCQ alternate labels not converted** | Owner alternate field names lost on import; MCQs appear as **Q1, Q2, …** (default `label`) instead of preserved alts | **NEW Aug 2.** Distinct from C1 (FIB blanks). Converter has `convertMc` + `alternateLabel` → `item.name` — verify XML attr / casing / placement vs canvas Fields panel use of `name` vs `label`. Add fixture from a Library MCQ with real alt. | **Open — batch** |
+| **C3** | **Function tables fail convert** | Several function / itemization tables did not convert successfully (chips missing, wrong shape, or unusable after Open) | **NEW Aug 2 — open.** Owner still collecting examples. May overlap Jul 25 note “tables / functions not displaying” (`LIBRARY_PROJECTS_TRIAGE_JUL22.md`). Paths: `convertItemizationTable` / `convertSumFunction` in `tawalaXmlToJson.mjs`; do not confuse with Deploy-time MQL Where (fixed Jul 30). | **Open — examples pending** |
+| **C4** | **Field tokens in Headings (and some Text)** — conversion-time residue | Deploy of literal `<<Variable>>` in Headings was **fixed** (`headingExport.mjs`: strip/lookbehind so `<<Name>>` survives; emit `<field name="…"/>`) | **Deploy path closed** (Online Exam Builder → Administration / `Customize_Title`). **Still watch conversion:** if tokens are already mangled or plain text in JSON **on import** (not on Redeploy of correct JSON), that is a `convertHeading` / `richNodesToFormHtml` / Text field-token issue — batch only if owner finds mangled JSON after `.tawala` Open. Design still shows literal `<<…>>` (legacy; not a convert bug). Spec: `DESIGNER_FORM_ITEMS_HEADING.md` § Process-variable token. | **Deploy fixed; convert residual = watch / owner evidence** |
+| **C5** | **MCQ question field tokens mangled** (Design after convert) | After `.tawala` → JSON Open, Form **Answer** Q2 **question** shows HTML residue like `<>) <">"` instead of chip pair `<<QNumber>> ) <<Q>>`. **Choices still show** `<<A>>`…`<<F>>` chips. Q1 **FIB** with same `<<QNumber>>` / `<<Q>>` often OK (FIB embeds tokens). | **NEW Aug 2 — confirmed owner screenshots.** **Not C2** (alternate labels). Same `<<field>>` family as **C4**, but on **MCQ question body** (Design + import path), not Heading Deploy. **Convert often correct:** `convertMc` → `blocksToPlainString` keeps plain `"question": "<<QNumber>>) <<Q>>"` (Library JSON already has this). Converter note in `tawalaXmlToJson.mjs` `fieldTokenHtml`: brackets must be entities or **innerHTML parses `<<Name>>` as tags**. **Visible destroy:** `McqCanvasRow` idle uses raw `dangerouslySetInnerHTML` on `question` and edit does `el.innerHTML = question` — **without** `embedPlainFieldTokensAsHtml` — while **choices** already call it (`McqCanvasRow` ~L143 / ~L485 vs ~L496). Browser strip → residue; edit blur can **persist mangled HTML** into JSON. Screenshots: **broken** `~/.cursor/projects/Users-DougC1-Projects-Tawala/assets/What_it_came_through_as-30c5fb9a-757d-4c2a-be88-9a38473c4331.png`; **expected** `…/How_it_should_look-20ce48a5-e15e-4789-bfc2-308dbbeda92c.png`. Repro: **Online Exam Builder** → Form **Answer** (Q2 MCQ). Batch fix (not this session): embed on question path like choices/FIB + smoke; optional convert→chip HTML if any path stores unescaped tags in question HTML. | **Open — batch** |
+
+#### Related (not necessarily same batch)
+
+- Jul 25 reconvert quality rows still partly live: unwanted `Record:` on function fields; early structured-Text placeholders **largely fixed** Jul 25 evening — see `LIBRARY_PROJECTS_TRIAGE_JUL22.md` and TODO #16 in `DESIGNER_OPEN_TODOS.md`.
+- Variables-as-text / Set expression typing: **Deploy export largely fixed Jul 27**; remaining Library gaps are separate from this convert queue.
+- Prefer **reconvert from `.tawala`** after the batch fix over hand-editing broken JSON for big apps.
+
 ---
 
 ### Fixed Jul 30 — MQL Where clause not wired on Deploy (blocking) — **re-opened then fixed with evidence**
@@ -96,6 +137,20 @@ Website chat stays primary. Also listed in `.cursor/rules/tawala-designer-parked
   4. **Main Menu template JSON was deleted** in the Jul 22 commit — Vite returned SPA HTML for `/samples/templates/*.json` (broken New Project starters). **Restored** under `designer-web/public/samples/templates/`.
 - **Fixed (session):** `ExecutionContext.getStorageAttribute()` now appends `userProjectId`; class hot-copied into Tomcat Jul 22 evening.
 - **Ops clean-up (Jul 22 evening):** Deleted contaminated Tomcat Deploy **`Simple Survey`** (`qyzju5cyuagbidj`) + its 7 submissions; see `CONTAMINATED_SIMPLE_SURVEY_JUL22.md`. Prefer **New Project** (not overwrite) between featured apps; Redeploy under a fresh name if lists look wrong.
+
+### Online Exam Builder — Admin → Scores first-hit “session expired” (Aug 3)
+
+- **Symptom:** Java Deploy (`:8080`, MADE WITH TAWALA chrome). From **Administration**, select **Scores** → first POST yields legacy error *“An error occured while running this application…”* (BackButton / session page). **This page** recovery often opens **Setup** (not Admin). Second Scores works and shows the Student Scores table.
+- **Not a Designer/JSON bug:** Deploy XML for `Post-Administration` is correct (`show document="Student Scores"` + incomplete-exam get + `show form="Administration"`). Student Scores MQL Where `Record:Exam:status equals completed` emits correctly. **Node** runtime Admin→Scores works on the **first** submit (no PRG store).
+- **Root cause (Java PRG):** After form POST, Tomcat does redirect-after-post (`?__`) and reloads a page stashed on `HttpSession`. `storeLastPage` / `getStoredPage` used **one global** session key (`com.tawala.project.last.stored.page`) shared by **all** projects on `localhost:8080` (same `JSESSIONID`). Concurrent Deploy tabs (Exam setup, another app, Admin elsewhere) clobber the stored page → first Admin Scores GET `?__` sees null → exact error page. Jul 22 only scoped `StoredContextInfo` by `userProjectId`, **not** the PRG last-page slot.
+- **Also expected (not fixed here):**
+  - **Stale Admin form after Tomcat restart** — cookie/session wiped; open form still has old post-token → same error. Refresh Admin URL, then Scores again.
+  - **Browser BACK / double-submit** of the menu form after a successful Scores POST → intentional back-button token reject (same copy).
+  - **“This page” → Setup** — `originalLink` freezes to the **first** startpoint touched in that session. Setup before Admin means recovery returns Setup. Not a Scores link bug.
+- **Fix (source):** `ExecutionContext.storeLastPage` / `getStoredPage` key by `userProjectId` + form name (`TawalaWebapp-build1700/.../ExecutionContext.java`). Rebuild/hot-copy class into Tomcat WEB-INF (same pattern as Jul 22) and restart the webapp so the new class loads.
+- **Smoke (clean):** Redeploy Online Exam → open **only** Administration start URL in a fresh private window → Scores → expect **Completed Tests** + Admin menu stacked (or Admin again). Repeat with two Deploy tabs of different apps and POST both around the same time — Scores must still land, not the error page.
+- **`:3001` restart** does **not** wipe Tomcat session (Java and Node sessions are separate). Wiping/restarting **Tomcat** or multi-tab PRG thrash do.
+- **Park (product):** Setup form has **no** exit path to Administration — owner: add when done; see `DESIGNER_OPEN_TODOS.md` deferred smoke follow-ups. Student Scores table column clip / horizontal scrollbar is a separate Deploy CSS item (other agent).
 
 ### Preview / Deploy font size vs Design (Jul 23)
 

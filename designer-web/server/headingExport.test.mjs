@@ -195,6 +195,33 @@ describe("headingToXml / headingToPreviewHtml", () => {
     );
   });
 
+  it("turns literal <<VariableName>> tokens into unqualified <field/> refs (owner bug Aug 1, 2026)", () => {
+    // Legacy TextItem.Text (HeadingItem extends TextItem) converts any <<Name>> run into
+    // <field name="Name"/> with NO form-name prefix — Customize_Title is a Process
+    // variable (Set command), not a field of the Administration form.
+    const item = {
+      type: "heading",
+      label: "H1",
+      level: "main",
+      content: "<<Customize_Title>> Administration",
+    };
+    expect(headingToXml(item, esc, esc)).toBe(
+      `<heading label="H1" type="Main"><field name="Customize_Title"/> Administration</heading>`,
+    );
+  });
+
+  it("resolves multiple tokens and keeps escaping around them", () => {
+    const item = {
+      type: "heading",
+      label: "H1",
+      level: "main",
+      content: "<<Customize_Title>> for <<Exam:name>> & Co",
+    };
+    expect(headingToXml(item, esc, esc)).toBe(
+      `<heading label="H1" type="Main"><field name="Customize_Title"/> for <field name="Exam:name"/> &amp; Co</heading>`,
+    );
+  });
+
   it("marks Preview Sub with heading-after-blank when Design had a blank line", () => {
     const item = {
       type: "heading",

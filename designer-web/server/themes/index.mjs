@@ -104,14 +104,17 @@ i, em { font-style: italic; }
 .fib-top-label-field input { box-sizing: content-box; }
 .preview-itemization-controls { margin: 0.35rem 0 0.5rem; font-size: 13px; }
 .preview-itemization-controls a { color: #000080; margin-right: 12px; }
+/* Mirrors form-layout-core list tables: wrapper owns max-width; table max-content. */
+:root { --tawala-list-table-max-width: 100%; }
 .preview-itemization-table {
   width: fit-content;
-  max-width: min(var(--tawala-list-table-max-width, 6in), 100%);
+  max-width: min(var(--tawala-list-table-max-width, 100%), 100%);
   overflow-x: auto;
+  box-sizing: border-box;
 }
 .preview-itemization-table table {
   width: max-content;
-  max-width: min(var(--tawala-list-table-max-width, 6in), 100%);
+  max-width: none;
   table-layout: auto;
   border-collapse: collapse;
   margin: 0.75em 0 1em;

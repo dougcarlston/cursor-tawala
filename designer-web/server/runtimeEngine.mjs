@@ -77,6 +77,29 @@ export function resolveTemplate(str, ctx) {
   return String(str).replace(/<<([^>]+)>>/g, (_, ref) => getFieldValue(ctx, ref.trim()));
 }
 
+/**
+ * After template expand, evaluate trivial arithmetic Set expressions
+ * (e.g. `<<Score>> * 100 / <<QuestionTotal>>` → `75`).
+ * Leaves non-numeric text alone.
+ */
+export function evaluateSetExpression(expanded) {
+  const s = String(expanded ?? "").trim();
+  if (!s) return s;
+  // Digits, decimal points, whitespace, and + - * / ( ) only.
+  if (!/^[\d.\s+\-*/()]+$/.test(s) || !/[+\-*/]/.test(s)) return s;
+  try {
+    // eslint-disable-next-line no-new-func
+    const n = Function(`"use strict"; return (${s});`)();
+    if (typeof n === "number" && Number.isFinite(n)) {
+      // Prefer integers when exact; else trim noisy floats (e.g. 66.666…).
+      return Number.isInteger(n) ? String(n) : String(Math.round(n * 1000) / 1000);
+    }
+  } catch {
+    /* keep expanded text */
+  }
+  return s;
+}
+
 export function compareValues(left, op, right) {
   const l = String(left ?? "");
   const r = String(right ?? "");
@@ -145,8 +168,8 @@ export function runCommand(cmd, ctx) {
     case "comment":
       return null;
     case "set": {
-      const val = resolveTemplate(cmd.value ?? "", ctx);
-      ctx.fields[cmd.field] = val;
+      const expanded = resolveTemplate(cmd.value ?? "", ctx);
+      ctx.fields[cmd.field] = evaluateSetExpression(expanded);
       return null;
     }
     case "get": {

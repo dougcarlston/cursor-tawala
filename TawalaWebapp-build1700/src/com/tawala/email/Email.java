@@ -238,7 +238,11 @@ abstract public class Email {
 	/**
 	 * Sanitizes a process-supplied "From" value into a safe Reply-To address.
 	 * Returns null (omit the header) rather than ever emitting a value Resend
-	 * would reject with 550 Invalid reply_to field.
+	 * (or similar relays) would reject with 550 Invalid reply_to field.
+	 *
+	 * Common failure case on local Java: project owner is the seed user
+	 * {@code dev@localhost} / {@code designer@localhost}. JavaMail accepts those
+	 * addresses, but Resend does not — omit Reply-To and send with server From only.
 	 */
 	static Address buildSafeReplyTo(String from) {
 		if (from == null || from.trim().length() == 0) {
@@ -270,18 +274,59 @@ abstract public class Email {
 			return null;
 		}
 
+		address = address.trim();
+		if (!isRoutableReplyToAddress(address)) {
+			Log.warn(Email.class, "Omitting Reply-To: non-routable address '" + address
+					+ "' derived from '" + from + "'");
+			return null;
+		}
+
 		try {
-			InternetAddress safe = new InternetAddress(address.trim());
+			// Bare mailbox only — display names in Reply-To are unnecessary and have
+			// triggered provider 550s when personal contains odd characters.
+			InternetAddress safe = new InternetAddress(address);
 			safe.validate();
-			if (personal != null && personal.trim().length() > 0) {
-				safe.setPersonal(personal.trim());
-			}
 			return safe;
 		} catch (Exception e) {
 			Log.warn(Email.class, "Omitting Reply-To: invalid address '" + address
 					+ "' derived from '" + from + "'");
 			return null;
 		}
+	}
+
+	/**
+	 * True when the address looks like a public SMTP mailbox providers accept
+	 * for Reply-To (has {@code @}, domain contains a dot, not localhost/.local/etc.).
+	 * JavaMail {@link InternetAddress#validate()} still accepts {@code user@localhost}.
+	 */
+	static boolean isRoutableReplyToAddress(String address) {
+		if (address == null) {
+			return false;
+		}
+		String a = address.trim();
+		int at = a.lastIndexOf('@');
+		if (at <= 0 || at >= a.length() - 1) {
+			return false;
+		}
+		String local = a.substring(0, at);
+		String domain = a.substring(at + 1).toLowerCase();
+		if (local.length() == 0 || domain.length() == 0) {
+			return false;
+		}
+		if (local.indexOf(' ') >= 0 || domain.indexOf(' ') >= 0) {
+			return false;
+		}
+		// Require a multi-label domain (example.com). Reject "localhost", bare hostnames.
+		if (domain.indexOf('.') < 0) {
+			return false;
+		}
+		if ("localhost".equals(domain) || domain.endsWith(".localhost")
+				|| domain.endsWith(".local") || domain.endsWith(".internal")
+				|| domain.endsWith(".invalid") || domain.endsWith(".test")
+				|| domain.endsWith(".example")) {
+			return false;
+		}
+		return true;
 	}
 
 	public Date getCreatedDate() {

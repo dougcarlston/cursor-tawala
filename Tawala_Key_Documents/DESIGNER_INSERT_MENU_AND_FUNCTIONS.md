@@ -468,24 +468,26 @@ Owner (July 10): browser Configure is **functionally the same** for the core par
 
 **Owner WHERE smoke Jul 19: Passed** (full Where conditions, same bar as FORM RECORD COUNT).
 
-### Deploy table width (Jul 22)
+### Deploy table width (Jul 22; refreshed Aug 3 2026)
 
-Legacy auto-applied `dtFixTableWidth` when an MQL had **more than 3 columns**, stretching the YUI table to ~97% of the page and leaving an empty “blank box” to the right of the last column (e.g. Get Together “Who is coming” vs compact “Who can't come”).
+Legacy auto-applied `dtFixTableWidth` when an MQL had **more than 3 columns**, stretching the YUI table to ~97% of the page and leaving an empty “blank box” to the right of the last column (e.g. Get Together “Who is coming” vs compact “Who can't come”). A later **6in** cap fixed empty stretch but **clipped multi-column end-of-exam lists**, leaving empty theme chrome to the right while a horizontal slider stayed inside a narrow box.
 
 **Product contract:**
-1. Tables are **content-sized** and hug the **left** — no empty full-width frame.
+1. Tables are **content-sized** and hug the **left** — no empty full-width frame for narrow Signup-style lists.
 2. Cell text stays on **one line** (`white-space: nowrap`) so names/values do not wrap to a second line while columns shrink.
-3. Overall table width grows with content up to **`--tawala-list-table-max-width` (default 6in)** or 100% of the form, whichever is smaller; wider content scrolls horizontally inside the table wrapper.
+3. Overall table width grows with content up to **`--tawala-list-table-max-width` (default 100% of the form/document content column)**; wider content scrolls horizontally **inside the table wrapper**. YUI dual-pane hd/bd pixel widths are cleared so multi-column lists can use free space.
 4. Authors may still **widen columns** by dragging the heading border when Print/Export controls are shown.
 
 | Surface | Change |
 |---------|--------|
 | Java `ItemizationTable` | no longer emits `dtFixTableWidth` from column count |
-| `default.js` | ignores `dtFixTableWidth`; `fitTableToContent()` after YUI render |
-| `form-layout-core.css` | `max-content` + nowrap + 6in cap |
-| Preview | same content-fit / nowrap / 6in cap |
+| `default.js` | ignores `dtFixTableWidth`; `fitTableToContent()` after YUI render (also clears `.yui-dt-hd` / `.yui-dt-bd` fixed widths) |
+| `form-layout-core.css` | `max-content` + nowrap; wrapper max 100%; **no 6in cap** |
+| Preview | same content-fit / nowrap / full content-column cap |
 
-**Smoke:** Redeploy / hard-refresh a Document with a 4-column MQL → table hugs columns (no empty right box); long first+last names stay on one line until ~6in; drag a heading border → column still widens when Print/Export is on.
+**Smoke:** Hard-refresh Deploy CSS (see below), open a Document with a multi-column MQL (e.g. Online Exam correct-answers) → all columns visible without slider when they fit the content column; narrow Signup lists still hug content; drag a heading border → column still widens when Print/Export is on.
+
+**Deploy CSS note:** Layout CSS is **not** in project JSON. After editing `docker/tomcat/css/project/form-layout-core.css`, copy into the Tomcat ROOT (or rebuild the Docker image) and **hard-refresh** the browser — Redeploy alone leaves the old `6in` rules live.
 
 ---
 

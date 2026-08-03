@@ -198,6 +198,16 @@ Source: `documentHtmlToXml.mjs` + `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Fun
 
 ---
 
+## Deferred smoke follow-ups (Online Exam / admin UX)
+
+Small product gaps found while smoke-testing Priority Library apps. **Do not implement** unless the owner reopens a specific row.
+
+| Item | Notes | Status |
+|------|-------|--------|
+| **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) but **no path to Administration**. Owner: *should be added — when we're done.* Admin is a separate startpoint today; recovery links also surface Setup when that was the session's first entry URL. | **Parked Aug 3** |
+
+---
+
 ## After Designer is basically finished (gated)
 
 Owner (July 12, 2026): park these until the browser Designer is considered **basically finished**. **Do not start any of these without prior discussion with the owner.**

@@ -381,6 +381,37 @@ describe("projectToXml heading type", () => {
     });
     expect(xml).toContain('<heading label="H1" type="Main">Title sub</heading>');
   });
+
+  it("resolves a Process-set <<Variable>> token in a Heading title (owner bug Aug 1, 2026 — Online Exam Builder Administration form)", () => {
+    // Real project shape: Process SetupCustomizationVariables does
+    // `Set Customize_Title to <<Configuration:SetupVariables:Title>>`, then the
+    // Administration form's Heading shows `<<Customize_Title>> Administration`.
+    // Legacy resolves this as `<field name="Customize_Title"/>` (unqualified — it's a
+    // process variable, not a field of Administration); a naive tag-strip previously
+    // mangled the literal `<<Customize_Title>>` into a stray `>` before Java ever saw it.
+    const xml = projectToXml({
+      name: "Online Exam Builder",
+      forms: [
+        {
+          name: "Administration",
+          startPoint: true,
+          items: [
+            {
+              type: "heading",
+              label: "H1",
+              level: "main",
+              content: "<<Customize_Title>> Administration",
+            },
+          ],
+        },
+      ],
+    });
+    expect(xml).toContain(
+      '<heading label="H1" type="Main"><field name="Customize_Title"/> Administration</heading>',
+    );
+    expect(xml).not.toContain("&gt; Administration");
+    expect(xml).not.toContain("Administration:Customize_Title");
+  });
 });
 
 describe("projectToXml pageHeader", () => {

@@ -49,6 +49,11 @@ public class ExecutionContext {
 	public static boolean REDIRECT_AFTER_POST = true;
 	public static boolean DETECT_BACK_BUTTON_NAVIGATION = true;
 
+	// PRG (redirect-after-post) stores the rendered page on the HttpSession.
+	// Keys MUST include userProjectId (+ form name) — global keys were one
+	// session-wide slot and concurrent localhost Deploy tabs thrash each other
+	// (POST stores page A, peer tab clobbers, GET ?__ → “session expired” page).
+	// Same class of bug as StoredContextInfo before Jul 22 userProjectId scoping.
 	private static final String LAST_STORED_PAGE_ATTRIBUTE = "com.tawala.project.last.stored.page";
 	private static final String LAST_STORED_FORM_NAME_ATTRIBUTE = "com.tawala.project.last.stored.form.name";
 
@@ -565,20 +570,31 @@ public class ExecutionContext {
 
 	public void storeLastPage(Form postedToForm, OldPage page) {
 		HttpSession session = getRequest().getSession();
-		session.setAttribute(LAST_STORED_PAGE_ATTRIBUTE, page);
-		session.setAttribute(LAST_STORED_FORM_NAME_ATTRIBUTE, postedToForm
-				.getName());
+		// Key includes userProjectId + form so multi-tab localhost Deploy
+		// (shared JSESSIONID) cannot clobber another project's PRG page.
+		session.setAttribute(lastStoredPageAttribute(postedToForm), page);
 	}
 
 	public OldPage getStoredPage(Form postedToForm) {
 		HttpSession session = getRequest().getSession();
+		OldPage scoped = (OldPage) session
+				.getAttribute(lastStoredPageAttribute(postedToForm));
+		if (scoped != null) {
+			return scoped;
+		}
+		// One-release fallback: pre-scoped global key (same form name only).
 		String formName = (String) session
 				.getAttribute(LAST_STORED_FORM_NAME_ATTRIBUTE);
 		if (formName == null || !formName.equals(postedToForm.getName())) {
 			return null;
-		} else {
-			return (OldPage) session.getAttribute(LAST_STORED_PAGE_ATTRIBUTE);
 		}
+		return (OldPage) session.getAttribute(LAST_STORED_PAGE_ATTRIBUTE);
+	}
+
+	/** Isolate PRG page storage per Deploy project (+ form) inside one JSESSIONID. */
+	private String lastStoredPageAttribute(Form postedToForm) {
+		return LAST_STORED_PAGE_ATTRIBUTE + "." + project.getId() + "."
+				+ postedToForm.getName();
 	}
 
 	public String generateNextExpectedPostToken() {

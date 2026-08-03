@@ -60,8 +60,14 @@ export function findSegmentForSkip(segments, label) {
     const seg = segments[i];
     for (let j = 0; j < seg.items.length; j++) {
       const item = seg.items[j];
-      if (item.label === label || itemKey(item) === label) {
-        return { index: i, startLabel: label };
+      // Java FormItem.matchesId: canvas label OR alternateLabel (JSON `name` / alternateLabel).
+      if (
+        item.label === label ||
+        item.name === label ||
+        item.alternateLabel === label ||
+        itemKey(item) === label
+      ) {
+        return { index: i, startLabel: item.label ?? label };
       }
     }
   }

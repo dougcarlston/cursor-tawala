@@ -224,6 +224,8 @@ Owner references:
 
 **When this track resumes (after Website):** read `.cursor/rules/tawala-designer-parked-post-website.mdc` first — especially **MUST DO: conflate Invitation + Hyperlink** (Form link primary).
 
+**Aug 2 morning — conversion inventory (no code fixes):** Owner is listing **`.tawala` → JSON** bugs before another large import trove; **batch-fix with tests later**. Queue: sequential FIB blanks elided (C1; multi-alt destroyed), MCQ alternate labels → Q1/Q2 (C2), function tables fail convert (C3, examples pending), Heading `<<field>>` Deploy fixed / convert residual watch (C4). Full table: `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**. Repros: Online Exam Builder, Priority Library Projects.
+
 ### 5-line paste opener
 
 ```

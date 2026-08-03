@@ -916,9 +916,11 @@ function convertHeading(itemNode) {
 function convertText(itemNode, imageById = {}) {
   const body = itemNode.text;
   const label = attr(itemNode, "label") ?? "T1";
+  const name = attr(itemNode, "alternateLabel");
   const style = attr(itemNode, "style") ?? "normal";
   const blocks = paragraphsToBlocks(body, { location: `text ${label}`, imageById });
   const item = { type: "text", label, style };
+  if (name) item.name = name;
   const hasMql = blocksHaveType(blocks, "itemizationTable");
 
   // Prefer Form Text HTML (TextCanvasRow) for fields / invitations / hyperlinks /
@@ -939,6 +941,7 @@ function convertText(itemNode, imageById = {}) {
 function convertFib(itemNode) {
   const body = itemNode.fib;
   const label = attr(itemNode, "label") ?? "Q1";
+  const name = attr(itemNode, "alternateLabel");
   const style = attr(itemNode, "style") ?? "";
   const blanks = [];
   const promptParts = [];
@@ -964,8 +967,13 @@ function convertFib(itemNode) {
           blank.height = Number(a["@_height"]);
         }
         blanks.push(blank);
-        // Design canvas idle shows underscore runs (not blank widgets). Preview/runtime
-        // turn `_` + blanks[] into inputs — so import must emit `_`.repeat(length).
+        // Design canvas maps each `_+` run → one blank (fibBlanks.parseUnderscoreRuns).
+        // Legacy often puts one <blank> per paragraph with no inter-text; joining
+        // underscore runs without a break elides multi-choice FIBs (C1 / Online Exam Q5).
+        const last = promptParts[promptParts.length - 1];
+        if (typeof last === "string" && /^_+$/.test(last)) {
+          promptParts.push("\n");
+        }
         const len = Math.max(1, Number(blank.length) || 20);
         promptParts.push("_".repeat(len));
       } else if (t === "font" || t === "b" || t === "i" || t === "u") {
@@ -983,19 +991,30 @@ function convertFib(itemNode) {
   };
 
   for (const n of children(body)) {
-    if (tagName(n) === "paragraph") walkParagraph(n.paragraph);
+    if (tagName(n) !== "paragraph") continue;
+    const beforeLen = promptParts.length;
+    walkParagraph(n.paragraph);
+    // Preserve paragraph structure so blanks on successive lines stay separate runs.
+    if (promptParts.length > beforeLen) {
+      const last = promptParts[promptParts.length - 1];
+      if (last !== "\n") promptParts.push("\n");
+    }
   }
 
   // Build prompt: text + underscore runs for each <blank> (Design idle contract).
   // DirtBowl uses / between blank regions — approximate from collected text.
-  let prompt = promptParts.join("").replace(/[^\S\n]+/g, " ").replace(/ *\n */g, "\n").trim();
-  // Collapse runs of spaces but keep underscore runs intact (already no spaces inside).
-  prompt = prompt.replace(/ +/g, " ").trim();
-  if (blanks.length > 1 && !prompt.includes("/")) {
-    // leave as-is; freeform blanks are positioned via underscore runs
-  }
+  let prompt = promptParts
+    .join("")
+    .replace(/\r\n/g, "\n")
+    // Collapse horizontal whitespace but keep newlines (blank separators).
+    .replace(/[^\S\n]+/g, " ")
+    .replace(/ *\n */g, "\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .replace(/ +/g, " ")
+    .trim();
 
   const item = { type: "fib", label, style, prompt, blanks };
+  if (name) item.name = name;
   const dc = displayConditionFromItem(body);
   if (dc) item.displayCondition = dc;
   return item;
@@ -1078,6 +1097,7 @@ function convertMc(itemNode) {
   const style = attr(itemNode, "style") ?? "vertical";
   const paddingBottom = attr(itemNode, "paddingBottom");
 
+  // Plain <<field>> text (not chip HTML). Design must embed before innerHTML — see C5 / McqCanvasRow.
   const questionNode = findChild(body, "question");
   const question = questionNode
     ? blocksToPlainString(paragraphsToBlocks(questionNode, { location: `mc ${label} question` }))

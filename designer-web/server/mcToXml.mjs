@@ -3,6 +3,7 @@ import {
   formattedTextToFontXml,
   richHtmlFragmentToFontXml,
 } from "./fibRichPromptToXml.mjs";
+import { conditionOperandXml } from "./conditionOperandXml.mjs";
 
 const TAB_MC_DEFAULT = '<tabPositions><tabStop position="2880"/></tabPositions>';
 
@@ -78,7 +79,7 @@ function recordSelectorXml(choice, escAttr) {
     if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
       return `<${op} field="${field}"/>`;
     }
-    return `<${op} field="${field}"><string value="${escAttr(row.value ?? "")}"/></${op}>`;
+    return `<${op} field="${field}">${conditionOperandXml(row.value, escAttr)}</${op}>`;
   });
   const body = nestConditionOps(parts, combinator);
   return `<record-selector>${formTag}<conditions>${body}</conditions></record-selector>`;

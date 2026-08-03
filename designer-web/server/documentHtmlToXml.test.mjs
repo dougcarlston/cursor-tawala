@@ -327,6 +327,34 @@ describe("documentHtmlToXml record-count Where conditions", () => {
     );
   });
 
+  it("emits field-ref operands for <<Exam:id>> / join fields (Online Exam MQL)", () => {
+    const xml = documentHtmlToXml(
+      tokenHtml("itemization-table", {
+        numberOfColumns: 2,
+        column: [
+          { header: "Q", contents: "<<Question:Question>>" },
+          { header: "A", contents: "<<Answer:Answer>>" },
+        ],
+        conditionsRows: [
+          { field: "Answer:SessionId", op: "equals", value: "<<Exam:id>>" },
+          { field: "Question:QuestionId", op: "equals", value: "<<Record:Answer:QuestionId>>" },
+        ],
+        conditionsCombinator: "and",
+      }),
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('form name="Question"');
+    expect(xml).toContain('form name="Answer"');
+    expect(xml).toContain(
+      '<equals field="Record:Answer:SessionId"><string field="Exam:id"/></equals>',
+    );
+    expect(xml).toContain(
+      '<equals field="Record:Question:QuestionId"><string field="Record:Answer:QuestionId"/></equals>',
+    );
+    expect(xml).not.toContain('string value="<<Exam:id>>"');
+  });
+
   it("emits Where from legacy structured-node brace chip when no modern token", () => {
     const node = encodeURIComponent(
       JSON.stringify({

@@ -341,6 +341,59 @@ describe("convertTawalaXmlToProject", () => {
     expect(html).toMatch(/field-token[^>]*>&lt;&lt;Customize_eventHeader&gt;&gt;/);
     expect(html).not.toMatch(/field-token[^>]*><</);
   });
+
+  it("keeps sequential FIB blanks as separate underscore runs (Online Exam C1)", () => {
+    // One blank per paragraph, like Online Exam Builder Form Question Q5.
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="MultiBlankFib" themePath="default" format="1.8">
+  <forms>
+    <form name="Question" startPoint="true">
+      <items>
+        <text label="T1" alternateLabel="Beginning">
+          <paragraph align="left" indent="0"><font>Please enter exam question here:</font></paragraph>
+        </text>
+        <fib label="Q5" alternateLabel="MCQ choices">
+          <paragraph align="left" indent="0"><font><b><field name="Question:Question"/></b></font></paragraph>
+          <paragraph align="left" indent="0"><font>Response Choices:</font></paragraph>
+          <paragraph align="left" indent="0"><blank label="a" length="28" required="true" alternateLabel="Choice1"/></paragraph>
+          <paragraph align="left" indent="0"><blank label="b" length="28" required="true" alternateLabel="Choice2"/></paragraph>
+          <paragraph align="left" indent="0"><blank label="c" length="28" alternateLabel="Choice3"/></paragraph>
+          <paragraph align="left" indent="0"><blank label="d" length="28" alternateLabel="Choice4"/></paragraph>
+          <paragraph align="left" indent="0"><blank label="e" length="28" alternateLabel="Choice5"/></paragraph>
+          <paragraph align="left" indent="0"><blank label="f" length="28" alternateLabel="Choice6"/></paragraph>
+        </fib>
+      </items>
+    </form>
+  </forms>
+  <processes/>
+  <documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "c1.tawala" });
+    const form = (project.forms as Array<{ items: Array<Record<string, unknown>> }>)[0];
+    const t1 = form.items.find((i) => i.label === "T1") as { name?: string };
+    expect(t1.name).toBe("Beginning");
+    const fib = form.items.find((i) => i.label === "Q5") as {
+      name?: string;
+      prompt?: string;
+      blanks?: Array<{ name: string; alternateLabel?: string }>;
+    };
+    expect(fib.name).toBe("MCQ choices");
+    expect(fib.blanks).toHaveLength(6);
+    expect(fib.blanks?.map((b) => b.name)).toEqual([
+      "Choice1",
+      "Choice2",
+      "Choice3",
+      "Choice4",
+      "Choice5",
+      "Choice6",
+    ]);
+    const runs = (fib.prompt ?? "").match(/_+/g) ?? [];
+    expect(runs).toHaveLength(6);
+    expect(runs.every((r) => r.length === 28)).toBe(true);
+    // Contiguous elision would be one 168-char run with no newlines between.
+    expect(fib.prompt).toContain("\n");
+    expect(fib.prompt).not.toMatch(/_{40,}/);
+  });
 });
 
 describe("isTawalaProjectFileName", () => {

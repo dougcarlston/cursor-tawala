@@ -66,11 +66,23 @@ describe("form-layout-core.css (Deploy layout lock)", () => {
     expect(css).toMatch(/form div\.fib:not\(\.vertical\) > div > script/);
   });
 
-  it("locks list/MQL tables to content-fit, nowrap, and 6in max", () => {
-    expect(css).toContain("--tawala-list-table-max-width: 6in");
+  it("locks list/MQL tables to content-fit, nowrap, full content width", () => {
+    // Cap is content-column percentage, never a fixed inch (old 6in left empty
+    // theme chrome while multi-column exam lists scrolled).
+    expect(css).toContain("--tawala-list-table-max-width: 100%");
+    expect(css).not.toMatch(/--tawala-list-table-max-width:\s*6in/);
     expect(css).toMatch(/form table\.component[\s\S]*?width:\s*max-content\s*!important/);
     expect(css).toMatch(/form table\.component[\s\S]*?white-space:\s*nowrap\s*!important/);
-    expect(css).toMatch(/max-width:\s*min\(var\(--tawala-list-table-max-width/);
+    // Plain table.component still capped at content column.
+    expect(css).toMatch(
+      /form table\.component[\s\S]*?max-width:\s*min\(var\(--tawala-list-table-max-width/,
+    );
+    // YUI/preview wrappers own overflow; inner tables must not re-cap below content.
+    expect(css).toMatch(/div\.tawalaDataTable table[\s\S]*?max-width:\s*none\s*!important/);
+    expect(css).toMatch(
+      /div\.tawalaDataTable[\s\S]*?max-width:\s*min\(var\(--tawala-list-table-max-width/,
+    );
+    expect(css).toMatch(/div\.tawalaDataTable:not\(\.dtFixTableWidth\) \.yui-dt-bd/);
   });
 
   it("locks Main/Sub heading vertical gap (Preview parity for split headings)", () => {

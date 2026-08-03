@@ -92,8 +92,24 @@ The webapp ships **`javax.mail-1.6.2.jar`** instead (old jars kept under `Tawala
 - Client API (authenticated): `queryEmailStatus`, `sendTestEmail`.
 - Postgres: `email` table (`state`, `from_address`, `to_address`, `subject`, `create_dt`, `sent_dt`).
 
+## Local seed users and Reply-To
+
+Process **Send** with no explicit From uses the **project owner** email as Reply-To.
+Dev seed users (`db/init/04_seed_dev_user.sql`) have `dev@localhost` / `designer@localhost`.
+JavaMail accepts those, but **Resend rejects them** (550 Invalid `reply_to`).
+
+Runtime fix: `Email.buildSafeReplyTo` **omits** Reply-To for non-routable addresses
+(`@localhost`, no-dot domains, `.local`, etc.). The message still goes out with the
+server-owned From. Optional: set the Deploy user's account email to a real address
+if you want a useful Reply-To during local smoke.
+
+Exam / notify mails (e.g. Online Exam Builder "Notify me by email") still enqueue when
+`EmailConfirm` is set; failures that used to stick at `ERROR` for `dev@localhost`
+should become `SENT` after this sanitizer.
+
 ## Deferred
 
 Provider delivery/bounce webhooks, per-project credentials, Preview sending, broadcast streams.
+Node Preview/runtime `case "send"` remains a no-op — only Java `:8080` delivers mail.
 
 Until webhooks exist, `SENT` means the SMTP relay accepted the message — not mailbox delivery.
