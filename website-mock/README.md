@@ -295,9 +295,13 @@ Requires designer-web API (`:3001`) and `docker compose` postgres. SportsDashboa
 
 ### Test drive purge-on-start
 
-Library / home / detail **Test drive** (and Library/detail start-point links) purge that project’s responses **before** opening `:8080`, so each drive starts clean. My Tawala **Use** opens the start URL **without** purge (operate the persistent app). My Tawala **PURGE** uses the same API as Test drive’s purge step.
+Library / home / Library detail **Test drive** (and Library start-point links) purge that project’s responses **before** opening `:8080`, so each drive starts clean. That is appropriate for simple surveys with no setup state.
 
-**Limitation:** the form opens in a new tab; there is no reliable purge-on-tab-close in this static mock. Legacy Library test drive used an in-memory session world (no durable DB writes); local mock hits the real deployed project, so purge-on-start is the practical substitute.
+**My Tawala Project Details start points do not purge on click** (same as **Use**): they open the live Deploy URL (`/p/{uniqueId}/{formToken}.FormName`) and keep stored data. This is required for multi-start apps like **Online Exam Builder** — Admin/Setup writes **Question** and **SetupVariables** rows; purging before Exam wiped those rows, so Answer showed only `1)` with a blank after Name submit. Use Project Actions **PURGE** when you deliberately want a clean slate. Online Exam’s primary / first-listed start is **Exam** (examinee), not Administration.
+
+My Tawala **Use** and start-point selection prefer end-user forms (**Exam**, **Registration**, **Survey**, …) over Admin/Setup/Preview when multiple start URLs exist.
+
+**Limitation:** the form opens in a new tab; there is no reliable purge-on-tab-close in this static mock. Legacy Library test drive used an in-memory session world (no durable DB writes); local mock hits the real deployed project, so Library purge-on-start is the practical substitute.
 
 ## Publish (My Tawala → Library)
 

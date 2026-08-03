@@ -1240,6 +1240,43 @@ window.TawalaDemo = {
       };
     }
   },
+  /**
+   * Prefer end-user start forms over Admin/Setup/Preview for multi-start projects
+   * (Online Exam Builder: Exam vs Administration, DirtBowl: Registration vs AdminDash).
+   * @param {Array<{label?:string,form?:string,url?:string|null}>} startPoints
+   * @returns {{label?:string,form?:string,url?:string|null}|null}
+   */
+  pickPrimaryStartPoint(startPoints) {
+    const list = (startPoints || []).filter((s) => s && s.url);
+    if (!list.length) return null;
+    const labelOf = (s) => String(s.label || s.form || "").trim();
+    // Exact / high-value public entry forms first.
+    const prefer = [
+      /^exam$/i,
+      /^registration$/i,
+      /^survey$/i,
+      /^form\s*\+?\s*1$/i,
+      /^form\s*1$/i,
+      /^sign[-\s]?up/i,
+      /^potluck/i,
+      /^exception\s*request/i,
+    ];
+    for (let p = 0; p < prefer.length; p++) {
+      const hit = list.find((s) => prefer[p].test(labelOf(s)));
+      if (hit) return hit;
+    }
+    // Skip admin / setup / preview / reports when a plain operate form exists.
+    const deprioritize =
+      /admin|setup|customiz|preview|utility|report|dash|config|scoring|answer/i;
+    const nonAdmin = list.find((s) => !deprioritize.test(labelOf(s)));
+    return nonAdmin || list[0];
+  },
+  /** Primary :8080 URL for Use / My Tawala operate (Exam, not Admin, when both exist). */
+  primaryStartUrl(startPoints, fallbackUrl) {
+    const primary = this.pickPrimaryStartPoint(startPoints);
+    if (primary && primary.url) return primary.url;
+    return fallbackUrl || null;
+  },
   /** Delegated clicks for elements with data-testdrive-url (or .js-testdrive href). */
   bindTestDriveClicks(root) {
     const scope = root || document;
@@ -1253,7 +1290,10 @@ window.TawalaDemo = {
         (el.classList.contains("js-testdrive") ? el.getAttribute("href") : null);
       if (!href || href === "#") return;
       ev.preventDefault();
-      void this.openTestDrive(href);
+      // data-testdrive-purge="false" → open without wiping DB (My Tawala operate / exam after Admin setup).
+      const purgeAttr = el.getAttribute("data-testdrive-purge");
+      const purge = purgeAttr !== "false" && purgeAttr !== "0";
+      void this.openTestDrive(href, { purge });
     });
   },
   /** Inline stars after the project name (no separate Rating column). Unrated → omit. */
@@ -1266,22 +1306,42 @@ window.TawalaDemo = {
     }
     return html + "</span>";
   },
-  startPointHtml(sp) {
-    const label = String(sp.label || "Start");
+  /**
+   * Start-point link HTML.
+   * @param {{label?:string,url?:string|null}} sp
+   * @param {{purge?:boolean}} opts — Library: purge true (default). My Tawala Project Details: purge false
+   *   so Admin setup (questions / config) is not wiped before Exam / Registration.
+   */
+  startPointHtml(sp, opts) {
+    const options = opts || {};
+    const purge = options.purge !== false;
+    const label = String(sp.label || sp.form || "Start");
+    const escLabel = label.replace(/&/g, "&amp;").replace(/</g, "&lt;");
     if (sp.url) {
+      const safeUrl = String(sp.url).replace(/"/g, "&quot;");
+      if (purge) {
+        return (
+          '<a class="js-testdrive" href="' +
+          sp.url +
+          '" data-testdrive-url="' +
+          safeUrl +
+          '" target="_blank" rel="noopener" title="Purges prior responses for this project, then opens :8080">' +
+          escLabel +
+          "</a>"
+        );
+      }
+      // My Tawala / operate: full token URL as-is, no purge (use Project Actions PURGE to clear).
       return (
-        '<a class="js-testdrive" href="' +
+        '<a href="' +
         sp.url +
-        '" data-testdrive-url="' +
-        String(sp.url).replace(/"/g, "&quot;") +
-        '" target="_blank" rel="noopener" title="Purges prior responses for this project, then opens :8080">' +
-        label.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
+        '" target="_blank" rel="noopener" title="Open this start form on :8080 (keeps project data; use PURGE to clear)">' +
+        escLabel +
         "</a>"
       );
     }
     return (
       '<span class="start-point-pending" title="No local :8080 URL yet (dev)">' +
-      label.replace(/&/g, "&amp;").replace(/</g, "&lt;") +
+      escLabel +
       "</span>"
     );
   },

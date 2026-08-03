@@ -1117,6 +1117,26 @@
         {
           "cmd": "if",
           "condition": {
+            "field": "Question:SequenceNumber",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- if SequenceNumber never assigned, mirror QuestionId so exam order matches admin #"
+            },
+            {
+              "cmd": "set",
+              "field": "Question:SequenceNumber",
+              "value": "<<Question:QuestionId>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
             "field": "Question:TypeChoice",
             "op": "mcEquals",
             "value": "a"
@@ -1530,7 +1550,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "- fetch the current question to display in the PollLoop form"
+          "text": "- Load question for exam step QNumber. Admin # is QuestionId — try that first; fall back to SequenceNumber (exam order)."
         },
         {
           "cmd": "get",
@@ -1539,7 +1559,7 @@
             "Question"
           ],
           "where": {
-            "field": "QuestionRecords:Question:SequenceNumber",
+            "field": "QuestionRecords:Question:QuestionId",
             "op": "equals",
             "value": "<<QNumber>>"
           }
@@ -1618,6 +1638,108 @@
               "value": "<<Query:Question:QuestionId>>",
               "concat": false,
               "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Q",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- Fallback when QuestionId is blank/missing: match SequenceNumber to QNumber"
+            },
+            {
+              "cmd": "get",
+              "recordList": "QuestionRecords",
+              "sourceForms": [
+                "Question"
+              ],
+              "where": {
+                "field": "QuestionRecords:Question:SequenceNumber",
+                "op": "equals",
+                "value": "<<QNumber>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Query",
+              "recordList": "QuestionRecords",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Q",
+                  "value": "<<Query:Question:Question>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "QType",
+                  "value": "<<Query:Question:Type>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "A",
+                  "value": "<<Query:Question:Choice1>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "B",
+                  "value": "<<Query:Question:Choice2>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "C",
+                  "value": "<<Query:Question:Choice3>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "D",
+                  "value": "<<Query:Question:Choice4>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "E",
+                  "value": "<<Query:Question:Choice5>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "F",
+                  "value": "<<Query:Question:Choice6>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "CorrectAnswer",
+                  "value": "<<Query:Question:Answer>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "LastQuestionId",
+                  "value": "<<Query:Question:QuestionId>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
             }
           ]
         }

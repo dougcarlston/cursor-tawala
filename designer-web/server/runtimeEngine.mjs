@@ -179,7 +179,17 @@ export function runCommand(cmd, ctx) {
       for (const formName of forms) {
         const recs = ctx.records[formName] ?? [];
         for (const rec of recs) {
-          rows.push({ _form: formName, ...rec });
+          const row = { _form: formName, ...rec };
+          if (cmd.where) {
+            // Java Get evaluates Where with the candidate mapped under recordList name
+            // (e.g. field `QuestionRecords:Question:QuestionId`).
+            const prev = ctx.recordBindings;
+            ctx.recordBindings = { ...(prev ?? {}), [listName]: row };
+            const ok = evalCondition(cmd.where, ctx);
+            ctx.recordBindings = prev ?? {};
+            if (!ok) continue;
+          }
+          rows.push(row);
         }
       }
       ctx.recordLists = ctx.recordLists ?? {};

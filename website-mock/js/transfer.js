@@ -367,7 +367,17 @@
       label: sp.form || sp.label || "Start",
       url: sp.url || null,
     }));
-    const firstUrl = (startPoints.find((s) => s && s.url) || {}).url || null;
+    // Prefer Exam / Registration over Administration when multi-start (Online Exam Builder).
+    let primaryUrl = null;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.primaryStartUrl === "function"
+    ) {
+      primaryUrl = window.TawalaDemo.primaryStartUrl(startPoints, null);
+    }
+    const firstUrl =
+      primaryUrl || (startPoints.find((s) => s && s.url) || {}).url || null;
     let uniqueId = receipt.uniqueId || null;
     if (
       !uniqueId &&

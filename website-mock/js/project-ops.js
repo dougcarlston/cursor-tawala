@@ -689,9 +689,18 @@
     return null;
   }
 
-  /** Primary :8080 start URL for Use (operate) — no purge-on-start. */
+  /**
+   * Primary :8080 start URL for Use (operate) — no purge-on-start.
+   * Prefer examinee form (Exam / Registration / Survey) over Admin/Setup when multi-start.
+   * Always re-score from startPoints when present so redeploy tokens stay current and
+   * Admin is never sticky as primary just because testDriveUrl was set first.
+   */
   function projectUseUrl(project) {
     if (!project) return null;
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.primaryStartUrl === "function") {
+      const preferred = TawalaDemo.primaryStartUrl(project.startPoints, null);
+      if (preferred) return preferred;
+    }
     if (project.testDriveUrl) return project.testDriveUrl;
     const sp = (project.startPoints || []).find((s) => s && s.url);
     return sp ? sp.url : null;
@@ -853,20 +862,31 @@
 
   /**
    * Full Project Details layout (separate page): action bar + sidebar ops + collapsible sections.
-   * Inactive section chips are disabled (grey only). Start points keep :8080 test-drives when deployed.
+   * Inactive section chips are disabled (grey only). Start points open live :8080 URLs when deployed.
+   * Do NOT purge-on-click here (unlike Library Test drive): Online Exam Admin setup / questions
+   * must survive when the owner then opens Exam. Use PURGE action when a clean slate is wanted.
    */
   function renderDetailPanel(project) {
     if (!project) return '<p class="pm-hint">Project not found.</p>';
     const deployed = typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
-    const startLinks = (project.startPoints || [])
+    let startPoints = project.startPoints || [];
+    // Surface Exam / Registration before Admin when multi-start (list order only).
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.pickPrimaryStartPoint === "function") {
+      const primary = TawalaDemo.pickPrimaryStartPoint(startPoints);
+      if (primary && startPoints.length > 1) {
+        startPoints = [primary].concat(startPoints.filter((s) => s !== primary));
+      }
+    }
+    const startLinks = startPoints
       .map((sp) => {
         if (typeof TawalaDemo !== "undefined" && TawalaDemo.startPointHtml) {
-          return `<li>${TawalaDemo.startPointHtml(sp)}</li>`;
+          // My Tawala: no purge (preserve Question / SetupVariables for Exam flow).
+          return `<li>${TawalaDemo.startPointHtml(sp, { purge: false })}</li>`;
         }
         if (sp.url) {
-          return `<li><a href="${escapeHtml(sp.url)}" target="_blank" rel="noopener">${escapeHtml(sp.label)}</a></li>`;
+          return `<li><a href="${escapeHtml(sp.url)}" target="_blank" rel="noopener">${escapeHtml(sp.label || sp.form || "Start")}</a></li>`;
         }
-        return `<li><span class="start-point-pending" title="No local :8080 URL yet">${escapeHtml(sp.label)}</span></li>`;
+        return `<li><span class="start-point-pending" title="No local :8080 URL yet">${escapeHtml(sp.label || sp.form || "Start")}</span></li>`;
       })
       .join("");
 
@@ -895,8 +915,8 @@
     const startSection =
       `<ul class="pm-start-points">${startLinks || "<li>—</li>"}</ul>` +
       (deployed
-        ? '<p class="pm-hint">Test-drive links → local Java :8080 (purge prior responses on click, then open).</p>'
-        : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — open in Web Designer, then Deploy for a live test-drive.</p>');
+        ? '<p class="pm-hint">Start links → local Java :8080 (full form-token URLs from Deploy). Keeps project data; use <b>PURGE</b> to clear responses. For Online Exam: open <b>Exam</b> (not Administration) to take the test after Admin setup.</p>'
+        : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — open in Web Designer, then Deploy → Show in My Tawala for live start links.</p>');
 
     return (
       `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
@@ -915,7 +935,7 @@
       "</div>" +
       '<h3 class="sectionHeading">Project Actions</h3>' +
       renderProjectActionsBar(project.id) +
-      renderCollapsibleSection("pmSecStart", "Start points (test drive)", startSection, true) +
+      renderCollapsibleSection("pmSecStart", "Start points", startSection, true) +
       renderCollapsibleSection("pmSecComments", "Comments", commentsStub, false) +
       renderCollapsibleSection("pmSecData", "Project Data", dataOps, false) +
       renderCollapsibleSection("pmSecVersions", "Versions", versionOps, false) +
