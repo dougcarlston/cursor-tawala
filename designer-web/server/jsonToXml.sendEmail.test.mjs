@@ -84,6 +84,34 @@ describe("send command XML", () => {
     });
     expect(xml).toContain('<subject><field name="Head"/> - Confirmation</subject>');
   });
+
+  it("emits static text body with inviteTo (cs v95 / Alumni style)", () => {
+    const xml = projectToXml({
+      name: "Mail",
+      forms: [{ name: "Petition", startPoint: true, items: [] }],
+      processes: [
+        {
+          name: "Process 4",
+          commands: [
+            {
+              cmd: "send",
+              to: { fieldRef: "VoterEmail" },
+              subject: "Supporting a candidate",
+              body: {
+                text: "Dear Friend,\n\nPlease click this link.",
+                inviteTo: "Petition",
+              },
+            },
+          ],
+        },
+      ],
+    });
+    expect(xml).toContain('<to addressField="VoterEmail"/>');
+    expect(xml).toContain('<body inviteTo="Petition">');
+    expect(xml).toContain("Dear Friend");
+    expect(xml).toContain("Please click this link.");
+    expect(xml).toMatch(/<send>[\s\S]*<body[\s\S]*<\/body>[\s\S]*<\/send>/);
+  });
 });
 
 describe("emailStatus parse", () => {

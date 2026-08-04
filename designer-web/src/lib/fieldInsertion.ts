@@ -115,6 +115,11 @@ export function hasFieldDragFormContext(dataTransfer: DataTransfer | null): bool
  * True when `name` is already Form- or Record-qualified for `formName`.
  * FIB blanks like `FIB1:a` contain `:` but are NOT form-qualified — Java `Reference`
  * only sets formName when the first segment is a real form in the project.
+ *
+ * A bare leaf whose text equals the form name is NOT qualified (e.g. form
+ * `Question` + field `Question` must become `Question:Question`, not bare
+ * `Question`). Treating `name === formName` as already-qualified made Fields
+ * inserts into MCQ/FIB omit the form prefix when names collide (owner Online Exam).
  */
 export function isFormQualifiedFieldName(
   name: string,
@@ -125,7 +130,7 @@ export function isFormQualifiedFieldName(
   if (/^Record:/i.test(trimmed)) return true;
   const form = formName?.trim();
   if (!form) return false;
-  return trimmed === form || trimmed.startsWith(`${form}:`);
+  return trimmed.startsWith(`${form}:`);
 }
 
 /**

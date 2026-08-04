@@ -58,6 +58,13 @@ describe("qualifyPaletteFieldName", () => {
       "Record:Form 1:Email",
     );
   });
+
+  it("qualifies field leaf when form and field share the same title (Online Exam)", () => {
+    // Regression: treating name === formName as already-qualified inserted bare
+    // <<Question>> instead of <<Question:Question>> into MCQ/FIB.
+    expect(qualifyPaletteFieldName("Question", "Question")).toBe("Question:Question");
+    expect(qualifyPaletteFieldName("Exam", "Exam")).toBe("Exam:Exam");
+  });
 });
 
 describe("setFieldDragData / readFieldDragNameForTarget", () => {

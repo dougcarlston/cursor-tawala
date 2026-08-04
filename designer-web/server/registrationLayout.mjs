@@ -26,6 +26,7 @@ function fieldStored(ctx, formName, itemLabel, blankName) {
 }
 
 function val(ctx, formName, item, blank) {
+  if (!blank?.name) return "";
   const stored = fieldStored(ctx, formName, item.label, blank.name);
   if (stored !== undefined) return stored;
   const alt = blank.alternateLabel || blank.name;
@@ -36,7 +37,34 @@ function val(ctx, formName, item, blank) {
   return "";
 }
 
+/** Resolve a blank by legacy name / alternateLabel (DirtBowl Registration fields). */
+function blankByName(item, name) {
+  return (
+    (item.blanks ?? []).find((x) => x.name === name || x.alternateLabel === name) ?? null
+  );
+}
+
+/** True when every requested blank name is present on the FIB item. */
+export function itemHasNamedBlanks(item, names) {
+  if (!item || !names?.length) return false;
+  return names.every((n) => blankByName(item, n));
+}
+
+/**
+ * DirtBowl-style Registration layout is hardcoded for labels Q1/Q3/… and T2/….
+ * Many projects also name a form "Registration" (e.g. CYO Dance Agreement) with
+ * different blanks — only apply the special layout when Q1 looks like DirtBowl.
+ */
+export function isDirtBowlRegistrationForm(form) {
+  if (!form || form.name !== "Registration") return false;
+  const q1 = (form.items ?? []).find((i) => i.type === "fib" && i.label === "Q1");
+  return itemHasNamedBlanks(q1, ["FirstName", "LastName", "RegAgeMo"]);
+}
+
 function textInput(formName, item, blank, ctx, { size, className = "reg-input" } = {}) {
+  // Missing blanks must not throw — non-DirtBowl Registration FIBs can hit Q* paths
+  // with fewer fields; callers should return null, but guard defensively too.
+  if (!blank?.name) return "";
   const fname = `${item.label}:${blank.name}`;
   const v = val(ctx, formName, item, blank);
   const layoutSized = /\breg-(name|full|email|phone|grid-address|friend)\b/.test(className);
@@ -59,8 +87,15 @@ function labelRow(label, fieldsHtml, { bold = true } = {}) {
 }
 
 function renderQ1(item, ctx, formName) {
-  const blanks = item.blanks ?? [];
-  const [first, last, mo, day, yr] = blanks;
+  // DirtBowl: First/Last + DOB triple — not every Registration.Q1 (CYO has PartLast/PartFirst/MI only).
+  if (!itemHasNamedBlanks(item, ["FirstName", "LastName", "RegAgeMo", "RegAgeDay", "RegAgeYr"])) {
+    return null;
+  }
+  const first = blankByName(item, "FirstName");
+  const last = blankByName(item, "LastName");
+  const mo = blankByName(item, "RegAgeMo");
+  const day = blankByName(item, "RegAgeDay");
+  const yr = blankByName(item, "RegAgeYr");
   return `<div class="fib fib-reg" id="item-${esc(itemKey(item))}">
     ${nameHintRow()}
     <div class="reg-field-row reg-name-row">
@@ -84,15 +119,18 @@ function renderQ1(item, ctx, formName) {
 }
 
 function renderQ3(item, ctx, formName) {
-  const blank = item.blanks?.[0];
+  // DirtBowl school line is a single blank; multi-blank Q3s (e.g. CYO DOB/grade/club) fall through.
+  const blanks = item.blanks ?? [];
+  if (blanks.length !== 1) return null;
+  const blank = blanks[0];
   return `<div class="fib fib-reg" id="item-${esc(itemKey(item))}">
     ${labelRow("Name of your School", textInput(formName, item, blank, ctx, { className: "reg-input reg-full" }))}
   </div>`;
 }
 
 function renderQ4(item, ctx, formName) {
-  const b = item.blanks ?? [];
-  const byName = (n) => b.find((x) => x.name === n || x.alternateLabel === n) ?? { name: n, length: 18 };
+  if (!itemHasNamedBlanks(item, ["ParentFirstName", "ParentLastName"])) return null;
+  const byName = (n) => blankByName(item, n) ?? { name: n, length: 18 };
   return `<div class="fib fib-reg fib-reg-q4" id="item-${esc(itemKey(item))}">
     ${nameHintRow()}
     <div class="reg-field-row reg-name-row">
@@ -150,7 +188,9 @@ function renderQ4(item, ctx, formName) {
 }
 
 function renderQ9(item, ctx, formName) {
-  const blank = item.blanks?.[0];
+  // DirtBowl coach preference only — CYO Q9 is parent email.
+  const blank = blankByName(item, "PreferredCoach") ?? null;
+  if (!blank) return null;
   return `<div class="fib fib-reg" id="item-${esc(itemKey(item))}">
     <div class="reg-field-row">
       <span class="reg-label reg-label-bold">Coach Preferences <em class="fib-hint fib-hint-inline">(if any)</em>:</span>
@@ -160,6 +200,8 @@ function renderQ9(item, ctx, formName) {
 }
 
 function renderQ10(item, ctx, formName) {
+  // DirtBowl friend slots a/b/c — not emergency Name/Phone (CYO).
+  if (!itemHasNamedBlanks(item, ["a", "b"])) return null;
   const blanks = item.blanks ?? [];
   const fields = blanks
     .map((blank) => textInput(formName, item, blank, ctx, { className: "reg-input reg-friend" }))
@@ -168,6 +210,7 @@ function renderQ10(item, ctx, formName) {
 }
 
 function renderQ12(item, ctx, formName) {
+  if (!itemHasNamedBlanks(item, ["MedPlanName"])) return null;
   const rows = [
     ["Plan Name", "MedPlanName"],
     ["Plan Number", "MedPlanNumber"],
@@ -175,10 +218,9 @@ function renderQ12(item, ctx, formName) {
     ["Physician Phone", "DocPhone"],
     ["Physician Address", "DocAddress"],
   ];
-  const b = item.blanks ?? [];
   const html = rows
     .map(([label, name]) => {
-      const blank = b.find((x) => x.name === name || x.alternateLabel === name) ?? { name, length: 39 };
+      const blank = blankByName(item, name) ?? { name, length: 39 };
       return labelRow(label, textInput(formName, item, blank, ctx, { className: "reg-input reg-full" }));
     })
     .join("");
@@ -186,6 +228,9 @@ function renderQ12(item, ctx, formName) {
 }
 
 export function renderRegistrationFib(item, ctx, formName) {
+  // Only DirtBowl-shaped Registration may enter Q* specializers. form name
+  // "Registration" alone (CYO Dance, etc.) must stay on generic FIB rendering.
+  if (ctx?.dirtBowlRegLayout !== true) return null;
   switch (item.label) {
     case "Q1":
       return renderQ1(item, ctx, formName);
@@ -205,6 +250,11 @@ export function renderRegistrationFib(item, ctx, formName) {
 }
 
 export function renderRegistrationText(item, ctx, formName, project) {
+  // Hardcoded banner/table blocks are DirtBowl-only; other Registration forms keep Design content.
+  const form = project?.forms?.find((f) => f.name === formName);
+  if (form ? !isDirtBowlRegistrationForm(form) : ctx.dirtBowlRegLayout === false) {
+    return null;
+  }
   switch (item.label) {
     case "T1": {
       const msg = getFieldValue(ctx, "Message")?.trim();
@@ -261,6 +311,8 @@ export function renderRegistrationText(item, ctx, formName, project) {
 }
 
 export function renderRegistrationMc(item, ctx) {
+  // DirtBowl division/sex/jersey chrome only when the form is DirtBowl-shaped.
+  if (ctx?.dirtBowlRegLayout !== true) return null;
   const inputType = item.onlyone !== false ? "radio" : "checkbox";
   const name = itemKey(item);
   const expanded = [];

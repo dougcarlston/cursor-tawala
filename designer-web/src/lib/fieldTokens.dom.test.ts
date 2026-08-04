@@ -82,6 +82,21 @@ describe("normalizeFieldTokenSpans / embedPlainFieldTokensAsHtml", () => {
     expect(html).toContain("ContactType1");
     expect(html).not.toContain("<<ContactType1>>");
   });
+
+  it("preserves Form:Field names with colons (MCQ question / Online Exam)", () => {
+    // Without embed, idle innerHTML of "<<Question:Question>>" is tag-parsed into junk
+    // (often looks like only <<Question>>). FIB already embeds; MCQ question must too.
+    const raw = "<<Question:Question>>";
+    const html = embedPlainFieldTokensAsHtml(raw);
+    expect(html).toContain(`${FIELD_NAME_ATTR}="Question:Question"`);
+    expect(html).toContain(FIELD_TOKEN_CLASS);
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const chip = div.querySelector(`.${FIELD_TOKEN_CLASS}`) as HTMLElement | null;
+    expect(chip).not.toBeNull();
+    expect(readFieldNameFromToken(chip!)).toBe("Question:Question");
+    expect(chip!.textContent).toBe("<<Question:Question>>");
+  });
 });
 
 describe("insertFieldTokenAtSelection", () => {

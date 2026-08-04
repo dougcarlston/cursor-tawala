@@ -86,6 +86,11 @@ import {
 } from "@/lib/tableCellSelection";
 import { tryDeleteInlineTokensInSelection } from "@/lib/inlineTokenDelete";
 import { openFunctionTokenForEdit, selectFunctionToken } from "@/lib/functionPicker";
+import {
+  HYPERLINK_TOKEN_CLASS,
+  INVITATION_TOKEN_CLASS,
+  openLinkTokenForEdit,
+} from "@/lib/linkInsert";
 import { isMultiClickSelectionGesture } from "@/lib/wordSelect";
 import { isRedundantDefaultFontSize } from "@/lib/fontSizeStrip";
 import {
@@ -1090,6 +1095,25 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
 
             const el = surfaceRef.current;
             if (!el) return;
+
+            // Invitation / Hyperlink chips: re-open Insert dialog (legacy double-click edit).
+            const linkTok = (e.target as HTMLElement).closest(
+              `.${INVITATION_TOKEN_CLASS}, .${HYPERLINK_TOKEN_CLASS}`,
+            );
+            if (linkTok instanceof HTMLElement && el.contains(linkTok)) {
+              e.preventDefault();
+              e.stopPropagation();
+              registerAsPaletteEditor();
+              if (
+                openLinkTokenForEdit(linkTok, el, () => {
+                  rememberSelection();
+                }, () => {
+                  commitFromSurface(el);
+                })
+              ) {
+                return;
+              }
+            }
 
             // Field token: select it — never let a stray dblclick invent another insert.
             const field = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);

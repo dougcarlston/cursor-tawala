@@ -392,11 +392,39 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
         }
       }
       if (classes.includes("invitation-token")) {
-        out += `<font color="000080"><u>${invitationTokenToXml(open.attrs, inner, escAttr, escText)}</u></font>`;
+        // Prefer a single <font> layer. Nested <font> is fatal on Java: Font FACTORY
+        // has no "font" child → "No class registered for font" and the link is dropped
+        // (CYO Dashboard invitation grid). Outer colored parents strip inner fonts below;
+        // when this token is alone, apply the default blue underline wrap here.
+        let inv = invitationTokenToXml(open.attrs, inner, escAttr, escText);
+        const invStyle = parseStyleAttr(open.attrs);
+        const color = invStyle.color
+          ? cssColorToLegacyHex(invStyle.color)
+          : "000080";
+        const face = invStyle["font-family"]?.split(",")[0]?.replace(/['"]/g, "") ?? "";
+        const size = invStyle["font-size"]
+          ? fontSizeToLegacy(invStyle["font-size"])
+          : null;
+        inv =
+          `<font${face ? ` face="${escAttr(face)}"` : ""}${size != null ? ` size="${size}"` : ""} color="${escAttr(color)}">` +
+          `<u>${inv}</u></font>`;
+        out += inv;
         continue;
       }
       if (classes.includes("hyperlink-token")) {
-        out += `<font color="000080"><u>${hyperlinkTokenToXml(open.attrs, escAttr, escText)}</u></font>`;
+        let link = hyperlinkTokenToXml(open.attrs, escAttr, escText);
+        const linkStyle = parseStyleAttr(open.attrs);
+        const color = linkStyle.color
+          ? cssColorToLegacyHex(linkStyle.color)
+          : "000080";
+        const face = linkStyle["font-family"]?.split(",")[0]?.replace(/['"]/g, "") ?? "";
+        const size = linkStyle["font-size"]
+          ? fontSizeToLegacy(linkStyle["font-size"])
+          : null;
+        link =
+          `<font${face ? ` face="${escAttr(face)}"` : ""}${size != null ? ` size="${size}"` : ""} color="${escAttr(color)}">` +
+          `<u>${link}</u></font>`;
+        out += link;
         continue;
       }
       const style = parseStyleAttr(open.attrs);
@@ -411,10 +439,21 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
         const color = cssColorToLegacyHex(style.color);
         // Avoid nested <font> — Java Font FACTORY does not register "font" (drops children),
         // and Style post-process non-greedy </font> matching corrupts nested wraps.
-        const unwrapped = unwrapOuterFont(unwrapBareFont(innerXml));
+        // Strip all font tags (not just outer) so invitation/link default wraps from
+        // token spans or inner colored spans cannot nest under this wrap.
+        let unwrapped = unwrapOuterFont(unwrapBareFont(innerXml));
+        unwrapped = unwrapped.replace(/<\/?font\b[^>]*>/gi, "");
+        // Collapse stacked <u> from outer HTML underline + token defaults
+        while (/^<u>[\s\S]*<\/u>$/i.test(unwrapped.trim())) {
+          const next = unwrapped.trim().replace(/^<u>([\s\S]*)<\/u>$/i, "$1");
+          if (next === unwrapped.trim()) break;
+          unwrapped = next;
+        }
+        const hasLinkMarkup = /<(?:invitation|link)\b/i.test(unwrapped);
+        const body = hasLinkMarkup ? `<u>${unwrapped}</u>` : unwrapped;
         innerXml =
           `<font${face ? ` face="${escAttr(face)}"` : ""} size="${size}" color="${escAttr(color)}">` +
-          `${unwrapped}</font>`;
+          `${body}</font>`;
       }
       // Palette styleWithCSS leaves B/I/U on span style — map like <b>/<i>/<u> tags.
       const weight = String(style["font-weight"] ?? "").toLowerCase();

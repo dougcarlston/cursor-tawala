@@ -482,6 +482,30 @@ describe("documentHtmlToXml invitation / hyperlink", () => {
     expect(xml).toContain('<invitation form="Form 2" project="">Continue</invitation>');
   });
 
+  it("does not nest font around invitation when outer color span wraps the token (Java drops nested font)", () => {
+    const config = JSON.stringify({
+      form: "ViewAll",
+      project: "",
+      displayText: "View Full Report",
+      isPrivate: false,
+      authToken: "",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const html =
+      `<p><span style="color:#0066CC"><u>` +
+      `<span class="invitation-token" data-invitation-config="${config}" ` +
+      `style="color:#000080;text-decoration:underline">View Full Report</span>` +
+      `</u></span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain(
+      '<invitation form="ViewAll" project="">View Full Report</invitation>',
+    );
+    // Single font layer only — nested <font> is dropped silently by Java Font FACTORY
+    expect((xml.match(/<font\b/g) || []).length).toBe(1);
+    expect(xml).not.toMatch(/<font[^>]*>[\s\S]*<font/);
+  });
+
   it("emits private invitation with authenticationTokenValue", () => {
     const config = JSON.stringify({
       form: "PlayerDash",

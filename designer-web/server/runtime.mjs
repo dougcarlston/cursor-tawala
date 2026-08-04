@@ -21,6 +21,7 @@ import {
   segmentVisibleItems,
 } from "./formSegments.mjs";
 import {
+  isDirtBowlRegistrationForm,
   isRegistrationForm,
   registrationPage2Footer,
   renderRegistrationFib,
@@ -113,7 +114,9 @@ function blankInput(item, blank, ctx) {
 }
 
 function renderFib(item, ctx) {
-  if (isRegistrationForm(ctx.formName)) {
+  // DirtBowl FIB layouts match on blank *names*; other Registration forms fall through.
+  // Require dirtBowlRegLayout === true so form name "Registration" alone never fatal-paths.
+  if (isRegistrationForm(ctx.formName) && ctx.dirtBowlRegLayout === true) {
     const reg = renderRegistrationFib(item, ctx, ctx.formName);
     if (reg) return reg;
   }
@@ -350,8 +353,9 @@ function renderRichContent(content, ctx, item) {
 }
 
 function renderMcChoices(item, ctx) {
-  if (isRegistrationForm(ctx.formName)) {
-    return renderRegistrationMc(item, ctx);
+  if (isRegistrationForm(ctx.formName) && ctx.dirtBowlRegLayout === true) {
+    const reg = renderRegistrationMc(item, ctx);
+    if (reg != null) return reg;
   }
 
   const inputType = item.onlyone !== false ? "radio" : "checkbox";
@@ -383,7 +387,7 @@ function renderItem(item, ctx, project) {
       // Mixed Main+Sub lines → multiple headings; `<br>` → line breaks.
       return headingToPreviewHtml(item, esc);
     case "text": {
-      if (isRegistrationForm(ctx.formName)) {
+      if (isRegistrationForm(ctx.formName) && ctx.dirtBowlRegLayout === true) {
         const reg = renderRegistrationText(item, ctx, ctx.formName, project);
         if (reg !== null) return reg;
       }
@@ -414,10 +418,19 @@ function renderItem(item, ctx, project) {
       const qLegend = /<[a-z/!]/i.test(qRaw)
         ? enhanceRichTextHtml(qRaw, ctx)
         : esc(qRaw.replace(/<[^>]+>/g, ""));
-      if (isRegistrationForm(ctx.formName) && (item.label === "Q7" || item.label === "Q8")) {
+      if (
+        isRegistrationForm(ctx.formName) &&
+        ctx.dirtBowlRegLayout === true &&
+        (item.label === "Q7" || item.label === "Q8")
+      ) {
         return choices;
       }
-      if (isRegistrationForm(ctx.formName) && typeof choices === "string" && /^\s*<(fieldset|div)\b/.test(choices)) {
+      if (
+        isRegistrationForm(ctx.formName) &&
+        ctx.dirtBowlRegLayout === true &&
+        typeof choices === "string" &&
+        /^\s*<(fieldset|div)\b/.test(choices)
+      ) {
         return choices;
       }
       return `<fieldset class="mc" id="item-${esc(itemKey(item))}"><legend>${qLegend}</legend><div class="mc-choices">${choices}</div></fieldset>`;
@@ -628,6 +641,8 @@ export function prepareFormContext(project, form, session, options = {}) {
   ctx.formName = form.name;
   ctx.blankAliases = blankAliasesFromForm(form);
   ctx.project = project;
+  // DirtBowl Registration special layouts only when Q1 has DirtBowl blank names.
+  ctx.dirtBowlRegLayout = isDirtBowlRegistrationForm(form);
 
   if (form.preProcess && !options.skipPreProcess) {
     runProcessByName(project, form.preProcess, ctx);
@@ -752,7 +767,7 @@ function getSegmentItems(form, session, options = {}) {
   const seg = segments[state.segmentIndex] ?? segments[0];
   let items = segmentVisibleItems(seg, state.skipStartLabel);
 
-  if (isRegistrationForm(form.name) && state.segmentIndex === 1) {
+  if (isDirtBowlRegistrationForm(form) && state.segmentIndex === 1) {
     const hasFooter = items.some((i) => i.label === "T10" || (i.style === "instructional" && String(i.content).includes("Press Submit to continue")));
     if (!hasFooter) {
       items = [...items, { type: "text", label: "__footer", style: "instructional", content: "__page2footer__" }];
@@ -889,6 +904,7 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
   ctx.formName = formName;
   ctx.blankAliases = blankAliasesFromForm(form);
   ctx.project = project;
+  ctx.dirtBowlRegLayout = isDirtBowlRegistrationForm(form);
 
   if (form.preProcess) {
     runProcessByName(project, form.preProcess, ctx);
@@ -900,7 +916,7 @@ export function handleFormSubmit(project, formName, session, body, baseUrl, uniq
   const segIdx = Number(body.segmentId ?? state.segmentIndex ?? 0);
   const prevSegment = segments[segIdx] ?? segments[0];
 
-  if (formName === "Registration" && segIdx === 0) {
+  if (isDirtBowlRegistrationForm(form) && segIdx === 0) {
     const pageErr = validateRegistrationPage1(ctx);
     if (pageErr) {
       session.fields.Message = pageErr;

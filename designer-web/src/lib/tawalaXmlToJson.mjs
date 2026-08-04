@@ -577,6 +577,62 @@ function convertItemizationTable(tableNode, ctx = {}) {
   return node;
 }
 
+/**
+ * True when a form/document item body uses `<paragraph>` / `<division>` /
+ * `<table>` structure (modern Designer export). Older projects (Living Will,
+ * Wildcat Week, …) put plain text and `<field>` chips directly under the item.
+ */
+function itemBodyHasParagraphStructure(itemBody) {
+  if (!Array.isArray(itemBody)) return false;
+  return children(itemBody).some((n) => {
+    const t = tagName(n);
+    return t === "paragraph" || t === "division" || t === "table";
+  });
+}
+
+/**
+ * Legacy flat item bodies: text (and mixed field/font) with no <paragraph>.
+ * `children()` drops #text, so those used to convert as empty.
+ */
+function flatItemBodyToBlocks(itemBody, ctx = {}) {
+  const blocks = [];
+  if (!Array.isArray(itemBody) || itemBody.length === 0) return blocks;
+
+  const contentNodes = itemBody.filter((n) => {
+    if (n?.["#text"] != null) return true;
+    const t = tagName(n);
+    return t != null && t !== "displayConditions";
+  });
+  if (contentNodes.length === 0) return blocks;
+
+  const onlyPlainText = contentNodes.every((n) => n?.["#text"] != null);
+  if (onlyPlainText) {
+    const full = textOf(contentNodes).replace(/\r\n/g, "\n");
+    const paras = full
+      .split(/\n\s*\n/)
+      .map((s) => s.replace(/\n/g, " ").replace(/\s+/g, " ").trim())
+      .filter(Boolean);
+    for (const p of paras) {
+      blocks.push({
+        type: "paragraph",
+        align: "left",
+        indent: 0,
+        nodes: [{ type: "text", text: p }],
+      });
+    }
+    return blocks;
+  }
+
+  // Mixed text + field / font / invitation / image at item root.
+  blocks.push({
+    type: "paragraph",
+    align: "left",
+    indent: 0,
+    nodes: richNodesFromXml(contentNodes, ctx),
+  });
+  return blocks;
+}
+
 function paragraphsToBlocks(itemBody, ctx = {}) {
   const blocks = [];
   for (const n of children(itemBody)) {
@@ -603,7 +659,25 @@ function paragraphsToBlocks(itemBody, ctx = {}) {
         indent: 0,
         nodes: richNodesFromXml([n], ctx),
       });
+    } else if (
+      t === "image" ||
+      t === "invitation" ||
+      t === "link" ||
+      t === "itemization-table" ||
+      t === "sum"
+    ) {
+      blocks.push({
+        type: "paragraph",
+        align: "left",
+        indent: 0,
+        nodes: richNodesFromXml([n], ctx),
+      });
     }
+  }
+
+  // Older .tawala form items: no <paragraph> wrappers (Publishable Living Will, etc.)
+  if (blocks.length === 0 && !itemBodyHasParagraphStructure(itemBody)) {
+    blocks.push(...flatItemBodyToBlocks(itemBody, ctx));
   }
   return blocks;
 }
@@ -990,15 +1064,21 @@ function convertFib(itemNode) {
     }
   };
 
-  for (const n of children(body)) {
-    if (tagName(n) !== "paragraph") continue;
-    const beforeLen = promptParts.length;
-    walkParagraph(n.paragraph);
-    // Preserve paragraph structure so blanks on successive lines stay separate runs.
-    if (promptParts.length > beforeLen) {
-      const last = promptParts[promptParts.length - 1];
-      if (last !== "\n") promptParts.push("\n");
+  const paragraphKids = children(body).filter((n) => tagName(n) === "paragraph");
+  if (paragraphKids.length > 0) {
+    for (const n of paragraphKids) {
+      const beforeLen = promptParts.length;
+      walkParagraph(n.paragraph);
+      // Preserve paragraph structure so blanks on successive lines stay separate runs.
+      if (promptParts.length > beforeLen) {
+        const last = promptParts[promptParts.length - 1];
+        if (last !== "\n") promptParts.push("\n");
+      }
     }
+  } else {
+    // Flat legacy FIB (Living Will / Wildcat Week): text + <blank> under <fib>, no <paragraph>.
+    // Pass the full body array so #text nodes are not dropped by children().
+    walkParagraph(body ?? []);
   }
 
   // Build prompt: text + underscore runs for each <blank> (Design idle contract).
@@ -1343,14 +1423,35 @@ function convertSendCommand(sendNode) {
   const bodyDoc = children(body).find((n) => tagName(n) === "body");
   if (bodyDoc) {
     const a = attrs(bodyDoc);
-    cmd.body = {
-      document: a["@_document"],
-      reset: String(a["@_reset"] ?? "false").toLowerCase() === "true",
-      showHeader: String(a["@_showHeader"] ?? "true").toLowerCase() !== "false",
-    };
+    const inviteTo = a["@_inviteTo"];
+    if (a["@_document"] != null && String(a["@_document"]).trim() !== "") {
+      cmd.body = {
+        document: a["@_document"],
+        reset: String(a["@_reset"] ?? "false").toLowerCase() === "true",
+        showHeader: String(a["@_showHeader"] ?? "true").toLowerCase() !== "false",
+      };
+      if (inviteTo) cmd.body.inviteTo = inviteTo;
+    } else {
+      // Static body text (cs v95, Alumni List Builder): plain text under <body>,
+      // optionally inviteTo="FormName". Must round-trip — Java Send requires a body child.
+      const raw = textOf(bodyDoc.body ?? []).replace(/\r\n/g, "\n");
+      cmd.body = { text: raw };
+      if (inviteTo) cmd.body.inviteTo = inviteTo;
+      if (String(a["@_reset"] ?? "").toLowerCase() === "true") cmd.body.reset = true;
+      if (String(a["@_showHeader"] ?? "").toLowerCase() === "false") {
+        cmd.body.showHeader = false;
+      }
+    }
   }
 
-  warn(`Send command subject="${cmd.subject ?? ""}" body="${cmd.body?.document ?? ""}" (email deploy path limited in browser Designer)`);
+  const bodyHint = cmd.body?.document
+    ? `document=${cmd.body.document}`
+    : cmd.body?.text != null
+      ? `text(${String(cmd.body.text).length} chars)`
+      : "";
+  warn(
+    `Send command subject="${cmd.subject ?? ""}" body="${bodyHint}" (email deploy path limited in browser Designer)`,
+  );
   return cmd;
 }
 

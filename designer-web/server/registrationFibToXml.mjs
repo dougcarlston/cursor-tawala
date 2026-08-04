@@ -1,5 +1,7 @@
 /** Registration FIB blocks for Java — layout aligned with 5173 registrationLayout.mjs */
 
+import { itemHasNamedBlanks } from "./registrationLayout.mjs";
+
 const TAB_LEFT =
   '<tabPositions><tabStop position="4031"/><tabStop position="6192"/></tabPositions>';
 const TAB_HINT =
@@ -86,6 +88,9 @@ function phoneRowXml(phone1, phone2, phone3, letters, escAttr, escText) {
 }
 
 function registrationQ1Fib(item, escAttr, escText) {
+  if (!itemHasNamedBlanks(item, ["FirstName", "LastName", "RegAgeMo", "RegAgeDay", "RegAgeYr"])) {
+    return null;
+  }
   const first = findBlank(item, "FirstName");
   const last = findBlank(item, "LastName");
   const mo = findBlank(item, "RegAgeMo");
@@ -103,8 +108,9 @@ function registrationQ1Fib(item, escAttr, escText) {
 }
 
 function registrationQ3Fib(item, escAttr, escText) {
+  // DirtBowl: single school blank. Multi-blank Q3 (e.g. CYO) → generic fibToXml.
+  if ((item.blanks ?? []).length !== 1) return null;
   const blank = item.blanks?.[0] ?? { name: "a", length: 39 };
-  const letters = new Map([[blank, "a"]]);
   let body = fontXml("Name of your School: ", escText, { bold: true });
   body += "<tab/>";
   body += blankXml(blank, "a", escAttr);
@@ -112,6 +118,7 @@ function registrationQ3Fib(item, escAttr, escText) {
 }
 
 function registrationQ4Fib(item, escAttr, escText) {
+  if (!itemHasNamedBlanks(item, ["ParentFirstName", "ParentLastName"])) return null;
   const first = findBlank(item, "ParentFirstName");
   const last = findBlank(item, "ParentLastName");
   const address = findBlank(item, "Address");
@@ -165,7 +172,7 @@ function registrationQ4Fib(item, escAttr, escText) {
   return `<fib label="${escAttr(item.label)}">${body}</fib>`;
 }
 
-/** Registration-only FIB export matching 5173 testbed layout. */
+/** Registration-only FIB export matching 5173 testbed layout. Returns null → generic fibToXml. */
 export function registrationFibToXml(item, escAttr, escText) {
   switch (item.label) {
     case "Q1":

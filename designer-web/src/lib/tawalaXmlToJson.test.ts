@@ -311,6 +311,42 @@ describe("convertTawalaXmlToProject", () => {
     expect(html).toContain("&lt;&lt;Record:Form 1:Name&gt;&gt;");
   });
 
+  it("converts Document table invitations with displayText (CYO Dashboard grid)", () => {
+    // CYO Dance Agreement Document Dashboard: five Form-link invitations in a table.
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="CYO" themePath="plain" format="1.16">
+  <forms>
+    <form name="ViewAll" startPoint="true"><items/></form>
+    <form name="Custom Report" startPoint="false"><items/></form>
+  </forms>
+  <processes/>
+  <documents>
+    <document name="Dashboard">
+      <xmlData>
+        <table indent="24">
+          <row>
+            <cell width="3828"><division align="center"><font color="0066CC"><u>
+              <invitation form="ViewAll" project=""><displayText><string value="View Full Report"/></displayText></invitation>
+            </u></font></division></cell>
+            <cell width="3588"><division align="center"><font color="0066CC"><u>
+              <invitation form="Custom Report" project=""><displayText><string value="View Custom Report"/></displayText></invitation>
+            </u></font></division></cell>
+          </row>
+        </table>
+      </xmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project, warnings } = convertTawalaXmlToProject(xml);
+    const html = String((project.documents as Array<{ content: string }>)[0].content);
+    expect(html).toContain('class="invitation-token"');
+    expect(html).toContain("&quot;form&quot;:&quot;ViewAll&quot;");
+    expect(html).toContain("&quot;displayText&quot;:&quot;View Full Report&quot;");
+    expect(html).toContain("&quot;form&quot;:&quot;Custom Report&quot;");
+    expect(html).toContain("&quot;displayText&quot;:&quot;View Custom Report&quot;");
+    expect(warnings.some((w) => w.includes('text=""'))).toBe(false);
+  });
+
   it("imports Document table cells with SUM as function chips and escapes field brackets", () => {
     const xml = `<?xml version="1.0" encoding="utf-8" ?>
 <project name="SumDoc" themePath="default" format="1.9">
@@ -393,6 +429,88 @@ describe("convertTawalaXmlToProject", () => {
     // Contiguous elision would be one 168-char run with no newlines between.
     expect(fib.prompt).toContain("\n");
     expect(fib.prompt).not.toMatch(/_{40,}/);
+  });
+
+  it("keeps flat (non-paragraph) text, FIB blanks, and MC wording — Living Will / Wildcat style", () => {
+    // Older Publishable apps put prompt text and <blank> directly under the item
+    // (no <paragraph>). Without a flat-body path the canvas looked empty.
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="FlatFormLegacy" themePath="default" format="1.3">
+  <forms>
+    <form name="LivingWill" startPoint="true" process="Process 1">
+      <items>
+        <text label="T1">California Living Will
+
+This program will create a Living Will under the laws of the State of California.
+</text>
+        <fib label="Q1">Personal Information:  <blank label="a" alternateLabel="FirstName" length="15" required="false"/>  (first) <blank label="b" alternateLabel="LastName" length="15" required="false"/> (last)</fib>
+        <text label="T2">First Name: <field name="FirstName"/>
+Last Name: <field name="LastName"/></text>
+        <mc label="Q3" onlyone="true" required="false"><question>Is this information correct?</question><choice label="a">Yes</choice><choice label="b">No</choice></mc>
+      </items>
+    </form>
+  </forms>
+  <processes><process name="Process 1"/></processes>
+  <documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "flat.tawala" });
+    const form = (project.forms as Array<{ items: Array<Record<string, unknown>> }>)[0];
+    const t1 = form.items.find((i) => i.label === "T1") as { content?: string };
+    expect(String(t1.content ?? "")).toMatch(/California Living Will/);
+    expect(String(t1.content ?? "")).toMatch(/illustrative|Living Will|California/i);
+
+    const fib = form.items.find((i) => i.label === "Q1") as {
+      prompt?: string;
+      blanks?: Array<{ name: string; alternateLabel?: string }>;
+    };
+    expect(fib.blanks).toHaveLength(2);
+    expect(fib.blanks?.map((b) => b.name)).toEqual(["FirstName", "LastName"]);
+    expect(fib.prompt).toMatch(/Personal Information:/);
+    expect(fib.prompt).toMatch(/_+/);
+
+    const t2 = form.items.find((i) => i.label === "T2") as { content?: string };
+    expect(String(t2.content ?? "")).toMatch(/FirstName/);
+    expect(String(t2.content ?? "")).toMatch(/LastName/);
+
+    const mc = form.items.find((i) => i.label === "Q3") as {
+      question?: string;
+      choices?: Array<{ label: string; text: string }>;
+    };
+    expect(mc.question).toMatch(/Is this information correct/);
+    expect(mc.choices).toEqual([
+      { label: "a", text: "Yes" },
+      { label: "b", text: "No" },
+    ]);
+  });
+
+  it("preserves static text Send body + inviteTo (no document attr)", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="SendTextBody" themePath="default" format="1.3">
+  <forms><form name="Petition" startPoint="true"><items/></form></forms>
+  <processes>
+    <process name="Process 4">
+      <send>
+        <to addressField="VoterEmail"/>
+        <subject>Hello</subject>
+        <body inviteTo="Petition">Dear Friend,
+
+Please help.</body>
+      </send>
+    </process>
+  </processes>
+  <documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "send.tawala" });
+    const cmd = (project.processes as Array<{ commands: Array<Record<string, unknown>> }>)[0]
+      .commands[0] as {
+      cmd: string;
+      body?: { text?: string; inviteTo?: string; document?: string };
+    };
+    expect(cmd.cmd).toBe("send");
+    expect(cmd.body?.document).toBeUndefined();
+    expect(cmd.body?.inviteTo).toBe("Petition");
+    expect(cmd.body?.text).toMatch(/Dear Friend/);
+    expect(cmd.body?.text).toMatch(/Please help/);
   });
 });
 

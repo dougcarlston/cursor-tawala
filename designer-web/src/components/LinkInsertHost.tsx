@@ -7,6 +7,7 @@ import {
   insertLinkTokenAtSelection,
   parseHyperlinkConfig,
   parseInvitationConfig,
+  replaceLinkToken,
   subscribeLinkInsert,
   type HyperlinkDraft,
   type InvitationDraft,
@@ -31,12 +32,26 @@ export function LinkInsertHost() {
       return;
     }
     handle.el.focus();
-    handle.restoreSelection();
-    insertLinkTokenAtSelection(handle.el, kind, draft);
+    const editing = Boolean(request.editEl?.isConnected);
+    if (editing) {
+      // Prefer in-place replace so double-click edit does not stack chips.
+      replaceLinkToken(handle.el, request.editEl, kind, draft);
+    } else {
+      handle.restoreSelection();
+      insertLinkTokenAtSelection(handle.el, kind, draft);
+    }
     handle.commit();
     useProjectStore
       .getState()
-      .setStatus(kind === "invitation" ? "Invitation inserted" : "Hyperlink inserted");
+      .setStatus(
+        editing
+          ? kind === "invitation"
+            ? "Invitation updated"
+            : "Hyperlink updated"
+          : kind === "invitation"
+            ? "Invitation inserted"
+            : "Hyperlink inserted",
+      );
     close();
   };
 

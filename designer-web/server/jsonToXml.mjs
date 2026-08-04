@@ -1,6 +1,7 @@
 /** Best-effort JSON format 2.0 → legacy XML for Java /client upload. */
 
 import { fibToXml } from "./fibToXml.mjs";
+import { isDirtBowlRegistrationForm } from "./registrationLayout.mjs";
 import { registrationFibToXml } from "./registrationFibToXml.mjs";
 import { registrationTextToXml } from "./registrationTextToXml.mjs";
 import { mcToXml } from "./mcToXml.mjs";
@@ -851,6 +852,27 @@ function inferSendAddresses(cmd, ctx = {}) {
   };
 }
 
+function sendBodyToXml(body) {
+  if (!body || typeof body !== "object") return "";
+  if (body.document != null && String(body.document).trim() !== "") {
+    const invite =
+      body.inviteTo != null && String(body.inviteTo).trim() !== ""
+        ? ` inviteTo="${escAttr(body.inviteTo)}"`
+        : "";
+    return `<body document="${escAttr(body.document)}" reset="${body.reset === true ? "true" : "false"}" showHeader="${body.showHeader === false ? "false" : "true"}"${invite}/>`;
+  }
+  // Static text body (legacy send without document) — Java StaticTextSendBody.
+  // Omitting <body> NPEs Process load: Factory.make(null) in Send.<init>.
+  if (body.text != null) {
+    const invite =
+      body.inviteTo != null && String(body.inviteTo).trim() !== ""
+        ? ` inviteTo="${escAttr(body.inviteTo)}"`
+        : "";
+    return `<body${invite}>${escText(body.text)}</body>`;
+  }
+  return "<body/>";
+}
+
 function sendToXml(cmd, ctx = {}) {
   const { to: toAddr, from: fromAddr } = inferSendAddresses(cmd, ctx);
   const to = addressToXml("to", toAddr);
@@ -858,9 +880,7 @@ function sendToXml(cmd, ctx = {}) {
   const cc = addressToXml("cc", cmd.cc);
   // Java Send only registers to/cc — do not emit unsupported <bcc>.
   const subject = subjectToXml(cmd.subject);
-  const body = cmd.body?.document
-    ? `<body document="${escAttr(cmd.body.document)}" reset="${cmd.body.reset === true ? "true" : "false"}" showHeader="${cmd.body.showHeader === false ? "false" : "true"}"/>`
-    : "";
+  const body = sendBodyToXml(cmd.body);
   if (!to && !from && !subject && !body) {
     return `<!-- incomplete send command -->`;
   }
@@ -1010,7 +1030,7 @@ function richNodesToXml(nodes) {
     .join("");
 }
 
-function itemToXml(item, formName = "", project = null) {
+function itemToXml(item, formName = "", project = null, form = null) {
   const altLabel = item.alternateLabel ?? item.name;
   const altAttr =
     altLabel && altLabel !== item.label ? ` alternateLabel="${escAttr(altLabel)}"` : "";
@@ -1021,13 +1041,14 @@ function itemToXml(item, formName = "", project = null) {
       // Mixed Main/Sub lines → multiple `<heading>` elements (Java one type each).
       return headingToXml(item, escAttr, escText);
     case "text": {
-      const legacy = registrationTextToXml(item, formName);
+      const legacy = registrationTextToXml(item, formName, form);
       const body = legacy ?? textContentToXml(item.content, item.style, project, formName);
       const padAttr = item.paddingBottom === false ? ` paddingBottom="false"` : "";
       return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}"${padAttr}>${body}</text>`;
     }
     case "fib": {
-      if (formName === "Registration") {
+      // DirtBowl-only layout export; non-DirtBowl Registration (e.g. CYO) → generic fibToXml.
+      if (form && isDirtBowlRegistrationForm(form)) {
         const regFib = registrationFibToXml(item, escAttr, escText);
         if (regFib) return withDisplayConditions(regFib, item);
       }
@@ -1061,7 +1082,7 @@ export function projectToXml(project) {
         .filter(Boolean)
         .join(" ");
       const items = (form.items ?? [])
-        .map((item) => itemToXml(item, form.name, project))
+        .map((item) => itemToXml(item, form.name, project, form))
         .join("");
       return `<form ${attrs}><items>${items}</items></form>`;
     })

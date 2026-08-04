@@ -26,6 +26,11 @@ import {
   selectionHasResettableFormatting,
 } from "@/lib/formattingPaletteContext";
 import { openFunctionTokenForEdit, selectFunctionToken } from "@/lib/functionPicker";
+import {
+  HYPERLINK_TOKEN_CLASS,
+  INVITATION_TOKEN_CLASS,
+  openLinkTokenForEdit,
+} from "@/lib/linkInsert";
 import { ensureFunctionTokenCaretGaps, FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
 import { tryDeleteInlineTokensInSelection } from "@/lib/inlineTokenDelete";
 import {
@@ -520,6 +525,17 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                   registerAsPaletteEditor();
                   openFunctionTokenForEdit(func, el, rememberSelection, commit);
                   return;
+                }
+                const linkTok = (e.target as HTMLElement).closest(
+                  `.${INVITATION_TOKEN_CLASS}, .${HYPERLINK_TOKEN_CLASS}`,
+                );
+                if (linkTok instanceof HTMLElement && el.contains(linkTok)) {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  registerAsPaletteEditor();
+                  if (openLinkTokenForEdit(linkTok, el, rememberSelection, commit)) {
+                    return;
+                  }
                 }
                 const field = (e.target as HTMLElement).closest(`.${FIELD_TOKEN_CLASS}`);
                 if (field instanceof HTMLElement && el.contains(field)) {

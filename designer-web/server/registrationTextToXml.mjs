@@ -1,5 +1,6 @@
 /** Legacy DirtBowl Registration blocks for Java upload. */
 
+import { isDirtBowlRegistrationForm } from "./registrationLayout.mjs";
 import { REGISTRATION_T8_XML, REGISTRATION_T9_XML } from "./registrationReviewXml.mjs";
 
 const REGISTRATION_TEXT_XML = {
@@ -12,7 +13,13 @@ const REGISTRATION_TEXT_XML = {
   T9: REGISTRATION_T9_XML,
 };
 
-export function registrationTextToXml(item, formName) {
+/**
+ * DirtBowl Registration text blocks for Java. Non-DirtBowl Registration forms
+ * (e.g. CYO Dance Agreement) must keep Design HTML via textContentToXml.
+ * @param {object|null} form — when provided, gates on DirtBowl Q1 blank names
+ */
+export function registrationTextToXml(item, formName, form = null) {
   if (formName !== "Registration") return null;
+  if (form && !isDirtBowlRegistrationForm(form)) return null;
   return REGISTRATION_TEXT_XML[item.label] ?? null;
 }

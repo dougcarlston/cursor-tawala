@@ -7,6 +7,7 @@ import {
   retainEditorFocusOnBlur,
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
+import { htmlToPlainText as fibHtmlToPlainText } from "@/lib/fibBlanks";
 import {
   embedPlainFieldTokensAsHtml,
   insertFieldTokenAtSelection,
@@ -57,10 +58,9 @@ function caretRangeAtPoint(x: number, y: number): Range | null {
   return null;
 }
 
+// Shield <<Form:Field>> before innerHTML — naive parse turns colons into tags (C5).
 function htmlToPlainText(html: string): string {
-  const tmp = document.createElement("div");
-  tmp.innerHTML = html;
-  return tmp.textContent ?? "";
+  return fibHtmlToPlainText(html);
 }
 
 const choiceLetter = (i: number) => String.fromCharCode(97 + (i % 26));
@@ -70,8 +70,8 @@ const choiceLetter = (i: number) => String.fromCharCode(97 + (i % 26));
  * legacy `McqItemView`). Q-badge, rich question (B/I/U via palette), inline lettered choices
  * where Enter adds the next choice, and a property strip (multi-select, required, choice source).
  *
- * C5 (DESIGNER_OPEN_BUGS): question idle/edit inject raw plain `<<field>>` via innerHTML —
- * must use embedPlainFieldTokensAsHtml first (choices already do); else browser tag-parses.
+ * Field tokens in question text (C5 fixed Aug 4): idle + edit entry use
+ * embedPlainFieldTokensAsHtml like FIB/choices so <<Form:Field>> is not tag-parsed.
  */
 export function McqCanvasRow({ item, index, formName, selected }: Props) {
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
@@ -143,7 +143,9 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     }
     const el = editorRef.current;
     if (!el) return;
-    el.innerHTML = question;
+    // Same as FIB: plain <<Form:Field>> must become chips before innerHTML or the
+    // browser treats <Field> as a tag (C5 — shows <<Question>> / empty question).
+    el.innerHTML = embedPlainFieldTokensAsHtml(question);
     el.focus();
     setActiveFieldTarget(insertFieldToken, {}, el);
     registerAsPaletteEditor();
@@ -485,7 +487,11 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
           <div key="mcq-rendered" className="mcq-rendered">
             <div
               className={`mcq-question${isEmpty ? " placeholder" : ""}`}
-              dangerouslySetInnerHTML={{ __html: isEmpty ? MCQ_PLACEHOLDER : question }}
+              dangerouslySetInnerHTML={{
+                __html: isEmpty
+                  ? MCQ_PLACEHOLDER
+                  : embedPlainFieldTokensAsHtml(question),
+              }}
             />
             {choiceSource === "manual" ? (
               <ul className="mcq-choices-preview">
