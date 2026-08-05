@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-use-mytawala" />
-  <script src="js/demo-urls.js?v=20260801-dataops"></script>
-  <script src="js/transfer.js?v=20260801-dataops"></script>
+  <script src="js/demo-urls.js?v=20260804-exam-purge"></script>
+  <script src="js/transfer.js?v=20260804-exam-purge"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -106,19 +106,23 @@
       const deployed = TawalaDemo.isDeployed(project);
       const primary = document.getElementById("testDrivePrimary");
       const viewMine = document.getElementById("viewInMyTawala");
-      if (deployed) {
+      const driveUrl =
+        typeof TawalaDemo.libraryTestDriveUrl === "function"
+          ? TawalaDemo.libraryTestDriveUrl(project)
+          : project.testDriveUrl;
+      if (deployed && driveUrl) {
         document.getElementById("testDriveBlurb").textContent =
-          "Purges prior responses for this project, then opens localhost:8080. Redeploy if the link is stale.";
-        primary.href = project.testDriveUrl;
+          "Primary Test Drive purges prior responses, then opens localhost:8080 (Admin/Setup first for Online Exam). Start-point links below keep data so Setup → Exam works without wiping questions. Redeploy if the link is stale.";
+        primary.href = driveUrl;
         primary.classList.add("js-testdrive");
-        primary.setAttribute("data-testdrive-url", project.testDriveUrl);
+        primary.setAttribute("data-testdrive-url", driveUrl);
         primary.title = "Purge prior responses, then open :8080";
         primary.hidden = false;
         document.getElementById("sidebarTestDrive").innerHTML =
           "<h3>Quick start</h3><p><a class=\"js-testdrive\" href=\"" +
-          project.testDriveUrl +
+          escapeHtml(driveUrl) +
           "\" data-testdrive-url=\"" +
-          project.testDriveUrl +
+          escapeHtml(driveUrl) +
           "\" target=\"_blank\" rel=\"noopener\" title=\"Purge prior responses, then open :8080\">Test drive now</a></p>";
       } else {
         document.getElementById("testDriveBlurb").textContent =
@@ -169,8 +173,10 @@
         "</p><p><b>Updated:</b> " +
         escapeHtml(project.updated || "") +
         "</p>";
+      // Same as My Tawala Details: no purge on start-point click. Primary Test Drive
+      // above still purges once; subsequent Setup → Exam must keep Question rows.
       document.getElementById("startPoints").innerHTML = (project.startPoints || [])
-        .map((sp) => `<li>${TawalaDemo.startPointHtml(sp)}</li>`)
+        .map((sp) => `<li>${TawalaDemo.startPointHtml(sp, { purge: false })}</li>`)
         .join("");
 
       const catSelect = document.getElementById("detailCatSelect");

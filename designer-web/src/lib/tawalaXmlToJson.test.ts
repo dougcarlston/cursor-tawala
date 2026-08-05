@@ -263,6 +263,33 @@ describe("convertTawalaXmlToProject", () => {
     expect(warnings.some((w) => w.includes('text=""'))).toBe(false);
   });
 
+  it("converts private Document invitation: #text label + literal auth string (Sign-up ViewFinalList)", () => {
+    // Legacy: auth is <string value="fromSignupSheet"/>; label is bare #text "click here".
+    // Prior bug: expressionToString(body) stole the auth string as displayText and dropped auth.
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="Sign-up Sheet" themePath="default" format="1.8">
+  <forms><form name="Administration" startPoint="true"><items/></form></forms>
+  <processes/>
+  <documents>
+    <document name="SignUp ViewFinalList">
+      <xmlData>
+        <paragraph indent="0" align="left"><font><b>If you'd like to see the list of all who have signed up, </b></font><font><b><u><invitation form="Administration" project="" private="true"><authenticationTokenValue><string value="fromSignupSheet"/></authenticationTokenValue>click here</invitation></u></b></font><font><b>.</b></font></paragraph>
+      </xmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project, warnings } = convertTawalaXmlToProject(xml);
+    const html = String((project.documents as Array<{ content: string }>)[0].content);
+    expect(html).toContain('class="invitation-token"');
+    expect(html).toContain("&quot;displayText&quot;:&quot;click here&quot;");
+    expect(html).toContain("&quot;authToken&quot;:&quot;fromSignupSheet&quot;");
+    expect(html).toContain("&quot;isPrivate&quot;:true");
+    expect(html).toContain(">click here</span>");
+    expect(html).not.toContain("&quot;displayText&quot;:&quot;fromSignupSheet&quot;");
+    expect(html.match(/invitation-token/g)?.length).toBe(1);
+    expect(warnings.some((w) => w.includes('text=""'))).toBe(false);
+  });
+
   it("converts hyperlink link element to hyperlink-token HTML", () => {
     const xml = `<?xml version="1.0" encoding="utf-8" ?>
 <project name="Link" themePath="default" format="1.9">
@@ -376,6 +403,117 @@ describe("convertTawalaXmlToProject", () => {
     expect(html).toContain('data-field-name="Customize_eventHeader"');
     expect(html).toMatch(/field-token[^>]*>&lt;&lt;Customize_eventHeader&gt;&gt;/);
     expect(html).not.toMatch(/field-token[^>]*><</);
+  });
+
+  it("imports question-correlation-table and record-count as function chips (not field dumps)", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="CorrDoc" themePath="default" format="1.8">
+  <forms>
+    <form name="Questionnaire" startPoint="true">
+      <items>
+        <text label="T1">
+          <paragraph align="left" indent="0"><font><b>
+            <question-correlation-table version="1">
+              <question-field-name>Record:Questionnaire:Able</question-field-name>
+              <display-field-name>Record:Questionnaire:Name</display-field-name>
+              <preferred-choice-field-name>Record:Questionnaire:Preferred</preferred-choice-field-name>
+              <conditions>
+                <form name="Questionnaire" />
+                <conditions>
+                  <equals field="Record:Questionnaire:Name"><string field="Target"/></equals>
+                </conditions>
+              </conditions>
+            </question-correlation-table>
+          </b></font></paragraph>
+        </text>
+      </items>
+    </form>
+  </forms>
+  <processes/>
+  <documents>
+    <document name="Report">
+      <xmlData>
+        <paragraph align="left" indent="0">
+          <font>Total respondents: </font>
+          <font><b><i>
+            <record-count version="3">
+              <form-name>Questionnaire</form-name>
+              <conditions><form name="Questionnaire" /></conditions>
+            </record-count>
+          </i></b></font>
+        </paragraph>
+        <paragraph align="left" indent="0"><font>
+          <question-correlation-table version="1">
+            <question-field-name>Record:Questionnaire:Able</question-field-name>
+            <display-field-name>Record:Questionnaire:Name</display-field-name>
+            <preferred-choice-field-name>Record:Questionnaire:Preferred</preferred-choice-field-name>
+            <conditions><form name="Questionnaire" /></conditions>
+          </question-correlation-table>
+        </font></paragraph>
+      </xmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "corrDoc.tawala" });
+    const report = String(
+      (project.documents as Array<{ content: string }>).find((d) => d.name === "Report")!
+        .content,
+    );
+    expect(report).toContain('data-function-id="record-count"');
+    expect(report).toContain('data-function-id="question-correlation-table"');
+    expect(report).toContain("Questionnaire:Able");
+    expect(report).toContain("Questionnaire:Name");
+    expect(report).toContain("Questionnaire:Preferred");
+    expect(report).not.toContain(
+      "Record:Questionnaire:AbleRecord:Questionnaire:NameRecord:Questionnaire:Preferred",
+    );
+    expect(report).not.toMatch(/>Questionnaire<\/[bi]?>/);
+    // Form text item path (not only documents)
+    const formHtml = String(
+      (
+        project.forms as Array<{
+          items: Array<{ type: string; content?: string }>;
+        }>
+      )[0].items[0].content,
+    );
+    expect(formHtml).toContain('data-function-id="question-correlation-table"');
+    expect(formHtml).toContain("&quot;op&quot;:&quot;equals&quot;");
+    expect(formHtml).not.toContain(
+      "Record:Questionnaire:AbleRecord:Questionnaire:NameRecord:Questionnaire:Preferred",
+    );
+  });
+
+  it("imports choice-tally-table and simple-list as function chips", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="TallyDoc" themePath="default" format="1.8">
+  <forms><form name="Questionnaire" startPoint="true"><items/></form></forms>
+  <processes/>
+  <documents>
+    <document name="Results">
+      <xmlData>
+        <paragraph align="left" indent="0"><font>
+          <choice-tally-table version="1">
+            <field>Questionnaire:UserResponse</field>
+            <conditions><form name="Questionnaire" /></conditions>
+          </choice-tally-table>
+        </font></paragraph>
+        <paragraph align="left" indent="0"><font>
+          <simple-list version="2">
+            <simple-list-field>Record:Questionnaire:Name</simple-list-field>
+            <conditions><form name="Questionnaire" /></conditions>
+          </simple-list>
+        </font></paragraph>
+      </xmlData>
+    </document>
+  </documents>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "tallyDoc.tawala" });
+    const html = String((project.documents as Array<{ content: string }>)[0].content);
+    expect(html).toContain('data-function-id="choice-tally-table"');
+    expect(html).toContain('data-function-id="simple-list"');
+    expect(html).toContain("Questionnaire:UserResponse");
+    expect(html).toContain("Questionnaire:Name");
+    expect(html).not.toMatch(/Questionnaire:UserResponseQuestionnaire/);
   });
 
   it("keeps sequential FIB blanks as separate underscore runs (Online Exam C1)", () => {

@@ -192,11 +192,16 @@ app.post("/api/deploy", async (req, res) => {
   }
 
   try {
+      // File→New from a template (and blank New) mark projects so Deploy does not reattach
+      // to prior responses accumulated under the same project name.
+      const freshFromTemplate = project._freshFromTemplate === true;
+      const { _freshFromTemplate: _drop, ...projectForDeploy } = project;
+
       if (JAVA_URL) {
-        const xml = buildUploadRequest(credentials, project);
+        const xml = buildUploadRequest(credentials, projectForDeploy);
         const javaResponse = await forwardToJava(xml);
-        const allForProject = parseStartpointsForProject(javaResponse, project.name);
-        const startpoints = filterStartpointsForMarkedForms(project, allForProject);
+        const allForProject = parseStartpointsForProject(javaResponse, projectForDeploy.name);
+        const startpoints = filterStartpointsForMarkedForms(projectForDeploy, allForProject);
         const failure = parseDeployFailure(javaResponse);
         if (failure) {
           res.status(502).json({
@@ -209,12 +214,12 @@ app.post("/api/deploy", async (req, res) => {
         }
         if (!javaResponse.includes('status="success"') || startpoints.length === 0) {
           const snippet = javaResponse.replace(/\s+/g, " ").slice(0, 200);
-          const marked = startPointFormNames(project);
+          const marked = startPointFormNames(projectForDeploy);
           let error;
           if (marked.size === 0) {
-            error = `No forms marked as Starting Point in "${project.name}". Open a form, check Starting Point in Properties, then deploy again.`;
+            error = `No forms marked as Starting Point in "${projectForDeploy.name}". Open a form, check Starting Point in Properties, then deploy again.`;
           } else if (allForProject.length === 0) {
-            error = `Java deploy returned no start points for project "${project.name}". Restart the dev API if you still see DirtBowl URLs.`;
+            error = `Java deploy returned no start points for project "${projectForDeploy.name}". Restart the dev API if you still see DirtBowl URLs.`;
           } else {
             error = `Java deploy did not return URLs for the Starting Point form(s): ${[...marked].join(", ")}.`;
           }
@@ -229,18 +234,35 @@ app.post("/api/deploy", async (req, res) => {
           });
           return;
         }
+        const uniqueId = uniqueIdFromStartpoints(startpoints);
+        // Tomcat reuses project identity by name — purge leftover form responses for File→New.
+        let purged = null;
+        if (freshFromTemplate && uniqueId) {
+          try {
+            purged = await purgeProjectResponsesByUniqueId(uniqueId);
+          } catch (e) {
+            purged = { status: "failure", error: String(e.message ?? e) };
+          }
+        }
         res.json({
           status: "success",
           mode: "java",
-          project: project.name,
-          uniqueId: uniqueIdFromStartpoints(startpoints),
+          project: projectForDeploy.name,
+          uniqueId,
           startpoints,
+          freshFromTemplate,
+          purged,
         });
         return;
       }
 
-    const entry = store.saveProject(credentials.user, project);
-    const startpoints = (project.forms ?? [])
+    const entry = store.saveProject(credentials.user, projectForDeploy, {
+      forceNewId: freshFromTemplate,
+    });
+    if (freshFromTemplate) {
+      resetSession(entry.uniqueId, projectForDeploy);
+    }
+    const startpoints = (projectForDeploy.forms ?? [])
       .filter((f) => f.startPoint === true)
       .map((form) => ({
         form: form.name,
@@ -249,9 +271,10 @@ app.post("/api/deploy", async (req, res) => {
     res.json({
       status: "success",
       mode: "dev",
-      project: project.name,
+      project: projectForDeploy.name,
       uniqueId: entry.uniqueId,
       startpoints,
+      freshFromTemplate,
     });
   } catch (e) {
     console.error(e);
@@ -310,13 +333,16 @@ app.post("/p/:uniqueId/:formName", express.urlencoded({ extended: true }), (req,
 });
 
 app.post("/api/preview", (req, res) => {
-  const { project } = req.body ?? {};
+  const { project, resetSession: doReset } = req.body ?? {};
   if (!project?.name) {
     res.status(400).json({ error: "project required" });
     return;
   }
-  store.putPreview("designer", project);
-  res.json({ ok: true, project: project.name });
+  const { runtimeId } = store.putPreview("designer", project);
+  if (doReset) {
+    resetSession(runtimeId, project);
+  }
+  res.json({ ok: true, project: project.name, runtimeId });
 });
 
 app.get("/preview/:userId/:projectName/:formName", (req, res) => {
@@ -325,11 +351,14 @@ app.get("/preview/:userId/:projectName/:formName", (req, res) => {
     res.status(404).send("Preview not found — use Preview tab in Designer");
     return;
   }
-  const session = getOrCreateSession(`preview-${req.params.userId}`, data.project);
+  const runtimeId = store.previewRuntimeId(req.params.userId, data.project.name);
+  // Ensure runtime project file exists (may have been put under old id).
+  store.putPreview(req.params.userId, data.project);
+  const session = getOrCreateSession(runtimeId, data.project);
   res
     .type("html")
     .send(
-      runtime.renderFormPage(data.project, req.params.formName, HOST, `preview-${req.params.userId}`, session, {
+      runtime.renderFormPage(data.project, req.params.formName, HOST, runtimeId, session, {
         designerPreview: true,
       }),
     );

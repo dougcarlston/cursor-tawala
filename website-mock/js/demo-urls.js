@@ -454,34 +454,39 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": null
   },
   "online-exam-builder": {
-    "name": "Online Exam Builder (stub)",
+    "name": "Online Exam Builder",
     "category": "Polls and Surveys",
     "featured": false,
     "iconLabel": "OE",
     "rating": 0,
     "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (11 forms). Start points: Exam, Administration, CustomizationPreview.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 11 forms, 17 processes, 13 documents. Start points: Exam, Administration, CustomizationPreview, Setup.",
+    "updated": "8/4/26",
+    "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
+    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Library Test Drive opens Administration first.",
     "jsonFile": "projects/library/Online Exam Builder.json",
     "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
+    "liveReady": true,
+    "deployed": true,
+    "uniqueId": "u3hkqgwtrepjlur",
     "startPoints": [
       {
-        "label": "Exam"
+        "label": "Exam",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/sto3lpi.Exam"
       },
       {
-        "label": "Administration"
+        "label": "Administration",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
       },
       {
-        "label": "CustomizationPreview"
+        "label": "CustomizationPreview",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/oio6z9y.CustomizationPreview"
       },
       {
-        "label": "Setup"
+        "label": "Setup",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/dc2nyex.Setup"
       }
     ],
-    "testDriveUrl": null
+    "testDriveUrl": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
   },
   // signup-sheet-email — retired from public Library (owner Aug 1, 2026). Still on
   // Designer → File → New Project (`designer-web/public/samples/templates/signup-sheet-w-email.json`).
@@ -1241,8 +1246,10 @@ window.TawalaDemo = {
     }
   },
   /**
-   * Prefer end-user start forms over Admin/Setup/Preview for multi-start projects
-   * (Online Exam Builder: Exam vs Administration, DirtBowl: Registration vs AdminDash).
+   * Prefer end-user start forms over Admin/Setup/Preview when ranking a single
+   * operate URL (Online Exam Builder: Exam vs Administration). Used when Use
+   * opens a single-start runtime link, and for start-point list ordering.
+   * Multi-start Use navigates to Project Details instead (see projectUseTarget).
    * @param {Array<{label?:string,form?:string,url?:string|null}>} startPoints
    * @returns {{label?:string,form?:string,url?:string|null}|null}
    */
@@ -1271,11 +1278,41 @@ window.TawalaDemo = {
     const nonAdmin = list.find((s) => !deprioritize.test(labelOf(s)));
     return nonAdmin || list[0];
   },
-  /** Primary :8080 URL for Use / My Tawala operate (Exam, not Admin, when both exist). */
+  /**
+   * Library Test Drive entry point — for apps with Exam + Administration/Setup
+   * (Online Exam Builder), open Admin/Setup first so the drive starts where you
+   * configure questions. My Tawala Use for multi-start goes to Project Details
+   * (not Exam); single-start Use still uses pickPrimaryStartPoint.
+   */
+  pickLibraryTestDriveStartPoint(startPoints) {
+    const list = (startPoints || []).filter((s) => s && s.url);
+    if (!list.length) return null;
+    const labelOf = (s) => String(s.label || s.form || "").trim();
+    const hasExam = list.some((s) => /^exam$/i.test(labelOf(s)));
+    if (hasExam) {
+      const setupPrefer = [/^administration$/i, /^setup$/i, /^admin$/i];
+      for (let p = 0; p < setupPrefer.length; p++) {
+        const hit = list.find((s) => setupPrefer[p].test(labelOf(s)));
+        if (hit) return hit;
+      }
+    }
+    return this.pickPrimaryStartPoint(startPoints);
+  },
+  /** Preferred :8080 URL when ranking start points (Exam over Admin when both exist). */
   primaryStartUrl(startPoints, fallbackUrl) {
     const primary = this.pickPrimaryStartPoint(startPoints);
     if (primary && primary.url) return primary.url;
     return fallbackUrl || null;
+  },
+  /**
+   * Library listing / detail Test Drive URL. Prefer Setup/Admin for Exam apps;
+   * fall back to stored testDriveUrl.
+   */
+  libraryTestDriveUrl(project) {
+    if (!project) return null;
+    const preferred = this.pickLibraryTestDriveStartPoint(project.startPoints);
+    if (preferred && preferred.url) return preferred.url;
+    return project.testDriveUrl || null;
   },
   /** Delegated clicks for elements with data-testdrive-url (or .js-testdrive href). */
   bindTestDriveClicks(root) {
@@ -1309,8 +1346,9 @@ window.TawalaDemo = {
   /**
    * Start-point link HTML.
    * @param {{label?:string,url?:string|null}} sp
-   * @param {{purge?:boolean}} opts — Library: purge true (default). My Tawala Project Details: purge false
-   *   so Admin setup (questions / config) is not wiped before Exam / Registration.
+   * @param {{purge?:boolean}} opts — Default purge true (listing / primary Test Drive).
+   *   Project Details (Library and My Tawala) pass purge:false so Admin/Setup writes
+   *   (questions / config) survive when opening Exam / Registration next.
    */
   startPointHtml(sp, opts) {
     const options = opts || {};
@@ -1330,11 +1368,11 @@ window.TawalaDemo = {
           "</a>"
         );
       }
-      // My Tawala / operate: full token URL as-is, no purge (use Project Actions PURGE to clear).
+      // Project Details / operate: full token URL as-is, no purge (use PURGE / primary Test Drive to clear).
       return (
         '<a href="' +
         sp.url +
-        '" target="_blank" rel="noopener" title="Open this start form on :8080 (keeps project data; use PURGE to clear)">' +
+        '" target="_blank" rel="noopener" title="Open this start form on :8080 (keeps project data; use PURGE or primary Test Drive to clear)">' +
         escLabel +
         "</a>"
       );

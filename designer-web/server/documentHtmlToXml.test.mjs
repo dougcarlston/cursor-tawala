@@ -525,6 +525,85 @@ describe("documentHtmlToXml invitation / hyperlink", () => {
     expect(xml).toContain("Dashboard</invitation>");
   });
 
+  it("emits private invitation with literal auth string (Sign-up fromSignupSheet)", () => {
+    const config = JSON.stringify({
+      form: "Administration",
+      project: "",
+      displayText: "click here",
+      isPrivate: true,
+      authToken: "fromSignupSheet",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const html = `<p><span class="invitation-token" data-invitation-config="${config}">click here</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('private="true"');
+    expect(xml).toContain('<string value="fromSignupSheet"/>');
+    expect(xml).toContain("click here</invitation>");
+  });
+
+  it("hoists font outside b/u for Sign-up ViewFinalList HTML (Java Bold cannot contain font)", () => {
+    // Converted Design HTML: bold+underline wrap the invitation chip (which already
+    // carries color). Naive emit was <b><u><font>…invitation… — Java drops font
+    // under TextFormattingContainerElement → missing "click here" (`, .` on Deploy).
+    const config = JSON.stringify({
+      form: "Administration",
+      project: "",
+      displayText: "click here",
+      isPrivate: true,
+      authToken: "fromSignupSheet",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const html =
+      `<p><span><b>If you'd like to see the list of all who have signed up, </b></span>` +
+      `<span><b><u><span contenteditable="false" class="invitation-token" ` +
+      `data-invitation-config="${config}" ` +
+      `style="color:#000080;text-decoration:underline">click here</span></u></b></span>` +
+      `<span><b>.</b></span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<string value="fromSignupSheet"/>');
+    expect(xml).toContain("click here</invitation>");
+    // Legacy order: font outermost, then b/u, then invitation (not b>u>font).
+    expect(xml).toMatch(
+      /<font\b[^>]*color="000080"[^>]*>\s*<b>\s*<u>\s*<invitation\b/,
+    );
+    expect(xml).not.toMatch(/<(?:b|u)>\s*<font\b/);
+  });
+
+  it("recovers nested invitation chips (auth parked in outer displayText)", () => {
+    // Corrupt convert/edit: outer private chip displayText=fromSignupSheet auth="";
+    // inner chip holds click here. Deploy must emit one private invitation.
+    const outer = JSON.stringify({
+      form: "Administration",
+      project: "",
+      displayText: "fromSignupSheet",
+      isPrivate: true,
+      authToken: "",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const inner = JSON.stringify({
+      form: "Administration",
+      project: "",
+      displayText: "click here",
+      isPrivate: false,
+      authToken: "",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const html =
+      `<p><span class="invitation-token" data-invitation-config="${outer}">` +
+      `<span class="invitation-token" data-invitation-config="${inner}">click here</span>` +
+      `</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('private="true"');
+    expect(xml).toContain('<string value="fromSignupSheet"/>');
+    expect(xml).toContain("click here</invitation>");
+    expect((xml.match(/<invitation\b/g) || []).length).toBe(1);
+    expect(xml).not.toContain(">fromSignupSheet</invitation>");
+  });
+
   it("emits <link> for hyperlink-token", () => {
     const config = JSON.stringify({
       url: "http://www.dirtbowl.com",

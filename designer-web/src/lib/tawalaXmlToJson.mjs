@@ -42,6 +42,81 @@ const CONDITION_OPS = new Set([
   "mcIsNotBlank",
 ]);
 
+/**
+ * Legacy display-function element ids that must become function chips.
+ * Unknown tags fall through to recursive text extraction — that concatenates
+ * child field paths (e.g. question-correlation-table → AbleNamePreferred dump).
+ * itemization-table stays on its structured-node path.
+ */
+const DISPLAY_FUNCTION_IDS = new Set([
+  "sum",
+  "record-count",
+  "question-correlation-table",
+  "choice-tally-table",
+  "response-totals-table",
+  "popular-choice-correlation-table",
+  "popular-choice-display",
+  "popular-choice-count",
+  "simple-list",
+  "display-mcq-label",
+  "display-image",
+  "project-email-count",
+  "paypal-single-item-button",
+  "categorizer",
+  "link-to-project-details",
+  "export-team-roster",
+]);
+
+/** Chip title (legacy Insert → Function display name). */
+const DISPLAY_FUNCTION_TITLES = {
+  sum: "SUM",
+  "record-count": "FORM RECORD COUNT",
+  "question-correlation-table": "QUESTION CORRELATION TABLE",
+  "choice-tally-table": "RESPONSE BAR GRAPH",
+  "response-totals-table": "RESPONSE TOTALS",
+  "popular-choice-correlation-table": "RANKED MULTIQUESTION RESPONSE LIST",
+  "popular-choice-display": "RANKED RESPONSE NAME",
+  "popular-choice-count": "RANKED RESPONSE COUNTS",
+  "simple-list": "SINGLE QUESTION LIST",
+  "display-mcq-label": "DISPLAY MULTIPLE-CHOICE QUESTION RESPONSES",
+  "display-image": "DISPLAY IMAGE",
+  "project-email-count": "PROJECT EMAIL COUNT",
+  "paypal-single-item-button": "PAYPAL SINGLE ITEM PURCHASE BUTTON",
+  categorizer: "CATEGORIZER",
+  "link-to-project-details": "LINK TO PROJECT DETAILS IN MY TAWALA",
+  "export-team-roster": "EXPORT TEAM ROSTER",
+};
+
+/** Params whose text is a Record:Form:Field / Form:Field path → strip Record:. */
+const FIELD_PATH_PARAMS = new Set([
+  "field",
+  "field-name",
+  "question-field-name",
+  "display-field-name",
+  "preferred-choice-field-name",
+  "popular-choice-field-name",
+  "choice-available-field-name",
+  "choice-preferred-field-name",
+  "popular-choice-display-field-name",
+  "simple-list-field",
+  "category-names",
+  "category-ids",
+  "category-storage-field",
+  "status-field",
+  "amount-field",
+]);
+
+/** Params that are nested expressions (`<string value|field>`, arithmetic, …). */
+const EXPRESSION_PARAMS = new Set([
+  "source",
+  "width",
+  "height",
+  "alt_title",
+  "description",
+  "item",
+  "amount",
+]);
+
 /** Ordered children of a preserveOrder element array. */
 function children(nodes) {
   if (!Array.isArray(nodes)) return [];
@@ -321,15 +396,37 @@ function richNodesFromXml(nodes, ctx = {}) {
         const form = a["@_form"] ?? "";
         const project = a["@_project"] ?? "";
         const priv = String(a["@_private"] ?? "").toLowerCase() === "true";
-        // Legacy puts label in <displayText><string value="…"/></displayText>
-        // (flattenPlainText only sees #text, so it used to drop every label).
+        // Auth first — display extraction must not treat auth <string value> as the label.
+        // Sign-up Sheet ViewFinalList: private invitation with
+        //   <authenticationTokenValue><string value="fromSignupSheet"/></…>click here
+        // (label is #text; auth is a sibling expression — not <<Field>>).
+        const auth = findChild(body, "authenticationTokenValue");
+        let authToken = "";
+        if (auth) {
+          const authExpr = expressionToString(auth).trim();
+          if (authExpr) {
+            const m = authExpr.match(/^<<([^>]+)>>$/);
+            // Keep <<Field>> as field name; keep literal strings as-is (fromSignupSheet).
+            authToken = m ? m[1] : authExpr;
+          }
+        }
+        // Legacy often puts label in <displayText><string value="…"/></displayText>
+        // (Form Text). Documents more often use bare #text after authenticationTokenValue.
         const displayBody = findChild(body, "displayText");
         let text = "";
         if (displayBody != null) {
           text =
             expressionToString(displayBody) || flattenPlainText(displayBody);
         } else {
-          text = expressionToString(body) || flattenPlainText(body);
+          // Prefer #text siblings — do NOT expressionToString(whole body): that walks
+          // authenticationTokenValue and steals its <string value> as the display label.
+          text = flattenPlainText(body);
+          if (!text) {
+            const withoutAuth = children(body).filter(
+              (c) => tagName(c) !== "authenticationTokenValue",
+            );
+            text = expressionToString(withoutAuth);
+          }
         }
         if (!text) {
           warn(
@@ -338,21 +435,12 @@ function richNodesFromXml(nodes, ctx = {}) {
         }
         const inv = { type: "invitation", form, text, project };
         if (priv) inv.private = true;
-        // auth token if present
-        const auth = findChild(body, "authenticationTokenValue");
-        if (auth) {
-          const authExpr = expressionToString(auth);
-          const m = authExpr.match(/^<<([^>]+)>>$/);
-          if (m) inv.authenticationTokenField = m[1];
-        }
+        if (authToken) inv.authenticationTokenField = authToken;
         out.push(inv);
         break;
       }
       case "itemization-table":
         out.push(convertItemizationTable(n, ctx));
-        break;
-      case "sum":
-        out.push(convertSumFunction(n, ctx));
         break;
       case "link": {
         // Legacy: <link><new-window/><description>…</description><url>…</url>
@@ -425,6 +513,12 @@ function richNodesFromXml(nodes, ctx = {}) {
         });
         break;
       default:
+        if (DISPLAY_FUNCTION_IDS.has(t)) {
+          out.push(convertDisplayFunction(n, t));
+          break;
+        }
+        // Unknown wrappers: recurse. Do NOT do this for display functions —
+        // their parameter text would concatenate onto the page.
         out.push(...richNodesFromXml(body, ctx));
     }
   }
@@ -441,35 +535,136 @@ function designFieldFromRecordPath(raw) {
 }
 
 /**
- * Legacy `<sum><field>Record:Form:Blank</field><conditions>…` → function node for Design chips.
+ * Read a display-function parameter body: plain text, or nested expression nodes.
  */
-function convertSumFunction(sumNode, _ctx = {}) {
-  const body = sumNode.sum ?? [];
-  let fieldRaw = "";
+function displayFunctionParamRaw(paramTag, body) {
+  const kids = children(body);
+  const hasElements = kids.some((k) => tagName(k));
+  if (EXPRESSION_PARAMS.has(paramTag) || hasElements) {
+    const expr = expressionToString(body);
+    if (expr) return expr;
+  }
+  return (
+    textOf(body ?? []).trim() ||
+    flattenPlainText(body ?? []) ||
+    ""
+  );
+}
+
+/**
+ * Legacy `<conditions><form name="X"/>…` (+ optional nested filter) → Configure rows.
+ */
+function extractDisplayFunctionConditions(condBody) {
+  const formNames = [];
   let where;
-  for (const c of children(body)) {
-    const t = tagName(c);
-    if (t === "field") {
-      fieldRaw =
-        textOf(c.field ?? []).trim() ||
-        attr(c, "name") ||
-        flattenPlainText(c.field ?? []) ||
-        "";
-    } else if (t === "conditions") {
-      where = parseConditions(c.conditions);
+  const kids = children(condBody);
+  for (const inner of kids) {
+    const it = tagName(inner);
+    if (it === "form") {
+      const name = attr(inner, "name");
+      if (name) formNames.push(name);
+    } else if (it === "conditions") {
+      where = parseConditions(inner.conditions);
     }
   }
-  const field = designFieldFromRecordPath(fieldRaw);
+  // Rare: ops directly under conditions without a nested <conditions> wrapper.
+  if (!where) {
+    const hasOp = kids.some((k) => {
+      const t = tagName(k);
+      return t && (CONDITION_OPS.has(t) || t === "and" || t === "or");
+    });
+    if (hasOp) where = parseConditions(condBody);
+  }
   const flat = flattenWhereToConditionRows(where);
-  const config = {
-    field,
-    conditionsRows: flat?.rows ?? [{ field: "", op: "equals", value: "" }],
+  const rows = (flat?.rows ?? [{ field: "", op: "equals", value: "" }]).map((r) => ({
+    field: designFieldFromRecordPath(r.field),
+    op: r.op,
+    value: String(r.value ?? ""),
+  }));
+  return {
+    formNames,
+    conditionsRows: rows,
     conditionsCombinator: flat?.combinator ?? "and",
   };
-  if (!field) {
+}
+
+/**
+ * Legacy display-function XML → `{ type: "function", functionId, config }` chip node.
+ * Covers Question Correlation, Form Record Count, Response Totals, etc.
+ * (itemization-table stays on convertItemizationTable.)
+ */
+function convertDisplayFunction(wrapNode, functionId) {
+  const body = wrapNode[functionId] ?? [];
+  const config = {};
+  let sawConditions = false;
+
+  for (const c of children(body)) {
+    const t = tagName(c);
+    if (!t) continue;
+    if (t === "conditions") {
+      sawConditions = true;
+      const extracted = extractDisplayFunctionConditions(c.conditions);
+      config.conditionsRows = extracted.conditionsRows;
+      config.conditionsCombinator = extracted.conditionsCombinator;
+      if (extracted.formNames[0] && !config["form-name"]) {
+        // record-count prefers explicit <form-name>; others infer form from field paths.
+        if (functionId === "record-count") {
+          config["form-name"] = extracted.formNames[0];
+        }
+      }
+      continue;
+    }
+    if (t === "column" || t === "number-of-columns") {
+      // categorizer / paypal column collections — preserve via warn; chip still emitted.
+      if (!config._skippedColumns) {
+        config._skippedColumns = true;
+        warn(
+          `Document <${functionId}> has column collection — chip imported without columns (Configure to restore)`,
+        );
+      }
+      continue;
+    }
+    if (t === "show-print-control" || t === "show-export-control") {
+      const raw =
+        textOf(c[t] ?? []).trim() ||
+        flattenPlainText(c[t] ?? []) ||
+        "";
+      config[t] = raw.toLowerCase() === "true" ? "true" : "false";
+      continue;
+    }
+
+    const raw =
+      displayFunctionParamRaw(t, c[t] ?? []) ||
+      (t === "field" ? attr(c, "name") || "" : "");
+    if (FIELD_PATH_PARAMS.has(t)) {
+      config[t] = designFieldFromRecordPath(raw);
+    } else {
+      config[t] = raw;
+    }
+  }
+
+  // Always give Configure a conditions scaffold when the catalog expects it.
+  if (!sawConditions && functionId !== "project-email-count" && functionId !== "display-mcq-label" && functionId !== "display-image" && functionId !== "link-to-project-details" && functionId !== "export-team-roster") {
+    config.conditionsRows = config.conditionsRows ?? [
+      { field: "", op: "equals", value: "" },
+    ];
+    config.conditionsCombinator = config.conditionsCombinator ?? "and";
+  }
+
+  delete config._skippedColumns;
+
+  if (functionId === "sum" && !config.field) {
     warn("Document <sum> missing field — placeholder chip still emitted");
   }
-  return { type: "function", functionId: "sum", config };
+  if (functionId === "question-correlation-table" && !config["question-field-name"]) {
+    warn("Document <question-correlation-table> missing question-field-name — placeholder chip still emitted");
+  }
+  if (functionId === "record-count" && !config["form-name"]) {
+    warn("Document <record-count> missing form-name — placeholder chip still emitted");
+  }
+
+  // sum used key `field` historically; keep that shape.
+  return { type: "function", functionId, config };
 }
 
 function convertItemizationTable(tableNode, ctx = {}) {
@@ -664,7 +859,7 @@ function paragraphsToBlocks(itemBody, ctx = {}) {
       t === "invitation" ||
       t === "link" ||
       t === "itemization-table" ||
-      t === "sum"
+      DISPLAY_FUNCTION_IDS.has(t)
     ) {
       blocks.push({
         type: "paragraph",
@@ -762,22 +957,62 @@ function fieldTokenHtml(name) {
 
 let nextImportedFunctionInstanceId = 1;
 
-/** Display-function chip HTML (SUM, etc.) with escaped `<<NAME(…)>>` text. */
+/** Display-function chip HTML with escaped `<<NAME(…)>>` text. */
 function displayFunctionTokenHtml(functionId, config) {
   const id = String(functionId ?? "").trim() || "sum";
   const inst = nextImportedFunctionInstanceId++;
   const confJson = JSON.stringify(config ?? {});
-  const field = String(config?.field ?? "").trim();
-  const label = field ? `<<SUM(${field})>>` : `<<SUM>>`;
-  // Prefer catalog-style label; keep SUM-specific for import path.
+  const title = DISPLAY_FUNCTION_TITLES[id] ?? id.toUpperCase().replace(/-/g, " ");
+  const parts = [];
+  // Stable param order for chip label (mirrors Insert → Function display).
+  const order = [
+    "form-name",
+    "rank",
+    "layout-type",
+    "field",
+    "field-name",
+    "question-field-name",
+    "display-field-name",
+    "preferred-choice-field-name",
+    "popular-choice-field-name",
+    "choice-available-field-name",
+    "choice-preferred-field-name",
+    "popular-choice-display-field-name",
+    "simple-list-field",
+    "display",
+    "source",
+    "description",
+    "open-preference",
+  ];
+  for (const key of order) {
+    const v = config?.[key];
+    if (v === undefined || v === null) continue;
+    const s = String(v).trim();
+    if (!s) continue;
+    parts.push(s.length > 36 ? `${s.slice(0, 35)}…` : s);
+  }
+  const rows = Array.isArray(config?.conditionsRows) ? config.conditionsRows : [];
+  for (const row of rows) {
+    const field = String(row?.field ?? "").trim();
+    if (!field) continue;
+    const op = String(row?.op ?? "equals").trim();
+    const value = String(row?.value ?? "").trim();
+    if (op === "isBlank" || op === "isNotBlank" || op === "mcIsBlank" || op === "mcIsNotBlank") {
+      const label =
+        op === "isNotBlank" || op === "mcIsNotBlank" ? "is not blank" : "is blank";
+      parts.push(`${field} ${label}`);
+    } else if (value) {
+      parts.push(`${field} ${op} ${value}`);
+    } else {
+      parts.push(field);
+    }
+  }
   const display =
-    id === "sum"
-      ? label
-      : `<<${id.toUpperCase()}${field ? `(${field})` : ""}>>`;
+    parts.length > 0 ? `<<${title}(${parts.join(", ")})>>` : `<<${title}>>`;
   return (
     `<span class="function-token function-table-token" contenteditable="false" ` +
     `data-function-id="${escHtml(id)}" data-function-instance="${inst}" ` +
-    `data-function-config="${escHtml(confJson)}" title="${escHtml(id.toUpperCase())}">` +
+    `data-function-config="${escHtml(confJson)}" title="${escHtml(title)}">` +
     `${escHtml(display)}</span>`
   );
 }

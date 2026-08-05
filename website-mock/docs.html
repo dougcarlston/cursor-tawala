@@ -191,7 +191,7 @@ curl -s http://localhost:3001/api/health</pre>
           </table>
           <p>
             <b>Smoke Purge:</b> Deploy → Show in My Tawala → Purge → alert shows deleted count.
-            Test drive still purge-on-start for Library / home / detail.
+            Library primary Test Drive still purge-on-start; Project Details start-point links do not.
           </p>
           <p>
             <b>Smoke Delete:</b>
@@ -207,7 +207,7 @@ curl -s http://localhost:3001/api/health</pre>
             </thead>
             <tbody>
               <tr><td><b>Save a copy</b> (Library)</td><td>Copy public Library → this account’s private My Tawala (acquire; stub in mock). ≠ Use ≠ open in Designer.</td></tr>
-              <tr><td><b>Use</b> (My Tawala)</td><td>Open / run the project’s primary :8080 start link (operate). Not on Library. Not legacy CloneAndCustomize. Grey when no deploy URL. Does not purge-on-start (unlike Library Test drive).</td></tr>
+              <tr><td><b>Use</b> (My Tawala)</td><td>Single-start: open the :8080 runtime URL. Multi-start: open Project Details to choose Setup vs Exam (etc.). Not on Library. Not legacy CloneAndCustomize. Grey when no deploy URL. Does not purge-on-start (unlike Library Test drive).</td></tr>
               <tr><td><b>Open in Designer</b></td><td>Author/customize definition in Designer — required for some starters; most users avoid this path.</td></tr>
               <tr><td><b>EXPORT / IMPORT</b></td><td>Response data only. Not definition versioning; not Backup.</td></tr>
               <tr><td><b>BACKUP / RESTORE</b></td><td>Paired definition + data snapshot. Distinct from Import.</td></tr>
@@ -232,7 +232,7 @@ curl -s http://localhost:3001/api/health</pre>
             <b>Library</b> Actions = discovery / acquire:
             <b>Test drive</b> | <b>Save a copy</b> only (no Use).
             <b>My Tawala</b> = operate — listing + Details have <b>Use</b>
-            (opens the primary :8080 start URL when deployed; no purge-on-start).
+            (single-start → :8080 when deployed; multi-start → Project Details to pick an entry point; no purge-on-start).
             Prefer runnable / admin-from-runtime Library projects (or clearly label Designer-required).
             Designer-only starters (e.g. Sign-up Sheet w Email) live on
             File → New Project — retired from the public Library catalog (Aug 1, 2026).

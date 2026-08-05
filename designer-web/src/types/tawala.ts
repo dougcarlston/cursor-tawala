@@ -225,6 +225,11 @@ export interface TawalaProject {
   images?: TawalaImageDef[];
   /** Project-wide deployed page banner (Project → Page Header…). */
   pageHeader?: TawalaPageHeader;
+  /**
+   * Designer-only: File→New (template/blank). First Deploy purges prior responses for this
+   * project name (Tomcat reuses identity by name) and mints a new Node uniqueId. Not saved.
+   */
+  _freshFromTemplate?: boolean;
 }
 
 export type EditorTab = "design" | "preview";

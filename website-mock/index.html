@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/homepage.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-publish-wide" />
-  <script src="js/demo-urls.js?v=20260801-dataops"></script>
+  <script src="js/demo-urls.js?v=20260804-exam-purge"></script>
 </head>
 <body data-tawala-page="home">
   <div id="doc">
@@ -104,13 +104,16 @@
     const td = document.getElementById("homeTestDriveLinks");
     td.innerHTML = TawalaDemo.featured()
       .filter((p) => TawalaDemo.isDeployed(p))
-      .map(
-        (p) =>
-          `<a class="test-drive-link js-testdrive" href="${p.testDriveUrl}" data-testdrive-url="${p.testDriveUrl}" target="_blank" rel="noopener" title="Purge prior responses, then open :8080">${escapeHtml(
-            TawalaDemo.displayName(p.name).replace(/ Template$/, "")
-          )}</a>`
-        )
-        .join("");
+      .map((p) => {
+        const url =
+          typeof TawalaDemo.libraryTestDriveUrl === "function"
+            ? TawalaDemo.libraryTestDriveUrl(p)
+            : p.testDriveUrl;
+        return `<a class="test-drive-link js-testdrive" href="${url}" data-testdrive-url="${url}" target="_blank" rel="noopener" title="Purge prior responses, then open :8080">${escapeHtml(
+          TawalaDemo.displayName(p.name).replace(/ Template$/, "")
+        )}</a>`;
+      })
+      .join("");
   </script>
 </body>
 </html>

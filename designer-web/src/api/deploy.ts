@@ -16,6 +16,8 @@ export interface DeployResult {
   startpoints?: StartPoint[];
   error?: string;
   raw?: string;
+  /** True when Deploy handled a File→New (responses purged / new Node id). */
+  freshFromTemplate?: boolean;
 }
 
 const CREDS_KEY = "tawala.designer.credentials";

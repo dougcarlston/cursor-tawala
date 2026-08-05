@@ -310,6 +310,44 @@ function isFontWrappedDisplayComponent(xml) {
   return FONT_WRAPPED_DISPLAY_COMPONENT_RE.test(String(xml ?? "").trim());
 }
 
+/**
+ * Wrap with `<b>` / `<i>` / `<u>` without putting those tags *outside* `<font>`.
+ *
+ * Legacy Java TextFormattingContainerElement (Bold/Italics/Underline) does **not**
+ * register `font`. Structure `<b><u><font>…<invitation/></font></u></b>` logs
+ * "No class registered for font" and drops the invitation → Deploy shows `, .`
+ * (Sign-up Sheet ViewFinalList). Legacy order is `<font>…<b><u><invitation/>`.
+ */
+function wrapInlineFormat(tag, xml) {
+  const s = String(xml ?? "");
+  const trimmed = s.trim();
+  const openMatch = trimmed.match(/^<font\b[^>]*>/i);
+  if (!openMatch) return `<${tag}>${s}</${tag}>`;
+  let depth = 0;
+  const re = /<\/?font\b[^>]*>/gi;
+  let m;
+  while ((m = re.exec(trimmed))) {
+    if (/^<\/font/i.test(m[0])) {
+      depth -= 1;
+      if (depth === 0) {
+        if (m.index + m[0].length !== trimmed.length) {
+          return `<${tag}>${s}</${tag}>`;
+        }
+        const open = openMatch[0];
+        const body = trimmed.slice(open.length, m.index);
+        const already = new RegExp(`^<${tag}>([\\s\\S]*)<\\/${tag}>$`, "i");
+        if (already.test(body.trim())) {
+          return `${open}${body}</font>`;
+        }
+        return `${open}<${tag}>${body}</${tag}></font>`;
+      }
+    } else {
+      depth += 1;
+    }
+  }
+  return `<${tag}>${s}</${tag}>`;
+}
+
 function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
   if (!html) return "";
   let out = "";
@@ -462,28 +500,28 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
         weight === "bolder" ||
         (/^\d+$/.test(weight) && Number(weight) >= 600)
       ) {
-        innerXml = `<b>${innerXml}</b>`;
+        innerXml = wrapInlineFormat("b", innerXml);
       }
       if (String(style["font-style"] ?? "").toLowerCase() === "italic") {
-        innerXml = `<i>${innerXml}</i>`;
+        innerXml = wrapInlineFormat("i", innerXml);
       }
       if (/\bunderline\b/i.test(String(style["text-decoration"] ?? ""))) {
-        innerXml = `<u>${innerXml}</u>`;
+        innerXml = wrapInlineFormat("u", innerXml);
       }
       out += innerXml;
       continue;
     }
 
     if (open.name === "strong" || open.name === "b") {
-      out += `<b>${inlineHtmlToXml(inner, escAttr, escText, opts)}</b>`;
+      out += wrapInlineFormat("b", inlineHtmlToXml(inner, escAttr, escText, opts));
       continue;
     }
     if (open.name === "em" || open.name === "i") {
-      out += `<i>${inlineHtmlToXml(inner, escAttr, escText, opts)}</i>`;
+      out += wrapInlineFormat("i", inlineHtmlToXml(inner, escAttr, escText, opts));
       continue;
     }
     if (open.name === "u") {
-      out += `<u>${inlineHtmlToXml(inner, escAttr, escText, opts)}</u>`;
+      out += wrapInlineFormat("u", inlineHtmlToXml(inner, escAttr, escText, opts));
       continue;
     }
     if (open.name === "font") {
@@ -608,8 +646,45 @@ function parseJsonConfigAttr(attrs, keyName) {
   return parseFunctionConfigAttr(`${keyName}=${afterEq}`);
 }
 
+/**
+ * Recover nested invitation chips from a bad convert/edit (Sign-up Sheet ViewFinalList):
+ * outer private chip had displayText=auth literal + empty authToken; inner chip held "click here".
+ */
+function recoverNestedInvitationConfig(config, innerHtml) {
+  if (!/invitation-token/i.test(innerHtml)) return config;
+  const nestedAttr = /data-invitation-config\s*=\s*"([^"]*)"/i.exec(innerHtml);
+  if (!nestedAttr) return config;
+  let nested;
+  try {
+    nested = JSON.parse(decodeHtmlAttrEntities(nestedAttr[1]));
+  } catch {
+    return config;
+  }
+  if (!nested || typeof nested !== "object") return config;
+  const outerAuth = String(config.authToken ?? "").trim();
+  const outerDisplay = String(config.displayText ?? "").trim();
+  const nestedDisplay = String(nested.displayText ?? "").trim();
+  const isPrivate = config.isPrivate === true || config.isPrivate === "true";
+  // Mis-parked auth literal in outer displayText (converter bug before auth/label split).
+  if (isPrivate && !outerAuth && outerDisplay && nestedDisplay && outerDisplay !== nestedDisplay) {
+    return {
+      ...config,
+      authToken: outerDisplay,
+      displayText: nestedDisplay,
+      form: String(config.form ?? nested.form ?? "").trim() || config.form,
+    };
+  }
+  // Generic nest: keep outer form/auth/private; visible label from inner text.
+  const visible = stripTags(innerHtml).trim();
+  if (visible && visible !== outerDisplay) {
+    return { ...config, displayText: visible };
+  }
+  return config;
+}
+
 function invitationTokenToXml(attrs, innerHtml, escAttr, escText) {
-  const config = parseJsonConfigAttr(attrs, "data-invitation-config");
+  let config = parseJsonConfigAttr(attrs, "data-invitation-config");
+  config = recoverNestedInvitationConfig(config, innerHtml);
   const form = String(config.form ?? "").trim();
   const project = String(config.project ?? "");
   const display =

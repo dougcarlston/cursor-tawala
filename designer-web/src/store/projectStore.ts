@@ -1100,9 +1100,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     // Default (blank) project auto-creates one "Form 1"; the explicit "Empty"
     // template must produce a truly empty project with no forms/processes/documents.
     const empty = options?.empty ?? false;
-    const project = empty
-      ? { ...emptyProject(), forms: [], processes: [], documents: [] }
-      : emptyProject();
+    const project = {
+      ...(empty
+        ? { ...emptyProject(), forms: [], processes: [], documents: [] }
+        : emptyProject()),
+      _freshFromTemplate: true,
+    };
     set({
       project,
       dirty: true,
@@ -1121,6 +1124,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     });
     // Owner Jul 14: when Explorer already highlights Form 1, open it on the canvas.
     if (!empty) get().openWindow("form", "Form 1");
+    void import("@/api/preview")
+      .then(({ resetPreviewSession }) => resetPreviewSession(get().project))
+      .catch(() => {});
   },
 
   loadTemplate: async (samplePath) => {
@@ -1131,7 +1137,18 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!res.ok) throw new Error(`Template not found: ${samplePath}`);
     const raw = await res.text();
     get().importJson(raw);
-    set({ dirty: true, statusMessage: `New project from template` });
+    // Mark so Deploy does not reattach to prior Test Drive / Tomcat responses.
+    set({
+      dirty: true,
+      statusMessage: `New project from template`,
+      project: { ...get().project, _freshFromTemplate: true },
+    });
+    try {
+      const { resetPreviewSession } = await import("@/api/preview");
+      await resetPreviewSession(get().project);
+    } catch {
+      /* API may be down */
+    }
   },
 
   addForm: () => {
@@ -1700,7 +1717,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     return result.id;
   },
 
-  exportJson: () => JSON.stringify(get().project, null, 2),
+  exportJson: () => {
+    const { _freshFromTemplate: _drop, ...rest } = get().project as TawalaProject & {
+      _freshFromTemplate?: boolean;
+    };
+    return JSON.stringify(rest, null, 2);
+  },
 
   importJson: (raw) => {
     const parsed: unknown = JSON.parse(raw);
@@ -1775,11 +1797,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         });
         return;
       }
+      // Clear File→New marker after first successful Deploy (data was purged/new id minted).
+      const { _freshFromTemplate: _f, ...clean } = project as TawalaProject & {
+        _freshFromTemplate?: boolean;
+      };
       set({
+        project: clean as TawalaProject,
         lastDeploy: result,
         showDeployResult: true,
         dirty: false,
-        statusMessage: `Deployed ${project.name}`,
+        statusMessage:
+          project._freshFromTemplate && result.mode === "java"
+            ? `Deployed ${project.name} (prior test responses purged)`
+            : `Deployed ${project.name}`,
       });
     } catch (e) {
       set({ statusMessage: `Deploy error: ${e instanceof Error ? e.message : String(e)}` });

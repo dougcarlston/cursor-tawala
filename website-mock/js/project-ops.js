@@ -112,15 +112,15 @@
    * My Tawala **listing** row in front of them (icon strip) — Details stays USE…PULL.
    * See LISTING_ACTIONS below for the wired Publish control.
    *
-   * USE (owner Aug 1, 2026): open primary :8080 start URL to run the persistent app —
-   * not legacy CloneAndCustomize. Disabled when no deploy URL. Does not purge-on-start
-   * (unlike Library Test drive).
+   * USE (owner Aug 1 / Aug 4, 2026): single-start → open that :8080 URL (no purge);
+   * multi-start (Exam+Setup, etc.) → Project Details so the user picks an entry point.
+   * Not legacy CloneAndCustomize. Disabled when no deploy URL.
    */
   const PROJECT_ACTIONS = [
     {
       id: "use",
       label: "USE",
-      title: "Open / run this project (start link)",
+      title: "Open / run this project — or choose a start point when there are several",
       wired: "use-project",
     },
     { id: "export", label: "EXPORT", title: "Export project response data (Excel-format mock — see README)", wired: "export-mytawala" },
@@ -146,7 +146,7 @@
     {
       id: "use",
       label: "Use",
-      title: "Open / run this project (start link)",
+      title: "Open / run this project — or choose a start point when there are several",
       wired: "use-project",
       icon: "use",
     },
@@ -301,8 +301,9 @@
   const RELATED_SAVE_CLONE = [
     { label: "Save this project under My Tawala", source: "Library → My Tawala (acquire)", wired: false },
     {
-      label: "Use (run start link)",
-      source: "My Tawala listing / Details — open :8080 primary start URL (not Library; not CloneAndCustomize)",
+      label: "Use (run or pick start point)",
+      source:
+        "My Tawala listing / Details — single-start opens :8080; multi-start opens Project Details (not Library; not CloneAndCustomize)",
       wired: "use-project",
     },
     { label: "Publish / move to Library", source: "My Tawala → Library", wired: false },
@@ -372,7 +373,7 @@
     "submenu-mytawala.jsp, submenu-library.jsp, confirmationdialogs.jsp. " +
     "Mock My Tawala listing shows Use + Export…Publish icon strip (labels in headers). " +
     "Catalog is split: Public Library controls vs My Tawala / Project Manager. " +
-    "Library Actions = Test drive | Save a copy; Use (run start link) is on My Tawala only. " +
+    "Library Actions = Test drive | Save a copy; Use is on My Tawala only (single-start → :8080; multi-start → Project Details). " +
     "SportsDashboards (not SportsBoard).";
 
   /** One-liner for API/plumbing failures only — never dump CLI / DirtBowl / Test-drive notes into Purge alerts. */
@@ -421,7 +422,7 @@
       id: "listing",
       title: "My Projects listing row",
       where:
-        "mytawala.html — icon strip per row (labels in column headers): Use · Export · Import · Backup · Restore · Purge · Delete · Publish · Pull. Use opens :8080 start URL when deployed (no purge).",
+        "mytawala.html — icon strip per row (labels in column headers): Use · Export · Import · Backup · Restore · Purge · Delete · Publish · Pull. Use: single-start opens :8080; multi-start opens Project Details (no purge).",
       items: LISTING_ACTIONS,
     },
     {
@@ -430,7 +431,7 @@
       title: "Project Details — action bar",
       where:
         "projectmanager/detail.jsp — USE · EXPORT · IMPORT · BACKUP · RESTORE · PURGE · DELETE · PULL FROM LIBRARY. " +
-        "USE = open/run primary :8080 start link (owner Aug 1, 2026). " +
+        "USE = single-start opens :8080; multi-start → Project Details (owner Aug 4, 2026). " +
         "No PUBLISH here — Publish only lives on the My Tawala listing row.",
       items: PROJECT_ACTIONS,
     },
@@ -473,7 +474,7 @@
     mytawala: {
       heading: "My Tawala / Project Manager controls",
       blurb:
-        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; Use opens the :8080 start link when deployed; PURGE and DELETE are active on listing and Details.",
+        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; Use opens :8080 when single-start, else Project Details; PURGE and DELETE are active on listing and Details.",
     },
   };
 
@@ -514,7 +515,7 @@
     if (item.wired === "restore-mytawala") return "active (properties overlay + POST :3001 data)";
     if (item.wired === "pull-library") return "active (Pull dialog → overlay content refresh from Library)";
     if (item.wired === "use-project") {
-      return "active when :8080 start URL exists (open/run — no purge; My Tawala only)";
+      return "active when :8080 start URL exists (single → run; multi → Project Details; no purge; My Tawala only)";
     }
     if (item.wired === "test-drive") return "active when :8080 deployed (purge-on-start)";
     if (item.wired === true) return "active";
@@ -612,15 +613,26 @@
    * Library listing — one Actions grid cell with spaced icons (sub-labels in header).
    * Test drive when deployed; Save a copy grey stub.
    */
+  function libraryDriveUrl(project) {
+    if (
+      typeof TawalaDemo !== "undefined" &&
+      typeof TawalaDemo.libraryTestDriveUrl === "function"
+    ) {
+      return TawalaDemo.libraryTestDriveUrl(project);
+    }
+    return project && project.testDriveUrl ? project.testDriveUrl : null;
+  }
+
   function renderLibraryListingControlCells(project) {
+    const driveUrl = libraryDriveUrl(project);
     const deployed =
-      typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
+      (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
     const icons = LIBRARY_LISTING_ACTIONS.map((op) => {
       if (op.wired === "test-drive") {
-        if (deployed) {
+        if (deployed && driveUrl) {
           return (
             `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
-            `href="${escapeHtml(project.testDriveUrl)}" data-testdrive-url="${escapeHtml(project.testDriveUrl)}" ` +
+            `href="${escapeHtml(driveUrl)}" data-testdrive-url="${escapeHtml(driveUrl)}" ` +
             `target="_blank" rel="noopener" ` +
             `title="Purge prior responses, then open :8080" aria-label="${escapeHtml(op.title)}" ` +
             `data-op="${escapeHtml(op.id)}" data-wired="true">${listingIconHtml(op.icon)}</a>`
@@ -650,13 +662,14 @@
     return (
       '<div class="controls pm-listing-controls library-listing-controls" onclick="event.stopPropagation()">' +
       LIBRARY_LISTING_ACTIONS.map((op) => {
+        const driveUrl = libraryDriveUrl(project);
         const deployed =
-          typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
+          (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
         if (op.wired === "test-drive") {
-          if (deployed) {
+          if (deployed && driveUrl) {
             return (
               `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
-              `href="${escapeHtml(project.testDriveUrl)}" data-testdrive-url="${escapeHtml(project.testDriveUrl)}" ` +
+              `href="${escapeHtml(driveUrl)}" data-testdrive-url="${escapeHtml(driveUrl)}" ` +
               `target="_blank" rel="noopener" ` +
               `title="Purge prior responses, then open :8080" aria-label="${escapeHtml(op.title)}" ` +
               `data-op="${escapeHtml(op.id)}" data-wired="true">${listingIconHtml(op.icon)}</a>`
@@ -690,10 +703,9 @@
   }
 
   /**
-   * Primary :8080 start URL for Use (operate) — no purge-on-start.
-   * Prefer examinee form (Exam / Registration / Survey) over Admin/Setup when multi-start.
-   * Always re-score from startPoints when present so redeploy tokens stay current and
-   * Admin is never sticky as primary just because testDriveUrl was set first.
+   * Single-start :8080 URL for Use (operate) — no purge-on-start.
+   * Prefer examinee form (Exam / Registration / Survey) over Admin/Setup when ranking.
+   * Multi-start Use does not open this directly — see projectUseTarget.
    */
   function projectUseUrl(project) {
     if (!project) return null;
@@ -706,19 +718,62 @@
     return sp ? sp.url : null;
   }
 
-  /** Active ops are clickable; inactive ops are disabled (no “not wired” label — grey is enough). */
-  function actionButton(op, projectId) {
-    if (op.wired === "use-project") {
-      const project = resolveMyTawalaProject(projectId);
-      const url = projectUseUrl(project);
-      const deployed =
-        (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!url;
-      if (deployed && url) {
+  function startPointsWithUrls(project) {
+    return ((project && project.startPoints) || []).filter((s) => s && s.url);
+  }
+
+  function listedStartPoints(project) {
+    return ((project && project.startPoints) || []).filter(
+      (s) => s && (s.url || s.label || s.form)
+    );
+  }
+
+  function projectDetailsHref(projectId, hash) {
+    const base = `mytawala-project.html?project=${encodeURIComponent(projectId || "")}`;
+    return hash ? `${base}#${hash}` : base;
+  }
+
+  /**
+   * Use navigation: multi-entry apps (2+ start points) go to Project Details so the
+   * user picks Setup vs Exam (etc.). Single-start opens the one :8080 URL in a new tab.
+   * Owner Aug 4, 2026 — jumping straight to Exam skipped setup and hit stale sessions.
+   */
+  function projectUseTarget(project) {
+    if (!project) return null;
+    const listed = listedStartPoints(project);
+    const withUrls = startPointsWithUrls(project);
+    const runtimeUrl = projectUseUrl(project);
+    if (!withUrls.length && !runtimeUrl) return null;
+    if (listed.length > 1) {
+      return {
+        href: projectDetailsHref(project.id, "pmSecStart"),
+        openInNewTab: false,
+        title: "Choose a start point on Project Details (multi-entry project)",
+        mode: "details",
+      };
+    }
+    if (!runtimeUrl) return null;
+    return {
+      href: runtimeUrl,
+      openInNewTab: true,
+      title: "Open / run this project (start link)",
+      mode: "runtime",
+    };
+  }
+
+  function renderUseAnchor(op, projectId, variant) {
+    const project = resolveMyTawalaProject(projectId);
+    const target = projectUseTarget(project);
+    const deployed =
+      (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!target;
+    const asIcon = variant === "listing-icon" || variant === "listing-inline";
+    if (!(deployed && target)) {
+      if (asIcon) {
         return (
-          `<a class="pm-action is-active" href="${escapeHtml(url)}" target="_blank" rel="noopener" ` +
-          `title="${escapeHtml(op.title)}" data-op="${escapeHtml(op.id)}" ` +
-          `data-project="${escapeHtml(projectId || "")}" data-wired="use-project">` +
-          `${escapeHtml(op.label)}</a>`
+          `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+          `title="No local deploy URL yet — Deploy from Designer first" ` +
+          `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
+          `data-project="${escapeHtml(projectId || "")}" data-wired="false">${listingIconHtml(op.icon)}</button>`
         );
       }
       return (
@@ -727,6 +782,30 @@
         `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
         `data-project="${escapeHtml(projectId || "")}" data-wired="false">${escapeHtml(op.label)}</button>`
       );
+    }
+    const title = target.title || op.title;
+    const blank = target.openInNewTab ? ` target="_blank" rel="noopener"` : "";
+    if (asIcon) {
+      return (
+        `<a class="pm-icon-action pm-op-icon-btn is-active" href="${escapeHtml(target.href)}"${blank} ` +
+        `title="${escapeHtml(title)}" aria-label="${escapeHtml(op.label)}" ` +
+        `data-op="${escapeHtml(op.id)}" data-project="${escapeHtml(projectId || "")}" ` +
+        `data-wired="use-project" data-use-mode="${escapeHtml(target.mode)}">` +
+        `${listingIconHtml(op.icon)}</a>`
+      );
+    }
+    return (
+      `<a class="pm-action is-active" href="${escapeHtml(target.href)}"${blank} ` +
+      `title="${escapeHtml(title)}" data-op="${escapeHtml(op.id)}" ` +
+      `data-project="${escapeHtml(projectId || "")}" data-wired="use-project" ` +
+      `data-use-mode="${escapeHtml(target.mode)}">${escapeHtml(op.label)}</a>`
+    );
+  }
+
+  /** Active ops are clickable; inactive ops are disabled (no “not wired” label — grey is enough). */
+  function actionButton(op, projectId) {
+    if (op.wired === "use-project") {
+      return renderUseAnchor(op, projectId, "action");
     }
     const active = isOpActive(op);
     const data =
@@ -760,31 +839,9 @@
 
   /** Per-row icon cells (one &lt;td&gt; per listing action). Name click → Project Details. */
   function renderListingControlCells(projectId) {
-    const project = resolveMyTawalaProject(projectId);
     return LISTING_ACTIONS.map((op) => {
       if (op.wired === "use-project") {
-        const url = projectUseUrl(project);
-        const deployed =
-          (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!url;
-        if (deployed && url) {
-          return (
-            `<td class="col-op">` +
-            `<a class="pm-icon-action pm-op-icon-btn is-active" href="${escapeHtml(url)}" ` +
-            `target="_blank" rel="noopener" title="${escapeHtml(op.title)}" ` +
-            `aria-label="${escapeHtml(op.label)}" data-op="${escapeHtml(op.id)}" ` +
-            `data-project="${escapeHtml(projectId)}" data-wired="use-project">` +
-            `${listingIconHtml(op.icon)}</a>` +
-            `</td>`
-          );
-        }
-        return (
-          `<td class="col-op">` +
-          `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-          `title="No local deploy URL yet — Deploy from Designer first" ` +
-          `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
-          `data-project="${escapeHtml(projectId)}" data-wired="false">${listingIconHtml(op.icon)}</button>` +
-          `</td>`
-        );
+        return `<td class="col-op">${renderUseAnchor(op, projectId, "listing-icon")}</td>`;
       }
       const active = isOpActive(op);
       const wired = active ? String(op.wired) : "false";
@@ -808,25 +865,7 @@
       '<div class="controls pm-listing-controls">' +
       LISTING_ACTIONS.map((op) => {
         if (op.wired === "use-project") {
-          const project = resolveMyTawalaProject(projectId);
-          const url = projectUseUrl(project);
-          const deployed =
-            (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!url;
-          if (deployed && url) {
-            return (
-              `<a class="pm-icon-action pm-op-icon-btn is-active" href="${escapeHtml(url)}" ` +
-              `target="_blank" rel="noopener" title="${escapeHtml(op.title)}" ` +
-              `aria-label="${escapeHtml(op.label)}" data-op="${escapeHtml(op.id)}" ` +
-              `data-project="${escapeHtml(projectId)}" data-wired="use-project">` +
-              `${listingIconHtml(op.icon)}</a>`
-            );
-          }
-          return (
-            `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-            `title="No local deploy URL yet — Deploy from Designer first" ` +
-            `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
-            `data-project="${escapeHtml(projectId)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
-          );
+          return renderUseAnchor(op, projectId, "listing-inline");
         }
         const active = isOpActive(op);
         const wired = active ? String(op.wired) : "false";
@@ -915,7 +954,7 @@
     const startSection =
       `<ul class="pm-start-points">${startLinks || "<li>—</li>"}</ul>` +
       (deployed
-        ? '<p class="pm-hint">Start links → local Java :8080 (full form-token URLs from Deploy). Keeps project data; use <b>PURGE</b> to clear responses. For Online Exam: open <b>Exam</b> (not Administration) to take the test after Admin setup.</p>'
+        ? '<p class="pm-hint">Start links → local Java :8080 (full form-token URLs from Deploy). Keeps project data; use <b>PURGE</b> to clear responses. Multi-entry apps (e.g. Online Exam): open <b>Setup</b>/<b>Administration</b> first, then <b>Exam</b>. <b>Use</b> from the listing brings you here to choose.</p>'
         : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — open in Web Designer, then Deploy → Show in My Tawala for live start links.</p>');
 
     return (
@@ -1458,7 +1497,7 @@
 
     if (wired === "false" || !wired) return;
 
-    /* Use = native <a> to :8080 start URL (no purge). Let the browser follow href. */
+    /* Use = native <a>: single-start → :8080; multi-start → Project Details. Let browser follow. */
     if (wired === "use-project") return;
 
     if (op === "expand-all" || op === "collapse-all") {

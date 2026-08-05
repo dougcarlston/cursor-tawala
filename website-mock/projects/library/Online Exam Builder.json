@@ -11,7 +11,7 @@
           "type": "fib",
           "label": "Q1",
           "style": "",
-          "prompt": "Exam Title: ________________________________________",
+          "prompt": "Exam Title:\n________________________________________",
           "blanks": [
             {
               "name": "Title",
@@ -25,7 +25,7 @@
           "type": "fib",
           "label": "Q2",
           "style": "",
-          "prompt": "Exam Date or Version: _________________",
+          "prompt": "Exam Date or Version:\n_________________",
           "blanks": [
             {
               "name": "Date",
@@ -38,7 +38,7 @@
           "type": "fib",
           "label": "Q3",
           "style": "",
-          "prompt": "Pre-test instructions to examinee:_________________________________________________________________",
+          "prompt": "Pre-test instructions to examinee:\n_________________________________________________________________",
           "blanks": [
             {
               "name": "PreInstructions",
@@ -52,7 +52,7 @@
           "type": "fib",
           "label": "Q4",
           "style": "",
-          "prompt": "Comments or instructions to examinee upon completion of test:_________________________________________________________________",
+          "prompt": "Comments or instructions to examinee upon completion of test:\n_________________________________________________________________",
           "blanks": [
             {
               "name": "PostInstructions",
@@ -91,7 +91,7 @@
           "type": "fib",
           "label": "Q6",
           "style": "",
-          "prompt": "If you checked the email notification box above, please provide your email address:________________________________________",
+          "prompt": "If you checked the email notification box above, please provide your email address:\n________________________________________",
           "blanks": [
             {
               "name": "EmailToNotify",
@@ -133,6 +133,7 @@
           "type": "text",
           "label": "T1",
           "style": "normal",
+          "name": "Beginning",
           "content": "Please enter exam question here:"
         },
         {
@@ -147,7 +148,8 @@
               "alternateLabel": "Question",
               "required": true
             }
-          ]
+          ],
+          "name": "Question Text"
         },
         {
           "type": "mc",
@@ -194,7 +196,7 @@
           "type": "fib",
           "label": "Q3",
           "style": "",
-          "prompt": "<<Question:Question>> Please enter correct answer:_______________________",
+          "prompt": "<<Question:Question>>\nPlease enter correct answer:\n_______________________",
           "blanks": [
             {
               "name": "FIBAnswer",
@@ -259,7 +261,7 @@
           "type": "fib",
           "label": "Q5",
           "style": "",
-          "prompt": "<<Question:Question>>Response Choices: (leave blank any fields you don't need)________________________________________________________________________________________________________________________________________________________________________",
+          "prompt": "<<Question:Question>>\nResponse Choices: (leave blank any fields you don't need)\n____________________________\n____________________________\n____________________________\n____________________________\n____________________________\n____________________________",
           "blanks": [
             {
               "name": "Choice1",
@@ -293,7 +295,8 @@
               "length": 28,
               "alternateLabel": "Choice6"
             }
-          ]
+          ],
+          "name": "MCQ choices"
         },
         {
           "type": "break",
@@ -313,7 +316,7 @@
           "style": "vertical",
           "displayAs": "radio",
           "choiceSource": "manual",
-          "question": "<<Question:Question>>",
+          "question": "\u200b<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Question:Question\" title=\"Question:Question\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Question:Question&gt;&gt;</span><br>",
           "choices": [
             {
               "label": "a",
@@ -341,6 +344,10 @@
             }
           ],
           "name": "MCQAnswer"
+        },
+        {
+          "type": "break",
+          "label": "BREAK"
         },
         {
           "type": "mc",
@@ -761,19 +768,27 @@
           "choices": [
             {
               "label": "a",
-              "text": "Update the description or other text"
+              "text": "Update Setup",
+              "name": "a"
             },
             {
               "label": "b",
-              "text": "Add a question"
+              "text": "Add a question",
+              "name": "b"
             },
             {
               "label": "c",
-              "text": "Delete a question"
+              "text": "Delete a question",
+              "name": "c"
             },
             {
               "label": "d",
-              "text": "Edit a question"
+              "text": "Edit a question",
+              "name": "d"
+            },
+            {
+              "name": "e",
+              "text": "Return to Admin Dashboard"
             }
           ],
           "name": "Navigation"
@@ -853,7 +868,7 @@
           "type": "text",
           "label": "T1",
           "style": "normal",
-          "content": "Examinees:\nRecord:Exam:name"
+          "content": "\u200b<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"simple-list\" data-function-instance=\"1\" data-function-config=\"{&quot;simple-list-field&quot;:&quot;Exam:name&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Exam:name&quot;,&quot;op&quot;:&quot;isNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SINGLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SINGLE QUESTION LIST(Exam:name, Exam:name is not blank)&gt;&gt;</span><br>"
         },
         {
           "type": "fib",
@@ -1550,7 +1565,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "- Load question for exam step QNumber. Admin # is QuestionId — try that first; fall back to SequenceNumber (exam order)."
+          "text": "- Load question for exam step QNumber. Admin # is QuestionId \u2014 try that first; fall back to SequenceNumber (exam order)."
         },
         {
           "cmd": "get",
@@ -2407,6 +2422,20 @@
           ]
         },
         {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:Navigation",
+            "op": "equals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
           "cmd": "show",
           "form": "Setup"
         }
@@ -2855,7 +2884,7 @@
     },
     {
       "name": "QuestionPreview",
-      "content": "<p></p><p><span style=\"font-family:Arial;font-size:11pt\"><b>Here are all the questions you entered so far:</b></span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p><p></p>"
+      "content": "<p></p><p><span style=\"font-family:Arial;font-size:11pt\"><b>Here are all the questions you entered so far:</b></span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;#&quot;,&quot;contents&quot;:&quot;Record:Question:QuestionId&quot;},{&quot;header&quot;:&quot;Question&quot;,&quot;contents&quot;:&quot;Record:Question:Question&quot;},{&quot;header&quot;:&quot;Choices&quot;,&quot;contents&quot;:&quot;Record:Question:DisplayChoices&quot;},{&quot;header&quot;:&quot;Answer&quot;,&quot;contents&quot;:&quot;Record:Question:Answer&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Question&quot;}\" data-itemization-form=\"Question\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span></span></p><p></p>"
     },
     {
       "name": "Session Expired Notification",
@@ -2871,19 +2900,19 @@
     },
     {
       "name": "End of Exam With Explanation",
-      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_PostInstructions\" title=\"Customize_PostInstructions\" draggable=\"true\">&lt;&lt;Customize_PostInstructions&gt;&gt;</span></span></p><p></p><p><span>You correctly answered </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ScorePercentage\" title=\"ScorePercentage\" draggable=\"true\">&lt;&lt;ScorePercentage&gt;&gt;</span></span><span>% of questions (</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span> out of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"QuestionTotal\" title=\"QuestionTotal\" draggable=\"true\">&lt;&lt;QuestionTotal&gt;&gt;</span></span><span>).</span></p><p></p><p><span>Below are the details on how you answered each question:</span></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3ASequenceNumber%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Correct%20Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%2C%7B%22header%22%3A%22Your%20Answer%22%2C%22field%22%3A%22Record%3AAnswer%3AAnswer%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3AAnswer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CExam%3Aid%3E%3E%22%7D%2C%7B%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AAnswer%3AQuestionId%3E%3E%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+      "content": "<p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_PostInstructions\" title=\"Customize_PostInstructions\" draggable=\"true\">&lt;&lt;Customize_PostInstructions&gt;&gt;</span></span></p><p></p><p><span>You correctly answered </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ScorePercentage\" title=\"ScorePercentage\" draggable=\"true\">&lt;&lt;ScorePercentage&gt;&gt;</span></span><span>% of questions (</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span> out of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"QuestionTotal\" title=\"QuestionTotal\" draggable=\"true\">&lt;&lt;QuestionTotal&gt;&gt;</span></span><span>).</span></p><p></p><p><span>Below are the details on how you answered each question:</span></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:5,&quot;column&quot;:[{&quot;header&quot;:&quot;#&quot;,&quot;contents&quot;:&quot;Record:Question:SequenceNumber&quot;},{&quot;header&quot;:&quot;Question&quot;,&quot;contents&quot;:&quot;Record:Question:Question&quot;},{&quot;header&quot;:&quot;Choices&quot;,&quot;contents&quot;:&quot;Record:Question:DisplayChoices&quot;},{&quot;header&quot;:&quot;Correct Answer&quot;,&quot;contents&quot;:&quot;Record:Question:Answer&quot;},{&quot;header&quot;:&quot;Your Answer&quot;,&quot;contents&quot;:&quot;Record:Answer:Answer&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Answer:SessionId&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&lt;&lt;Exam:id&gt;&gt;&quot;},{&quot;field&quot;:&quot;Question:QuestionId&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&lt;&lt;Record:Answer:QuestionId&gt;&gt;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Question&quot;}\" data-itemization-form=\"Question\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3ASequenceNumber%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Correct%20Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%2C%7B%22header%22%3A%22Your%20Answer%22%2C%22field%22%3A%22Record%3AAnswer%3AAnswer%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22Answer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CExam%3Aid%3E%3E%22%7D%2C%7B%22field%22%3A%22Question%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AAnswer%3AQuestionId%3E%3E%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22Answer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CExam%3Aid%3E%3E%22%7D%2C%7B%22field%22%3A%22Question%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AAnswer%3AQuestionId%3E%3E%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ..., Answer:SessionId equals \"&lt;&lt;Exam:id&gt;&gt;\" AND Question:QuestionId equals \"&lt;&lt;Record:Answer:QuestionId&gt;&gt;\")&gt;&gt;</span></span></p>"
     },
     {
       "name": "Student Scores",
-      "content": "<p><span>Completed Tests:</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Exam\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Exam%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AExam%3Aname%22%7D%2C%7B%22header%22%3A%22Number%20of%20Correct%20Answers%22%2C%22field%22%3A%22Record%3AExam%3Ascore%22%7D%2C%7B%22header%22%3A%22Percent%20Correct%22%2C%22field%22%3A%22Record%3AExam%3AscorePercentage%22%7D%2C%7B%22header%22%3A%22Question%20Number(s)%20Incorrectly%20Answered%22%2C%22field%22%3A%22Record%3AExam%3AincorrectAnswers%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AExam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22completed%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+      "content": "<p><span>Completed Tests:</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;Record:Exam:name&quot;},{&quot;header&quot;:&quot;Number of Correct Answers&quot;,&quot;contents&quot;:&quot;Record:Exam:score&quot;},{&quot;header&quot;:&quot;Percent Correct&quot;,&quot;contents&quot;:&quot;Record:Exam:scorePercentage&quot;},{&quot;header&quot;:&quot;Question Number(s) Incorrectly Answered&quot;,&quot;contents&quot;:&quot;Record:Exam:incorrectAnswers&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Exam:status&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;completed&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Exam&quot;}\" data-itemization-form=\"Exam\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Exam%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AExam%3Aname%22%7D%2C%7B%22header%22%3A%22Number%20of%20Correct%20Answers%22%2C%22field%22%3A%22Record%3AExam%3Ascore%22%7D%2C%7B%22header%22%3A%22Percent%20Correct%22%2C%22field%22%3A%22Record%3AExam%3AscorePercentage%22%7D%2C%7B%22header%22%3A%22Question%20Number(s)%20Incorrectly%20Answered%22%2C%22field%22%3A%22Record%3AExam%3AincorrectAnswers%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22Exam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22completed%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22Exam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22completed%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ..., Exam:status equals \"completed\")&gt;&gt;</span></span></p>"
     },
     {
       "name": "Incomplete Tests",
-      "content": "<p><span>These examinees are still working on the test, or they have never finished:</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Exam\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Exam%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AExam%3Aname%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AExam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22in%20progress%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+      "content": "<p><span>These examinees are still working on the test, or they have never finished:</span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:1,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;Record:Exam:name&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Exam:status&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;in progress&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Exam&quot;}\" data-itemization-form=\"Exam\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Exam%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AExam%3Aname%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22Exam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22in%20progress%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22Exam%3Astatus%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22in%20progress%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, 1, Record:Exam:name, Exam:status equals \"in progress\")&gt;&gt;</span></span></p>"
     },
     {
       "name": "Question Analysis Report",
-      "content": "<p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22%23%20of%20Correct%20Answers%22%2C%22field%22%3A%22Record%3AQuestion%3ACorrectAnswers%22%7D%2C%7B%22header%22%3A%22Total%20Answers%22%2C%22field%22%3A%22Record%3AQuestion%3ATotalAnswers%22%7D%2C%7B%22header%22%3A%22Percent%20Correct%22%2C%22field%22%3A%22Record%3AQuestion%3ACorrectPercentage%22%7D%5D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+      "content": "<p><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><span contenteditable=\"false\" class=\"function-token function-table-token\" data-function-id=\"itemization-table\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:5,&quot;column&quot;:[{&quot;header&quot;:&quot;#&quot;,&quot;contents&quot;:&quot;Record:Question:QuestionId&quot;},{&quot;header&quot;:&quot;Question&quot;,&quot;contents&quot;:&quot;Record:Question:Question&quot;},{&quot;header&quot;:&quot;# of Correct Answers&quot;,&quot;contents&quot;:&quot;Record:Question:CorrectAnswers&quot;},{&quot;header&quot;:&quot;Total Answers&quot;,&quot;contents&quot;:&quot;Record:Question:TotalAnswers&quot;},{&quot;header&quot;:&quot;Percent Correct&quot;,&quot;contents&quot;:&quot;Record:Question:CorrectPercentage&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Question&quot;}\" data-itemization-form=\"Question\" data-itemization-token=\"true\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestionId%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22%23%20of%20Correct%20Answers%22%2C%22field%22%3A%22Record%3AQuestion%3ACorrectAnswers%22%7D%2C%7B%22header%22%3A%22Total%20Answers%22%2C%22field%22%3A%22Record%3AQuestion%3ATotalAnswers%22%7D%2C%7B%22header%22%3A%22Percent%20Correct%22%2C%22field%22%3A%22Record%3AQuestion%3ACorrectPercentage%22%7D%5D%2C%22showPrint%22%3Afalse%2C%22showExport%22%3Afalse%2C%22conditions%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22conditionsRows%22%3A%5B%7B%22field%22%3A%22%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%22%7D%5D%2C%22combinator%22%3A%22and%22%2C%22conditionsCombinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span></span></p>"
     },
     {
       "name": "Question Number is Incorrect",
@@ -2895,10 +2924,10 @@
     },
     {
       "name": "DisplayIndividualResult",
-      "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ShowExamineeDetail:Testee\" title=\"ShowExamineeDetail:Testee\" draggable=\"true\">&lt;&lt;ShowExamineeDetail:Testee&gt;&gt;</span></b></span><span><b>'s responses:</b></span></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3ASequenceNumber%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%20(if%20applicable)%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Correct%20Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%2C%7B%22header%22%3A%22Examinee's%20Answer%22%2C%22field%22%3A%22Record%3AAnswer%3AAnswer%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3AAnswer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CDisplaySessionID%3E%3E%22%7D%2C%7B%22field%22%3A%22Record%3AAnswer%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AQuestion%3AQuestionId%3E%3E%22%7D%5D%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+      "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ShowExamineeDetail:Testee\" title=\"ShowExamineeDetail:Testee\" draggable=\"true\">&lt;&lt;ShowExamineeDetail:Testee&gt;&gt;</span></b></span><span><b>'s responses:</b></span></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Question\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Question%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22%23%22%2C%22field%22%3A%22Record%3AQuestion%3ASequenceNumber%22%7D%2C%7B%22header%22%3A%22Question%22%2C%22field%22%3A%22Record%3AQuestion%3AQuestion%22%7D%2C%7B%22header%22%3A%22Choices%20(if%20applicable)%22%2C%22field%22%3A%22Record%3AQuestion%3ADisplayChoices%22%7D%2C%7B%22header%22%3A%22Correct%20Answer%22%2C%22field%22%3A%22Record%3AQuestion%3AAnswer%22%7D%2C%7B%22header%22%3A%22Examinee's%20Answer%22%2C%22field%22%3A%22Record%3AAnswer%3AAnswer%22%7D%5D%2C%22where%22%3A%7B%22and%22%3A%5B%7B%22field%22%3A%22Record%3AAnswer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CDisplaySessionID%3E%3E%22%7D%2C%7B%22field%22%3A%22Record%3AAnswer%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AQuestion%3AQuestionId%3E%3E%22%7D%5D%7D%2C%22conditions%22%3A%5B%7B%22field%22%3A%22Answer%3ASessionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CDisplaySessionID%3E%3E%22%7D%2C%7B%22field%22%3A%22Answer%3AQuestionId%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%22%3C%3CRecord%3AQuestion%3AQuestionId%3E%3E%22%7D%5D%2C%22combinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
     }
   ],
   "_originalFormat": "1.8",
   "_designerBuild": "176",
-  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Online Exam Builder.tawala"
+  "_convertedFrom": "../Tawala Projects/Master List Tawala/Online Exam Builder.tawala"
 }

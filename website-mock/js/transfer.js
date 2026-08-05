@@ -367,7 +367,7 @@
       label: sp.form || sp.label || "Start",
       url: sp.url || null,
     }));
-    // Prefer Exam / Registration over Administration when multi-start (Online Exam Builder).
+    // Prefer Exam / Registration when ranking a primary URL among multi-start receipts.
     let primaryUrl = null;
     if (
       typeof window !== "undefined" &&
@@ -695,6 +695,32 @@
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
 
+    const sourceStartPoints = (sourceProject && sourceProject.startPoints) || [];
+    // Prefer one uniqueId for all start points (Admin writes + Exam reads same project).
+    let uniqueId = (sourceProject && sourceProject.uniqueId) || null;
+    if (
+      !uniqueId &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdForProject === "function"
+    ) {
+      uniqueId = window.TawalaDemo.uniqueIdForProject(sourceProject);
+    }
+    // Library Test Drive: Administration/Setup first for Online Exam (not Exam).
+    let testDriveUrl = null;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.libraryTestDriveUrl === "function"
+    ) {
+      testDriveUrl = window.TawalaDemo.libraryTestDriveUrl({
+        startPoints: sourceStartPoints,
+        testDriveUrl: (sourceProject && sourceProject.testDriveUrl) || null,
+      });
+    } else {
+      testDriveUrl = (sourceProject && sourceProject.testDriveUrl) || null;
+    }
+
     const entry = {
       name: publishName,
       category:
@@ -721,9 +747,9 @@
       publishedAt: nowIso,
       replacesLibraryId: targetId || null,
       deployed: !!(sourceProject && sourceProject.deployed),
-      startPoints: (sourceProject && sourceProject.startPoints) || [],
-      testDriveUrl: (sourceProject && sourceProject.testDriveUrl) || null,
-      uniqueId: (sourceProject && sourceProject.uniqueId) || null,
+      startPoints: sourceStartPoints,
+      testDriveUrl,
+      uniqueId,
     };
     /* liveReady is an owner-vetted cue — a fresh Publish overlay never claims it automatically. */
 

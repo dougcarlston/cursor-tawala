@@ -21,7 +21,26 @@ function randomId() {
   return crypto.randomBytes(8).toString("hex");
 }
 
-export function saveProject(userId, project) {
+/**
+ * Forget a prior Node Deploy slot for this project name (sessions + package file).
+ * Next saveProject mints a new uniqueId so File→New does not inherit old responses.
+ */
+export function forgetDeployedProjectByName(userId, projectName) {
+  ensureDir();
+  const dir = userDir(userId);
+  const metaPath = path.join(dir, "_index.json");
+  if (!fs.existsSync(metaPath)) return null;
+  let index = JSON.parse(fs.readFileSync(metaPath, "utf8"));
+  const entry = index.find((e) => e.name === projectName);
+  if (!entry) return null;
+  index = index.filter((e) => e.name !== projectName);
+  fs.writeFileSync(metaPath, JSON.stringify(index, null, 2));
+  const filePath = path.join(dir, `${entry.uniqueId}.json`);
+  if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+  return entry.uniqueId;
+}
+
+export function saveProject(userId, project, { forceNewId = false } = {}) {
   ensureDir();
   const dir = userDir(userId);
   const metaPath = path.join(dir, "_index.json");
@@ -31,6 +50,12 @@ export function saveProject(userId, project) {
   }
 
   let entry = index.find((e) => e.name === project.name);
+  if (entry && forceNewId) {
+    const filePath = path.join(dir, `${entry.uniqueId}.json`);
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
+    index = index.filter((e) => e.name !== project.name);
+    entry = null;
+  }
   if (!entry) {
     entry = { name: project.name, uniqueId: randomId(), updatedAt: new Date().toISOString() };
     index.push(entry);
@@ -39,8 +64,13 @@ export function saveProject(userId, project) {
     entry.updatedAt = new Date().toISOString();
   }
 
+  // Never persist Designer-only flags into the .deployed package.
+  const { _freshFromTemplate: _f, ...projectBody } = project ?? {};
   const filePath = path.join(dir, `${entry.uniqueId}.json`);
-  fs.writeFileSync(filePath, JSON.stringify({ userId, project, uniqueId: entry.uniqueId }, null, 2));
+  fs.writeFileSync(
+    filePath,
+    JSON.stringify({ userId, project: projectBody, uniqueId: entry.uniqueId }, null, 2),
+  );
   fs.writeFileSync(metaPath, JSON.stringify(index, null, 2));
   return entry;
 }
@@ -70,6 +100,22 @@ export function getProjectByUniqueId(uniqueId) {
   return null;
 }
 
+/**
+ * Designer Form Preview session/runtime id.
+ * Previously only `preview-{userId}` — shared across every New Project, so answers
+ * and Report/itemization rows from the prior template bled into the next File→New.
+ * Scope by project name hash (short, stable while authoring one project).
+ */
+export function previewRuntimeId(userId, projectName) {
+  const u = String(userId ?? "designer").replace(/[^a-zA-Z0-9_-]/g, "_");
+  const h = crypto
+    .createHash("sha1")
+    .update(String(projectName ?? ""))
+    .digest("hex")
+    .slice(0, 8);
+  return `pv-${u}-${h}`;
+}
+
 export function getPreview(userId, projectName) {
   const dir = userDir(userId);
   const previewPath = path.join(dir, `_preview_${projectName.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
@@ -77,17 +123,17 @@ export function getPreview(userId, projectName) {
   return JSON.parse(fs.readFileSync(previewPath, "utf8"));
 }
 
-export function putPreview(userId, project) {
+export function putPreview(userId, project, { resetSession = false } = {}) {
   ensureDir();
   const dir = userDir(userId);
   const previewPath = path.join(dir, `_preview_${project.name.replace(/[^a-zA-Z0-9_-]/g, "_")}.json`);
   fs.writeFileSync(previewPath, JSON.stringify({ userId, project }, null, 2));
-  // Form Preview embeds uniqueId `preview-{userId}` in the form action (/p/…).
-  // Keep a real project file under that id so Submit resolves (sessions/ is not a project).
-  const runtimeId = `preview-${userId.replace(/[^a-zA-Z0-9_-]/g, "_")}`;
+  // Form Preview embeds uniqueId in the form action (/p/…). File under that id so
+  // Submit resolves (sessions/ is not a project store).
+  const runtimeId = previewRuntimeId(userId, project.name);
   fs.writeFileSync(
     path.join(dir, `${runtimeId}.json`),
     JSON.stringify({ userId, project, uniqueId: runtimeId }, null, 2),
   );
-  return previewPath;
+  return { previewPath, runtimeId, resetSession };
 }
