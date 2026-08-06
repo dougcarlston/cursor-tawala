@@ -54,9 +54,40 @@ function embeddedImageToXml(attrs, escAttr) {
   );
 }
 
+/** Normalize CSS/legacy align to values Java Div emits as text-align. */
+function normalizeAlign(raw) {
+  const a = String(raw ?? "")
+    .trim()
+    .toLowerCase();
+  if (a === "left" || a === "center" || a === "right" || a === "justify") return a;
+  return null;
+}
+
 function parseAlignFromTag(tagHtml) {
   const style = parseStyleAttr(tagHtml);
-  if (style["text-align"]) return style["text-align"];
+  return normalizeAlign(style["text-align"]) ?? "left";
+}
+
+/**
+ * Design stores table alignment on the cell (`td`/`th` style) and/or nested
+ * `<p>`/`<div>` (Signup Sheet contact labels). Legacy Deploy puts it on
+ * `<division align="…">` — Java Div → inline `text-align`. Never nest
+ * `<paragraph>` in cells (Column factory only accepts division/font/…).
+ */
+function parseTableCellAlign(openTagAttrs, cellInnerHtml) {
+  const fromCell = normalizeAlign(
+    parseStyleAttr(`<x ${openTagAttrs}>`)["text-align"],
+  );
+  if (fromCell) return fromCell;
+
+  const nestedRe = /<(?:p|div)\b([^>]*)>/gi;
+  let m;
+  while ((m = nestedRe.exec(String(cellInnerHtml ?? "")))) {
+    const fromNested = normalizeAlign(
+      parseStyleAttr(`<x ${m[1]}>`)["text-align"],
+    );
+    if (fromNested) return fromNested;
+  }
   return "left";
 }
 
@@ -170,15 +201,22 @@ function extractOpenTag(html) {
 function nextTopLevelBlock(html) {
   const trimmed = html.trim();
   if (!trimmed) return null;
-  for (const tag of ["table", "p", "div"]) {
-    const re = new RegExp(`^<${tag}\\b[\\s\\S]*?<\\/${tag}>`, "i");
-    const m = trimmed.match(re);
-    if (m) return { html: m[0], rest: trimmed.slice(m[0].length) };
+  // Prefer real open-tag + matching close (nested <p> inside doc-placed-text is common).
+  // A non-greedy `[\s\S]*?</p>` wrongly truncates at the first inner </p>, leaving
+  // later lines (e.g. "Contact information:") as unplaced blocks that sort *after*
+  // an absolutely-positioned table on Deploy.
+  const open = extractOpenTag(trimmed);
+  if (open && /^(table|p|div)$/i.test(open.name)) {
+    const matched = sliceMatchingElement(trimmed, open);
+    if (matched) return { html: matched.block, rest: matched.rest };
+    // Unclosed table/p/div — consume the open tag only so we do not loop forever.
+    return { html: open.full, rest: trimmed.slice(open.full.length) };
   }
   const textEnd = trimmed.search(/<(?:table|p|div)\b/i);
   if (textEnd > 0) {
     return { html: trimmed.slice(0, textEnd), rest: trimmed.slice(textEnd) };
   }
+  // Inline-only fragment (e.g. bare function-token <span>…) — one block.
   return { html: trimmed, rest: "" };
 }
 
@@ -1153,7 +1191,27 @@ function conditionFieldForXml(raw, defaultForm, knownForms = []) {
   return s;
 }
 
+/**
+ * Design Border 1 / Border 2 / No Border → legacy `border` attr on `<table>`.
+ * Default is Border 1 (matches insert table + bare `table.user` / `border="1"`).
+ */
+function tableBorderAttrFromHtml(tableOpenAttrs) {
+  const classes = parseClassAttr(tableOpenAttrs);
+  if (classes.includes("user-border-none")) return "0";
+  if (classes.includes("user-border-2")) return "2";
+  if (classes.includes("user-border-1")) return "1";
+  const borderM = String(tableOpenAttrs ?? "").match(/\bborder\s*=\s*["']?(\d+)["']?/i);
+  if (borderM) {
+    const n = Number.parseInt(borderM[1], 10);
+    if (n === 0) return "0";
+    if (n >= 2) return "2";
+  }
+  return "1";
+}
+
 function tableHtmlToXml(tableHtml, escAttr, escText, opts = {}) {
+  const open = extractOpenTag(String(tableHtml ?? "").trim());
+  const border = tableBorderAttrFromHtml(open?.attrs ?? "");
   const rows = [];
   const rowRe = /<tr\b[^>]*>([\s\S]*?)<\/tr>/gi;
   let rowMatch;
@@ -1165,8 +1223,9 @@ function tableHtmlToXml(tableHtml, escAttr, escText, opts = {}) {
       const openTag = cellMatch[0].match(/^<t[dh]\b([^>]*)>/i)?.[1] ?? "";
       const widthPt = parseStyleAttr(`<x ${openTag}>`).width ?? "";
       const width = ptToTwips(widthPt) || 2160;
+      const align = parseTableCellAlign(openTag, cellMatch[1]);
       const inner = inlineHtmlToXml(cellMatch[1], escAttr, escText, opts);
-      cells.push({ width, inner });
+      cells.push({ width, align, inner });
     }
     if (cells.length) rows.push(cells);
   }
@@ -1177,14 +1236,14 @@ function tableHtmlToXml(tableHtml, escAttr, escText, opts = {}) {
         `<row>${cells
           .map(
             (c) =>
-              `<cell width="${c.width}"><division indent="0" align="left">${wrapTableCellDivision(
-                c.inner,
-              )}</division></cell>`,
+              `<cell width="${c.width}"><division indent="0" align="${escAttr(
+                c.align,
+              )}">${wrapTableCellDivision(c.inner)}</division></cell>`,
           )
           .join("")}</row>`,
     )
     .join("");
-  return `<table indent="0">${rowXml}</table>`;
+  return `<table indent="0" border="${border}">${rowXml}</table>`;
 }
 
 /**
@@ -1221,14 +1280,16 @@ function wrapTableCellDivision(inner) {
 
 /**
  * Form Text often wraps a table in `<div data-doc-blank>` (or mixes prose + table).
- * inlineHtmlToXml would flatten `<table>` — split and emit real table XML (Potluck T6).
+ * Document placed lines may nest invalid `<p>` inside `<p class="doc-placed-text">`
+ * (Signup Sheet contact heading). Split block tags so each becomes its own paragraph
+ * / table — inlineHtmlToXml would otherwise flatten nested `<p>` into one line.
  */
 function mixedFlowInnerToXml(innerHtml, escAttr, escText, align = "left", opts = {}) {
   const parts = [];
   let rest = String(innerHtml ?? "");
   while (rest.trim()) {
-    const tableIdx = rest.search(/<table\b/i);
-    if (tableIdx < 0) {
+    const blockIdx = rest.search(/<(?:table|p|div)\b/i);
+    if (blockIdx < 0) {
       const body = inlineHtmlToXml(rest, escAttr, escText, opts);
       const meaningful = String(body ?? "")
         .replace(/<sp\s*\/>/gi, "")
@@ -1239,8 +1300,8 @@ function mixedFlowInnerToXml(innerHtml, escAttr, escText, align = "left", opts =
       }
       break;
     }
-    if (tableIdx > 0) {
-      const before = rest.slice(0, tableIdx);
+    if (blockIdx > 0) {
+      const before = rest.slice(0, blockIdx);
       const body = inlineHtmlToXml(before, escAttr, escText, opts);
       const meaningful = String(body ?? "")
         .replace(/<sp\s*\/>/gi, "")
@@ -1249,10 +1310,10 @@ function mixedFlowInnerToXml(innerHtml, escAttr, escText, align = "left", opts =
       if (meaningful) {
         parts.push(`<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`);
       }
-      rest = rest.slice(tableIdx);
+      rest = rest.slice(blockIdx);
     }
     const open = extractOpenTag(rest);
-    if (!open || open.name !== "table") {
+    if (!open || !/^(table|p|div)$/i.test(open.name)) {
       const body = inlineHtmlToXml(rest, escAttr, escText, opts);
       if (body.trim()) {
         parts.push(`<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`);
@@ -1267,7 +1328,35 @@ function mixedFlowInnerToXml(innerHtml, escAttr, escText, align = "left", opts =
       }
       break;
     }
-    parts.push(tableHtmlToXml(matched.block, escAttr, escText, opts));
+    if (open.name === "table") {
+      parts.push(tableHtmlToXml(matched.block, escAttr, escText, opts));
+    } else {
+      // Nested p/div: recurse so wrappers that still contain tables/paragraphs expand.
+      const nestedAlign = parseAlignFromTag(open.attrs) || align;
+      const nestedInner = matched.inner;
+      if (/<(?:table|p|div)\b/i.test(nestedInner)) {
+        const nested = mixedFlowInnerToXml(nestedInner, escAttr, escText, nestedAlign, opts);
+        if (nested) parts.push(nested);
+        else if (/\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs)) {
+          parts.push(BLANK_PARAGRAPH_XML);
+        }
+      } else {
+        const body = inlineHtmlToXml(nestedInner, escAttr, escText, opts);
+        const meaningful = String(body ?? "")
+          .replace(/<sp\s*\/>/gi, "")
+          .replace(/\s+/g, "")
+          .trim();
+        if (meaningful) {
+          parts.push(
+            `<paragraph indent="0" align="${escAttr(nestedAlign)}">${body}</paragraph>`,
+          );
+        } else if (/\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs)) {
+          parts.push(BLANK_PARAGRAPH_XML);
+        }
+        // Skip unmarked empty nested <p></p> / <br> husks — trailing empties would
+        // stack with placed-gap spacers (Signup Sheet contact block).
+      }
+    }
     rest = matched.rest;
   }
   return parts.join("");
@@ -1291,8 +1380,9 @@ function blockHtmlToXml(blockHtml, escAttr, escText, opts = {}) {
     const inner = extractTagInner(blockHtml, open.name);
     const isPlaced = classes.includes("doc-placed-text") || style.position === "absolute";
 
-    // Nested / wrapper tables (Form Text confirmation grids) must stay tables.
-    if (/<table\b/i.test(inner)) {
+    // Nested tables / invalid nested <p> inside doc-placed-text (Signup Sheet) /
+    // Form Text confirmation grids — expand to real paragraph/table XML.
+    if (/<(?:table|p|div)\b/i.test(inner)) {
       const mixed = mixedFlowInnerToXml(inner, escAttr, escText, align, opts);
       if (mixed) return mixed;
       // Empty wrapper around blank table only — keep intentional blank if marked.

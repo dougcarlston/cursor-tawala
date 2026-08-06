@@ -217,6 +217,45 @@ div.tawalaDocument table.component {
 	table-layout: auto !important;
 }
 
+/*
+ * Document authoring tables (Design Border 1 default). Java Table emits
+ * class="user user-border-*" + inline borders; this covers older XML without
+ * border= and theme/email stylesheet paths. Bare `div.document table` also
+ * matches pre-patch Java renders (no class=).
+ */
+div.document table,
+div.tawalaDocument table {
+	border-collapse: collapse;
+}
+div.document table td,
+div.document table th,
+div.tawalaDocument table td,
+div.tawalaDocument table th {
+	border: 1px solid #000;
+	padding: 2px 6px;
+	vertical-align: top;
+}
+div.document table.user.user-border-2,
+div.tawalaDocument table.user.user-border-2 {
+	border: 3px solid #000;
+}
+div.document table.user.user-border-none,
+div.document table.user.user-border-none td,
+div.document table.user.user-border-none th,
+div.tawalaDocument table.user.user-border-none,
+div.tawalaDocument table.user.user-border-none td,
+div.tawalaDocument table.user.user-border-none th {
+	border: none;
+}
+/* Do not force borders on YUI/itemization component tables inside documents. */
+div.document table.component td,
+div.document table.component th,
+div.tawalaDocument table.component td,
+div.tawalaDocument table.component th {
+	border: 1px solid #cccccc;
+	padding: 0.2em 1em;
+}
+
 /* Inside YUI / Preview wrappers: wrapper owns the max-width + overflow-x.
  * Pinning max-width on nowrap tables created a narrow slider while empty
  * theme chrome sat free to the right (esp. multi-column exam result lists). */

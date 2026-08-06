@@ -522,6 +522,30 @@ const FORM_ITEM_SPACING_CSS = `
 .tawala-form table.user.user-border-2 th {
   border-width: 2px;
 }
+.tawala-form table.user.user-border-none,
+.tawala-form table.user.user-border-none td,
+.tawala-form table.user.user-border-none th {
+  border: none;
+}
+/* Document pages (Show Document / email body) — Border 1 default. */
+.doc-section table.user,
+div.document table.user {
+  border-collapse: collapse;
+}
+.doc-section table.user td,
+.doc-section table.user th,
+div.document table.user td,
+div.document table.user th {
+  border: 1px solid #333;
+  padding: 2px 6px;
+  vertical-align: top;
+}
+.doc-section table.user.user-border-none td,
+.doc-section table.user.user-border-none th,
+div.document table.user.user-border-none td,
+div.document table.user.user-border-none th {
+  border: none;
+}
 .form-footer-preview {
   display: flex;
   flex-wrap: wrap;

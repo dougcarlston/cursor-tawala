@@ -61,6 +61,11 @@ export interface FormItemBase {
    * exposes Tabs; compatible exporters may still emit these as twips (×1440).
    */
   tabPositions?: number[];
+  /**
+   * Legacy item visibility (`displayConditions`). Preserved on convert; Designer
+   * cannot edit yet — see hierarchical warning cues in DESIGNER_OPEN_BUGS.md.
+   */
+  displayCondition?: unknown;
 }
 
 export interface HeadingItem extends FormItemBase {

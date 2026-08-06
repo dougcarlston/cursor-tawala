@@ -13,6 +13,8 @@ import {
   insertFieldTokenAtSelection,
   selectFieldDropTarget,
 } from "@/lib/fieldTokens";
+import { formItemHasDisplayCondition } from "@/lib/preservedImportGaps";
+import { CanvasItemBadgeStack } from "./CanvasItemBadgeStack";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -305,7 +307,9 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
 
   return (
     <div
-      className={`mcq-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}`}
+      className={`mcq-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}${
+        formItemHasDisplayCondition(item) ? " has-preserved-gap" : ""
+      }`}
       onClick={(e) => {
         e.stopPropagation();
         if (editing) setSelectedItemIndex(index);
@@ -313,45 +317,47 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
       }}
       onBlur={handleBlur}
     >
-      {editingLabel ? (
-        <input
-          ref={labelInputRef}
-          className="mcq-badge-input"
-          defaultValue={item.label}
-          maxLength={20}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              commitLabel(e.currentTarget.value);
-            } else if (e.key === "Escape") {
-              e.preventDefault();
-              setEditingLabel(false);
-            }
-          }}
-          onBlur={(e) => commitLabel(e.currentTarget.value)}
-        />
-      ) : (
-        <div
-          className={`mcq-badge${editing ? " editing" : ""}`}
-          draggable={selected}
-          title={selected ? "Drag to reorder, or click to edit question label" : "Click to select"}
-          onDragStart={(e) => {
-            if (!selected) {
-              e.preventDefault();
-              return;
-            }
-            e.dataTransfer.effectAllowed = "move";
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedItemIndex(index);
-            if (selected) setEditingLabel(true);
-          }}
-        >
-          {item.label}
-        </div>
-      )}
+      <CanvasItemBadgeStack showCond={formItemHasDisplayCondition(item)}>
+        {editingLabel ? (
+          <input
+            ref={labelInputRef}
+            className="mcq-badge-input"
+            defaultValue={item.label}
+            maxLength={20}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLabel(e.currentTarget.value);
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setEditingLabel(false);
+              }
+            }}
+            onBlur={(e) => commitLabel(e.currentTarget.value)}
+          />
+        ) : (
+          <div
+            className={`mcq-badge${editing ? " editing" : ""}`}
+            draggable={selected}
+            title={selected ? "Drag to reorder, or click to edit question label" : "Click to select"}
+            onDragStart={(e) => {
+              if (!selected) {
+                e.preventDefault();
+                return;
+              }
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedItemIndex(index);
+              if (selected) setEditingLabel(true);
+            }}
+          >
+            {item.label}
+          </div>
+        )}
+      </CanvasItemBadgeStack>
       <div className="mcq-canvas-main">
         {editing ? (
           <>

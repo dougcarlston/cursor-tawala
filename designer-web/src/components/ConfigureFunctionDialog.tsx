@@ -21,6 +21,8 @@ import {
   ConfigureFunctionShell,
   type ConfigureFunctionHelp,
 } from "./ConfigureFunctionShell";
+import { PreservedCondChip } from "./PreservedCondChip";
+import { hasDisplayCondition } from "@/lib/preservedImportGaps";
 
 interface Props {
   def: FunctionDef;
@@ -36,10 +38,14 @@ const MAX_COLUMNS = 12;
 function normalizeColumns(config: FunctionConfig): ColumnConfig[] {
   const cols = (config.column as ColumnConfig[] | undefined) ?? [];
   const n = Math.max(1, Number(config.numberOfColumns ?? cols.length) || cols.length || 1);
-  const next = cols.slice(0, n).map((c) => ({
-    header: c?.header ?? "",
-    contents: c?.contents ?? "",
-  }));
+  const next = cols.slice(0, n).map((c) => {
+    const col: ColumnConfig = {
+      header: c?.header ?? "",
+      contents: c?.contents ?? "",
+    };
+    if (c?.displayCondition != null) col.displayCondition = c.displayCondition;
+    return col;
+  });
   while (next.length < n) next.push({ header: "", contents: "" });
   return next;
 }
@@ -243,7 +249,12 @@ function ParamField({
             }
             onMouseDown={() => onSelectColumn(i)}
           >
-            <div className="configure-function-column-title">Column {i + 1}</div>
+            <div className="configure-function-column-title">
+              Column {i + 1}
+              {hasDisplayCondition(col.displayCondition) ? (
+                <PreservedCondChip kind="column" className="configure-function-cond-chip" />
+              ) : null}
+            </div>
             <label>
               <span>Heading:</span>
               <FieldTextInput

@@ -22,7 +22,7 @@ export interface ItemizationNode {
   type: "itemizationTable";
   form?: string;
   version?: number;
-  columns?: { header: string; field: string }[];
+  columns?: { header: string; field: string; displayCondition?: unknown }[];
   [key: string]: unknown;
 }
 
@@ -129,7 +129,11 @@ export function itemizationToConfig(node: ItemizationNode): FunctionConfig {
     "show-print-control": flagToEnum(node.showPrint ?? node["show-print-control"]),
     "show-export-control": flagToEnum(node.showExport ?? node["show-export-control"]),
     numberOfColumns: Math.max(1, cols.length),
-    column: cols.map((c) => ({ header: c.header ?? "", contents: c.field ?? "" })),
+    column: cols.map((c) => {
+      const col: ColumnConfig = { header: c.header ?? "", contents: c.field ?? "" };
+      if (c.displayCondition != null) col.displayCondition = c.displayCondition;
+      return col;
+    }),
     "form-name": node.form ?? "",
     conditionsRows: (filledFromConditions.length
       ? fromConditions
@@ -171,10 +175,14 @@ export function functionConfigToItemizationNode(config: FunctionConfig): Itemiza
   return {
     type: "itemizationTable",
     form: form || undefined,
-    columns: cols.slice(0, n).map((c) => ({
-      header: c.header ?? "",
-      field: c.contents ?? "",
-    })),
+    columns: cols.slice(0, n).map((c) => {
+      const col: { header: string; field: string; displayCondition?: unknown } = {
+        header: c.header ?? "",
+        field: c.contents ?? "",
+      };
+      if (c.displayCondition != null) col.displayCondition = c.displayCondition;
+      return col;
+    }),
     showPrint: flagToEnum(config["show-print-control"]) === "true",
     showExport: flagToEnum(config["show-export-control"]) === "true",
     conditions: config.conditionsRows ?? [{ field: "", op: "equals", value: "" }],
@@ -196,14 +204,19 @@ export function itemizationFunctionTokenHtml(node: ItemizationNode): string {
     ? buildFunctionDisplayString(def, config)
     : STRUCTURED_TOKEN_LABELS.itemizationTable;
   const form = String(node.form ?? config["form-name"] ?? "").trim();
+  const hasColDc = (node.columns ?? []).some((c) => c.displayCondition != null);
+  const warnClass = hasColDc ? " preserved-import-warning" : "";
+  const title = hasColDc
+    ? "MULTIPLE QUESTION LIST — Visibility condition preserved; Designer cannot edit yet"
+    : "MULTIPLE QUESTION LIST";
   return (
-    `<span contenteditable="false" class="function-token function-table-token" ` +
+    `<span contenteditable="false" class="function-token function-table-token${warnClass}" ` +
     `data-function-id="itemization-table" ` +
     `data-function-config="${escAttr(serializeFunctionConfig(config))}" ` +
     (form ? `data-itemization-form="${escAttr(form)}" ` : "") +
     `data-itemization-token="true" ` +
     `${STRUCTURED_NODE_DATA_ATTR}="${escAttr(encodeStructuredNode(functionConfigToItemizationNode(config)))}" ` +
-    `title="MULTIPLE QUESTION LIST" draggable="true">` +
+    `title="${escAttr(title)}" draggable="true">` +
     `${escText(display)}</span>`
   );
 }

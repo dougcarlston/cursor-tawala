@@ -69,6 +69,11 @@ export type FunctionConfig = Record<
 export interface ColumnConfig {
   header?: string;
   contents: string;
+  /**
+   * Legacy per-column visibility. Preserved on convert; Configure Function shows
+   * a `cond` cue but cannot edit the condition yet.
+   */
+  displayCondition?: unknown;
 }
 
 const CONDITIONS_PARAM: FunctionParamDef = {

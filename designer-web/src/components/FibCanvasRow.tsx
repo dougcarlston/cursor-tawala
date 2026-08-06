@@ -25,6 +25,8 @@ import {
   insertFieldTokenAtSelection,
   selectFieldDropTarget,
 } from "@/lib/fieldTokens";
+import { formItemHasDisplayCondition } from "@/lib/preservedImportGaps";
+import { CanvasItemBadgeStack } from "./CanvasItemBadgeStack";
 import {
   clearActivePaletteEditor,
   clearFormattingFocus,
@@ -351,11 +353,17 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
 
   return (
     <div
-      className={`fib-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}`}
+      className={`fib-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}${
+        formItemHasDisplayCondition(item) ? " has-preserved-gap" : ""
+      }`}
       onClick={(e) => {
         e.stopPropagation();
         const target = e.target as HTMLElement;
-        if (target.closest(".fib-badge, .fib-badge-input, .fib-property-strip, .canvas-item-delete")) {
+        if (
+          target.closest(
+            ".fib-badge, .fib-badge-input, .fib-property-strip, .canvas-item-delete, .preserved-cond-chip, .canvas-item-badge-stack",
+          )
+        ) {
           return;
         }
         // First click: select only (no caret). Second click: edit at click point.
@@ -372,46 +380,48 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
       }}
       onBlur={handleBlur}
     >
-      {editingLabel ? (
-        <input
-          ref={labelInputRef}
-          className="fib-badge-input"
-          defaultValue={item.label}
-          maxLength={12}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              commitLabel(e.currentTarget.value);
-            } else if (e.key === "Escape") {
-              e.preventDefault();
-              setEditingLabel(false);
-            }
-          }}
-          onBlur={(e) => commitLabel(e.currentTarget.value)}
-        />
-      ) : (
-        <div
-          className={`fib-badge${editing ? " editing" : ""}`}
-          draggable={selected}
-          title={selected ? "Drag to reorder, or click to edit question label" : "Click to select"}
-          onDragStart={(e) => {
-            if (!selected) {
-              e.preventDefault();
-              return;
-            }
-            // Bubble to .form-item-slot so FormEditor can set MIME / reorder UI.
-            e.dataTransfer.effectAllowed = "move";
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedItemIndex(index);
-            if (selected) setEditingLabel(true);
-          }}
-        >
-          {item.label}
-        </div>
-      )}
+      <CanvasItemBadgeStack showCond={formItemHasDisplayCondition(item)}>
+        {editingLabel ? (
+          <input
+            ref={labelInputRef}
+            className="fib-badge-input"
+            defaultValue={item.label}
+            maxLength={12}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLabel(e.currentTarget.value);
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setEditingLabel(false);
+              }
+            }}
+            onBlur={(e) => commitLabel(e.currentTarget.value)}
+          />
+        ) : (
+          <div
+            className={`fib-badge${editing ? " editing" : ""}`}
+            draggable={selected}
+            title={selected ? "Drag to reorder, or click to edit question label" : "Click to select"}
+            onDragStart={(e) => {
+              if (!selected) {
+                e.preventDefault();
+                return;
+              }
+              // Bubble to .form-item-slot so FormEditor can set MIME / reorder UI.
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedItemIndex(index);
+              if (selected) setEditingLabel(true);
+            }}
+          >
+            {item.label}
+          </div>
+        )}
+      </CanvasItemBadgeStack>
       <div className="fib-canvas-main">
         {editing ? (
           <>

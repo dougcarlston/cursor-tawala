@@ -20,6 +20,9 @@
  *         POST /api/import-responses (replace mode)
  * wired: "pull-library" → openPullDialog — pick a Library project, confirm, then
  *         TawalaTransfer.pullFromLibrary refreshes content only (name/deploy/data preserved)
+ * wired: "download-version" → download minimal JSON for the selected Versions row
+ *         (metadata only — not a full Designer definition restore)
+ * Versions description cells → TawalaTransfer.updateVersionDescription (inline edit; number/current immutable)
  */
 (function () {
   /** My Tawala top sub-menu (submenu-mytawala.jsp) */
@@ -141,6 +144,10 @@
    * My Projects listing row — same ops as Project Actions, icon-per-row / label-in-header.
    * (Legacy view.jsp was Purge/Delete only; owner asked for the full listing-appropriate strip.)
    * Use is first: primary “run this project” affordance (My Tawala = operate).
+   *
+   * Column groups (flat listing — no version piles): Project info (Name…Use in HTML +
+   * this strip’s Use) · Data transfer · Backup · Destructive (red) · Library transfer.
+   * `groupStart` marks the first op column of a new visual group (CSS left rule + gap).
    */
   const LISTING_ACTIONS = [
     {
@@ -149,6 +156,7 @@
       title: "Open / run this project — or choose a start point when there are several",
       wired: "use-project",
       icon: "use",
+      group: "info",
     },
     {
       id: "export",
@@ -156,6 +164,8 @@
       title: "Export project response data (Excel-format mock — see README)",
       wired: "export-mytawala",
       icon: "export",
+      group: "transfer",
+      groupStart: true,
     },
     {
       id: "import",
@@ -163,6 +173,7 @@
       title: "Import response data into this project (field mismatch fails)",
       wired: "import-mytawala",
       icon: "import",
+      group: "transfer",
     },
     {
       id: "backup",
@@ -170,6 +181,8 @@
       title: "Back up this project (definition + data + properties)",
       wired: "backup-mytawala",
       icon: "backup",
+      group: "backup",
+      groupStart: true,
     },
     {
       id: "restore",
@@ -177,6 +190,7 @@
       title: "Restore this project from a backup",
       wired: "restore-mytawala",
       icon: "restore",
+      group: "backup",
     },
     {
       id: "purge",
@@ -185,6 +199,9 @@
       wired: "purge-local",
       confirmId: "purge",
       icon: "purge",
+      group: "destructive",
+      groupStart: true,
+      destructive: true,
     },
     {
       id: "delete",
@@ -193,6 +210,8 @@
       wired: "delete-mytawala",
       confirmId: "delete",
       icon: "delete",
+      group: "destructive",
+      destructive: true,
     },
     {
       id: "publish",
@@ -200,6 +219,8 @@
       title: "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)",
       wired: "publish-mytawala",
       icon: "publish",
+      group: "library",
+      groupStart: true,
     },
     {
       id: "pull-library",
@@ -207,8 +228,18 @@
       title: "Replace this project's content with a newer public Library version",
       wired: "pull-library",
       icon: "pull",
+      group: "library",
     },
   ];
+
+  /** CSS classes for listing op columns (group separators + destructive affordance). */
+  function listingColClasses(op) {
+    const parts = ["col-op"];
+    if (op.group) parts.push(`col-group-${op.group}`);
+    if (op.groupStart) parts.push("col-group-start");
+    if (op.destructive) parts.push("col-op-destructive");
+    return parts.join(" ");
+  }
 
   /** Compact SVG glyphs for listing icon cells (12×12 viewBox). */
   const LISTING_ICONS = {
@@ -258,11 +289,16 @@
     { label: "Purge (form)", title: "Purge data for form — confirm: Erase Form Data", wired: false, confirmId: "erase" },
   ];
 
-  /** Versions section */
+  /** Versions section — Deploy-switch / delete stay grey; Download wired for selected row. */
   const VERSION_OPS = [
     { label: "Deploy", title: "Make this version the active version", wired: false },
     { label: "Delete this version", title: "Delete this version", wired: false, confirmId: "deleteversion" },
-    { label: "Download this version of the project", title: "Download this version of the project", wired: false },
+    {
+      label: "Download this version of the project",
+      title: "Download this version’s metadata (minimal JSON)",
+      wired: "download-version",
+      id: "download-version",
+    },
     {
       label: "Delete Selected Items",
       title: "Delete selected versions",
@@ -422,7 +458,7 @@
       id: "listing",
       title: "My Projects listing row",
       where:
-        "mytawala.html — icon strip per row (labels in column headers): Use · Export · Import · Backup · Restore · Purge · Delete · Publish · Pull. Use: single-start opens :8080; multi-start opens Project Details (no purge).",
+        "mytawala.html — icon strip per row (labels in column headers): Use · Export · Import · Backup · Restore · Purge · Delete · Publish · Pull. Visual column groups + red Purge/Delete. Use: single-start opens :8080; multi-start opens Project Details (no purge).",
       items: LISTING_ACTIONS,
     },
     {
@@ -498,7 +534,8 @@
       op.wired === "import-mytawala" ||
       op.wired === "backup-mytawala" ||
       op.wired === "restore-mytawala" ||
-      op.wired === "pull-library"
+      op.wired === "pull-library" ||
+      op.wired === "download-version"
     );
   }
 
@@ -514,6 +551,9 @@
     if (item.wired === "backup-mytawala") return "active (download JSON — definition + data + properties)";
     if (item.wired === "restore-mytawala") return "active (properties overlay + POST :3001 data)";
     if (item.wired === "pull-library") return "active (Pull dialog → overlay content refresh from Library)";
+    if (item.wired === "download-version") {
+      return "active (minimal version metadata JSON — Details Versions only)";
+    }
     if (item.wired === "use-project") {
       return "active when :8080 start URL exists (single → run; multi → Project Details; no purge; My Tawala only)";
     }
@@ -831,7 +871,8 @@
   function renderListingActionHeaders() {
     return LISTING_ACTIONS.map((op) => {
       return (
-        `<th class="col-op" scope="col" data-op-col="${escapeHtml(op.id)}" ` +
+        `<th class="${listingColClasses(op)}" scope="col" data-op-col="${escapeHtml(op.id)}" ` +
+        `data-col-group="${escapeHtml(op.group || "")}" ` +
         `title="${escapeHtml(op.title)}"><span class="th-label">${escapeHtml(op.label)}</span></th>`
       );
     }).join("");
@@ -840,16 +881,18 @@
   /** Per-row icon cells (one &lt;td&gt; per listing action). Name click → Project Details. */
   function renderListingControlCells(projectId) {
     return LISTING_ACTIONS.map((op) => {
+      const colClass = listingColClasses(op);
       if (op.wired === "use-project") {
-        return `<td class="col-op">${renderUseAnchor(op, projectId, "listing-icon")}</td>`;
+        return `<td class="${colClass}">${renderUseAnchor(op, projectId, "listing-icon")}</td>`;
       }
       const active = isOpActive(op);
       const wired = active ? String(op.wired) : "false";
       const disabled = active ? "" : " disabled";
       const activeClass = active ? " is-active" : "";
+      const dangerClass = op.destructive ? " is-destructive" : "";
       return (
-        `<td class="col-op">` +
-        `<button type="button" class="pm-icon-action pm-op-icon-btn${activeClass}"${disabled} ` +
+        `<td class="${colClass}">` +
+        `<button type="button" class="pm-icon-action pm-op-icon-btn${activeClass}${dangerClass}"${disabled} ` +
         `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
         `data-op="${escapeHtml(op.id)}" data-project="${escapeHtml(projectId)}" ` +
         `data-confirm="${escapeHtml(op.confirmId || "")}" data-wired="${escapeHtml(wired)}">` +
@@ -871,8 +914,9 @@
         const wired = active ? String(op.wired) : "false";
         const disabled = active ? "" : " disabled";
         const activeClass = active ? " is-active" : "";
+        const dangerClass = op.destructive ? " is-destructive" : "";
         return (
-          `<button type="button" class="pm-icon-action pm-op-icon-btn${activeClass}"${disabled} ` +
+          `<button type="button" class="pm-icon-action pm-op-icon-btn${activeClass}${dangerClass}"${disabled} ` +
           `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
           `data-op="${escapeHtml(op.id)}" data-project="${escapeHtml(projectId)}" ` +
           `data-confirm="${escapeHtml(op.confirmId || "")}" data-wired="${escapeHtml(wired)}">` +
@@ -888,6 +932,209 @@
       `<button type="button" class="pm-action" disabled title="${escapeHtml(op.title || op.label)}" ` +
       `data-op="${escapeHtml(op.id || op.label)}" data-wired="false">${escapeHtml(op.label)}</button>`
     );
+  }
+
+  /** Active or grey chip for Versions / similar section toolbars. */
+  function sectionChip(op, projectId) {
+    if (!isOpActive(op)) return disabledChip(op);
+    return (
+      `<button type="button" class="pm-action is-active" ` +
+      `title="${escapeHtml(op.title || op.label)}" ` +
+      `data-op="${escapeHtml(op.id || op.label)}" data-wired="${escapeHtml(String(op.wired))}" ` +
+      `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
+    );
+  }
+
+  function formatVersionDate(iso) {
+    if (!iso) return "—";
+    try {
+      const dt = new Date(iso);
+      if (Number.isNaN(dt.getTime())) return "—";
+      return `${dt.getMonth() + 1}/${dt.getDate()}/${String(dt.getFullYear()).slice(-2)}`;
+    } catch {
+      return "—";
+    }
+  }
+
+  /** Normalize overlay versions[] for Details display (newest first). */
+  function projectVersionRows(project) {
+    const raw = Array.isArray(project && project.versions) ? project.versions.slice() : [];
+    if (!raw.length && project && (project.versionNumber != null || project.lastDeployAt)) {
+      raw.push({
+        versionNumber: project.versionNumber != null ? Number(project.versionNumber) : 1,
+        description: project.versionDescription || "",
+        at: project.lastDeployAt || project.updatedAt || null,
+        uniqueId: project.uniqueId || null,
+        mode: project.mode || null,
+        startPoints: project.startPoints || [],
+        deployed: !!project.deployed,
+      });
+    }
+    raw.sort((a, b) => Number(b.versionNumber) - Number(a.versionNumber));
+    return raw.filter((v) => v && Number.isFinite(Number(v.versionNumber)));
+  }
+
+  function renderVersionsSection(project) {
+    const rows = projectVersionRows(project);
+    const chips =
+      '<div class="pm-chip-row">' +
+      VERSION_OPS.map((op) => sectionChip(op, project.id)).join("") +
+      "</div>";
+    if (!rows.length) {
+      return (
+        chips +
+        '<p class="pm-hint">No Deploy versions yet — open in Web Designer, Deploy, optionally add a version note, then <b>Show in My Tawala</b>. Listing stays flat; history appears here only.</p>'
+      );
+    }
+    const currentNum =
+      project.versionNumber != null
+        ? Number(project.versionNumber)
+        : rows[0]
+          ? Number(rows[0].versionNumber)
+          : null;
+    const body = rows
+      .map((v, idx) => {
+        const num = Number(v.versionNumber);
+        const isCurrent = currentNum != null ? num === currentNum : idx === 0;
+        const isDeployed = v.deployed === true || isCurrent;
+        const statusBits = [];
+        if (isCurrent) statusBits.push("Current");
+        if (isDeployed) statusBits.push("Deployed");
+        const status = statusBits.length ? statusBits.join(" · ") : "—";
+        const descRaw = String(v.description || "").trim();
+        return (
+          `<tr class="${isCurrent ? "pm-version-current" : ""}" data-version-number="${escapeHtml(String(num))}">` +
+          `<td class="pm-version-pick">` +
+          `<input type="radio" name="pmVersionPick" value="${escapeHtml(String(num))}" ` +
+          `${isCurrent ? "checked " : ""}` +
+          `aria-label="Select version ${escapeHtml(String(num))}" />` +
+          `</td>` +
+          `<td class="pm-version-num">${escapeHtml(String(num))}</td>` +
+          `<td class="pm-version-desc">` +
+          `<input type="text" class="pm-version-desc-input" ` +
+          `data-project="${escapeHtml(project.id || "")}" ` +
+          `data-version-number="${escapeHtml(String(num))}" ` +
+          `value="${escapeHtml(descRaw)}" ` +
+          `placeholder="Add description…" ` +
+          `aria-label="Description for version ${escapeHtml(String(num))} (editable)" ` +
+          `title="Edit description — version number and current/deployed stay fixed" />` +
+          `</td>` +
+          `<td class="pm-version-date">${escapeHtml(formatVersionDate(v.at))}</td>` +
+          `<td class="pm-version-status">${escapeHtml(status)}</td>` +
+          `</tr>`
+        );
+      })
+      .join("");
+    return (
+      chips +
+      '<table class="pm-versions-table" aria-label="Project versions">' +
+      "<thead><tr>" +
+      "<th scope=\"col\"></th>" +
+      "<th scope=\"col\">#</th>" +
+      "<th scope=\"col\">Description</th>" +
+      "<th scope=\"col\">Date</th>" +
+      "<th scope=\"col\">Status</th>" +
+      "</tr></thead>" +
+      `<tbody>${body}</tbody></table>` +
+      '<p class="pm-hint">Description can be edited; Deploy creates a new version. <b>Download</b> saves minimal metadata JSON for the selected row. Switch-deploy / delete-version stay deferred. Listing remains one row per project.</p>'
+    );
+  }
+
+  function saveVersionDescriptionFromInput(input) {
+    if (!input || !input.classList || !input.classList.contains("pm-version-desc-input")) return;
+    const projectId = input.dataset.project || "";
+    const versionNumber = input.dataset.versionNumber || "";
+    const next = String(input.value || "").trim();
+    const prev = String(input.dataset.savedValue != null ? input.dataset.savedValue : input.defaultValue || "").trim();
+    if (next === prev) {
+      input.value = next;
+      return;
+    }
+    if (
+      typeof TawalaTransfer === "undefined" ||
+      typeof TawalaTransfer.updateVersionDescription !== "function"
+    ) {
+      setStatus("Couldn’t save version description — transfer script not loaded.");
+      window.alert("Couldn't save description\n\nTransfer support didn’t load. Refresh and try again.");
+      input.value = prev;
+      return;
+    }
+    const result = TawalaTransfer.updateVersionDescription(projectId, versionNumber, next);
+    if (!result || !result.ok) {
+      const err = (result && result.error) || "unknown";
+      setStatus(`Couldn’t save version ${versionNumber} description (${err}).`);
+      window.alert(
+        `Couldn't save description for version ${versionNumber}\n\n` +
+          (err === "no-overlay"
+            ? "This project has no Deploy overlay in this browser yet. Deploy → Show in My Tawala first."
+            : err === "version-not-found"
+              ? "That version wasn’t found on the overlay."
+              : `Error: ${err}`)
+      );
+      input.value = prev;
+      return;
+    }
+    input.value = result.description || "";
+    input.dataset.savedValue = result.description || "";
+    input.defaultValue = result.description || "";
+    setStatus(`Saved description for version ${result.versionNumber}.`);
+  }
+
+  function downloadSelectedVersion(projectId) {
+    const project =
+      (typeof TawalaDemo !== "undefined" && TawalaDemo.getMyTawala && TawalaDemo.getMyTawala(projectId)) ||
+      null;
+    if (!project) {
+      setStatus("Download version — project not found.");
+      window.alert("Couldn't download version\n\nProject not found in My Tawala.");
+      return;
+    }
+    const host = document.getElementById("pmDetail");
+    const picked =
+      (host && host.querySelector('input[name="pmVersionPick"]:checked')) ||
+      document.querySelector('input[name="pmVersionPick"]:checked');
+    const rows = projectVersionRows(project);
+    let version = null;
+    if (picked && picked.value) {
+      const n = Number(picked.value);
+      version = rows.find((v) => Number(v.versionNumber) === n) || null;
+    }
+    if (!version) version = rows[0] || null;
+    if (!version) {
+      setStatus("Download version — no versions on this project.");
+      window.alert("Couldn't download version\n\nNo Deploy versions recorded yet.");
+      return;
+    }
+    const payload = {
+      kind: "tawala.project-version",
+      format: 1,
+      note: "Minimal metadata download (first slice). Not a full Designer definition restore.",
+      projectId: project.id || projectId,
+      projectName: project.name || null,
+      versionNumber: Number(version.versionNumber),
+      description: version.description || "",
+      at: version.at || null,
+      uniqueId: version.uniqueId || project.uniqueId || null,
+      mode: version.mode || project.mode || null,
+      startPoints: version.startPoints || project.startPoints || [],
+      deployed: !!version.deployed,
+      downloadedAt: new Date().toISOString(),
+    };
+    const slug =
+      (typeof TawalaTransfer !== "undefined" && TawalaTransfer.slugifyProjectId
+        ? TawalaTransfer.slugifyProjectId(project.name || projectId)
+        : String(projectId || "project")) || "project";
+    const filename = `${slug}-v${payload.versionNumber}.version.json`;
+    const blob = new Blob([JSON.stringify(payload, null, 2)], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    setStatus(`Downloaded ${filename}`);
   }
 
   function renderCollapsibleSection(id, title, innerHtml, open) {
@@ -935,11 +1182,7 @@
       "</div>" +
       '<p class="pm-hint">Form table — SHOW ALL / SELECTED filters and per-form View / Export / Import / Purge.</p>';
 
-    const versionOps =
-      '<div class="pm-chip-row">' +
-      VERSION_OPS.map(disabledChip).join("") +
-      "</div>" +
-      '<p class="pm-hint">Version list — Deploy / Delete / Download.</p>';
+    const versionOps = renderVersionsSection(project);
 
     const backupOps =
       '<div class="pm-chip-row">' +
@@ -957,6 +1200,8 @@
         ? '<p class="pm-hint">Start links → local Java :8080 (full form-token URLs from Deploy). Keeps project data; use <b>PURGE</b> to clear responses. Multi-entry apps (e.g. Online Exam): open <b>Setup</b>/<b>Administration</b> first, then <b>Exam</b>. <b>Use</b> from the listing brings you here to choose.</p>'
         : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — open in Web Designer, then Deploy → Show in My Tawala for live start links.</p>');
 
+    const versionsOpen = projectVersionRows(project).length > 0;
+
     return (
       `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
       `<div class="pm-detail-main">` +
@@ -971,13 +1216,20 @@
               .replace(/\.json$/i, ""))
       )}</h2>` +
       `<p class="pm-detail-meta">${escapeHtml(project.shortDescription || "")}</p>` +
+      (project.versionNumber != null
+        ? `<p class="pm-detail-version">Version ${escapeHtml(String(project.versionNumber))}` +
+          (project.versionDescription
+            ? ` — ${escapeHtml(String(project.versionDescription))}`
+            : "") +
+          `</p>`
+        : "") +
       "</div>" +
       '<h3 class="sectionHeading">Project Actions</h3>' +
       renderProjectActionsBar(project.id) +
       renderCollapsibleSection("pmSecStart", "Start points", startSection, true) +
       renderCollapsibleSection("pmSecComments", "Comments", commentsStub, false) +
       renderCollapsibleSection("pmSecData", "Project Data", dataOps, false) +
-      renderCollapsibleSection("pmSecVersions", "Versions", versionOps, false) +
+      renderCollapsibleSection("pmSecVersions", "Versions", versionOps, versionsOpen) +
       renderCollapsibleSection("pmSecOther", "Backups, emails & library publish", backupOps, false) +
       '<p class="pm-hint" id="pmOpStatus" role="status"></p>' +
       "</div>" +
@@ -1524,6 +1776,11 @@
       return;
     }
 
+    if (wired === "download-version") {
+      downloadSelectedVersion(projectId);
+      return;
+    }
+
     if (
       wired === "export-mytawala" ||
       wired === "import-mytawala" ||
@@ -1659,6 +1916,29 @@
     scope.addEventListener("click", (ev) => {
       if (ev.target.closest("[data-op], .pm-action, .pm-icon-action")) {
         void handleOpClick(ev);
+      }
+    });
+    scope.addEventListener("focusin", (ev) => {
+      const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
+      if (!input) return;
+      if (input.dataset.savedValue == null) {
+        input.dataset.savedValue = String(input.value || "").trim();
+      }
+    });
+    scope.addEventListener("change", (ev) => {
+      const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
+      if (input) saveVersionDescriptionFromInput(input);
+    });
+    scope.addEventListener("keydown", (ev) => {
+      const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
+      if (!input) return;
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        input.blur();
+      } else if (ev.key === "Escape") {
+        ev.preventDefault();
+        input.value = input.dataset.savedValue != null ? input.dataset.savedValue : input.defaultValue;
+        input.blur();
       }
     });
   }

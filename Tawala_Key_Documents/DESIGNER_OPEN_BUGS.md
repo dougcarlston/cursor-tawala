@@ -236,6 +236,21 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Design-mode checkboxes and radios change state** on the canvas. **UX bug; deferred.**
 
+### Hierarchical convert / preserved-warning cues (Aug 6, 2026) — **implemented (partial)**
+
+**Owner design request.** Lead the author quickly from outer → inner to the warning target so they can decide **workaround vs Designer edit needed**. Applies to uneditable / preserved import gaps (e.g. `displayCondition`, Configure Function gaps) and similar convert warnings — not a substitute for eventually editing those properties in UI.
+
+**Cue hierarchy (outer → inner) — wired in `designer-web`:**
+
+1. **Project Explorer** — Form or Document node shows an amber warning cue if **anything inside** has a preserved `displayCondition` (item-level or itemization column / Document HTML embed).
+2. **Form / Document canvas** — item row left edge + **`cond` chip** beside T/Q badge when `item.displayCondition` is set; **function chip** turns amber when columns carry `displayCondition`.
+3. **Configure Function dialog** — column-level **`cond` badge** next to “Column N” when that column has `displayCondition` (round-trip preserves the marker).
+4. **Status bar** — live count of preserved gap markers still in the open project JSON (tooltip summarizes item vs column counts). Convert warn *strings* are still discarded on Open; cues are driven by JSON markers.
+
+**Still not visually flagged** (honest remainder): Send/email path limits, dropped `<styles>`, multi-source-form itemization primary-only, Dynamic MCQ nested record-selector `where`, skipped `<file>` uploaders, empty `<show/>`, and other convert messages that leave no durable `displayCondition`-like marker (or leave data that Design already edits via Where rows).
+
+**Related:** Legacy `.tawala` → JSON batch queue; import lossy notes in `DESIGNER_OPEN_TODOS.md`. Helpers: `designer-web/src/lib/preservedImportGaps.ts`. **Edit UI for item `displayCondition`** (legacy right-click label → where-clause; parenthetical label) is **not** this cue work — parked/sequestered in `DESIGNER_OPEN_TODOS.md` § **Form items & Fields**.
+
 ### Hold-list (Jul 18 gated pass)
 
 | Batch | Item | Status |

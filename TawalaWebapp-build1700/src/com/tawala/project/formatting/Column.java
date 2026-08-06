@@ -13,7 +13,7 @@ public class Column extends ContainerElement {
 		FACTORY.setKeepWhitespace(false);
 		FACTORY.register("division", Div.class);
 	}
-	
+
 	private final int width;
 
 	public Column(ConfigElement config) {
@@ -22,9 +22,20 @@ public class Column extends ContainerElement {
 	}
 
 	public Table.Column toHtmlColumn(ExecutionContext context) {
+		return toHtmlColumn(context, 1);
+	}
+
+	public Table.Column toHtmlColumn(ExecutionContext context, int border) {
 		HtmlItems cellContents = new HtmlItems();
 		cellContents.appendContents(getContents(), context);
-		
-		return new Table.Column(cellContents, "style", "width: " + (width/20) + "pt");
+
+		StringBuilder style = new StringBuilder();
+		style.append("width: ").append(width / 20).append("pt");
+		if (border <= 0) {
+			style.append("; border: none");
+		} else {
+			style.append("; border: 1px solid #000000");
+		}
+		return new Table.Column(cellContents, "style", style.toString());
 	}
 }

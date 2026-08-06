@@ -8,6 +8,11 @@ import {
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
 import { FIELD_TOKEN_CLASS, insertFieldTokenAtSelection, selectFieldDropTarget } from "@/lib/fieldTokens";
+import {
+  formItemHasDisplayCondition,
+  formItemHasPreservedGap,
+} from "@/lib/preservedImportGaps";
+import { CanvasItemBadgeStack } from "./CanvasItemBadgeStack";
 import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import { TableHandlesOverlay } from "./TableHandlesOverlay";
 import { EmbeddedImageHandlesOverlay } from "./EmbeddedImageHandlesOverlay";
@@ -301,12 +306,19 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
 
   return (
     <div
-      className={`text-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}${styleClass}`}
+      className={`text-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}${styleClass}${
+        formItemHasPreservedGap(item) ? " has-preserved-gap" : ""
+      }`}
       onClick={(e) => {
         e.stopPropagation();
         setSelectedItemIndex(index);
         const target = e.target as HTMLElement;
-        if (target.closest(".text-badge, .text-badge-input, .canvas-item-delete")) return;
+        if (
+          target.closest(
+            ".text-badge, .text-badge-input, .canvas-item-delete, .preserved-cond-chip, .canvas-item-badge-stack",
+          )
+        )
+          return;
 
         const token = target.closest(`.${FUNCTION_TOKEN_CLASS}`);
         if (token instanceof HTMLElement) {
@@ -336,45 +348,47 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       onBlur={handleBlur}
     >
       <FormItemDeleteButton formName={formName} index={index} visible={selected} />
-      {editingLabel ? (
-        <input
-          ref={labelInputRef}
-          className="text-badge-input"
-          defaultValue={item.label}
-          maxLength={12}
-          onClick={(e) => e.stopPropagation()}
-          onKeyDown={(e) => {
-            if (e.key === "Enter") {
-              e.preventDefault();
-              commitLabel(e.currentTarget.value);
-            } else if (e.key === "Escape") {
-              e.preventDefault();
-              setEditingLabel(false);
-            }
-          }}
-          onBlur={(e) => commitLabel(e.currentTarget.value)}
-        />
-      ) : (
-        <div
-          className={`text-badge${editing ? " editing" : ""}`}
-          draggable={selected}
-          title={selected ? "Drag to reorder, or click to edit text label" : "Click to select"}
-          onDragStart={(e) => {
-            if (!selected) {
-              e.preventDefault();
-              return;
-            }
-            e.dataTransfer.effectAllowed = "move";
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setSelectedItemIndex(index);
-            if (selected) setEditingLabel(true);
-          }}
-        >
-          {item.label}
-        </div>
-      )}
+      <CanvasItemBadgeStack showCond={formItemHasDisplayCondition(item)}>
+        {editingLabel ? (
+          <input
+            ref={labelInputRef}
+            className="text-badge-input"
+            defaultValue={item.label}
+            maxLength={12}
+            onClick={(e) => e.stopPropagation()}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                e.preventDefault();
+                commitLabel(e.currentTarget.value);
+              } else if (e.key === "Escape") {
+                e.preventDefault();
+                setEditingLabel(false);
+              }
+            }}
+            onBlur={(e) => commitLabel(e.currentTarget.value)}
+          />
+        ) : (
+          <div
+            className={`text-badge${editing ? " editing" : ""}`}
+            draggable={selected}
+            title={selected ? "Drag to reorder, or click to edit text label" : "Click to select"}
+            onDragStart={(e) => {
+              if (!selected) {
+                e.preventDefault();
+                return;
+              }
+              e.dataTransfer.effectAllowed = "move";
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              setSelectedItemIndex(index);
+              if (selected) setEditingLabel(true);
+            }}
+          >
+            {item.label}
+          </div>
+        )}
+      </CanvasItemBadgeStack>
       <div className="text-canvas-main">
         {editing ? (
           <div className="text-rich-wrap">

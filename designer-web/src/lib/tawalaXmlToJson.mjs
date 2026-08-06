@@ -845,7 +845,7 @@ function paragraphsToBlocks(itemBody, ctx = {}) {
     } else if (t === "displayConditions") {
       // handled separately
     } else if (t === "table") {
-      blocks.push(...tableToBlocks(n.table, ctx));
+      blocks.push(...tableToBlocks(n.table, ctx, attrs(n)));
     } else if (t === "font" || t === "b" || t === "i" || t === "u" || t === "field") {
       // Bare rich nodes at cell root (rare) — wrap as one paragraph.
       blocks.push({
@@ -877,7 +877,7 @@ function paragraphsToBlocks(itemBody, ctx = {}) {
   return blocks;
 }
 
-function tableToBlocks(tableBody, ctx) {
+function tableToBlocks(tableBody, ctx, tableAttrs = {}) {
   const rows = [];
   for (const r of findChildren(tableBody, "row")) {
     const cells = [];
@@ -892,7 +892,17 @@ function tableToBlocks(tableBody, ctx) {
     }
     rows.push({ cells });
   }
-  return [{ type: "table", rows }];
+  const borderRaw = tableAttrs["@_border"] ?? tableAttrs.border;
+  let border = 1;
+  if (borderRaw != null && String(borderRaw).trim() !== "") {
+    const s = String(borderRaw).trim();
+    if (s === "0" || /^none$/i.test(s)) border = 0;
+    else {
+      const n = Number(s);
+      border = Number.isFinite(n) ? (n <= 0 ? 0 : n >= 2 ? 2 : 1) : 1;
+    }
+  }
+  return [{ type: "table", rows, border }];
 }
 
 function blocksAreSimplePlain(blocks) {
@@ -1102,10 +1112,15 @@ function richNodesToFormHtml(nodes, imageById = {}) {
     if (n.type === "itemizationTable") {
       const enc = encodeURIComponent(JSON.stringify(n));
       const form = String(n.form ?? "");
+      const hasColDc = Array.isArray(n.columns) && n.columns.some((c) => c?.displayCondition != null);
+      const warnClass = hasColDc ? " preserved-import-warning" : "";
+      const title = hasColDc
+        ? "MULTIPLE QUESTION LIST — Visibility condition preserved; Designer cannot edit yet"
+        : "MULTIPLE QUESTION LIST";
       out +=
-        `<span contenteditable="false" class="function-table-inline function-table-token" ` +
+        `<span contenteditable="false" class="function-table-inline function-table-token${warnClass}" ` +
         `data-itemization-token="true" data-itemization-form="${escHtml(form)}" ` +
-        `data-tawala-structured-node="${escHtml(enc)}" title="MULTIPLE QUESTION LIST">` +
+        `data-tawala-structured-node="${escHtml(enc)}" title="${escHtml(title)}">` +
         `{ MULTIPLE QUESTION LIST }</span>`;
       continue;
     }
@@ -1171,6 +1186,15 @@ function richBlocksToFormHtml(blocks, imageById = {}) {
         const indentPt = indentTwips > 0 ? indentTwips / 20 : 0;
         const margin =
           indentPt > 0 ? ` style="margin-left:${indentPt}pt"` : "";
+        const borderN = b.border == null ? 1 : Number(b.border);
+        const border =
+          !Number.isFinite(borderN) || borderN < 0 ? 1 : borderN <= 0 ? 0 : borderN >= 2 ? 2 : 1;
+        const borderClass =
+          border === 0
+            ? "user user-border-none"
+            : border === 2
+              ? "user user-border-2"
+              : "user user-border-1";
         const rows = (b.rows ?? [])
           .map((row) => {
             const cells = (row.cells ?? [])
@@ -1186,7 +1210,7 @@ function richBlocksToFormHtml(blocks, imageById = {}) {
             return `<tr>${cells}</tr>`;
           })
           .join("");
-        return `<table class="user" border="1" cellpadding="4" cellspacing="0"${margin}>${rows}</table>`;
+        return `<table class="${borderClass}" border="${border}" cellpadding="4" cellspacing="0"${margin}>${rows}</table>`;
       }
       return "";
     })
@@ -1831,7 +1855,7 @@ function convertDocument(docNode, imageById = {}) {
           nodes: richNodesFromXml(n.paragraph, { location: `document ${name}` }),
         });
       } else if (t === "table") {
-        const tableBlocks = tableToBlocks(n.table, { location: `document ${name}` });
+        const tableBlocks = tableToBlocks(n.table, { location: `document ${name}` }, attrs(n));
         const indentTwips = attr(n, "indent");
         if (indentTwips != null && tableBlocks[0]) {
           const tw = Number(indentTwips);

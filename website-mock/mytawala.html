@@ -6,10 +6,10 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-use-mytawala" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260805-colgroups2" />
   <script src="js/demo-urls.js?v=20260803-examtd"></script>
-  <script src="js/transfer.js?v=20260803-examtd"></script>
-  <script src="js/project-ops.js?v=20260803-examtd"></script>
+  <script src="js/transfer.js?v=20260805-verdesc"></script>
+  <script src="js/project-ops.js?v=20260805-colgroups"></script>
   <script src="js/data-ops.js?v=20260801-updated-sort"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
@@ -78,28 +78,28 @@
               aria-label="My Projects — private My Tawala list"
             >
               <colgroup id="myProjectsCols">
-                <col class="col-name" style="width: 24%" />
-                <col class="col-created" style="width: 9%" />
-                <col class="col-updated" style="width: 9%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
-                <col class="col-op" style="width: 6.4%" />
+                <col class="col-name col-group-info" style="width: 24%" />
+                <col class="col-created col-group-info" style="width: 9%" />
+                <col class="col-updated col-group-info" style="width: 9%" />
+                <col class="col-op col-group-info" style="width: 5.5%" />
+                <col class="col-op col-group-transfer" style="width: 5.5%" />
+                <col class="col-op col-group-transfer" style="width: 5.5%" />
+                <col class="col-op col-group-backup" style="width: 5.5%" />
+                <col class="col-op col-group-backup" style="width: 5.5%" />
+                <col class="col-op col-group-destructive" style="width: 5.5%" />
+                <col class="col-op col-group-destructive" style="width: 5.5%" />
+                <col class="col-op col-group-library" style="width: 5.5%" />
+                <col class="col-op col-group-library" style="width: 5.5%" />
               </colgroup>
               <thead>
                 <tr id="myProjectsHead">
-                  <th class="left sortable" scope="col" data-sort="name" title="Sort by name">
+                  <th class="left sortable col-group-info" scope="col" data-sort="name" title="Sort by name">
                     <span class="th-label">Name</span>
                   </th>
-                  <th class="col-date sortable" scope="col" data-sort="created" title="Sort by created">
+                  <th class="col-date sortable col-group-info" scope="col" data-sort="created" title="Sort by created">
                     <span class="th-label">Created</span>
                   </th>
-                  <th class="col-date sortable" scope="col" data-sort="updated" title="Sort by updated">
+                  <th class="col-date sortable col-group-info" scope="col" data-sort="updated" title="Sort by updated">
                     <span class="th-label">Updated</span>
                   </th>
                 </tr>
@@ -237,11 +237,11 @@
       const created = displayListDate(p.created || p.createdAt || p.updated || p.updatedAt || "");
       const updated = displayListDate(p.updated || p.updatedAt || p.lastDeployAt || "");
       return `<tr data-project-id="${escapeHtml(p.id)}">
-        <td class="info left">
+        <td class="info left col-group-info">
           <span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>
         </td>
-        <td class="date-created col-date">${escapeHtml(created)}</td>
-        <td class="updated col-date">${escapeHtml(updated)}</td>
+        <td class="date-created col-date col-group-info">${escapeHtml(created)}</td>
+        <td class="updated col-date col-group-info">${escapeHtml(updated)}</td>
         ${TawalaProjectOps.renderListingControlCells(p.id)}
       </tr>`;
     }

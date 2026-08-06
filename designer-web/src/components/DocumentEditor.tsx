@@ -1,5 +1,6 @@
 import { useProjectStore } from "@/store/projectStore";
 import { RichContentBlock } from "@/types/tawala";
+import { decoratePreservedWarningChipsHtml } from "@/lib/preservedImportGaps";
 import { RichTextEditor } from "./RichTextEditor";
 
 interface Props {
@@ -31,7 +32,7 @@ export function DocumentEditor({ documentName }: Props) {
 /** Load project document content into the WYSIWYG surface (HTML string preferred). */
 export function documentContentToHtml(content: string | RichContentBlock[] | undefined): string {
   if (content == null) return "";
-  if (typeof content === "string") return content;
+  if (typeof content === "string") return decoratePreservedWarningChipsHtml(content);
   if (
     content.length === 1 &&
     content[0]?.type === "paragraph" &&
@@ -39,7 +40,7 @@ export function documentContentToHtml(content: string | RichContentBlock[] | und
   ) {
     return "";
   }
-  return blocksToHtml(content);
+  return decoratePreservedWarningChipsHtml(blocksToHtml(content));
 }
 
 type RichNode = {

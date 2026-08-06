@@ -20,7 +20,7 @@ node scripts/tawala-to-json.mjs path/to/Project.tawala [out.json]
 File → Open → choose .json or .tawala (or .tawala.xml)
 ```
 
-After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save handle is **cleared** — next Save is Save As `.json` (does not overwrite the legacy file).
+After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save handle is **cleared** — next Save is Save As `.json` (does not overwrite the legacy file). **Parked UX (do not implement yet):** hierarchical Explorer → canvas → `cond` badge warning cues + dismissible deep-link warning list — see `DESIGNER_OPEN_BUGS.md` § **Hierarchical convert / preserved-warning cues**.
 
 **CLI smoke Jul 21:**
 | Source | Forms | Processes | Documents | Images |
@@ -116,6 +116,7 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 ## Form items & Fields
 
 - **Move Up / Move Down** for form items and process statements — **Done Jul 12** (↑/↓ + Alt+arrows + select-then-drag reorder; compact lists, caret only while dragging). **Document blocks — owner smoke Jul 15: pass.**
+- **Form Item conditional display (right-click label → where-clause)** — **Parked / sequester (Aug 6, owner-confirmed).** Late Tawala addition; forgotten; **not specced for Web Designer**. Legacy: right-click a **Form Item label** → option to **display the item conditionally** → **where-clause popup**; when chosen, the **label shows in parentheses**. Rare; projects that use it stay **sequestered** until a future Designer Agent round. Browser Designer already preserves `displayCondition` and shows a `cond` cue (see `DESIGNER_OPEN_BUGS.md` § **Hierarchical convert / preserved-warning cues**) but has **no edit UI** — **do not implement** in this track.
 - **FIB hint-text styling** (smaller italic secondary font for parentheticals). **Deferred** → `docs/DESIGNER_BACKLOG_FORMS_FIBS.md`. (Source: Designer Sign-up DirtBowl)
 - **Heading Main/Sub** — **Jul 24:** Design Type applies to the **selection** (or pends at caret). Mixed Main+Sub lines in one box export as multiple `<heading>` / Preview `h1.heading` + `h2.subheading` with stack gap. See `DESIGNER_FORM_ITEMS_HEADING.md`. (Source: Designer MDI and Heading)
 - **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)

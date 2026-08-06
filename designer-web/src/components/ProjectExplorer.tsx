@@ -2,6 +2,10 @@ import { useEffect, useRef, useState, type ButtonHTMLAttributes, type ReactNode 
 import { useProjectStore } from "@/store/projectStore";
 import type { Selection } from "@/types/tawala";
 import { linkedProcessesForForm } from "@/lib/projectModel";
+import {
+  documentHasPreservedGaps,
+  formHasPreservedGaps,
+} from "@/lib/preservedImportGaps";
 import { fieldDropRejectHandlers } from "./FieldDropInputs";
 import {
   hasExplorerProcessDrag,
@@ -259,6 +263,8 @@ export function ProjectExplorer() {
                           onRenameSubmit={(next) =>
                             submitRename({ key: formKey, kind: "form", name: form.name }, next)
                           }
+                          warning={formHasPreservedGaps(form)}
+                          warningTitle="Form has preserved visibility conditions Designer cannot edit yet"
                           icon={
                             <FormNodeIcon
                               startPoint={form.startPoint}
@@ -393,6 +399,8 @@ export function ProjectExplorer() {
                               next,
                             )
                           }
+                          warning={documentHasPreservedGaps(doc)}
+                          warningTitle="Document has preserved visibility conditions Designer cannot edit yet"
                           icon={<DocumentIcon />}
                         />
                       </li>
@@ -449,6 +457,8 @@ function TreeNode({
   dragName,
   acceptProcessAsPost,
   onProcessDropAsPost,
+  warning,
+  warningTitle,
 }: {
   label: string;
   expanded: boolean;
@@ -466,6 +476,9 @@ function TreeNode({
   /** Form rows: accept a dragged process as Post-process (legacy explorer drop). */
   acceptProcessAsPost?: boolean;
   onProcessDropAsPost?: (processName: string) => void;
+  /** Preserved import gap somewhere under this node. */
+  warning?: boolean;
+  warningTitle?: string;
 }) {
   const renamable = !!onBeginRename;
   const holdTimer = useRef<number | null>(null);
@@ -520,12 +533,17 @@ function TreeNode({
 
   return (
     <div
-      className={`tree-node${selected ? " selected" : ""}${dropHover ? " drop-target" : ""}`}
+      className={`tree-node${selected ? " selected" : ""}${dropHover ? " drop-target" : ""}${
+        warning ? " has-preserved-warning" : ""
+      }`}
       draggable={canDrag}
       title={
-        processDropActive
-          ? "Drop a Process here to attach it as Post-process"
-          : undefined
+        warning
+          ? warningTitle ??
+            "Contains preserved visibility conditions Designer cannot edit yet"
+          : processDropActive
+            ? "Drop a Process here to attach it as Post-process"
+            : undefined
       }
       onDragStart={(e) => {
         if (!canDrag || !dragKind || !dragName) {

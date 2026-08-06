@@ -11,6 +11,7 @@ import { requestFunctionPicker } from "@/lib/functionPicker";
 interface ItemizationColumn {
   header: string;
   field: string;
+  displayCondition?: unknown;
 }
 
 interface ItemizationNode extends RichTextNode {
@@ -116,7 +117,11 @@ function itemizationToConfig(node: ItemizationNode): FunctionConfig {
     "show-print-control": flagToEnum(node.showPrint ?? node["show-print-control"]),
     "show-export-control": flagToEnum(node.showExport ?? node["show-export-control"]),
     numberOfColumns: Math.max(1, cols.length),
-    column: cols.map((c) => ({ header: c.header ?? "", contents: c.field ?? "" })),
+    column: cols.map((c) => {
+      const col: ColumnConfig = { header: c.header ?? "", contents: c.field ?? "" };
+      if (c.displayCondition != null) col.displayCondition = c.displayCondition;
+      return col;
+    }),
     "form-name": node.form ?? "",
     conditionsRows: (filledFromConditions.length
       ? fromConditions
@@ -197,10 +202,14 @@ function patchItemizationFromConfig(
   const cols = (config.column as ColumnConfig[] | undefined) ?? [];
   const n = Number(config.numberOfColumns ?? cols.length) || cols.length;
   const form = String(config["form-name"] ?? "").trim();
-  const nextColumns: ItemizationColumn[] = cols.slice(0, n).map((c) => ({
-    header: c.header ?? "",
-    field: c.contents ?? "",
-  }));
+  const nextColumns: ItemizationColumn[] = cols.slice(0, n).map((c) => {
+    const col: ItemizationColumn = {
+      header: c.header ?? "",
+      field: c.contents ?? "",
+    };
+    if (c.displayCondition != null) col.displayCondition = c.displayCondition;
+    return col;
+  });
 
   return content.map((block) => ({
     ...block,
@@ -231,20 +240,31 @@ function renderFunctionBlock(
   style: CSSProperties | undefined,
   onActivate: () => void,
 ) {
+  const colWarn =
+    node.type === "itemizationTable" &&
+    Array.isArray((node as ItemizationNode).columns) &&
+    (node as ItemizationNode).columns!.some((c) => c.displayCondition != null);
+  const warnClass = colWarn ? " preserved-import-warning" : "";
+  const warnTitle = colWarn
+    ? " — Visibility condition preserved; Designer cannot edit yet"
+    : "";
+
   if (node.type === "itemizationTable") {
     return (
       <button
         key={key}
         type="button"
-        className="function-table-badge function-table-standalone function-table-editable"
+        className={`function-table-badge function-table-standalone function-table-editable${warnClass}`}
         style={style}
-        title="Click to edit MULTIPLE QUESTION LIST"
+        title={`Click to edit MULTIPLE QUESTION LIST${warnTitle}`}
         onClick={(e) => {
           e.stopPropagation();
           onActivate();
         }}
       >
-        <span className="function-table-label function-table-token">{ITEMIZATION_TOKEN_LABEL}</span>
+        <span className="function-table-label function-table-token">
+          {ITEMIZATION_TOKEN_LABEL}
+        </span>
       </button>
     );
   }
@@ -315,13 +335,21 @@ function renderInlineNodes(nodes: RichTextNode[] = [], onActivate: () => void): 
           </span>
         );
       }
-      case "itemizationTable":
+      case "itemizationTable": {
+        const colWarn = Array.isArray((node as ItemizationNode).columns)
+          && (node as ItemizationNode).columns!.some((c) => c.displayCondition != null);
         return (
           <button
             key={key}
             type="button"
-            className="function-table-inline function-table-token function-table-editable"
-            title="Click to edit MULTIPLE QUESTION LIST"
+            className={`function-table-inline function-table-token function-table-editable${
+              colWarn ? " preserved-import-warning" : ""
+            }`}
+            title={
+              colWarn
+                ? "Click to edit MULTIPLE QUESTION LIST — Visibility condition preserved; Designer cannot edit yet"
+                : "Click to edit MULTIPLE QUESTION LIST"
+            }
             onClick={(e) => {
               e.stopPropagation();
               onActivate();
@@ -330,6 +358,7 @@ function renderInlineNodes(nodes: RichTextNode[] = [], onActivate: () => void): 
             {ITEMIZATION_TOKEN_LABEL}
           </button>
         );
+      }
       case "questionCorrelationTable":
         return (
           <button

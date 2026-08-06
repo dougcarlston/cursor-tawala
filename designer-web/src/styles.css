@@ -1087,6 +1087,20 @@ textarea {
   background: #e6f0ff;
 }
 
+/* Preserved import gaps (displayCondition, etc.) — amber cue, not alarm red. */
+.tree-node.has-preserved-warning .tree-label {
+  color: #9a3412;
+  font-weight: 600;
+}
+
+.tree-node.has-preserved-warning:not(.selected) {
+  background: #fff7ed;
+}
+
+.tree-node.has-preserved-warning .tree-icon {
+  filter: sepia(0.35) saturate(2.2) hue-rotate(-20deg);
+}
+
 /* Shared [-]/[+] collapse control for Project Explorer and Fields tree. */
 .tree-collapse-toggle,
 .fields-tree-toggle {
@@ -3499,6 +3513,63 @@ div.skip-script-line[role="button"]:hover {
   vertical-align: bottom;
 }
 
+.function-table-token.preserved-import-warning,
+.function-table-inline.preserved-import-warning,
+.function-table-badge.preserved-import-warning .function-table-token,
+.function-token.preserved-import-warning {
+  border-color: #c2410c;
+  background: #fff7ed;
+  color: #9a3412;
+  box-shadow: inset 0 0 0 1px rgba(194, 65, 12, 0.25);
+}
+
+.canvas-item-badge-stack {
+  flex: 0 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  width: 64px;
+}
+
+.canvas-item-badge-stack .text-badge,
+.canvas-item-badge-stack .fib-badge,
+.canvas-item-badge-stack .mcq-badge,
+.canvas-item-badge-stack .text-badge-input,
+.canvas-item-badge-stack .fib-badge-input,
+.canvas-item-badge-stack .mcq-badge-input {
+  width: 100%;
+}
+
+.preserved-cond-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  min-height: 14px;
+  padding: 0 5px;
+  border-radius: 3px;
+  border: 1px solid #c2410c;
+  background: #ffedd5;
+  color: #9a3412;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  cursor: help;
+  user-select: none;
+}
+
+.fib-canvas-row.has-preserved-gap,
+.text-canvas-row.has-preserved-gap,
+.mcq-canvas-row.has-preserved-gap {
+  box-shadow: inset 3px 0 0 #ea580c;
+}
+
+.configure-function-cond-chip {
+  align-self: center;
+}
+
 /* Document / Form Text: tokens follow the line's typing format (not the badge mono 10px). */
 .rich-surface .function-table-token,
 .text-rich-editor .function-table-token {
@@ -4504,6 +4575,11 @@ button.font-color-picker-recent-slot:hover {
   white-space: nowrap;
   text-align: right;
   color: #444;
+}
+
+.status-preserved-gaps {
+  color: #9a3412;
+  font-weight: 600;
 }
 
 @keyframes status-bar-flash {
@@ -6778,6 +6854,9 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .configure-function-column-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   font-weight: 600;
   margin-bottom: 2px;
@@ -7090,6 +7169,27 @@ button.font-color-picker-recent-slot:hover {
   display: block;
   color: var(--accent);
   word-break: break-all;
+}
+
+.deploy-version-note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 12px;
+  margin: 4px 0 0;
+}
+
+.deploy-version-note span {
+  font-weight: 600;
+}
+
+.deploy-version-note textarea {
+  width: 100%;
+  box-sizing: border-box;
+  resize: vertical;
+  min-height: 48px;
+  font: inherit;
+  padding: 6px 8px;
 }
 
 .error-text {

@@ -1,5 +1,6 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
+import { summarizePreservedGaps } from "@/lib/preservedImportGaps";
 
 export function StatusBar() {
   const statusMessage = useProjectStore((s) => s.statusMessage);
@@ -8,6 +9,7 @@ export function StatusBar() {
   const credentials = useProjectStore((s) => s.credentials);
   const [runtime, setRuntime] = useState<"dev" | "java" | "…">("…");
   const [flashKey, setFlashKey] = useState(0);
+  const gapSummary = useMemo(() => summarizePreservedGaps(project), [project]);
 
   useEffect(() => {
     fetch("/api/health")
@@ -20,6 +22,16 @@ export function StatusBar() {
     setFlashKey((k) => k + 1);
   }, [statusMessage]);
 
+  const gapTip =
+    gapSummary.totalMarkers > 0
+      ? [
+          `${gapSummary.itemDisplayConditions} item displayCondition(s)`,
+          `${gapSummary.columnDisplayConditions} column displayCondition(s)`,
+          `${gapSummary.formsAffected} form(s), ${gapSummary.documentsAffected} document(s)`,
+          "Explorer / canvas / Configure Function show amber cues — Designer cannot edit these yet",
+        ].join(" · ")
+      : undefined;
+
   return (
     <footer className="status-bar">
       <span key={flashKey} className="status-bar-message" title={statusMessage}>
@@ -28,6 +40,11 @@ export function StatusBar() {
       <span className="status-bar-meta">
         {project.name} · format {project.format}
         {dirty ? <span className="dirty"> · modified</span> : null}
+        {gapSummary.totalMarkers > 0 ? (
+          <span className="status-preserved-gaps" title={gapTip}>
+            {` · ${gapSummary.totalMarkers} preserved gap${gapSummary.totalMarkers === 1 ? "" : "s"}`}
+          </span>
+        ) : null}
         {" · "}
         <span className={runtime === "java" ? "runtime-java" : "runtime-dev"}>
           deploy → {runtime === "java" ? "Java :8080" : "dev runtime :5173"}

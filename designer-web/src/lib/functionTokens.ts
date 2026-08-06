@@ -110,12 +110,21 @@ export function createFunctionTokenElement(
   const id = instanceId ?? allocateFunctionInstanceId();
   const display = buildFunctionDisplayString(def, config);
   const span = document.createElement("span");
-  span.className = `${FUNCTION_TOKEN_CLASS} function-table-token`;
+  const cols = config.column as { displayCondition?: unknown }[] | undefined;
+  const hasColDc = Array.isArray(cols) && cols.some((c) => c?.displayCondition != null);
+  span.className = `${FUNCTION_TOKEN_CLASS} function-table-token${
+    hasColDc ? " preserved-import-warning" : ""
+  }`;
   span.setAttribute("contenteditable", "false");
   span.setAttribute(FUNCTION_TOKEN_ATTR, def.id);
   span.setAttribute("data-function-instance", String(id));
   span.setAttribute(FUNCTION_CONFIG_ATTR, serializeFunctionConfig(config));
-  span.setAttribute("title", def.name);
+  span.setAttribute(
+    "title",
+    hasColDc
+      ? `${def.name} — Visibility condition preserved; Designer cannot edit yet`
+      : def.name,
+  );
   span.draggable = true;
   span.textContent = display;
   return span;

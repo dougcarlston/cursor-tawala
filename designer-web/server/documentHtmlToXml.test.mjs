@@ -862,3 +862,83 @@ describe("documentHtmlToXml placed vertical gaps (DISPLAY MCQ spacing)", () => {
     expect(xml).toContain('all_choices');
   });
 });
+
+describe("documentHtmlToXml nested placed paragraphs + table order (Signup Sheet)", () => {
+  it("keeps Contact information heading above the contact table (not after)", () => {
+    // Template shape: absolute table first in DOM, then doc-placed-text with
+    // illegal nested <p> for the greeting + "Contact information:" heading.
+    const html =
+      `<table class="user" border="1" cellpadding="4" cellspacing="0" ` +
+      `style="top: 71.6pt; position: absolute; left: 7.5pt; width: 262pt;" ` +
+      `data-doc-home-top="71.6pt"><tbody>` +
+      `<tr><td style="width: 85.6pt;"><p style="text-align:right"><b>Email:</b></p></td>` +
+      `<td style="width: 146.1pt;"><span class="field-token" data-field-name="Form 1:Email">&lt;&lt;Form 1:Email&gt;&gt;</span></td></tr>` +
+      `</tbody></table>` +
+      `<p class="doc-placed-text" data-doc-home-top="0pt" style="position: absolute; left: 7.5pt; top: 0pt; margin: 0px;">` +
+      `<p><span><b><span class="field-token" data-field-name="FulllName">&lt;&lt;FulllName&gt;&gt;</span></b></span>` +
+      `<span>&nbsp;has joined the signup sheet.</span></p>` +
+      `<p></p>` +
+      `<p><span><b>Contact information:</b></span></p>` +
+      `<p></p>` +
+      `<p></p>` +
+      `</p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText, { formName: "Form 1" });
+    const iJoined = xml.indexOf("has joined the signup sheet");
+    const iContact = xml.indexOf("Contact information:");
+    const iTable = xml.indexOf("<table ");
+    const iEmail = xml.indexOf("<b>Email:</b>");
+    expect(iJoined).toBeGreaterThanOrEqual(0);
+    expect(iContact).toBeGreaterThan(iJoined);
+    expect(iTable).toBeGreaterThan(iContact);
+    expect(iEmail).toBeGreaterThan(iTable);
+    expect(xml).toContain('border="1"');
+    // Nested <p style="text-align:right"> → division align (not hardcoded left).
+    expect(xml).toMatch(
+      /<division indent="0" align="right"><font><b>Email:<\/b><\/font><\/division>/,
+    );
+  });
+
+  it("maps td/th text-align and nested p text-align onto division align", () => {
+    const xml = documentHtmlToXml(
+      `<table class="user" border="1"><tbody>` +
+        `<tr>` +
+        `<td style="width: 80pt;"><p style="text-align:right"><b>Email:</b></p></td>` +
+        `<td style="width: 120pt; text-align: center;">` +
+        `<span class="field-token" data-field-name="Form 1:Email">&lt;&lt;Form 1:Email&gt;&gt;</span>` +
+        `</td>` +
+        `<td style="width: 90pt; text-align: justify;"><span>Notes</span></td>` +
+        `</tr>` +
+        `</tbody></table>`,
+      escAttr,
+      escText,
+      { formName: "Form 1" },
+    );
+    expect(xml).toContain('<division indent="0" align="right">');
+    expect(xml).toContain('<division indent="0" align="center">');
+    expect(xml).toContain('<division indent="0" align="justify">');
+    expect(xml).toContain('<field name="Form 1:Email"/>');
+  });
+
+  it("defaults bare table.user to border=1; honors user-border-none / user-border-2", () => {
+    const bare = documentHtmlToXml(
+      `<table class="user"><tbody><tr><td style="width: 50pt;">A</td></tr></tbody></table>`,
+      escAttr,
+      escText,
+    );
+    expect(bare).toContain('<table indent="0" border="1">');
+
+    const none = documentHtmlToXml(
+      `<table class="user user-border-none"><tbody><tr><td style="width: 50pt;">A</td></tr></tbody></table>`,
+      escAttr,
+      escText,
+    );
+    expect(none).toContain('border="0"');
+
+    const thick = documentHtmlToXml(
+      `<table class="user user-border-2"><tbody><tr><td style="width: 50pt;">A</td></tr></tbody></table>`,
+      escAttr,
+      escText,
+    );
+    expect(thick).toContain('border="2"');
+  });
+});
