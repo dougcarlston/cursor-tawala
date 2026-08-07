@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legacy reference — Library (reconstructed)</title>
+  <link rel="stylesheet" href="legacy-chrome.css" />
+</head>
+<body>
+  <div class="legacy-banner">
+    LEGACY REFERENCE — not wired
+    <span>· RECONSTRUCTED / UNCERTAIN — no full Library still; from CSS + buttons + JSP notes</span>
+  </div>
+
+  <div id="doc">
+    <div id="hd">
+      <a class="logo" href="index.html">TAWALA<span class="beta">Beta</span></a>
+      <nav class="nav" aria-label="Main">
+        <a href="#">HOME</a>
+        <a href="legacy-my-tawala.html">MY TAWALA</a>
+        <a class="active" href="legacy-library.html">LIBRARY</a>
+        <a href="#">FAQ</a>
+        <a href="#">FORUM</a>
+        <a href="#">NEWS</a>
+        <a href="#">DESIGNER</a>
+        <a href="#">ABOUT</a>
+        <a href="#">ADMIN</a>
+      </nav>
+      <div class="welcome">Welcome back, <b>tonyf</b>. <a href="#">Logout</a></div>
+    </div>
+
+    <div id="bd">
+      <aside class="sidebar-left">
+        <div class="block">
+          <h3>Select a Library</h3>
+          <ul class="cat-list">
+            <li><a class="selected" href="#">Tawala Public Library</a></li>
+            <li><a href="#">User Community Library</a></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Categories</h3>
+          <ul class="cat-list">
+            <li><a href="#">Show All Categories</a></li>
+            <li><a href="#">Events &amp; Gatherings</a></li>
+            <li><a href="#">Sign-up &amp; Rosters</a></li>
+            <li><a href="#">Surveys</a></li>
+            <li><a href="#">Sports</a></li>
+            <li><a href="#">Education</a></li>
+          </ul>
+        </div>
+        <div class="block">
+          <h3>Next level</h3>
+          <p><a href="#">Create your own Tawala apps</a> — free account.</p>
+        </div>
+      </aside>
+
+      <div class="content">
+        <div class="uncertain">
+          <b>Reconstructed / uncertain.</b> No dedicated <code>Library-*.png</code> full-page still
+          was found in From Tony images. Layout inferred from <code>library.css</code> /
+          <code>projectManager.css</code>, action-button GIFs (See demo / Test drive / Download /
+          Customize), star rating assets, and Beta nav chrome visible on the My Tawala and
+          Project Details stills. Treat columns, CTAs, and category tree as best-effort — mark
+          preferences accordingly in the comparison canvas.
+        </div>
+
+        <div class="pageTitle"><h1>Tawala Libraries</h1></div>
+
+        <div class="search-bar">
+          <label>
+            Category
+            <select disabled><option>All categories</option></select>
+          </label>
+          <label>
+            Search
+            <input type="text" size="28" value="" disabled placeholder="Search public library…" />
+          </label>
+          <button type="button" class="btn-view" disabled>Search</button>
+        </div>
+
+        <table class="projectListing" aria-label="Public Library (reconstructed)">
+          <thead>
+            <tr>
+              <th>Name</th>
+              <th>Rating</th>
+              <th class="num">Times used</th>
+              <th class="num">Comments</th>
+              <th>Updated</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <span class="lib-icon" title="app icon">GT</span>
+                <a href="#detail">Get Together</a>
+              </td>
+              <td><span class="stars" title="4 of 5">★★★★☆</span></td>
+              <td class="num">184</td>
+              <td class="num">12</td>
+              <td>2008-03-11</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="lib-icon">PL</span>
+                <a href="#detail">Potluck</a>
+              </td>
+              <td><span class="stars">★★★★★</span></td>
+              <td class="num">312</td>
+              <td class="num">27</td>
+              <td>2008-01-22</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="lib-icon">SU</span>
+                <a href="#detail">Sign-up Sheet</a>
+              </td>
+              <td><span class="stars">★★★★☆</span></td>
+              <td class="num">256</td>
+              <td class="num">9</td>
+              <td>2007-11-04</td>
+            </tr>
+            <tr>
+              <td>
+                <span class="lib-icon">SV</span>
+                <a href="#detail">Simple Survey</a>
+              </td>
+              <td><span class="stars">★★★☆☆</span></td>
+              <td class="num">97</td>
+              <td class="num">4</td>
+              <td>2007-09-18</td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div id="detail" class="section-block" style="margin-top:28px; border-top:1px solid #ddd; padding-top:16px;">
+          <p class="section-note" style="margin-bottom:8px;">
+            <b>Library detail surface (reconstructed)</b> — icon + title + rating + big CTAs.
+            Exact placement of buttons vs description is uncertain.
+          </p>
+          <div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
+            <div>
+              <span class="lib-icon" style="width:64px;height:64px;line-height:62px;font-size:18px;">PL</span>
+            </div>
+            <div style="flex:1; min-width:220px;">
+              <h1 class="page-red" style="font-size:24px; margin:0 0 4px;">Potluck</h1>
+              <p style="margin:0 0 4px;"><span class="stars">★★★★★</span> (27 comments)</p>
+              <p style="margin:0 0 8px; font-size:12px; color:#555;">
+                Coordinate potluck dishes with a setup form and organizer view. Published from My Tawala.
+              </p>
+              <div class="cta-row">
+                <span class="cta" title="seedemo-button.gif">See Demo</span>
+                <span class="cta alt" title="testdrivelatest-button.gif">Test Drive Latest</span>
+                <span class="cta muted" title="downloadlatest-button.gif — Use / clone into My Tawala">Download Latest</span>
+                <span class="cta muted" title="customize-button.gif">Customize</span>
+              </div>
+              <p class="section-note">
+                Glossary mapping (uncertain): Download / Use ≈ clone into My Tawala;
+                Customize ≈ web customize wizard (not Designer). See Demo / Test Drive ≈ try without acquiring.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="ft">
+      Static HTML · reconstructed · not wired ·
+      <a href="index.html">Legacy reference index</a> ·
+      Live mock: <a href="../library.html">../library.html</a> /
+      <a href="../library-detail.html">../library-detail.html</a>
+    </footer>
+  </div>
+</body>
+</html>

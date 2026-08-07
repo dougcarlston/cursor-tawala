@@ -22,6 +22,8 @@
  *         TawalaTransfer.pullFromLibrary refreshes content only (name/deploy/data preserved)
  * wired: "download-version" → download minimal JSON for the selected Versions row
  *         (metadata only — not a full Designer definition restore)
+ * wired: "deploy-version" → Deploy-this-version (switch live :8080 definition to selected
+ *         row’s snapshot; enabled only for non-current rows with a saved definition)
  * Versions description cells → TawalaTransfer.updateVersionDescription (inline edit; number/current immutable)
  */
 (function () {
@@ -289,9 +291,14 @@
     { label: "Purge (form)", title: "Purge data for form — confirm: Erase Form Data", wired: false, confirmId: "erase" },
   ];
 
-  /** Versions section — Deploy-switch / delete stay grey; Download wired for selected row. */
+  /** Versions section — Deploy-this-version wired; delete stays grey; Download = metadata. */
   const VERSION_OPS = [
-    { label: "Deploy", title: "Make this version the active version", wired: false },
+    {
+      label: "Deploy this version",
+      title: "Make this version the active deployed definition on :8080 (same uniqueId)",
+      wired: "deploy-version",
+      id: "deploy-version",
+    },
     { label: "Delete this version", title: "Delete this version", wired: false, confirmId: "deleteversion" },
     {
       label: "Download this version of the project",
@@ -306,6 +313,10 @@
       confirmId: "deleteselected",
     },
   ];
+
+  /** Shown when an older Versions row has no definition snapshot (pre–Aug 7, 2026 history). */
+  const NO_VERSION_SNAPSHOT_MSG =
+    "This version has no saved definition — only versions created after Deploy → Show in My Tawala started saving snapshots (Aug 7, 2026+) can be redeployed.";
 
   /** Backups / emails / publish dialogs (admin-ish; still useful memory jogs) */
   const OTHER_OPS = [
@@ -535,7 +546,8 @@
       op.wired === "backup-mytawala" ||
       op.wired === "restore-mytawala" ||
       op.wired === "pull-library" ||
-      op.wired === "download-version"
+      op.wired === "download-version" ||
+      op.wired === "deploy-version"
     );
   }
 
@@ -553,6 +565,9 @@
     if (item.wired === "pull-library") return "active (Pull dialog → overlay content refresh from Library)";
     if (item.wired === "download-version") {
       return "active (minimal version metadata JSON — Details Versions only)";
+    }
+    if (item.wired === "deploy-version") {
+      return "active when a non-current version with a saved definition snapshot is selected";
     }
     if (item.wired === "use-project") {
       return "active when :8080 start URL exists (single → run; multi → Project Details; no purge; My Tawala only)";
@@ -935,7 +950,25 @@
   }
 
   /** Active or grey chip for Versions / similar section toolbars. */
-  function sectionChip(op, projectId) {
+  function sectionChip(op, projectId, opts) {
+    const options = opts || {};
+    if (op.wired === "deploy-version") {
+      const enabled = !!options.deployVersionEnabled;
+      if (!enabled) {
+        return (
+          `<button type="button" class="pm-action" disabled ` +
+          `title="${escapeHtml(options.deployVersionTitle || op.title || op.label)}" ` +
+          `data-op="${escapeHtml(op.id || op.label)}" data-wired="deploy-version" ` +
+          `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
+        );
+      }
+      return (
+        `<button type="button" class="pm-action is-active" ` +
+        `title="${escapeHtml(op.title || op.label)}" ` +
+        `data-op="${escapeHtml(op.id || op.label)}" data-wired="deploy-version" ` +
+        `data-project="${escapeHtml(projectId || "")}">${escapeHtml(op.label)}</button>`
+      );
+    }
     if (!isOpActive(op)) return disabledChip(op);
     return (
       `<button type="button" class="pm-action is-active" ` +
@@ -956,6 +989,16 @@
     }
   }
 
+  function versionIsRedeployable(v) {
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.versionHasRedeployableDefinition === "function"
+    ) {
+      return TawalaTransfer.versionHasRedeployableDefinition(v);
+    }
+    return !!(v && (v.definition || v.snapshotId || v.hasDefinition));
+  }
+
   /** Normalize overlay versions[] for Details display (newest first). */
   function projectVersionRows(project) {
     const raw = Array.isArray(project && project.versions) ? project.versions.slice() : [];
@@ -968,17 +1011,94 @@
         mode: project.mode || null,
         startPoints: project.startPoints || [],
         deployed: !!project.deployed,
+        snapshotId: null,
+        definition: null,
+        hasDefinition: false,
       });
     }
     raw.sort((a, b) => Number(b.versionNumber) - Number(a.versionNumber));
     return raw.filter((v) => v && Number.isFinite(Number(v.versionNumber)));
   }
 
+  function getSelectedVersionRow(project, host) {
+    const rows = projectVersionRows(project);
+    const scope = host || document.getElementById("pmDetailHost") || document;
+    const picked =
+      (scope && scope.querySelector && scope.querySelector('input[name="pmVersionPick"]:checked')) ||
+      document.querySelector('input[name="pmVersionPick"]:checked');
+    if (picked && picked.value) {
+      const n = Number(picked.value);
+      const found = rows.find((v) => Number(v.versionNumber) === n);
+      if (found) return found;
+    }
+    return rows[0] || null;
+  }
+
+  function deployVersionEnabledForSelection(project, version) {
+    if (!project || !version) return false;
+    const rows = projectVersionRows(project);
+    const currentNum =
+      project.versionNumber != null
+        ? Number(project.versionNumber)
+        : rows[0]
+          ? Number(rows[0].versionNumber)
+          : null;
+    if (currentNum != null && Number(version.versionNumber) === currentNum) return false;
+    return versionIsRedeployable(version);
+  }
+
+  function syncDeployVersionChip(root) {
+    const host = root || document.getElementById("pmDetailHost") || document;
+    const btn = host.querySelector && host.querySelector('[data-wired="deploy-version"]');
+    if (!btn) return;
+    const projectId = btn.dataset.project || "";
+    const project =
+      (projectId &&
+        typeof TawalaDemo !== "undefined" &&
+        TawalaDemo.getMyTawala &&
+        TawalaDemo.getMyTawala(projectId)) ||
+      null;
+    const version = getSelectedVersionRow(project, host);
+    const enabled = deployVersionEnabledForSelection(project, version);
+    btn.disabled = !enabled;
+    if (enabled) {
+      btn.classList.add("is-active");
+      btn.title = "Make this version the active deployed definition on :8080 (same uniqueId)";
+    } else {
+      btn.classList.remove("is-active");
+      if (version && !versionIsRedeployable(version)) {
+        btn.title = NO_VERSION_SNAPSHOT_MSG;
+      } else if (version) {
+        btn.title = "Already the current version — pick an older version to switch";
+      } else {
+        btn.title = "Select a non-current version that has a saved definition snapshot";
+      }
+    }
+  }
+
   function renderVersionsSection(project) {
     const rows = projectVersionRows(project);
+    const currentNum =
+      project.versionNumber != null
+        ? Number(project.versionNumber)
+        : rows[0]
+          ? Number(rows[0].versionNumber)
+          : null;
+    const defaultSelected =
+      rows.find((v) => currentNum != null && Number(v.versionNumber) === currentNum) || rows[0] || null;
+    const deployEnabled = deployVersionEnabledForSelection(project, defaultSelected);
     const chips =
       '<div class="pm-chip-row">' +
-      VERSION_OPS.map((op) => sectionChip(op, project.id)).join("") +
+      VERSION_OPS.map((op) =>
+        sectionChip(op, project.id, {
+          deployVersionEnabled: deployEnabled,
+          deployVersionTitle: deployEnabled
+            ? undefined
+            : defaultSelected && !versionIsRedeployable(defaultSelected)
+              ? NO_VERSION_SNAPSHOT_MSG
+              : "Select a non-current version that has a saved definition snapshot",
+        })
+      ).join("") +
       "</div>";
     if (!rows.length) {
       return (
@@ -986,24 +1106,21 @@
         '<p class="pm-hint">No Deploy versions yet — open in Web Designer, Deploy, optionally add a version note, then <b>Show in My Tawala</b>. Listing stays flat; history appears here only.</p>'
       );
     }
-    const currentNum =
-      project.versionNumber != null
-        ? Number(project.versionNumber)
-        : rows[0]
-          ? Number(rows[0].versionNumber)
-          : null;
     const body = rows
       .map((v, idx) => {
         const num = Number(v.versionNumber);
         const isCurrent = currentNum != null ? num === currentNum : idx === 0;
         const isDeployed = v.deployed === true || isCurrent;
+        const hasSnap = versionIsRedeployable(v);
         const statusBits = [];
         if (isCurrent) statusBits.push("Current");
         if (isDeployed) statusBits.push("Deployed");
+        if (!hasSnap) statusBits.push("No snapshot");
         const status = statusBits.length ? statusBits.join(" · ") : "—";
         const descRaw = String(v.description || "").trim();
         return (
-          `<tr class="${isCurrent ? "pm-version-current" : ""}" data-version-number="${escapeHtml(String(num))}">` +
+          `<tr class="${isCurrent ? "pm-version-current" : ""}" data-version-number="${escapeHtml(String(num))}" ` +
+          `data-has-snapshot="${hasSnap ? "1" : "0"}">` +
           `<td class="pm-version-pick">` +
           `<input type="radio" name="pmVersionPick" value="${escapeHtml(String(num))}" ` +
           `${isCurrent ? "checked " : ""}` +
@@ -1036,7 +1153,10 @@
       "<th scope=\"col\">Status</th>" +
       "</tr></thead>" +
       `<tbody>${body}</tbody></table>` +
-      '<p class="pm-hint">Description can be edited; Deploy creates a new version. <b>Download</b> saves minimal metadata JSON for the selected row. Switch-deploy / delete-version stay deferred. Listing remains one row per project.</p>'
+      '<p class="pm-hint"><b>Deploy this version</b> switches the live :8080 definition to the selected row ' +
+      "(same uniqueId; does not mint a new version). Needs a saved snapshot from " +
+      "<b>Deploy → Show in My Tawala</b>. <b>Download</b> is still metadata-only. Delete version stays deferred. " +
+      "Listing remains one row per project. Response data may not match an older schema — you’ll be asked to confirm.</p>"
     );
   }
 
@@ -1108,7 +1228,7 @@
     const payload = {
       kind: "tawala.project-version",
       format: 1,
-      note: "Minimal metadata download (first slice). Not a full Designer definition restore.",
+      note: "Minimal metadata download. Deploy this version uses the saved definition snapshot, not this file.",
       projectId: project.id || projectId,
       projectName: project.name || null,
       versionNumber: Number(version.versionNumber),
@@ -1118,6 +1238,8 @@
       mode: version.mode || project.mode || null,
       startPoints: version.startPoints || project.startPoints || [],
       deployed: !!version.deployed,
+      hasDefinition: versionIsRedeployable(version),
+      snapshotId: version.snapshotId || null,
       downloadedAt: new Date().toISOString(),
     };
     const slug =
@@ -1135,6 +1257,151 @@
     a.remove();
     setTimeout(() => URL.revokeObjectURL(url), 1000);
     setStatus(`Downloaded ${filename}`);
+  }
+
+  async function resolveDefinitionForVersion(version) {
+    if (version && version.definition && typeof version.definition === "object" && version.definition.name) {
+      return { ok: true, definition: version.definition, from: "overlay" };
+    }
+    const snapshotId = version && version.snapshotId ? String(version.snapshotId).trim() : "";
+    if (!snapshotId) {
+      return { ok: false, error: "no-snapshot", message: NO_VERSION_SNAPSHOT_MSG };
+    }
+    if (typeof TawalaDemo === "undefined" || typeof TawalaDemo.fetchVersionSnapshot !== "function") {
+      return {
+        ok: false,
+        error: "no-api",
+        message: "Couldn’t load definition snapshot — demo-urls support missing. Refresh and try again.",
+      };
+    }
+    const snap = await TawalaDemo.fetchVersionSnapshot(snapshotId);
+    if (!snap || snap.status === "failure" || !snap.project) {
+      return {
+        ok: false,
+        error: "fetch-failed",
+        message:
+          "Couldn’t load the saved definition for this version.\n\n" +
+          ((snap && snap.error) || "snapshot not found") +
+          "\n\nIs designer-web API on :3001? Snapshots live under designer-web/.deployed/version-snapshots/.",
+      };
+    }
+    return { ok: true, definition: snap.project, from: "api", snapshotId };
+  }
+
+  async function deploySelectedVersion(projectId) {
+    const project =
+      (typeof TawalaDemo !== "undefined" && TawalaDemo.getMyTawala && TawalaDemo.getMyTawala(projectId)) ||
+      null;
+    if (!project) {
+      setStatus("Deploy this version — project not found.");
+      window.alert("Couldn't deploy version\n\nProject not found in My Tawala.");
+      return;
+    }
+    const host = document.getElementById("pmDetailHost") || document;
+    const version = getSelectedVersionRow(project, host);
+    if (!version) {
+      setStatus("Deploy this version — no version selected.");
+      window.alert("Couldn't deploy version\n\nNo Deploy versions recorded yet.");
+      return;
+    }
+    if (!deployVersionEnabledForSelection(project, version)) {
+      if (!versionIsRedeployable(version)) {
+        setStatus(`Version ${version.versionNumber}: no saved definition.`);
+        window.alert("Couldn't deploy version\n\n" + NO_VERSION_SNAPSHOT_MSG);
+      } else {
+        setStatus(`Version ${version.versionNumber} is already current.`);
+        window.alert(
+          "Couldn't deploy version\n\nThat version is already current. Select an older version to switch."
+        );
+      }
+      return;
+    }
+
+    const resolved = await resolveDefinitionForVersion(version);
+    if (!resolved.ok) {
+      setStatus(`Deploy this version failed — ${resolved.error || "no definition"}.`);
+      window.alert("Couldn't deploy version\n\n" + (resolved.message || NO_VERSION_SNAPSHOT_MSG));
+      return;
+    }
+
+    if (
+      resolved.from === "api" &&
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.attachVersionDefinition === "function"
+    ) {
+      TawalaTransfer.attachVersionDefinition(
+        projectId,
+        version.versionNumber,
+        resolved.definition,
+        resolved.snapshotId || version.snapshotId
+      );
+    }
+
+    const ok = window.confirm(
+      `Deploy version ${version.versionNumber} as the live definition?\n\n` +
+        "Responses collected under a newer form may not match this version. Continue?\n\n" +
+        "This re-uploads the saved definition to :8080 (same project name / uniqueId when Java matches by name). " +
+        "It does not mint a new Versions row."
+    );
+    if (!ok) {
+      setStatus("Deploy this version cancelled.");
+      return;
+    }
+
+    if (typeof TawalaDemo === "undefined" || typeof TawalaDemo.deployProjectDefinition !== "function") {
+      setStatus("Deploy this version — deploy API helper missing.");
+      window.alert("Couldn't deploy version\n\nDeploy support didn’t load. Refresh and try again.");
+      return;
+    }
+
+    setStatus(`Deploying version ${version.versionNumber}…`);
+    const result = await TawalaDemo.deployProjectDefinition(resolved.definition);
+    if (!result || result.status === "failure") {
+      const err = (result && result.error) || "unknown";
+      setStatus(`Deploy this version failed: ${err}`);
+      window.alert(`Couldn't deploy version ${version.versionNumber}\n\n${err}`);
+      return;
+    }
+
+    if (
+      typeof TawalaTransfer === "undefined" ||
+      typeof TawalaTransfer.markVersionCurrentAndDeployed !== "function"
+    ) {
+      setStatus("Deploy succeeded on :8080, but My Tawala overlay wasn’t updated (transfer missing).");
+      window.alert(
+        `Deployed version ${version.versionNumber} to runtime, but couldn’t update My Tawala flags.\n\nRefresh and check start points.`
+      );
+      return;
+    }
+
+    const marked = TawalaTransfer.markVersionCurrentAndDeployed(projectId, version.versionNumber, result);
+    if (!marked || !marked.ok) {
+      setStatus(`Deploy OK, overlay update failed (${(marked && marked.error) || "unknown"}).`);
+      window.alert(
+        `Runtime deploy succeeded, but My Tawala version flags weren’t updated (${(marked && marked.error) || "unknown"}).`
+      );
+      return;
+    }
+
+    const refreshed =
+      (typeof TawalaDemo !== "undefined" && TawalaDemo.getMyTawala && TawalaDemo.getMyTawala(projectId)) ||
+      null;
+    const detailHost = document.getElementById("pmDetailHost");
+    if (detailHost && refreshed) {
+      detailHost.innerHTML = renderDetailPanel({ id: projectId, ...refreshed });
+      syncDeployVersionChip(detailHost);
+    }
+    setStatus(
+      `Deployed version ${version.versionNumber} — now current/deployed` +
+        (result.uniqueId ? ` (uniqueId ${result.uniqueId})` : "") +
+        "."
+    );
+    window.alert(
+      `Version ${version.versionNumber} is now the deployed definition.\n\n` +
+        (result.mode === "java" ? "Java :8080 updated. " : "Dev runtime updated. ") +
+        "Start points on this page were refreshed. " +
+        "If you collected responses under a newer form, fields may not line up — Export/Import can fail until you switch back or purge."
+    );
   }
 
   function renderCollapsibleSection(id, title, innerHtml, open) {
@@ -1781,6 +2048,21 @@
       return;
     }
 
+    if (wired === "deploy-version") {
+      if (btn.dataset.busy === "1") return;
+      btn.dataset.busy = "1";
+      const prevDisabled = btn.disabled;
+      btn.disabled = true;
+      try {
+        await deploySelectedVersion(projectId);
+      } finally {
+        btn.dataset.busy = "";
+        btn.disabled = prevDisabled;
+        syncDeployVersionChip(document.getElementById("pmDetailHost") || document);
+      }
+      return;
+    }
+
     if (
       wired === "export-mytawala" ||
       wired === "import-mytawala" ||
@@ -1928,6 +2210,15 @@
     scope.addEventListener("change", (ev) => {
       const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
       if (input) saveVersionDescriptionFromInput(input);
+      if (ev.target && ev.target.name === "pmVersionPick") {
+        syncDeployVersionChip(document.getElementById("pmDetailHost") || scope);
+      }
+    });
+    scope.addEventListener("click", (ev) => {
+      /* Radios sometimes fire click without change when re-selecting; keep chip in sync. */
+      if (ev.target && ev.target.name === "pmVersionPick") {
+        syncDeployVersionChip(document.getElementById("pmDetailHost") || scope);
+      }
     });
     scope.addEventListener("keydown", (ev) => {
       const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
@@ -1971,6 +2262,7 @@
     renderLibraryListingActionHeaders,
     renderLibraryListingControls,
     renderDetailPanel,
+    syncDeployVersionChip,
     renderOpsCatalog,
     openPublishDialog,
     bind,

@@ -1109,6 +1109,76 @@ window.TawalaDemo = {
     }
   },
   /**
+   * Fetch a Designer definition snapshot saved at Show in My Tawala
+   * (POST /api/version-snapshots). Used by Deploy-this-version when the overlay
+   * has snapshotId but no cached definition body.
+   */
+  async fetchVersionSnapshot(snapshotId) {
+    if (!snapshotId) {
+      return { status: "failure", error: "snapshotId required" };
+    }
+    const url =
+      this.purgeApiBase().replace(/\/$/, "") +
+      "/api/version-snapshots/" +
+      encodeURIComponent(snapshotId);
+    try {
+      const res = await fetch(url);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          status: "failure",
+          snapshotId,
+          error: data.error || `HTTP ${res.status}`,
+        };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        snapshotId,
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+  /**
+   * Redeploy a project definition to :8080 / Node runtime (same /api/deploy as Designer).
+   * Java keeps the same uniqueId when the project name matches an existing deployment.
+   */
+  async deployProjectDefinition(project) {
+    if (!project || !project.name) {
+      return { status: "failure", error: "project required" };
+    }
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/deploy";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credentials: { user: "dev", password: "dev" },
+          project,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          status: "failure",
+          error: data.error || `HTTP ${res.status}`,
+          ...data,
+        };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+  /**
    * Purge :8080 submissions for a My Tawala project after Publish (owner Aug 1, 2026 — Publish
    * to Library must never leave one account's prior test/demo responses visible to whoever
    * uses the newly-published Library project next). Resolves the same uniqueId as My Tawala

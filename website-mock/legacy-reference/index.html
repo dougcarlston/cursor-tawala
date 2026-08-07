@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legacy reference — index</title>
+  <link rel="stylesheet" href="legacy-chrome.css" />
+</head>
+<body>
+  <div class="legacy-banner">
+    LEGACY REFERENCE — not wired
+    <span>· static HTML only · open beside live website-mock pages for visual compare</span>
+  </div>
+
+  <div class="index-wrap">
+    <h1>Legacy page lookalikes</h1>
+    <div class="note">
+      These pages are <b>static and non-operational</b> — fake data, dead controls, no JS wiring.
+      They approximate Beta chrome from From Tony stills so you can open them side-by-side with the
+      live mock under <code>website-mock/</code>.
+    </div>
+
+    <h2 style="color:#4d6581; font-size:16px;">Open these</h2>
+    <ul>
+      <li>
+        <a href="legacy-my-tawala.html"><b>legacy-my-tawala.html</b></a>
+        — My Tawala listing (from <code>MyTawala-600px.png</code>)
+        · live: <a href="../mytawala.html">mytawala.html</a>
+      </li>
+      <li>
+        <a href="legacy-project-details.html"><b>legacy-project-details.html</b></a>
+        — Project Details / Potluck (from <code>ProjectDetails-600px.png</code>)
+        · live: <a href="../mytawala-project.html">mytawala-project.html</a>
+      </li>
+      <li>
+        <a href="legacy-library.html"><b>legacy-library.html</b></a>
+        — Public Library <b>(reconstructed / uncertain)</b> — no full still
+        · live: <a href="../library.html">library.html</a> /
+        <a href="../library-detail.html">library-detail.html</a>
+      </li>
+    </ul>
+
+    <div class="compare-links">
+      <p><b>How to view</b></p>
+      <pre style="background:#f3f3f3; padding:10px 12px; font-size:12px; overflow:auto;">cd website-mock
+./serve.sh
+# then open:
+#   http://127.0.0.1:5500/legacy-reference/
+#   http://127.0.0.1:5500/mytawala.html          (live mock)
+#   http://127.0.0.1:5500/mytawala-project.html
+#   http://127.0.0.1:5500/library.html</pre>
+      <p>
+        Feature-by-feature owner decisions:
+        canvas <code>legacy-vs-mock-pages.canvas.tsx</code>
+        (open beside chat in Cursor).
+      </p>
+      <p>
+        Source notes:
+        <code>…/From Tony/FROM_TONY_IMAGES_NOTES.md</code>
+      </p>
+      <p>
+        Committed stills + lookalike screenshots:
+        <a href="stills/"><code>stills/</code></a>
+        · Owner triage:
+        <code>website-mock/README.md</code> § Aug 7–8 legacy page triage
+      </p>
+    </div>
+  </div>
+</body>
+</html>

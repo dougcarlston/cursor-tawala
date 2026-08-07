@@ -6,10 +6,10 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260805-verdesc" />
-  <script src="js/demo-urls.js?v=20260803-examtd"></script>
-  <script src="js/transfer.js?v=20260805-verdesc"></script>
-  <script src="js/project-ops.js?v=20260805-verdesc"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260807-deployswitch" />
+  <script src="js/demo-urls.js?v=20260807-deployswitch"></script>
+  <script src="js/transfer.js?v=20260807-deployswitch"></script>
+  <script src="js/project-ops.js?v=20260807-deployswitch"></script>
   <script src="js/data-ops.js?v=20260801-dataops"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
@@ -49,22 +49,49 @@
         ? TawalaTransfer.slugifyProjectId(ingested.name)
         : "") ||
       "";
-    const project = id ? TawalaDemo.getMyTawala(id) : null;
-    const host = document.getElementById("pmDetailHost");
-    if (!project) {
-      const lib = id ? TawalaDemo.getLibrary(id) : null;
-      if (lib) {
-        location.replace("library-detail.html?project=" + encodeURIComponent(id));
-      } else {
-        host.innerHTML =
-          '<p class="pm-hint">Unknown project' +
-          (id ? " (“" + id.replace(/</g, "&lt;") + "”)" : "") +
-          '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Projects</a>.</p>';
+
+    function renderProject(projectId) {
+      const project = projectId ? TawalaDemo.getMyTawala(projectId) : null;
+      const host = document.getElementById("pmDetailHost");
+      if (!project) {
+        const lib = projectId ? TawalaDemo.getLibrary(projectId) : null;
+        if (lib) {
+          location.replace("library-detail.html?project=" + encodeURIComponent(projectId));
+        } else {
+          host.innerHTML =
+            '<p class="pm-hint">Unknown project' +
+            (projectId ? " (“" + projectId.replace(/</g, "&lt;") + "”)" : "") +
+            '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Projects</a>.</p>';
+        }
+        return;
       }
-    } else {
       document.title = "Tawala - " + TawalaDemo.displayName(project.name);
-      host.innerHTML = TawalaProjectOps.renderDetailPanel({ id, ...project });
+      host.innerHTML = TawalaProjectOps.renderDetailPanel({ id: projectId, ...project });
+      if (typeof TawalaProjectOps.syncDeployVersionChip === "function") {
+        TawalaProjectOps.syncDeployVersionChip(host);
+      }
     }
+
+    renderProject(id);
+
+    /* Hydrate definition body from :3001 snapshot so Deploy-this-version works offline of a re-fetch later. */
+    (async function hydrateSnapshot() {
+      if (!ingested || !id || !ingested.snapshotId) return;
+      const versionNumber = ingested.versionNumber;
+      if (versionNumber == null) return;
+      if (typeof TawalaDemo === "undefined" || typeof TawalaDemo.fetchVersionSnapshot !== "function") {
+        return;
+      }
+      const snap = await TawalaDemo.fetchVersionSnapshot(ingested.snapshotId);
+      if (!snap || snap.status === "failure" || !snap.project) return;
+      if (
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.attachVersionDefinition === "function"
+      ) {
+        TawalaTransfer.attachVersionDefinition(id, versionNumber, snap.project, ingested.snapshotId);
+        renderProject(id);
+      }
+    })();
   </script>
 </body>
 </html>

@@ -7,14 +7,26 @@ import {
   websiteMockProjectDetailsUrl,
 } from "@/lib/shellCommands";
 
+/** Strip Designer-only flags before snapshot / receipt. */
+function projectForSnapshot(project: Record<string, unknown> | null | undefined) {
+  if (!project || typeof project !== "object") return null;
+  const { _freshFromTemplate: _drop, ...rest } = project;
+  return rest;
+}
+
 export function DeployDialog() {
   const show = useProjectStore((s) => s.showDeployResult);
   const setShow = useProjectStore((s) => s.setShowDeployResult);
   const lastDeploy = useProjectStore((s) => s.lastDeploy);
+  const project = useProjectStore((s) => s.project);
   const [versionDescription, setVersionDescription] = useState("");
+  const [busy, setBusy] = useState(false);
 
   useEffect(() => {
-    if (show) setVersionDescription("");
+    if (show) {
+      setVersionDescription("");
+      setBusy(false);
+    }
   }, [show, lastDeploy]);
 
   if (!show || !lastDeploy) return null;
@@ -22,14 +34,58 @@ export function DeployDialog() {
   const failed = lastDeploy.status === "failure";
   const close = () => {
     setVersionDescription("");
+    setBusy(false);
     setShow(false);
   };
 
-  const openMyTawala = () => {
-    if (failed) return;
+  const openMyTawala = async () => {
+    if (failed || busy) return;
     const name = lastDeploy.project ?? "Project";
     const id = mockProjectIdFromName(name);
     const note = versionDescription.trim();
+    let snapshotId: string | null = null;
+    const snapProject = projectForSnapshot(project as Record<string, unknown>);
+
+    setBusy(true);
+    try {
+      if (snapProject) {
+        const res = await fetch("/api/version-snapshots", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            project: snapProject,
+            uniqueId: lastDeploy.uniqueId ?? null,
+            projectId: id,
+            versionDescription: note,
+            at: new Date().toISOString(),
+          }),
+        });
+        const data = (await res.json().catch(() => ({}))) as {
+          status?: string;
+          snapshotId?: string;
+          error?: string;
+        };
+        if (res.ok && data.snapshotId) {
+          snapshotId = data.snapshotId;
+        } else {
+          window.alert(
+            "Couldn’t save a definition snapshot for this version.\n\n" +
+              (data.error || `HTTP ${res.status}`) +
+              "\n\nMy Tawala will still record version metadata, but “Deploy this version” " +
+              "won’t be able to redeploy this row until a later Deploy → Show in My Tawala succeeds with :3001 up.",
+          );
+        }
+      }
+    } catch (e) {
+      window.alert(
+        "Couldn’t reach the Designer API to save a definition snapshot.\n\n" +
+          String((e as Error)?.message || e) +
+          "\n\nIs designer-web on :3001? My Tawala will still open with metadata only.",
+      );
+    } finally {
+      setBusy(false);
+    }
+
     const receipt = {
       id,
       name,
@@ -41,9 +97,11 @@ export function DeployDialog() {
       mode: lastDeploy.mode ?? null,
       at: new Date().toISOString(),
       versionDescription: note,
+      snapshotId,
     };
     // Project Details deep link + receipt → mock upserts My Tawala pile overlay
     // (mints monotonic versionNumber; history on Details Versions only).
+    // Definition body stays on :3001 (snapshotId) — URL cannot carry full project JSON.
     const url =
       websiteMockProjectDetailsUrl(id) +
       "&deployReceipt=" +
@@ -63,10 +121,11 @@ export function DeployDialog() {
           {!failed ? (
             <button
               type="button"
-              onClick={openMyTawala}
+              onClick={() => void openMyTawala()}
+              disabled={busy}
               title="Add/update this project in mock My Tawala and open Project Details"
             >
-              Show in My Tawala
+              {busy ? "Saving snapshot…" : "Show in My Tawala"}
             </button>
           ) : null}
           <button type="button" onClick={close}>
@@ -122,8 +181,9 @@ export function DeployDialog() {
             </label>
             <p className="hint">
               <strong>Show in My Tawala</strong> opens Project Details on :5500, mints the next
-              version number on the mock overlay, and records the note above. Listing stays flat —
-              history is under Project Details → Versions. Mock must be running:{" "}
+              version number on the mock overlay, saves a definition snapshot (for later{" "}
+              <strong>Deploy this version</strong>), and records the note above. Listing stays
+              flat — history is under Project Details → Versions. Mock must be running:{" "}
               <code>cd website-mock && ./serve.sh</code>. Listing:{" "}
               <a href={LOCAL_WEBSITE_MOCK_MYTAWALA_URL} target="_blank" rel="noreferrer">
                 My Tawala

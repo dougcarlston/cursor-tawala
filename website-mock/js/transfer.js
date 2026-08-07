@@ -20,9 +20,11 @@
  *     Deploy overlay rows may carry:
  *       versionNumber — monotonic int (latest Deploy)
  *       versionDescription — optional note from Designer Deploy dialog
- *       versions — [{ versionNumber, description, at, uniqueId, mode, startPoints, deployed }]
+ *       versions — [{ versionNumber, description, at, uniqueId, mode, startPoints, deployed,
+ *         snapshotId?, definition?, hasDefinition? }]
  *       history is Details-only (listing stays flat; see README Sequencing / hold)
  *       description is the only mutable field on an existing version (updateVersionDescription)
+ *       Deploy-this-version needs snapshotId and/or definition (saved from Show in My Tawala)
  *   tawala.mock.myTawalaDeleted — { [projectId]: true } account-private My Tawala removals
  *     (does not touch public Library / TAWALA_LIBRARY / liveReady)
  *   tawala.mock.libraryOverlay — { [libraryId]: catalog-shaped entry } merged into the public
@@ -452,6 +454,12 @@
       receipt.versionNumber != null && Number(receipt.versionNumber) > maxNum
         ? Number(receipt.versionNumber)
         : maxNum + 1;
+    const snapshotId =
+      receipt.snapshotId != null && String(receipt.snapshotId).trim()
+        ? String(receipt.snapshotId).trim()
+        : null;
+    const definition =
+      receipt.definition && typeof receipt.definition === "object" ? receipt.definition : null;
     const versionEntry = {
       versionNumber,
       description: versionDescription,
@@ -460,6 +468,9 @@
       mode: receipt.mode || (prev && prev.mode) || null,
       startPoints: startPoints.length ? startPoints : (prev && prev.startPoints) || [],
       deployed: true,
+      snapshotId,
+      definition,
+      hasDefinition: !!(definition || snapshotId),
     };
     const versions = prevVersions
       .map((v) => (v && typeof v === "object" ? { ...v, deployed: false } : v))
@@ -573,6 +584,151 @@
     overlay[projectId] = { ...prev, ...patch };
     if (!writeJson(PILE_KEY, overlay)) return { ok: false, error: "write-failed" };
     return { ok: true, projectId, versionNumber: num, description: desc };
+  }
+
+  /** True when a versions[] row can be redeployed (cached definition and/or :3001 snapshotId). */
+  function versionHasRedeployableDefinition(version) {
+    if (!version || typeof version !== "object") return false;
+    if (version.definition && typeof version.definition === "object" && version.definition.name) {
+      return true;
+    }
+    if (version.snapshotId && String(version.snapshotId).trim()) return true;
+    return version.hasDefinition === true;
+  }
+
+  /**
+   * Attach / cache a definition body (and optional snapshotId) on an existing version row.
+   * Used after Show in My Tawala hydrates from :3001, or when a receipt carries definition inline.
+   */
+  function attachVersionDefinition(projectId, versionNumber, definition, snapshotId) {
+    if (!projectId) return { ok: false, error: "missing-project" };
+    const num = Number(versionNumber);
+    if (!Number.isFinite(num) || num < 1) return { ok: false, error: "invalid-version" };
+    if (!definition || typeof definition !== "object" || !definition.name) {
+      return { ok: false, error: "invalid-definition" };
+    }
+    const overlay = getMyTawalaOverlay();
+    const prev = overlay[projectId] || null;
+    if (!prev) return { ok: false, error: "no-overlay" };
+    let versions = Array.isArray(prev.versions)
+      ? prev.versions.map((v) => (v && typeof v === "object" ? { ...v } : v))
+      : [];
+    const idx = versions.findIndex((v) => v && Number(v.versionNumber) === num);
+    if (idx < 0) return { ok: false, error: "version-not-found" };
+    const existing = versions[idx];
+    const snap =
+      snapshotId != null && String(snapshotId).trim()
+        ? String(snapshotId).trim()
+        : existing.snapshotId || null;
+    const withDef = {
+      ...existing,
+      versionNumber: Number(existing.versionNumber),
+      snapshotId: snap,
+      definition,
+      hasDefinition: true,
+    };
+    versions[idx] = withDef;
+    const tryWrite = (rows) => {
+      overlay[projectId] = { ...prev, versions: rows };
+      return writeJson(PILE_KEY, overlay);
+    };
+    if (!tryWrite(versions)) {
+      // Quotas: keep snapshotId only so Deploy-this-version can still fetch from :3001.
+      versions[idx] = {
+        ...existing,
+        versionNumber: Number(existing.versionNumber),
+        snapshotId: snap,
+        definition: null,
+        hasDefinition: !!snap,
+      };
+      if (!tryWrite(versions)) return { ok: false, error: "write-failed" };
+      return { ok: true, projectId, versionNumber: num, cached: false, snapshotId: snap };
+    }
+    return { ok: true, projectId, versionNumber: num, cached: true, snapshotId: snap };
+  }
+
+  /**
+   * After a successful Deploy-this-version: mark that row current/deployed (no new version mint).
+   * Updates start points / uniqueId from the deploy API result.
+   */
+  function markVersionCurrentAndDeployed(projectId, versionNumber, deployResult) {
+    if (!projectId) return { ok: false, error: "missing-project" };
+    const num = Number(versionNumber);
+    if (!Number.isFinite(num) || num < 1) return { ok: false, error: "invalid-version" };
+    const overlay = getMyTawalaOverlay();
+    const prev = overlay[projectId] || null;
+    if (!prev) return { ok: false, error: "no-overlay" };
+
+    let versions = Array.isArray(prev.versions)
+      ? prev.versions.map((v) => (v && typeof v === "object" ? { ...v } : v))
+      : [];
+    const idx = versions.findIndex((v) => v && Number(v.versionNumber) === num);
+    if (idx < 0) return { ok: false, error: "version-not-found" };
+
+    const startPoints = (
+      Array.isArray(deployResult && deployResult.startpoints)
+        ? deployResult.startpoints
+        : Array.isArray(deployResult && deployResult.startPoints)
+          ? deployResult.startPoints
+          : versions[idx].startPoints || prev.startPoints || []
+    ).map((sp) => ({
+      label: sp.form || sp.label || "Start",
+      url: sp.url || null,
+    }));
+    let primaryUrl = null;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.primaryStartUrl === "function"
+    ) {
+      primaryUrl = window.TawalaDemo.primaryStartUrl(startPoints, null);
+    }
+    const firstUrl =
+      primaryUrl || (startPoints.find((s) => s && s.url) || {}).url || null;
+    const uniqueId =
+      (deployResult && deployResult.uniqueId) ||
+      versions[idx].uniqueId ||
+      prev.uniqueId ||
+      null;
+    const mode = (deployResult && deployResult.mode) || versions[idx].mode || prev.mode || null;
+    const nowIso = timestampNow();
+
+    versions = versions.map((v) =>
+      v && typeof v === "object" ? { ...v, deployed: Number(v.versionNumber) === num } : v
+    );
+    versions[idx] = {
+      ...versions[idx],
+      versionNumber: num,
+      deployed: true,
+      uniqueId,
+      mode,
+      startPoints: startPoints.length ? startPoints : versions[idx].startPoints || [],
+      at: versions[idx].at || nowIso,
+    };
+
+    overlay[projectId] = {
+      ...prev,
+      versions,
+      versionNumber: num,
+      versionDescription: String(versions[idx].description || "").trim(),
+      uniqueId,
+      mode,
+      startPoints: startPoints.length ? startPoints : prev.startPoints || [],
+      testDriveUrl: firstUrl || prev.testDriveUrl || null,
+      deployed: !!firstUrl || !!prev.deployed,
+      lastDeployAt: nowIso,
+      updated: formatListDate(nowIso),
+      updatedAt: nowIso,
+    };
+    if (!writeJson(PILE_KEY, overlay)) return { ok: false, error: "write-failed" };
+    return {
+      ok: true,
+      projectId,
+      versionNumber: num,
+      uniqueId,
+      startPoints: overlay[projectId].startPoints,
+      testDriveUrl: overlay[projectId].testDriveUrl,
+    };
   }
 
   function removeMyTawalaOverlay(projectId) {
@@ -1182,6 +1338,7 @@
             : receipt.description != null
               ? String(receipt.description)
               : "",
+        snapshotId: receipt.snapshotId || null,
       })
     );
     return (
@@ -1208,6 +1365,7 @@
             : receipt.description != null
               ? String(receipt.description)
               : "",
+        snapshotId: receipt.snapshotId || null,
       })
     );
     return "http://localhost:5500/mytawala.html?deployReceipt=" + payload;
@@ -1247,6 +1405,9 @@
     upsertMyTawalaFromDeploy,
     upsertMyTawalaProperties,
     updateVersionDescription,
+    versionHasRedeployableDefinition,
+    attachVersionDefinition,
+    markVersionCurrentAndDeployed,
     removeMyTawalaOverlay,
     clearMyTawalaOverlay,
     withMyTawalaOverlay,

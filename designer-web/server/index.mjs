@@ -25,6 +25,7 @@ import {
   exportProjectResponsesByUniqueId,
   importProjectResponsesByUniqueId,
 } from "./projectResponses.mjs";
+import { getVersionSnapshot, saveVersionSnapshot } from "./versionSnapshots.mjs";
 
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
 let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
@@ -73,6 +74,20 @@ const xmlParser = new XMLParser({
 function checkAuth(user, password) {
   if (process.env.TAWALA_DEV_AUTH === "any") return true;
   return DEV_USERS[user] === password;
+}
+
+/** CORS for website-mock (:5500) calling purge / deploy / snapshots from the browser. */
+function allowMockCors(req, res) {
+  const origin = req.headers.origin || "";
+  if (
+    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin) ||
+    origin === "null"
+  ) {
+    res.setHeader("Access-Control-Allow-Origin", origin === "null" ? "*" : origin);
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+    res.setHeader("Vary", "Origin");
+  }
 }
 
 function deploymentXml(userId, projects, baseUrl) {
@@ -175,8 +190,14 @@ function failureXml(id, message) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="failure">\n  <error id="${id}" message="${message}"/>\n</response>\n`;
 }
 
-/** JSON deploy from web Designer */
+app.options("/api/deploy", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/** JSON deploy from web Designer (also My Tawala Deploy-this-version via CORS). */
 app.post("/api/deploy", async (req, res) => {
+  allowMockCors(req, res);
   const { credentials, project } = req.body ?? {};
   if (!credentials?.user || !credentials?.password) {
     res.status(400).json({ status: "failure", error: "credentials required" });
@@ -374,20 +395,6 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
-/** CORS for website-mock (:5500) calling purge / health from the browser. */
-function allowMockCors(req, res) {
-  const origin = req.headers.origin || "";
-  if (
-    /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(origin) ||
-    origin === "null"
-  ) {
-    res.setHeader("Access-Control-Allow-Origin", origin === "null" ? "*" : origin);
-    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-    res.setHeader("Vary", "Origin");
-  }
-}
-
 app.options("/api/purge-responses", (req, res) => {
   allowMockCors(req, res);
   res.status(204).end();
@@ -499,6 +506,47 @@ app.post("/api/import-responses", async (req, res) => {
     console.error(e);
     res.status(500).json({ status: "failure", uniqueId, error: String(e.message ?? e) });
   }
+});
+
+app.options("/api/version-snapshots", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+app.options("/api/version-snapshots/:snapshotId", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/**
+ * Store a Designer project JSON for My Tawala Deploy-this-version.
+ * Called from Designer Show in My Tawala (receipt URL cannot carry the full definition).
+ */
+app.post("/api/version-snapshots", (req, res) => {
+  allowMockCors(req, res);
+  const body = req.body ?? {};
+  try {
+    const saved = saveVersionSnapshot({
+      project: body.project,
+      uniqueId: body.uniqueId || null,
+      projectId: body.projectId || null,
+      versionDescription: body.versionDescription || "",
+      at: body.at || null,
+    });
+    res.json({ status: "success", ...saved });
+  } catch (e) {
+    res.status(400).json({ status: "failure", error: String(e.message ?? e) });
+  }
+});
+
+app.get("/api/version-snapshots/:snapshotId", (req, res) => {
+  allowMockCors(req, res);
+  const record = getVersionSnapshot(req.params.snapshotId);
+  if (!record) {
+    res.status(404).json({ status: "failure", error: "snapshot not found" });
+    return;
+  }
+  res.json({ status: "success", ...record });
 });
 
 /** Server-owned outbound email status (no secrets returned). */

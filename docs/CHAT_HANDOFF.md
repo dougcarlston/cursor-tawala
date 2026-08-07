@@ -333,16 +333,22 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Website — library ops (Export/Backup/Purge)`
 
-**Status (Jul 31, 2026):** Designer gate (Sign-up Sheet / Get Together template deploy) is **largely met**. Libraries are the **core of the Website** — owner affirms a **solid basis** for Library + My Tawala; next focus is **catalog / lifecycle ops** (harden Delete / Purge, **EXPORT / IMPORT**, **BACKUP / RESTORE**, Publish stub readiness, keep flat My Tawala) — **not** more look-and-feel (Home polish optional / non-blocking). Version piles stay deferred. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Status (Aug 7–8, 2026):** Catalog ops largely wired (Delete/Purge, E/I/B/R, Publish/Pull, Use split, Versions first slice + **Deploy this version**). Owner **legacy page triage** captured in `website-mock/README.md` § **Aug 7–8 legacy page triage** (stills in `legacy-reference/stills/`). **Next session:** discuss triage lists **1** (Ask to evaluate) and **4** (Unsure); then execute list **2**. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+
+### Session checkpoint — Aug 7, 2026
+
+**Done today:** Deploy this version + definition snapshots (smoke OK); Tony stills / `FROM_TONY_IMAGES_NOTES` + `legacy-reference/` HTML + comparison canvas; feature triage (Responses = project-wide submission count); versioning radio/Deploy-switch honesty resolved by wiring Deploy this version.
+
+**Next:** lists 1+4 discussion → list 2 execution chunks; hold Make a Copy; Selective Purge by form stays ask-commissioners.
 
 ### 5-line paste opener
 
 ```
 Project: Tawala (~/Projects/Tawala)
 Track: Website mock — website-mock/ (Phase 3)
-Goal: Library + My Tawala catalog ops — harden Delete/Purge + EXPORT/IMPORT + BACKUP/RESTORE (+ lifecycle); Publish stub readiness; flat My Tawala (no version piles yet). L&F deferred; Home polish optional/non-critical
-Read first: .cursor/rules/tawala-designer-parked-post-website.mdc, website-mock/README.md, docs/ROADMAP.md Phase 3
-Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless links need it; defer parked Designer items + Project Manager/Email Delivery + visual polish (except optional Home); product tenancy = 1 public Library + per-account private My Tawala (Publish bridges; mock is still single-user localStorage)
+Goal: Discuss Aug 7–8 triage lists 1+4 (Ask / Unsure), then execute list 2 (lean My Tawala + Details decision ops, Responses, Theme, Published rail, etc.). Hold Make a Copy. Read website-mock/README.md § Aug 7–8 legacy page triage first.
+Read first: website-mock/README.md § Aug 7–8 legacy page triage, .cursor/rules/tawala-designer-parked-post-website.mdc, docs/ROADMAP.md Phase 3
+Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless Deploy/snapshots need it; defer parked Designer items; tenancy = 1 public Library + per-account private My Tawala
 ```
 
 ### Work to date
