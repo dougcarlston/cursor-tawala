@@ -139,13 +139,14 @@
     {
       id: "use",
       label: "Use",
-      title: "Select a start point to run on :8080",
+      title:
+        "Select a start point to run on :8080 (needs Java runtime). Offline Purge: select project/form → Purge — not Use.",
       wired: "use-project",
     },
     {
       id: "copy-link",
       label: "Copy link",
-      title: "Select a start point to copy its :8080 link",
+      title: "Select a start point to copy its :8080 link (works offline; does not open the form)",
       wired: "copy-start-link",
     },
     {
@@ -215,7 +216,8 @@
     {
       id: "use",
       label: "Use",
-      title: "Open / run this project — or choose a start point when there are several",
+      title:
+        "Open / run on :8080 (needs Java). Multi-start → Project Details. Offline Purge uses seeded Records — not Use.",
       wired: "use-project",
       icon: "use",
       group: "info",
@@ -448,7 +450,8 @@
     "SportsDashboards (not SportsBoard).";
 
   /** One-liner for API/plumbing failures only — never dump CLI / DirtBowl / Test-drive notes into Purge alerts. */
-  const LOCAL_PURGE_HELP = "Needs designer-web API on :3001 and Docker Postgres.";
+  const LOCAL_PURGE_HELP =
+    "Needs designer-web API on :3001 and Docker Postgres (Online Exam Builder can show/purge seeded demo Records when live counts are unavailable).";
 
   /** Catalog sections — split by product surface (Library vs My Tawala / Project Manager). */
   const OPS_CATALOG_SECTIONS = [
@@ -484,8 +487,10 @@
     {
       surface: "mytawala",
       id: "submenu",
-      title: "My Tawala sub-menu",
-      where: "submenu-mytawala.jsp — shallow 3-item bar above listings",
+      title: "My Tawala sub-menu (removed from mock UI)",
+      where:
+        "submenu-mytawala.jsp archive — My Projects / My Account / Change Password bar removed from " +
+        "mytawala.html + mytawala-project.html (Aug 9); Account stays in primary chrome Welcome menu.",
       items: MYTAWALA_SUBMENU,
     },
     {
@@ -818,6 +823,75 @@
     return sp ? sp.url : null;
   }
 
+  /** True when href targets local Tomcat (:8080) — the live form runtime Use opens. */
+  function isLocalJavaRuntimeUrl(url) {
+    if (!url || url === "#") return false;
+    try {
+      const u = new URL(url, typeof location !== "undefined" ? location.href : "http://localhost/");
+      const host = (u.hostname || "").toLowerCase();
+      if (host !== "localhost" && host !== "127.0.0.1") return false;
+      const port = String(u.port || (u.protocol === "https:" ? "443" : "80"));
+      return port === "8080";
+    } catch {
+      return /(?:localhost|127\.0\.0\.1):8080/i.test(String(url));
+    }
+  }
+
+  /** Short-lived probe cache so repeated Use clicks don’t re-wait the timeout. */
+  let runtimeProbeCache = { at: 0, ok: null };
+  const RUNTIME_PROBE_TTL_MS = 4000;
+
+  /**
+   * Probe local Java/Tomcat. Uses no-cors so CORS never false-negatives when :8080 is up;
+   * connection refused / abort → unreachable. Does not prove the project token is deployed.
+   */
+  async function probeLocalJavaRuntime(timeoutMs) {
+    const now = Date.now();
+    if (runtimeProbeCache.ok !== null && now - runtimeProbeCache.at < RUNTIME_PROBE_TTL_MS) {
+      return runtimeProbeCache.ok;
+    }
+    const ms = typeof timeoutMs === "number" ? timeoutMs : 1200;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+      await fetch("http://127.0.0.1:8080/", {
+        method: "GET",
+        mode: "no-cors",
+        cache: "no-store",
+        signal: ctrl.signal,
+      });
+      runtimeProbeCache = { at: Date.now(), ok: true };
+      return true;
+    } catch {
+      runtimeProbeCache = { at: Date.now(), ok: false };
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  const USE_OFFLINE_ALERT =
+    "Use needs the Java runtime on http://localhost:8080 — it isn’t reachable right now.\n\n" +
+    "You’re still on the :5500 mock. For offline Purge review with seeded demo Records:\n" +
+    "  1. Stay on Project Details (Online Exam Builder)\n" +
+    "  2. Expand Project Data (▸)\n" +
+    "  3. Select the project row (or a form)\n" +
+    "  4. Click Purge — do not click Use\n\n" +
+    "Copy link still copies the real :8080 start URL if you need it later.";
+
+  async function openUseRuntimeUrl(url) {
+    if (!url || url === "#") return;
+    setStatus("Checking Java runtime on :8080…");
+    const up = await probeLocalJavaRuntime();
+    if (!up) {
+      setStatus("Use blocked — :8080 unreachable. For offline review: select project/form → Purge (not Use).");
+      window.alert(USE_OFFLINE_ALERT);
+      return;
+    }
+    setStatus("Opening start form on :8080…");
+    window.open(url, "_blank", "noopener");
+  }
+
   function startPointsWithUrls(project) {
     return ((project && project.startPoints) || []).filter((s) => s && s.url);
   }
@@ -856,7 +930,8 @@
     return {
       href: runtimeUrl,
       openInNewTab: true,
-      title: "Open / run this project (start link)",
+      title:
+        "Open / run this project on :8080 (needs Java runtime; offline Purge demo Records work without Use)",
       mode: "runtime",
     };
   }
@@ -1839,7 +1914,10 @@
       ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
         "<b>Start ▶</b> → Use / Copy link; <b>any form</b> → Export / Import / Purge; " +
         "<b>project</b> (or collapsed list) → Backup / Restore + project-wide data ops. Publish stays on. " +
-        "Use keeps data (Purge clears). Records need <code>:3001</code> + Docker/Postgres; else <b>—</b>.</p>"
+        "Use keeps data (Purge clears) and needs Java on <code>:8080</code> — if Tomcat is down, Use warns instead of leaving the mock. " +
+        "<b>Offline Purge:</b> select the <b>project</b> (or a form) → <b>Purge</b> — do not click Use. " +
+        "<b>Online Exam Builder</b> seeds demo Records when live counts are unavailable " +
+        "(<code>:3001</code> down, or up but Docker/Postgres unreachable). Use <b>Reseed demo Records</b> to restore after Purge.</p>"
       : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — Expand still lists starts/forms; Export / Import / Purge need Deploy → Show in My Tawala.</p>';
 
     return (
@@ -1877,6 +1955,11 @@
         }</li>`) +
       `</ul>` +
       `</div>` +
+      `<p class="pm-demo-records-tools" id="pmDemoRecordsTools" hidden>` +
+      `<span class="pm-demo-records-badge" title="Seeded demo counts (not live Postgres)">Demo data</span>` +
+      `<button type="button" class="pm-demo-reseed" data-pm-reseed-demo="1" ` +
+      `title="Restore seeded demo Records (project total 50) after Purge">Reseed demo Records</button>` +
+      `</p>` +
       hint +
       "</div>"
     );
@@ -2115,13 +2198,14 @@
             el.rel = "noopener";
             el.dataset.useMode = "runtime";
           }
-          el.title = "Use the highlighted start point on :8080";
+          el.title =
+            "Use the highlighted start point on :8080 (needs Java runtime). Offline Purge: select project/form → Purge — not Use.";
           el.classList.add("is-active");
         } else {
           const offTitle =
             sel.kind === "form"
-              ? "Use is only for start points (▶) — highlight a starting form"
-              : "Select a start point (▶) to Use";
+              ? "Use is only for start points (▶). For offline Purge, keep this form selected and click Purge — not Use."
+              : "Select a start point (▶) to Use — or keep the project selected and click Purge for offline demo Records.";
           setCtrlEnabled(el, false, offTitle);
           if (el.tagName === "A") {
             el.href = "#";
@@ -2140,7 +2224,9 @@
             ? "Copy link is only for start points (▶) — highlight a starting form"
             : "Select a start point (▶) to copy its link";
         setCtrlEnabled(el, startReady, offTitle);
-        if (startReady) el.title = "Copy the highlighted start point link";
+        if (startReady) {
+          el.title = "Copy the highlighted start point’s :8080 URL (does not open the form; fine offline)";
+        }
         return;
       }
 
@@ -2214,11 +2300,19 @@
     const treeCount =
       (scope && scope.querySelector && scope.querySelector("#pmDataProjectRecords")) ||
       document.getElementById("pmDataProjectRecords");
+    const tools =
+      (scope && scope.querySelector && scope.querySelector("#pmDemoRecordsTools")) ||
+      document.getElementById("pmDemoRecordsTools");
     const known = !!(countsState && countsState.known);
+    /* Prefer numeral 0 after Purge of demo data — em-dash only when unknown. */
     const label = known ? String(countsState.total) : "—";
     const title = known
       ? `Records (Responses): ${countsState.total}` +
-        (countsState.source ? ` · ${countsState.source}` : "")
+        (countsState.source === "mock-seed"
+          ? " · demo data (live counts unavailable)"
+          : countsState.source
+            ? ` · ${countsState.source}`
+            : "")
       : countsState && countsState.error
         ? `Records unavailable: ${countsState.error}`
         : "Records (Responses) — count unavailable (needs :3001 + Postgres/Docker, or a uniqueId)";
@@ -2230,6 +2324,36 @@
       treeCount.textContent = label;
       treeCount.title = title;
     }
+    if (tools) {
+      const showDemo = !!(known && countsState.source === "mock-seed");
+      tools.hidden = !showDemo;
+    }
+  }
+
+  /** Restore Online Exam (etc.) demo Records after Purge — no DevTools needed. */
+  async function reseedDemoRecords(tree) {
+    const projectId = tree && tree.dataset.projectId;
+    const uniqueId =
+      typeof TawalaDemo !== "undefined" && typeof TawalaDemo.resolvePurgeUniqueId === "function"
+        ? TawalaDemo.resolvePurgeUniqueId(projectId)
+        : null;
+    if (
+      !uniqueId ||
+      typeof TawalaDemo === "undefined" ||
+      typeof TawalaDemo.reseedMockResponseCounts !== "function"
+    ) {
+      window.alert("Couldn't reseed demo Records — project has no demo seed.");
+      return;
+    }
+    const result = TawalaDemo.reseedMockResponseCounts(uniqueId);
+    if (!result || result.status !== "success") {
+      window.alert(
+        `Couldn't reseed demo Records\n\n${(result && result.error) || "unknown error"}`
+      );
+      return;
+    }
+    setStatus(`Reseeded demo Records — ${result.count} row(s).`);
+    await hydrateProjectDataTree(tree.closest(".pm-section") || document);
   }
 
   /**
@@ -2320,6 +2444,14 @@
 
     /* Banner controls must not steal / reset the form highlight. */
     if (ev.target.closest(".pm-data-ctrl-group, .pm-data-banner-controls")) {
+      return;
+    }
+
+    const reseedBtn = ev.target.closest("[data-pm-reseed-demo]");
+    if (reseedBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      void reseedDemoRecords(tree);
       return;
     }
 
@@ -2543,14 +2675,21 @@
         `<button type="button" class="pm-action pm-identity-action" data-wired="deactivate-project" ` +
         `data-project="${pid}" title="Hide from public Library; keep on My Tawala with Offline marker">De-activate</button>`;
 
+    /* Version number sits on the same line as the label; description (if any) is a
+     * separate unindented line below — not “Version / hanging — — Build …” */
+    const versionLabel =
+      `Version <b class="pm-version-num">${escapeHtml(versionNum)}</b>`;
+    const versionDd = versionDesc
+      ? `<dd class="pm-version-desc">${escapeHtml(versionDesc)}</dd>`
+      : `<dd class="pm-version-desc pm-version-desc-empty"></dd>`;
+
     return (
       `<div class="pm-identity-rail" id="pmIdentityRail">` +
       `<dl class="pm-identity-grid">` +
       `<div class="pm-identity-row"><dt>Author</dt><dd>${author}</dd></div>` +
-      `<div class="pm-identity-row"><dt>Version</dt><dd>` +
-      `<b>${escapeHtml(versionNum)}</b>` +
-      (versionDesc ? ` — ${escapeHtml(versionDesc)}` : "") +
-      `</dd></div>` +
+      `<div class="pm-identity-row pm-identity-version"><dt>${versionLabel}</dt>` +
+      versionDd +
+      `</div>` +
       `<div class="pm-identity-row"><dt>Published</dt><dd>${publishedHtml}</dd></div>` +
       `<div class="pm-identity-row"><dt>Status</dt><dd class="pm-identity-status">${statusHtml}</dd></div>` +
       `<div class="pm-identity-row"><dt>Theme / Appearance</dt><dd>` +
@@ -2705,7 +2844,6 @@
       `<p class="pm-detail-records">Records: <b id="pmRecordsTotal" title="Project-wide submission count">—</b>` +
       ` <span class="deploy-hint-quiet">(Responses · all forms)</span></p>` +
       "</div>" +
-      '<h3 class="sectionHeading">Project Actions</h3>' +
       renderProjectActionsBar(project.id) +
       renderCollapsibleSection("pmSecData", "Project Data", projectDataSection, true) +
       renderCollapsibleSection("pmSecVersions", "Versions", versionOps, versionsOpen) +
@@ -2784,6 +2922,32 @@
     const c = CONFIRMS[confirmId];
     if (!c) return Promise.resolve(true);
     return Promise.resolve(window.confirm(`${c.title}\n\n${c.body}`));
+  }
+
+  /**
+   * Destructive Purge confirm — clear project-vs-form scope (Aug 9 selection model).
+   * Clears response/submission data only; never the project definition.
+   */
+  function showPurgeConfirm({ displayName, formName }) {
+    const project = displayName || "this project";
+    if (formName) {
+      return Promise.resolve(
+        window.confirm(
+          `Purge Form Data\n\n` +
+            `Permanently delete all response/submission data for form “${formName}” in “${project}”?\n\n` +
+            `Other forms are left alone. The project definition is not changed.\n\n` +
+            `Use keeps data — only Purge clears it.`
+        )
+      );
+    }
+    return Promise.resolve(
+      window.confirm(
+        `Purge Project Data\n\n` +
+          `Permanently delete ALL response/submission data for “${project}”?\n\n` +
+          `The project stays on My Tawala; only Records/responses are cleared (not Delete, not De-activate).\n\n` +
+          `Use keeps data — only Purge clears it.`
+      )
+    );
   }
 
   function setStatus(msg) {
@@ -3226,10 +3390,24 @@
 
     if (wired === "false" || !wired) return;
 
-    /* Use = native <a> to :8080 when a start point is highlighted on Project Data. */
+    /*
+     * Use: multi-start → Project Details (same mock host); single-start / banner start
+     * → :8080. Probe Tomcat first so a dead :8080 never silently dumps the owner off :5500.
+     * preventDefault must run before any await (popup / navigation race).
+     */
     if (wired === "use-project") {
       if (btn.classList.contains("is-scope-disabled") || btn.getAttribute("aria-disabled") === "true") {
         ev.preventDefault();
+        return;
+      }
+      const href = btn.tagName === "A" ? btn.getAttribute("href") || "" : "";
+      const mode = btn.dataset.useMode || "";
+      if (mode === "details" || (href && !isLocalJavaRuntimeUrl(href))) {
+        return;
+      }
+      if (href && isLocalJavaRuntimeUrl(href)) {
+        ev.preventDefault();
+        void openUseRuntimeUrl(href);
       }
       return;
     }
@@ -3344,6 +3522,17 @@
     if (wired === "purge-local") {
       const formName =
         btn.dataset.dataScope === "form" && btn.dataset.formName ? btn.dataset.formName : "";
+      const project =
+        typeof TawalaDemo !== "undefined" && projectId && TawalaDemo.getMyTawala
+          ? TawalaDemo.getMyTawala(projectId)
+          : typeof TawalaDemo !== "undefined" && projectId && TawalaDemo.get
+            ? TawalaDemo.get(projectId)
+            : null;
+      const displayName =
+        project && typeof TawalaDemo !== "undefined" && TawalaDemo.displayName
+          ? TawalaDemo.displayName(project.name || projectId)
+          : projectId || "project";
+
       /* Form-scoped Purge = export → drop form → replace (data-ops). Whole-project uses API purge. */
       if (formName) {
         if (typeof TawalaDataOps === "undefined" || typeof TawalaDataOps.handleFormPurgeClick !== "function") {
@@ -3351,12 +3540,14 @@
           window.alert("Couldn't purge form\n\nData ops support script didn't load. Refresh and try again.");
           return;
         }
+        const okForm = await showPurgeConfirm({ displayName, formName });
+        if (!okForm) return;
         if (btn.dataset.busy === "1") return;
         btn.dataset.busy = "1";
         const prevDisabled = btn.disabled;
         btn.disabled = true;
         try {
-          await TawalaDataOps.handleFormPurgeClick(projectId, formName);
+          await TawalaDataOps.handleFormPurgeClick(projectId, formName, { confirmed: true });
         } finally {
           btn.dataset.busy = "";
           btn.disabled = prevDisabled;
@@ -3364,10 +3555,8 @@
         return;
       }
 
-      if (confirmId) {
-        const ok = await showConfirm(confirmId);
-        if (!ok) return;
-      }
+      const okProject = await showPurgeConfirm({ displayName });
+      if (!okProject) return;
 
       /* Purge = clear :8080 submission data only — not Delete (row remove). */
       if (typeof TawalaDemo === "undefined" || !TawalaDemo.purgeResponses) {
@@ -3375,14 +3564,6 @@
         window.alert(`Couldn't purge\n\nPurge support isn’t loaded. Refresh the page and try again.`);
         return;
       }
-      const project =
-        (projectId && TawalaDemo.getMyTawala && TawalaDemo.getMyTawala(projectId)) ||
-        (projectId && TawalaDemo.get && TawalaDemo.get(projectId)) ||
-        null;
-      const displayName =
-        project && TawalaDemo.displayName
-          ? TawalaDemo.displayName(project.name || projectId)
-          : projectId || "project";
       const uniqueId =
         typeof TawalaDemo.resolvePurgeUniqueId === "function"
           ? TawalaDemo.resolvePurgeUniqueId(projectId)
@@ -3407,9 +3588,12 @@
         if (result.status === "success") {
           const n =
             result.javaDb && result.javaDb.deleted != null ? result.javaDb.deleted : "?";
-          const warn = result.warning ? ` (${result.warning})` : "";
+          const warn = result.warning ? `\n\n${result.warning}` : "";
           const msg = `Purged “${displayName}” — deleted ${n} submission row(s).${warn}`;
-          setStatus(msg);
+          setStatus(
+            `Purged “${displayName}” — deleted ${n} submission row(s).` +
+              (result.source === "mock-seed" ? " (demo Records)" : "")
+          );
           window.alert(msg);
           document.dispatchEvent(
             new CustomEvent("tawala:project-purged", {

@@ -784,13 +784,24 @@ window.TAWALA_MYTAWALA = {
     "comments": 0,
     "updated": "8/4/26",
     "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
-    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Seeded into My Tawala for lean-list + Project Data UI review (same :8080 deploy as Library).",
+    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Seeded into My Tawala for lean-list + Project Data UI review (same :8080 deploy as Library). Demo Records (below) let Purge be reviewed offline when :3001/Postgres is down — not live Use submissions.",
     "jsonFile": "projects/mytawala/Online Exam Builder.json",
     "themePath": "default",
     "sourcePile": "mytawala",
     "liveReady": true,
     "deployed": true,
     "uniqueId": "u3hkqgwtrepjlur",
+    /* First-paint listing total; live hydrate / mock store may replace. Sum of recordsByForm. */
+    "recordCount": 50,
+    "recordsByForm": {
+      "Exam": 12,
+      "Answer": 15,
+      "Question": 8,
+      "ShowExamineeDetail": 6,
+      "Scoring": 4,
+      "Administration": 3,
+      "Setup": 2
+    },
     "formNames": [
       "SetupVariables",
       "Question",
@@ -956,6 +967,29 @@ window.TAWALA_MYTAWALA = {
 window.TAWALA_DEMO_URLS = window.TAWALA_LIBRARY;
 
 /** Helpers shared by library / home / My Tawala / detail pages. */
+/**
+ * Offline demo Records for Purge review when live counts are unavailable (owner cannot
+ * Use forms to mint real submissions). Keyed by uniqueId. First read seeds into
+ * localStorage `tawala.mock.responseCounts`; Purge clears that entry (does not re-seed
+ * until Reseed / localStorage key removed). Never overrides a successful :3001 export
+ * (including real count 0). Falls back when :3001 is down *or* answers but cannot reach
+ * Postgres/Docker (typical: health 200 + export 502 “Docker daemon”).
+ */
+window.TAWALA_DEMO_RESPONSE_SEEDS = {
+  u3hkqgwtrepjlur: {
+    projectId: "online-exam-builder",
+    byForm: {
+      Exam: 12,
+      Answer: 15,
+      Question: 8,
+      ShowExamineeDetail: 6,
+      Scoring: 4,
+      Administration: 3,
+      Setup: 2,
+    },
+  },
+};
+
 window.TawalaDemo = {
   /** Listing title — never show file extensions (.json / .tawala). On-disk format may still be JSON. */
   displayName(name) {
@@ -1163,9 +1197,281 @@ window.TawalaDemo = {
   purgeApiBase() {
     return (typeof window !== "undefined" && window.TAWALA_DEV_API) || "http://localhost:3001";
   },
+
+  _mockResponseCountsKey: "tawala.mock.responseCounts",
+
+  hasDemoResponseSeed(uniqueId) {
+    return !!(
+      this.isValidUniqueId(uniqueId) &&
+      window.TAWALA_DEMO_RESPONSE_SEEDS &&
+      window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId]
+    );
+  },
+
+  _readMockResponseStore() {
+    try {
+      const raw = localStorage.getItem(this._mockResponseCountsKey);
+      if (!raw) return {};
+      const parsed = JSON.parse(raw);
+      return parsed && typeof parsed === "object" ? parsed : {};
+    } catch {
+      return {};
+    }
+  },
+
+  _writeMockResponseStore(store) {
+    try {
+      localStorage.setItem(this._mockResponseCountsKey, JSON.stringify(store || {}));
+    } catch {
+      /* ignore quota / private mode */
+    }
+  },
+
+  _sumByForm(byForm) {
+    let n = 0;
+    Object.keys(byForm || {}).forEach((k) => {
+      const v = Number(byForm[k]);
+      if (!Number.isNaN(v) && v >= 0) n += v;
+    });
+    return n;
+  },
+
+  _mockCountSuccess(uniqueId, mock, liveError) {
+    if (!mock) return null;
+    const out = {
+      status: "success",
+      uniqueId,
+      count: mock.count,
+      byForm: mock.byForm,
+      source: "mock-seed",
+      purged: !!mock.purged,
+    };
+    if (liveError) out.liveError = String(liveError);
+    return out;
+  },
+
+  /**
+   * Ensure demo uniqueId has a localStorage entry (seed once). After Purge the entry
+   * stays with empty byForm so reload does not resurrect demo counts.
+   */
+  ensureMockResponseCounts(uniqueId) {
+    if (!this.isValidUniqueId(uniqueId)) return null;
+    const seeds = window.TAWALA_DEMO_RESPONSE_SEEDS || {};
+    const seed = seeds[uniqueId];
+    if (!seed) return null;
+    const store = this._readMockResponseStore();
+    if (store[uniqueId]) {
+      const byForm = store[uniqueId].byForm && typeof store[uniqueId].byForm === "object"
+        ? store[uniqueId].byForm
+        : {};
+      return {
+        uniqueId,
+        byForm,
+        count: this._sumByForm(byForm),
+        source: "mock-seed",
+        purged: !!store[uniqueId].purged,
+      };
+    }
+    const byForm = { ...(seed.byForm || {}) };
+    store[uniqueId] = {
+      projectId: seed.projectId || null,
+      byForm,
+      seededAt: new Date().toISOString(),
+    };
+    this._writeMockResponseStore(store);
+    return {
+      uniqueId,
+      byForm,
+      count: this._sumByForm(byForm),
+      source: "mock-seed",
+      purged: false,
+    };
+  },
+
+  /**
+   * Force-restore catalog demo byForm counts (owner Reseed control / DevTools-free).
+   * Only for uniqueIds in TAWALA_DEMO_RESPONSE_SEEDS.
+   */
+  reseedMockResponseCounts(uniqueId) {
+    if (!this.hasDemoResponseSeed(uniqueId)) {
+      return { status: "failure", uniqueId, error: "No demo Records seed for this project" };
+    }
+    const seed = window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId];
+    const store = this._readMockResponseStore();
+    const byForm = { ...(seed.byForm || {}) };
+    store[uniqueId] = {
+      projectId: seed.projectId || null,
+      byForm,
+      seededAt: new Date().toISOString(),
+      reseededAt: new Date().toISOString(),
+    };
+    this._writeMockResponseStore(store);
+    return {
+      status: "success",
+      uniqueId,
+      byForm,
+      count: this._sumByForm(byForm),
+      source: "mock-seed",
+      purged: false,
+    };
+  },
+
+  /** Clear mock counts for uniqueId (project-wide offline Purge). */
+  clearMockResponseCounts(uniqueId) {
+    if (!this.isValidUniqueId(uniqueId)) {
+      return { status: "failure", uniqueId, error: "uniqueId required" };
+    }
+    const before = this.ensureMockResponseCounts(uniqueId);
+    const deleted = before ? before.count : 0;
+    const store = this._readMockResponseStore();
+    store[uniqueId] = {
+      projectId: (before && window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId]
+        ? window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId].projectId
+        : null) || (store[uniqueId] && store[uniqueId].projectId) || null,
+      byForm: {},
+      purged: true,
+      purgedAt: new Date().toISOString(),
+    };
+    this._writeMockResponseStore(store);
+    return {
+      status: "success",
+      uniqueId,
+      source: "mock-seed",
+      javaDb: { deleted },
+      warning:
+        "Mock offline purge — :3001 unreachable; cleared seeded demo Records only (not live Postgres).",
+    };
+  },
+
+  /**
+   * Form-scoped offline Purge against seeded demo counts.
+   * @returns {{status:"success"|"failure", uniqueId?:string, removed?:number, remaining?:number, error?:string, warning?:string, source?:string}}
+   */
+  purgeMockFormResponses(uniqueId, formName) {
+    const name = String(formName || "");
+    if (!this.isValidUniqueId(uniqueId) || !name) {
+      return { status: "failure", error: "uniqueId and formName required" };
+    }
+    const cur = this.ensureMockResponseCounts(uniqueId);
+    if (!cur) {
+      return {
+        status: "failure",
+        uniqueId,
+        error: "No offline demo Records for this project (only Online Exam Builder is seeded).",
+      };
+    }
+    const byForm = { ...(cur.byForm || {}) };
+    const removed = Number(byForm[name]) || 0;
+    delete byForm[name];
+    const remaining = this._sumByForm(byForm);
+    const store = this._readMockResponseStore();
+    store[uniqueId] = {
+      projectId: (store[uniqueId] && store[uniqueId].projectId) ||
+        (window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId] &&
+          window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId].projectId) ||
+        null,
+      byForm,
+      purged: remaining === 0,
+      purgedAt: remaining === 0 ? new Date().toISOString() : undefined,
+    };
+    this._writeMockResponseStore(store);
+    return {
+      status: "success",
+      uniqueId,
+      formName: name,
+      removed,
+      remaining,
+      inserted: remaining,
+      source: "mock-seed",
+      warning:
+        "Mock offline purge — :3001 unreachable; cleared seeded demo Records for this form only.",
+    };
+  },
+
+  _isApiUnreachableError(err) {
+    const msg = String((err && err.message) || err || "");
+    return (
+      /failed to fetch/i.test(msg) ||
+      /networkerror/i.test(msg) ||
+      /load failed/i.test(msg) ||
+      /is designer-web API on :3001/i.test(msg)
+    );
+  },
+
+  /**
+   * Project (+ per-form) Records counts. Prefers a successful :3001 export (live wins,
+   * including real 0). When :3001 is down *or* returns failure (e.g. Docker daemon
+   * unavailable while health is still 200), fall back to seeded mock for
+   * TAWALA_DEMO_RESPONSE_SEEDS uniqueIds — otherwise honest failure ("—").
+   */
+  async countResponses(uniqueId) {
+    if (!uniqueId) return { status: "failure", error: "uniqueId required" };
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/export-responses";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uniqueId,
+          credentials: { user: "dev", password: "dev" },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (res.ok && data.status === "success") {
+        const byForm = {};
+        (data.forms || []).forEach((f) => {
+          if (f && f.form) byForm[f.form] = (f.rows && f.rows.length) || 0;
+        });
+        return {
+          status: "success",
+          uniqueId,
+          count: typeof data.count === "number" ? data.count : this._sumByForm(byForm),
+          byForm,
+          source: data.source || "api",
+        };
+      }
+      /* API answered but could not produce counts — mock only for seeded demos. */
+      const liveErr = data.error || `HTTP ${res.status}`;
+      const mockOk = this._mockCountSuccess(
+        uniqueId,
+        this.ensureMockResponseCounts(uniqueId),
+        liveErr
+      );
+      if (mockOk) return mockOk;
+      return {
+        status: "failure",
+        uniqueId,
+        error: liveErr,
+      };
+    } catch (e) {
+      const mockOk = this._mockCountSuccess(
+        uniqueId,
+        this.ensureMockResponseCounts(uniqueId),
+        e && e.message
+      );
+      if (mockOk) return mockOk;
+      if (!this._isApiUnreachableError(e)) {
+        return {
+          status: "failure",
+          uniqueId,
+          error: String(e.message || e),
+        };
+      }
+      return {
+        status: "failure",
+        uniqueId,
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+
   /**
    * Purge Postgres submissions (+ Node session if present) for a uniqueId.
-   * Requires designer-web API + Docker Postgres for :8080 projects.
+   * When :3001 is unreachable *or* returns an error (Docker down, etc.) and this
+   * uniqueId has demo seed Records, clears the mock store instead (honest warning).
+   * Live API success also clears any mock copy.
    */
   async purgeResponses(uniqueId) {
     if (!uniqueId) {
@@ -1182,7 +1488,10 @@ window.TawalaDemo = {
         }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
+      if (!res.ok || data.status === "failure") {
+        if (this.hasDemoResponseSeed(uniqueId)) {
+          return this.clearMockResponseCounts(uniqueId);
+        }
         return {
           status: "failure",
           uniqueId,
@@ -1190,8 +1499,23 @@ window.TawalaDemo = {
           ...data,
         };
       }
+      /* Keep mock store in sync after a real purge so offline reload stays at 0. */
+      if (this.hasDemoResponseSeed(uniqueId)) {
+        const store = this._readMockResponseStore();
+        const seed = window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId];
+        store[uniqueId] = {
+          projectId: (store[uniqueId] && store[uniqueId].projectId) || seed.projectId || null,
+          byForm: {},
+          purged: true,
+          purgedAt: new Date().toISOString(),
+        };
+        this._writeMockResponseStore(store);
+      }
       return data;
     } catch (e) {
+      if (this.hasDemoResponseSeed(uniqueId)) {
+        return this.clearMockResponseCounts(uniqueId);
+      }
       return {
         status: "failure",
         uniqueId,

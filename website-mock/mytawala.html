@@ -6,11 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-chrome1" />
-  <script src="js/demo-urls.js?v=20260809-theme-left3"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-demorec1" />
+  <script src="js/demo-urls.js?v=20260809-demorec1"></script>
   <script src="js/transfer.js?v=20260809-ident2"></script>
-  <script src="js/project-ops.js?v=20260809-chrome1"></script>
-  <script src="js/data-ops.js?v=20260809-datatree"></script>
+  <script src="js/project-ops.js?v=20260809-demorec1"></script>
+  <script src="js/data-ops.js?v=20260809-demorec1"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -56,7 +56,6 @@
           <span class="listing-pile">MyTawala pile — Get from Library… always available; select a linked row to Refresh; select any row to Delete; double-click for Details. Click a heading to sort; drag header edges to resize.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
-        <div id="pmSubmenuHost"></div>
         <div id="deployInboxHost" class="deploy-inbox" hidden></div>
 
         <div id="projectManager" class="section">
@@ -420,9 +419,6 @@
       const ingested = TawalaTransfer.ingestDeployReceiptFromUrl(location.search);
       if (ingested) refreshProjects();
     }
-
-    document.getElementById("pmSubmenuHost").innerHTML =
-      TawalaProjectOps.renderSubmenu("My Projects");
 
     document.getElementById("myProjectsListingBarHost").innerHTML =
       TawalaProjectOps.renderListingSelectionBar();

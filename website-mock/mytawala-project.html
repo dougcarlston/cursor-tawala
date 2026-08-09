@@ -6,11 +6,11 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-pdata-align1" />
-  <script src="js/demo-urls.js?v=20260809-theme-left3"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-demorec1" />
+  <script src="js/demo-urls.js?v=20260809-demorec1"></script>
   <script src="js/transfer.js?v=20260809-ident2"></script>
-  <script src="js/project-ops.js?v=20260809-pdata-align1"></script>
-  <script src="js/data-ops.js?v=20260809-datatree"></script>
+  <script src="js/project-ops.js?v=20260809-demorec1"></script>
+  <script src="js/data-ops.js?v=20260809-demorec1"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -19,7 +19,6 @@
 
     <div id="bd" class="pm-detail-bd">
       <div class="content pm-detail-content">
-        <div id="pmSubmenuHost"></div>
         <div id="pmDetailHost"></div>
       </div>
     </div>
@@ -31,9 +30,6 @@
   <script>
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
-
-    document.getElementById("pmSubmenuHost").innerHTML =
-      TawalaProjectOps.renderSubmenu("My Projects");
 
     let ingested = null;
     if (typeof TawalaTransfer !== "undefined") {
@@ -92,6 +88,17 @@
     document.addEventListener("tawala:project-active-changed", () => {
       if (id) renderProject(id);
     });
+
+    /* After Purge / Import / Restore — refresh Records totals + per-form counts in Project Data. */
+    function refreshProjectDataCounts() {
+      const host = document.getElementById("pmDetailHost");
+      if (host && typeof TawalaProjectOps.hydrateProjectDataTree === "function") {
+        void TawalaProjectOps.hydrateProjectDataTree(host);
+      }
+    }
+    document.addEventListener("tawala:project-purged", refreshProjectDataCounts);
+    document.addEventListener("tawala:project-imported", refreshProjectDataCounts);
+    document.addEventListener("tawala:project-restored", refreshProjectDataCounts);
 
     /* Hydrate definition body from :3001 snapshot so Deploy-this-version works offline of a re-fetch later. */
     (async function hydrateSnapshot() {

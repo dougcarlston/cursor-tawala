@@ -390,8 +390,9 @@
   /**
    * Form-scoped Purge: export all → drop the form → replace-write the rest.
    * Whole-project Purge still uses TawalaDemo.purgeResponses (faster DB delete).
+   * @param {{ confirmed?: boolean }} [opts] — pass confirmed:true when the caller already showed the Purge confirm.
    */
-  async function handleFormPurgeClick(projectId, formName) {
+  async function handleFormPurgeClick(projectId, formName, opts) {
     const name = String(formName || "");
     if (!name) return;
     if (!requireDataApi()) return;
@@ -408,17 +409,42 @@
       window.alert(`Couldn't purge form “${name}”\n\n${msg}`);
       return;
     }
-    const c = TawalaProjectOps.CONFIRMS.erase;
-    if (
-      !window.confirm(
-        `${c.title}\n\n${c.body}\n\nForm: “${name}” in “${displayName}”. Other forms are left alone.`
-      )
-    ) {
-      return;
+    if (!(opts && opts.confirmed)) {
+      const ok = window.confirm(
+        `Purge Form Data\n\n` +
+          `Permanently delete all response/submission data for form “${name}” in “${displayName}”?\n\n` +
+          `Other forms are left alone. The project definition is not changed.`
+      );
+      if (!ok) return;
     }
     setStatus(`Purging form “${name}” in “${displayName}”…`);
     const current = await TawalaDemo.exportResponses(uniqueId);
     if (current.status !== "success") {
+      /*
+       * Live export failed (:3001 down, or up but Docker/Postgres unreachable).
+       * Clear seeded demo form counts when this uniqueId has a catalog seed.
+       */
+      const canMock =
+        typeof TawalaDemo.hasDemoResponseSeed === "function"
+          ? TawalaDemo.hasDemoResponseSeed(uniqueId)
+          : !!(window.TAWALA_DEMO_RESPONSE_SEEDS && window.TAWALA_DEMO_RESPONSE_SEEDS[uniqueId]);
+      if (canMock && typeof TawalaDemo.purgeMockFormResponses === "function") {
+        const mock = TawalaDemo.purgeMockFormResponses(uniqueId, name);
+        if (mock.status === "success") {
+          const msg =
+            `Purged form “${name}” from “${displayName}” — removed ${mock.removed} demo row(s); ` +
+            `${mock.remaining} remain in the project.\n\n` +
+            (mock.warning || "Mock offline purge — seeded demo Records only.");
+          setStatus(msg);
+          window.alert(msg);
+          document.dispatchEvent(
+            new CustomEvent("tawala:project-purged", {
+              detail: { projectId, uniqueId, result: mock, displayName, formName: name },
+            })
+          );
+          return;
+        }
+      }
       const msg = `Couldn't purge form “${name}”\n\n${current.error || "export failed"}\n\n${TawalaProjectOps.LOCAL_PURGE_HELP}`;
       setStatus(`Purge failed for form “${name}”: ${current.error || "unknown error"}`);
       window.alert(msg);
