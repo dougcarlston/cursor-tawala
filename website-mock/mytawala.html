@@ -6,11 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260805-colgroups2" />
-  <script src="js/demo-urls.js?v=20260803-examtd"></script>
-  <script src="js/transfer.js?v=20260805-verdesc"></script>
-  <script src="js/project-ops.js?v=20260805-colgroups"></script>
-  <script src="js/data-ops.js?v=20260801-updated-sort"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-chrome1" />
+  <script src="js/demo-urls.js?v=20260809-theme-left3"></script>
+  <script src="js/transfer.js?v=20260809-ident2"></script>
+  <script src="js/project-ops.js?v=20260809-chrome1"></script>
+  <script src="js/data-ops.js?v=20260809-datatree"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -51,10 +51,9 @@
       </div>
 
       <div class="content">
-        <div class="pageTitle"><h1>My Tawala</h1></div>
         <div class="listing-identity" role="status">
-          <span class="listing-where">My Projects</span>
-          <span class="listing-pile">Private MyTawala pile — click a heading to sort; drag header edges to resize columns.</span>
+          <span class="listing-where">Private</span>
+          <span class="listing-pile">MyTawala pile — Get from Library… always available; select a linked row to Refresh; select any row to Delete; double-click for Details. Click a heading to sort; drag header edges to resize.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
         <div id="pmSubmenuHost"></div>
@@ -71,6 +70,8 @@
             </form>
           </div>
 
+          <div id="myProjectsListingBarHost"></div>
+
           <div class="mytawala-listing-frame">
             <table
               id="myProjectsTable"
@@ -78,18 +79,11 @@
               aria-label="My Projects — private My Tawala list"
             >
               <colgroup id="myProjectsCols">
-                <col class="col-name col-group-info" style="width: 24%" />
-                <col class="col-created col-group-info" style="width: 9%" />
-                <col class="col-updated col-group-info" style="width: 9%" />
-                <col class="col-op col-group-info" style="width: 5.5%" />
-                <col class="col-op col-group-transfer" style="width: 5.5%" />
-                <col class="col-op col-group-transfer" style="width: 5.5%" />
-                <col class="col-op col-group-backup" style="width: 5.5%" />
-                <col class="col-op col-group-backup" style="width: 5.5%" />
-                <col class="col-op col-group-destructive" style="width: 5.5%" />
-                <col class="col-op col-group-destructive" style="width: 5.5%" />
-                <col class="col-op col-group-library" style="width: 5.5%" />
-                <col class="col-op col-group-library" style="width: 5.5%" />
+                <col class="col-name col-group-info" style="width: 43%" />
+                <col class="col-created col-group-info" style="width: 12%" />
+                <col class="col-updated col-group-info" style="width: 12%" />
+                <col class="col-records col-group-info" style="width: 10%" />
+                <col class="col-op col-group-info" style="width: 8%" />
               </colgroup>
               <thead>
                 <tr id="myProjectsHead">
@@ -101,6 +95,13 @@
                   </th>
                   <th class="col-date sortable col-group-info" scope="col" data-sort="updated" title="Sort by updated">
                     <span class="th-label">Updated</span>
+                  </th>
+                  <th
+                    class="col-records col-group-info"
+                    scope="col"
+                    title="Records (Responses) — project-wide submission count via :3001 when uniqueId + Docker/Postgres are available; otherwise —"
+                  >
+                    <span class="th-label">Records</span>
                   </th>
                 </tr>
               </thead>
@@ -119,7 +120,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js"></script>
+  <script src="js/chrome.js?v=20260809-chrome1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -185,11 +186,27 @@
 
     const SORT_STATE = { key: "name", dir: 1 };
     let projects = [];
+    /** Selected project id for listing Pull / Delete (row highlight). */
+    let selectedProjectId = "";
 
     function refreshProjects() {
       projects = TawalaDemo.myTawalaEntries();
     }
     refreshProjects();
+
+    function setListingSelection(projectId) {
+      selectedProjectId = projectId ? String(projectId) : "";
+      TawalaProjectOps.syncListingSelectionBar(selectedProjectId);
+      document.querySelectorAll("#projectRows tr[data-project-id]").forEach((tr) => {
+        const on = tr.dataset.projectId === selectedProjectId;
+        tr.classList.toggle("is-selected", on);
+        tr.setAttribute("aria-selected", on ? "true" : "false");
+      });
+    }
+
+    function projectDetailsHref(projectId) {
+      return `mytawala-project.html?project=${encodeURIComponent(projectId || "")}`;
+    }
 
     function sortValue(p, key) {
       if (key === "name") {
@@ -231,26 +248,115 @@
       });
     }
 
+    /** Session cache: uniqueId → { status, count?, error? } */
+    const RECORD_COUNT_CACHE = Object.create(null);
+    let recordsHydrateGen = 0;
+
+    /** Records / Responses — sync seed values first; hydrateListingRecordCounts fills live totals. */
+    function displayRecords(p) {
+      if (p && (p.recordCount != null || p.responseCount != null || p.records != null)) {
+        const n = p.recordCount != null ? p.recordCount : p.responseCount != null ? p.responseCount : p.records;
+        if (n !== "" && n != null && !Number.isNaN(Number(n))) return String(n);
+      }
+      return "—";
+    }
+
     function projectRowHtml(p) {
-      const detailHref = `mytawala-project.html?project=${encodeURIComponent(p.id)}`;
       const title = TawalaDemo.displayName(p.name);
       const created = displayListDate(p.created || p.createdAt || p.updated || p.updatedAt || "");
       const updated = displayListDate(p.updated || p.updatedAt || p.lastDeployAt || "");
-      return `<tr data-project-id="${escapeHtml(p.id)}">
+      const uid =
+        typeof TawalaDemo.resolvePurgeUniqueId === "function"
+          ? TawalaDemo.resolvePurgeUniqueId(p.id)
+          : null;
+      const cached = uid ? RECORD_COUNT_CACHE[uid] : null;
+      let records = displayRecords(p);
+      let recordsTitle =
+        records === "—"
+          ? uid
+            ? "Records (Responses) — loading…"
+            : "Records (Responses) — no uniqueId (Deploy → Show in My Tawala)"
+          : `Records (Responses): ${records}`;
+      if (cached && cached.status === "success") {
+        records = String(cached.count);
+        recordsTitle = `Records (Responses): ${cached.count}`;
+      } else if (cached && cached.status === "failure") {
+        records = "—";
+        recordsTitle = `Records unavailable: ${cached.error || "API/Docker not reachable"}`;
+      }
+      const selected = selectedProjectId === p.id;
+      const offline =
+        p.inactive === true || p.libraryActive === false
+          ? ` <span class="pm-status-badge is-offline" title="Offline — hidden from public Library">Offline</span>`
+          : "";
+      return `<tr data-project-id="${escapeHtml(p.id)}" role="row" tabindex="0" aria-selected="${
+        selected ? "true" : "false"
+      }"${selected ? ' class="is-selected"' : ""} title="Click to select · Double-click for Project Details">
         <td class="info left col-group-info">
-          <span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>
+          <span class="title listing-project-name">${escapeHtml(title)}${offline}</span>
         </td>
         <td class="date-created col-date col-group-info">${escapeHtml(created)}</td>
         <td class="updated col-date col-group-info">${escapeHtml(updated)}</td>
+        <td class="col-records col-group-info" data-records-cell="1" title="${escapeHtml(recordsTitle)}">${escapeHtml(records)}</td>
         ${TawalaProjectOps.renderListingControlCells(p.id)}
       </tr>`;
     }
 
+    async function hydrateListingRecordCounts() {
+      const gen = ++recordsHydrateGen;
+      const rows = document.querySelectorAll("#projectRows tr[data-project-id]");
+      if (!rows.length || typeof TawalaDemo.countResponses !== "function") return;
+      const jobs = [];
+      rows.forEach((tr) => {
+        const id = tr.dataset.projectId;
+        const cell = tr.querySelector("[data-records-cell]");
+        if (!id || !cell) return;
+        const uid =
+          typeof TawalaDemo.resolvePurgeUniqueId === "function"
+            ? TawalaDemo.resolvePurgeUniqueId(id)
+            : null;
+        if (!uid) {
+          cell.textContent = "—";
+          cell.title = "Records (Responses) — no uniqueId (Deploy → Show in My Tawala)";
+          return;
+        }
+        if (RECORD_COUNT_CACHE[uid] && RECORD_COUNT_CACHE[uid].status === "success") {
+          cell.textContent = String(RECORD_COUNT_CACHE[uid].count);
+          cell.title = `Records (Responses): ${RECORD_COUNT_CACHE[uid].count}`;
+          return;
+        }
+        jobs.push(
+          TawalaDemo.countResponses(uid).then((r) => {
+            if (gen !== recordsHydrateGen || !document.contains(cell)) return;
+            if (r && r.status === "success") {
+              RECORD_COUNT_CACHE[uid] = { status: "success", count: r.count };
+              cell.textContent = String(r.count);
+              cell.title = `Records (Responses): ${r.count}`;
+            } else {
+              RECORD_COUNT_CACHE[uid] = {
+                status: "failure",
+                error: (r && r.error) || "count failed",
+              };
+              cell.textContent = "—";
+              cell.title =
+                "Records unavailable: " + ((r && r.error) || "API/Docker not reachable");
+            }
+          })
+        );
+      });
+      await Promise.all(jobs);
+    }
+
     function renderRows() {
       const list = sortedProjects();
+      if (selectedProjectId && !list.some((p) => p.id === selectedProjectId)) {
+        selectedProjectId = "";
+      }
       document.getElementById("projectRows").innerHTML = list.map(projectRowHtml).join("");
       document.getElementById("projectCount").textContent = String(list.length);
       updateSortIndicators();
+      TawalaProjectOps.syncListingSelectionBar(selectedProjectId);
+      void hydrateListingRecordCounts();
     }
 
     function enableColumnResize(table) {
@@ -317,6 +423,9 @@
 
     document.getElementById("pmSubmenuHost").innerHTML =
       TawalaProjectOps.renderSubmenu("My Projects");
+
+    document.getElementById("myProjectsListingBarHost").innerHTML =
+      TawalaProjectOps.renderListingSelectionBar();
 
     function renderDeployInbox() {
       const host = document.getElementById("deployInboxHost");
@@ -390,16 +499,62 @@
     renderRows();
     enableColumnResize(document.getElementById("myProjectsTable"));
 
+    const projectRows = document.getElementById("projectRows");
+    /*
+     * Row highlight selection (owner Aug 9 addenda):
+     *   single click → select only (enables Pull / Delete)
+     *   double-click → Project Details
+     * Use icon stays a real single-click control. Name is not a link (avoids
+     * navigating on the first click of a double-click).
+     */
+    projectRows.addEventListener("click", (ev) => {
+      if (ev.target.closest("a, button, .pm-icon-action, .pm-op-icon-btn")) return;
+      const tr = ev.target.closest("tr[data-project-id]");
+      if (!tr) return;
+      setListingSelection(tr.dataset.projectId);
+    });
+    projectRows.addEventListener("dblclick", (ev) => {
+      if (ev.target.closest("a, button, .pm-icon-action, .pm-op-icon-btn")) return;
+      const tr = ev.target.closest("tr[data-project-id]");
+      if (!tr || !tr.dataset.projectId) return;
+      ev.preventDefault();
+      setListingSelection(tr.dataset.projectId);
+      location.href = projectDetailsHref(tr.dataset.projectId);
+    });
+    projectRows.addEventListener("keydown", (ev) => {
+      const tr = ev.target.closest("tr[data-project-id]");
+      if (!tr) return;
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        setListingSelection(tr.dataset.projectId);
+        location.href = projectDetailsHref(tr.dataset.projectId);
+      } else if (ev.key === " " || ev.key === "Spacebar") {
+        ev.preventDefault();
+        setListingSelection(tr.dataset.projectId);
+      }
+    });
+
     document.addEventListener("tawala:project-deleted", (ev) => {
       const id = ev.detail && ev.detail.projectId;
       if (!id) return;
+      if (selectedProjectId === id) selectedProjectId = "";
       refreshProjects();
       renderRows();
       renderDeployInbox();
     });
 
+    document.addEventListener("tawala:project-pulled", () => {
+      refreshProjects();
+      renderRows();
+    });
+
     document.addEventListener("tawala:project-published", () => {
       // Publish can add a new My Tawala safety-net row (a retired Library stub) — refresh.
+      refreshProjects();
+      renderRows();
+    });
+
+    document.addEventListener("tawala:project-active-changed", () => {
       refreshProjects();
       renderRows();
     });

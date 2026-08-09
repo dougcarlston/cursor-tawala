@@ -875,7 +875,67 @@
           : { id, ...data, fromPublishOverlay: true }
       );
     });
-    return Array.from(byId.values());
+    /* Active / De-activate (Aug 9): inactive Library rows stay off the public listing. */
+    return Array.from(byId.values()).filter(
+      (p) => p && p.inactive !== true && p.libraryActive !== false
+    );
+  }
+
+  /**
+   * Flip public-Library visibility for a My Tawala project (Details Active / De-activate).
+   * Inactive → hidden from Library listing (no Test Drive / Save a copy); stays on My Tawala
+   * with Offline marker. Persists on My Tawala overlay + Library overlay when a twin exists.
+   */
+  function setProjectLibraryActive(projectId, active) {
+    if (!projectId) return { ok: false, error: "missing-project" };
+    const wantActive = !!active;
+    const inactive = !wantActive;
+    const nowIso = timestampNow();
+    const now = formatListDate(nowIso);
+
+    clearMyTawalaDeleted(projectId);
+    const myOverlay = getMyTawalaOverlay();
+    const prevMine = myOverlay[projectId] || {};
+    myOverlay[projectId] = {
+      ...prevMine,
+      inactive,
+      libraryActive: wantActive,
+      updated: now,
+      updatedAt: nowIso,
+    };
+    if (!writeJson(PILE_KEY, myOverlay)) return { ok: false, error: "write-failed" };
+
+    const publishedId =
+      (prevMine.publishedToLibraryId && String(prevMine.publishedToLibraryId)) ||
+      (myOverlay[projectId].publishedToLibraryId && String(myOverlay[projectId].publishedToLibraryId)) ||
+      "";
+    const twinId =
+      publishedId ||
+      (window.TAWALA_LIBRARY && Object.prototype.hasOwnProperty.call(window.TAWALA_LIBRARY, projectId)
+        ? projectId
+        : "") ||
+      (getLibraryOverlayEntry(projectId) ? projectId : "");
+
+    if (twinId) {
+      const base = (window.TAWALA_LIBRARY && window.TAWALA_LIBRARY[twinId]) || {};
+      const prevLib = getLibraryOverlayEntry(twinId) || {};
+      const { id: _drop, ...prevFields } = prevLib;
+      upsertLibraryOverlay(twinId, {
+        ...base,
+        ...prevFields,
+        inactive,
+        libraryActive: wantActive,
+        updated: now,
+        updatedAt: nowIso,
+      });
+    }
+
+    return {
+      ok: true,
+      projectId,
+      active: wantActive,
+      libraryId: twinId || null,
+    };
   }
 
   /** Full current Library (catalog + overlay, minus retired stubs) — Publish match candidates. */
@@ -1034,6 +1094,21 @@
     /* liveReady is an owner-vetted cue — a fresh Publish overlay never claims it automatically. */
 
     upsertLibraryOverlay(libraryId, entry);
+
+    /* Stamp the source My Tawala row so Details can show Published → Library link. */
+    if (sourceProjectId) {
+      const myOverlay = getMyTawalaOverlay();
+      const prevMine = myOverlay[sourceProjectId] || {};
+      myOverlay[sourceProjectId] = {
+        ...prevMine,
+        publishedToLibraryId: libraryId,
+        publishedToLibraryName: publishName,
+        publishedAt: nowIso,
+        updated: now,
+        updatedAt: nowIso,
+      };
+      writeJson(PILE_KEY, myOverlay);
+    }
 
     let retired = null;
     if (targetIsActiveStub) {
@@ -1430,6 +1505,7 @@
     libraryReplaceCandidates,
     findMatchingLibraryTargets,
     publishToLibrary,
+    setProjectLibraryActive,
     findPullCandidates,
     pullFromLibrary,
     ADMIN_KEY,

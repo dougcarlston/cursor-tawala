@@ -6,7 +6,7 @@
   <title>Tawala - Website mock docs</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260801-use-mytawala" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-chrome1" />
 </head>
 <body data-tawala-page="docs" data-tawala-status="compact">
   <div id="doc">
@@ -96,8 +96,9 @@ curl -s http://localhost:3001/api/health</pre>
           <h3>Publish (My Tawala → Library)</h3>
           <p>
             Deliberate bridge from private My Tawala into the one public Library.
-            Entry points: My Tawala listing <b>Publish</b>, Project Details
-            <b>PUBLISH</b>, or <a href="library-admin.html">library-admin.html</a>.
+            Entry points: Project Details <b>PUBLISH</b>
+            (listing Publish removed Aug 9 — lean list), or
+            <a href="library-admin.html">library-admin.html</a>.
           </p>
           <ul>
             <li>Rename on the way in (strips any <code>" (stub)"</code> suffix by default).</li>
@@ -112,7 +113,8 @@ curl -s http://localhost:3001/api/health</pre>
           </ul>
           <p>
             <b>Smoke:</b>
-            <a href="mytawala.html">mytawala.html</a> → Publish on a row → confirm → check
+            <a href="mytawala.html">mytawala.html</a> → open a project →
+            <b>PUBLISH</b> on Project Details → confirm → check
             <a href="library.html">library.html</a> and My Tawala for the expected add / retire / replace outcome,
             plus a purged-row count (or a clear ⚠️ skipped/failed note) in the same success alert.
           </p>
@@ -195,7 +197,7 @@ curl -s http://localhost:3001/api/health</pre>
           </p>
           <p>
             <b>Smoke Delete:</b>
-            <a href="mytawala.html">mytawala.html</a> → Delete → reload → row still gone; Library twin unchanged.
+            <a href="mytawala.html">mytawala.html</a> → select row → Delete → reload → row still gone; Library twin unchanged.
           </p>
         </div>
 
@@ -261,7 +263,7 @@ curl -s http://localhost:3001/api/health</pre>
 
     <div id="tawala-chrome-footer"></div>
   </div>
-  <script src="js/chrome.js"></script>
+  <script src="js/chrome.js?v=20260809-chrome1"></script>
   <script>TawalaChrome.mount();</script>
 </body>
 </html>

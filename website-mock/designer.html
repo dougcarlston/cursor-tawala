@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8" />
   <title>Tawala - Designer</title>
-  <link rel="stylesheet" href="css/tawala-mock.css" />
+  <link rel="stylesheet" href="css/tawala-mock.css?v=20260809-chrome1" />
 </head>
-<body data-tawala-page="mytawala" data-tawala-user="dev" class="stub-page">
+<body data-tawala-page="designer" data-tawala-user="dev" class="stub-page">
   <div id="doc">
     <div id="tawala-chrome-banner"></div>
     <div id="tawala-chrome-header"></div>
@@ -15,25 +15,51 @@
         <div class="block">
           <p>
             The legacy <b>Tawala Designer</b> is a desktop application for building forms, processes, and documents.
+            Local browser work uses <code>designer-web/</code> on port <b>5173</b>; this mock site runs on :5500.
+          </p>
+          <div id="designerOpenHint" class="stub-form note" hidden></div>
+          <p>
+            <a class="button" id="designerOpenLive" href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer → localhost:5173</a>
           </p>
           <p>
-            <a class="button" href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer → localhost:5173</a>
-          </p>
-          <p>
-            Legacy Tawala Designer was a desktop app. Local browser work uses <code>designer-web/</code> on port 5173; this mock site runs on :5500 (Library / My Tawala).
+            Designer (:5173) and this mock (:5500) do <b>not</b> share storage. After opening Designer, use
+            <b>File → Open</b> on the project JSON if it is not already loaded.
           </p>
           <p>
             To deploy templates to local Java without the Designer Deploy button, use:
           </p>
           <pre style="background:#f4f4f4;padding:8px;overflow:auto;">node scripts/deploy-tawala-template.mjs "Template Name"</pre>
           <p><a href="library.html">Browse templates in Library →</a> · <a href="mytawala.html">My Tawala project ops →</a></p>
-          <p class="stub-form note">Stub page — legacy nav linked to <code>/designer</code> download flow.</p>
+          <p class="stub-form note">Stub page — opened from Project Details → <b>Edit project in Designer</b> when you cancel the live :5173 hop.</p>
         </div>
       </div>
     </div>
     <div id="tawala-chrome-footer"></div>
   </div>
-  <script src="js/chrome.js"></script>
-  <script>TawalaChrome.mount();</script>
+  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script>
+    TawalaChrome.mount();
+    (function () {
+      const params = new URLSearchParams(location.search);
+      const projectId = params.get("project") || "";
+      const name = params.get("name") || "";
+      const json = params.get("json") || "";
+      const hint = document.getElementById("designerOpenHint");
+      if (!hint || (!projectId && !name && !json)) return;
+      hint.hidden = false;
+      const parts = [
+        "<b>Edit project in Designer</b> — requested from My Tawala Project Details.",
+      ];
+      if (name) parts.push("Project: <b>" + name.replace(/</g, "&lt;") + "</b>");
+      if (projectId) parts.push("Id: <code>" + projectId.replace(/</g, "&lt;") + "</code>");
+      if (json) parts.push("Repo JSON: <code>" + json.replace(/</g, "&lt;") + "</code>");
+      parts.push("Open localhost:5173, then File → Open that JSON if needed.");
+      hint.innerHTML = parts.join("<br />");
+      const live = document.getElementById("designerOpenLive");
+      if (live && name) {
+        live.title = "Open browser Designer for “" + name + "”";
+      }
+    })();
+  </script>
 </body>
 </html>

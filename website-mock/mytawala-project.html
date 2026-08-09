@@ -6,11 +6,11 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260807-deployswitch" />
-  <script src="js/demo-urls.js?v=20260807-deployswitch"></script>
-  <script src="js/transfer.js?v=20260807-deployswitch"></script>
-  <script src="js/project-ops.js?v=20260807-deployswitch"></script>
-  <script src="js/data-ops.js?v=20260801-dataops"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-records-grid" />
+  <script src="js/demo-urls.js?v=20260809-theme-left3"></script>
+  <script src="js/transfer.js?v=20260809-ident2"></script>
+  <script src="js/project-ops.js?v=20260809-records-grid"></script>
+  <script src="js/data-ops.js?v=20260809-datatree"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -19,7 +19,6 @@
 
     <div id="bd" class="pm-detail-bd">
       <div class="content pm-detail-content">
-        <div class="pageTitle"><h1>Project Details</h1></div>
         <div id="pmSubmenuHost"></div>
         <div id="pmDetailHost"></div>
       </div>
@@ -28,7 +27,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js"></script>
+  <script src="js/chrome.js?v=20260809-chrome1"></script>
   <script>
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
@@ -61,7 +60,7 @@
           host.innerHTML =
             '<p class="pm-hint">Unknown project' +
             (projectId ? " (“" + projectId.replace(/</g, "&lt;") + "”)" : "") +
-            '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Projects</a>.</p>';
+            '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Tawala</a>.</p>';
         }
         return;
       }
@@ -70,9 +69,29 @@
       if (typeof TawalaProjectOps.syncDeployVersionChip === "function") {
         TawalaProjectOps.syncDeployVersionChip(host);
       }
+      if (typeof TawalaProjectOps.syncProjectActionsForDataSelection === "function") {
+        TawalaProjectOps.syncProjectActionsForDataSelection(host.querySelector("#pmDataTree"));
+      }
+      if (typeof TawalaProjectOps.hydrateProjectDataTree === "function") {
+        void TawalaProjectOps.hydrateProjectDataTree(host);
+      }
+      if (typeof TawalaProjectOps.hydrateThemeFromProjectJson === "function") {
+        void TawalaProjectOps.hydrateThemeFromProjectJson(host, {
+          id: projectId,
+          ...project,
+        });
+      }
     }
 
     renderProject(id);
+
+    /* Left-rail identity: re-paint after Publish / Active flip without a full navigation. */
+    document.addEventListener("tawala:project-published", () => {
+      if (id) renderProject(id);
+    });
+    document.addEventListener("tawala:project-active-changed", () => {
+      if (id) renderProject(id);
+    });
 
     /* Hydrate definition body from :3001 snapshot so Deploy-this-version works offline of a re-fetch later. */
     (async function hydrateSnapshot() {

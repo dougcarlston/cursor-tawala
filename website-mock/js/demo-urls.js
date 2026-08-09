@@ -52,6 +52,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "A one-question survey with an instant results report.",
     "longDescription": "Replace the sample question with your own multiple-choice question. Respondents pick an answer; the Report form shows live tallies.",
     "jsonFile": "designer-web/public/samples/templates/simple-survey.json",
+    "themePath": "mvsc",
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
@@ -78,6 +79,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Collect names and contact info; see signups in a table on the same page.",
     "longDescription": "First name, last name, email, phone, and address fields feed an itemization table so your group can see who has signed up without a separate report form.",
     "jsonFile": "designer-web/public/samples/templates/signup-sheet.json",
+    "themePath": "baseball",
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
@@ -100,6 +102,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Potluck invitation \u2014 headcount, dish contributions, and a shared report.",
     "longDescription": "Invite guests to a potluck, collect RSVPs and what each person will bring. Uses Potluck Organizer (start), Report, documents, and processes for thanks and delete.",
     "jsonFile": "designer-web/public/samples/templates/potluck.json",
+    "themePath": "default",
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
@@ -126,6 +129,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Find the best date for an event \u2014 availability plus top preference.",
     "longDescription": "Two MCQs: which dates work (multi-select) and top preference (single). Report includes a question-correlation table to see the best overlap.",
     "jsonFile": "designer-web/public/samples/templates/get-together.json",
+    "themePath": "greentea",
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
@@ -152,6 +156,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (26 forms). Start points: Password.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 26 forms, 29 processes, 16 documents. Start points: Password.",
     "jsonFile": "projects/library/AlexTimon.json",
+    "themePath": "tennis",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -173,6 +178,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (15 forms). Start points: Questionnaire, Administration, Setup.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 15 forms, 19 processes, 21 documents. Start points: Questionnaire, Administration, Setup.",
     "jsonFile": "projects/library/Automated List Builder.json",
+    "themePath": "basicblue",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -200,6 +206,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (26 forms). Start points: Password.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 26 forms, 29 processes, 16 documents. Start points: Password.",
     "jsonFile": "projects/library/ClientProfiler.json",
+    "themePath": "tennis",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -221,6 +228,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (11 forms). Start points: Admin, CheckReqForm, DepositForm.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 11 forms, 13 processes, 6 documents. Start points: Admin, CheckReqForm, DepositForm.",
     "jsonFile": "projects/library/CYO CheckDeposit Request1.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -248,6 +256,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (15 forms). Start points: ExceptionRequest, Setup, ClubData.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 15 forms, 19 processes, 23 documents. Start points: ExceptionRequest, Setup, ClubData, FullReport, SummaryReport.",
     "jsonFile": "projects/library/CYO Exceptions App.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -281,6 +290,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (77 forms). Start points: Registration, AdminDash.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 77 forms, 91 processes, 46 documents. Start points: Registration, AdminDash.",
     "jsonFile": "projects/library/DirtBowl.json",
+    "themePath": "dirtbowl2",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -305,6 +315,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (34 forms). Start points: Administration, Utility.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 34 forms, 44 processes, 20 documents. Start points: Administration, Utility.",
     "jsonFile": "projects/library/GenericListManager.json",
+    "themePath": "plain",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -329,6 +340,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Fun quiz — horses vs penguins. Score tracking with Process math.",
     "longDescription": "Owner-vetted Entertainment try-out. One form, one process (score/wrong math), six answer documents. Theme style2. Start point: Form 1.",
     "jsonFile": "projects/library/Horses and Penguins Test.json",
+    "themePath": "style2",
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
@@ -351,6 +363,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (3 forms). Start points: Setup, Widget.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 3 forms, 4 processes, 4 documents. Start points: Setup, Widget.",
     "jsonFile": "projects/library/League Age calculator.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -375,6 +388,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (5 forms). Start points: Main Menu.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 5 forms, 5 processes, 6 documents. Start points: Main Menu.",
     "jsonFile": "projects/library/Lunch Order Menu.json",
+    "themePath": "default",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -396,6 +410,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Multi-question poll with bar-graph tallies and a response table on Report.",
     "longDescription": "Owner-vetted Polls and Surveys try-out (corrected port). Survey collects name, several multiple-choice questions, and optional results link. Report shows choice-tally tables per MCQ plus an itemization table of all responses.",
     "jsonFile": "projects/library/Multiple Question Survey Template.json",
+    "themePath": "default",
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
@@ -422,6 +437,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (18 forms). Start points: Start.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 18 forms, 23 processes, 4 documents. Start points: Start.",
     "jsonFile": "projects/library/MVSC Communicator.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -443,6 +459,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (1 forms). Start points: Form 1.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 1 forms, 0 processes, 0 documents. Start points: Form 1.",
     "jsonFile": "projects/library/MVSC Registration.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -464,6 +481,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
     "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Library Test Drive opens Administration first.",
     "jsonFile": "projects/library/Online Exam Builder.json",
+    "themePath": "default",
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
@@ -502,6 +520,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (79 forms). Start points: Registration, AdminDash.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 79 forms, 94 processes, 47 documents. Start points: Registration, AdminDash.",
     "jsonFile": "projects/library/SportsDashboards Template.json",
+    "themePath": "dirtbowl2",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -526,6 +545,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (100 forms). Start points: Registration, AdminDash, UtilityToSetPlayerAges.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 100 forms, 120 processes, 60 documents. Start points: Registration, AdminDash, UtilityToSetPlayerAges, RegistrantDeduping.",
     "jsonFile": "projects/library/St Patrick SportsDashboards.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -556,6 +576,7 @@ window.TAWALA_LIBRARY = {
     "shortDescription": "Converted project (6 forms). Start points: Start.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 6 forms, 8 processes, 9 documents. Start points: Start.",
     "jsonFile": "projects/library/Tawala Invoicing.json",
+    "themePath": "mvsc",
     "sourcePile": "library",
     "stub": true,
     "deployed": false,
@@ -579,6 +600,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (2 forms). Start points: Start.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 2 forms, 3 processes, 2 documents. Start points: Start.",
     "jsonFile": "projects/mytawala/BBBulkMail.json",
+    "themePath": "default",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -599,6 +621,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (35 forms). Start points: AdminDash.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 35 forms, 42 processes, 26 documents. Start points: AdminDash.",
     "jsonFile": "projects/mytawala/CampaignDashboards.json",
+    "themePath": "lime",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -619,6 +642,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (6 forms). Start points: Start, CheckReqForm.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 6 forms, 7 processes, 4 documents. Start points: Start, CheckReqForm.",
     "jsonFile": "projects/mytawala/CYO Check Request.json",
+    "themePath": "mvsc",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -642,6 +666,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (8 forms). Start points: Admin, CheckReqForm, Setup.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 8 forms, 8 processes, 3 documents. Start points: Admin, CheckReqForm, Setup.",
     "jsonFile": "projects/mytawala/CYO CheckDeposit Request.json",
+    "themePath": "mvsc",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -668,6 +693,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (3 forms). Start points: Form 1, Form 2, Form 3.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 3 forms, 3 processes, 3 documents. Start points: Form 1, Form 2, Form 3.",
     "jsonFile": "projects/mytawala/Designer Candidate App 01.json",
+    "themePath": "default",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -694,6 +720,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (19 forms). Start points: Start.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 19 forms, 23 processes, 6 documents. Start points: Start.",
     "jsonFile": "projects/mytawala/Dirtbowl Communicator.json",
+    "themePath": "dirtbowl2",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -714,6 +741,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (1 forms). Start points: Form 1.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 1 forms, 0 processes, 0 documents. Start points: Form 1.",
     "jsonFile": "projects/mytawala/DisplayLabelTest.json",
+    "themePath": "default",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -734,6 +762,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (15 forms). Start points: EmailerStart, JoinMailingList.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 15 forms, 21 processes, 7 documents. Start points: EmailerStart, JoinMailingList.",
     "jsonFile": "projects/mytawala/Emailer With Signup.dgmod.json",
+    "themePath": "mvsc",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -746,6 +775,55 @@ window.TAWALA_MYTAWALA = {
     ],
     "testDriveUrl": null
   },
+  "online-exam-builder": {
+    "name": "Online Exam Builder",
+    "category": "Polls and Surveys",
+    "featured": false,
+    "iconLabel": "OE",
+    "rating": 0,
+    "comments": 0,
+    "updated": "8/4/26",
+    "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
+    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Seeded into My Tawala for lean-list + Project Data UI review (same :8080 deploy as Library).",
+    "jsonFile": "projects/mytawala/Online Exam Builder.json",
+    "themePath": "default",
+    "sourcePile": "mytawala",
+    "liveReady": true,
+    "deployed": true,
+    "uniqueId": "u3hkqgwtrepjlur",
+    "formNames": [
+      "SetupVariables",
+      "Question",
+      "Exam",
+      "Answer",
+      "Administration",
+      "CustomizationPreview",
+      "Setup",
+      "Scoring",
+      "Delete Question",
+      "Edit Question",
+      "ShowExamineeDetail"
+    ],
+    "startPoints": [
+      {
+        "label": "Exam",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/sto3lpi.Exam"
+      },
+      {
+        "label": "Administration",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
+      },
+      {
+        "label": "CustomizationPreview",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/oio6z9y.CustomizationPreview"
+      },
+      {
+        "label": "Setup",
+        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/dc2nyex.Setup"
+      }
+    ],
+    "testDriveUrl": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
+  },
   "paypal-tester": {
     "name": "PayPal Tester",
     "category": "Business",
@@ -757,6 +835,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (3 forms). Start points: Start.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 3 forms, 3 processes, 2 documents. Start points: Start.",
     "jsonFile": "projects/mytawala/PayPal Tester.json",
+    "themePath": "mvsc",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -777,6 +856,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (4 forms). Start points: Setup, Potluck Organizer, Administration.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 4 forms, 7 processes, 11 documents. Start points: Setup, Potluck Organizer, Administration.",
     "jsonFile": "projects/mytawala/Potluck - Kids Too.json",
+    "themePath": "basicyellow",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -803,6 +883,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (60 forms). Start points: Registration, AdminDash.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 60 forms, 69 processes, 35 documents. Start points: Registration, AdminDash.",
     "jsonFile": "projects/mytawala/RealDirtwHeader.json",
+    "themePath": "dirtbowl2",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -826,6 +907,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (9 forms). Start points: Administration, Setup, Signup.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 9 forms, 13 processes, 10 documents. Start points: Administration, Setup, Signup.",
     "jsonFile": "projects/mytawala/Shared To-Do.json",
+    "themePath": "default",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -852,6 +934,7 @@ window.TAWALA_MYTAWALA = {
     "shortDescription": "Converted project (5 forms). Start points: Customize, Start Questionnaire, Administration.",
     "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 5 forms, 6 processes, 5 documents. Start points: Customize, Start Questionnaire, Administration.",
     "jsonFile": "projects/mytawala/Single Question Poll or Survey.json",
+    "themePath": "default",
     "sourcePile": "mytawala",
     "deployed": false,
     "startPoints": [
@@ -971,7 +1054,17 @@ window.TawalaDemo = {
     ) {
       const overlay = window.TawalaTransfer.getOverlayEntry(id);
       if (overlay) {
-        return base ? { ...base, ...overlay, id } : { ...overlay, id };
+        if (!base) return { ...overlay, id };
+        const merged = { ...base, ...overlay, id };
+        /* Empty overlay theme must not wipe catalog / definition themePath. */
+        if (!merged.themePath && base.themePath) merged.themePath = base.themePath;
+        if (!merged.jsonFile && base.jsonFile) merged.jsonFile = base.jsonFile;
+        if (!Array.isArray(merged.formNames) || !merged.formNames.length) {
+          if (Array.isArray(base.formNames) && base.formNames.length) {
+            merged.formNames = base.formNames.slice();
+          }
+        }
+        return merged;
       }
     }
     return base;

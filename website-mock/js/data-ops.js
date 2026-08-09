@@ -175,10 +175,42 @@
     return true;
   }
 
+  /** Filter an export wire payload down to one form (client-side form-scoped Export). */
+  function filterExportToForm(result, formName) {
+    const name = String(formName || "");
+    const forms = (result.forms || []).filter((f) => f && f.form === name);
+    const fieldsByForm = {};
+    if (result.fieldsByForm && result.fieldsByForm[name]) {
+      fieldsByForm[name] = result.fieldsByForm[name];
+    }
+    let count = 0;
+    forms.forEach((f) => {
+      count += (f.rows && f.rows.length) || 0;
+    });
+    return { forms, fieldsByForm, count };
+  }
+
+  /**
+   * Merge one form from `incomingForms` into a full current export, then replace-write.
+   * Import API replace deletes ALL submissions first — never send a single-form payload alone.
+   */
+  function mergeFormIntoExport(currentForms, incomingFormEntry, formName) {
+    const name = String(formName || "");
+    const others = (currentForms || []).filter((f) => f && f.form !== name);
+    const incoming =
+      incomingFormEntry ||
+      (currentForms || []).find((f) => f && f.form === name) ||
+      { form: name, rows: [] };
+    return others.concat([{ form: name, rows: (incoming.rows || []).slice() }]);
+  }
+
   // ---------------------------------------------------------------------
   // EXPORT — Excel response data only (see README glossary).
+  // opts.formName → download that form's rows only (still one Export file).
   // ---------------------------------------------------------------------
-  async function handleExportClick(projectId) {
+  async function handleExportClick(projectId, opts) {
+    const options = opts || {};
+    const formName = options.formName ? String(options.formName) : "";
     if (!requireDataApi()) return;
     const project = resolveProject(projectId);
     const displayName = displayNameFor(project, projectId);
@@ -193,13 +225,26 @@
       window.alert(`Couldn't export “${displayName}”\n\n${msg}`);
       return;
     }
-    setStatus(`Exporting “${displayName}”…`);
+    const scopeLabel = formName ? `form “${formName}” in “${displayName}”` : `“${displayName}”`;
+    setStatus(`Exporting ${scopeLabel}…`);
     const result = await TawalaDemo.exportResponses(uniqueId);
     if (result.status !== "success") {
-      const msg = `Couldn't export “${displayName}”\n\n${result.error || "unknown error"}\n\n${TawalaProjectOps.LOCAL_PURGE_HELP}`;
-      setStatus(`Export failed for “${displayName}”: ${result.error || "unknown error"}`);
+      const msg = `Couldn't export ${scopeLabel}\n\n${result.error || "unknown error"}\n\n${TawalaProjectOps.LOCAL_PURGE_HELP}`;
+      setStatus(`Export failed for ${scopeLabel}: ${result.error || "unknown error"}`);
       window.alert(msg);
       return;
+    }
+    const sliced = formName ? filterExportToForm(result, formName) : null;
+    const forms = sliced ? sliced.forms : result.forms;
+    const fieldsByForm = sliced ? sliced.fieldsByForm : result.fieldsByForm;
+    const count = sliced ? sliced.count : result.count;
+    if (formName && !forms.length) {
+      const msg =
+        `No submission rows for form “${formName}” in “${displayName}” (export file will list the form with 0 rows).`;
+      // Still download an empty-form export so Import round-trips stay honest.
+      forms.push({ form: formName, rows: [] });
+      if (!fieldsByForm[formName]) fieldsByForm[formName] = [];
+      setStatus(msg);
     }
     const bundle = {
       tawalaExportFormat: 1,
@@ -207,23 +252,32 @@
       projectId,
       displayName,
       uniqueId,
+      formName: formName || null,
       source: result.source,
       exportedAt: new Date().toISOString(),
-      fieldsByForm: result.fieldsByForm,
-      forms: result.forms,
-      count: result.count,
+      fieldsByForm,
+      forms,
+      count,
     };
-    const filename = `${TawalaTransfer.slugifyProjectId(displayName)}.export.json`;
+    const slug = TawalaTransfer.slugifyProjectId(displayName);
+    const filename = formName
+      ? `${slug}.${TawalaTransfer.slugifyProjectId(formName)}.export.json`
+      : `${slug}.export.json`;
     triggerJsonDownload(filename, bundle);
-    const msg = `Exported “${displayName}” — ${result.count} submission row(s) across ${result.forms.length} form(s). Saved as ${filename} (mock JSON, not Excel — see README § Export/Import).`;
+    const msg = formName
+      ? `Exported form “${formName}” from “${displayName}” — ${count} submission row(s). Saved as ${filename}.`
+      : `Exported “${displayName}” — ${count} submission row(s) across ${forms.length} form(s). Saved as ${filename} (mock JSON, not Excel — see README § Export/Import).`;
     setStatus(msg);
     window.alert(msg);
   }
 
   // ---------------------------------------------------------------------
   // IMPORT — restore messed-up data into the CURRENT project; field mismatch fails.
+  // opts.formName → replace that form only (merge into full export, then replace-write).
   // ---------------------------------------------------------------------
-  async function handleImportClick(projectId) {
+  async function handleImportClick(projectId, opts) {
+    const options = opts || {};
+    const formName = options.formName ? String(options.formName) : "";
     if (!requireDataApi()) return;
     const project = resolveProject(projectId);
     const displayName = displayNameFor(project, projectId);
@@ -256,19 +310,39 @@
       return;
     }
 
-    setStatus(`Checking fields for “${displayName}”…`);
+    let formsForImport = payload.forms;
+    let fieldsForCheck = payload.fieldsByForm || {};
+    if (formName) {
+      const entry = (payload.forms || []).find((f) => f && f.form === formName);
+      if (!entry) {
+        const msg =
+          `Couldn't import into form “${formName}”\n\n` +
+          `The selected file has no data for that form. Export that form first, or pick a whole-project export that includes it.`;
+        setStatus(`Import failed — file has no form “${formName}”.`);
+        window.alert(msg);
+        return;
+      }
+      fieldsForCheck = {};
+      if (payload.fieldsByForm && payload.fieldsByForm[formName]) {
+        fieldsForCheck[formName] = payload.fieldsByForm[formName];
+      }
+      formsForImport = [entry];
+    }
+
+    const scopeLabel = formName ? `form “${formName}” in “${displayName}”` : `“${displayName}”`;
+    setStatus(`Checking fields for ${scopeLabel}…`);
     const current = await TawalaDemo.exportResponses(uniqueId);
     const currentFieldsByForm = current.status === "success" ? current.fieldsByForm : {};
-    const mismatch = findFieldMismatches(payload.fieldsByForm || {}, currentFieldsByForm);
+    const mismatch = findFieldMismatches(fieldsForCheck, currentFieldsByForm);
     if (mismatch.hard.length) {
       const details = mismatch.hard
         .map((m) => `  • ${m.form}: file has [${m.fileFields.join(", ")}] — current data has [${m.currentFields.join(", ")}]`)
         .join("\n");
       const msg =
-        `Import failed — field mismatch for “${displayName}”.\n\n` +
+        `Import failed — field mismatch for ${scopeLabel}.\n\n` +
         `The imported file's fields don't match the current data for these form(s):\n${details}\n\n` +
         "Import does not roll back the project definition — fix the export file or the project's fields, then try again.";
-      setStatus(`Import failed for “${displayName}” — field mismatch (${mismatch.hard.length} form(s)).`);
+      setStatus(`Import failed for ${scopeLabel} — field mismatch (${mismatch.hard.length} form(s)).`);
       window.alert(msg);
       return;
     }
@@ -276,24 +350,101 @@
       ? ` (${mismatch.skipped.length} form(s) had no current data to check field names against — imported without a mismatch check.)`
       : "";
 
-    const c = TawalaProjectOps.CONFIRMS.importResponses;
-    if (!window.confirm(`${c.title} — “${displayName}”\n\n${c.body}`)) return;
+    if (formName) {
+      const body =
+        `Replace response data for form “${formName}” only?\n\n` +
+        "Other forms in this project keep their current rows. Import does not change the project definition.";
+      if (!window.confirm(`Import Form Data — “${formName}”\n\n${body}`)) return;
+      const merged = mergeFormIntoExport(
+        current.status === "success" ? current.forms : [],
+        formsForImport[0],
+        formName
+      );
+      formsForImport = merged;
+    } else {
+      const c = TawalaProjectOps.CONFIRMS.importResponses;
+      if (!window.confirm(`${c.title} — “${displayName}”\n\n${c.body}`)) return;
+    }
 
-    setStatus(`Importing into “${displayName}”…`);
-    const result = await TawalaDemo.importResponses(uniqueId, payload.forms, {
+    setStatus(`Importing into ${scopeLabel}…`);
+    const result = await TawalaDemo.importResponses(uniqueId, formsForImport, {
       source: payload.source,
       mode: "replace",
     });
     if (result.status !== "success") {
-      const msg = `Couldn't import into “${displayName}”\n\n${result.error || "unknown error"}`;
-      setStatus(`Import failed for “${displayName}”: ${result.error || "unknown error"}`);
+      const msg = `Couldn't import into ${scopeLabel}\n\n${result.error || "unknown error"}`;
+      setStatus(`Import failed for ${scopeLabel}: ${result.error || "unknown error"}`);
       window.alert(msg);
       return;
     }
-    const msg = `Imported ${result.inserted} submission row(s) into “${displayName}”.${skipNote}`;
+    const msg = formName
+      ? `Imported form “${formName}” into “${displayName}” — project now has ${result.inserted} submission row(s) total.${skipNote}`
+      : `Imported ${result.inserted} submission row(s) into “${displayName}”.${skipNote}`;
     setStatus(msg);
     window.alert(msg);
-    document.dispatchEvent(new CustomEvent("tawala:project-imported", { detail: { projectId, result } }));
+    document.dispatchEvent(
+      new CustomEvent("tawala:project-imported", { detail: { projectId, result, formName: formName || null } })
+    );
+  }
+
+  /**
+   * Form-scoped Purge: export all → drop the form → replace-write the rest.
+   * Whole-project Purge still uses TawalaDemo.purgeResponses (faster DB delete).
+   */
+  async function handleFormPurgeClick(projectId, formName) {
+    const name = String(formName || "");
+    if (!name) return;
+    if (!requireDataApi()) return;
+    const project = resolveProject(projectId);
+    const displayName = displayNameFor(project, projectId);
+    if (!project) {
+      window.alert(`Can't purge — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+    const uniqueId = resolveUniqueId(projectId);
+    if (!uniqueId) {
+      const msg = `“${displayName}” isn’t linked to a live deploy yet. Deploy from Designer, then try Purge again.`;
+      setStatus(`Purge unavailable for “${displayName}” — not deployed.`);
+      window.alert(`Couldn't purge form “${name}”\n\n${msg}`);
+      return;
+    }
+    const c = TawalaProjectOps.CONFIRMS.erase;
+    if (
+      !window.confirm(
+        `${c.title}\n\n${c.body}\n\nForm: “${name}” in “${displayName}”. Other forms are left alone.`
+      )
+    ) {
+      return;
+    }
+    setStatus(`Purging form “${name}” in “${displayName}”…`);
+    const current = await TawalaDemo.exportResponses(uniqueId);
+    if (current.status !== "success") {
+      const msg = `Couldn't purge form “${name}”\n\n${current.error || "export failed"}\n\n${TawalaProjectOps.LOCAL_PURGE_HELP}`;
+      setStatus(`Purge failed for form “${name}”: ${current.error || "unknown error"}`);
+      window.alert(msg);
+      return;
+    }
+    const before = (current.forms || []).reduce((n, f) => n + ((f.rows && f.rows.length) || 0), 0);
+    const kept = (current.forms || []).filter((f) => f && f.form !== name);
+    const removed = before - kept.reduce((n, f) => n + ((f.rows && f.rows.length) || 0), 0);
+    const result = await TawalaDemo.importResponses(uniqueId, kept, {
+      source: current.source,
+      mode: "replace",
+    });
+    if (result.status !== "success") {
+      const msg = `Couldn't purge form “${name}”\n\n${result.error || "unknown error"}`;
+      setStatus(`Purge failed for form “${name}”: ${result.error || "unknown error"}`);
+      window.alert(msg);
+      return;
+    }
+    const msg = `Purged form “${name}” from “${displayName}” — removed ${removed} row(s); ${result.inserted} row(s) remain in the project.`;
+    setStatus(msg);
+    window.alert(msg);
+    document.dispatchEvent(
+      new CustomEvent("tawala:project-purged", {
+        detail: { projectId, uniqueId, result, displayName, formName: name },
+      })
+    );
   }
 
   // ---------------------------------------------------------------------
@@ -476,9 +627,12 @@
   window.TawalaDataOps = {
     handleExportClick,
     handleImportClick,
+    handleFormPurgeClick,
     handleBackupClick,
     handleRestoreClick,
     validateExportShape,
     findFieldMismatches,
+    filterExportToForm,
+    mergeFormIntoExport,
   };
 })();

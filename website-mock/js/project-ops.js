@@ -18,7 +18,8 @@
  *         downloads a JSON bundle: definition + data + properties, see README § Backup/Restore)
  * wired: "restore-mytawala" → TawalaDataOps.handleRestoreClick — confirm + overlay properties +
  *         POST /api/import-responses (replace mode)
- * wired: "pull-library" → openPullDialog — pick a Library project, confirm, then
+ * wired: "get-from-library" → navigate to library.html (acquire / Save a copy; not selection-gated)
+ * wired: "pull-library" → openPullDialog (Refresh from Library) — selection + Library link required;
  *         TawalaTransfer.pullFromLibrary refreshes content only (name/deploy/data preserved)
  * wired: "download-version" → download minimal JSON for the selected Versions row
  *         (metadata only — not a full Designer definition restore)
@@ -110,46 +111,105 @@
   ];
 
   /**
-   * Project Actions bar on Project Details (detail.jsp) — exact button labels.
-   * Titles from button title= attributes.
+   * Project Details main action bar (detail.jsp Project Actions).
    *
-   * No PUBLISH here (owner Aug 1, 2026): Publish only appears where the owner has the
-   * My Tawala **listing** row in front of them (icon strip) — Details stays USE…PULL.
-   * See LISTING_ACTIONS below for the wired Publish control.
+   * Aug 9, 2026 (Project Data banner): Use / Copy link / Export / Import / Purge live on
+   * the Project Data line (selection-scoped). This bar keeps Backup / Restore / Publish.
+   * Pull + Delete stay on the My Tawala listing selection bar.
    *
-   * USE (owner Aug 1 / Aug 4, 2026): single-start → open that :8080 URL (no purge);
-   * multi-start (Exam+Setup, etc.) → Project Details so the user picks an entry point.
-   * Not legacy CloneAndCustomize. Disabled when no deploy URL.
+   * Owner enablement (Aug 9):
+   *   A) Forms collapsed (expand 0) OR project root highlighted → Backup/Restore/Publish on;
+   *      Use/Copy off; Export/Import/Purge on (project scope).
+   *   B) Starting-point form highlighted → Use/Copy/Export/Import/Purge/Publish on; Backup/Restore off.
+   *   C) Non-start form highlighted → Export/Import/Purge/Publish on; Use/Copy/Backup/Restore off.
    */
   const PROJECT_ACTIONS = [
-    {
-      id: "use",
-      label: "USE",
-      title: "Open / run this project — or choose a start point when there are several",
-      wired: "use-project",
-    },
-    { id: "export", label: "EXPORT", title: "Export project response data (Excel-format mock — see README)", wired: "export-mytawala" },
-    { id: "import", label: "IMPORT", title: "Import response data into this project (Excel/JSON mock — field mismatch fails)", wired: "import-mytawala" },
     { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
     { id: "restore", label: "RESTORE", title: "Restore this project from a backup", wired: "restore-mytawala" },
-    { id: "purge", label: "PURGE", title: "Purge project data", wired: "purge-local", confirmId: "purge" },
-    { id: "delete", label: "DELETE", title: "Delete Project", wired: "delete-mytawala", confirmId: "delete" },
     {
-      id: "pull-library",
-      label: "PULL FROM LIBRARY",
-      title: "Replace this project's content with a newer public Library version",
-      wired: "pull-library",
+      id: "publish",
+      label: "PUBLISH",
+      title: "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)",
+      wired: "publish-mytawala",
+    },
+  ];
+
+  /** Project Data banner controls — selection-scoped per owner enablement A/B/C above. */
+  const PROJECT_DATA_CONTROLS = [
+    {
+      id: "use",
+      label: "Use",
+      title: "Select a start point to run on :8080",
+      wired: "use-project",
+    },
+    {
+      id: "copy-link",
+      label: "Copy link",
+      title: "Select a start point to copy its :8080 link",
+      wired: "copy-start-link",
+    },
+    {
+      id: "export",
+      label: "Export",
+      title: "Export response data (project or highlighted form)",
+      wired: "export-mytawala",
+    },
+    {
+      id: "import",
+      label: "Import",
+      title: "Import response data (project or highlighted form)",
+      wired: "import-mytawala",
+    },
+    {
+      id: "purge",
+      label: "Purge",
+      title: "Purge response data (project or highlighted form)",
+      wired: "purge-local",
+      confirmId: "purge",
+      destructive: true,
     },
   ];
 
   /**
-   * My Projects listing row — same ops as Project Actions, icon-per-row / label-in-header.
-   * (Legacy view.jsp was Purge/Delete only; owner asked for the full listing-appropriate strip.)
-   * Use is first: primary “run this project” affordance (My Tawala = operate).
-   *
-   * Column groups (flat listing — no version piles): Project info (Name…Use in HTML +
-   * this strip’s Use) · Data transfer · Backup · Destructive (red) · Library transfer.
-   * `groupStart` marks the first op column of a new visual group (CSS left rule + gap).
+   * My Projects listing — top action bar (owner Aug 9 breakpoint + option 3).
+   * Get from Library… — always on (opens public Library acquire path).
+   * Refresh from Library — selected row + linked Library entry (existing Pull metadata refresh).
+   * Delete — selected row only.
+   * Not a dense per-row icon strip.
+   */
+  const LISTING_BAR_ACTIONS = [
+    {
+      id: "get-library",
+      label: "GET FROM LIBRARY…",
+      title: "Browse the public Library and Save a copy into My Tawala",
+      wired: "get-from-library",
+      alwaysEnabled: true,
+    },
+    {
+      id: "refresh-library",
+      label: "REFRESH FROM LIBRARY",
+      title: "Update the selected project from its public Library listing",
+      wired: "pull-library",
+      requiresSelection: true,
+      requiresLibraryLink: true,
+    },
+    {
+      id: "delete",
+      label: "DELETE",
+      title: "Delete the selected project from My Tawala",
+      wired: "delete-mytawala",
+      confirmId: "delete",
+      destructive: true,
+      requiresSelection: true,
+    },
+  ];
+
+  /**
+   * My Projects listing — lean columns (Aug 9 Task List item 1).
+   * Only **Use** remains as a row action; Export / Import / Backup / Restore / Purge /
+   * Publish live on Project Details. Pull / Delete are on the listing selection bar.
+   * Click row → highlight/select; double-click → Project Details (no name link / Details cue).
+   * Records (Responses) column is rendered in mytawala.html (placeholder until count API).
    */
   const LISTING_ACTIONS = [
     {
@@ -159,78 +219,6 @@
       wired: "use-project",
       icon: "use",
       group: "info",
-    },
-    {
-      id: "export",
-      label: "Export",
-      title: "Export project response data (Excel-format mock — see README)",
-      wired: "export-mytawala",
-      icon: "export",
-      group: "transfer",
-      groupStart: true,
-    },
-    {
-      id: "import",
-      label: "Import",
-      title: "Import response data into this project (field mismatch fails)",
-      wired: "import-mytawala",
-      icon: "import",
-      group: "transfer",
-    },
-    {
-      id: "backup",
-      label: "Backup",
-      title: "Back up this project (definition + data + properties)",
-      wired: "backup-mytawala",
-      icon: "backup",
-      group: "backup",
-      groupStart: true,
-    },
-    {
-      id: "restore",
-      label: "Restore",
-      title: "Restore this project from a backup",
-      wired: "restore-mytawala",
-      icon: "restore",
-      group: "backup",
-    },
-    {
-      id: "purge",
-      label: "Purge",
-      title: "Purge project data",
-      wired: "purge-local",
-      confirmId: "purge",
-      icon: "purge",
-      group: "destructive",
-      groupStart: true,
-      destructive: true,
-    },
-    {
-      id: "delete",
-      label: "Delete",
-      title: "Delete project",
-      wired: "delete-mytawala",
-      confirmId: "delete",
-      icon: "delete",
-      group: "destructive",
-      destructive: true,
-    },
-    {
-      id: "publish",
-      label: "Publish",
-      title: "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)",
-      wired: "publish-mytawala",
-      icon: "publish",
-      group: "library",
-      groupStart: true,
-    },
-    {
-      id: "pull-library",
-      label: "Pull",
-      title: "Replace this project's content with a newer public Library version",
-      wired: "pull-library",
-      icon: "pull",
-      group: "library",
     },
   ];
 
@@ -271,13 +259,46 @@
       '<svg class="pm-op-icon" viewBox="0 0 12 12" aria-hidden="true"><path d="M3.5 2.2v7.6L10 6z" fill="currentColor" stroke="none"/></svg>',
   };
 
-  /** Sidebar / related project detail ops (block-projectManagerProjectDetails.jsp + invite/webpage) */
+  /**
+   * Sidebar stubs still parked (Invite / Include → Task List item 10).
+   * Rendered in the identity rail immediately under Theme / Appearance.
+   * REVISE / ONLINE-OFFLINE live as Edit in Designer / Active on the same rail.
+   */
   const PROJECT_SIDEBAR_OPS = [
-    { label: "REVISE PROJECT", title: "Customize / revise a customizable project", wired: false },
-    { label: "TAKE PROJECT ONLINE", title: "Project is Inactive → take online", wired: false },
-    { label: "TAKE PROJECT OFFLINE", title: "Project is Active → take offline", wired: false },
     { label: "Include Project in Web Page", title: "Incorporate this project into a web page", wired: false },
     { label: "Invite Other People to This Project", title: "Invitation options for start-point links", wired: false },
+  ];
+
+  /** Legacy Format → Project Themes (labels/paths from Designer theme-config; mock dropdown only). */
+  const PROJECT_THEMES = [
+    { label: "Baseball", path: "baseball" },
+    { label: "Basic Blue", path: "basicblue" },
+    { label: "Basic Green", path: "basicgreen" },
+    { label: "Basic Pink", path: "basicpink" },
+    { label: "Basic Yellow", path: "basicyellow" },
+    { label: "Big Q", path: "style2" },
+    { label: "Blue Lined Paper", path: "blueline" },
+    { label: "Chocolate", path: "chocolate" },
+    { label: "Dark", path: "dark" },
+    { label: "Default", path: "default" },
+    { label: "Dirtbowl", path: "dirtbowl" },
+    { label: "Dirtbowl - Variable Width", path: "dirtbowl2" },
+    { label: "Full Moon", path: "fullmoon" },
+    { label: "Green Lined Paper", path: "greenline" },
+    { label: "Green Tea", path: "greentea" },
+    { label: "Light Green", path: "litegreen" },
+    { label: "Lime", path: "lime" },
+    { label: "MVSC", path: "mvsc" },
+    { label: "Orange Swirl", path: "orangeswirl" },
+    { label: "Plain", path: "plain" },
+    { label: "Purple Haze", path: "purplehaze" },
+    { label: "Red", path: "red" },
+    { label: "Red Rays", path: "redrays" },
+    { label: "Salzburg", path: "salzburg" },
+    { label: "Soup's On", path: "soup" },
+    { label: "Tennis", path: "tennis" },
+    { label: "Tin Car Bell", path: "tincarbell" },
+    { label: "Yellow", path: "yellow" },
   ];
 
   /** Project Data section (detail.jsp form table + filters) */
@@ -354,7 +375,8 @@
       wired: "use-project",
     },
     { label: "Publish / move to Library", source: "My Tawala → Library", wired: false },
-    { label: "Pull from Library", source: "Library → My Tawala upgrade", wired: false },
+    { label: "Get from Library…", source: "My Tawala listing → library.html (acquire)", wired: "get-from-library" },
+    { label: "Refresh from Library", source: "Library → My Tawala upgrade (linked row)", wired: "pull-library" },
     { label: "Deploy from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
   ];
 
@@ -418,7 +440,9 @@
     "Archive sources: projectmanager/detail.jsp (Project Actions), view.jsp (listing Purge/Delete historically), " +
     "block-projectManagerProjectDetails.jsp (REVISE / ONLINE-OFFLINE / Include / Invite), " +
     "submenu-mytawala.jsp, submenu-library.jsp, confirmationdialogs.jsp. " +
-    "Mock My Tawala listing shows Use + Export…Publish icon strip (labels in headers). " +
+    "Mock My Tawala listing is lean (Aug 9): Name · Created · Updated · Records · Use; " +
+    "selection bar Get/Refresh/Delete; Details bar Backup/Restore/Publish; " +
+    "Project Data banner Use/Copy/Export/Import/Purge. " +
     "Catalog is split: Public Library controls vs My Tawala / Project Manager. " +
     "Library Actions = Test drive | Save a copy; Use is on My Tawala only (single-start → :8080; multi-start → Project Details). " +
     "SportsDashboards (not SportsBoard).";
@@ -466,10 +490,21 @@
     },
     {
       surface: "mytawala",
+      id: "listing-bar",
+      title: "My Projects listing — selection bar",
+      where:
+        "mytawala.html — Get from Library… (always) · Refresh from Library (selection + Library link) · Delete (selection). " +
+        "Owner Aug 9 option 3: acquire ≠ refresh; both stay off Project Details.",
+      items: LISTING_BAR_ACTIONS,
+    },
+    {
+      surface: "mytawala",
       id: "listing",
       title: "My Projects listing row",
       where:
-        "mytawala.html — icon strip per row (labels in column headers): Use · Export · Import · Backup · Restore · Purge · Delete · Publish · Pull. Visual column groups + red Purge/Delete. Use: single-start opens :8080; multi-start opens Project Details (no purge).",
+        "mytawala.html — lean listing (Aug 9): click row to select · double-click → Details · " +
+        "Name · Created · Updated · Records · Use. " +
+        "Use: single-start opens :8080; multi-start opens Project Details (no purge). Get/Refresh/Delete via listing bar.",
       items: LISTING_ACTIONS,
     },
     {
@@ -477,24 +512,34 @@
       id: "actions",
       title: "Project Details — action bar",
       where:
-        "projectmanager/detail.jsp — USE · EXPORT · IMPORT · BACKUP · RESTORE · PURGE · DELETE · PULL FROM LIBRARY. " +
-        "USE = single-start opens :8080; multi-start → Project Details (owner Aug 4, 2026). " +
-        "No PUBLISH here — Publish only lives on the My Tawala listing row.",
+        "projectmanager/detail.jsp — BACKUP · RESTORE · PUBLISH (flush right). " +
+        "Use / Copy / Export / Import / Purge moved to Project Data banner (Aug 9). " +
+        "Get/Refresh/Delete on listing bar (Aug 9 option 3).",
       items: PROJECT_ACTIONS,
     },
     {
       surface: "mytawala",
       id: "sidebar",
       title: "Project Details — left sidebar",
-      where: "blocks/block-projectManagerProjectDetails.jsp + invite / webpage flows",
+      where:
+        "Wider left rail (Aug 9): identity stack (Author / Version / Published / Status / Theme), " +
+        "then Invite / Include stubs directly under Theme, then Edit in Designer. " +
+        "Main column = title + Project Data / Versions / Comments (Project Data higher above the fold).",
       items: PROJECT_SIDEBAR_OPS,
     },
     {
       surface: "mytawala",
       id: "data",
       title: "Project Details — Project Data (collapsible)",
-      where: "detail.jsp form table + filters — per-form View / Export / Import / Purge",
-      items: PROJECT_DATA_OPS,
+      where:
+        "One unified form list (Aug 9): collapsed → starts (▶) → all forms; same tight row style. " +
+        "Banner: Records / Times used / Last used heads + Use / Copy link | Export Import | Purge. " +
+        "Project caret (▸) expands; start rows use a muted left-pointing cue (not an expander). " +
+        "Project-level Times used / Last used on a row under the banner; form rows show Records only. " +
+        "Enablement: collapsed/project → E/I/Purge + Backup/Restore/Publish (Use/Copy off); " +
+        "start ▶ → Use/Copy + E/I/Purge/Publish (Backup/Restore off); " +
+        "non-start form → E/I/Purge/Publish only. Legacy per-form View chips stay grey.",
+      items: [...PROJECT_DATA_CONTROLS, ...PROJECT_DATA_OPS],
     },
     {
       surface: "mytawala",
@@ -521,7 +566,7 @@
     mytawala: {
       heading: "My Tawala / Project Manager controls",
       blurb:
-        "mytawala.html (listing icon strip) + mytawala-project.html (Project Details). Private projects; Use opens :8080 when single-start, else Project Details; PURGE and DELETE are active on listing and Details.",
+        "mytawala.html (lean listing + selection-bar Pull/Delete) + mytawala-project.html (Details: Use/E/I/B/R/Purge/Publish). Private projects; Use opens :8080 when single-start, else Project Details.",
     },
   };
 
@@ -801,7 +846,7 @@
     if (!withUrls.length && !runtimeUrl) return null;
     if (listed.length > 1) {
       return {
-        href: projectDetailsHref(project.id, "pmSecStart"),
+        href: projectDetailsHref(project.id, "pmSecData"),
         openInNewTab: false,
         title: "Choose a start point on Project Details (multi-entry project)",
         mode: "details",
@@ -868,18 +913,151 @@
       (op.confirmId ? ` data-confirm="${escapeHtml(op.confirmId)}"` : "") +
       ` data-wired="${escapeHtml(active ? String(op.wired) : "false")}"`;
     const disabled = active ? "" : " disabled";
+    const dangerClass = op.destructive ? " is-destructive" : "";
     return (
-      `<button type="button" class="pm-action"${disabled} title="${escapeHtml(op.title || op.label)}" ${data}>` +
+      `<button type="button" class="pm-action${dangerClass}"${disabled} title="${escapeHtml(op.title || op.label)}" ${data}>` +
       `${escapeHtml(op.label)}</button>`
     );
   }
 
   function renderProjectActionsBar(projectId) {
     return (
-      '<div class="pm-actions-bar buttons" role="toolbar" aria-label="Project Actions">' +
+      '<div class="pm-actions-bar pm-detail-actions buttons" role="toolbar" aria-label="Project Actions">' +
       PROJECT_ACTIONS.map((op) => actionButton(op, projectId)).join("") +
       "</div>"
     );
+  }
+
+  /**
+   * Whether a My Tawala row is linked to a public Library entry (Refresh gate).
+   * Prefer an explicit pull record; else exact id/name twin in the Library catalog.
+   */
+  function resolveLibraryLink(projectId) {
+    if (!projectId || typeof TawalaDemo === "undefined") return null;
+    const project = TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    if (!project) return null;
+
+    const pulledId = project.pulledFromLibraryId ? String(project.pulledFromLibraryId) : "";
+    if (pulledId && TawalaDemo.getLibrary && TawalaDemo.getLibrary(pulledId)) {
+      const lib = TawalaDemo.getLibrary(pulledId);
+      return {
+        id: pulledId,
+        name: project.pulledFromLibraryName || (lib && lib.name) || pulledId,
+        kind: "pulled",
+      };
+    }
+
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.findPullCandidates === "function"
+    ) {
+      const exact = TawalaTransfer.findPullCandidates(projectId, project.name).filter(
+        (m) => m.matchKind === "exact"
+      );
+      if (exact.length === 1) {
+        return { id: exact[0].id, name: exact[0].name, kind: "exact" };
+      }
+    }
+
+    if (TawalaDemo.getLibrary && TawalaDemo.getLibrary(projectId)) {
+      const lib = TawalaDemo.getLibrary(projectId);
+      return { id: projectId, name: (lib && lib.name) || projectId, kind: "same-id" };
+    }
+    return null;
+  }
+
+  /**
+   * Top-of-list Get / Refresh / Delete — Get always on; Refresh needs selection + Library link;
+   * Delete needs selection.
+   */
+  function renderListingSelectionBar() {
+    return (
+      '<div class="pm-actions-bar pm-listing-bar buttons" id="myProjectsListingBar" role="toolbar" aria-label="My Tawala list actions">' +
+      LISTING_BAR_ACTIONS.map((op) => {
+        const dangerClass = op.destructive ? " is-destructive" : "";
+        const data =
+          `data-op="${escapeHtml(op.id || op.label)}" data-project=""` +
+          (op.confirmId ? ` data-confirm="${escapeHtml(op.confirmId)}"` : "") +
+          ` data-wired="${escapeHtml(String(op.wired))}"` +
+          (op.alwaysEnabled ? ' data-always-enabled="true"' : "") +
+          (op.requiresLibraryLink ? ' data-requires-library-link="true"' : "");
+        if (op.wired === "get-from-library") {
+          return (
+            `<a class="pm-action is-active" href="library.html" title="${escapeHtml(op.title || op.label)}" ${data}>` +
+            `${escapeHtml(op.label)}</a>`
+          );
+        }
+        const startDisabled = op.alwaysEnabled ? "" : " disabled";
+        return (
+          `<button type="button" class="pm-action${dangerClass}"${startDisabled} title="${escapeHtml(op.title || op.label)}" ${data}>` +
+          `${escapeHtml(op.label)}</button>`
+        );
+      }).join("") +
+      '<span class="pm-listing-bar-hint" id="myProjectsListingBarHint">Get from Library is always available · select a linked project to Refresh · select any project to Delete</span>' +
+      "</div>"
+    );
+  }
+
+  /** Enable/disable listing bar buttons for the selected project id (or none). */
+  function syncListingSelectionBar(projectId) {
+    const bar = document.getElementById("myProjectsListingBar");
+    if (!bar) return;
+    const id = projectId ? String(projectId) : "";
+    const link = id ? resolveLibraryLink(id) : null;
+    const hint = document.getElementById("myProjectsListingBarHint");
+    let selectedName = "";
+    if (id && typeof TawalaDemo !== "undefined" && TawalaDemo.getMyTawala) {
+      const p = TawalaDemo.getMyTawala(id);
+      selectedName = p
+        ? TawalaDemo.displayName
+          ? TawalaDemo.displayName(p.name)
+          : String(p.name || id)
+        : id;
+    }
+
+    bar.querySelectorAll("[data-wired]").forEach((el) => {
+      const opId = el.dataset.op || "";
+      if (el.dataset.alwaysEnabled === "true" || opId === "get-library") {
+        el.dataset.project = "";
+        if ("disabled" in el) el.disabled = false;
+        el.title = "Browse the public Library and Save a copy into My Tawala";
+        return;
+      }
+
+      el.dataset.project = id;
+
+      if (opId === "refresh-library" || el.dataset.wired === "pull-library") {
+        const enabled = !!(id && link);
+        el.disabled = !enabled;
+        if (!id) {
+          el.title = "Select a project that is linked to the Library to refresh";
+        } else if (!link) {
+          el.title =
+            "This project is not linked to a public Library entry — use Get from Library… to acquire a copy";
+        } else {
+          el.title = `Update “${selectedName}” from its Library listing (“${link.name}”)`;
+        }
+        return;
+      }
+
+      if (opId === "delete" || el.dataset.wired === "delete-mytawala") {
+        el.disabled = !id;
+        el.title = id
+          ? `Delete “${selectedName}” from My Tawala`
+          : "Select a project to delete";
+      }
+    });
+
+    if (hint) {
+      if (!id) {
+        hint.textContent =
+          "Get from Library is always available · select a linked project to Refresh · select any project to Delete";
+      } else if (link) {
+        hint.textContent = `Selected “${selectedName}” · linked to Library “${link.name}” — Refresh / Delete available`;
+      } else {
+        hint.textContent = `Selected “${selectedName}” · not linked to Library — Delete available; use Get from Library… to acquire`;
+      }
+    }
   }
 
   /** Header cells for listing action columns — label in bar, icon lives in each row. */
@@ -1404,50 +1582,1076 @@
     );
   }
 
-  function renderCollapsibleSection(id, title, innerHtml, open) {
+  function renderCollapsibleSection(id, title, innerHtml, open, opts) {
+    const options = opts || {};
+    const extraClass = options.greyed ? " is-stub-greyed" : "";
+    const summaryTitle = options.summaryTitle
+      ? ` title="${escapeHtml(options.summaryTitle)}"`
+      : "";
     return (
-      `<details class="pm-section" id="${escapeHtml(id)}"${open ? " open" : ""}>` +
-      `<summary>${escapeHtml(title)}</summary>` +
+      `<details class="pm-section${extraClass}" id="${escapeHtml(id)}"${open ? " open" : ""}>` +
+      `<summary${summaryTitle}>${escapeHtml(title)}</summary>` +
       `<div class="pm-section-body">${innerHtml}</div>` +
       "</details>"
     );
   }
 
-  /**
-   * Full Project Details layout (separate page): action bar + sidebar ops + collapsible sections.
-   * Inactive section chips are disabled (grey only). Start points open live :8080 URLs when deployed.
-   * Do NOT purge-on-click here (unlike Library Test drive): Online Exam Admin setup / questions
-   * must survive when the owner then opens Exam. Use PURGE action when a clean slate is wanted.
-   */
-  function renderDetailPanel(project) {
-    if (!project) return '<p class="pm-hint">Project not found.</p>';
-    const deployed = typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
-    let startPoints = project.startPoints || [];
-    // Surface Exam / Registration before Admin when multi-start (list order only).
+  function projectDisplayName(project) {
+    if (!project) return "";
+    if (window.TawalaDemo && window.TawalaDemo.displayName) {
+      return window.TawalaDemo.displayName(project.name);
+    }
+    return String(project.name || "")
+      .replace(/\.tawala\.xml$/i, "")
+      .replace(/\.tawala$/i, "")
+      .replace(/\.json$/i, "");
+  }
+
+  /** Ordered start points for Project Data (Exam/Registration first when multi-start). */
+  function orderedStartPoints(project) {
+    let startPoints = (project && project.startPoints) || [];
     if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.pickPrimaryStartPoint === "function") {
       const primary = TawalaDemo.pickPrimaryStartPoint(startPoints);
       if (primary && startPoints.length > 1) {
         startPoints = [primary].concat(startPoints.filter((s) => s !== primary));
       }
     }
-    const startLinks = startPoints
-      .map((sp) => {
-        if (typeof TawalaDemo !== "undefined" && TawalaDemo.startPointHtml) {
-          // My Tawala: no purge (preserve Question / SetupVariables for Exam flow).
-          return `<li>${TawalaDemo.startPointHtml(sp, { purge: false })}</li>`;
-        }
-        if (sp.url) {
-          return `<li><a href="${escapeHtml(sp.url)}" target="_blank" rel="noopener">${escapeHtml(sp.label || sp.form || "Start")}</a></li>`;
-        }
-        return `<li><span class="start-point-pending" title="No local :8080 URL yet">${escapeHtml(sp.label || sp.form || "Start")}</span></li>`;
-      })
-      .join("");
+    return startPoints.filter((s) => s && (s.url || s.label || s.form));
+  }
 
-    const dataOps =
-      '<div class="pm-chip-row">' +
-      PROJECT_DATA_OPS.map(disabledChip).join("") +
-      "</div>" +
-      '<p class="pm-hint">Form table — SHOW ALL / SELECTED filters and per-form View / Export / Import / Purge.</p>';
+  function startPointFormKey(sp) {
+    return String((sp && (sp.form || sp.label)) || "Start");
+  }
+
+  /** Encode a website-mock-relative path for fetch (spaces in JSON filenames). */
+  function encodeMockRelPath(relPath) {
+    return String(relPath || "")
+      .split("/")
+      .map((seg) => encodeURIComponent(seg))
+      .join("/");
+  }
+
+  /**
+   * All form names for the Forms branch: catalog formNames ∪ definition ∪ json hydrate ∪ starts.
+   * Non-start forms appear only after second expand (Forms [+]).
+   */
+  function collectFormNames(project, extraNames) {
+    const seen = new Set();
+    const out = [];
+    function add(name) {
+      const n = String(name || "").trim();
+      if (!n || seen.has(n)) return;
+      seen.add(n);
+      out.push(n);
+    }
+    /* Catalog seed (e.g. Online Exam) — sync first paint without waiting on fetch. */
+    const seeded = (project && project.formNames) || [];
+    if (Array.isArray(seeded)) seeded.forEach(add);
+    /* Overlay / Deploy may attach a forms array of names or {name} objects. */
+    const topForms = (project && project.forms) || [];
+    if (Array.isArray(topForms)) {
+      topForms.forEach((f) => add(typeof f === "string" ? f : f && f.name));
+    }
+    const versions = (project && project.versions) || [];
+    for (let i = 0; i < versions.length; i++) {
+      const def = versions[i] && versions[i].definition;
+      const forms = def && Array.isArray(def.forms) ? def.forms : [];
+      forms.forEach((f) => add(f && f.name));
+    }
+    if (project && project.definition && Array.isArray(project.definition.forms)) {
+      project.definition.forms.forEach((f) => add(f && f.name));
+    }
+    (extraNames || []).forEach(add);
+    orderedStartPoints(project).forEach((sp) => add(startPointFormKey(sp)));
+    return out;
+  }
+
+  /** Per-form count label: known success → number (0 ok); unknown/failed → "—". */
+  function formCountLabel(countsState, formName) {
+    if (!countsState || !countsState.known) return "—";
+    const n = countsState.byForm && countsState.byForm[formName];
+    return String(n == null ? 0 : n);
+  }
+
+  function startPointKeys(project) {
+    return new Set(orderedStartPoints(project).map(startPointFormKey));
+  }
+
+  /** Map form key → first matching start point (idx + url + label). */
+  function startInfoByForm(project) {
+    const map = new Map();
+    orderedStartPoints(project).forEach((sp, idx) => {
+      const key = startPointFormKey(sp);
+      if (!map.has(key)) {
+        map.set(key, {
+          idx,
+          url: sp.url ? String(sp.url) : "",
+          label: sp.label || sp.form || key,
+        });
+      }
+    });
+    return map;
+  }
+
+  /**
+   * Unified form list: start points first (ordered), then remaining forms.
+   * Each entry: { name, start: null | { idx, url, label } }.
+   */
+  function orderedFormEntries(project, formNames) {
+    const startMap = startInfoByForm(project);
+    const ordered = [];
+    const seen = new Set();
+    orderedStartPoints(project).forEach((sp) => {
+      const key = startPointFormKey(sp);
+      if (!key || seen.has(key)) return;
+      seen.add(key);
+      ordered.push({ name: key, start: startMap.get(key) || null });
+    });
+    (formNames || []).forEach((name) => {
+      const n = String(name || "").trim();
+      if (!n || seen.has(n)) return;
+      seen.add(n);
+      ordered.push({ name: n, start: startMap.get(n) || null });
+    });
+    return ordered;
+  }
+
+  function formStatCells(countsState, formName) {
+    const count = formCountLabel(countsState, formName);
+    const countTitle =
+      count === "—"
+        ? "Response count unavailable (needs :3001 + Postgres/Docker, or Deploy)"
+        : `Records for form “${formName}”: ${count}`;
+    /* Form rows: Records only — no Times used / Last used dashes (project-level stats). */
+    return (
+      `<span class="pm-data-stat-val" data-pm-form-count="1" title="${escapeHtml(countTitle)}">${escapeHtml(
+        count
+      )}</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-empty" aria-hidden="true"></span>` +
+      `<span class="pm-data-stat-val pm-data-stat-empty" aria-hidden="true"></span>` +
+      `<span class="pm-data-col-spacer" aria-hidden="true"></span>`
+    );
+  }
+
+  function formRowHtml(name, startInfo, countsState) {
+    const isStart = !!startInfo;
+    const label = isStart && startInfo.label ? startInfo.label : name;
+    const urlAttr =
+      isStart && startInfo.url ? ` data-pm-url="${escapeHtml(startInfo.url)}"` : "";
+    const idxAttr = isStart ? ` data-pm-start-idx="${startInfo.idx}"` : "";
+    return (
+      `<li class="pm-data-tree-row pm-data-tree-form${isStart ? " is-start" : ""}" role="treeitem" tabindex="0" ` +
+      `data-pm-sel="${isStart ? "start" : "form"}" data-pm-form="${escapeHtml(name)}" ` +
+      `data-pm-is-start="${isStart ? "1" : "0"}"${idxAttr}${urlAttr}>` +
+      (isStart
+        ? `<span class="pm-data-tree-play" title="Starting point" aria-label="Starting point">▶</span>`
+        : `<span class="pm-data-tree-play-spacer" aria-hidden="true"></span>`) +
+      `<span class="pm-data-tree-label">${escapeHtml(label)}</span>` +
+      formStatCells(countsState, name) +
+      `</li>`
+    );
+  }
+
+  /** Caret toggle (▸) — same family as .pm-section summary; CSS rotates when expanded. */
+  function renderDataTreeToggle(title, expanded) {
+    const open = !!expanded;
+    return (
+      `<button type="button" class="pm-data-tree-toggle${open ? " is-expanded" : ""}" data-pm-tree-toggle="1" ` +
+      `aria-expanded="${open ? "true" : "false"}" ` +
+      `title="${escapeHtml(title)}" ` +
+      `aria-label="${escapeHtml(title)}">` +
+      `<span class="pm-data-tree-toggle-glyph" aria-hidden="true">▸</span>` +
+      `</button>`
+    );
+  }
+
+  /** Project toggle titles for expand levels 0 / 1 / 2 (caret via CSS is-expanded). */
+  function projectToggleChrome(level) {
+    const n = Number(level) || 0;
+    if (n <= 0) return { title: "Show starting points", expanded: false };
+    if (n === 1) return { title: "Show all forms", expanded: true };
+    return { title: "Collapse project data", expanded: true };
+  }
+
+  function renderProjectDataBannerControls(projectId) {
+    const pid = escapeHtml(projectId || "");
+    const vrule = `<span class="pm-data-vrule" aria-hidden="true"></span>`;
+    /* Nested in last shared grid track so form-row stats align with banner heads. */
+    return (
+      `<div class="pm-data-project-controls">` +
+      vrule +
+      `<div class="pm-data-ctrl-group pm-data-banner-controls" role="toolbar" aria-label="Project Data actions">` +
+      `<a class="pm-data-ctrl pm-data-ctrl-use is-scope-disabled" href="#" ` +
+      `data-op="use" data-wired="use-project" data-project="${pid}" ` +
+      `title="Select a start point to Use" aria-disabled="true">Use</a>` +
+      `<button type="button" class="pm-data-ctrl is-scope-disabled" data-op="copy-link" ` +
+      `data-wired="copy-start-link" data-project="${pid}" disabled ` +
+      `title="Select a start point to copy its link">Copy link</button>` +
+      `</div>` +
+      vrule +
+      `<div class="pm-data-ctrl-group">` +
+      `<button type="button" class="pm-data-ctrl" data-op="export" data-wired="export-mytawala" ` +
+      `data-project="${pid}" data-data-scope="project" title="Export project response data">Export</button>` +
+      `<button type="button" class="pm-data-ctrl" data-op="import" data-wired="import-mytawala" ` +
+      `data-project="${pid}" data-data-scope="project" title="Import response data into this project">Import</button>` +
+      `</div>` +
+      vrule +
+      `<div class="pm-data-ctrl-group">` +
+      `<button type="button" class="pm-data-ctrl is-destructive" data-op="purge" data-wired="purge-local" ` +
+      `data-confirm="purge" data-project="${pid}" data-data-scope="project" title="Purge project data">Purge</button>` +
+      `</div>` +
+      `</div>`
+    );
+  }
+
+  /**
+   * Project Data — one unified form list (owner Aug 9):
+   *   level 0 — project banner only
+   *   level 1 — start points (muted ◀ cue) in the same list
+   *   level 2 — all forms (starts still marked)
+   * Banner row: name + stats headings + Use / Copy link | Export Import | Purge (nowrap).
+   * Values row under that: project Records / Times used / Last used.
+   * Full-height vrules: stats|controls, Copy|Export, Import|Purge.
+   */
+  function renderProjectDataTree(project) {
+    const deployed = typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
+    const displayName = projectDisplayName(project);
+    const formNames = collectFormNames(project);
+    const entries = orderedFormEntries(project, formNames);
+    const preferLevel =
+      typeof location !== "undefined" &&
+      location.hash &&
+      (location.hash === "#pmSecData" || location.hash === "#pmDataStartPoints")
+        ? 1
+        : 0;
+    const projectChrome = projectToggleChrome(preferLevel);
+    const formRows = entries.map((e) => formRowHtml(e.name, e.start, null)).join("");
+    const hasStarts = entries.some((e) => e.start);
+    const scrollClass = entries.length > 10 ? " is-scrollable" : "";
+
+    const hint = deployed
+      ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
+        "<b>Start ▶</b> → Use / Copy link; <b>any form</b> → Export / Import / Purge; " +
+        "<b>project</b> (or collapsed list) → Backup / Restore + project-wide data ops. Publish stays on. " +
+        "Use keeps data (Purge clears). Records need <code>:3001</code> + Docker/Postgres; else <b>—</b>.</p>"
+      : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — Expand still lists starts/forms; Export / Import / Purge need Deploy → Show in My Tawala.</p>';
+
+    return (
+      `<div class="pm-data-tree" id="pmDataTree" role="tree" ` +
+      `data-project-id="${escapeHtml(project.id || "")}" ` +
+      `data-expand-level="${preferLevel}" ` +
+      `data-project-open="${preferLevel >= 1 ? "1" : "0"}" ` +
+      `data-forms-open="${preferLevel >= 2 ? "1" : "0"}" ` +
+      `data-sel-kind="project" data-sel-key="">` +
+      /* One shared column grid for banner heads, banner values, and every form row. */
+      `<div class="pm-data-grid${scrollClass}">` +
+      `<div class="pm-data-project-block is-selected" role="treeitem" tabindex="0" ` +
+      `data-pm-sel="project" aria-selected="true" id="pmDataStartPoints">` +
+      /* Row 1 — name + column heads + command groups (vrules span both rows). */
+      renderDataTreeToggle(projectChrome.title, projectChrome.expanded) +
+      `<span class="pm-data-tree-label pm-data-tree-project-name">${escapeHtml(displayName)}</span>` +
+      `<span class="pm-data-stat-head">Records</span>` +
+      `<span class="pm-data-stat-head">Times used</span>` +
+      `<span class="pm-data-stat-head">Last used</span>` +
+      renderProjectDataBannerControls(project.id) +
+      /* Row 2 — project-level values under the heads (form rows: Records only). */
+      `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
+      `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
+      `<span class="pm-data-stat-val" id="pmDataProjectRecords" title="Project-wide Records (Responses)">—</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-placeholder" title="Times used — not wired yet">—</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-placeholder" title="Last used — not wired yet">—</span>` +
+      `</div>` +
+      `<ul class="pm-data-tree-list pm-data-forms-list${preferLevel >= 1 ? "" : " is-collapsed"}" ` +
+      `id="pmDataFormsList" role="group" aria-label="Forms">` +
+      (formRows ||
+        `<li class="pm-data-tree-empty">${
+          hasStarts ? "No forms discovered yet." : "No start points or forms listed."
+        }</li>`) +
+      `</ul>` +
+      `</div>` +
+      hint +
+      "</div>"
+    );
+  }
+
+  function readDataTreeSelection(tree) {
+    if (!tree) return { kind: "project", key: "", formName: "", startIdx: -1, url: "" };
+    const kind = tree.dataset.selKind || "project";
+    const key = tree.dataset.selKey || "";
+    const row =
+      tree.querySelector(
+        ".pm-data-tree-row.is-selected, .pm-data-project-block.is-selected, .pm-data-project-line.is-selected"
+      ) || tree.querySelector("[data-pm-sel].is-selected");
+    const formName =
+      kind === "form" || kind === "start"
+        ? (row && row.dataset.pmForm) || key || ""
+        : "";
+    return {
+      kind,
+      key,
+      formName,
+      startIdx: kind === "start" && row ? Number(row.dataset.pmStartIdx) : -1,
+      url: kind === "start" && row && row.dataset.pmUrl ? row.dataset.pmUrl : "",
+    };
+  }
+
+  function setDataTreeSelection(tree, kind, row) {
+    if (!tree) return;
+    tree.querySelectorAll(".is-selected[data-pm-sel]").forEach((el) => {
+      el.classList.remove("is-selected");
+      el.removeAttribute("aria-selected");
+    });
+    const target =
+      row ||
+      (kind === "project" ? tree.querySelector('[data-pm-sel="project"]') : null);
+    if (target) {
+      target.classList.add("is-selected");
+      target.setAttribute("aria-selected", "true");
+    }
+    tree.dataset.selKind = kind || "project";
+    if ((kind === "form" || kind === "start") && target) {
+      tree.dataset.selKey = target.dataset.pmForm || "";
+    } else {
+      tree.dataset.selKey = "";
+    }
+    syncProjectActionsForDataSelection(tree);
+  }
+
+  /** Clamp/normalize expand level: 0 = closed, 1 = starts, 2 = all forms. */
+  function normalizeExpandLevel(level) {
+    const n = Number(level);
+    if (!Number.isFinite(n) || n <= 0) return 0;
+    if (n >= 2) return 2;
+    return 1;
+  }
+
+  /**
+   * Apply expand level to the tree (CSS data attrs + toggle chrome).
+   * Keeps legacy data-project-open / data-forms-open in sync for CSS.
+   */
+  function setExpandLevel(tree, level) {
+    if (!tree) return;
+    const next = normalizeExpandLevel(level);
+    tree.dataset.expandLevel = String(next);
+    tree.dataset.projectOpen = next >= 1 ? "1" : "0";
+    tree.dataset.formsOpen = next >= 2 ? "1" : "0";
+
+    const list = tree.querySelector("#pmDataFormsList");
+    if (list) list.classList.toggle("is-collapsed", next < 1);
+
+    const projectChrome = projectToggleChrome(next);
+    const projectLine = tree.querySelector('[data-pm-sel="project"]');
+    const projectToggle = projectLine && projectLine.querySelector("[data-pm-tree-toggle]");
+    if (projectToggle) {
+      projectToggle.setAttribute("aria-expanded", projectChrome.expanded ? "true" : "false");
+      projectToggle.classList.toggle("is-expanded", projectChrome.expanded);
+      projectToggle.title = projectChrome.title;
+      projectToggle.setAttribute("aria-label", projectChrome.title);
+    }
+
+    /* Collapsed (level 0) = project-level enablement; clear any form/start highlight. */
+    const sel = readDataTreeSelection(tree);
+    if (next <= 0 && sel.kind !== "project") {
+      setDataTreeSelection(tree, "project");
+    } else if (next === 1 && sel.kind === "form") {
+      /* Level 1 hides non-start rows — drop a highlight that is no longer visible. */
+      setDataTreeSelection(tree, "project");
+    } else {
+      syncProjectActionsForDataSelection(tree);
+    }
+  }
+
+  /**
+   * Selection that drives enablement. Expand level 0 (forms list hidden) always
+   * behaves as project-level (owner rule A), even if a stale form key remains.
+   */
+  function effectiveDataSelection(tree) {
+    const expandLevel = normalizeExpandLevel(tree && tree.dataset.expandLevel);
+    if (expandLevel <= 0) {
+      return { kind: "project", key: "", formName: "", startIdx: -1, url: "" };
+    }
+    return readDataTreeSelection(tree);
+  }
+
+  /** Project caret cycles 0 → 1 → 2 → 0. */
+  function cycleProjectExpand(tree) {
+    if (!tree) return;
+    const cur = normalizeExpandLevel(tree.dataset.expandLevel);
+    setExpandLevel(tree, cur >= 2 ? 0 : cur + 1);
+  }
+
+  /** @deprecated use setExpandLevel — kept name for any stray callers */
+  function setProjectBranchOpen(tree, open) {
+    setExpandLevel(tree, open ? 1 : 0);
+  }
+
+  /** @deprecated use setExpandLevel */
+  function setFormsBranchOpen(tree, open) {
+    setExpandLevel(tree, open ? 2 : Math.min(normalizeExpandLevel(tree && tree.dataset.expandLevel), 1));
+  }
+
+  function setCtrlEnabled(el, enabled, titleWhenOff) {
+    if (!el) return;
+    if (enabled) {
+      el.classList.remove("is-scope-disabled");
+      el.removeAttribute("aria-disabled");
+      if (el.tagName === "BUTTON") el.disabled = false;
+    } else {
+      el.classList.add("is-scope-disabled");
+      el.setAttribute("aria-disabled", "true");
+      if (el.tagName === "BUTTON") el.disabled = true;
+      if (titleWhenOff) el.title = titleWhenOff;
+    }
+  }
+
+  function applyDataScopeToCtrl(el, sel, op) {
+    if (!el) return;
+    if ((sel.kind === "form" || sel.kind === "start") && sel.formName) {
+      el.dataset.dataScope = "form";
+      el.dataset.formName = sel.formName;
+      el.title =
+        op === "export"
+          ? `Export response data for form “${sel.formName}” only`
+          : op === "import"
+            ? `Import response data into form “${sel.formName}” only`
+            : `Purge response data for form “${sel.formName}” only`;
+    } else {
+      el.dataset.dataScope = "project";
+      delete el.dataset.formName;
+      el.title =
+        op === "export"
+          ? "Export project response data (Excel-format mock — see README)"
+          : op === "import"
+            ? "Import response data into this project (Excel/JSON mock — field mismatch fails)"
+            : "Purge project data";
+    }
+  }
+
+  /**
+   * Enable/disable Project Data banner + Details Backup/Restore/Publish from highlight.
+   * Owner matrix A/B/C — see PROJECT_ACTIONS comment. Collapsed tree ⇒ rule A.
+   */
+  function syncProjectActionsForDataSelection(tree) {
+    const detail = document.getElementById("pmDetail");
+    const dataTree = tree || document.getElementById("pmDataTree");
+    const sel = effectiveDataSelection(dataTree);
+    const projectId =
+      (detail && detail.dataset.projectId) || (dataTree && dataTree.dataset.projectId) || "";
+
+    const projectSelected = sel.kind === "project";
+    const startReady = sel.kind === "start" && !!sel.url;
+    const formRowHighlighted = sel.kind === "form" || sel.kind === "start";
+    /* A/B/C: Export / Import / Purge / Publish always on for project, start, or form. */
+    const dataOpsEnabled =
+      sel.kind === "project" || sel.kind === "form" || sel.kind === "start";
+    /* A only: Backup / Restore when project-level (collapsed or project root highlighted). */
+    const backupRestoreEnabled = projectSelected && !formRowHighlighted;
+
+    /* Main Details bar: Backup / Restore (A only); Publish always (A/B/C). */
+    const bar = detail && detail.querySelector(".pm-detail-actions");
+    if (bar) {
+      bar.querySelectorAll("button.pm-action, a.pm-action").forEach((el) => {
+        const op = el.dataset.op || "";
+        const wired = el.dataset.wired || "";
+        if (op === "publish" || wired === "publish-mytawala") {
+          setCtrlEnabled(el, true);
+          el.title =
+            "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)";
+          if ("disabled" in el) el.disabled = false;
+          return;
+        }
+        if (
+          op === "backup" ||
+          op === "restore" ||
+          wired === "backup-mytawala" ||
+          wired === "restore-mytawala"
+        ) {
+          setCtrlEnabled(
+            el,
+            backupRestoreEnabled,
+            formRowHighlighted
+              ? "Backup / Restore are project-level — highlight the project (or collapse the form list)"
+              : "Select the project in Project Data (or collapse the form list) to enable Backup / Restore"
+          );
+          if (backupRestoreEnabled) {
+            el.title =
+              op === "restore" || wired === "restore-mytawala"
+                ? "Restore this project from a backup"
+                : "Back up this project (definition + data + properties)";
+            el.disabled = false;
+            el.classList.remove("is-scope-disabled");
+          } else {
+            el.disabled = true;
+          }
+        }
+      });
+    }
+
+    /* Project Data banner controls (groups live as project-block grid children). */
+    const controls =
+      (dataTree && dataTree.querySelector(".pm-data-project-block")) ||
+      document.querySelector(".pm-data-project-block");
+    if (!controls) return;
+
+    controls.querySelectorAll("[data-wired]").forEach((el) => {
+      const op = el.dataset.op || "";
+      const wired = el.dataset.wired || "";
+
+      if (wired === "use-project" || op === "use") {
+        /* B only: start-point highlight. A (project/collapsed) and C (non-start) → off. */
+        if (startReady) {
+          setCtrlEnabled(el, true);
+          if (el.tagName === "A") {
+            el.href = sel.url;
+            el.target = "_blank";
+            el.rel = "noopener";
+            el.dataset.useMode = "runtime";
+          }
+          el.title = "Use the highlighted start point on :8080";
+          el.classList.add("is-active");
+        } else {
+          const offTitle =
+            sel.kind === "form"
+              ? "Use is only for start points (▶) — highlight a starting form"
+              : "Select a start point (▶) to Use";
+          setCtrlEnabled(el, false, offTitle);
+          if (el.tagName === "A") {
+            el.href = "#";
+            el.removeAttribute("target");
+            el.removeAttribute("rel");
+            el.dataset.useMode = "none";
+          }
+          el.classList.remove("is-active");
+        }
+        return;
+      }
+
+      if (wired === "copy-start-link" || op === "copy-link") {
+        const offTitle =
+          sel.kind === "form"
+            ? "Copy link is only for start points (▶) — highlight a starting form"
+            : "Select a start point (▶) to copy its link";
+        setCtrlEnabled(el, startReady, offTitle);
+        if (startReady) el.title = "Copy the highlighted start point link";
+        return;
+      }
+
+      if (wired === "export-mytawala" || wired === "import-mytawala" || wired === "purge-local") {
+        if (dataOpsEnabled) {
+          setCtrlEnabled(el, true);
+          applyDataScopeToCtrl(el, sel, op);
+        } else {
+          setCtrlEnabled(
+            el,
+            false,
+            op === "purge"
+              ? "Select the project or a form to Purge response data"
+              : "Select the project (all data) or a form (that form only)"
+          );
+        }
+      }
+    });
+
+    /* Keep projectId on banner controls if missing. */
+    if (projectId) {
+      controls.querySelectorAll("[data-project]").forEach((el) => {
+        if (!el.dataset.project) el.dataset.project = projectId;
+      });
+    }
+  }
+
+  async function copyUrlToClipboard(url) {
+    if (!url) {
+      window.alert("This start point has no :8080 URL to copy yet.");
+      return;
+    }
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        await navigator.clipboard.writeText(url);
+      } else {
+        window.prompt("Copy this start link:", url);
+        return;
+      }
+      setStatus("Copied start link.");
+    } catch {
+      window.prompt("Copy this start link:", url);
+    }
+  }
+
+  async function copyStartLinkFromTree(tree, startIdx) {
+    const row = tree.querySelector(
+      `.pm-data-tree-form[data-pm-start-idx="${startIdx}"], .pm-data-tree-start[data-pm-start-idx="${startIdx}"]`
+    );
+    await copyUrlToClipboard(row && row.dataset.pmUrl);
+  }
+
+  function rebuildFormsList(tree, formNames, project, countsState) {
+    const list = tree.querySelector("#pmDataFormsList");
+    if (!list) return;
+    const entries = orderedFormEntries(project, formNames);
+    if (!entries.length) {
+      list.innerHTML = '<li class="pm-data-tree-empty">No forms discovered yet.</li>';
+      list.classList.remove("is-scrollable");
+    } else {
+      list.innerHTML = entries.map((e) => formRowHtml(e.name, e.start, countsState)).join("");
+      list.classList.toggle("is-scrollable", entries.length > 10);
+    }
+  }
+
+  function setProjectRecordsDisplay(scope, countsState) {
+    const totalEl =
+      (scope && scope.querySelector && scope.querySelector("#pmRecordsTotal")) ||
+      document.getElementById("pmRecordsTotal");
+    const treeCount =
+      (scope && scope.querySelector && scope.querySelector("#pmDataProjectRecords")) ||
+      document.getElementById("pmDataProjectRecords");
+    const known = !!(countsState && countsState.known);
+    const label = known ? String(countsState.total) : "—";
+    const title = known
+      ? `Records (Responses): ${countsState.total}` +
+        (countsState.source ? ` · ${countsState.source}` : "")
+      : countsState && countsState.error
+        ? `Records unavailable: ${countsState.error}`
+        : "Records (Responses) — count unavailable (needs :3001 + Postgres/Docker, or a uniqueId)";
+    if (totalEl) {
+      totalEl.textContent = label;
+      totalEl.title = title;
+    }
+    if (treeCount) {
+      treeCount.textContent = label;
+      treeCount.title = title;
+    }
+  }
+
+  /**
+   * Enrich Forms branch from catalog jsonFile / export, and fill Records counts.
+   * Safe no-op when offline / undeployed — form names still come from catalog formNames.
+   */
+  async function hydrateProjectDataTree(root) {
+    const scope = root || document;
+    const tree = scope.querySelector("#pmDataTree");
+    if (!tree) return;
+    const projectId = tree.dataset.projectId;
+    const project = resolveMyTawalaProject(projectId);
+    if (!project) return;
+    const extras = [];
+    let countsState = null;
+
+    const jsonFile = project.jsonFile ? String(project.jsonFile) : "";
+    if (jsonFile && !jsonFile.includes("..") && !jsonFile.startsWith("/")) {
+      /* Only paths the mock static server can serve (projects/… under website-mock). */
+      if (jsonFile.startsWith("projects/")) {
+        try {
+          const res = await fetch(encodeMockRelPath(jsonFile));
+          if (res.ok) {
+            const def = await res.json();
+            (def.forms || []).forEach((f) => {
+              if (f && f.name) extras.push(f.name);
+            });
+          }
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+
+    const uniqueId =
+      typeof TawalaDemo !== "undefined" && typeof TawalaDemo.resolvePurgeUniqueId === "function"
+        ? TawalaDemo.resolvePurgeUniqueId(projectId)
+        : null;
+    if (uniqueId && typeof TawalaDemo.countResponses === "function") {
+      try {
+        const result = await TawalaDemo.countResponses(uniqueId);
+        if (result && result.status === "success") {
+          Object.keys(result.byForm || {}).forEach((n) => extras.push(n));
+          countsState = {
+            known: true,
+            total: result.count,
+            byForm: result.byForm || {},
+            source: result.source || "",
+          };
+        } else {
+          countsState = {
+            known: false,
+            error: (result && result.error) || "count failed",
+          };
+        }
+      } catch (e) {
+        countsState = { known: false, error: String((e && e.message) || e) };
+      }
+    } else if (!uniqueId) {
+      countsState = { known: false, error: "no uniqueId — Deploy first" };
+    }
+
+    const formNames = collectFormNames(project, extras);
+    rebuildFormsList(tree, formNames, project, countsState);
+    setProjectRecordsDisplay(scope, countsState);
+
+    /* Preserve selection highlight after rebuild. */
+    const sel = readDataTreeSelection(tree);
+    if ((sel.kind === "form" || sel.kind === "start") && sel.formName) {
+      const rows = tree.querySelectorAll(".pm-data-tree-form");
+      let restored = false;
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].dataset.pmForm === sel.formName) {
+          setDataTreeSelection(tree, rows[i].dataset.pmSel || sel.kind, rows[i]);
+          restored = true;
+          break;
+        }
+      }
+      if (!restored) syncProjectActionsForDataSelection(tree);
+    } else {
+      syncProjectActionsForDataSelection(tree);
+    }
+  }
+
+  function handleDataTreeClick(ev) {
+    const tree = ev.target.closest("#pmDataTree");
+    if (!tree) return;
+
+    /* Banner controls must not steal / reset the form highlight. */
+    if (ev.target.closest(".pm-data-ctrl-group, .pm-data-banner-controls")) {
+      return;
+    }
+
+    const copyBtn = ev.target.closest("[data-pm-copy-start]");
+    if (copyBtn) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      void copyStartLinkFromTree(tree, copyBtn.getAttribute("data-pm-copy-start"));
+      return;
+    }
+
+    const toggle = ev.target.closest("[data-pm-tree-toggle]");
+    if (toggle) {
+      ev.preventDefault();
+      ev.stopPropagation();
+      cycleProjectExpand(tree);
+      return;
+    }
+
+    const row = ev.target.closest("[data-pm-sel]");
+    if (!row || !tree.contains(row)) return;
+    const kind = row.dataset.pmSel || "project";
+    setDataTreeSelection(tree, kind, row);
+  }
+
+  /** Mock account label for Author rail (body data-tawala-user, else "dev"). */
+  function projectAuthorLabel(project) {
+    if (project && project.author) return String(project.author);
+    if (typeof document !== "undefined" && document.body) {
+      const u = document.body.getAttribute("data-tawala-user");
+      if (u) return u;
+    }
+    return "dev";
+  }
+
+  /**
+   * Library entry this My Tawala project is published as (or catalog twin by id).
+   * Returns null when not in the public Library.
+   */
+  function resolvePublishedLibraryLink(project) {
+    if (!project || typeof TawalaDemo === "undefined") return null;
+    const publishedId = project.publishedToLibraryId ? String(project.publishedToLibraryId) : "";
+    if (publishedId && typeof TawalaDemo.getLibrary === "function") {
+      const lib = TawalaDemo.getLibrary(publishedId);
+      if (lib) {
+        return {
+          id: publishedId,
+          name: project.publishedToLibraryName || lib.name || publishedId,
+          inactive: lib.inactive === true || lib.libraryActive === false,
+        };
+      }
+    }
+    if (project.id && typeof TawalaDemo.getLibrary === "function") {
+      const twin = TawalaDemo.getLibrary(project.id);
+      if (twin) {
+        return {
+          id: project.id,
+          name: twin.name || project.name,
+          inactive: twin.inactive === true || twin.libraryActive === false,
+        };
+      }
+    }
+    return null;
+  }
+
+  function themeLabelForPath(themePath) {
+    const path = String(themePath || "").trim();
+    if (!path) return "Default";
+    const hit = PROJECT_THEMES.find((t) => t.path === path);
+    return hit ? hit.label : path;
+  }
+
+  /**
+   * Prefer the project's recommended / stored theme (overlay, catalog, definition fields).
+   * "Default" stays in the dropdown, but is only the selection when no project theme is present.
+   */
+  function resolveProjectThemePath(project) {
+    if (!project || typeof project !== "object") return "default";
+    const candidates = [
+      project.themePath,
+      project.theme,
+      project.themeId,
+      project.recommendedTheme,
+      project.themeName,
+    ];
+    for (let i = 0; i < candidates.length; i++) {
+      const raw = candidates[i];
+      if (raw == null) continue;
+      const s = String(raw).trim();
+      if (!s) continue;
+      const lower = s.toLowerCase();
+      const byPath = PROJECT_THEMES.find((t) => t.path === s || t.path === lower);
+      if (byPath) return byPath.path;
+      const byLabel = PROJECT_THEMES.find((t) => t.label.toLowerCase() === lower);
+      if (byLabel) return byLabel.path;
+      return s;
+    }
+    return "default";
+  }
+
+  function themeOptionsHtml(selectedPath) {
+    const sel = resolveProjectThemePath({ themePath: selectedPath });
+    const known = PROJECT_THEMES.some((t) => t.path === sel);
+    let html = PROJECT_THEMES.map((t) => {
+      const selected = t.path === sel ? " selected" : "";
+      return `<option value="${escapeHtml(t.path)}"${selected}>${escapeHtml(t.label)}</option>`;
+    }).join("");
+    if (!known) {
+      html =
+        `<option value="${escapeHtml(sel)}" selected>${escapeHtml(sel)} (custom)</option>` + html;
+    }
+    return html;
+  }
+
+  /**
+   * If catalog/overlay lacks themePath, read project JSON definition and select that theme.
+   * Does not overwrite an explicit overlay themePath the user already chose.
+   */
+  async function hydrateThemeFromProjectJson(detailRoot, project) {
+    if (!detailRoot || !project || !project.jsonFile) return;
+    const sel = detailRoot.querySelector('select[data-wired="theme-select"]');
+    if (!sel) return;
+    const overlayHasTheme =
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.getOverlayEntry === "function" &&
+      (() => {
+        const ov = TawalaTransfer.getOverlayEntry(project.id);
+        return !!(ov && (ov.themePath || ov.theme || ov.themeId));
+      })();
+    if (overlayHasTheme) return;
+
+    const current = resolveProjectThemePath(project);
+    /* Catalog already has a non-default theme — leave it. */
+    if (current && current !== "default") return;
+
+    try {
+      const res = await fetch(String(project.jsonFile), { cache: "no-store" });
+      if (!res.ok) return;
+      const def = await res.json();
+      const fromJson = resolveProjectThemePath(def);
+      if (!fromJson || fromJson === current) return;
+      let hasOpt = false;
+      for (let oi = 0; oi < sel.options.length; oi++) {
+        if (sel.options[oi].value === fromJson) {
+          hasOpt = true;
+          break;
+        }
+      }
+      if (!hasOpt) {
+        const opt = document.createElement("option");
+        opt.value = fromJson;
+        opt.textContent = `${fromJson} (custom)`;
+        sel.insertBefore(opt, sel.firstChild);
+      }
+      sel.value = fromJson;
+      const hint = detailRoot.querySelector("#pmIdentityRail .pm-identity-row .deploy-hint-quiet");
+      if (hint) hint.textContent = `(${themeLabelForPath(fromJson)})`;
+      /* Persist onto overlay so later paints keep the definition theme without re-fetch. */
+      if (
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.upsertMyTawalaProperties === "function"
+      ) {
+        TawalaTransfer.upsertMyTawalaProperties(project.id, { themePath: fromJson });
+      }
+    } catch {
+      /* ignore — mock may be offline of the jsonFile */
+    }
+  }
+
+  /**
+   * Details identity / ops rail (Task List 5–7, 11–12): Published, author, version,
+   * Active/De-activate, Theme / Appearance, Invite / Include stubs, Edit in Designer.
+   */
+  function renderSidebarProjectOps() {
+    return (
+      '<div class="pm-sidebar-ops pm-sidebar-stack" aria-label="Project option stubs">' +
+      PROJECT_SIDEBAR_OPS.map((op) => {
+        return (
+          `<button type="button" class="pm-action" disabled title="${escapeHtml(op.title)}" ` +
+          `data-op="${escapeHtml(op.label)}" data-wired="false">${escapeHtml(op.label)}</button>`
+        );
+      }).join("") +
+      "</div>"
+    );
+  }
+
+  function renderIdentityRail(project) {
+    const pid = escapeHtml(project.id || "");
+    const author = escapeHtml(projectAuthorLabel(project));
+    const versionNum = project.versionNumber != null ? String(project.versionNumber) : "—";
+    const versionDesc = project.versionDescription
+      ? String(project.versionDescription)
+      : project.shortDescription
+        ? String(project.shortDescription)
+        : "";
+    const published = resolvePublishedLibraryLink(project);
+    const inactive = project.inactive === true || project.libraryActive === false;
+    const themePath = resolveProjectThemePath(project);
+
+    let publishedHtml;
+    if (published) {
+      const libHref = `library-detail.html?project=${encodeURIComponent(published.id)}`;
+      const offlineNote = published.inactive
+        ? ' <span class="pm-identity-muted">(hidden from Library while Offline)</span>'
+        : "";
+      publishedHtml =
+        `<b>Yes</b> · <a href="${escapeHtml(libHref)}">${escapeHtml(
+          (window.TawalaDemo && window.TawalaDemo.displayName
+            ? window.TawalaDemo.displayName(published.name)
+            : published.name) || published.id
+        )}</a>${offlineNote}`;
+    } else {
+      publishedHtml = `<span class="pm-identity-muted">No</span> <span class="deploy-hint-quiet">(Publish to list in the public Library)</span>`;
+    }
+
+    const statusHtml = inactive
+      ? `<span class="pm-status-badge is-offline" title="Hidden from public Library; still on My Tawala">Offline</span>` +
+        `<button type="button" class="pm-action pm-identity-action" data-wired="activate-project" ` +
+        `data-project="${pid}" title="Show again in the public Library (if published)">Activate</button>`
+      : `<span class="pm-status-badge is-active" title="Visible in public Library when published">Active</span>` +
+        `<button type="button" class="pm-action pm-identity-action" data-wired="deactivate-project" ` +
+        `data-project="${pid}" title="Hide from public Library; keep on My Tawala with Offline marker">De-activate</button>`;
+
+    return (
+      `<div class="pm-identity-rail" id="pmIdentityRail">` +
+      `<dl class="pm-identity-grid">` +
+      `<div class="pm-identity-row"><dt>Author</dt><dd>${author}</dd></div>` +
+      `<div class="pm-identity-row"><dt>Version</dt><dd>` +
+      `<b>${escapeHtml(versionNum)}</b>` +
+      (versionDesc ? ` — ${escapeHtml(versionDesc)}` : "") +
+      `</dd></div>` +
+      `<div class="pm-identity-row"><dt>Published</dt><dd>${publishedHtml}</dd></div>` +
+      `<div class="pm-identity-row"><dt>Status</dt><dd class="pm-identity-status">${statusHtml}</dd></div>` +
+      `<div class="pm-identity-row"><dt>Theme / Appearance</dt><dd>` +
+      `<label class="pm-theme-label"><span class="visually-hidden">Theme</span>` +
+      `<select class="pm-theme-select" data-wired="theme-select" data-project="${pid}" ` +
+      `title="Theme path stored on this My Tawala overlay (mock — does not push CSS to :8080)">${themeOptionsHtml(
+        themePath
+      )}</select></label>` +
+      ` <span class="deploy-hint-quiet">(${escapeHtml(themeLabelForPath(themePath))})</span>` +
+      `</dd></div>` +
+      `</dl>` +
+      renderSidebarProjectOps() +
+      `<div class="pm-identity-actions">` +
+      `<button type="button" class="pm-action is-active" data-wired="edit-in-designer" ` +
+      `data-project="${pid}" title="Open this project in the browser Designer">Edit project in Designer</button>` +
+      `</div>` +
+      `</div>`
+    );
+  }
+
+  /** Open browser Designer (:5173) with a clear message; fall back to designer.html stub. */
+  function openEditInDesigner(projectId) {
+    const project =
+      projectId && typeof TawalaDemo !== "undefined" && typeof TawalaDemo.getMyTawala === "function"
+        ? TawalaDemo.getMyTawala(projectId)
+        : null;
+    const name =
+      project && window.TawalaDemo && window.TawalaDemo.displayName
+        ? window.TawalaDemo.displayName(project.name)
+        : (project && project.name) || projectId || "this project";
+    const jsonFile = (project && project.jsonFile) || "";
+    const designerApp = "http://localhost:5173/";
+    const stubQs =
+      "designer.html?project=" +
+      encodeURIComponent(projectId || "") +
+      "&name=" +
+      encodeURIComponent(name) +
+      (jsonFile ? "&json=" + encodeURIComponent(jsonFile) : "");
+
+    const lines = [
+      `Open “${name}” in the browser Designer.`,
+      "",
+      "Designer (:5173) and this mock (:5500) do not share storage — use File → Open on the project JSON if it is not already loaded.",
+    ];
+    if (jsonFile) lines.push("", `Repo path: ${jsonFile}`);
+    lines.push("", "OK opens Designer at localhost:5173. Cancel opens the Designer stub page instead.");
+
+    const goLive = window.confirm(lines.join("\n"));
+    if (goLive) {
+      window.open(designerApp, "_blank", "noopener");
+      setStatus(`Opened Designer for “${name}” — File → Open if needed.`);
+    } else {
+      location.href = stubQs;
+    }
+  }
+
+  function applyThemeSelection(projectId, themePath) {
+    if (!projectId || !themePath) return;
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaTransfer.upsertMyTawalaProperties !== "function") {
+      window.alert("Couldn't save theme — transfer script didn't load.");
+      return;
+    }
+    const ok = TawalaTransfer.upsertMyTawalaProperties(projectId, { themePath: String(themePath) });
+    if (!ok) {
+      window.alert("Couldn't save theme on this browser overlay.");
+      return;
+    }
+    setStatus(`Theme set to ${themeLabelForPath(themePath)} (overlay only — Redeploy to apply on :8080).`);
+    const hint = document.querySelector("#pmIdentityRail .pm-identity-row .deploy-hint-quiet");
+    if (hint) hint.textContent = `(${themeLabelForPath(themePath)})`;
+  }
+
+  function toggleProjectActive(projectId, active) {
+    if (!projectId) return;
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaTransfer.setProjectLibraryActive !== "function") {
+      window.alert("Couldn't update Active / Offline — transfer script didn't load.");
+      return;
+    }
+    const label = active ? "Activate" : "De-activate";
+    const confirmMsg = active
+      ? "Activate this project?\n\nIf it is published, it will show again in the public Library (Test Drive / Save a copy)."
+      : "De-activate this project?\n\nIt stays on My Tawala with an Offline marker, but is hidden from the public Library (no Test Drive / Save a copy). This is not Purge or Delete.";
+    if (!window.confirm(confirmMsg)) return;
+    const result = TawalaTransfer.setProjectLibraryActive(projectId, active);
+    if (!result || !result.ok) {
+      window.alert(`${label} failed\n\n${(result && result.error) || "Unknown error"}`);
+      return;
+    }
+    setStatus(
+      active
+        ? "Project is Active — visible in Library when published."
+        : "Project is Offline — hidden from Library; still on My Tawala."
+    );
+    document.dispatchEvent(
+      new CustomEvent("tawala:project-active-changed", {
+        detail: { projectId, active: !!active, result },
+      })
+    );
+  }
+
+  /**
+   * Full Project Details layout (separate page).
+   * Owner Aug 9: wider left sidebar — identity (incl. Theme), then Invite/Include under Theme,
+   * then Edit in Designer; main column = title + actions + Project Data / Versions / Comments.
+   * Project Data tree: expand (project → starts → all forms); selection scopes E/I/Purge.
+   * Start URLs open live :8080 when deployed — do NOT purge-on-click (unlike Library Test drive).
+   */
+  function renderDetailPanel(project) {
+    if (!project) return '<p class="pm-hint">Project not found.</p>';
+    const projectDataSection = renderProjectDataTree(project);
 
     const versionOps = renderVersionsSection(project);
 
@@ -1458,60 +2662,51 @@
       '<p class="pm-hint">Backups, project emails, library publish dialogs, and admin UPDATE.</p>';
 
     const commentsStub =
-      '<p class="pm-hint">Legacy Library listed a community comment count per project. ' +
-      "Comment threads are not wired in this mock — stub for later.</p>";
-
-    const startSection =
-      `<ul class="pm-start-points">${startLinks || "<li>—</li>"}</ul>` +
-      (deployed
-        ? '<p class="pm-hint">Start links → local Java :8080 (full form-token URLs from Deploy). Keeps project data; use <b>PURGE</b> to clear responses. Multi-entry apps (e.g. Online Exam): open <b>Setup</b>/<b>Administration</b> first, then <b>Exam</b>. <b>Use</b> from the listing brings you here to choose.</p>'
-        : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — open in Web Designer, then Deploy → Show in My Tawala for live start links.</p>');
+      '<p class="pm-hint">Comments / reputation are parked (Aug 9). Stub only — not wired in this mock.</p>';
 
     const versionsOpen = projectVersionRows(project).length > 0;
+    const displayName =
+      window.TawalaDemo && window.TawalaDemo.displayName
+        ? window.TawalaDemo.displayName(project.name)
+        : String(project.name || "")
+            .replace(/\.tawala\.xml$/i, "")
+            .replace(/\.tawala$/i, "")
+            .replace(/\.json$/i, "");
+    const inactive = project.inactive === true || project.libraryActive === false;
 
     return (
       `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
+      `<aside class="pm-detail-sidebar" aria-label="Project options">` +
+      "<h3>Project options</h3>" +
+      `<div class="pm-sidebar-identity">` +
+      renderIdentityRail(project) +
+      `</div>` +
+      `<p class="pm-hint">Theme, Invite / Include stubs, and Designer / Active controls stay in this rail. ` +
+      `<a href="project-ops-review.html">Archive labels</a></p>` +
+      "</aside>" +
       `<div class="pm-detail-main">` +
       `<div class="pm-detail-header">` +
-      `<p class="pm-back"><a href="mytawala.html">← My Projects</a></p>` +
-      `<h2>${escapeHtml(
-        (window.TawalaDemo && window.TawalaDemo.displayName
-          ? window.TawalaDemo.displayName(project.name)
-          : String(project.name || "")
-              .replace(/\.tawala\.xml$/i, "")
-              .replace(/\.tawala$/i, "")
-              .replace(/\.json$/i, ""))
-      )}</h2>` +
-      `<p class="pm-detail-meta">${escapeHtml(project.shortDescription || "")}</p>` +
-      (project.versionNumber != null
-        ? `<p class="pm-detail-version">Version ${escapeHtml(String(project.versionNumber))}` +
-          (project.versionDescription
-            ? ` — ${escapeHtml(String(project.versionDescription))}`
-            : "") +
-          `</p>`
+      `<p class="pm-back"><a href="mytawala.html">← My Tawala</a></p>` +
+      `<h2>${escapeHtml(displayName)}` +
+      (inactive
+        ? ` <span class="pm-status-badge is-offline" title="Offline — hidden from public Library">Offline</span>`
         : "") +
+      `</h2>` +
+      `<p class="pm-detail-meta">${escapeHtml(project.shortDescription || "")}</p>` +
+      `<p class="pm-detail-records">Records: <b id="pmRecordsTotal" title="Project-wide submission count">—</b>` +
+      ` <span class="deploy-hint-quiet">(Responses · all forms)</span></p>` +
       "</div>" +
       '<h3 class="sectionHeading">Project Actions</h3>' +
       renderProjectActionsBar(project.id) +
-      renderCollapsibleSection("pmSecStart", "Start points", startSection, true) +
-      renderCollapsibleSection("pmSecComments", "Comments", commentsStub, false) +
-      renderCollapsibleSection("pmSecData", "Project Data", dataOps, false) +
+      renderCollapsibleSection("pmSecData", "Project Data", projectDataSection, true) +
       renderCollapsibleSection("pmSecVersions", "Versions", versionOps, versionsOpen) +
       renderCollapsibleSection("pmSecOther", "Backups, emails & library publish", backupOps, false) +
+      renderCollapsibleSection("pmSecComments", "Comments", commentsStub, false, {
+        greyed: true,
+        summaryTitle: "Comments / reputation — stub (not wired)",
+      }) +
       '<p class="pm-hint" id="pmOpStatus" role="status"></p>' +
       "</div>" +
-      `<aside class="pm-detail-sidebar" aria-label="Project options">` +
-      "<h3>Project options</h3>" +
-      '<div class="pm-sidebar-ops pm-sidebar-stack">' +
-      PROJECT_SIDEBAR_OPS.map((op) => {
-        return (
-          `<button type="button" class="pm-action" disabled title="${escapeHtml(op.title)}" ` +
-          `data-op="${escapeHtml(op.label)}" data-wired="false">${escapeHtml(op.label)}</button>`
-        );
-      }).join("") +
-      "</div>" +
-      `<p class="pm-hint"><a href="project-ops-review.html">Archive labels / unimplemented features</a></p>` +
-      "</aside>" +
       "</div>"
     );
   }
@@ -1947,25 +3142,31 @@
     const backdrop = document.createElement("div");
     backdrop.className = "tawala-modal-backdrop";
     backdrop.id = PULL_MODAL_ID;
+    const link =
+      typeof resolveLibraryLink === "function" ? resolveLibraryLink(projectId) : null;
+    const linkedPreselect =
+      link && allCandidates.some((c) => c.id === link.id) ? link.id : "";
+    const initialSelect = linkedPreselect || preselectId;
+
     backdrop.innerHTML =
       '<div class="tawala-modal" role="dialog" aria-modal="true" aria-labelledby="pullModalTitle">' +
-      `<h3 id="pullModalTitle">Pull from Library</h3>` +
+      `<h3 id="pullModalTitle">Refresh from Library</h3>` +
       `<p class="pm-hint">Refreshes “${escapeHtml(displayName)}” with a public Library project's current description, category, and reference start points (mock — browser overlay only).</p>` +
-      '<label class="tawala-modal-field" for="pullSourceSelect">Pull content from' +
+      '<label class="tawala-modal-field" for="pullSourceSelect">Refresh content from' +
       `<select id="pullSourceSelect">${pullTargetOptionsHtml(matches, allCandidates)}</select>` +
       "</label>" +
       '<p class="pm-hint">Keeps this project\u2019s own name, rating, comments, and — importantly — its own <code>:8080</code> deploy / submission data. Only descriptive content is refreshed; use EXPORT/BACKUP first if you want a safety copy.</p>' +
       '<p class="pm-hint" id="pullModalError" role="alert" style="display:none;"></p>' +
       '<div class="tawala-modal-actions">' +
       '<button type="button" class="pm-action" id="pullModalCancel">Cancel</button>' +
-      '<button type="button" class="pm-action is-active" id="pullModalConfirm">Pull</button>' +
+      '<button type="button" class="pm-action is-active" id="pullModalConfirm">Refresh</button>' +
       "</div>" +
       "</div>";
     document.body.appendChild(backdrop);
     document.addEventListener("keydown", handlePullModalKeydown, true);
 
     const sourceSelect = backdrop.querySelector("#pullSourceSelect");
-    sourceSelect.value = preselectId;
+    sourceSelect.value = initialSelect;
     sourceSelect.focus();
 
     backdrop.addEventListener("click", (ev) => {
@@ -1984,7 +3185,7 @@
       const source = allCandidates.find((c) => c.id === libraryId);
       const sourceName = source ? source.name : libraryId;
       const confirmMsg =
-        `Pull “${sourceName}” into “${displayName}”?\n\n` +
+        `Refresh “${displayName}” from Library “${sourceName}”?\n\n` +
         "This overwrites the description, category, and reference start points on this My Tawala project. " +
         "Your own name, rating, comments, and :8080 deploy / submission data are not touched.";
       if (!window.confirm(confirmMsg)) return;
@@ -1992,12 +3193,12 @@
       const result = TawalaTransfer.pullFromLibrary({ myTawalaProjectId: projectId, libraryId });
       closePullModal();
       if (!result || !result.ok) {
-        const msg = `Couldn't pull “${sourceName}”\n\n${(result && result.error) || "Unknown error"}`;
+        const msg = `Couldn't refresh from “${sourceName}”\n\n${(result && result.error) || "Unknown error"}`;
         setStatus(msg.split("\n")[0]);
         window.alert(msg);
         return;
       }
-      const msg = `Pulled “${result.sourceName}” into “${displayName}” — description, category, and reference start points refreshed.`;
+      const msg = `Refreshed “${displayName}” from “${result.sourceName}” — description, category, and reference start points updated.`;
       setStatus(msg);
       window.alert(msg);
       document.dispatchEvent(
@@ -2016,8 +3217,25 @@
 
     if (wired === "false" || !wired) return;
 
-    /* Use = native <a>: single-start → :8080; multi-start → Project Details. Let browser follow. */
-    if (wired === "use-project") return;
+    /* Use = native <a> to :8080 when a start point is highlighted on Project Data. */
+    if (wired === "use-project") {
+      if (btn.classList.contains("is-scope-disabled") || btn.getAttribute("aria-disabled") === "true") {
+        ev.preventDefault();
+      }
+      return;
+    }
+
+    if (wired === "copy-start-link") {
+      ev.preventDefault();
+      const tree = document.getElementById("pmDataTree");
+      const sel = readDataTreeSelection(tree);
+      if (sel.kind === "start" && sel.url) {
+        void copyUrlToClipboard(sel.url);
+      } else {
+        window.alert("Select a start point (▶) first, then Copy link.");
+      }
+      return;
+    }
 
     if (op === "expand-all" || op === "collapse-all") {
       const open = op === "expand-all";
@@ -2035,6 +3253,26 @@
 
     if (wired === "publish-mytawala") {
       openPublishDialog(projectId);
+      return;
+    }
+
+    if (wired === "edit-in-designer") {
+      openEditInDesigner(projectId);
+      return;
+    }
+
+    if (wired === "deactivate-project") {
+      toggleProjectActive(projectId, false);
+      return;
+    }
+
+    if (wired === "activate-project") {
+      toggleProjectActive(projectId, true);
+      return;
+    }
+
+    if (wired === "get-from-library") {
+      /* Native <a href="library.html"> — let the browser navigate. */
       return;
     }
 
@@ -2078,10 +3316,14 @@
       btn.dataset.busy = "1";
       const prevDisabled = btn.disabled;
       btn.disabled = true;
+      const formName =
+        btn.dataset.dataScope === "form" && btn.dataset.formName ? btn.dataset.formName : "";
       try {
-        if (wired === "export-mytawala") await TawalaDataOps.handleExportClick(projectId);
-        else if (wired === "import-mytawala") await TawalaDataOps.handleImportClick(projectId);
-        else if (wired === "backup-mytawala") await TawalaDataOps.handleBackupClick(projectId);
+        if (wired === "export-mytawala") {
+          await TawalaDataOps.handleExportClick(projectId, formName ? { formName } : undefined);
+        } else if (wired === "import-mytawala") {
+          await TawalaDataOps.handleImportClick(projectId, formName ? { formName } : undefined);
+        } else if (wired === "backup-mytawala") await TawalaDataOps.handleBackupClick(projectId);
         else if (wired === "restore-mytawala") await TawalaDataOps.handleRestoreClick(projectId);
       } finally {
         btn.dataset.busy = "";
@@ -2090,12 +3332,34 @@
       return;
     }
 
-    if (confirmId) {
-      const ok = await showConfirm(confirmId);
-      if (!ok) return;
-    }
-
     if (wired === "purge-local") {
+      const formName =
+        btn.dataset.dataScope === "form" && btn.dataset.formName ? btn.dataset.formName : "";
+      /* Form-scoped Purge = export → drop form → replace (data-ops). Whole-project uses API purge. */
+      if (formName) {
+        if (typeof TawalaDataOps === "undefined" || typeof TawalaDataOps.handleFormPurgeClick !== "function") {
+          setStatus("Form purge unavailable — js/data-ops.js didn't load.");
+          window.alert("Couldn't purge form\n\nData ops support script didn't load. Refresh and try again.");
+          return;
+        }
+        if (btn.dataset.busy === "1") return;
+        btn.dataset.busy = "1";
+        const prevDisabled = btn.disabled;
+        btn.disabled = true;
+        try {
+          await TawalaDataOps.handleFormPurgeClick(projectId, formName);
+        } finally {
+          btn.dataset.busy = "";
+          btn.disabled = prevDisabled;
+        }
+        return;
+      }
+
+      if (confirmId) {
+        const ok = await showConfirm(confirmId);
+        if (!ok) return;
+      }
+
       /* Purge = clear :8080 submission data only — not Delete (row remove). */
       if (typeof TawalaDemo === "undefined" || !TawalaDemo.purgeResponses) {
         setStatus(`PURGE unavailable — purge support not loaded.`);
@@ -2155,6 +3419,11 @@
       return;
     }
 
+    if (confirmId) {
+      const ok = await showConfirm(confirmId);
+      if (!ok) return;
+    }
+
     if (wired === "delete-mytawala" || wired === "delete-mock") {
       /* Delete = remove this account’s My Tawala row (not Purge submissions; not Library). */
       let result = { ok: false, projectId, hadOverlay: false, hadInbox: false };
@@ -2196,9 +3465,25 @@
   function bind(root) {
     const scope = root || document;
     scope.addEventListener("click", (ev) => {
+      if (ev.target.closest("#pmDataTree")) {
+        handleDataTreeClick(ev);
+      }
       if (ev.target.closest("[data-op], .pm-action, .pm-icon-action")) {
         void handleOpClick(ev);
       }
+    });
+    scope.addEventListener("change", (ev) => {
+      const sel = ev.target.closest && ev.target.closest('select[data-wired="theme-select"]');
+      if (!sel) return;
+      applyThemeSelection(sel.dataset.project || "", sel.value);
+    });
+    scope.addEventListener("keydown", (ev) => {
+      const row = ev.target.closest && ev.target.closest("#pmDataTree [data-pm-sel]");
+      if (!row || (ev.key !== "Enter" && ev.key !== " ")) return;
+      if (ev.target.closest("a, button, input, textarea")) return;
+      ev.preventDefault();
+      const tree = row.closest("#pmDataTree");
+      setDataTreeSelection(tree, row.dataset.pmSel || "project", row);
     });
     scope.addEventListener("focusin", (ev) => {
       const input = ev.target.closest && ev.target.closest(".pm-version-desc-input");
@@ -2241,6 +3526,9 @@
     LIBRARY_ADMIN_STUBS,
     LIBRARY_LISTING_ACTIONS,
     PROJECT_ACTIONS,
+    PROJECT_DATA_CONTROLS,
+    PROJECT_THEMES,
+    LISTING_BAR_ACTIONS,
     LISTING_ACTIONS,
     LISTING_ICONS,
     PROJECT_SIDEBAR_OPS,
@@ -2252,17 +3540,24 @@
     CONFIRMS,
     ARCHIVE_NOTE,
     LOCAL_PURGE_HELP,
+    resolveLibraryLink,
     renderSubmenu,
     renderLibrarySubmenu,
     renderLibraryChromeStubs,
     renderListingControls,
     renderListingControlCells,
     renderListingActionHeaders,
+    renderListingSelectionBar,
+    syncListingSelectionBar,
     renderLibraryListingControlCells,
     renderLibraryListingActionHeaders,
     renderLibraryListingControls,
     renderDetailPanel,
     syncDeployVersionChip,
+    hydrateProjectDataTree,
+    hydrateThemeFromProjectJson,
+    resolveProjectThemePath,
+    syncProjectActionsForDataSelection,
     renderOpsCatalog,
     openPublishDialog,
     bind,

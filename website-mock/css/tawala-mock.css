@@ -66,6 +66,76 @@ a:hover {
   color: #ffe0e0;
 }
 
+#headingStatus .account-menu {
+  display: inline-block;
+  position: relative;
+  margin-left: 6px;
+  vertical-align: baseline;
+  z-index: 40;
+}
+
+#headingStatus .account-menu-toggle {
+  appearance: none;
+  -webkit-appearance: none;
+  margin: 0;
+  padding: 0 2px;
+  border: none;
+  background: transparent;
+  color: #ffe0e0;
+  font: inherit;
+  font-size: 12px;
+  font-weight: bold;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+#headingStatus .account-menu-caret {
+  display: inline-block;
+  margin-left: 2px;
+  font-size: 0.85em;
+}
+
+#headingStatus .account-menu-panel {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  min-width: 10.5em;
+  margin: 0;
+  padding: 4px 0;
+  list-style: none;
+  background: #fff;
+  border: 1px solid #aca899;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.22);
+  text-align: left;
+  z-index: 50;
+}
+
+#headingStatus .account-menu-panel li {
+  margin: 0;
+  padding: 0;
+}
+
+#headingStatus .account-menu-panel a,
+#headingStatus .account-menu-panel .link-pending {
+  display: block;
+  padding: 6px 12px;
+  color: #222 !important;
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: normal;
+  white-space: nowrap;
+}
+
+#headingStatus .account-menu-panel a:hover {
+  background: #eef3fa;
+  color: #316ac5 !important;
+}
+
+#headingStatus .account-menu-panel .link-pending {
+  color: #999 !important;
+  cursor: default;
+}
+
 #headingMenu {
   clear: both;
   padding: 8px 0 6px;

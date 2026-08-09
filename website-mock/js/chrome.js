@@ -6,10 +6,18 @@
   const LINKS = {
     about: { href: "about.html", label: "ABOUT", nav: true, ready: true },
     faq: { href: "faq.html", label: "FAQ", nav: true, ready: true },
+    designer: {
+      href: "http://localhost:5173",
+      label: "DESIGNER",
+      nav: true,
+      ready: true,
+      target: "_blank",
+    },
     library: { href: "library.html", label: "LIBRARY", nav: true, ready: true },
     mytawala: { href: "mytawala.html", label: "MY TAWALA", nav: true, ready: true },
     home: { href: "index.html", label: "HOME", nav: true, ready: true },
-    login: { href: "login.html", label: "Login", ready: true },
+    login: { href: "login.html", label: "Log in", ready: true },
+    register: { href: "signup.html", label: "Register", ready: true },
     signup: {
       href: "signup.html",
       label: "Sign up for FREE account here!",
@@ -17,10 +25,11 @@
     },
     signupShort: { href: "signup.html", label: "Sign up free", ready: true },
     logout: { href: "logout.html", label: "Logout", ready: true },
-    designer: {
-      href: "http://localhost:5173",
-      label: "Open Web Designer",
-      ready: true,
+    changePassword: {
+      href: "#",
+      label: "Change Password",
+      ready: false,
+      title: "Change your password (not wired in mock)",
     },
     designerStub: {
       href: "designer.html",
@@ -43,16 +52,20 @@
     docs: { href: "docs.html", label: "Docs", ready: true },
   };
 
-  const NAV_ORDER = ["about", "faq", "library", "mytawala", "home"];
+  /** LTR: Home · Library · My Tawala · Designer · FAQ · About */
+  const NAV_ORDER = ["home", "library", "mytawala", "designer", "faq", "about"];
 
   function anchor(key, labelOverride) {
     const item = LINKS[key];
     if (!item) return "";
     const text = labelOverride || item.label;
     if (!item.ready) {
-      return `<span class="link-pending" aria-disabled="true" title="Unavailable">${text}</span>`;
+      const title = item.title ? ` title="${item.title}"` : ' title="Unavailable"';
+      return `<span class="link-pending" aria-disabled="true"${title}>${text}</span>`;
     }
-    return `<a href="${item.href}">${text}</a>`;
+    const target =
+      item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
+    return `<a href="${item.href}"${target}>${text}</a>`;
   }
 
   function renderNav(activePage) {
@@ -62,21 +75,42 @@
       if (!item.ready) {
         return `<li class="${selected ? "selected" : ""}"><span class="link-pending" aria-disabled="true">${item.label}</span></li>`;
       }
-      return `<li class="${selected ? "selected" : ""}"><a href="${item.href}"${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
+      const target =
+        item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
+      return `<li class="${selected ? "selected" : ""}"><a href="${item.href}"${target}${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
     }).join("\n          ");
   }
 
-  function renderGuestStatus(compact) {
-    if (compact) {
-      return `Hello. ${anchor("login")} · ${anchor("signupShort")}`;
-    }
-    return `Hello. ${anchor("login")} to see your projects. New to Tawala? ${anchor("signup")}`;
+  function renderAccountMenu(user) {
+    const items = user
+      ? [
+          `<li>${anchor("changePassword")}</li>`,
+          `<li>${anchor("logout")}</li>`,
+        ]
+      : [
+          `<li>${anchor("register")}</li>`,
+          `<li>${anchor("login")}</li>`,
+        ];
+    return (
+      `<div class="account-menu">` +
+      `<button type="button" class="account-menu-toggle" aria-haspopup="true" aria-expanded="false">` +
+      `My Account <span class="account-menu-caret" aria-hidden="true">▾</span>` +
+      `</button>` +
+      `<ul class="account-menu-panel" hidden>` +
+      items.join("") +
+      `</ul>` +
+      `</div>`
+    );
   }
 
-  function renderHeader(activePage, user, statusMode) {
+  function renderGuestStatus() {
+    return `Welcome. Please register or Log in ${renderAccountMenu("")}`;
+  }
+
+  function renderHeader(activePage, user) {
     const status = user
-      ? `Welcome back, <span class="userName">${user}</span>. ${anchor("logout")}`
-      : renderGuestStatus(statusMode === "compact");
+      ? `Welcome back, <span class="userName">${user}</span>. ${renderAccountMenu(user)}`
+      : renderGuestStatus();
 
     return `
     <div id="hd">
@@ -118,11 +152,64 @@
     );
   }
 
+  function bindAccountMenus(root) {
+    const scope = root || document;
+    scope.querySelectorAll(".account-menu").forEach((menu) => {
+      const toggle = menu.querySelector(".account-menu-toggle");
+      const panel = menu.querySelector(".account-menu-panel");
+      if (!toggle || !panel || toggle.dataset.bound === "1") return;
+      toggle.dataset.bound = "1";
+
+      function close() {
+        panel.hidden = true;
+        toggle.setAttribute("aria-expanded", "false");
+        menu.classList.remove("is-open");
+      }
+
+      function open() {
+        panel.hidden = false;
+        toggle.setAttribute("aria-expanded", "true");
+        menu.classList.add("is-open");
+      }
+
+      toggle.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (panel.hidden) open();
+        else close();
+      });
+
+      panel.addEventListener("click", (e) => e.stopPropagation());
+    });
+
+    if (!document.documentElement.dataset.accountMenuDocBound) {
+      document.documentElement.dataset.accountMenuDocBound = "1";
+      document.addEventListener("click", () => {
+        document.querySelectorAll(".account-menu.is-open").forEach((menu) => {
+          const toggle = menu.querySelector(".account-menu-toggle");
+          const panel = menu.querySelector(".account-menu-panel");
+          if (panel) panel.hidden = true;
+          if (toggle) toggle.setAttribute("aria-expanded", "false");
+          menu.classList.remove("is-open");
+        });
+      });
+      document.addEventListener("keydown", (e) => {
+        if (e.key !== "Escape") return;
+        document.querySelectorAll(".account-menu.is-open").forEach((menu) => {
+          const toggle = menu.querySelector(".account-menu-toggle");
+          const panel = menu.querySelector(".account-menu-panel");
+          if (panel) panel.hidden = true;
+          if (toggle) toggle.setAttribute("aria-expanded", "false");
+          menu.classList.remove("is-open");
+        });
+      });
+    }
+  }
+
   function mount() {
     const body = document.body;
     const activePage = body.dataset.tawalaPage || "home";
     const user = body.dataset.tawalaUser || "";
-    const statusMode = body.dataset.tawalaStatus || "";
     const showBanner = body.dataset.tawalaBanner !== "false";
 
     const bannerEl = document.getElementById("tawala-chrome-banner");
@@ -137,7 +224,8 @@
     }
 
     if (headerEl) {
-      headerEl.innerHTML = renderHeader(activePage, user, statusMode);
+      headerEl.innerHTML = renderHeader(activePage, user);
+      bindAccountMenus(headerEl);
     }
     if (footerEl) {
       footerEl.innerHTML = renderFooter();
