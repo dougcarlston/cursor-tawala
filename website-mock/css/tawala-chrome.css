@@ -2023,32 +2023,65 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   font-size: 0.9em;
   color: #222;
   /*
-   * Shared column recipe (toggle | name | Records | Times | Last | controls).
-   * Last track is a hard width so banner buttons cannot widen past form rows.
-   * Actual tracks live on .pm-data-grid; banner + form rows use subgrid.
+   * Shared column recipe used identically by banner + every form row:
+   * toggle/cue | name | Records | Times | Last | controls/spacer.
+   *
+   * Space priority when tight (owner Aug 9):
+   *   1) Controls always fully visible (fixed track — never clip Purge).
+   *   2) Keep Records visible; Times used / Last used drop (not crush — heads
+   *      must stay readable/aligned with dashes while visible).
+   *   3) Form/project names use leftover 1fr (CSS ellipsis); ~6ch is only the
+   *      grid min when very tight — never a permanent JS/CSS display cap.
+   * Hard control width + subgrid — keeps banner heads on the same tracks as form dashes.
    */
-  --pm-data-stat-w: 5.75em;
-  --pm-data-ctrl-w: 23em;
-  --pm-data-cols:
-    20px minmax(0, 1fr) var(--pm-data-stat-w) var(--pm-data-stat-w) var(--pm-data-stat-w)
-    var(--pm-data-ctrl-w);
+  /* Stat tracks sized to fit full uppercase heads (RECORDS / TIMES USED / LAST USED). */
+  --pm-data-records-w: 5.75em;
+  --pm-data-extra-stat-w: 5.75em; /* Times used / Last used — drop before Records */
+  --pm-data-ctrl-w: 23em; /* Use · Copy link | Export Import | Purge */
+  --pm-data-name-min: 6ch; /* last-resort floor when viewport is tight */
+  --pm-data-gap: 6px;
   --pm-data-vrule: #6e5c45;
   --pm-data-pad-inline-start: 2px;
   --pm-data-pad-inline-end: 4px;
-  overflow-x: auto;
+  container-type: inline-size;
+  container-name: pm-data;
+  overflow-x: auto; /* safety; controls also sticky-right if scroll appears */
 }
 
 /*
- * ONE grid for banner heads, banner values, and every form row.
- * Scroll (when many forms) is on this same box so a list scrollbar cannot
- * narrow form rows independently of the banner (Records dash drift).
+ * ONE grid for banner + every form row (subgrid). Separate per-row grids let
+ * the banner control track drift from form spacers — RECORDS head vs form "—"
+ * misaligned. Scroll on this same box so a list scrollbar cannot narrow form
+ * rows alone. --pm-data-cols lives here so container queries re-resolve tracks.
  */
 .pm-data-grid {
   display: grid;
   grid-template-columns: var(--pm-data-cols);
-  column-gap: 6px;
+  column-gap: var(--pm-data-gap);
   align-items: center;
   min-width: 0;
+  width: 100%;
+  --pm-data-cols:
+    20px minmax(var(--pm-data-name-min), 1fr) var(--pm-data-records-w)
+    var(--pm-data-extra-stat-w) var(--pm-data-extra-stat-w) var(--pm-data-ctrl-w);
+}
+
+/*
+ * Squeeze: drop Times / Last when tight (do not shrink tracks below header
+ * width — that jammed TIMES USED / LAST USED into overlapping glyphs).
+ * Records stays; name keeps 1fr and ellipsizes only as leftover runs out.
+ */
+@container pm-data (max-width: 48rem) {
+  .pm-data-grid {
+    --pm-data-extra-stat-w: 0px;
+  }
+
+  .pm-data-stat-times,
+  .pm-data-stat-last {
+    visibility: hidden;
+    overflow: hidden;
+    pointer-events: none;
+  }
 }
 
 .pm-data-grid.is-scrollable {
@@ -2066,9 +2099,11 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   padding: 0;
 }
 
-/* Let form <li> cells participate in .pm-data-grid tracks */
+/* contents → form <li> cells participate in .pm-data-grid tracks */
 .pm-data-forms-list {
   display: contents;
+  margin: 0;
+  padding: 0;
 }
 
 .pm-data-forms-list.is-collapsed,
@@ -2083,20 +2118,30 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   display: none;
 }
 
+/* Banner + form rows: subgrid of .pm-data-grid (one shared column recipe). */
 .pm-data-line,
-.pm-data-tree-row {
+.pm-data-tree-row,
+.pm-data-project-block {
   grid-column: 1 / -1;
   display: grid;
   grid-template-columns: subgrid;
   align-items: center;
-  min-height: 0;
+  box-sizing: border-box;
+  min-width: 0;
   line-height: 1.1;
-  /* Match banner inline inset so stats share the same content edge */
-  padding: 0 var(--pm-data-pad-inline-end) 0 var(--pm-data-pad-inline-start);
+  padding-left: var(--pm-data-pad-inline-start);
+  padding-right: var(--pm-data-pad-inline-end);
+  margin: 0;
   border-radius: 2px;
   cursor: pointer;
   user-select: none;
-  box-sizing: border-box;
+}
+
+.pm-data-line,
+.pm-data-tree-row {
+  min-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 /*
@@ -2104,21 +2149,12 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
  * Controls nest in the last track; vrules stretch inside that nest.
  */
 .pm-data-project-block {
-  grid-column: 1 / -1;
-  display: grid;
-  grid-template-columns: subgrid;
   grid-template-rows: auto auto;
-  align-items: center;
-  line-height: 1.1;
-  /* Top pad replaces section-body pad so vrules span that band; inline pad
-     matches form rows (no extra wrapper around Records values). */
-  padding: 10px var(--pm-data-pad-inline-end) 3px var(--pm-data-pad-inline-start);
+  /* Top pad replaces section-body pad so vrules span that band */
+  padding-top: 10px;
+  padding-bottom: 3px;
   border-bottom: 1px solid #e4ddd2;
   border-radius: 0 0 2px 2px;
-  margin-bottom: 0;
-  cursor: pointer;
-  user-select: none;
-  box-sizing: border-box;
   background: #f7f4ef;
   position: sticky;
   top: 0;
@@ -2191,6 +2227,13 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   grid-row: 1;
 }
 
+/* Form + project names share the 1fr name track; ellipsis only when that track is tight. */
+.pm-data-tree-form > .pm-data-tree-label,
+.pm-data-tree-project-name {
+  min-width: 0;
+  max-width: 100%;
+}
+
 .pm-data-tree-project-name {
   font-weight: 700;
   color: #004392;
@@ -2219,14 +2262,14 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
 .pm-data-project-block > .pm-data-stat-head {
   grid-row: 1;
   justify-self: stretch;
-  width: auto;
+  width: 100%;
   min-width: 0;
 }
 
 .pm-data-project-block > .pm-data-stat-val {
   grid-row: 2;
   justify-self: stretch;
-  width: auto;
+  width: 100%;
   min-width: 0;
 }
 
@@ -2244,9 +2287,15 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   white-space: nowrap;
   text-align: center;
   justify-self: stretch;
+  align-self: center;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden; /* never paint into a neighbor column */
+  text-overflow: clip;
+  box-sizing: border-box;
 }
 
 .pm-data-stat-val {
@@ -2255,9 +2304,14 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   font-variant-numeric: tabular-nums;
   text-align: center;
   justify-self: stretch;
+  align-self: center;
+  width: 100%;
   min-width: 0;
+  max-width: 100%;
   margin: 0;
   padding: 0;
+  overflow: hidden;
+  box-sizing: border-box;
 }
 
 .pm-data-tree-form > .pm-data-stat-val {
@@ -2286,20 +2340,30 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   align-items: flex-start;
   justify-content: flex-end;
   gap: 6px;
-  min-width: 0; /* allow track to size from template, not button max-content */
+  /*
+   * min-width:0 so button max-content cannot widen the fixed control track
+   * (that shifted banner heads off the form-row dashes). Track stays
+   * --pm-data-ctrl-w; buttons themselves are flex-shrink:0.
+   */
+  min-width: 0;
+  width: 100%;
   max-width: 100%;
+  overflow: visible;
   align-self: stretch;
   cursor: default;
+  /* If the tree still scrolls horizontally, keep actions in the visible right edge. */
+  position: sticky;
+  right: 0;
+  z-index: 2;
+  background: #f7f4ef;
 }
 
-.pm-data-project-block > .pm-data-tree-label,
-.pm-data-tree-row > .pm-data-tree-label,
+.pm-data-project-block.is-selected > .pm-data-project-controls {
+  background: #d9e7f5;
+}
+
 .pm-data-tree-row > .pm-data-col-spacer {
   min-width: 0;
-}
-
-.pm-data-tree-empty {
-  grid-column: 1 / -1;
 }
 
 /* Full-height vertical rules across the project banner band (into block padding) */
@@ -2321,7 +2385,8 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   /* Top of banner band (heads row) — not vertically centered across values row */
   align-self: flex-start;
   cursor: default;
-  min-width: 0;
+  flex-shrink: 0;
+  min-width: 0; /* do not force the shared control track wider than template */
 }
 
 .pm-data-banner-controls {
@@ -2621,9 +2686,17 @@ a.pm-action.is-active {
   font-size: 0.92em;
 }
 
-@media (max-width: 800px) {
+/*
+ * Owner Aug 9: below ~screenshot two-column width (1024px), hide the identity
+ * rail so Project Data (fluid names + controls + Records) keeps the width.
+ */
+@media (max-width: 1024px) {
   .pm-detail-layout {
     grid-template-columns: 1fr;
+  }
+
+  .pm-detail-sidebar {
+    display: none;
   }
 }
 

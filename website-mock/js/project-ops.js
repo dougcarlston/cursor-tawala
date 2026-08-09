@@ -1722,20 +1722,25 @@
       count === "—"
         ? "Response count unavailable (needs :3001 + Postgres/Docker, or Deploy)"
         : `Records for form “${formName}”: ${count}`;
-    /* Form rows: Records only — no Times used / Last used dashes (project-level stats). */
+    /* Form rows: Records only — Times used / Last used are project-level (banner). */
     return (
-      `<span class="pm-data-stat-val" data-pm-form-count="1" title="${escapeHtml(countTitle)}">${escapeHtml(
-        count
-      )}</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-empty" aria-hidden="true"></span>` +
-      `<span class="pm-data-stat-val pm-data-stat-empty" aria-hidden="true"></span>` +
+      `<span class="pm-data-stat-val pm-data-stat-records" data-pm-form-count="1" title="${escapeHtml(
+        countTitle
+      )}">${escapeHtml(count)}</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-empty pm-data-stat-times" aria-hidden="true"></span>` +
+      `<span class="pm-data-stat-val pm-data-stat-empty pm-data-stat-last" aria-hidden="true"></span>` +
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>`
     );
   }
 
+  /**
+   * Form-row label: full name in the DOM; CSS ellipsis shortens only when the
+   * name track is tight (minmax ~6ch last resort). title keeps the full string.
+   */
   function formRowHtml(name, startInfo, countsState) {
     const isStart = !!startInfo;
     const label = isStart && startInfo.label ? startInfo.label : name;
+    const full = String(label || "");
     const urlAttr =
       isStart && startInfo.url ? ` data-pm-url="${escapeHtml(startInfo.url)}"` : "";
     const idxAttr = isStart ? ` data-pm-start-idx="${startInfo.idx}"` : "";
@@ -1746,7 +1751,8 @@
       (isStart
         ? `<span class="pm-data-tree-play" title="Starting point" aria-label="Starting point">▶</span>`
         : `<span class="pm-data-tree-play-spacer" aria-hidden="true"></span>`) +
-      `<span class="pm-data-tree-label">${escapeHtml(label)}</span>` +
+      `<span class="pm-data-tree-label" title="${escapeHtml(full)}" ` +
+      `aria-label="${escapeHtml(full)}">${escapeHtml(full)}</span>` +
       formStatCells(countsState, name) +
       `</li>`
     );
@@ -1849,17 +1855,19 @@
       `data-pm-sel="project" aria-selected="true" id="pmDataStartPoints">` +
       /* Row 1 — name + column heads + command groups (vrules span both rows). */
       renderDataTreeToggle(projectChrome.title, projectChrome.expanded) +
-      `<span class="pm-data-tree-label pm-data-tree-project-name">${escapeHtml(displayName)}</span>` +
-      `<span class="pm-data-stat-head">Records</span>` +
-      `<span class="pm-data-stat-head">Times used</span>` +
-      `<span class="pm-data-stat-head">Last used</span>` +
+      `<span class="pm-data-tree-label pm-data-tree-project-name" title="${escapeHtml(
+        displayName
+      )}">${escapeHtml(displayName)}</span>` +
+      `<span class="pm-data-stat-head pm-data-stat-records">Records</span>` +
+      `<span class="pm-data-stat-head pm-data-stat-times">Times used</span>` +
+      `<span class="pm-data-stat-head pm-data-stat-last">Last used</span>` +
       renderProjectDataBannerControls(project.id) +
       /* Row 2 — project-level values under the heads (form rows: Records only). */
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
-      `<span class="pm-data-stat-val" id="pmDataProjectRecords" title="Project-wide Records (Responses)">—</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-placeholder" title="Times used — not wired yet">—</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-placeholder" title="Last used — not wired yet">—</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-records" id="pmDataProjectRecords" title="Project-wide Records (Responses)">—</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-placeholder pm-data-stat-times" title="Times used — not wired yet">—</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-placeholder pm-data-stat-last" title="Last used — not wired yet">—</span>` +
       `</div>` +
       `<ul class="pm-data-tree-list pm-data-forms-list${preferLevel >= 1 ? "" : " is-collapsed"}" ` +
       `id="pmDataFormsList" role="group" aria-label="Forms">` +
@@ -2188,13 +2196,14 @@
   function rebuildFormsList(tree, formNames, project, countsState) {
     const list = tree.querySelector("#pmDataFormsList");
     if (!list) return;
+    const grid = tree.querySelector(".pm-data-grid");
     const entries = orderedFormEntries(project, formNames);
     if (!entries.length) {
       list.innerHTML = '<li class="pm-data-tree-empty">No forms discovered yet.</li>';
-      list.classList.remove("is-scrollable");
+      if (grid) grid.classList.remove("is-scrollable");
     } else {
       list.innerHTML = entries.map((e) => formRowHtml(e.name, e.start, countsState)).join("");
-      list.classList.toggle("is-scrollable", entries.length > 10);
+      if (grid) grid.classList.toggle("is-scrollable", entries.length > 10);
     }
   }
 
