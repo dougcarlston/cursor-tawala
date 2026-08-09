@@ -1,6 +1,6 @@
 # Legacy reference stills
 
-Committed copies for markdown embeds in `website-mock/README.md` § **Aug 7–8 legacy page triage**.
+Committed copies for markdown embeds in `website-mock/README.md` § **Aug 9 decisions (lists 1+4)**.
 
 | File | Source |
 |------|--------|

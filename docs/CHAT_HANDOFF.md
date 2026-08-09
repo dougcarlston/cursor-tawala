@@ -333,22 +333,22 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Website — library ops (Export/Backup/Purge)`
 
-**Status (Aug 7–8, 2026):** Catalog ops largely wired (Delete/Purge, E/I/B/R, Publish/Pull, Use split, Versions first slice + **Deploy this version**). Owner **legacy page triage** captured in `website-mock/README.md` § **Aug 7–8 legacy page triage** (stills in `legacy-reference/stills/`). **Next session:** discuss triage lists **1** (Ask to evaluate) and **4** (Unsure); then execute list **2**. Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Status (Aug 9, 2026):** Catalog ops largely wired (Delete/Purge, E/I/B/R, Publish/Pull, Use split, Versions first slice + **Deploy this version**). Aug 7–8 triage lists **1** and **4** walked with the owner; **canonical decisions + Task List** in `website-mock/README.md` § **Aug 9 decisions (lists 1+4)** (stills kept under `legacy-reference/stills/`). **Next session:** execute that Task List (lean My Tawala + Details ops first). Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
 
-### Session checkpoint — Aug 7, 2026
+### Session checkpoint — Aug 9, 2026
 
-**Done today:** Deploy this version + definition snapshots (smoke OK); Tony stills / `FROM_TONY_IMAGES_NOTES` + `legacy-reference/` HTML + comparison canvas; feature triage (Responses = project-wide submission count); versioning radio/Deploy-switch honesty resolved by wiring Deploy this version.
+**Done today:** Documented Aug 9 walkthrough agreements in plain English (Publish = new Library entry; update existing = new version on that entry; Active/De-activate; Start-point distribute/embed instead of ACL; Records/clones/times-used; Project Data + Purge toolbar; Edit in Designer on Details only; Make a Copy; Backup hold; Test Drive contract) plus ordered Task List. No UI feature work this pass.
 
-**Next:** lists 1+4 discussion → list 2 execution chunks; hold Make a Copy; Selective Purge by form stays ask-commissioners.
+**Next:** execute Task List chunks 1→ (lean listing, Details ops rail, Records, Project Data / whole-project Purge…). Holds called out in the README Task List (Backup package, Download latest, SEE DEMO videos, ratings product, Shared Data, Access column).
 
 ### 5-line paste opener
 
 ```
 Project: Tawala (~/Projects/Tawala)
 Track: Website mock — website-mock/ (Phase 3)
-Goal: Discuss Aug 7–8 triage lists 1+4 (Ask / Unsure), then execute list 2 (lean My Tawala + Details decision ops, Responses, Theme, Published rail, etc.). Hold Make a Copy. Read website-mock/README.md § Aug 7–8 legacy page triage first.
-Read first: website-mock/README.md § Aug 7–8 legacy page triage, .cursor/rules/tawala-designer-parked-post-website.mdc, docs/ROADMAP.md Phase 3
-Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless Deploy/snapshots need it; defer parked Designer items; tenancy = 1 public Library + per-account private My Tawala
+Goal: Execute Aug 9 Task List (list-2 chunks first): lean My Tawala listing → Project Details ops rail → Records count → Project Data + whole-project Purge. Read website-mock/README.md § Aug 9 decisions first.
+Read first: website-mock/README.md § Aug 9 decisions (lists 1+4), .cursor/rules/tawala-designer-parked-post-website.mdc, docs/ROADMAP.md Phase 3
+Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless Deploy/snapshots need it; defer parked Designer items; tenancy = 1 public Library + per-account private My Tawala; respect HOLD items in the Aug 9 Task List
 ```
 
 ### Work to date

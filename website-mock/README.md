@@ -23,7 +23,7 @@ Open:
 - **Library:** http://localhost:5500/library.html
 - My Tawala: http://localhost:5500/mytawala.html
 - **Docs** (mock ops guide): http://localhost:5500/docs.html — also linked quietly from the yellow mock banner and the site footer on every chrome page; full README as plain text at http://localhost:5500/README.md
-- **Legacy reference (static, non-operational):** http://localhost:5500/legacy-reference/ — Beta lookalikes of My Tawala / Project Details / Library from From Tony stills (Library = reconstructed). Side-by-side with live mock pages above. **Owner decisions:** § [Aug 7–8 legacy page triage](#aug-78-legacy-page-triage) below (stills + lookalike shots under `legacy-reference/stills/`). Feature comparison canvas (outside repo): `~/.cursor/projects/Users-DougC1-Projects-Tawala/canvases/legacy-vs-mock-pages.canvas.tsx`.
+- **Legacy reference (static, non-operational):** http://localhost:5500/legacy-reference/ — Beta lookalikes of My Tawala / Project Details / Library from From Tony stills (Library = reconstructed). Side-by-side with live mock pages above. **Owner decisions:** § [Aug 9 decisions (lists 1+4)](#aug-9-decisions-lists-14) below (stills + lookalike shots under `legacy-reference/stills/`). Feature comparison canvas (outside repo): `~/.cursor/projects/Users-DougC1-Projects-Tawala/canvases/legacy-vs-mock-pages.canvas.tsx`.
 
 **Stop:** `Ctrl+C` in the serve terminal, or from another shell: `cd website-mock && ./serve.sh stop`.
 
@@ -390,11 +390,13 @@ There is still **no public Library Delete button** for normal users — `library
 
 **Smoke:** `library-admin.html` with admin mode off → gate screen only, no table. Enable → table lists every current Library entry (stub + non-stub, with “stub” / “live” / “not vetted” / “published overlay” badges) plus a Publish/overwrite mini-form and a Retired section (empty until something is retired). Publish/overwrite a project with the purge checkbox checked (default) → status line shows the purge outcome (deleted count, or a ⚠️ skipped/failed note) alongside the publish confirmation — same purge-on-Publish behavior as the My Tawala dialog. Rename a row → name updates on `library.html` after reload, **no purge call** (Rename never purges). Retire a stub → gone from `library.html`, appears in `mytawala.html` still named `"… (stub)"`, **no purge call** (Retire never purges). Retire a non-stub (e.g. a Main Menu template) → gone from `library.html`, appears in `mytawala.html` under its original name. Restore either → back in `library.html`.
 
-## Aug 7–8 legacy page triage
+## Aug 9 decisions (lists 1+4)
 
-**Canonical** owner decisions from From Tony stills + `legacy-reference/` lookalikes vs the live mock. Short pointers: `docs/CHAT_HANDOFF.md` Chat 3; `Tawala_Key_Documents/LEGACY_MEMO_TRIAGE.md` (B7); outside-repo stills notes: `…/From Tony/FROM_TONY_IMAGES_NOTES.md`. Comparison canvas (not in git): `~/.cursor/projects/Users-DougC1-Projects-Tawala/canvases/legacy-vs-mock-pages.canvas.tsx`.
+On Aug 7–8 we compared From Tony stills and the `legacy-reference/` lookalikes to the live mock and sorted features into four lists. On **Aug 9, 2026** the owner walked through lists **1** (Ask to evaluate) and **4** (Unsure — talk further) and settled the product meanings below. This section is the **canonical** write-up of those agreements, in plain English so a future reader (or a compacted chat) does not need the session shorthand.
 
-**Next session focus:** lists **1** (Ask to evaluate) and **4** (Unsure — talk further). Then execute list **2** in chunks.
+Short pointers: `docs/CHAT_HANDOFF.md` Chat 3; `Tawala_Key_Documents/LEGACY_MEMO_TRIAGE.md` (B7). Outside-repo stills notes: `…/From Tony/FROM_TONY_IMAGES_NOTES.md`. Comparison canvas (not in git): `~/.cursor/projects/Users-DougC1-Projects-Tawala/canvases/legacy-vs-mock-pages.canvas.tsx`.
+
+**What to do next:** execute the [Task List](#task-list-aug-9) (list-2 work first, in chunks). Do not re-debate the decisions below unless new evidence appears.
 
 ### Reference stills (committed under `legacy-reference/stills/`)
 
@@ -426,56 +428,145 @@ Static lookalikes (served at `/legacy-reference/`; screenshots Aug 7):
 
 *Lookalike — `legacy-library.html` (reconstructed / uncertain)*
 
-### 1. Ask to evaluate *(focus next session)*
+### Publish and the Library catalog
 
-Publish vs Update library vs Update existing · Active / De-activate · Shared Data · Invite to project · Include in Web Page · SEE DEMO vs Test Drive vs Download · Access column · Times used · Customize · Comments (who / where) · Selective Purge by form (ask commissioners)
+**Publish** means: take a project from private My Tawala and create a **new** entry in the one public Library.
 
-### 2. Prioritize and execute *(was “likely add”; owner accepted Responses)*
+**Update an existing Library app** means: put a **new version** onto a Library entry that already exists (the same catalog row keeps its identity; the published definition advances). That is the normal way to refresh something already in the Library — not a separate mystery product verb.
 
-- Lean My Tawala list; **decision ops on Project Details** (Publish lifecycle, Purge / Delete, E/I/B/R)
-- **Responses** = project-wide submission count (not comments); per-form counts on Details later
-- Theme / Appearance · Per-form Project Data · Published Yes + link · Author / version# / description rail · Versions (keep **Deploy this version**; fuller download later) · Library blurb under name + clearer acquire when named · **Make a Copy** (still holding team) when ready
+Drop the third Publish-dialog choice that asked something like “Update library with this version?” unless clear evidence of that third path resurfaces in legacy or real use. Two outcomes are enough: **new Library entry**, or **new version on an existing Library entry**.
 
-### 3. Deprioritize / skip for now
+On the **Library** surface, the actions people should see are:
 
-- Full Beta nav peers (Forum / News / Admin …) — one-line explain only; not product work now
-- Library version history on the public site
-- Project icon tiles
-- Dense ops icons forever on the listing (prefer lean list + Details)
-- Flash SEE DEMO until assets exist
-- Full ratings product **as display-only forever** — but owner wants a future **solicit ratings** story (My Tawala users of published apps / invitations) → park under list **4**, not “never”
+- **Test Drive** — try the live app (see Test Drive below).
+- **Save a copy** — acquire into the user’s private My Tawala (rename on the way in).
 
-### 4. Unsure — talk further *(focus next session)*
+Park **SEE DEMO** until there are real demo videos to show. **Download latest** is deferred for a later conversation; the preferred direction is **Pull into Designer** (bring the definition into authoring) rather than “push a download from the website.” Do **not** add a Library **Customize** control that dumps the user into Designer from the catalog.
 
-Revise Project · Comments UX · E/I/B/R exact meanings · Active/Offline vs Purge · Use only on My Tawala vs Library Download/Use · Project Data lock / chart icons · Access column worth it once defined · **Ratings solicit design** (who / when)
+**Stars** after Library names may stay as a visual placeholder. **Comments** are a placeholder on the **Library detail** page only (not a My Tawala list column). A real reputation / ratings product is a **separate future project** — do not build gaming-prone ratings as part of this Website ops pass.
 
-### Synopsis — Aug 7, 2026 (today)
+### Active and De-activate
 
-- **Deploy this version** wired: definition snapshots on Deploy → Show in My Tawala; radios + button switch live `:8080` to a snapshot-backed row; smoke OK. Earlier versioning smoke gaps (radios looked like Deploy-switch but did nothing) resolved by that wiring — not by removing radios.
-- Tony Images / `FROM_TONY_IMAGES_NOTES.md`; `website-mock/legacy-reference/` static HTML; comparison canvas; stills copied into `legacy-reference/stills/` for this doc.
-- Feature triage with owner (lists above); **Responses** clarified as project-wide submission count.
-- Conditional-display sequester was prior day — not today’s work.
+**De-activate** (and the reverse, take Active again) is a useful **temporary take-down** while the author investigates a problem. It is not Purge and not Delete.
 
-### Todo going forward
+When a project is **Inactive**:
 
-1. **Discuss lists 1 + 4** (tomorrow / Monday) — evaluate + talk further; move decided items into list 2.
-2. **Execute list 2** in chunks: lean My Tawala list → Details ops rail (Publish lifecycle, Purge/Delete, E/I/B/R placement) → Responses column (project-wide) → Theme / Appearance → per-form Project Data → Published Yes+link + author/version/description rail → Versions polish (keep Deploy this version; richer download later) → Library blurb + clearer acquire naming.
-3. **Hold Make a Copy** until team memory returns; then wire alongside Library Save a copy.
-4. **Park** list 3 items; do not build display-only ratings forever — design solicit ratings when list 4 settles.
-5. Keep **Selective Purge by form** on the ask-commissioners track (list 1); do not build yet.
-6. Stub cleanup / Live Library continue as separate catalog work when a stub has a real Deploy → Publish replacement.
+- It is **hidden from the public Library** — visitors cannot Test Drive it or Make / Save a copy from the catalog.
+- It **remains on the author’s My Tawala**, with a clear Offline / Inactive marker so the author can reactivate it.
+
+Who can flip the flag: the **author** for now (admin tooling later). The control lives on **Project Details**, not as a confusing listing-only mystery. Keep the language and UI distinct from **Purge** (wipe response data) and **Delete** (remove this My Tawala copy).
+
+### Shared Data — parked
+
+**Shared Data** is a Fleischauer-era idea with no usable spec in hand. Park it. Do not invent behavior for it in this phase.
+
+### Invite collaborators — no ACL for now
+
+We are **not** building real access-control / collaborator ACLs yet.
+
+Instead, use **Project Details → Start points** as the place to help authors distribute the right URLs:
+
+- Short **help text** explaining what each start point is for.
+- A **Copy link** control so teachers / coaches can paste the URL to students or players.
+- Optional **owner-chosen labels** on those start points (for example “participant” vs “admin”) — labels for humans, not a full permissions system.
+- Putting a stable **uniqueId in the URL** is the coded stretch when we wire this for real.
+
+**Include in Web Page** belongs in the same Start-points area: copy an **iframe / embed** snippet for the chosen start URL. A concrete use case is a Foundation teacher nomination form embedded on an external site.
+
+### Access column — parked
+
+The listing **Access** column (last-used style) is parked. **Updated / last modified** on the listing is less critical if **Versions** on Project Details already carry dated history.
+
+### Records, clone count, and times used
+
+**Records** (also called **Responses**) means the **project-wide count of submissions**. Show that number on the **My Tawala listing** and again on **Project Details**. Break it down **per form** on the **Project Data** section (not as a substitute for the project-wide total).
+
+**Clone count** means how many times people used **Save a copy** (or equivalent) to pull this Library project into their own My Tawala — **copies of the app**, not rows of response data. Only meaningful once Save a copy exists for real.
+
+**Times used** (proposed definition for when we wire it): count a **new respondent session that begins from a start URL**. Do **not** count Library Test Drive sessions. Do **not** count every click inside an already-open session. When wired, show **Times used** on Project Details; **Last used** is the timestamp of the most recent such session.
+
+### Project Data and Purge
+
+On **Project Details**, add a **Project Data** section with a **collapsible form list**. Collapse modes the owner wants available: closed; **starting points only**; **all forms**.
+
+From that section the author **selects** either one form or the **entire project**, then uses a shared toolbar: **Export / Import / Purge**. We do not require mysterious per-row icons as the only way to act — selection plus toolbar is the model.
+
+Build **whole-project Purge** first. **Per-form Purge** uses the same UI (Selective Purge). Sports commissioners may still need a “stats only” nuance later; that can refine Selective Purge without inventing a second product.
+
+**Purge** and **Delete** are not the long-term focus of the My Tawala **listing** chrome. **Delete** means: remove this copy from My Tawala. **Purge** means: clear response data (for the selection). Keep those meanings separate from De-activate and from Backup/Restore.
+
+### Designer entry points
+
+Put **“Edit project in Designer”** on **Project Details only**, with that honest name. Do not use a vague **“Revise”** label that hides the fact that Designer is involved.
+
+Put **nothing about Designer** on the My Tawala **listing**. A Home-sidebar link toward Designer can come later, and should sit **away from** the Library chrome so catalog browsing does not feel like an authoring trap.
+
+### Make a Copy
+
+On **Project Details**, **Make a Copy** forks the author’s **own** project without opening Designer: mint a **new uniqueId**, default to **empty response data**, and let the author **rename** (for example “Biology Mid-term 2026”). Renaming alone is **not** a new instance — only Make a Copy (or Library Save a copy) creates a new project identity.
+
+Optional **copy-with-data** (with a clear confirm) can come later.
+
+On the Library side, **Save a copy** acquires into My Tawala and should support **rename on acquire** the same way.
+
+### Backup
+
+Do **not** build Backup further until the package contents are decided. Default proposal on the table: Backup = **currently deployed definition + current response data**. Remember: **Restore** is not the same as **Deploy this version** (Restore re-applies a backup package; Deploy this version switches which definition revision is live on `:8080`).
+
+### Test Drive
+
+**Test Drive** belongs on the **Library**. When the visitor leaves the Test Drive, **purge** the demo responses. While they are in the drive, they may use **all start points** before that wipe (so multi-step apps like Exam + Admin Setup still work during the session).
+
+---
+
+### Earlier triage lists (Aug 7–8 — historical)
+
+These four lists framed the Aug 9 walkthrough. Lists **1** and **4** are now decided above; list **2** is the execution backlog in the Task List; list **3** stays deprioritized.
+
+1. **Ask to evaluate** *(discussed Aug 9 — decisions above)* — Publish vs update Library; Active / De-activate; Shared Data; Invite / Include in Web Page; SEE DEMO vs Test Drive vs Download; Access column; Times used; Customize; Comments; Selective Purge by form.
+2. **Prioritize and execute** — Lean My Tawala list; decision ops on Project Details; Records/Responses; Theme / Appearance; per-form Project Data; Published Yes + link; author / version / description rail; Versions (keep Deploy this version); Library blurb + clearer acquire; Make a Copy when ready.
+3. **Deprioritize / skip for now** — Full Beta nav peers (Forum / News / Admin …); Library version history on the public site; project icon tiles; dense ops icons forever on the listing; Flash SEE DEMO until videos exist; full ratings as a forever display-only product (reputation = separate future project per Aug 9).
+4. **Unsure — talk further** *(discussed Aug 9 — decisions above)* — Revise vs Edit in Designer; Comments UX; E/I/B/R / Backup meanings; Active/Offline vs Purge; Use vs Library Download; Project Data chrome; Access column; ratings solicit design.
+
+### Synopsis — Aug 7 (implementation day) and Aug 9 (decision day)
+
+- **Aug 7:** **Deploy this version** wired (definition snapshots on Deploy → Show in My Tawala; radios + button switch live `:8080`). Tony stills / `FROM_TONY_IMAGES_NOTES.md`; `legacy-reference/` HTML; comparison canvas; stills under `legacy-reference/stills/`. Initial feature triage into the four lists; **Responses** already clarified as project-wide submission count.
+- **Aug 9:** Walked lists 1+4 to agreement. Publish = new Library entry; update existing = new version on that entry; drop the third “update library with this version?” prompt unless evidence returns. Library CTAs = Test Drive + Save a copy. Active/De-activate = temporary take-down (not Purge/Delete). Invite = Start-point help + Copy link + optional labels + Include-in-Web-Page embed (no ACL). Records on list + Details; clones = Library copies; Times used = new respondent sessions from start URLs. Project Data selection + Export/Import/Purge toolbar; whole-project Purge first. Designer only from Details as “Edit project in Designer.” Make a Copy = own fork with new uniqueId. Backup parked pending package decision. Test Drive = Library, purge on leave, all start points allowed first.
+
+### Task List (Aug 9)
+
+Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** Items marked **HOLD** wait on a decision or asset; do not half-build them.
+
+1. **Lean the My Tawala listing** — Prefer a calmer list; move heavy decision ops (Publish lifecycle, Purge / Delete emphasis, Export / Import / Backup / Restore placement) onto **Project Details** so the listing is not a dense icon strip forever.
+2. **Project Details ops rail** — Group Publish / update-Library, Active/De-activate, Purge, Delete, and data tools where the author actually decides. Keep Purge ≠ Delete ≠ De-activate visually and in copy.
+3. **Records (Responses) count** — Show project-wide submission count on the My Tawala list and on Project Details. Add per-form counts inside Project Data when that section lands.
+4. **Project Data section** — Collapsible form list (closed / starting points only / all forms). Select form or entire project → shared **Export / Import / Purge** toolbar. Ship **whole-project Purge** in this UI first; then Selective (per-form) Purge in the same pattern. **HOLD nuance:** sports “stats-only” Selective Purge after commissioner feedback if needed.
+5. **Theme / Appearance** — Surface when it fits the Details rail; do not block Records or Project Data on pixel-perfect theme chrome.
+6. **Published indicator** — On Details: clear Yes (or equivalent) plus a link to the Library entry when published.
+7. **Author / version / description rail** — Show who owns it, current version number, and description beside Versions (keep **Deploy this version**; richer version download can wait).
+8. **Library listing / detail acquire clarity** — Blurb under the name; CTAs = **Test Drive** + **Save a copy** only. Rename on Save a copy. No Customize→Designer dump. No SEE DEMO until videos exist.
+9. **Make a Copy (own project)** — On Project Details: fork with new uniqueId, empty data by default, rename in the flow. Wire **Library Save a copy** rename-on-acquire alongside. **HOLD:** optional copy-with-data (confirm) until the empty-data path is solid.
+10. **Start points: distribute + embed** — Help text, Copy link, optional participant/admin-style labels, and **Include in Web Page** (iframe/embed for the chosen start URL). **HOLD coded stretch:** uniqueId-in-URL hardening as part of real wiring.
+11. **Edit project in Designer** — Details-only control with that exact honest label. Remove or avoid “Revise” that conceals Designer. No Designer column or icon on the My Tawala listing. **HOLD:** Home sidebar Designer link later, placed away from Library.
+12. **Active / De-activate** — Author control on Details; Inactive hides from public Library (no Test Drive / Save a copy) but stays on My Tawala with Offline/Inactive marker.
+13. **Times used / Last used / Clone count** — Wire when Save a copy and session accounting exist; use the Aug 9 definitions (clones ≠ data rows; times used ≠ Test Drive).
+14. **Test Drive contract** — Keep Library-owned; allow all start points during the drive; purge when the visitor leaves (document and implement the leave/wipe path honestly in the mock’s limits).
+15. **HOLD — Backup package** — Do not expand Backup/Restore until the owner confirms the default proposal (deployed definition + current responses) and how Restore differs from Deploy this version in the UI copy.
+16. **HOLD — Download latest** — Talk later; prefer Pull into Designer over site Push/Download.
+17. **HOLD / park — Shared Data, Access column, SEE DEMO videos, reputation/ratings product, ACL collaborators** — No build in this phase.
+18. **Ongoing — Library stub cleanup** — Separate catalog work: Designer → Deploy → Publish a real replacement, then retire the stub (see § Library stubs).
 
 ## Parked / backlog (owner Aug 1, 2026) — look & feel / organization phase
 
-Worth doing, but **not initial wiring**. These are **look & feel / organization** ideas for a later phase — same Website priority as above: **library / catalog ops first**; L&F parked. Flat My Tawala **listing** (one row per project) stays current. Details-only Versions history (first slice Aug 5, 2026) does **not** lift the listing hold — see § Save/Deploy/Publish **Sequencing / hold**. Folder UX / listing piles come with the later L&F/organization pass (delete-version, audit; Deploy-switch wired Aug 7). **Owner page-feature triage (Aug 7–8):** see § [Aug 7–8 legacy page triage](#aug-78-legacy-page-triage) above (canonical).
+Worth doing, but **not initial wiring**. These are **look & feel / organization** ideas for a later phase — same Website priority as above: **library / catalog ops first**; L&F parked. Flat My Tawala **listing** (one row per project) stays current. Details-only Versions history (first slice Aug 5, 2026) does **not** lift the listing hold — see § Save/Deploy/Publish **Sequencing / hold**. Folder UX / listing piles come with the later L&F/organization pass (delete-version, audit; Deploy-switch wired Aug 7). **Owner decisions (Aug 9):** see § [Aug 9 decisions (lists 1+4)](#aug-9-decisions-lists-14) above (canonical). Task execution order is in that section’s Task List.
 
-1. **My Tawala listing column groups — DONE (Aug 5, 2026)** — Implemented on the flat listing (one row per project — no version piles). Visual groups via thick left rules + padding: **Project info** (Name, Created, Updated, Use) · **Data transfer** (Export, Import) · **Backup** (Backup, Restore) · **Destructive** (Purge, Delete — solid red icon buttons, not a thin outline) · **Library transfer** (Publish, Pull). Code: `js/project-ops.js` (`group` / `groupStart` / `destructive` on `LISTING_ACTIONS`), `css/tawala-chrome.css`, `mytawala.html`. Still optional later polish from earlier L&F notes: sticky/frozen icon-column headings; more distinct glyphs within a group. Not needed for ops wiring. **Aug 7–8 triage:** prefer **leaner** listing long-term (ops on Details) — see triage list 2.
+1. **My Tawala listing column groups — DONE (Aug 5, 2026)** — Implemented on the flat listing (one row per project — no version piles). Visual groups via thick left rules + padding: **Project info** (Name, Created, Updated, Use) · **Data transfer** (Export, Import) · **Backup** (Backup, Restore) · **Destructive** (Purge, Delete — solid red icon buttons, not a thin outline) · **Library transfer** (Publish, Pull). Code: `js/project-ops.js` (`group` / `groupStart` / `destructive` on `LISTING_ACTIONS`), `css/tawala-chrome.css`, `mytawala.html`. Still optional later polish from earlier L&F notes: sticky/frozen icon-column headings; more distinct glyphs within a group. Not needed for ops wiring. **Aug 9:** prefer **leaner** listing long-term (ops on Details) — see Task List items 1–2.
 2. **User-controlled folders** — group (and hide) groups or versions of projects; drag-and-drop so the user can keep projects they’re working on at the top. Organization UX — after ops are solid.
 3. **Complete-private list** — a separate list for a user’s projects that are **complete but not intended for the public Library** (private archive / complete-private vs My Tawala working set vs Library Publish). Organization UX — after ops are solid.
 4. **Season / roster carry-forward** — sports leagues annually asked how to move prior-year rosters (owner Aug 1, 2026 — quote under § Library Actions / Use framing). Historical practice: **Excel Export → archive**, then **reuse player subset only** (drop graduates, add new kids) via selective Import — not Backup/Restore-everything, not Library re-pull. Soft open: “roll season” ≈ export archive + import filtered roster on the EXPORT/IMPORT spine. Backlog signal for SDT / season handoff; not Customize vs Copy. No feature designed here.
-5. **Library quality / community** — pro vs amateur/community Publish mix; reviews/ratings as promotion vs gameable reputation; Designer ease as prerequisite for contribution (YouTube “easy to load” analogy). Open questions only — see § Library quality / community above. **Aug 7–8:** do not ship display-only ratings forever; future **solicit ratings** design sits in triage list 4.
+5. **Library quality / community** — pro vs amateur/community Publish mix; reviews/ratings as promotion vs gameable reputation; Designer ease as prerequisite for contribution (YouTube “easy to load” analogy). Open questions only — see § Library quality / community above. **Aug 9:** stars/comments stay placeholders; reputation/ratings = separate future project — do not build here.
 6. **Versions / Deploy this version (wired Aug 7, 2026)** — radios + **Deploy this version** switch snapshot-backed rows; delete-version still grey; Download still metadata-only; Restore ≠ make-definition-version-current. Documented under glossary **Owner smoke Aug 7**. Still easy to get in trouble with response/schema mismatch — see smoke steps.
-7. **Selective Purge by form** (owner Aug 7, 2026) — e.g. SportsDashboards: keep Player/Coach submissions, purge statistics for a new year. Product question under **Purge / E/I/B/R**; owner will ask commissioners if they needed it and if legacy supported it. **Park — do not build.** Also triage list 1.
+7. **Selective Purge by form** — Aug 7 park asked commissioners; **Aug 9:** same UI as whole-project Purge (select form → Purge toolbar). Build whole-project first, then per-form in that UI; sports stats-only nuance may refine later. No longer “never build” — it is Task List item 4 after whole-project Purge.
 
 ## Owner checklist — product ready for Library (Deploy → Live)
 
