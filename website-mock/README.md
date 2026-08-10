@@ -6,6 +6,8 @@ Static rough draft of the legacy Tawala site (home, Library, project detail, My 
 
 ## View locally
 
+**Clean start tomorrow (Docker + Tomcat + :5500 + what to click):** see `docs/CHAT_HANDOFF.md` → **Chat 3 — Website mock** → **Clean start tomorrow**. Chat title: **Library thread**.
+
 **Always** serve from `website-mock/` (not the repo root). Wrong cwd → `http://localhost:5500/library.html` returns **404**.
 
 ```bash
@@ -64,7 +66,7 @@ Open:
 
 There is **one public Library** (shared catalog). Each **account** has its **own separate, private My Tawala**; another account cannot see or access your My Tawala contents. The bridge out of private My Tawala into the public world is **Publish** (to Library) — optional and deliberate. Until Publish, projects stay private to that account’s My Tawala.
 
-**Current priority (owner Jul 31, 2026):** **Libraries are the core of the Website** (Library + My Tawala / catalog ops). Harden **Delete / Purge** and data/backup lifecycle ops (**EXPORT / IMPORT**, **BACKUP / RESTORE**) over look-and-feel; solid basis for libraries already exists. Library → My Tawala **Save a copy** remains the acquire stub; **Use** (run start link) is on My Tawala. **Do not** chase more visual polish now — **Home** L&F is optional and non-critical. Version piles stay deferred until ops are trustworthy (see glossary **Sequencing / hold** below).
+**Current priority (owner Jul 31, 2026):** **Libraries are the core of the Website** (Library + My Tawala / catalog ops). Harden **Delete / Purge** and data/backup lifecycle ops (**EXPORT / IMPORT**, **BACKUP / RESTORE**) over look-and-feel; solid basis for libraries already exists. Library → My Tawala **Save a copy** is wired (rename-on-acquire); **Use** (run start link) is on My Tawala. **Do not** chase more visual polish now — **Home** L&F is optional and non-critical. Version piles stay deferred until ops are trustworthy (see glossary **Sequencing / hold** below).
 
 **Mock note:** today’s mock is single-browser `localStorage` (no real multi-account auth). The **product model** is still multi-account private My Tawala; do not design as if all My Tawala piles were shared.
 
@@ -88,7 +90,26 @@ See `projects/README.md` for refresh commands and MANIFEST files.
 - **`liveReady: true`** in `demo-urls.js` = owner-vetted product with a working `:8080` test-drive. Library list shows a quiet green **Live** chip (placeholders stay unmarked; Test drive stays disabled until `deployed` + URL).
 - List rows are **name-only** (no letter-tile icon fallbacks — those were CSS stand-ins for missing project icon bitmaps). Missing `:8080` deploys are **not** bannered on list chrome — Test drive stays disabled with a title tip; quiet status may appear on detail / start-point stubs only. Listing titles never show a `.json` extension — on-disk backups may still be JSON; display uses the project name only.
 
-Main Menu public templates (Simple Survey, Sign-up, Potluck, Get Together, Multiple Question Survey) stay in the Library catalog with current Phase 2 `:8080` URLs. JSON for most of those is under `designer-web/public/samples/templates/`; Multiple Question Survey also has a WebLibrary backup under `projects/library/`. **Sign-up Sheet Template w Email** (`signup-sheet-email`) was **retired from the public Library** (owner Aug 1, 2026) — not drop-in ready yet; remains on **Designer → File → New Project** only (not seeded into default My Tawala). Re-Publish when a finished runtime-customizable version exists.
+### Library vs New Project templates (owner Aug 10, 2026)
+
+**Source of good starters:** Designer **File → New Project…** — catalog in `designer-web/src/templates/catalog.ts`, JSON under `designer-web/public/samples/templates/` (Empty, Form with Process, Form+Process+Document, Sign-up Sheet, Sign-up Sheet w Email, Get Together, Potluck, Simple Survey, Multiple Question Survey). Spec/matrix: `Tawala_Key_Documents/DESIGNER_TEMPLATE_MATRIX.md`.
+
+**Public Library (`TAWALA_LIBRARY` in `js/demo-urls.js`)** is only for **vetted liveReady try-outs** with working `:8080` URLs — not a dump of New Project JSON or WebLibrary conversions. Aug 10 cleanup:
+
+- Removed broken **Sign-up Sheet Template** Library seed (`signup-sheet` → old uniqueId `cicw55xxhvwrrh7`). Sign-up Sheet stays on **New Project** only until a good Deploy is re-Published.
+- Removed all remaining **WebLibrary stubs** from the catalog seed (do not reintroduce). Backing JSON under `projects/library/` may still exist on disk as archives; they are not listed.
+- Kept liveReady: Simple Survey, Potluck, Get Together, Multiple Question Survey, Horses and Penguins Test, Online Exam Builder.
+- **Sign-up Sheet w Email** already retired Aug 1 (New Project only).
+
+**If Library / My Tawala still shows Sign-up Sheet after the repo cleanup:** that is almost always this browser’s `localStorage` (Save a copy / Publish overlay / old Test Drive uniqueId `cicw55xxhvwrrh7`) — not the seed. Open once (auto-runs): `http://127.0.0.1:5500/_diag-discard-signup-copy.html` — then hard-refresh Library and My Tawala. Designer **New Project → Sign-up Sheet** is intentionally kept.
+
+**If Library still shows WebLibrary stubs (AlexTimon, DirtBowl, …) after seed cleanup:** root cause is almost always `tawala.mock.libraryOverlay` — **Save a copy** (and admin Rename) used to snapshot the full catalog row into localStorage, so stubs survived after they were removed from `TAWALA_LIBRARY`. Fix is in `transfer.js` (denylist scrub on every Library load + no more full-row snapshot on Save a copy).
+
+- **Hard-refresh Library (must show 6 liveReady only, no stubs):**  
+  `http://127.0.0.1:5500/library.html?v=20260810-stubs-gone2`
+- **Nuclear overlay clear (if stubs still appear):**  
+  `http://127.0.0.1:5500/_diag-clear-library-stubs.html`  
+  (or `…/_diag-clear-library-stubs.html?nuke=all` to wipe all Library Publish overlays)
 
 ### Library Actions / Use framing (owner Aug 1, 2026)
 
@@ -99,7 +120,7 @@ Main Menu public templates (Simple Survey, Sign-up, Potluck, Get Together, Multi
 **Implications:**
 
 - Library should prefer **runnable / admin-from-runtime** projects, or clearly label **Designer-required** starters.
-- Designer-only starters stay on the New Project menu; `signup-sheet-email` is no longer in `TAWALA_LIBRARY`.
+- Designer-only starters stay on the New Project menu; `signup-sheet` and `signup-sheet-email` are no longer in `TAWALA_LIBRARY` (Aug 10 / Aug 1).
 - Glossary: **Use** (My Tawala — single-start run link, or Project Details when multi-entry) ≠ **Save a copy** (Library → My Tawala) ≠ **open in Designer** ≠ legacy **USE IT** / CloneAndCustomize (not wired).
 - Aligns with tenancy: **Publish** to Library; **operate** from My Tawala.
 - **Owner evidence (Aug 1, 2026):** *“Every year the sports leagues asked how to move over rosters from previous years so they wouldn't have to re-enter all that data.”* **Refinement:** leagues **exported via Excel** at end of season and **archived** it; they only **reused player data**, stripping graduates and adding new kids. Season handoff ≈ **Export (Excel) archive + selective Import/reuse of a roster subset** — not full **Backup/Restore** of everything, not delete-and-re-pull Library. Aligns with the documented **EXPORT/IMPORT** data spine (Excel). Soft open: a future “roll season” could mean export-archive + import filtered roster. Reinforces **named long-lived instances + cross-season data move**; distinct from Designer Customize vs Copy to My Tawala. (Parked — no feature invented here; see Parked / backlog.)
@@ -118,32 +139,19 @@ Main Menu public templates (Simple Survey, Sign-up, Potluck, Get Together, Multi
 
 **Open questions (not decided):** How (or whether) to surface pro vs community projects in one Library; whether ratings/reviews are worth the gameability risk; how much Designer ease-of-use is a prerequisite for a healthy publish culture. Keep today’s mock stars / comments as stubs only — no reputation product work in this phase. See also Parked / backlog.
 
-### Library stubs and their retirement path (owner Aug 1, 2026)
+### Library stubs (retired from catalog seed — Aug 10, 2026)
 
-Most `projects/library/` WebLibrary backups were bulk-converted placeholders — never deployed, never test-driven, not owner-vetted. The **correct** way to clean these up is **Designer → Deploy → Publish**: open the equivalent working copy in Designer, Deploy it, verify, then Publish it into the Library. **Publish is wired** (see § Publish below) — until a stub has a real Deploy/Publish replacement, it **stays in the catalog as a visible reminder**; there is no shortcut that skips checking the Designer/Deploy equivalent first.
+Owner cleared stubs from the Public Library experience; the **repo seed** now matches: **`TAWALA_LIBRARY` has 0 stubs** (confirmed via `node scripts/list-library-stubs.mjs`). Do **not** re-seed WebLibrary placeholders into the catalog. JSON under `projects/library/` may remain as archives only.
 
-**How a stub is identified:** `stub: true` on a `TAWALA_LIBRARY` entry in `js/demo-urls.js` — set on placeholders / converted-but-unverified projects that are **not** `liveReady` and have no real `:8080` deploy. The entry's display `name` also carries a visible **`" (stub)"` suffix** (e.g. `"AlexTimon (stub)"`) so the Library listing itself shows what still needs replacing, without any extra rendering code (titles everywhere already flow through `TawalaDemo.displayName()`). `liveReady: true` entries (Aug 4, 2026: Simple Survey, Sign-up Sheet Template, Potluck, Get Together, Horses and Penguins Test, Multiple Question Survey Template, Online Exam Builder) are owner-vetted working demos and are **never** marked as stubs. Other real (non-`stub`) rows that are not yet `liveReady` are never stubs either — see "Unvetted non-stub entries" below.
+**How a stub used to be identified:** `stub: true` + `" (stub)"` name suffix. **Policy now:** only add Library rows that are owner-vetted `liveReady` with real `:8080` Test Drive URLs — preferably after Designer New Project → Deploy → Publish. New Project templates that are not ready for Library stay on Designer only (Sign-up Sheet / Sign-up Sheet w Email).
 
-**Current stub list (14 of 21 Library entries, Aug 4, 2026):** AlexTimon, Automated List Builder, ClientProfiler, CYO CheckDeposit Request1, CYO Exceptions App, DirtBowl, GenericListManager, League Age calculator, Lunch Order Menu, MVSC Communicator, MVSC Registration, SportsDashboards Template, St Patrick SportsDashboards, Tawala Invoicing. (**Online Exam Builder** promoted to Live Aug 4.) Get the live list any time (never goes stale) with:
+**Why stubs could still appear after seed cleanup:** `Save a copy` / admin Rename wrote full catalog rows into `tawala.mock.libraryOverlay`. Removing stubs from `demo-urls.js` did not clear that overlay, so `withLibraryOverlay` re-added them. Fixed Aug 10: denylist + auto-scrub + thin cloneCount overlay. Confirmation URLs above.
 
 ```bash
-cd website-mock && node scripts/list-library-stubs.mjs          # table
-node scripts/list-library-stubs.mjs --ids                       # ids only
-node scripts/list-library-stubs.mjs --json                      # id/name/category/jsonFile
+cd website-mock && node scripts/list-library-stubs.mjs   # should print 0 stubs
 ```
 
-**Retirement path — no public Library Delete button.** Owner already knows Library must not get a public Delete control (unlike My Tawala's private row Delete, see below). Two supported paths now:
-
-- **Self-serve (Aug 1, 2026):** open `library-admin.html` (see § Library admin path) and click **Retire** on the row — works on this browser, writes the localStorage overlay, done immediately.
-- **Agent-assisted, ships into the repo catalog:** owner asks an agent to retire it (e.g. *"retire stub dirtbowl"* or *"move all stubs to My Tawala"*), and the agent:
-  1. Runs `list-library-stubs.mjs` to confirm current stub ids (read-only — never edits the catalog itself).
-  2. Removes the entry from `TAWALA_LIBRARY` in `js/demo-urls.js` — and, if moving to My Tawala instead of deleting outright, adds an equivalent entry to `TAWALA_MYTAWALA` **keeping** the `" (stub)"` suffix and `stub: true` flag (owner Aug 1, 2026 — the safety-net copy stays visibly marked as a retired stub; never dropped).
-  3. Moves the backing JSON from `projects/library/<file>` to `projects/mytawala/<file>` when moving to My Tawala (or deletes it when just retiring the placeholder outright with no replacement).
-  4. If a **real** replacement was Deployed/Published instead, adds/updates the new catalog entry per the "Owner checklist" below (`deployed: true`, `testDriveUrl`, `liveReady: true` once vetted) rather than just deleting the stub.
-
-Both paths keep stub cleanup deliberate and reversible (My Tawala safety copy, or `library-admin.html` "Restore to Library") — never a one-click public Delete.
-
-**Unvetted non-stub entries (owner Aug 1, 2026 — "a lot of these").** Real (non-`stub`) Library rows catalogued without owner vetting stay unmarked as stubs. **Sign-up Sheet w Email** was an example; it was **removed from `TAWALA_LIBRARY`** (Aug 1, 2026) rather than seeded into everyone's My Tawala — still on Designer New Project; owner may keep a personal copy via admin Retire if they already did. For remaining unvetted non-stubs still in the catalog, Retire (via `library-admin.html` or `TawalaTransfer.retireLibraryEntry`) moves them into the My Tawala overlay so the owner can open/continue in Designer and re-Publish later — display **name left as-is**, no fake `" (stub)"` suffix (`retiredFromLibraryId` + `retiredWasStub: false` + note). The admin table flags any non-stub, non-`liveReady` row with a quiet **"not vetted"** badge as a cleanup hint.
+**Admin / overlay note:** `library-admin.html` Retire still works for *this browser’s* overlay if a Publish overlay reappears locally; shipping catalog changes still go through `js/demo-urls.js`.
 
 ## Navigation and stub pages
 
@@ -178,7 +186,7 @@ Links **without** a stub yet are greyed out via class `link-pending` in `chrome.
 | Designer **Project → Project Manager…** (or toolbar) | `mytawala-project.html?project=…` for the open project name (slug id) |
 | Designer **Help → Website mock (My Tawala)…** | `http://localhost:5500/mytawala.html` |
 | Designer **Help → Website mock (Library)…** | `http://localhost:5500/library.html` |
-| Designer **Deploy** dialog → **Show in My Tawala** | `mytawala-project.html?project=…&deployReceipt=…` — upserts My Tawala pile overlay + opens Details |
+| Designer **Push** dialog (UI still **Deploy**) → **Show in My Tawala** | `mytawala-project.html?project=…&deployReceipt=…` — upserts My Tawala pile overlay + opens Details |
 
 Test-drive start points stay on `:8080` via `js/demo-urls.js`.
 
@@ -188,8 +196,8 @@ Shared helpers: `js/transfer.js` (localStorage on `:5500` only — Designer `:51
 
 | Hop | UI | Status |
 |-----|-----|--------|
-| **Web Designer → My Tawala** | Deploy dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. Overlay survives reload until **Delete** (or clear). Not written into `demo-urls.js`. |
-| **Library → My Tawala** | Listing / detail **Save a copy** / **Save to My Tawala** | Grey stub (acquire). **Use** is on My Tawala, not Library — see § Library Actions / Use framing. |
+| **Web Designer → My Tawala** | Push/Deploy dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. Overlay survives reload until **Delete** (or clear). Not written into `demo-urls.js`. |
+| **Library → My Tawala** | Listing / detail **Save a copy** | Wired (Aug 9 #8) — rename dialog → new My Tawala overlay row (empty data / no shared Library uniqueId). **Use** is on My Tawala, not Library — see § Library Actions / Use framing. |
 | **My Tawala → Library** | Project Details **PUBLISH** | Wired (Aug 1, 2026) — opens the Publish dialog. Listing Publish removed Aug 9 (lean list). Sidebar **Publish to Library** stays a grey stub (no bound project; use Details or library-admin). |
 | **Library → My Tawala acquire** | Listing **GET FROM LIBRARY…** | Always on (Aug 9 option 3) — navigates to `library.html` for Save a copy / browse. Not tied to row selection. |
 | **Library ← My Tawala upgrade** | Listing **REFRESH FROM LIBRARY** | Wired (Aug 1, 2026; renamed/gated Aug 9 option 3) — enabled only when a selected My Tawala row is **linked** to a Library entry (`pulledFromLibraryId` or exact id/name twin); dialog + `TawalaTransfer.pullFromLibrary` refreshes description/category/reference start points. Sidebar **Pull from Library** stays a grey stub. |
@@ -197,35 +205,38 @@ Shared helpers: `js/transfer.js` (localStorage on `:5500` only — Designer `:51
 
 Grey controls use Designer accent palette (`--tw-accent`); disabled = opacity only.
 
-## Save / Deploy / Publish (product glossary)
+## Save / Push / Deploy / Publish (product glossary)
 
 Short product meanings for Website + Designer hops. Sits next to Project Versioning (legacy memo B7) and the transfer stubs above. Not implemented as multi-account auth in this mock.
 
-**Ops verb split (evidence-backed — Java build1700 + memos; owner Jul 31, 2026 reconciled):** Keep **EXPORT / IMPORT** and **BACKUP / RESTORE** separate. Do **not** conflate either with **Deploy** (definition versions) or Designer **File → Save** (local authoring). Shipped Project Manager UI had **no “Save” for submissions** — the ops verbs were **EXPORT / IMPORT / BACKUP / RESTORE** (plus Delete / Purge / Publish, etc.). Owner colloquial “Save” for protecting a live project may have meant **Backup**; treat that gently when reading older notes.
+**Naming (owner Aug 10, 2026 — confirmed):** **Deploy** = website / My Tawala Details only (go live for others + share help). Designer’s old “Deploy to Tawala” / “Deploy this version” (and similar) become **Push** — developers already know “Push.” Docs + checklist first; **do not mass-rename Designer UI mid-session** until the owner says go. See § [Designer Push rename checklist](#designer-push-rename-checklist-docs-first--do-not-mass-rename-yet).
+
+**Ops verb split (evidence-backed — Java build1700 + memos; owner Jul 31, 2026 reconciled):** Keep **EXPORT / IMPORT** and **BACKUP / RESTORE** separate. Do **not** conflate either with **Push** (Designer → definition on server / My Tawala library) or Designer **File → Save** (local authoring), or with website **Deploy** (admin go-live + share). Shipped Project Manager UI had **no “Save” for submissions** — the ops verbs were **EXPORT / IMPORT / BACKUP / RESTORE** (plus Delete / Purge / Publish, etc.). Owner colloquial “Save” for protecting a live project may have meant **Backup**; treat that gently when reading older notes.
 
 | Spine | Verbs | What it carries | Contract |
 |-------|--------|-----------------|----------|
 | **Data only** | **EXPORT** / **IMPORT** | Excel **response data** (submissions) only | **Import** = restore messed-up **data** into the **current** project. Field mismatch **fails**; Import does **not** roll back the project definition. Not “export / import a project version” and not a general “move projects around.” |
 | **Paired snapshot** | **BACKUP** / **RESTORE** | `.backup` ZIP = **paired project definition + data** (plus properties / links) | **Restore** re-applies the matching definition, then data — which is why restore “worked pretty well” across later field changes. This **already was** the paired snapshot path; it is **not** the same as Export/Import. |
-| **Definition versions** | **Deploy** | My Tawala **definition versions** | Shipped Java **auto-deploys** the new version. Separate from Backup. See B7. |
-| **Local authoring** | Designer **File → Save** | Local project definition only | Not My Tawala data, not Backup, not Deploy versioning. |
+| **Definition versions** | **Push** (Designer; UI still says Deploy until rename) | My Tawala **definition versions** | Shipped Java auto-activates the new version on the server. Separate from Backup and from website **Deploy**. See B7. |
+| **Local authoring** | Designer **File → Save** | Local project definition only | Not My Tawala data, not Backup, not Push versioning, not website Deploy. |
 
 **Reconciled (replaces earlier “evolving perhaps Save must also preserve project” note):** Schema drift makes **data-only Import** fail or lose fidelity when fields no longer match — that is expected for Export/Import. The paired **definition + data** package was **Backup / Restore**, not Export/Import and not a PM “Save.” Do not invent a new Save-as-paired-bundle verb on top of this split.
 
 | Verb | Scope | Meaning |
 |------|--------|---------|
-| **Save a copy** (Library) | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (acquire). Stays private until Publish. Not Use; not open in Designer; not a PM submissions verb. Stub in mock. |
-| **Use** | My Tawala listing + Details | Single-start: open that `:8080` URL (operate). Multi-start: open **Project Details** to pick Setup vs Exam (etc.). Wired Aug 1 / Aug 4, 2026 — active when a deploy URL exists; grey otherwise. Does **not** purge-on-start. ≠ Save a copy ≠ open in Designer ≠ legacy CloneAndCustomize. See § Library Actions / Use framing. |
+| **Save a copy** (Library) | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (acquire). Invites a name on the way in (suggested Library title or `Copy of …`); **warn + confirm overwrite** if the name matches an existing My Tawala row (case-insensitive trim) — never silent. Empty response data until **Push** from Designer (mock: no uniqueId / no live start URLs). Stays private until Publish. Rename anytime later on Project Details. Not Use; not open in Designer. Wired Aug 9 #8; naming contract Aug 10 (`TawalaTransfer.saveCopyFromLibrary`). See § Acquire naming. |
+| **Use** | My Tawala listing + Details | For the owner *themselves* — try/run for personal testing or personal use (not the primary “administer to others” path). Single-start: open that `:8080` URL. Multi-start: open **Project Details** to pick Setup vs Exam (etc.). Wired Aug 1 / Aug 4, 2026 — active when a live start URL exists; grey otherwise. Does **not** purge-on-start. ≠ Save a copy ≠ open in Designer ≠ legacy CloneAndCustomize. See § Library Actions / Use framing and § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). |
 | **Open in Designer** | Library / My Tawala → Designer | Author / customize the project definition in Designer. Required for some starters (e.g. Sign-up Sheet w Email); majority of users are not comfortable here — prefer runtime-admin or My Tawala copy-to-run paths when possible. |
 | **EXPORT** | My Tawala / Project Manager | Outbound Excel **response data** only. Not definition versioning; not Backup. |
 | **IMPORT** | My Tawala / Project Manager | Restore messed-up **data** into the current project. Field mismatch **fails** (correct — e.g. Export from an older schema into a project that later added an MCQ); does **not** roll back definition. Same data spine as Export. |
 | **BACKUP** | My Tawala / Project Manager | Write a `.backup` ZIP — paired **definition + data** (plus properties / links). |
-| **RESTORE** | My Tawala / Project Manager | Re-apply a **Backup** snapshot (legacy target: matching definition, then data). **Not** “switch Deploy to an earlier definition version” / make-version-current — that is **Deploy this version** (B7; wired Aug 7, 2026 for snapshot-backed rows). Distinct from Import. |
-| **Deploy** | Designer → runtime / My Tawala | Mints a My Tawala **definition version** and (in shipped Java) auto-deploys it; optionally surface via **Show in My Tawala**. Deploy ≠ Backup ≠ Publish to Library. |
-| **Publish** | My Tawala → Library | Deliberate bridge from private My Tawala into the **one** public Library catalog. Optional; until then, projects remain account-private. **Wired Aug 1, 2026** (mock — localStorage Library overlay): Project Details **PUBLISH** (listing icon removed Aug 9) opens a dialog to rename on the way in and optionally replace an existing Library entry. See § Publish below. |
+| **RESTORE** | My Tawala / Project Manager | Re-apply a **Backup** snapshot (legacy target: matching definition, then data). **Not** “switch Push to an earlier definition version” / make-version-current — that is **Push this version** (B7; UI still says **Deploy this version**; wired Aug 7, 2026 for snapshot-backed rows). Distinct from Import. |
+| **Push** (Designer — rename pending) | Designer → runtime / My Tawala library | Push the project definition to the server so it shows in **your My Tawala library** (mints a definition version; shipped Java activates it). Optional **Show in My Tawala**. **Push this version** (today’s **Deploy this version**) switches which snapshot is live. Owner long form: *Push Project to your MyTawala library*; short button proposal: **Push to My Tawala** (help text keeps the long form). ≠ Backup ≠ Publish ≠ website **Deploy**. UI still says Deploy until checklist rename. |
+| **Deploy** (My Tawala Details — website) | My Tawala → participants | After owning a project: **go live for others** + share help (**copy form link** / **embed**). Not Use-for-self; not Publish-to-Library; not Designer Push. **Wired Aug 10** — Details **DEPLOY** + Invite/Include sidebar → share panel. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). |
+| **Publish** | My Tawala → Library | Deliberate bridge from private My Tawala into the **one** public Library catalog (designers sharing a copy publicly). Optional; until then, projects remain account-private. **Wired Aug 1, 2026** (mock — localStorage Library overlay): Project Details **PUBLISH** (listing icon removed Aug 9) opens a dialog to rename on the way in and optionally replace an existing Library entry. See § Publish below. |
 | **Get from Library…** | Library → My Tawala (acquire) | Always-on listing control → public Library (`library.html`) to Save a copy. **Aug 9 option 3** — not selection-gated. |
-| **Refresh from Library** (was Pull) | Library → My Tawala (upgrade) | Refresh a My Tawala project's descriptive content from its linked public Library version. **Wired Aug 1, 2026**; listing bar only (Aug 9); enabled when the selected row is Library-linked. Mock refreshes description/category/reference links only; name/rating/comments/deploy identity are preserved. See § "My Tawala layout" **PULL / Refresh** below. |
-| **Versioning** | My Tawala project | Immutable project-definition snapshots (deployed vs non-deployed, Library submit rules, test-drive, upload metadata) — see triage **B7 Project Versioning**. Historically present in PM **Versions** UI; separate from Export/Import and from Backup/Restore. **Mock first slice:** history lives on Project Details **Versions** only (flat listing unchanged). |
+| **Refresh from Library** (was Pull) | Library → My Tawala (upgrade) | Refresh a My Tawala project's descriptive content from its linked public Library version. **Wired Aug 1, 2026**; listing bar only (Aug 9); enabled when the selected row is Library-linked. Mock refreshes description/category/reference links only; name/rating/comments/live-identity are preserved. See § "My Tawala layout" **PULL / Refresh** below. |
+| **Versioning** | My Tawala project | Immutable project-definition snapshots (pushed/live vs not, Library submit rules, test-drive, upload metadata) — see triage **B7 Project Versioning**. Historically present in PM **Versions** UI; separate from Export/Import and from Backup/Restore. **Mock first slice:** history lives on Project Details **Versions** only (flat listing unchanged). |
 | **Designer Save** | Designer File → Save | Persist local definition on disk — authoring only. |
 
 **Pillars (do not conflate):**
@@ -233,8 +244,8 @@ Short product meanings for Website + Designer hops. Sits next to Project Version
 1. **Tenancy** — one public Library; per-account private My Tawala; Publish is the only intentional public bridge (see § Tenancy above).
 2. **Data ops (Excel)** — **EXPORT / IMPORT** — response data only; Import does not change definition.
 3. **Paired backup ops** — **BACKUP / RESTORE** — `.backup` ZIP with matching definition + data (plus properties / links).
-4. **Versioning** — which project-definition revision is active / test-driven / submitted to Library (B7 / Deploy), independent of Excel data tools and of Backup packages.
-5. **Deploy vs Publish** — Deploy mints/auto-deploys a definition version for an account’s project; Publish shares into the shared Library catalog.
+4. **Versioning** — which project-definition revision is active / test-driven / submitted to Library (B7 / **Push**), independent of Excel data tools and of Backup packages.
+5. **Push vs Deploy vs Publish vs Use** — Designer **Push** (UI still Deploy) puts the definition on the server / into your My Tawala library; My Tawala Details **Deploy** = go live for participants + share/embed help; **Publish** shares into the public Library; **Use** = run for yourself. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project).
 
 **Sequencing / hold (owner Jul 31, 2026; first slice Aug 5, 2026; Deploy-switch Aug 7, 2026):** Do **not** fill the My Tawala **listing** with **version piles** — keep **one flat row per project**. The hold is **listing clutter**, not “versions never existed.” **Safe first slice (owner green light):** Deploy → Show in My Tawala mints a monotonic `versionNumber` + optional **version description** on the overlay/receipt; Project Details **Versions** shows that history (number, description, date, current/deployed) and may offer a minimal JSON download; **description of an existing version is editable** (legacy: versions immutable except description). **Deploy this version (Aug 7):** radios select a row; the button switches the live `:8080` definition to that row’s **saved snapshot** (same project name / uniqueId when Java matches by name) — does **not** mint a new Versions row. Still **not** wired: listing piles, **delete-version**, audit trail. Legacy intent (Deploy creates versions, one deployed, Library = published snapshot) remains the **target** model (B7).
 
@@ -517,9 +528,72 @@ Optional **copy-with-data** (with a clear confirm) can come later.
 
 On the Library side, **Save a copy** acquires into My Tawala and should support **rename on acquire** the same way.
 
+After the author **owns** a private copy (Library **Save a copy**, or Details **Make a Copy** when wired — Task [#9](#task-list-aug-9)), the next commands are **Use / Deploy / Publish** — see the subsection below. **Make a Copy** only creates the fork; it does not distribute to participants or put the project in the public Library.
+
+### Use / Deploy / Publish (after owning a project)
+
+**Owner product thinking (Aug 10, 2026).** Plain English for what happens once a project sits in *this account’s* My Tawala:
+
+| Command | Who it’s for | Meaning |
+|---------|----------------|---------|
+| **Use** | The owner, for *themselves* | Try it or run it for their own use (testing or real personal use). **Not** the primary “administer this to other people” path. Already on My Tawala listing + Details. |
+| **Publish** | Designers sharing into the catalog | Put a copy into the **public Library** (from My Tawala / Details). Owner is fine leaving **Publish** available for that audience. Already wired. |
+| **Deploy** | Administrators setting up for *others* | Website / My Tawala Details sense only: go live for participants + share help — **Copy a form link** and **Embed** / **Include in Web Page**. **Not** Publish. Natural front door for Task [#10](#task-list-aug-9). **Wired Aug 10** on Details action bar (+ Invite / Include sidebar → same panel). |
+
+**Gap closed (Aug 10 slice):** Details action bar is **RENAME · BACKUP · RESTORE · DEPLOY · PUBLISH**. **DEPLOY** opens the share panel (start picker when multi-start; Copy link + iframe embed). Empty Library acquires (no `:8080` URLs) get an honest “need a live project first” message; seeded live rows (e.g. Online Exam Builder) share immediately. Project Data banner **Copy link** remains for in-tree selection.
+
+**Naming (owner Aug 10, 2026 — confirmed):**
+
+- **Keep Deploy** on the website / My Tawala Details path (admin go-live + share/embed help).
+- **Rename Designer** “Deploy to Tawala” / “Deploy this version” (and similar) to **Push** — e.g. short **Push to My Tawala**, long help *Push Project to your MyTawala library*. Developers already know “Push.”
+- Docs + [checklist](#designer-push-rename-checklist-docs-first--do-not-mass-rename-yet) first — **no Designer UI mass-rename yet**; parked on the Designer chat list (`.cursor/rules/tawala-designer-parked-post-website.mdc` MUST DO + `docs/CHAT_HANDOFF.md` Chat 1 phase 1). Keep `/api/deploy` code ids.
+
+**Project Details action bar:** **RENAME · BACKUP · RESTORE · DEPLOY · PUBLISH**. Residual confusion elsewhere: Versions still has **Deploy this version** (Designer-Push family — rename with the checklist), listing/sidebar still say **Deploy from Designer**, and Use grey-tooltips still say “Deploy … before Use.” Backup/Restore stay distinct from both Deploy and Push (see glossary).
+
+**Cross-links:** Task [#9](#task-list-aug-9) Make a Copy = own fork (new identity). Task [#10](#task-list-aug-9) = distribute + embed start-point work that website **Deploy** leads into. **Use** ≠ **Deploy** (website) ≠ **Push** (Designer) ≠ **Publish** (see glossary § [Save / Push / Deploy / Publish](#save--push--deploy--publish-product-glossary)).
+
+**Open question (owner phrasing ambiguous — do not invent):** Owner said *“I think so. I don't mind leaving it on the MyTawala page too”* — unclear what “it” is (likely description double-click or rename discoverability). Confirm before wiring any My Tawala listing affordance from that remark.
+
+### Designer Push rename checklist (docs first — do not mass-rename yet)
+
+Owner Aug 10: Designer user-facing **Deploy** → **Push** (to My Tawala library / show in My Tawala). **Parked on the Designer chat list** — do not implement in website sessions. See `.cursor/rules/tawala-designer-parked-post-website.mdc` (MUST DO) and `docs/CHAT_HANDOFF.md` Chat 1 phase 1. Inventory below until that Designer pass runs. Internal API paths (`/api/deploy`, `deployProject`, code comments, tests) may stay `deploy` for now; this list is **UI / status / help copy** people see.
+
+**Proposed labels:** button short **Push to My Tawala** (or menu **Push…** / toolbar tip **Push Project**); help long form *Push Project to your MyTawala library*. **Deploy this version** → **Push this version** (or equivalent). Dialog titles e.g. *Project pushed* / *Push failed*.
+
+**`designer-web/` user-facing strings (~20+ sites; primary files below):**
+
+| Location | Current copy (rename candidates) |
+|----------|----------------------------------|
+| `src/components/MenuBar.tsx` | File menu **Deploy…**; Project menu **Deploy**; theme tooltips mentioning Deploy / Redeploy |
+| `src/components/MainIconToolbar.tsx` | Toolbar tip **Deploy Project** |
+| `src/components/LoginDialog.tsx` | **Login & Deploy**; “Credentials for deploy…” |
+| `src/components/DeployDialog.tsx` | Titles **Deploy Failed** / **Project Deployed**; “Deploy succeeded…”; help cites **Deploy this version** / Deploy → Show in My Tawala; placeholder “What changed in this deploy?” |
+| `src/store/projectStore.ts` | Status: **Deploying…**, **Deploy failed:**, **Deployed {name}**, **Deploy error:**, **Enter deploy credentials** |
+| `src/components/StatusBar.tsx` | **deploy →** Java / dev runtime |
+| `src/components/PageHeaderDialog.tsx` | Status “Page Header saved — **Deploy** shows it…” |
+| `src/components/SendStatementBuilder.tsx` | Hint “On **Deploy** (:8080)…” |
+| `src/lib/functionCatalog.ts` | Function-picker blurbs that say “on **Deploy**…” (user-visible) |
+| `server/runtime.mjs` | Preview chrome: “Use **Deploy** to run it live” |
+
+**Also mirror on website-mock when Designer renames** (same product verb family — not the new Details **Deploy**): Versions button **Deploy this version** + related alerts/hints in `js/project-ops.js`; My Tawala **Deploy from Designer** link / inbox copy; Use tooltips “Deploy … before Use”; symbiotic hop docs that say Designer **Deploy** dialog.
+
+**Out of scope for the rename pass:** code identifiers, `/api/deploy`, Java “auto-deploy” jargon in maintainer docs, template instructional text that literally shows a Deploy *button screenshot* inside sample projects (product content, not shell chrome) — call those out separately if the owner wants them updated.
+
+### Acquire naming (owner Aug 10, 2026)
+
+How names work when someone pulls a Library project into My Tawala, and when they rename later. **Choice:** **warn + confirm overwrite** (case-insensitive, trimmed) — never silent. Dialog shows a live warning when the typed name matches an existing My Tawala row; confirming asks again before replacing. Cancel leaves both projects untouched.
+
+1. **Save a copy invites their own name** — dialog opens with a suggested name pre-filled (Library title when free; otherwise `Copy of …` / numbered). Field is focused and selected so typing replaces the suggestion. Copy invites choosing a name they will recognize in My Tawala — not “just accept the Library title.”
+2. **Collision on acquire** — confirming with a taken name warns, then on OK **deletes the existing same-name My Tawala row** and writes this acquire as the sole row with that display name (new id; empty data). Same rule in `TawalaTransfer.saveCopyFromLibrary({ overwrite: true })`.
+3. **Rename anytime on Project Details** — double-click the title **or** use the **Rename** control; not limited to first acquire. Same warn+confirm when the new name collides (`renameMyTawalaProject` with `overwrite: true`): **delete the other conflicting project**, keep **this** project’s identity under the new name. Keeping the current name is a no-op.
+4. **Renaming ≠ new project** — only Save a copy (Library) or Make a Copy (own fork, when wired) mints a new identity. Rename changes the display name on the existing private row.
+5. **Empty data still applies** — acquire never inherits the Library demo `uniqueId` / live start URLs; Use stays grey until Designer **Push** (UI still Deploy).
+
+**Overwrite semantics (no duplicate display names):** Save a copy → remove old row, new acquire wins. Rename A → name of B → remove B, A keeps its id with the new name.
+
 ### Backup
 
-Do **not** build Backup further until the package contents are decided. Default proposal on the table: Backup = **currently deployed definition + current response data**. Remember: **Restore** is not the same as **Deploy this version** (Restore re-applies a backup package; Deploy this version switches which definition revision is live on `:8080`).
+Do **not** build Backup further until the package contents are decided. Default proposal on the table: Backup = **currently live (pushed) definition + current response data**. Remember: **Restore** is not the same as **Push this version** / today’s **Deploy this version** (Restore re-applies a backup package; Push this version switches which definition revision is live on `:8080`).
 
 ### Test Drive
 
@@ -540,6 +614,7 @@ These four lists framed the Aug 9 walkthrough. Lists **1** and **4** are now dec
 
 - **Aug 7:** **Deploy this version** wired (definition snapshots on Deploy → Show in My Tawala; radios + button switch live `:8080`). Tony stills / `FROM_TONY_IMAGES_NOTES.md`; `legacy-reference/` HTML; comparison canvas; stills under `legacy-reference/stills/`. Initial feature triage into the four lists; **Responses** already clarified as project-wide submission count.
 - **Aug 9:** Walked lists 1+4 to agreement. Publish = new Library entry; update existing = new version on that entry; drop the third “update library with this version?” prompt unless evidence returns. Library CTAs = Test Drive + Save a copy. Active/De-activate = temporary take-down (not Purge/Delete). Invite = Start-point help + Copy link + optional labels + Include-in-Web-Page embed (no ACL). Records on list + Details; clones = Library copies; Times used = new respondent sessions from start URLs. Project Data selection + Export/Import/Purge toolbar; whole-project Purge first. Designer only from Details as “Edit project in Designer.” Make a Copy = own fork with new uniqueId. Backup parked pending package decision. Test Drive = Library, purge on leave, all start points allowed first.
+- **Aug 10 (decision + Deploy share slice):** After owning a My Tawala copy — **Use** = for yourself; **Publish** = put a copy in the public Library; **Deploy** (website Details) = administer for others → share/embed help (Task #10). Details **DEPLOY** + Invite/Include open the share panel (Copy link / iframe embed; multi-start picker; honest empty-acquire message). Designer authoring verb → **Push** (to My Tawala library); rename parked on Designer chat list — no Designer UI mass-rename. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project).
 
 ### Task List (Aug 9)
 
@@ -551,10 +626,10 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 4. **Project Data section** — **DONE (tree + forms + Purge scope, Aug 9):** project **+** cycles closed → start points → all forms (second click; Forms **+** optional). Online Exam seeded `formNames` + `projects/mytawala/Online Exam Builder.json` hydrate. Selection scopes Export / Import / Purge (enablement matrix A/B/C). **Whole-project Purge** (`:3001/api/purge-responses`) and **Selective (per-form) Purge** (export → drop form → replace) share the Project Data **Purge** control; confirm copy names the scope; Records re-hydrate after success. Responsive polish (fluid names, aligned RECORDS, hide sidebar below 1024px) committed separately. **HOLD nuance:** sports “stats-only” Selective Purge after commissioner feedback if needed.
 5. **Theme / Appearance** — **DONE (Aug 9 slice):** Details identity-rail dropdown (legacy theme labels/paths); persists `themePath` on My Tawala overlay (does not push CSS to :8080).
 6. **Published indicator** — **DONE (Aug 9 slice):** Details shows Yes + Library link (catalog twin or `publishedToLibraryId` after Publish); No when unpublished.
-7. **Author / version / description rail** — **DONE (Aug 9 slice):** Author (mock user), current version # + description under the title (Versions section unchanged).
-8. **Library listing / detail acquire clarity** — Blurb under the name; CTAs = **Test Drive** + **Save a copy** only. Rename on Save a copy. No Customize→Designer dump. No SEE DEMO until videos exist.
-9. **Make a Copy (own project)** — On Project Details: fork with new uniqueId, empty data by default, rename in the flow. Wire **Library Save a copy** rename-on-acquire alongside. **HOLD:** optional copy-with-data (confirm) until the empty-data path is solid.
-10. **Start points: distribute + embed** — Help text, Copy link, optional participant/admin-style labels, and **Include in Web Page** (iframe/embed for the chosen start URL). **HOLD coded stretch:** uniqueId-in-URL hardening as part of real wiring.
+7. **Author / version / description rail** — **DONE (Aug 9 slice; blurb placement clarified):** Author (mock user) + Version # (+ Deploy `versionDescription` only) in the left rail. Project **shortDescription** blurb lives **once** under the main title — not repeated under Version / in the sidebar.
+8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8):** Listing + detail show blurb under the name; CTAs = **Test Drive** + **Save a copy** only (no Customize→Designer, no SEE DEMO). **Save a copy** opens rename dialog → new My Tawala row (`pulledFromLibraryId`, empty data). Clone count bumps on acquire (Times used / clone display still Task #13). Test Drive leave/wipe honesty remains Task #14.
+9. **Make a Copy (own project)** — On Project Details: fork with new uniqueId, empty data by default, rename in the flow. Library acquire rename is already in #8 — this item is the author’s **own** My Tawala fork. After owning a copy, next commands are **Use / Deploy / Publish** (see § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project)) — Make a Copy only creates the fork. **HOLD:** optional copy-with-data (confirm) until the empty-data path is solid.
+10. **Start points: distribute + embed** — **PARTIAL (Aug 10 Deploy doorway):** Details **DEPLOY** opens share panel — help copy, start picker (multi-start), **Copy link**, **Include in Web Page** (iframe embed). Invite / Include sidebar buttons open the same panel. Empty acquires: honest “need live project first”; Online Exam (and other seeded live rows) share now. Project Data banner **Copy link** still works for tree selection. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). Designer shell still says Deploy until the [Push rename checklist](#designer-push-rename-checklist-docs-first--do-not-mass-rename-yet) runs (parked on Designer chat list). **HOLD coded stretch:** uniqueId-in-URL hardening; optional participant/admin-style start labels polish.
 11. **Edit project in Designer** — **DONE (Aug 9 slice):** Details-only **Edit project in Designer** → confirm opens `:5173` (or Cancel → `designer.html` stub with project/json hint). No Designer control on the listing. **HOLD:** Home sidebar Designer link later, placed away from Library.
 12. **Active / De-activate** — **DONE (Aug 9 slice):** Details Activate / De-activate; overlay `inactive` hides from Library listing; My Tawala keeps Offline badge.
 13. **Times used / Last used / Clone count** — Wire when Save a copy and session accounting exist; use the Aug 9 definitions (clones ≠ data rows; times used ≠ Test Drive).
@@ -573,7 +648,7 @@ Plain-English note of what landed in the My Tawala / Project Details / chrome pa
 - **Lean My Tawala listing** — Columns are Name · Created · Updated · Records · Use (no dense icon strip). Single-click selects a row; double-click opens Project Details. Top bar: **Get from Library…** (always on → Library), **Refresh from Library** (only when the selected row is Library-linked), **Delete** (selection-gated). Heavy ops stay on Details.
 - **Online Exam Builder** — Seeded live into the My Tawala pile (`projects/mytawala/Online Exam Builder.json` + catalog/`MANIFEST`) so Project Data / forms can be reviewed without hunting a Library twin.
 - **Project Data** — One collapsible list (not separate Start points + Forms panels). Project caret expands closed → start points → all forms. Banner holds Use / Copy link | Export / Import | Purge with vertical separators; project-level stats heads (Records / Times used / Last used) sit on that banner; form rows show Records only. Selection drives the **A / B / C enablement matrix** (collapsed or project selected → project-wide data ops + Backup/Restore; start point → Use/Copy + data ops; non-start form → data ops only; Publish stays available).
-- **Project Details** — Wider left **Project options** sidebar. Identity (Author, Version, Published Yes+Library link, Status Active/De-activate, Theme / Appearance from project JSON when present) lives there; Invite / Include stubs sit under Theme; **Edit project in Designer** in the same rail. Main column: title, Records total, Project Actions (Backup / Restore / Publish), then Project Data / Versions / Backups / Comments.
+- **Project Details** — Wider left **Project options** sidebar. Identity (Author, Version # + Deploy note only, Published Yes+Library link, Status Active/De-activate, Theme / Appearance from project JSON when present) lives there; Invite / Include stubs sit under Theme; **Edit project in Designer** in the same rail. Main column: title + **one** shortDescription blurb, Records total, Project Actions (Backup / Restore / Publish), then Project Data / Versions / Backups / Comments. (Blurb is not repeated under Version.)
 - **Site chrome** — Nav order is Home · Library · My Tawala · Designer · FAQ · About. **My Account** dropdown (welcome line) for Log in / Register or Change Password / Logout. Redundant **My Projects** page title removed (nav “My Tawala” is enough).
 
 **Mid-flight / open**
@@ -583,7 +658,7 @@ Plain-English note of what landed in the My Tawala / Project Details / chrome pa
 
 **Next**
 
-Continue the [Task List](#task-list-aug-9): Make a Copy, start-point embed / Copy link help, Library blurbs + Save a copy clarity, then remaining open items (Times used, Test Drive leave/wipe, etc.). Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears.
+Continue the [Task List](#task-list-aug-9): Make a Copy (#9), then polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Then remaining open items (Times used, Test Drive leave/wipe, etc.). Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears.
 
 ## Parked / backlog (owner Aug 1, 2026) — look & feel / organization phase
 

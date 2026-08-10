@@ -861,12 +861,13 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   background: #fff;
 }
 
-/* Dense single-line project rows — same grid as header */
+/* Library rows — name + blurb under name (Aug 9 #8); same grid as header */
 .library-project-row {
   font-size: 0.88em;
-  line-height: 1.2;
+  line-height: 1.25;
   cursor: pointer;
   min-height: 1.55em;
+  align-items: start;
 }
 
 .library-project-row:hover {
@@ -874,14 +875,21 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
 }
 
 .library-project-row .lib-col {
-  padding: 1px 6px;
+  padding: 4px 6px;
   min-width: 0;
 }
 
 .library-project-row .lib-col-name {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+}
+
+.library-name-block {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0 0.35em;
+  min-width: 0;
 }
 
 .library-project-row .lib-col-name .title,
@@ -906,6 +914,43 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
 
 .library-project-row.library-row-live .lib-col-name .title a {
   color: inherit;
+}
+
+.library-row-blurb {
+  display: block;
+  width: 100%;
+  flex-basis: 100%;
+  margin: 2px 0 0;
+  color: var(--tw-muted, #666);
+  font-size: 0.9em;
+  line-height: 1.35;
+  white-space: normal;
+}
+
+/* Library detail — blurb once under title; acquire CTAs = Test Drive + Save a copy */
+.library-detail-blurb {
+  margin: 4px 0 10px;
+  color: var(--tw-muted, #555);
+  font-size: 0.95em;
+  line-height: 1.4;
+  max-width: 42em;
+}
+
+.library-acquire-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 14px;
+}
+
+.library-acquire-ctas .pm-action {
+  margin: 0;
+}
+
+.library-project-row .lib-col-used,
+.library-project-row .lib-col-updated,
+.library-project-row .lib-col-actions {
+  padding-top: 6px;
 }
 
 .library-project-row .lib-col-used {
@@ -1254,6 +1299,30 @@ a.pm-op-icon-btn.library-row-action:hover {
   color: var(--tw-muted);
   font-weight: normal;
   margin-left: 4px;
+}
+
+/* My Tawala listing — click / double-click affordance (owner Aug 10).
+ * Hint lives inside .mytawala-listing-frame as the table’s previous sibling
+ * (flush above the list). Color is instructional blue — #000080 reads black
+ * on light grey; do not reuse .pm-hint (that class forces #555 later in cascade). */
+#myProjectsListingBarHost:has(+ .mytawala-listing-frame) .pm-listing-bar {
+  margin-bottom: 2px;
+}
+
+.mytawala-listing-frame > .mytawala-listing-nav-hint {
+  margin: 0;
+  padding: 2px 6px 0;
+  max-width: none;
+  font-size: 11px;
+  font-weight: 700;
+  font-style: italic;
+  /* Brighter than Designer navy #000080 (reads black); beat any inherited #555 */
+  color: #0000ee;
+  line-height: 1.2;
+}
+
+.mytawala-listing-frame > table.projectListing.mytawala-listing {
+  margin-top: 0;
 }
 
 /*
@@ -1703,10 +1772,40 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
   padding-top: 8px;
 }
 
-.pm-detail-header h2 {
+.pm-detail-header h2,
+.pm-detail-header .pm-detail-title {
   margin: 0 0 6px;
   font-size: 1.35em;
   color: #333;
+}
+
+.pm-detail-title[data-wired="rename-project"] {
+  cursor: pointer;
+  user-select: none;
+  display: inline;
+}
+
+.pm-detail-title[data-wired="rename-project"]:hover {
+  color: #1a4a7a;
+}
+
+.pm-detail-title[data-wired="rename-project"]:focus-visible {
+  outline: 2px solid #4a7ab0;
+  outline-offset: 2px;
+}
+
+/* Left-rail Source — quiet “from … in Library” (main header no longer repeats this). */
+.pm-identity-source,
+.pm-identity-source a,
+.pm-identity-source a:visited {
+  color: #6a7a8a;
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.pm-identity-source a:hover {
+  color: #3a5a7a;
+  text-decoration: none;
 }
 
 .pm-detail-meta {
@@ -1714,6 +1813,35 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
   font-size: 0.92em;
   color: #555;
   line-height: 1.4;
+}
+
+/* Description under title — double-click to edit (no hint text; empty shows muted placeholder on hover). */
+.pm-detail-meta[data-wired="edit-description"] {
+  cursor: text;
+  min-height: 1.4em;
+  max-width: 42em;
+  border-radius: 2px;
+}
+
+.pm-detail-meta[data-wired="edit-description"]:hover {
+  color: #333;
+}
+
+.pm-detail-meta[data-wired="edit-description"]:focus-visible {
+  outline: 2px solid #4a7ab0;
+  outline-offset: 2px;
+}
+
+.pm-detail-meta.is-empty .pm-detail-meta-ph {
+  color: #a8a098;
+  opacity: 0;
+  user-select: none;
+  transition: opacity 0.12s ease;
+}
+
+.pm-detail-meta.is-empty:hover .pm-detail-meta-ph,
+.pm-detail-meta.is-empty:focus-visible .pm-detail-meta-ph {
+  opacity: 1;
 }
 
 /* Details identity / ops rail (Published, author, version, Active, Theme, Edit in Designer) */
@@ -1783,6 +1911,33 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
   border-color: #c4a060;
   background: #f7efd8;
   color: #6a4e16;
+}
+
+.pm-status-badge.is-from-library {
+  border-color: #8aa0b8;
+  background: #e8eef5;
+  color: #2f4a66;
+  font-weight: normal;
+}
+
+.pm-acquire-success {
+  margin: 0 0 12px;
+  padding: 10px 12px;
+  border: 1px solid #8aaa7a;
+  background: #eef6ea;
+  color: #2f5a28;
+}
+
+.pm-acquire-success p {
+  margin: 0 0 6px;
+}
+
+.pm-acquire-success p:last-child {
+  margin-bottom: 0;
+}
+
+.pm-acquire-success .pm-hint {
+  color: #3d5a38;
 }
 
 .pm-identity-actions {
@@ -2516,16 +2671,6 @@ a.pm-data-ctrl-use.is-active:not(.is-scope-disabled):hover {
   font-variant-numeric: tabular-nums;
 }
 
-.pm-detail-records {
-  margin: 4px 0 0;
-  font-size: 0.92em;
-  color: #333;
-}
-
-.pm-detail-records b {
-  font-variant-numeric: tabular-nums;
-}
-
 /* Online Exam offline demo Records — shown only when counts come from mock-seed. */
 .pm-demo-records-tools {
   margin: 6px 0 0;
@@ -2952,6 +3097,31 @@ a.pm-action.is-active {
   grid-column: 1 / -1;
 }
 
+.tawala-modal-code {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 4px;
+  padding: 6px 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 11px;
+  line-height: 1.35;
+  border: 1px solid var(--tw-border);
+  border-radius: 2px;
+  background: #f7f8fa;
+  resize: vertical;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.tawala-modal-inline-actions {
+  margin: 4px 0 10px;
+}
+
+.tawala-modal--deploy-share {
+  max-width: 640px;
+}
+
 .tawala-modal-hint-tight {
   margin: 6px 0 0;
   font-size: 0.8em;
@@ -2973,7 +3143,8 @@ a.pm-action.is-active {
 }
 
 .tawala-modal-field input[type="text"],
-.tawala-modal-field select {
+.tawala-modal-field select,
+.tawala-modal-field textarea {
   display: block;
   width: 100%;
   margin-top: 4px;
@@ -2985,15 +3156,30 @@ a.pm-action.is-active {
   box-sizing: border-box;
 }
 
+.tawala-modal-field textarea {
+  resize: vertical;
+  min-height: 4.5em;
+  line-height: 1.35;
+  font-family: inherit;
+}
+
 .tawala-modal-field input[type="text"]:focus,
-.tawala-modal-field select:focus {
+.tawala-modal-field select:focus,
+.tawala-modal-field textarea:focus {
   outline: none;
   border-color: var(--tw-accent);
   box-shadow: 0 0 0 2px rgba(49, 106, 197, 0.18);
 }
 
+.tawala-modal--desc {
+  max-width: 28em;
+}
+
 .tawala-modal #publishModalError,
-.tawala-modal #pullModalError {
+.tawala-modal #pullModalError,
+.tawala-modal #saveCopyModalError,
+.tawala-modal #renameModalError,
+.tawala-modal #descModalError {
   color: #a5271f;
   margin: 6px 0 0;
 }

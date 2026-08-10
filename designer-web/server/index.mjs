@@ -395,6 +395,89 @@ app.get("/api/health", (_req, res) => {
   });
 });
 
+/**
+ * Website-mock Test Drive gate: fetch a local :8080 form URL server-side (no CORS) and
+ * detect the legacy fail page (“We are very sorry”) when World is not initialized or
+ * the path is missing. HTTP 200 alone is not success.
+ */
+app.options("/api/probe-java-url", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+app.get("/api/probe-java-url", async (req, res) => {
+  allowMockCors(req, res);
+  const raw = String(req.query.url || "").trim();
+  if (!raw) {
+    res.status(400).json({ ok: false, error: "url query required" });
+    return;
+  }
+  let parsed;
+  try {
+    parsed = new URL(raw);
+  } catch {
+    res.status(400).json({ ok: false, error: "invalid url" });
+    return;
+  }
+  const host = (parsed.hostname || "").toLowerCase();
+  if (host !== "localhost" && host !== "127.0.0.1") {
+    res.status(400).json({ ok: false, error: "only localhost :8080 URLs are allowed" });
+    return;
+  }
+  const port = String(parsed.port || (parsed.protocol === "https:" ? "443" : "80"));
+  if (port !== "8080") {
+    res.status(400).json({ ok: false, error: "only localhost :8080 URLs are allowed" });
+    return;
+  }
+  try {
+    const upstream = await fetch(parsed.toString(), {
+      method: "GET",
+      redirect: "follow",
+      signal: AbortSignal.timeout(4000),
+      headers: { Accept: "text/html,*/*" },
+    });
+    const text = await upstream.text();
+    const titleMatch = text.match(/<title[^>]*>([^<]*)<\/title>/i);
+    const title = titleMatch ? titleMatch[1].trim() : "";
+    const failPage =
+      /We are very sorry/i.test(text) ||
+      /not currently available/i.test(text) ||
+      /World is not initialized/i.test(text) ||
+      /Project Not Found/i.test(title) ||
+      /Project Not Found/i.test(text) ||
+      (/<h1[^>]*>\s*Error\s*<\/h1>/i.test(text) && /Tawala Team/i.test(text));
+    if (failPage) {
+      res.json({
+        ok: false,
+        reason: "fail-page",
+        status: upstream.status,
+        title,
+        detail:
+          "Java returned the legacy fail page (often World not initialized — restart tawala-tomcat after Postgres is healthy).",
+      });
+      return;
+    }
+    if (!upstream.ok) {
+      res.json({
+        ok: false,
+        reason: "http-error",
+        status: upstream.status,
+        title,
+        detail: `Java returned HTTP ${upstream.status}`,
+      });
+      return;
+    }
+    res.json({ ok: true, status: upstream.status, title });
+  } catch (e) {
+    res.status(502).json({
+      ok: false,
+      reason: "unreachable",
+      error: String(e.message || e),
+      detail: "Could not reach the Java form URL from the Designer API.",
+    });
+  }
+});
+
 app.options("/api/purge-responses", (req, res) => {
   allowMockCors(req, res);
   res.status(204).end();

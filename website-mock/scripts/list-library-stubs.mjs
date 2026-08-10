@@ -7,10 +7,10 @@
  * A Library entry is a stub when `stub: true` is set in js/demo-urls.js
  * (TAWALA_LIBRARY). Its display `name` also carries a visible " (stub)"
  * suffix so the Library listing shows what still needs replacing.
- * `liveReady: true` entries (Simple Survey, Sign-up Sheet, Potluck, Get
- * Together, Horses and Penguins Test, Multiple Question Survey Template)
- * are never stubs. Sign-up Sheet w Email was retired from TAWALA_LIBRARY
- * (Aug 1, 2026) — Designer New Project only, not listed here.
+ * `liveReady: true` entries are never stubs. Aug 10, 2026: all WebLibrary stubs
+ * and the broken Sign-up Sheet Library seed were removed from TAWALA_LIBRARY
+ * (0 stubs expected). Sign-up Sheet / Sign-up Sheet w Email = Designer New
+ * Project only until re-Published.
  *
  * Usage:
  *   node scripts/list-library-stubs.mjs            # table of all stubs

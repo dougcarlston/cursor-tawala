@@ -87,25 +87,26 @@
   ];
 
   /**
-   * Public Library listing row actions — discovery / acquire only (owner Aug 1, 2026).
+   * Public Library listing row actions — discovery / acquire only (owner Aug 1 / Aug 9).
    * Single “Actions” column: two icons + column sub-labels under the Actions header
    * (Test drive | Save a copy). **Use** lives on My Tawala (operate), not Library.
-   * Test drive still purges-on-start. Save a copy remains a grey stub.
+   * No Customize→Designer, no SEE DEMO, no Download on this path.
    * wired: "test-drive" → active when project has a live :8080 URL; else disabled grey.
+   * wired: "save-copy-library" → rename dialog → TawalaTransfer.saveCopyFromLibrary.
    */
   const LIBRARY_LISTING_ACTIONS = [
     {
       id: "test-drive",
       label: "Test drive",
-      title: "Test drive this project (local :8080)",
+      title: "Test drive this project (needs Java on :8080; probes before open)",
       wired: "test-drive",
       icon: "testdrive",
     },
     {
       id: "save-my-tawala",
       label: "Save a copy",
-      title: "Save this project under My Tawala",
-      wired: false,
+      title: "Save a copy to My Tawala (rename on the way in)",
+      wired: "save-copy-library",
       icon: "save",
     },
   ];
@@ -114,18 +115,34 @@
    * Project Details main action bar (detail.jsp Project Actions).
    *
    * Aug 9, 2026 (Project Data banner): Use / Copy link / Export / Import / Purge live on
-   * the Project Data line (selection-scoped). This bar keeps Backup / Restore / Publish.
-   * Pull + Delete stay on the My Tawala listing selection bar.
+   * the Project Data line (selection-scoped). This bar keeps Rename / Backup / Restore /
+   * Deploy (share) / Publish. Pull + Delete stay on the My Tawala listing selection bar.
+   * Title double-click also opens Rename (no separate Rename control under the title).
+   * Description under the title: double-click only (no hint / no button) → edit shortDescription.
    *
-   * Owner enablement (Aug 9):
+   * Owner enablement (Aug 9; Deploy Aug 10):
    *   A) Forms collapsed (expand 0) OR project root highlighted → Backup/Restore/Publish on;
-   *      Use/Copy off; Export/Import/Purge on (project scope).
+   *      Use/Copy off; Export/Import/Purge on (project scope). Rename + Deploy always on.
    *   B) Starting-point form highlighted → Use/Copy/Export/Import/Purge/Publish on; Backup/Restore off.
    *   C) Non-start form highlighted → Export/Import/Purge/Publish on; Use/Copy/Backup/Restore off.
+   * Deploy (website share/embed) stays available on A/B/C — dialog explains when no live URL yet.
    */
   const PROJECT_ACTIONS = [
+    {
+      id: "rename",
+      label: "RENAME",
+      title: "Rename this project in My Tawala (or double-click the title)",
+      wired: "rename-project",
+    },
     { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
     { id: "restore", label: "RESTORE", title: "Restore this project from a backup", wired: "restore-mytawala" },
+    {
+      id: "deploy",
+      label: "DEPLOY",
+      title:
+        "Go live for participants — copy a form/start link or embed it in a web page (not Publish; not Designer Push)",
+      wired: "deploy-share",
+    },
     {
       id: "publish",
       label: "PUBLISH",
@@ -262,13 +279,21 @@
   };
 
   /**
-   * Sidebar stubs still parked (Invite / Include → Task List item 10).
-   * Rendered in the identity rail immediately under Theme / Appearance.
+   * Sidebar Invite / Include — Task #10 doorway (Aug 10): same Deploy share panel as the
+   * Details action-bar DEPLOY button (copy link + iframe embed). Not ACL invites.
    * REVISE / ONLINE-OFFLINE live as Edit in Designer / Active on the same rail.
    */
   const PROJECT_SIDEBAR_OPS = [
-    { label: "Include Project in Web Page", title: "Incorporate this project into a web page", wired: false },
-    { label: "Invite Other People to This Project", title: "Invitation options for start-point links", wired: false },
+    {
+      label: "Include Project in Web Page",
+      title: "Open Deploy — copy an iframe embed for a start URL",
+      wired: "deploy-share",
+    },
+    {
+      label: "Invite Other People to This Project",
+      title: "Open Deploy — copy a form/start link to email participants",
+      wired: "deploy-share",
+    },
   ];
 
   /** Legacy Format → Project Themes (labels/paths from Designer theme-config; mock dropdown only). */
@@ -369,14 +394,18 @@
 
   /** Symbiotic transfer flows — Library ↔ My Tawala ↔ Designer (labels first; wire later). */
   const RELATED_SAVE_CLONE = [
-    { label: "Save this project under My Tawala", source: "Library → My Tawala (acquire)", wired: false },
+    {
+      label: "Save a copy",
+      source: "Library → My Tawala (acquire; rename-on-acquire; empty data until Deploy)",
+      wired: "save-copy-library",
+    },
     {
       label: "Use (run or pick start point)",
       source:
         "My Tawala listing / Details — single-start opens :8080; multi-start opens Project Details (not Library; not CloneAndCustomize)",
       wired: "use-project",
     },
-    { label: "Publish / move to Library", source: "My Tawala → Library", wired: false },
+    { label: "Publish / move to Library", source: "My Tawala → Library", wired: "publish-mytawala" },
     { label: "Get from Library…", source: "My Tawala listing → library.html (acquire)", wired: "get-from-library" },
     { label: "Refresh from Library", source: "Library → My Tawala upgrade (linked row)", wired: "pull-library" },
     { label: "Deploy from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
@@ -517,7 +546,7 @@
       id: "actions",
       title: "Project Details — action bar",
       where:
-        "projectmanager/detail.jsp — BACKUP · RESTORE · PUBLISH (flush right). " +
+        "projectmanager/detail.jsp — RENAME · BACKUP · RESTORE · DEPLOY · PUBLISH (flush right). " +
         "Use / Copy / Export / Import / Purge moved to Project Data banner (Aug 9). " +
         "Get/Refresh/Delete on listing bar (Aug 9 option 3).",
       items: PROJECT_ACTIONS,
@@ -527,8 +556,8 @@
       id: "sidebar",
       title: "Project Details — left sidebar",
       where:
-        "Wider left rail (Aug 9): identity stack (Author / Version / Published / Status / Theme), " +
-        "then Invite / Include stubs directly under Theme, then Edit in Designer. " +
+        "Wider left rail (Aug 9; Deploy share Aug 10): identity stack (Author / Version / Published / Status / Theme), " +
+        "then Invite / Include (→ Deploy share panel) under Theme, then Edit in Designer. " +
         "Main column = title + Project Data / Versions / Comments (Project Data higher above the fold).",
       items: PROJECT_SIDEBAR_OPS,
     },
@@ -591,11 +620,14 @@
       op.wired === "delete-mock" ||
       op.wired === "edit-categories" ||
       op.wired === "publish-mytawala" ||
+      op.wired === "deploy-share" ||
       op.wired === "export-mytawala" ||
       op.wired === "import-mytawala" ||
       op.wired === "backup-mytawala" ||
       op.wired === "restore-mytawala" ||
       op.wired === "pull-library" ||
+      op.wired === "save-copy-library" ||
+      op.wired === "rename-project" ||
       op.wired === "download-version" ||
       op.wired === "deploy-version"
     );
@@ -608,11 +640,18 @@
     }
     if (item.wired === "edit-categories") return "active (local category assignment)";
     if (item.wired === "publish-mytawala") return "active (Publish dialog → Library overlay)";
+    if (item.wired === "deploy-share") {
+      return "active (Deploy share panel — copy start link / iframe embed)";
+    }
+    if (item.wired === "rename-project") return "active (Rename dialog → My Tawala overlay)";
     if (item.wired === "export-mytawala") return "active (download JSON — data only, see README)";
     if (item.wired === "import-mytawala") return "active (field-mismatch check + POST :3001)";
     if (item.wired === "backup-mytawala") return "active (download JSON — definition + data + properties)";
     if (item.wired === "restore-mytawala") return "active (properties overlay + POST :3001 data)";
     if (item.wired === "pull-library") return "active (Pull dialog → overlay content refresh from Library)";
+    if (item.wired === "save-copy-library") {
+      return "active (rename dialog → new My Tawala row; empty data until Deploy)";
+    }
     if (item.wired === "download-version") {
       return "active (minimal version metadata JSON — Details Versions only)";
     }
@@ -716,7 +755,7 @@
 
   /**
    * Library listing — one Actions grid cell with spaced icons (sub-labels in header).
-   * Test drive when deployed; Save a copy grey stub.
+   * Test drive when deployed; Save a copy always on (rename → My Tawala).
    */
   function libraryDriveUrl(project) {
     if (
@@ -726,6 +765,25 @@
       return TawalaDemo.libraryTestDriveUrl(project);
     }
     return project && project.testDriveUrl ? project.testDriveUrl : null;
+  }
+
+  function renderLibrarySaveCopyButton(project, variant) {
+    const pid = (project && project.id) || "";
+    const title = "Save a copy to My Tawala (rename on the way in)";
+    if (variant === "text") {
+      return (
+        `<button type="button" class="pm-action is-active library-save-copy" ` +
+        `title="${escapeHtml(title)}" aria-label="Save a copy" ` +
+        `data-op="save-my-tawala" data-wired="save-copy-library" ` +
+        `data-project="${escapeHtml(pid)}">Save a copy</button>`
+      );
+    }
+    return (
+      `<button type="button" class="pm-icon-action pm-op-icon-btn is-active library-row-action" ` +
+      `title="${escapeHtml(title)}" aria-label="Save a copy" ` +
+      `data-op="save-my-tawala" data-wired="save-copy-library" ` +
+      `data-project="${escapeHtml(pid)}">${listingIconHtml("save")}</button>`
+    );
   }
 
   function renderLibraryListingControlCells(project) {
@@ -739,7 +797,7 @@
             `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
             `href="${escapeHtml(driveUrl)}" data-testdrive-url="${escapeHtml(driveUrl)}" ` +
             `target="_blank" rel="noopener" ` +
-            `title="Purge prior responses, then open :8080" aria-label="${escapeHtml(op.title)}" ` +
+            `title="Needs Java on :8080 — probes first; purges prior responses, then opens" aria-label="${escapeHtml(op.title)}" ` +
             `data-op="${escapeHtml(op.id)}" data-wired="true">${listingIconHtml(op.icon)}</a>`
           );
         }
@@ -749,14 +807,20 @@
           `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
         );
       }
+      if (op.wired === "save-copy-library") {
+        return renderLibrarySaveCopyButton(project, "icon");
+      }
       return (
         `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
         `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
         `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
       );
     }).join("");
+    /* Do not stopPropagation here — document-level bind()/Test Drive handlers are bubble-phase
+     * and would never see Save a copy / purge-on-start clicks. Row navigation skips this cell
+     * via library.html onclick (closest .lib-col-actions). */
     return (
-      `<div class="lib-col lib-col-actions" onclick="event.stopPropagation()">` +
+      `<div class="lib-col lib-col-actions">` +
       `<span class="library-row-actions">${icons}</span>` +
       `</div>`
     );
@@ -765,7 +829,7 @@
   /** @deprecated Prefer renderLibraryListingControlCells — single-cell text controls. */
   function renderLibraryListingControls(project) {
     return (
-      '<div class="controls pm-listing-controls library-listing-controls" onclick="event.stopPropagation()">' +
+      '<div class="controls pm-listing-controls library-listing-controls">' +
       LIBRARY_LISTING_ACTIONS.map((op) => {
         const driveUrl = libraryDriveUrl(project);
         const deployed =
@@ -776,7 +840,7 @@
               `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
               `href="${escapeHtml(driveUrl)}" data-testdrive-url="${escapeHtml(driveUrl)}" ` +
               `target="_blank" rel="noopener" ` +
-              `title="Purge prior responses, then open :8080" aria-label="${escapeHtml(op.title)}" ` +
+              `title="Needs Java on :8080 — probes first; purges prior responses, then opens" aria-label="${escapeHtml(op.title)}" ` +
               `data-op="${escapeHtml(op.id)}" data-wired="true">${listingIconHtml(op.icon)}</a>`
             );
           }
@@ -785,6 +849,9 @@
             `title="No local test-drive yet" aria-label="Test drive unavailable" ` +
             `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`
           );
+        }
+        if (op.wired === "save-copy-library") {
+          return renderLibrarySaveCopyButton(project, "icon");
         }
         return (
           `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
@@ -823,51 +890,86 @@
     return sp ? sp.url : null;
   }
 
-  /** True when href targets local Tomcat (:8080) — the live form runtime Use opens. */
-  function isLocalJavaRuntimeUrl(url) {
-    if (!url || url === "#") return false;
-    try {
-      const u = new URL(url, typeof location !== "undefined" ? location.href : "http://localhost/");
-      const host = (u.hostname || "").toLowerCase();
-      if (host !== "localhost" && host !== "127.0.0.1") return false;
-      const port = String(u.port || (u.protocol === "https:" ? "443" : "80"));
-      return port === "8080";
-    } catch {
-      return /(?:localhost|127\.0\.0\.1):8080/i.test(String(url));
-    }
+  /** Honest grey-Use tip when Save a copy left the row without :8080 start URLs. */
+  const USE_NEEDS_DEPLOY_TITLE =
+    "Deploy this project before Use — no :8080 start URL yet (Save a copy starts empty)";
+
+  function projectHasUseRuntime(project) {
+    return !!(projectUseUrl(project) || startPointsWithUrls(project).length);
   }
 
-  /** Short-lived probe cache so repeated Use clicks don’t re-wait the timeout. */
-  let runtimeProbeCache = { at: 0, ok: null };
-  const RUNTIME_PROBE_TTL_MS = 4000;
+  /** Listing / Details badge when the row came from Library Save a copy. */
+  function fromLibraryAcquireBadge(project) {
+    if (!project || !(project.fromLibraryAcquire || project.sourcePile === "library-acquire")) {
+      return "";
+    }
+    const src = librarySourceDisplayName(project) || "Library";
+    return (
+      ` <span class="pm-status-badge is-from-library" ` +
+      `title="from ${escapeHtml(src)} in Library">from Library</span>`
+    );
+  }
+
+  /** Resolve Library template display name for provenance (acquire / pull link). */
+  function librarySourceDisplayName(project) {
+    if (!project) return "";
+    if (project.pulledFromLibraryName) {
+      return window.TawalaDemo && typeof window.TawalaDemo.displayName === "function"
+        ? window.TawalaDemo.displayName(project.pulledFromLibraryName)
+        : String(project.pulledFromLibraryName);
+    }
+    const libId = project.pulledFromLibraryId ? String(project.pulledFromLibraryId) : "";
+    if (
+      libId &&
+      typeof TawalaDemo !== "undefined" &&
+      typeof TawalaDemo.getLibrary === "function"
+    ) {
+      const lib = TawalaDemo.getLibrary(libId);
+      if (lib && lib.name) {
+        return typeof TawalaDemo.displayName === "function"
+          ? TawalaDemo.displayName(lib.name)
+          : String(lib.name);
+      }
+    }
+    return libId;
+  }
 
   /**
-   * Probe local Java/Tomcat. Uses no-cors so CORS never false-negatives when :8080 is up;
-   * connection refused / abort → unreachable. Does not prove the project token is deployed.
+   * Sidebar Source line wording helper — "from … in Library".
+   * Main Details header no longer shows provenance (sidebar only).
    */
+  function fromLibraryProvenanceLine(project) {
+    if (
+      !project ||
+      !(project.fromLibraryAcquire || project.sourcePile === "library-acquire" || project.pulledFromLibraryId)
+    ) {
+      return "";
+    }
+    const libId = project.pulledFromLibraryId ? String(project.pulledFromLibraryId) : "";
+    const libName = librarySourceDisplayName(project) || "Library";
+    const libHref = libId
+      ? `library-detail.html?project=${encodeURIComponent(libId)}`
+      : "library.html";
+    return (
+      `<p class="pm-detail-provenance">from ` +
+      `<a href="${escapeHtml(libHref)}">${escapeHtml(libName)}</a> in Library</p>`
+    );
+  }
+
+  /** True when href targets local Tomcat (:8080) — shared helper on TawalaDemo. */
+  function isLocalJavaRuntimeUrl(url) {
+    if (window.TawalaDemo && typeof window.TawalaDemo.isLocalJavaRuntimeUrl === "function") {
+      return window.TawalaDemo.isLocalJavaRuntimeUrl(url);
+    }
+    return /(?:localhost|127\.0\.0\.1):8080/i.test(String(url || ""));
+  }
+
+  /** Probe local Java/Tomcat — same cache/path as Library Test Drive (TawalaDemo). */
   async function probeLocalJavaRuntime(timeoutMs) {
-    const now = Date.now();
-    if (runtimeProbeCache.ok !== null && now - runtimeProbeCache.at < RUNTIME_PROBE_TTL_MS) {
-      return runtimeProbeCache.ok;
+    if (window.TawalaDemo && typeof window.TawalaDemo.probeLocalJavaRuntime === "function") {
+      return window.TawalaDemo.probeLocalJavaRuntime(timeoutMs);
     }
-    const ms = typeof timeoutMs === "number" ? timeoutMs : 1200;
-    const ctrl = new AbortController();
-    const timer = setTimeout(() => ctrl.abort(), ms);
-    try {
-      await fetch("http://127.0.0.1:8080/", {
-        method: "GET",
-        mode: "no-cors",
-        cache: "no-store",
-        signal: ctrl.signal,
-      });
-      runtimeProbeCache = { at: Date.now(), ok: true };
-      return true;
-    } catch {
-      runtimeProbeCache = { at: Date.now(), ok: false };
-      return false;
-    } finally {
-      clearTimeout(timer);
-    }
+    return false;
   }
 
   const USE_OFFLINE_ALERT =
@@ -943,18 +1045,19 @@
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!target;
     const asIcon = variant === "listing-icon" || variant === "listing-inline";
     if (!(deployed && target)) {
+      const offTitle = USE_NEEDS_DEPLOY_TITLE;
       if (asIcon) {
         return (
           `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-          `title="No local deploy URL yet — Deploy from Designer first" ` +
-          `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
+          `title="${escapeHtml(offTitle)}" ` +
+          `aria-label="Use unavailable — deploy first" data-op="${escapeHtml(op.id)}" ` +
           `data-project="${escapeHtml(projectId || "")}" data-wired="false">${listingIconHtml(op.icon)}</button>`
         );
       }
       return (
         `<button type="button" class="pm-action" disabled ` +
-        `title="No local deploy URL yet — Deploy from Designer first" ` +
-        `aria-label="Use unavailable" data-op="${escapeHtml(op.id)}" ` +
+        `title="${escapeHtml(offTitle)}" ` +
+        `aria-label="Use unavailable — deploy first" data-op="${escapeHtml(op.id)}" ` +
         `data-project="${escapeHtml(projectId || "")}" data-wired="false">${escapeHtml(op.label)}</button>`
       );
     }
@@ -1856,6 +1959,13 @@
 
   function renderProjectDataBannerControls(projectId) {
     const pid = escapeHtml(projectId || "");
+    const project = resolveMyTawalaProject(projectId);
+    const useOffTitle = projectHasUseRuntime(project)
+      ? "Select a start point to Use"
+      : USE_NEEDS_DEPLOY_TITLE;
+    const copyOffTitle = projectHasUseRuntime(project)
+      ? "Select a start point to copy its link"
+      : "Deploy this project before Copy link — no :8080 start URL yet";
     const vrule = `<span class="pm-data-vrule" aria-hidden="true"></span>`;
     /* Nested in last shared grid track so form-row stats align with banner heads. */
     return (
@@ -1864,10 +1974,10 @@
       `<div class="pm-data-ctrl-group pm-data-banner-controls" role="toolbar" aria-label="Project Data actions">` +
       `<a class="pm-data-ctrl pm-data-ctrl-use is-scope-disabled" href="#" ` +
       `data-op="use" data-wired="use-project" data-project="${pid}" ` +
-      `title="Select a start point to Use" aria-disabled="true">Use</a>` +
+      `title="${escapeHtml(useOffTitle)}" aria-disabled="true">Use</a>` +
       `<button type="button" class="pm-data-ctrl is-scope-disabled" data-op="copy-link" ` +
       `data-wired="copy-start-link" data-project="${pid}" disabled ` +
-      `title="Select a start point to copy its link">Copy link</button>` +
+      `title="${escapeHtml(copyOffTitle)}">Copy link</button>` +
       `</div>` +
       vrule +
       `<div class="pm-data-ctrl-group">` +
@@ -1912,13 +2022,16 @@
 
     const hint = deployed
       ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
-        "<b>Start ▶</b> → Use / Copy link; <b>any form</b> → Export / Import / Purge; " +
-        "<b>project</b> (or collapsed list) → Backup / Restore + project-wide data ops. Publish stays on. " +
-        "Use keeps data (Purge clears) and needs Java on <code>:8080</code> — if Tomcat is down, Use warns instead of leaving the mock. " +
-        "<b>Offline Purge:</b> select the <b>project</b> (or a form) → <b>Purge</b> — do not click Use. " +
-        "<b>Online Exam Builder</b> seeds demo Records when live counts are unavailable " +
-        "(<code>:3001</code> down, or up but Docker/Postgres unreachable). Use <b>Reseed demo Records</b> to restore after Purge.</p>"
-      : '<p class="pm-hint deploy-hint-quiet">No local :8080 deploy yet — Expand still lists starts/forms; Export / Import / Purge need Deploy → Show in My Tawala.</p>';
+        "<b>Start ▶</b> → <b>Use</b> (run for yourself on <code>:8080</code>) + banner Copy link; " +
+        "<b>any form</b> → Export / Import / Purge; <b>project</b> (collapsed) → Backup / Restore. " +
+        "<b>Deploy</b> (Details bar) = go live + share/embed for others — not the same as Use. " +
+        "Use keeps data; Purge clears. Offline: select project/form → Purge (not Use). " +
+        "Online Exam Builder can seed demo Records when <code>:3001</code>/Postgres is down — <b>Reseed demo Records</b> after Purge.</p>"
+      : '<p class="pm-hint deploy-hint-quiet">No live start URL yet — Expand still lists labels. ' +
+        "<b>Use</b> (run for yourself) stays grey until Designer push → <b>Show in My Tawala</b> " +
+        "(UI still says Deploy) creates <code>:8080</code> starts. " +
+        "<b>Deploy</b> on Details shares for others after that — not Use. " +
+        "Export / Import / Purge need a live uniqueId too.</p>";
 
     return (
       `<div class="pm-data-tree" id="pmDataTree" role="tree" ` +
@@ -2138,12 +2251,25 @@
     /* A only: Backup / Restore when project-level (collapsed or project root highlighted). */
     const backupRestoreEnabled = projectSelected && !formRowHighlighted;
 
-    /* Main Details bar: Backup / Restore (A only); Publish always (A/B/C). */
+    /* Main Details bar: Rename + Deploy always; Backup / Restore (A only); Publish always (A/B/C). */
     const bar = detail && detail.querySelector(".pm-detail-actions");
     if (bar) {
       bar.querySelectorAll("button.pm-action, a.pm-action").forEach((el) => {
         const op = el.dataset.op || "";
         const wired = el.dataset.wired || "";
+        if (op === "rename" || wired === "rename-project") {
+          setCtrlEnabled(el, true);
+          el.title = "Rename this project in My Tawala (or double-click the title)";
+          if ("disabled" in el) el.disabled = false;
+          return;
+        }
+        if (op === "deploy" || wired === "deploy-share") {
+          setCtrlEnabled(el, true);
+          el.title =
+            "Go live for participants — copy a form/start link or embed it in a web page (not Publish; not Designer Push)";
+          if ("disabled" in el) el.disabled = false;
+          return;
+        }
         if (op === "publish" || wired === "publish-mytawala") {
           setCtrlEnabled(el, true);
           el.title =
@@ -2189,8 +2315,10 @@
       const wired = el.dataset.wired || "";
 
       if (wired === "use-project" || op === "use") {
-        /* B only: start-point highlight. A (project/collapsed) and C (non-start) → off. */
-        if (startReady) {
+        /* B only: start-point highlight with a real :8080 URL. Empty Save-a-copy rows stay honest. */
+        const project = resolveMyTawalaProject(projectId);
+        const hasRuntime = projectHasUseRuntime(project);
+        if (startReady && hasRuntime) {
           setCtrlEnabled(el, true);
           if (el.tagName === "A") {
             el.href = sel.url;
@@ -2202,10 +2330,16 @@
             "Use the highlighted start point on :8080 (needs Java runtime). Offline Purge: select project/form → Purge — not Use.";
           el.classList.add("is-active");
         } else {
-          const offTitle =
-            sel.kind === "form"
-              ? "Use is only for start points (▶). For offline Purge, keep this form selected and click Purge — not Use."
-              : "Select a start point (▶) to Use — or keep the project selected and click Purge for offline demo Records.";
+          let offTitle = USE_NEEDS_DEPLOY_TITLE;
+          if (hasRuntime) {
+            offTitle =
+              sel.kind === "form"
+                ? "Use is only for start points (▶). For offline Purge, keep this form selected and click Purge — not Use."
+                : "Select a start point (▶) to Use — or keep the project selected and click Purge for offline demo Records.";
+          } else if (sel.kind === "start") {
+            offTitle =
+              "Deploy this project before Use — this start point has no :8080 URL yet (Save a copy starts empty)";
+          }
           setCtrlEnabled(el, false, offTitle);
           if (el.tagName === "A") {
             el.href = "#";
@@ -2219,12 +2353,19 @@
       }
 
       if (wired === "copy-start-link" || op === "copy-link") {
-        const offTitle =
-          sel.kind === "form"
-            ? "Copy link is only for start points (▶) — highlight a starting form"
-            : "Select a start point (▶) to copy its link";
-        setCtrlEnabled(el, startReady, offTitle);
-        if (startReady) {
+        const project = resolveMyTawalaProject(projectId);
+        const hasRuntime = projectHasUseRuntime(project);
+        let offTitle = "Select a start point (▶) to copy its link";
+        if (!hasRuntime) {
+          offTitle =
+            sel.kind === "start"
+              ? "Deploy this project before Copy link — this start point has no :8080 URL yet"
+              : "Deploy this project before Copy link — no :8080 start URL yet";
+        } else if (sel.kind === "form") {
+          offTitle = "Copy link is only for start points (▶) — highlight a starting form";
+        }
+        setCtrlEnabled(el, startReady && hasRuntime, offTitle);
+        if (startReady && hasRuntime) {
           el.title = "Copy the highlighted start point’s :8080 URL (does not open the form; fine offline)";
         }
         return;
@@ -2294,9 +2435,6 @@
   }
 
   function setProjectRecordsDisplay(scope, countsState) {
-    const totalEl =
-      (scope && scope.querySelector && scope.querySelector("#pmRecordsTotal")) ||
-      document.getElementById("pmRecordsTotal");
     const treeCount =
       (scope && scope.querySelector && scope.querySelector("#pmDataProjectRecords")) ||
       document.getElementById("pmDataProjectRecords");
@@ -2316,10 +2454,6 @@
       : countsState && countsState.error
         ? `Records unavailable: ${countsState.error}`
         : "Records (Responses) — count unavailable (needs :3001 + Postgres/Docker, or a uniqueId)";
-    if (totalEl) {
-      totalEl.textContent = label;
-      totalEl.title = title;
-    }
     if (treeCount) {
       treeCount.textContent = label;
       treeCount.title = title;
@@ -2607,8 +2741,6 @@
         sel.insertBefore(opt, sel.firstChild);
       }
       sel.value = fromJson;
-      const hint = detailRoot.querySelector("#pmIdentityRail .pm-identity-row .deploy-hint-quiet");
-      if (hint) hint.textContent = `(${themeLabelForPath(fromJson)})`;
       /* Persist onto overlay so later paints keep the definition theme without re-fetch. */
       if (
         typeof TawalaTransfer !== "undefined" &&
@@ -2622,16 +2754,21 @@
   }
 
   /**
-   * Details identity / ops rail (Task List 5–7, 11–12): Published, author, version,
-   * Active/De-activate, Theme / Appearance, Invite / Include stubs, Edit in Designer.
+   * Details identity / ops rail (Task List 5–7, 11–12): Published, author, version #,
+   * Active/De-activate, Theme / Appearance, Invite / Include (→ Deploy share), Edit in Designer.
+   * Project shortDescription (blurb) is NOT here — only under the main-column title.
    */
-  function renderSidebarProjectOps() {
+  function renderSidebarProjectOps(projectId) {
+    const pid = escapeHtml(projectId || "");
     return (
-      '<div class="pm-sidebar-ops pm-sidebar-stack" aria-label="Project option stubs">' +
+      '<div class="pm-sidebar-ops pm-sidebar-stack" aria-label="Project share options">' +
       PROJECT_SIDEBAR_OPS.map((op) => {
+        const active = isOpActive(op);
         return (
-          `<button type="button" class="pm-action" disabled title="${escapeHtml(op.title)}" ` +
-          `data-op="${escapeHtml(op.label)}" data-wired="false">${escapeHtml(op.label)}</button>`
+          `<button type="button" class="pm-action${active ? " is-active" : ""}"${active ? "" : " disabled"} ` +
+          `title="${escapeHtml(op.title)}" data-op="${escapeHtml(op.label)}" ` +
+          `data-project="${pid}" data-wired="${escapeHtml(active ? String(op.wired) : "false")}">` +
+          `${escapeHtml(op.label)}</button>`
         );
       }).join("") +
       "</div>"
@@ -2642,11 +2779,11 @@
     const pid = escapeHtml(project.id || "");
     const author = escapeHtml(projectAuthorLabel(project));
     const versionNum = project.versionNumber != null ? String(project.versionNumber) : "—";
+    /* Version rail = structural Deploy note only. Never fall back to shortDescription
+     * (marketing blurb) — that lives once under the main title (Task #7 / Aug 9). */
     const versionDesc = project.versionDescription
-      ? String(project.versionDescription)
-      : project.shortDescription
-        ? String(project.shortDescription)
-        : "";
+      ? String(project.versionDescription).trim()
+      : "";
     const published = resolvePublishedLibraryLink(project);
     const inactive = project.inactive === true || project.libraryActive === false;
     const themePath = resolveProjectThemePath(project);
@@ -2657,14 +2794,12 @@
       const offlineNote = published.inactive
         ? ' <span class="pm-identity-muted">(hidden from Library while Offline)</span>'
         : "";
+      /* Indicator only — Library name / theme label is not repeated here. */
       publishedHtml =
-        `<b>Yes</b> · <a href="${escapeHtml(libHref)}">${escapeHtml(
-          (window.TawalaDemo && window.TawalaDemo.displayName
-            ? window.TawalaDemo.displayName(published.name)
-            : published.name) || published.id
-        )}</a>${offlineNote}`;
+        `<a href="${escapeHtml(libHref)}" title="Open the public Library entry">` +
+        `<b>Yes</b></a>${offlineNote}`;
     } else {
-      publishedHtml = `<span class="pm-identity-muted">No</span> <span class="deploy-hint-quiet">(Publish to list in the public Library)</span>`;
+      publishedHtml = `<span class="pm-identity-muted">No</span>`;
     }
 
     const statusHtml = inactive
@@ -2674,6 +2809,21 @@
       : `<span class="pm-status-badge is-active" title="Visible in public Library when published">Active</span>` +
         `<button type="button" class="pm-action pm-identity-action" data-wired="deactivate-project" ` +
         `data-project="${pid}" title="Hide from public Library; keep on My Tawala with Offline marker">De-activate</button>`;
+
+    let sourceHtml = "";
+    if (project.fromLibraryAcquire || project.sourcePile === "library-acquire" || project.pulledFromLibraryId) {
+      const libId = project.pulledFromLibraryId ? String(project.pulledFromLibraryId) : "";
+      const libName = librarySourceDisplayName(project) || libId || "Library";
+      const libHref = libId
+        ? `library-detail.html?project=${encodeURIComponent(libId)}`
+        : "library.html";
+      /* Quiet secondary — “from … in Library” lives in this rail only. */
+      sourceHtml =
+        `<div class="pm-identity-row"><dt>Source</dt>` +
+        `<dd class="pm-identity-source">` +
+        `from <a href="${escapeHtml(libHref)}">${escapeHtml(libName)}</a> in Library` +
+        `</dd></div>`;
+    }
 
     /* Version number sits on the same line as the label; description (if any) is a
      * separate unindented line below — not “Version / hanging — — Build …” */
@@ -2690,6 +2840,7 @@
       `<div class="pm-identity-row pm-identity-version"><dt>${versionLabel}</dt>` +
       versionDd +
       `</div>` +
+      sourceHtml +
       `<div class="pm-identity-row"><dt>Published</dt><dd>${publishedHtml}</dd></div>` +
       `<div class="pm-identity-row"><dt>Status</dt><dd class="pm-identity-status">${statusHtml}</dd></div>` +
       `<div class="pm-identity-row"><dt>Theme / Appearance</dt><dd>` +
@@ -2698,10 +2849,9 @@
       `title="Theme path stored on this My Tawala overlay (mock — does not push CSS to :8080)">${themeOptionsHtml(
         themePath
       )}</select></label>` +
-      ` <span class="deploy-hint-quiet">(${escapeHtml(themeLabelForPath(themePath))})</span>` +
       `</dd></div>` +
       `</dl>` +
-      renderSidebarProjectOps() +
+      renderSidebarProjectOps(project.id) +
       `<div class="pm-identity-actions">` +
       `<button type="button" class="pm-action is-active" data-wired="edit-in-designer" ` +
       `data-project="${pid}" title="Open this project in the browser Designer">Edit project in Designer</button>` +
@@ -2758,8 +2908,6 @@
       return;
     }
     setStatus(`Theme set to ${themeLabelForPath(themePath)} (overlay only — Redeploy to apply on :8080).`);
-    const hint = document.querySelector("#pmIdentityRail .pm-identity-row .deploy-hint-quiet");
-    if (hint) hint.textContent = `(${themeLabelForPath(themePath)})`;
   }
 
   function toggleProjectActive(projectId, active) {
@@ -2796,8 +2944,10 @@
    * then Edit in Designer; main column = title + actions + Project Data / Versions / Comments.
    * Project Data tree: expand (project → starts → all forms); selection scopes E/I/Purge.
    * Start URLs open live :8080 when deployed — do NOT purge-on-click (unlike Library Test drive).
+   * @param {object} project
+   * @param {{ justAcquired?: boolean }} [opts]
    */
-  function renderDetailPanel(project) {
+  function renderDetailPanel(project, opts) {
     if (!project) return '<p class="pm-hint">Project not found.</p>';
     const projectDataSection = renderProjectDataTree(project);
 
@@ -2821,6 +2971,18 @@
             .replace(/\.tawala$/i, "")
             .replace(/\.json$/i, "");
     const inactive = project.inactive === true || project.libraryActive === false;
+    const justAcquired = !!(opts && opts.justAcquired);
+    const libSrcName = librarySourceDisplayName(project);
+    const acquiredBanner = justAcquired
+      ? `<div class="pm-acquire-success" role="status">` +
+        `<p><b>Saved a copy</b> as “${escapeHtml(displayName)}” in your My Tawala.` +
+        (libSrcName ? ` Source: ${escapeHtml(libSrcName)}.` : "") +
+        `</p>` +
+        `<p class="pm-hint">Records start empty. <b>Use</b> stays unavailable until you Deploy from Designer ` +
+        `(hover the grey Use control for the tip). ` +
+        `<a href="mytawala.html">← Back to My Tawala</a> and sort by <b>Created</b> to see this row with today’s date.</p>` +
+        `</div>`
+      : "";
 
     return (
       `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
@@ -2829,20 +2991,32 @@
       `<div class="pm-sidebar-identity">` +
       renderIdentityRail(project) +
       `</div>` +
-      `<p class="pm-hint">Theme, Invite / Include stubs, and Designer / Active controls stay in this rail. ` +
+      `<p class="pm-hint">Theme, Invite / Include (Deploy share), and Designer / Active controls stay in this rail. ` +
       `<a href="project-ops-review.html">Archive labels</a></p>` +
       "</aside>" +
       `<div class="pm-detail-main">` +
+      acquiredBanner +
       `<div class="pm-detail-header">` +
       `<p class="pm-back"><a href="mytawala.html">← My Tawala</a></p>` +
-      `<h2>${escapeHtml(displayName)}` +
+      `<h2 class="pm-detail-title" tabindex="0" title="Double-click to rename" ` +
+      `data-wired="rename-project" data-project="${escapeHtml(project.id)}">` +
+      `${escapeHtml(displayName)}` +
       (inactive
         ? ` <span class="pm-status-badge is-offline" title="Offline — hidden from public Library">Offline</span>`
         : "") +
       `</h2>` +
-      `<p class="pm-detail-meta">${escapeHtml(project.shortDescription || "")}</p>` +
-      `<p class="pm-detail-records">Records: <b id="pmRecordsTotal" title="Project-wide submission count">—</b>` +
-      ` <span class="deploy-hint-quiet">(Responses · all forms)</span></p>` +
+      (() => {
+        const blurb = String(project.shortDescription || "").trim();
+        const empty = !blurb;
+        return (
+          `<p class="pm-detail-meta${empty ? " is-empty" : ""}" tabindex="0" ` +
+          `data-wired="edit-description" data-project="${escapeHtml(project.id)}">` +
+          (empty
+            ? `<span class="pm-detail-meta-ph" aria-hidden="true">Add a description</span>`
+            : escapeHtml(blurb)) +
+          `</p>`
+        );
+      })() +
       "</div>" +
       renderProjectActionsBar(project.id) +
       renderCollapsibleSection("pmSecData", "Project Data", projectDataSection, true) +
@@ -2963,6 +3137,10 @@
   }
 
   const PUBLISH_MODAL_ID = "tawalaPublishModal";
+  const DEPLOY_SHARE_MODAL_ID = "tawalaDeployShareModal";
+  const SAVE_COPY_MODAL_ID = "tawalaSaveCopyModal";
+  const RENAME_MODAL_ID = "tawalaRenameModal";
+  const DESC_MODAL_ID = "tawalaDescModal";
 
   function closePublishModal() {
     const el = document.getElementById(PUBLISH_MODAL_ID);
@@ -2972,6 +3150,439 @@
 
   function handlePublishModalKeydown(ev) {
     if (ev.key === "Escape") closePublishModal();
+  }
+
+  function closeDeployShareModal() {
+    const el = document.getElementById(DEPLOY_SHARE_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handleDeployShareModalKeydown, true);
+  }
+
+  function handleDeployShareModalKeydown(ev) {
+    if (ev.key === "Escape") closeDeployShareModal();
+  }
+
+  function closeSaveCopyModal() {
+    const el = document.getElementById(SAVE_COPY_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handleSaveCopyModalKeydown, true);
+  }
+
+  function handleSaveCopyModalKeydown(ev) {
+    if (ev.key === "Escape") closeSaveCopyModal();
+  }
+
+  function closeRenameModal() {
+    const el = document.getElementById(RENAME_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handleRenameModalKeydown, true);
+  }
+
+  function handleRenameModalKeydown(ev) {
+    if (ev.key === "Escape") closeRenameModal();
+  }
+
+  function closeDescModal() {
+    const el = document.getElementById(DESC_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handleDescModalKeydown, true);
+  }
+
+  function handleDescModalKeydown(ev) {
+    if (ev.key === "Escape") closeDescModal();
+  }
+
+  /**
+   * Project Details — double-click title → rename My Tawala name (overlay, like Save a copy).
+   */
+  function openRenameDialog(projectId) {
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
+      window.alert("Rename isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    if (typeof TawalaTransfer.renameMyTawalaProject !== "function") {
+      window.alert("Rename isn't available — transfer support is outdated. Hard-refresh and try again.");
+      return;
+    }
+    const project = projectId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    if (!project) {
+      window.alert(`Can't rename — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+    closeRenameModal();
+    closeSaveCopyModal();
+    closeDescModal();
+
+    const currentName = TawalaDemo.displayName(project.name || projectId);
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = RENAME_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="renameModalTitle">' +
+      `<h3 id="renameModalTitle">Rename</h3>` +
+      `<p class="pm-hint tawala-modal-lede">Pick a name you’ll recognize in My Tawala. This does not create a new project or change any Library entry — only the display name on this private copy.</p>` +
+      '<div class="tawala-modal-body">' +
+      '<label class="tawala-modal-field" for="renameNameInput">Your project name' +
+      `<input type="text" id="renameNameInput" value="${escapeHtml(currentName)}" autocomplete="off" />` +
+      "</label>" +
+      '<p class="pm-hint tawala-modal-hint-tight">If the name matches another My Tawala project (not case-sensitive), you’ll be asked to confirm before replacing that other project.</p>' +
+      '<p class="pm-hint" id="renameModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="renameModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="renameModalConfirm">Rename</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+
+    const nameInput = backdrop.querySelector("#renameNameInput");
+    const errEl = backdrop.querySelector("#renameModalError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+    function checkRenameCollisionLive() {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal) {
+        showErr("");
+        return;
+      }
+      if (
+        typeof TawalaTransfer.compactNameKey === "function" &&
+        TawalaTransfer.compactNameKey(nameVal) === TawalaTransfer.compactNameKey(currentName)
+      ) {
+        showErr("");
+        return;
+      }
+      if (
+        typeof TawalaTransfer.myTawalaNameTaken === "function" &&
+        TawalaTransfer.myTawalaNameTaken(nameVal, projectId)
+      ) {
+        showErr(
+          `Warning: you already have a project named “${nameVal}”. Renaming will replace that other project (this project keeps its identity under the new name).`
+        );
+        return;
+      }
+      showErr("");
+    }
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeRenameModal();
+    });
+    backdrop.querySelector("#renameModalCancel").addEventListener("click", closeRenameModal);
+    document.addEventListener("keydown", handleRenameModalKeydown, true);
+
+    function confirmRename() {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal) {
+        showErr("Enter a project name.");
+        nameInput.focus();
+        return;
+      }
+      const sameAsCurrent =
+        typeof TawalaTransfer.compactNameKey === "function" &&
+        TawalaTransfer.compactNameKey(nameVal) === TawalaTransfer.compactNameKey(currentName);
+      const conflict =
+        !sameAsCurrent && typeof TawalaTransfer.findMyTawalaByName === "function"
+          ? TawalaTransfer.findMyTawalaByName(nameVal, projectId)
+          : null;
+      if (conflict) {
+        const conflictLabel =
+          typeof TawalaDemo.displayName === "function"
+            ? TawalaDemo.displayName(conflict.name)
+            : conflict.name || conflict.id;
+        const ok = window.confirm(
+          `You already have a project named “${nameVal}”.\n\n` +
+            `Replace “${conflictLabel}” with this rename?\n\n` +
+            `The other project will be removed from My Tawala (its Deploy / response identity goes with it). ` +
+            `This project keeps its own identity under the new name.`
+        );
+        if (!ok) {
+          nameInput.focus();
+          return;
+        }
+      }
+      const result = TawalaTransfer.renameMyTawalaProject(projectId, nameVal, {
+        overwrite: !!conflict,
+      });
+      if (!result || !result.ok) {
+        showErr((result && result.error) || "Unknown error");
+        nameInput.focus();
+        return;
+      }
+      closeRenameModal();
+      if (!result.unchanged) {
+        setStatus(
+          result.replacedId
+            ? `Renamed to “${result.name}” (replaced the other project with that name).`
+            : `Renamed to “${result.name}”.`
+        );
+      }
+      document.dispatchEvent(
+        new CustomEvent("tawala:project-renamed", {
+          detail: { projectId, name: result.name, result },
+        })
+      );
+    }
+
+    backdrop.querySelector("#renameModalConfirm").addEventListener("click", confirmRename);
+    nameInput.addEventListener("input", checkRenameCollisionLive);
+    nameInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        confirmRename();
+      }
+    });
+    setTimeout(() => {
+      nameInput.focus();
+      nameInput.select();
+    }, 0);
+  }
+
+  /**
+   * Project Details — double-click blurb under title → edit shortDescription (My Tawala overlay).
+   * Quieter than Rename: no instructional “double-click” hint on the page; discoverable only that way.
+   */
+  function openEditDescriptionDialog(projectId) {
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
+      window.alert("Description edit isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    if (typeof TawalaTransfer.upsertMyTawalaProperties !== "function") {
+      window.alert("Description edit isn't available — transfer support is outdated. Hard-refresh and try again.");
+      return;
+    }
+    const project = projectId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    if (!project) {
+      window.alert(`Can't edit description — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+    closeDescModal();
+    closeRenameModal();
+    closeSaveCopyModal();
+
+    const current = String(project.shortDescription || "").trim();
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = DESC_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish tawala-modal--desc" role="dialog" aria-modal="true" aria-labelledby="descModalTitle">' +
+      `<h3 id="descModalTitle">Description</h3>` +
+      '<div class="tawala-modal-body">' +
+      '<label class="tawala-modal-field" for="descModalInput">Under the project title' +
+      `<textarea id="descModalInput" rows="3" autocomplete="off">${escapeHtml(current)}</textarea>` +
+      "</label>" +
+      '<p class="pm-hint" id="descModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="descModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="descModalConfirm">Save</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+
+    const input = backdrop.querySelector("#descModalInput");
+    const errEl = backdrop.querySelector("#descModalError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeDescModal();
+    });
+    backdrop.querySelector("#descModalCancel").addEventListener("click", closeDescModal);
+    document.addEventListener("keydown", handleDescModalKeydown, true);
+
+    function confirmDesc() {
+      const next = String(input.value || "").trim();
+      if (next === current) {
+        closeDescModal();
+        return;
+      }
+      const ok = TawalaTransfer.upsertMyTawalaProperties(projectId, {
+        shortDescription: next,
+      });
+      if (!ok) {
+        showErr("Could not save to My Tawala (localStorage).");
+        input.focus();
+        return;
+      }
+      closeDescModal();
+      setStatus(next ? "Description updated." : "Description cleared.");
+      document.dispatchEvent(
+        new CustomEvent("tawala:project-description-changed", {
+          detail: { projectId, shortDescription: next },
+        })
+      );
+    }
+
+    backdrop.querySelector("#descModalConfirm").addEventListener("click", confirmDesc);
+    input.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter" && (ev.metaKey || ev.ctrlKey)) {
+        ev.preventDefault();
+        confirmDesc();
+      }
+    });
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 0);
+  }
+
+  /**
+   * Library Save a copy — rename-on-acquire into private My Tawala (Aug 9 Task #8).
+   * libraryId is the public catalog id (not a My Tawala row).
+   */
+  function openSaveCopyDialog(libraryId) {
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
+      window.alert("Save a copy isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    if (typeof TawalaTransfer.saveCopyFromLibrary !== "function") {
+      window.alert("Save a copy isn't available — transfer support is outdated. Hard-refresh and try again.");
+      return;
+    }
+    const project = libraryId && TawalaDemo.getLibrary ? TawalaDemo.getLibrary(libraryId) : null;
+    if (!project) {
+      window.alert(`Can't Save a copy — unknown Library project: ${libraryId || "(none)"}`);
+      return;
+    }
+    closeSaveCopyModal();
+    closeRenameModal();
+    closeDescModal();
+
+    const sourceName = TawalaDemo.displayName(project.name || libraryId);
+    const defaultName =
+      typeof TawalaTransfer.suggestUniqueMyTawalaName === "function"
+        ? TawalaTransfer.suggestUniqueMyTawalaName(sourceName)
+        : TawalaTransfer.stripStubSuffix(sourceName);
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = SAVE_COPY_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="saveCopyModalTitle">' +
+      `<h3 id="saveCopyModalTitle">Save a copy</h3>` +
+      `<p class="pm-hint tawala-modal-lede">Save “${escapeHtml(sourceName)}” into your private My Tawala. ` +
+      `<b>Choose a name</b> you’ll recognize later — the suggestion below is only a starting point (you can keep it or type your own). ` +
+      `This creates a new project identity; renaming alone later does not. Response data starts empty (Deploy before Use).</p>` +
+      '<div class="tawala-modal-body">' +
+      '<label class="tawala-modal-field" for="saveCopyNameInput">Your project name' +
+      `<input type="text" id="saveCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
+      "</label>" +
+      '<p class="pm-hint tawala-modal-hint-tight">If the name matches an existing My Tawala project (not case-sensitive), you’ll be asked to confirm before replacing it.</p>' +
+      '<p class="pm-hint" id="saveCopyModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="saveCopyModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="saveCopyModalConfirm">Save a copy</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+
+    const nameInput = backdrop.querySelector("#saveCopyNameInput");
+    const errEl = backdrop.querySelector("#saveCopyModalError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+    function checkSaveCopyCollisionLive() {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal) {
+        showErr("");
+        return;
+      }
+      if (
+        typeof TawalaTransfer.myTawalaNameTaken === "function" &&
+        TawalaTransfer.myTawalaNameTaken(nameVal)
+      ) {
+        showErr(
+          `Warning: you already have a project named “${nameVal}”. Saving will replace that My Tawala project with this copy.`
+        );
+        return;
+      }
+      showErr("");
+    }
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeSaveCopyModal();
+    });
+    backdrop.querySelector("#saveCopyModalCancel").addEventListener("click", closeSaveCopyModal);
+    document.addEventListener("keydown", handleSaveCopyModalKeydown, true);
+
+    function confirmSave() {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal) {
+        showErr("Enter a name for your My Tawala copy.");
+        nameInput.focus();
+        return;
+      }
+      const conflict =
+        typeof TawalaTransfer.findMyTawalaByName === "function"
+          ? TawalaTransfer.findMyTawalaByName(nameVal)
+          : null;
+      if (conflict) {
+        const conflictLabel =
+          typeof TawalaDemo.displayName === "function"
+            ? TawalaDemo.displayName(conflict.name)
+            : conflict.name || conflict.id;
+        const ok = window.confirm(
+          `You already have a project named “${nameVal}”.\n\n` +
+            `Replace “${conflictLabel}” with this Save a copy?\n\n` +
+            `The existing project will be removed from My Tawala (its Deploy / response identity goes with it). ` +
+            `This acquire becomes the sole row with that name.`
+        );
+        if (!ok) {
+          nameInput.focus();
+          return;
+        }
+      }
+      const result = TawalaTransfer.saveCopyFromLibrary({
+        libraryId,
+        name: nameVal,
+        overwrite: !!conflict,
+      });
+      if (!result || !result.ok) {
+        showErr((result && result.error) || "Unknown error");
+        nameInput.focus();
+        return;
+      }
+      closeSaveCopyModal();
+      setStatus(
+        result.replacedId
+          ? `Saved a copy as “${nameVal}” in My Tawala (replaced the previous project with that name).`
+          : `Saved a copy as “${nameVal}” in My Tawala.`
+      );
+      document.dispatchEvent(
+        new CustomEvent("tawala:library-saved-copy", {
+          detail: { libraryId, myTawalaId: result.id, name: nameVal, result },
+        })
+      );
+      /* Land on Project Details of the NEW copy with an on-page success banner (acquired=1).
+       * Avoid a blocking alert that can feel like the only confirmation — then disappear. */
+      window.location.href =
+        "mytawala-project.html?project=" +
+        encodeURIComponent(result.id) +
+        "&acquired=1";
+    }
+
+    backdrop.querySelector("#saveCopyModalConfirm").addEventListener("click", confirmSave);
+    nameInput.addEventListener("input", checkSaveCopyCollisionLive);
+    nameInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        confirmSave();
+      }
+    });
+    setTimeout(() => {
+      nameInput.focus();
+      nameInput.select();
+      checkSaveCopyCollisionLive();
+    }, 0);
   }
 
   /** Option label spelling out what picking this target will actually do (collision safety). */
@@ -3043,6 +3654,162 @@
       html += "</optgroup>";
     }
     return html;
+  }
+
+  /**
+   * Website Deploy (My Tawala Details) — Task #10 doorway.
+   * Admin go-live + share help: copy a start URL / iframe embed. Not Publish, not Designer Push.
+   * Empty Library acquires (no uniqueId / :8080 URLs) get an honest “need a live project first” message.
+   * Seeded live projects (e.g. Online Exam Builder) share immediately.
+   */
+  function iframeEmbedSnippet(url, title) {
+    const safeTitle = String(title || "Tawala form").replace(/"/g, "&quot;");
+    return (
+      `<iframe src="${url}" title="${safeTitle}" width="100%" height="640" ` +
+      `style="border:0;" loading="lazy"></iframe>`
+    );
+  }
+
+  function openDeployShareDialog(projectId) {
+    if (typeof TawalaDemo === "undefined") {
+      window.alert("Deploy isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    const project = resolveMyTawalaProject(projectId);
+    if (!project) {
+      window.alert(`Can't open Deploy — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+    closeDeployShareModal();
+    closePublishModal();
+
+    const displayName =
+      typeof TawalaDemo.displayName === "function"
+        ? TawalaDemo.displayName(project.name || projectId)
+        : String(project.name || projectId);
+    const starts = startPointsWithUrls(project);
+    const hasLive = starts.length > 0;
+    const fromAcquire =
+      !!(project.fromLibraryAcquire || project.sourcePile === "library-acquire") && !hasLive;
+
+    let bodyHtml;
+    if (!hasLive) {
+      bodyHtml =
+        '<div class="tawala-modal-body">' +
+        '<p class="pm-hint" role="status">' +
+        (fromAcquire
+          ? "<b>This copy is not live yet.</b> Library <b>Save a copy</b> creates an empty private row " +
+            "(no :8080 uniqueId / start URLs). Open it in Designer, push the definition to the runtime " +
+            "(Designer still says <b>Deploy</b> until the Push rename), then <b>Show in My Tawala</b> — " +
+            "after that, Deploy here can copy links and embed snippets."
+          : "<b>No live start URLs on this project yet.</b> Deploy share needs a :8080 uniqueId and start points. " +
+            "From Designer, push the project (UI still says Deploy) → <b>Show in My Tawala</b>, " +
+            "or open a seeded live project such as <b>Online Exam Builder</b>.") +
+        "</p>" +
+        '<p class="pm-hint tawala-modal-hint-tight">Use is for trying the form yourself; Publish puts a copy in the public Library. ' +
+        "Deploy (this dialog) is for administrators sharing with participants.</p>" +
+        "</div>" +
+        '<div class="tawala-modal-actions">' +
+        '<button type="button" class="pm-action is-active" id="deployShareClose">Close</button>' +
+        "</div>";
+    } else {
+      const options = starts
+        .map((sp, i) => {
+          const label = sp.label || sp.form || `Start ${i + 1}`;
+          return `<option value="${i}">${escapeHtml(label)}</option>`;
+        })
+        .join("");
+      bodyHtml =
+        '<div class="tawala-modal-body">' +
+        '<p class="pm-hint tawala-modal-hint-tight">Pick a start point (multi-start apps like Online Exam often have Exam vs Admin/Setup). ' +
+        "Defaults to the first listed start.</p>" +
+        '<label class="tawala-modal-field" for="deployShareStartSelect">Start point' +
+        `<select id="deployShareStartSelect">${options}</select>` +
+        "</label>" +
+        '<label class="tawala-modal-field" for="deployShareLink">Form / start link (email to participants)' +
+        '<textarea id="deployShareLink" class="tawala-modal-code" rows="2" readonly></textarea>' +
+        "</label>" +
+        '<p class="tawala-modal-inline-actions">' +
+        '<button type="button" class="pm-action is-active" id="deployShareCopyLink">Copy link</button>' +
+        "</p>" +
+        '<label class="tawala-modal-field" for="deployShareEmbed">Include in Web Page (iframe embed)' +
+        '<textarea id="deployShareEmbed" class="tawala-modal-code" rows="4" readonly></textarea>' +
+        "</label>" +
+        '<p class="tawala-modal-inline-actions">' +
+        '<button type="button" class="pm-action is-active" id="deployShareCopyEmbed">Copy embed</button>' +
+        "</p>" +
+        '<p class="pm-hint tawala-modal-hint-tight">Paste the embed into your site HTML. ' +
+        "Participants open the same :8080 start URL as the copied link.</p>" +
+        "</div>" +
+        '<div class="tawala-modal-actions">' +
+        '<button type="button" class="pm-action" id="deployShareClose">Close</button>' +
+        "</div>";
+    }
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = DEPLOY_SHARE_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish tawala-modal--deploy-share" role="dialog" ' +
+      'aria-modal="true" aria-labelledby="deployShareModalTitle">' +
+      '<h3 id="deployShareModalTitle">Deploy — share with participants</h3>' +
+      `<p class="pm-hint tawala-modal-lede">For administrators: go live for <b>others</b> on “${escapeHtml(displayName)}”. ` +
+      "Copy a form link or embed a start URL. This is not Publish (Library) and not Designer Push.</p>" +
+      bodyHtml +
+      "</div>";
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", handleDeployShareModalKeydown, true);
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeDeployShareModal();
+    });
+    const closeBtn = backdrop.querySelector("#deployShareClose");
+    if (closeBtn) closeBtn.addEventListener("click", closeDeployShareModal);
+
+    if (!hasLive) {
+      if (closeBtn) closeBtn.focus();
+      return;
+    }
+
+    const startSelect = backdrop.querySelector("#deployShareStartSelect");
+    const linkArea = backdrop.querySelector("#deployShareLink");
+    const embedArea = backdrop.querySelector("#deployShareEmbed");
+
+    function syncFields() {
+      const idx = Number(startSelect.value) || 0;
+      const sp = starts[idx] || starts[0];
+      const url = (sp && sp.url) || "";
+      const label = (sp && (sp.label || sp.form)) || displayName;
+      linkArea.value = url;
+      embedArea.value = iframeEmbedSnippet(url, label);
+    }
+    syncFields();
+    startSelect.addEventListener("change", syncFields);
+    startSelect.focus();
+
+    backdrop.querySelector("#deployShareCopyLink").addEventListener("click", () => {
+      void copyUrlToClipboard(linkArea.value).then(() => {
+        setStatus("Copied Deploy start link.");
+      });
+    });
+    backdrop.querySelector("#deployShareCopyEmbed").addEventListener("click", async () => {
+      const text = embedArea.value;
+      if (!text) {
+        window.alert("No embed snippet yet — pick a start point with a :8080 URL.");
+        return;
+      }
+      try {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          await navigator.clipboard.writeText(text);
+        } else {
+          window.prompt("Copy this iframe embed:", text);
+          return;
+        }
+        setStatus("Copied iframe embed snippet.");
+      } catch {
+        window.prompt("Copy this iframe embed:", text);
+      }
+    });
   }
 
   /**
@@ -3443,6 +4210,24 @@
       return;
     }
 
+    if (wired === "deploy-share") {
+      openDeployShareDialog(projectId);
+      return;
+    }
+
+    if (wired === "save-copy-library") {
+      ev.preventDefault();
+      /* data-project on Library surfaces is the public Library id. */
+      openSaveCopyDialog(projectId);
+      return;
+    }
+
+    if (wired === "rename-project" || op === "rename") {
+      ev.preventDefault();
+      openRenameDialog(projectId);
+      return;
+    }
+
     if (wired === "edit-in-designer") {
       openEditInDesigner(projectId);
       return;
@@ -3657,13 +4442,48 @@
 
   function bind(root) {
     const scope = root || document;
-    scope.addEventListener("click", (ev) => {
-      if (ev.target.closest("#pmDataTree")) {
-        handleDataTreeClick(ev);
+    /* Capture phase so Library Actions still fire if a parent later re-adds stopPropagation
+     * (row navigation must not swallow Save a copy). */
+    scope.addEventListener(
+      "click",
+      (ev) => {
+        if (ev.target.closest("#pmDataTree")) {
+          handleDataTreeClick(ev);
+        }
+        if (ev.target.closest("[data-op], .pm-action, .pm-icon-action")) {
+          void handleOpClick(ev);
+        }
+      },
+      true
+    );
+    /* Project Details title — double-click opens Rename (My Tawala overlay). */
+    scope.addEventListener("dblclick", (ev) => {
+      const title =
+        ev.target.closest && ev.target.closest('h2.pm-detail-title[data-wired="rename-project"]');
+      if (title) {
+        ev.preventDefault();
+        openRenameDialog(title.dataset.project || "");
+        return;
       }
-      if (ev.target.closest("[data-op], .pm-action, .pm-icon-action")) {
-        void handleOpClick(ev);
+      const meta =
+        ev.target.closest && ev.target.closest('.pm-detail-meta[data-wired="edit-description"]');
+      if (!meta) return;
+      ev.preventDefault();
+      openEditDescriptionDialog(meta.dataset.project || "");
+    });
+    scope.addEventListener("keydown", (ev) => {
+      const title =
+        ev.target.closest && ev.target.closest('h2.pm-detail-title[data-wired="rename-project"]');
+      if (title && ev.key === "Enter" && ev.target === title) {
+        ev.preventDefault();
+        openRenameDialog(title.dataset.project || "");
+        return;
       }
+      const meta =
+        ev.target.closest && ev.target.closest('.pm-detail-meta[data-wired="edit-description"]');
+      if (!meta || ev.key !== "Enter" || ev.target !== meta) return;
+      ev.preventDefault();
+      openEditDescriptionDialog(meta.dataset.project || "");
     });
     scope.addEventListener("change", (ev) => {
       const sel = ev.target.closest && ev.target.closest('select[data-wired="theme-select"]');
@@ -3746,6 +4566,8 @@
     renderLibraryListingActionHeaders,
     renderLibraryListingControls,
     renderDetailPanel,
+    fromLibraryAcquireBadge,
+    fromLibraryProvenanceLine,
     syncDeployVersionChip,
     hydrateProjectDataTree,
     hydrateThemeFromProjectJson,
@@ -3753,6 +4575,11 @@
     syncProjectActionsForDataSelection,
     renderOpsCatalog,
     openPublishDialog,
+    openDeployShareDialog,
+    openSaveCopyDialog,
+    openRenameDialog,
+    openEditDescriptionDialog,
+    renderLibrarySaveCopyButton,
     bind,
   };
 })();

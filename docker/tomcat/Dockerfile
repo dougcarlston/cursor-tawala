@@ -34,7 +34,9 @@ ENV CATALINA_OPTS="-Dlucene.use.in.process=true -Xms256m -Xmx1024m"
 
 EXPOSE 8080
 
+# `/` is 404 in this webapp; `/home` is the real readiness URL. Hitting `/` marked the
+# container unhealthy forever even when World + forms were fine.
 HEALTHCHECK --interval=15s --timeout=10s --start-period=120s --retries=8 \
-  CMD curl -fsS http://localhost:8080/ >/dev/null || exit 1
+  CMD curl -fsS http://localhost:8080/home >/dev/null || exit 1
 
 ENTRYPOINT ["/entrypoint.sh"]

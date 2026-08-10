@@ -6,9 +6,10 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-chrome1" />
-  <script src="js/demo-urls.js?v=20260804-exam-purge"></script>
-  <script src="js/transfer.js?v=20260804-exam-purge"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-overwrite1" />
+  <script src="js/demo-urls.js?v=20260810-overwrite1"></script>
+  <script src="js/transfer.js?v=20260810-overwrite1"></script>
+  <script src="js/project-ops.js?v=20260810-overwrite1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -25,7 +26,7 @@
         </div>
         <div class="block" id="sidebarMeta"></div>
         <div class="block" id="sidebarCategory"></div>
-        <div class="block" id="sidebarTransfer"></div>
+        <div class="block" id="sidebarAcquire"></div>
         <div class="block" id="sidebarTestDrive"></div>
       </div>
 
@@ -35,38 +36,28 @@
         <div class="section" id="projectDetails">
           <div class="project-heading">
             <h1 id="projectName"></h1>
+            <p id="projectBlurb" class="library-detail-blurb"></p>
+            <div id="projectAcquireCtas" class="library-acquire-ctas"></div>
           </div>
           <div id="description" class="section">
             <h3 class="sectionHeading">Description</h3>
             <div class="sectionContent">
-              <div id="shortDescription"></div>
-              <br />
-              <div>
-                <div class="label"><b>Detailed Description</b></div>
-                <div id="longDescription"></div>
-              </div>
+              <div id="longDescription"></div>
             </div>
           </div>
           <div id="comments" class="section">
             <h3 class="sectionHeading">Comments</h3>
             <div class="sectionContent">
               <p class="pm-hint">
-                Legacy Library showed a community comment count on listing rows.
-                Thread UI is not wired in this mock yet — stub only.
+                Comments / reputation are parked (Aug 9). Stub only — not wired in this mock.
               </p>
             </div>
           </div>
         </div>
 
-        <div class="testDriveBox">
+        <div class="testDriveBox" id="testDriveBox">
           <b>Test drive this project</b> (local Java runtime)
           <p id="testDriveBlurb"></p>
-          <p>
-            <a id="testDrivePrimary" href="#" target="_blank" rel="noopener">
-              <img src="images/template/test-drive-button.gif" alt="Test Drive Latest Version" />
-            </a>
-            <a id="viewInMyTawala" href="mytawala.html">View in My Tawala</a>
-          </p>
           <div class="start-points-heading">Start points</div>
           <ul class="startPointList" id="startPoints"></ul>
         </div>
@@ -76,7 +67,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script src="js/chrome.js?v=20260810-overwrite1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -87,6 +78,9 @@
     }
 
     TawalaChrome.mount();
+    if (typeof TawalaProjectOps !== "undefined" && TawalaProjectOps.bind) {
+      TawalaProjectOps.bind(document);
+    }
 
     const id = new URLSearchParams(location.search).get("project") || "simple-survey";
     const project = TawalaDemo.getLibrary(id);
@@ -100,41 +94,62 @@
       if (TawalaDemo.isLiveReady(project)) {
         nameEl.insertAdjacentHTML("afterend", " " + TawalaDemo.liveReadyHtml(project));
       }
-      document.getElementById("shortDescription").textContent = project.shortDescription;
-      document.getElementById("longDescription").textContent = project.longDescription;
+
+      const blurb = String(project.shortDescription || "").trim();
+      const blurbEl = document.getElementById("projectBlurb");
+      if (blurb) {
+        blurbEl.textContent = blurb;
+      } else {
+        blurbEl.hidden = true;
+      }
+      document.getElementById("longDescription").textContent =
+        project.longDescription || blurb || "No detailed description yet.";
 
       const deployed = TawalaDemo.isDeployed(project);
-      const primary = document.getElementById("testDrivePrimary");
-      const viewMine = document.getElementById("viewInMyTawala");
       const driveUrl =
         typeof TawalaDemo.libraryTestDriveUrl === "function"
           ? TawalaDemo.libraryTestDriveUrl(project)
           : project.testDriveUrl;
+
+      /* Primary CTAs under title: Test Drive + Save a copy only (Aug 9 #8). */
+      const ctas = document.getElementById("projectAcquireCtas");
+      let ctaHtml = "";
+      if (deployed && driveUrl) {
+        ctaHtml +=
+          `<a class="pm-action is-active js-testdrive" href="${escapeHtml(driveUrl)}" ` +
+          `data-testdrive-url="${escapeHtml(driveUrl)}" target="_blank" rel="noopener" ` +
+          `title="Needs Java on :8080 — probes first; purges prior responses, then opens">Test Drive</a>`;
+      } else {
+        ctaHtml +=
+          `<button type="button" class="pm-action" disabled title="No local test-drive yet">Test Drive</button>`;
+      }
+      if (
+        typeof TawalaProjectOps !== "undefined" &&
+        typeof TawalaProjectOps.renderLibrarySaveCopyButton === "function"
+      ) {
+        ctaHtml += TawalaProjectOps.renderLibrarySaveCopyButton(project, "text");
+      } else {
+        ctaHtml +=
+          `<button type="button" class="pm-action is-active" data-op="save-my-tawala" ` +
+          `data-wired="save-copy-library" data-project="${escapeHtml(id)}">Save a copy</button>`;
+      }
+      ctas.innerHTML = ctaHtml;
+
       if (deployed && driveUrl) {
         document.getElementById("testDriveBlurb").textContent =
-          "Primary Test Drive purges prior responses, then opens localhost:8080 (Admin/Setup first for Online Exam). Start-point links below keep data so Setup → Exam works without wiping questions. Redeploy if the link is stale.";
-        primary.href = driveUrl;
-        primary.classList.add("js-testdrive");
-        primary.setAttribute("data-testdrive-url", driveUrl);
-        primary.title = "Purge prior responses, then open :8080";
-        primary.hidden = false;
+          "Primary Test Drive purges prior responses, then opens localhost:8080 (Admin/Setup first for Online Exam). Start-point links below keep data so Setup → Exam works without wiping questions. Leave/wipe honesty is Task #14.";
         document.getElementById("sidebarTestDrive").innerHTML =
           "<h3>Quick start</h3><p><a class=\"js-testdrive\" href=\"" +
           escapeHtml(driveUrl) +
           "\" data-testdrive-url=\"" +
           escapeHtml(driveUrl) +
-          "\" target=\"_blank\" rel=\"noopener\" title=\"Purge prior responses, then open :8080\">Test drive now</a></p>";
+          "\" target=\"_blank\" rel=\"noopener\" title=\"Needs Java on :8080 — probes first; purges prior responses, then opens\">Test Drive</a></p>";
       } else {
         document.getElementById("testDriveBlurb").textContent =
           "No local :8080 test-drive for this project yet. Open it in the Web Designer, then Deploy when you want a live start point.";
-        primary.removeAttribute("href");
-        primary.hidden = true;
         document.getElementById("sidebarTestDrive").innerHTML =
-          "<h3>Test drive</h3><p class=\"deploy-hint-quiet\">No local deploy yet</p>";
+          "<h3>Test Drive</h3><p class=\"deploy-hint-quiet\">No local deploy yet</p>";
       }
-      // Library projects are not personal My Tawala rows — link to My Projects home.
-      viewMine.href = "mytawala.html";
-      viewMine.textContent = "Open My Tawala";
 
       const cats =
         typeof TawalaDemo.libraryCategories === "function"
@@ -158,12 +173,16 @@
         "</select>" +
         '<p class="pm-hint" id="detailCatStatus" style="margin-top:6px;"></p>';
 
-      document.getElementById("sidebarTransfer").innerHTML =
-        "<h3>Transfers</h3>" +
+      document.getElementById("sidebarAcquire").innerHTML =
+        "<h3>Acquire</h3>" +
         '<div class="pm-sidebar-ops pm-sidebar-stack">' +
-        '<button type="button" class="pm-action" disabled title="Save this project under My Tawala">Save to My Tawala</button>' +
+        (typeof TawalaProjectOps !== "undefined" &&
+        typeof TawalaProjectOps.renderLibrarySaveCopyButton === "function"
+          ? TawalaProjectOps.renderLibrarySaveCopyButton(project, "text")
+          : "") +
         '<a class="pm-action is-active" href="mytawala.html" title="Operate / run projects from My Tawala (Use lives there)">Open My Tawala</a>' +
-        "</div>";
+        "</div>" +
+        '<p class="pm-hint" style="margin-top:8px;">No Customize → Designer. SEE DEMO parked until videos exist.</p>';
 
       document.getElementById("sidebarMeta").innerHTML =
         "<p><b>Category:</b> " +
@@ -173,8 +192,7 @@
         "</p><p><b>Updated:</b> " +
         escapeHtml(project.updated || "") +
         "</p>";
-      // Same as My Tawala Details: no purge on start-point click. Primary Test Drive
-      // above still purges once; subsequent Setup → Exam must keep Question rows.
+
       document.getElementById("startPoints").innerHTML = (project.startPoints || [])
         .map((sp) => `<li>${TawalaDemo.startPointHtml(sp, { purge: false })}</li>`)
         .join("");

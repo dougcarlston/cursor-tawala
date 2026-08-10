@@ -14,6 +14,8 @@ alwaysApply: true
 - Spec (do not re-debate framing): `Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § **Insert → Link / Invitation… (unified — Form links first)**
 - Also noted in: `docs/CHAT_HANDOFF.md` Chat 1 opener; triage note on *Private Invitations.doc*
 
+**Rename Designer Deploy → Push (owner Aug 10, 2026 — park; do not implement in website chat):** User-facing **Deploy…** / **Deploy this version** (and similar shell copy) → **Push to My Tawala** / *Push Project to your MyTawala library* (short button / long help). **Deploy this version** → **Push this version**. Keep `/api/deploy`, `deployProject`, and related code ids for now — UI/status/help only. Inventory: `website-mock/README.md` § **Designer Push rename checklist**. Website My Tawala Details keeps the verb **Deploy** (go live + share/embed) — do not conflate.
+
 ## Parked until site is up
 
 1. **Document smoothness P0s** — Face/Size multi-chip, invent-with-tables, chip drag, table reflow

@@ -851,23 +851,116 @@
     return writeJson(LIBRARY_OVERLAY_KEY, {});
   }
 
+  /** Discarded seed ids (Aug 10 cleanup) — never list / never keep in Library overlay. */
+  function discardedLibraryIdSet() {
+    const raw =
+      (typeof window !== "undefined" && window.TAWALA_LIBRARY_DISCARDED_IDS) || [];
+    const set = new Set();
+    (Array.isArray(raw) ? raw : []).forEach((id) => {
+      if (id) set.add(String(id));
+    });
+    return set;
+  }
+
+  /**
+   * True when an id/entry must not appear in the public Library (retired WebLibrary stubs,
+   * Sign-up Sheet seed, or any stub-marked overlay snapshot). A later Publish at the same
+   * slug (`sourcePile: "publish-overlay"`, not stub-marked) is allowed through.
+   */
+  function isDiscardedPublicLibraryEntry(libraryId, data) {
+    const id = String(libraryId || "");
+    if (!id) return false;
+    if (data && typeof data === "object") {
+      if (data.stub === true) return true;
+      if (/\(\s*stub\s*\)\s*$/i.test(String(data.name || ""))) return true;
+      const uid = String(data.uniqueId || data.uniqueid || "");
+      if (uid === "cicw55xxhvwrrh7") return true;
+      try {
+        if (JSON.stringify(data).indexOf("cicw55xxhvwrrh7") !== -1) return true;
+      } catch {
+        /* ignore */
+      }
+      /* Real Publish replacement at a formerly-discarded slug — keep. */
+      if (
+        data.sourcePile === "publish-overlay" &&
+        data.stub !== true &&
+        !/\(\s*stub\s*\)\s*$/i.test(String(data.name || ""))
+      ) {
+        return false;
+      }
+    }
+    if (discardedLibraryIdSet().has(id)) return true;
+    return false;
+  }
+
+  /**
+   * Strip discarded / stub snapshots out of tawala.mock.libraryOverlay so they cannot
+   * resurrect after TAWALA_LIBRARY seed cleanup. Also marks them retired. Safe to call
+   * on every Library load. Does not touch My Tawala safety copies.
+   */
+  function scrubDiscardedLibraryStubs() {
+    const overlay = getLibraryOverlay();
+    const removed = [];
+    let changed = false;
+    Object.keys(overlay).forEach((id) => {
+      const data = overlay[id];
+      if (!isDiscardedPublicLibraryEntry(id, data)) return;
+      delete overlay[id];
+      removed.push(id);
+      changed = true;
+      markLibraryRetired(id);
+    });
+    if (changed) writeJson(LIBRARY_OVERLAY_KEY, overlay);
+
+    /* Also retire discarded ids even when overlay was already empty (blocks Restore). */
+    discardedLibraryIdSet().forEach((id) => {
+      if (!isLibraryRetired(id)) markLibraryRetired(id);
+    });
+
+    /* Drop category overrides for discarded ids (cosmetic; they have no Library row). */
+    const cats = getCategoryOverrides();
+    let catChanged = false;
+    Object.keys(cats).forEach((id) => {
+      if (!isDiscardedPublicLibraryEntry(id, null) && !discardedLibraryIdSet().has(id)) return;
+      delete cats[id];
+      catChanged = true;
+    });
+    if (catChanged) writeJson(CATEGORY_KEY, cats);
+
+    return { ok: true, removed };
+  }
+
   /**
    * Merge Publish overlay on top of catalog Library entries. Retired **stub** ids are dropped
    * from the catalog side (they left the public Library); an overlay entry at that same id
    * (e.g. a fresh Publish that happens to reuse the slug) still shows — retirement only hides
    * the old catalog row, it never blocks a new Publish from using that id.
+   *
+   * Aug 10, 2026: always scrub discarded stub snapshots first. Overlay-only rows that are
+   * stubs / discarded seed ids never re-enter the listing (Save a copy used to snapshot them).
    */
   function withLibraryOverlay(entries) {
+    scrubDiscardedLibraryStubs();
     const overlay = getLibraryOverlay();
     const retired = getLibraryRetired();
     const byId = new Map();
     (entries || []).forEach((p) => {
-      if (p && p.id && !retired[p.id]) byId.set(p.id, p);
+      if (!p || !p.id) return;
+      if (retired[p.id]) return;
+      if (isDiscardedPublicLibraryEntry(p.id, p)) return;
+      byId.set(p.id, p);
     });
     Object.keys(overlay).forEach((id) => {
       const data = overlay[id];
       if (!data || typeof data !== "object") return;
+      if (isDiscardedPublicLibraryEntry(id, data)) return;
       const existing = byId.get(id);
+      /* Overlay-only: keep real Publishes; drop stray snapshots of removed seed rows. */
+      if (!existing) {
+        const isPublish =
+          data.sourcePile === "publish-overlay" || data.fromPublishOverlay === true;
+        if (!isPublish && !data.liveReady) return;
+      }
       byId.set(
         id,
         existing
@@ -877,7 +970,11 @@
     });
     /* Active / De-activate (Aug 9): inactive Library rows stay off the public listing. */
     return Array.from(byId.values()).filter(
-      (p) => p && p.inactive !== true && p.libraryActive !== false
+      (p) =>
+        p &&
+        p.inactive !== true &&
+        p.libraryActive !== false &&
+        !isDiscardedPublicLibraryEntry(p.id, p)
     );
   }
 
@@ -1235,6 +1332,261 @@
     return { ok: true, libraryId, sourceName: source.name, entry: { id: myTawalaProjectId, ...entry } };
   }
 
+  /** True when a My Tawala id is already in the seed pile or overlay (deleted ids are free). */
+  function myTawalaIdTaken(id) {
+    if (!id) return false;
+    if (isMyTawalaDeleted(id)) return false;
+    if (Object.prototype.hasOwnProperty.call(getMyTawalaOverlay(), id)) return true;
+    return !!(window.TAWALA_MYTAWALA && Object.prototype.hasOwnProperty.call(window.TAWALA_MYTAWALA, id));
+  }
+
+  function uniqueMyTawalaSlug(baseSlug) {
+    const base = baseSlug || "project";
+    if (!myTawalaIdTaken(base)) return base;
+    let n = 2;
+    while (myTawalaIdTaken(`${base}-${n}`)) n++;
+    return `${base}-${n}`;
+  }
+
+  /** Case-insensitive display-name collision among current My Tawala rows. */
+  function myTawalaNameTaken(name, exceptId) {
+    return !!findMyTawalaByName(name, exceptId);
+  }
+
+  /**
+   * First My Tawala row whose display name matches (case-insensitive trim), or null.
+   * exceptId skips that row (rename-in-place keeping the same name / self).
+   */
+  function findMyTawalaByName(name, exceptId) {
+    const key = compactNameKey(name);
+    if (!key) return null;
+    let rows = [];
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.myTawalaEntries === "function"
+    ) {
+      rows = window.TawalaDemo.myTawalaEntries();
+    }
+    for (const p of rows) {
+      if (!p || (exceptId && p.id === exceptId)) continue;
+      const other =
+        typeof window.TawalaDemo.displayName === "function"
+          ? window.TawalaDemo.displayName(p.name)
+          : p.name;
+      if (compactNameKey(other) === key) return p;
+    }
+    return null;
+  }
+
+  /**
+   * Suggest a free My Tawala name for Save a copy.
+   * Prefer the Library title when free; if taken, "Copy of …" then "Copy of … 2", …
+   * (avoids opening on a collision — user can still type a taken name and confirm overwrite).
+   */
+  function suggestUniqueMyTawalaName(baseName) {
+    const display = stripStubSuffix(baseName) || "Project";
+    if (!myTawalaNameTaken(display)) return display;
+    const copyBase = `Copy of ${display}`;
+    if (!myTawalaNameTaken(copyBase)) return copyBase;
+    let n = 2;
+    while (myTawalaNameTaken(`${copyBase} ${n}`)) n++;
+    return `${copyBase} ${n}`;
+  }
+
+  /**
+   * Rename a My Tawala project in place (Project Details double-click / Rename). Persists to
+   * myTawalaOverlay — does not mint a new id or touch Library.
+   *
+   * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
+   * On overwrite:true, deleteMyTawalaProject the *other* conflicting row, then keep this
+   * project's id with the new display name (A→B's name removes B; A stays A with name B).
+   */
+  function renameMyTawalaProject(projectId, newName, opts) {
+    const overwrite = !!(opts && opts.overwrite);
+    if (!projectId) {
+      return { ok: false, error: "Project id is required." };
+    }
+    const current =
+      (typeof window !== "undefined" &&
+        window.TawalaDemo &&
+        typeof window.TawalaDemo.getMyTawala === "function" &&
+        window.TawalaDemo.getMyTawala(projectId)) ||
+      getOverlayEntry(projectId) ||
+      null;
+    if (!current) {
+      return { ok: false, error: `Unknown My Tawala project: ${projectId}` };
+    }
+    const name = String(newName || "").trim();
+    if (!name) {
+      return { ok: false, error: "Name is required." };
+    }
+    const currentDisplay =
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.displayName === "function"
+        ? window.TawalaDemo.displayName(current.name)
+        : String(current.name || projectId);
+    if (compactNameKey(name) === compactNameKey(currentDisplay)) {
+      return { ok: true, id: projectId, name: currentDisplay, unchanged: true };
+    }
+    const conflict = findMyTawalaByName(name, projectId);
+    if (conflict) {
+      if (!overwrite) {
+        const conflictName =
+          typeof window !== "undefined" &&
+          window.TawalaDemo &&
+          typeof window.TawalaDemo.displayName === "function"
+            ? window.TawalaDemo.displayName(conflict.name)
+            : String(conflict.name || conflict.id);
+        return {
+          ok: false,
+          needsOverwrite: true,
+          conflictId: conflict.id,
+          conflictName,
+          error: `You already have a project named “${name}”. Confirm to replace it.`,
+        };
+      }
+      deleteMyTawalaProject(conflict.id);
+    }
+    const nowIso = timestampNow();
+    const now = formatListDate(nowIso);
+    if (
+      !upsertMyTawalaProperties(projectId, {
+        name,
+        iconLabel: iconLabelFromName(name),
+        updated: now,
+        updatedAt: nowIso,
+      })
+    ) {
+      return { ok: false, error: "Could not write My Tawala overlay (localStorage)." };
+    }
+    return {
+      ok: true,
+      id: projectId,
+      name,
+      replacedId: conflict ? conflict.id : null,
+      entry: { id: projectId, ...current, name, iconLabel: iconLabelFromName(name), updated: now, updatedAt: nowIso },
+    };
+  }
+
+  /**
+   * Save a copy (Library → My Tawala acquire, Aug 9 Task #8). Mints a *new* private My Tawala
+   * row with rename-on-acquire. Empty-data default: no uniqueId / no :8080 start URLs (Use stays
+   * grey until Deploy) — never share the Library demo's submission identity. Start-point *labels*
+   * are kept for Project Data chrome. Bumps Library cloneCount (overlay) for Times-used later.
+   *
+   * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
+   * On overwrite:true, deleteMyTawalaProject the existing same-name row, then write this acquire
+   * as the sole My Tawala row with that display name (new id; old row gone).
+   */
+  function saveCopyFromLibrary({ libraryId, name, overwrite } = {}) {
+    if (!libraryId) {
+      return { ok: false, error: "Library project id is required." };
+    }
+    const source =
+      (typeof window !== "undefined" &&
+        window.TawalaDemo &&
+        typeof window.TawalaDemo.getLibrary === "function" &&
+        window.TawalaDemo.getLibrary(libraryId)) ||
+      libraryReplaceCandidates().find((c) => c.id === libraryId) ||
+      null;
+    if (!source) {
+      return { ok: false, error: `Unknown Library project: ${libraryId}` };
+    }
+    if (source.inactive === true || source.libraryActive === false) {
+      return { ok: false, error: "That Library project is inactive — Save a copy is unavailable." };
+    }
+    const copyName = String(name || "").trim();
+    if (!copyName) {
+      return { ok: false, error: "Name is required." };
+    }
+    const conflict = findMyTawalaByName(copyName);
+    if (conflict) {
+      if (!overwrite) {
+        const conflictName =
+          typeof window !== "undefined" &&
+          window.TawalaDemo &&
+          typeof window.TawalaDemo.displayName === "function"
+            ? window.TawalaDemo.displayName(conflict.name)
+            : String(conflict.name || conflict.id);
+        return {
+          ok: false,
+          needsOverwrite: true,
+          conflictId: conflict.id,
+          conflictName,
+          error: `You already have a project named “${copyName}”. Confirm to replace it.`,
+        };
+      }
+      deleteMyTawalaProject(conflict.id);
+    }
+
+    const id = uniqueMyTawalaSlug(slugifyProjectId(copyName));
+    const nowIso = timestampNow();
+    const now = formatListDate(nowIso);
+    const startPoints = (Array.isArray(source.startPoints) ? source.startPoints : [])
+      .map((sp) => ({
+        label: (sp && (sp.label || sp.form)) || "Start",
+      }))
+      .filter((sp) => sp.label);
+
+    const entry = {
+      name: copyName,
+      category: source.category || "Uncategorized",
+      featured: false,
+      iconLabel: iconLabelFromName(copyName),
+      rating: 0,
+      comments: 0,
+      created: now,
+      createdAt: nowIso,
+      updated: now,
+      updatedAt: nowIso,
+      shortDescription: source.shortDescription || "",
+      longDescription: source.longDescription || "",
+      jsonFile: source.jsonFile || null,
+      formNames: Array.isArray(source.formNames) ? source.formNames.slice() : undefined,
+      sourcePile: "library-acquire",
+      fromLibraryAcquire: true,
+      pulledFromLibraryId: libraryId,
+      pulledFromLibraryName: source.name,
+      pulledAt: nowIso,
+      /* Empty data / private identity — do not inherit Library uniqueId or live start URLs. */
+      uniqueId: null,
+      deployed: false,
+      testDriveUrl: null,
+      startPoints,
+    };
+
+    clearMyTawalaDeleted(id);
+    const overlay = getMyTawalaOverlay();
+    overlay[id] = entry;
+    if (!writeJson(PILE_KEY, overlay)) {
+      return { ok: false, error: "Could not write My Tawala overlay (localStorage)." };
+    }
+
+    /* Clone count = times Save a copy was used (overlay bump; catalog seed may already have a number).
+     * Only bump cloneCount — never snapshot the full catalog row into libraryOverlay.
+     * Spreading baseLib used to freeze discarded stubs in localStorage so they reappeared
+     * after TAWALA_LIBRARY seed cleanup. */
+    const prevCount = Number(source.cloneCount);
+    const nextCount = (Number.isFinite(prevCount) ? prevCount : 0) + 1;
+    if (!isDiscardedPublicLibraryEntry(libraryId, source)) {
+      const prevLib = getLibraryOverlayEntry(libraryId) || {};
+      const { id: _drop, stub: _stub, ...prevFields } = prevLib;
+      upsertLibraryOverlay(libraryId, { ...prevFields, cloneCount: nextCount });
+    }
+
+    return {
+      ok: true,
+      id,
+      libraryId,
+      sourceName: source.name,
+      cloneCount: nextCount,
+      replacedId: conflict ? conflict.id : null,
+      entry: { id, ...entry },
+    };
+  }
+
   /** Mock-only client gate for library-admin.html — no real auth. See README § Library admin path. */
   function isLibraryAdmin() {
     try {
@@ -1497,6 +1849,8 @@
     upsertLibraryOverlay,
     removeLibraryOverlay,
     clearLibraryOverlay,
+    scrubDiscardedLibraryStubs,
+    isDiscardedPublicLibraryEntry,
     getLibraryRetired,
     isLibraryRetired,
     markLibraryRetired,
@@ -1508,6 +1862,13 @@
     setProjectLibraryActive,
     findPullCandidates,
     pullFromLibrary,
+    myTawalaIdTaken,
+    uniqueMyTawalaSlug,
+    myTawalaNameTaken,
+    findMyTawalaByName,
+    suggestUniqueMyTawalaName,
+    renameMyTawalaProject,
+    saveCopyFromLibrary,
     ADMIN_KEY,
     isLibraryAdmin,
     setLibraryAdmin,

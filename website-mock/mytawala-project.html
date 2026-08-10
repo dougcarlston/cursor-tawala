@@ -6,11 +6,11 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-demorec1" />
-  <script src="js/demo-urls.js?v=20260809-demorec1"></script>
-  <script src="js/transfer.js?v=20260809-ident2"></script>
-  <script src="js/project-ops.js?v=20260809-demorec1"></script>
-  <script src="js/data-ops.js?v=20260809-demorec1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-deploy1" />
+  <script src="js/demo-urls.js?v=20260810-deploy1"></script>
+  <script src="js/transfer.js?v=20260810-deploy1"></script>
+  <script src="js/project-ops.js?v=20260810-deploy1"></script>
+  <script src="js/data-ops.js?v=20260810-deploy1"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -26,7 +26,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script src="js/chrome.js?v=20260810-deploy1"></script>
   <script>
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
@@ -45,7 +45,7 @@
         : "") ||
       "";
 
-    function renderProject(projectId) {
+    function renderProject(projectId, opts) {
       const project = projectId ? TawalaDemo.getMyTawala(projectId) : null;
       const host = document.getElementById("pmDetailHost");
       if (!project) {
@@ -61,7 +61,10 @@
         return;
       }
       document.title = "Tawala - " + TawalaDemo.displayName(project.name);
-      host.innerHTML = TawalaProjectOps.renderDetailPanel({ id: projectId, ...project });
+      host.innerHTML = TawalaProjectOps.renderDetailPanel(
+        { id: projectId, ...project },
+        opts || {}
+      );
       if (typeof TawalaProjectOps.syncDeployVersionChip === "function") {
         TawalaProjectOps.syncDeployVersionChip(host);
       }
@@ -79,13 +82,36 @@
       }
     }
 
-    renderProject(id);
+    const justAcquired = params.get("acquired") === "1";
+    renderProject(id, { justAcquired });
+    if (justAcquired && id) {
+      try {
+        history.replaceState(
+          {},
+          "",
+          "mytawala-project.html?project=" + encodeURIComponent(id)
+        );
+      } catch {
+        /* ignore */
+      }
+      const status = document.getElementById("pmOpStatus");
+      if (status) {
+        status.textContent =
+          "Saved a copy — Use stays grey until Deploy. Sort My Tawala by Created to find this row.";
+      }
+    }
 
-    /* Left-rail identity: re-paint after Publish / Active flip without a full navigation. */
+    /* Left-rail identity: re-paint after Publish / Active / Rename without a full navigation. */
     document.addEventListener("tawala:project-published", () => {
       if (id) renderProject(id);
     });
     document.addEventListener("tawala:project-active-changed", () => {
+      if (id) renderProject(id);
+    });
+    document.addEventListener("tawala:project-renamed", () => {
+      if (id) renderProject(id);
+    });
+    document.addEventListener("tawala:project-description-changed", () => {
       if (id) renderProject(id);
     });
 

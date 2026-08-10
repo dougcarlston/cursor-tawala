@@ -273,12 +273,13 @@ Constraints: Do not mix 8080 CSS/docker or website-mock in this chat; preview/de
 ### Immediate phases ahead
 
 0. **MUST (Jul 31 framing):** Unify Insert → Invitation + Hyperlink into one Link dialog — Form-in-project **primary**, external URL secondary, private InviteeID tertiary. Spec: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § unified Link. Do not treat Hyperlink as a peer product.
-1. **Designer architecture backlog** — MDI, explorer collapse, form–process links, properties popups, menu bars ([`DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)).
-2. **Owner verify** — DirtBowl Registration page 1 Q4 email-note alignment on `:8080` vs `:5173`; then commit `project.css` + doc updates.
-3. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
-4. **UX feedback** — canvas layout, inspector after architecture items land.
-5. **Backlog** — DirtBowl → website Library link, FIB free-mix layout, `.tawala` import, outbound email (separate session).
-6. **Parked polish** from `.cursor/rules/tawala-designer-parked-post-website.mdc` (Document P0s, confirm, Font Color, Skip stubs, Jul 30 FIB/Text Deploy bugs).
+1. **Rename Deploy → Push (parked Aug 10 — UI/copy only):** Designer **Deploy…** / **Deploy this version** → **Push to My Tawala** / *Push Project to your MyTawala library*; keep `/api/deploy` code ids. Checklist: `website-mock/README.md` § Designer Push rename; also `.cursor/rules/tawala-designer-parked-post-website.mdc`. Do **not** rename website My Tawala Details **Deploy** (share/embed).
+2. **Designer architecture backlog** — MDI, explorer collapse, form–process links, properties popups, menu bars ([`DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)).
+3. **Owner verify** — DirtBowl Registration page 1 Q4 email-note alignment on `:8080` vs `:5173`; then commit `project.css` + doc updates.
+4. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
+5. **UX feedback** — canvas layout, inspector after architecture items land.
+6. **Backlog** — DirtBowl → website Library link, FIB free-mix layout, `.tawala` import, outbound email (separate session).
+7. **Parked polish** from `.cursor/rules/tawala-designer-parked-post-website.mdc` (Document P0s, confirm, Font Color, Skip stubs, Jul 30 FIB/Text Deploy bugs).
 
 ---
 
@@ -331,24 +332,70 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 ## Chat 3 — Website mock
 
-**Suggested title:** `Website — library ops (Export/Backup/Purge)`
+**Suggested title:** `Library thread`
 
-**Status (Aug 9, 2026):** Catalog ops largely wired (Delete/Purge, E/I/B/R, Publish/Pull, Use split, Versions first slice + **Deploy this version**). Aug 7–8 triage lists **1** and **4** walked with the owner; **canonical decisions + Task List** in `website-mock/README.md` § **Aug 9 decisions (lists 1+4)** (stills kept under `legacy-reference/stills/`). **Next session:** execute that Task List (lean My Tawala + Details ops first). Parked Designer polish stays out of this chat (see `.cursor/rules/tawala-designer-parked-post-website.mdc`).
+**Status (Aug 9 evening, 2026):** Task List #8 (Save a copy) code fix is in the working tree (**uncommitted**). Test Drive catalog URLs were fine — Tomcat “World not initialized” was the fail-page cause (restart fixed it tonight). Purge offline demo already committed earlier (`2dab7ec`). Continue #8 visual review + Task List next.
 
-### Session checkpoint — Aug 9, 2026
+### Clean start tomorrow (plain English)
 
-**Done today:** Documented Aug 9 walkthrough agreements in plain English (Publish = new Library entry; update existing = new version on that entry; Active/De-activate; Start-point distribute/embed instead of ACL; Records/clones/times-used; Project Data + Purge toolbar; Edit in Designer on Details only; Make a Copy; Backup hold; Test Drive contract) plus ordered Task List. No UI feature work this pass.
+Do these in order. Wait for each step to finish before the next.
 
-**Next:** execute Task List chunks 1→ (lean listing, Details ops rail, Records, Project Data / whole-project Purge…). Holds called out in the README Task List (Backup package, Download latest, SEE DEMO videos, ratings product, Shared Data, Access column).
+1. **Open Cursor** and this repo: `~/Projects/Tawala`.
+2. **Start Docker Desktop** — wait until the whale icon is steady (not animating).
+3. **Start Postgres + Tomcat** (pick one; both are fine if Docker is ready):
+   - Preferred: `./scripts/docker-up.sh` from the repo root, **or**
+   - `docker compose -p ai-tawala up -d` from the repo root  
+   Wait until http://localhost:8080/login loads in a browser.
+4. **If Library Test Drive shows “We are very sorry”** (Tomcat is up but forms fail): in Terminal run  
+   `docker restart tawala-tomcat`  
+   Wait ~15 seconds, try the form URL again.
+5. **Start the website mock** (static pages on port 5500):  
+   `cd ~/Projects/Tawala/website-mock && python3 -m http.server 5500 --bind 127.0.0.1`
+6. **Optional — Designer API** (needed for Purge / Records / Test Drive fail-page probe):  
+   `cd ~/Projects/Tawala/designer-web && npm run dev`  
+   (or `./scripts/ensure-dev-api.sh` if Vite is already up and only `:3001` died).
+7. **Open these review URLs** (hard-refresh / use the `?v=` so you get tonight’s JS):
+   - Library: http://127.0.0.1:5500/library.html?v=20260809-libfix1  
+   - Simple Survey detail: http://127.0.0.1:5500/library-detail.html?project=simple-survey&v=20260809-libfix1  
+   - Online Exam (My Tawala Details): http://127.0.0.1:5500/mytawala-project.html?project=online-exam-builder&v=20260809-libfix1  
+   - Direct form smoke (should show a real form, not “We are very sorry”):  
+     http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey  
+     http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration
+8. **Rename the chat** to **Library thread**. Paste: `Clean start Library thread`  
+   or: “Continue Task List #8 review — Save a Copy + Test Drive; read docs/CHAT_HANDOFF.md Chat 3 clean-start.”
+
+#### DONE vs OPEN (for tomorrow)
+
+| Item | Status |
+|------|--------|
+| Purge offline demo Records | **DONE / committed** (`2dab7ec`) |
+| Aug 9 Task List #8 Save a copy (rename → My Tawala) | **WIP in files, not committed** — listing click was swallowed by `stopPropagation`; fixed to open rename dialog → Project Details. **Owner should click-test.** |
+| Test Drive → legacy fail page | **Runtime fixed tonight** by `docker restart tawala-tomcat` (World init). Catalog URLs were already correct. Docker HEALTHCHECK path fix in Dockerfile is also uncommitted. |
+| Commit of tonight’s Save a Copy / probe / HEALTHCHECK edits | **OPEN** — do after owner confirms Save a Copy + Test Drive in the browser |
+| Task List #8 leave/wipe honesty (#14), Times used (#13) | Still later |
+
+### Session checkpoint — Aug 9 evening (Library thread)
+
+**Save a Copy (root cause):** Library Actions cell used `onclick="event.stopPropagation()"`, so the document-level click handler never saw **Save a copy** (button → silence). **Fix:** remove that stopPropagation; row navigation ignores clicks on the Actions cell; op handlers use capture phase. Cache-bust `?v=20260809-libfix1`.
+
+**Test Drive (root cause):** Tomcat returned HTTP 200 with the legacy “We are very sorry” page because **World was not initialized** (often after Docker/Postgres race). Catalog `demo-urls.js` paths were OK. Restart Tomcat after Postgres is healthy. Optional `:3001/api/probe-java-url` helps the mock detect fail pages before opening a tab (needs API restart to load).
+
+**Uncommitted (leave for morning commit if review OK):** `website-mock/library.html`, `js/project-ops.js`, `js/demo-urls.js`, library/mytawala HTML cache-busts, `designer-web/server/index.mjs` (probe), `docker/tomcat/Dockerfile` (healthcheck `/home`).
+
+### Session checkpoint — Aug 9, 2026 (morning decisions)
+
+**Done that morning:** Documented Aug 9 walkthrough agreements in plain English (Publish = new Library entry; update existing = new version on that entry; Active/De-activate; Start-point distribute/embed instead of ACL; Records/clones/times-used; Project Data + Purge toolbar; Edit in Designer on Details only; Make a Copy; Backup hold; Test Drive contract) plus ordered Task List.
+
+**Next:** #8 owner visual review → commit if OK; then remaining Task List holds (Backup package, Download latest, SEE DEMO videos, ratings product, Shared Data, Access column).
 
 ### 5-line paste opener
 
 ```
 Project: Tawala (~/Projects/Tawala)
-Track: Website mock — website-mock/ (Phase 3)
-Goal: Execute Aug 9 Task List (list-2 chunks first): lean My Tawala listing → Project Details ops rail → Records count → Project Data + whole-project Purge. Read website-mock/README.md § Aug 9 decisions first.
-Read first: website-mock/README.md § Aug 9 decisions (lists 1+4), .cursor/rules/tawala-designer-parked-post-website.mdc, docs/ROADMAP.md Phase 3
-Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no designer-web/Tomcat thrash unless Deploy/snapshots need it; defer parked Designer items; tenancy = 1 public Library + per-account private My Tawala; respect HOLD items in the Aug 9 Task List
+Track: Website mock — website-mock/ (Phase 3) — chat title: Library thread
+Goal: Clean start Library thread — confirm Save a Copy + Test Drive; then continue Aug 9 Task List #8 review. Read docs/CHAT_HANDOFF.md Chat 3 “Clean start tomorrow”.
+Read first: docs/CHAT_HANDOFF.md (Chat 3 clean-start), website-mock/README.md § Aug 9 decisions (lists 1+4)
+Constraints: Keep website-mock/ + :5500; no commit unless owner asks; if Test Drive shows “We are very sorry”, docker restart tawala-tomcat; defer parked Designer items
 ```
 
 ### Work to date
@@ -400,7 +447,7 @@ Constraints: Keep website-mock/ + :5500; demo-urls.js → Phase 2 URLs only; no 
 - **Library quality / community (owner Aug 1, 2026 — L&F / later product):** pro vs community Publish mix, ratings/reputation gameability, Designer ease as contribution prerequisite — open questions only; no ratings build. See `website-mock/README.md` § Library quality / community.
 - **Designer MainMenu** Project Manager + Email Delivery — wait until the site exists.
 - Everything in `.cursor/rules/tawala-designer-parked-post-website.mdc`: Document P0s, native `confirm()`, Font Color picker, Skip/Process stubs; **plus Jul 30 parked (Not blocking):** FIB Styles squashed “Align right side” radio; Form Text blank-line loss on Deploy + image breaks highlight — see `DESIGNER_OPEN_BUGS.md` § Parked Jul 30.
-- **Also for next Designer chat (not here):** unify Invitation + Hyperlink (Form link primary) — called out in that rule’s **MUST DO** and Chat 1 opener.
+- **Also for next Designer chat (not here):** unify Invitation + Hyperlink (Form link primary) — called out in that rule’s **MUST DO** and Chat 1 opener; **plus** Designer Deploy → Push rename (UI/copy; keep `/api/deploy`) — same rule + Chat 1 phase 1 + `website-mock/README.md` checklist.
 - **Page Header / banner graphics** — until Deploy image pipeline is understood.
 - **Owner offline sample JSON review** — not blocking; do not replace samples here.
 - Do **not** thrash `designer-web/` or Tomcat/Docker unless a test-drive link truly requires URL wiring.

@@ -6,11 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-demorec1" />
-  <script src="js/demo-urls.js?v=20260809-demorec1"></script>
-  <script src="js/transfer.js?v=20260809-ident2"></script>
-  <script src="js/project-ops.js?v=20260809-demorec1"></script>
-  <script src="js/data-ops.js?v=20260809-demorec1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-overwrite1" />
+  <script src="js/demo-urls.js?v=20260810-overwrite1"></script>
+  <script src="js/transfer.js?v=20260810-overwrite1"></script>
+  <script src="js/project-ops.js?v=20260810-overwrite1"></script>
+  <script src="js/data-ops.js?v=20260810-overwrite1"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -53,7 +53,7 @@
       <div class="content">
         <div class="listing-identity" role="status">
           <span class="listing-where">Private</span>
-          <span class="listing-pile">MyTawala pile — Get from Library… always available; select a linked row to Refresh; select any row to Delete; double-click for Details. Click a heading to sort; drag header edges to resize.</span>
+          <span class="listing-pile">MyTawala pile — Get from Library… always available; select a linked row to Refresh; select any row to Delete. Click a heading to sort; drag header edges to resize.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
         <div id="deployInboxHost" class="deploy-inbox" hidden></div>
@@ -72,6 +72,9 @@
           <div id="myProjectsListingBarHost"></div>
 
           <div class="mytawala-listing-frame">
+            <p class="mytawala-listing-nav-hint" id="mytawalaListingNavHint">
+              Click any project name to highlight, double-click to go to that project's details page.
+            </p>
             <table
               id="myProjectsTable"
               class="projectListing mytawala-listing stripe"
@@ -119,7 +122,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script src="js/chrome.js?v=20260810-overwrite1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -288,11 +291,16 @@
         p.inactive === true || p.libraryActive === false
           ? ` <span class="pm-status-badge is-offline" title="Offline — hidden from public Library">Offline</span>`
           : "";
+      const fromLib =
+        typeof TawalaProjectOps !== "undefined" &&
+        typeof TawalaProjectOps.fromLibraryAcquireBadge === "function"
+          ? TawalaProjectOps.fromLibraryAcquireBadge(p)
+          : "";
       return `<tr data-project-id="${escapeHtml(p.id)}" role="row" tabindex="0" aria-selected="${
         selected ? "true" : "false"
       }"${selected ? ' class="is-selected"' : ""} title="Click to select · Double-click for Project Details">
         <td class="info left col-group-info">
-          <span class="title listing-project-name">${escapeHtml(title)}${offline}</span>
+          <span class="title listing-project-name">${escapeHtml(title)}${fromLib}${offline}</span>
         </td>
         <td class="date-created col-date col-group-info">${escapeHtml(created)}</td>
         <td class="updated col-date col-group-info">${escapeHtml(updated)}</td>

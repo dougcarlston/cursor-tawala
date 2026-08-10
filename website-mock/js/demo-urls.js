@@ -5,11 +5,10 @@
  *   website-mock/projects/library/  ← ~/Projects/Tawala Projects/WebLibrary
  *   website-mock/projects/mytawala/ ← ~/Projects/Tawala Projects/MyTawala
  *
- * Main Menu public templates (Simple Survey, Sign-up, Potluck, Get Together, …)
- * stay in the Library catalog with live :8080 URLs; JSON lives under
- * designer-web/public/samples/templates/. Designer-only New Project items
- * (Empty/Blank, Form with Process, Form with Process & Document, and
- * Sign-up Sheet w Email — retired from Library Aug 1, 2026) are NOT listed.
+ * Public Library holds vetted liveReady try-outs only (Aug 10, 2026 cleanup). New Project
+ * starters live under designer-web/public/samples/templates/ (catalog.ts). Sign-up Sheet and
+ * Sign-up Sheet w Email are Designer New Project only until a good Deploy is re-Published.
+ * Empty/Blank, Form with Process, Form with Process & Document stay Designer-only.
  *
  * Library listing groups mirror Designer File → New Project categories
  * (Activities / Meetings and Gatherings / Polls and Surveys), plus WebLibrary
@@ -18,13 +17,11 @@
  * liveReady: true — owner-vetted product with a working :8080 test-drive (quiet “Live” cue in Library list).
  * Update live URLs after Deploy (Designer File→Deploy or POST /api/deploy) / deploy-tawala-template.mjs.
  *
- * stub: true (Library only) — placeholder / converted-but-unverified entry kept as a visible
- * reminder, NOT a real working demo. Owner Aug 1, 2026: the correct route to clean these up is
- * Designer → Deploy → Publish (checking each equivalent working copy first) — until that route
- * is used, stubs stay in the catalog with a " (stub)" suffix on the display name so the Library
- * listing makes obvious what still needs replacing. Never set on liveReady or main-menu (deployed)
- * entries. There is intentionally NO public Library Delete control — see README.md
- * "Retiring Library stubs" for the agent-run retirement path (list-library-stubs.mjs).
+ * Library catalog (Aug 10, 2026): only owner-vetted liveReady try-outs. WebLibrary stubs and the
+ * broken Sign-up Sheet Template Library seed were removed — do not reintroduce stubs. New Project
+ * starters (including Sign-up Sheet / Sign-up Sheet w Email) live on Designer → File → New Project
+ * (`designer-web/src/templates/catalog.ts` + `public/samples/templates/`). Re-Publish to Library
+ * when a finished Deploy exists. See README.md § "Library vs New Project templates".
  */
 
 /**
@@ -67,29 +64,6 @@ window.TAWALA_LIBRARY = {
       }
     ],
     "testDriveUrl": "http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey"
-  },
-  "signup-sheet": {
-    "name": "Sign-up Sheet Template",
-    "category": "Activities",
-    "featured": true,
-    "iconLabel": "SU",
-    "rating": 5,
-    "comments": 8,
-    "updated": "6/27/26",
-    "shortDescription": "Collect names and contact info; see signups in a table on the same page.",
-    "longDescription": "First name, last name, email, phone, and address fields feed an itemization table so your group can see who has signed up without a separate report form.",
-    "jsonFile": "designer-web/public/samples/templates/signup-sheet.json",
-    "themePath": "baseball",
-    "sourcePile": "main-menu",
-    "liveReady": true,
-    "deployed": true,
-    "startPoints": [
-      {
-        "label": "Form 1",
-        "url": "http://localhost:8080/p/cicw55xxhvwrrh7/l2u4sdg.Form+1"
-      }
-    ],
-    "testDriveUrl": "http://localhost:8080/p/cicw55xxhvwrrh7/l2u4sdg.Form+1"
   },
   "potluck": {
     "name": "Potluck Template",
@@ -145,190 +119,6 @@ window.TAWALA_LIBRARY = {
     ],
     "testDriveUrl": "http://localhost:8080/p/b6do4s50iq64vl8/g6zi1ar.Survey"
   },
-  "alextimon": {
-    "name": "AlexTimon (stub)",
-    "category": "Business",
-    "featured": false,
-    "iconLabel": "AL",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (26 forms). Start points: Password.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 26 forms, 29 processes, 16 documents. Start points: Password.",
-    "jsonFile": "projects/library/AlexTimon.json",
-    "themePath": "tennis",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Password"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "automated-list-builder": {
-    "name": "Automated List Builder (stub)",
-    "category": "Activities",
-    "featured": false,
-    "iconLabel": "AL",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (15 forms). Start points: Questionnaire, Administration, Setup.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 15 forms, 19 processes, 21 documents. Start points: Questionnaire, Administration, Setup.",
-    "jsonFile": "projects/library/Automated List Builder.json",
-    "themePath": "basicblue",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Questionnaire"
-      },
-      {
-        "label": "Administration"
-      },
-      {
-        "label": "Setup"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "clientprofiler": {
-    "name": "ClientProfiler (stub)",
-    "category": "Business",
-    "featured": false,
-    "iconLabel": "CL",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (26 forms). Start points: Password.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 26 forms, 29 processes, 16 documents. Start points: Password.",
-    "jsonFile": "projects/library/ClientProfiler.json",
-    "themePath": "tennis",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Password"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "cyo-checkdeposit-request1": {
-    "name": "CYO CheckDeposit Request1 (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "CC",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (11 forms). Start points: Admin, CheckReqForm, DepositForm.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 11 forms, 13 processes, 6 documents. Start points: Admin, CheckReqForm, DepositForm.",
-    "jsonFile": "projects/library/CYO CheckDeposit Request1.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Admin"
-      },
-      {
-        "label": "CheckReqForm"
-      },
-      {
-        "label": "DepositForm"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "cyo-exceptions-app": {
-    "name": "CYO Exceptions App (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "CE",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (15 forms). Start points: ExceptionRequest, Setup, ClubData.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 15 forms, 19 processes, 23 documents. Start points: ExceptionRequest, Setup, ClubData, FullReport, SummaryReport.",
-    "jsonFile": "projects/library/CYO Exceptions App.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "ExceptionRequest"
-      },
-      {
-        "label": "Setup"
-      },
-      {
-        "label": "ClubData"
-      },
-      {
-        "label": "FullReport"
-      },
-      {
-        "label": "SummaryReport"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "dirtbowl": {
-    "name": "DirtBowl (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "DI",
-    "rating": 5,
-    "comments": 6,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (77 forms). Start points: Registration, AdminDash.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 77 forms, 91 processes, 46 documents. Start points: Registration, AdminDash.",
-    "jsonFile": "projects/library/DirtBowl.json",
-    "themePath": "dirtbowl2",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Registration"
-      },
-      {
-        "label": "AdminDash"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "genericlistmanager": {
-    "name": "GenericListManager (stub)",
-    "category": "Advanced",
-    "featured": false,
-    "iconLabel": "GE",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (34 forms). Start points: Administration, Utility.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 34 forms, 44 processes, 20 documents. Start points: Administration, Utility.",
-    "jsonFile": "projects/library/GenericListManager.json",
-    "themePath": "plain",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Administration"
-      },
-      {
-        "label": "Utility"
-      }
-    ],
-    "testDriveUrl": null
-  },
   "horses-and-penguins-test": {
     "name": "Horses and Penguins Test",
     "category": "Entertainment",
@@ -351,53 +141,6 @@ window.TAWALA_LIBRARY = {
       }
     ],
     "testDriveUrl": "http://localhost:8080/p/wg77ytn0bgq1x70/wdq78g1.Form+1"
-  },
-  "league-age-calculator": {
-    "name": "League Age calculator (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "LA",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (3 forms). Start points: Setup, Widget.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 3 forms, 4 processes, 4 documents. Start points: Setup, Widget.",
-    "jsonFile": "projects/library/League Age calculator.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Setup"
-      },
-      {
-        "label": "Widget"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "lunch-order-menu": {
-    "name": "Lunch Order Menu (stub)",
-    "category": "Activities",
-    "featured": false,
-    "iconLabel": "LO",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (5 forms). Start points: Main Menu.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 5 forms, 5 processes, 6 documents. Start points: Main Menu.",
-    "jsonFile": "projects/library/Lunch Order Menu.json",
-    "themePath": "default",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Main Menu"
-      }
-    ],
-    "testDriveUrl": null
   },
   "multiple-question-survey": {
     "name": "Multiple Question Survey Template",
@@ -425,50 +168,6 @@ window.TAWALA_LIBRARY = {
       }
     ],
     "testDriveUrl": "http://localhost:8080/p/grniytf6dvmobqe/y7ucha7.Survey"
-  },
-  "mvsc-communicator": {
-    "name": "MVSC Communicator (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "MC",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (18 forms). Start points: Start.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 18 forms, 23 processes, 4 documents. Start points: Start.",
-    "jsonFile": "projects/library/MVSC Communicator.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Start"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "mvsc-registration": {
-    "name": "MVSC Registration (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "MR",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (1 forms). Start points: Form 1.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 1 forms, 0 processes, 0 documents. Start points: Form 1.",
-    "jsonFile": "projects/library/MVSC Registration.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Form 1"
-      }
-    ],
-    "testDriveUrl": null
   },
   "online-exam-builder": {
     "name": "Online Exam Builder",
@@ -505,89 +204,39 @@ window.TAWALA_LIBRARY = {
       }
     ],
     "testDriveUrl": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
-  },
-  // signup-sheet-email — retired from public Library (owner Aug 1, 2026). Still on
-  // Designer → File → New Project (`designer-web/public/samples/templates/signup-sheet-w-email.json`).
-  // Not seeded into TAWALA_MYTAWALA. Re-Publish when a finished runtime-customizable version exists.
-  "sportsdashboards-template": {
-    "name": "SportsDashboards Template (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "ST",
-    "rating": 4,
-    "comments": 6,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (79 forms). Start points: Registration, AdminDash.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 79 forms, 94 processes, 47 documents. Start points: Registration, AdminDash.",
-    "jsonFile": "projects/library/SportsDashboards Template.json",
-    "themePath": "dirtbowl2",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Registration"
-      },
-      {
-        "label": "AdminDash"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "st-patrick-sportsdashboards": {
-    "name": "St Patrick SportsDashboards (stub)",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "SP",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (100 forms). Start points: Registration, AdminDash, UtilityToSetPlayerAges.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 100 forms, 120 processes, 60 documents. Start points: Registration, AdminDash, UtilityToSetPlayerAges, RegistrantDeduping.",
-    "jsonFile": "projects/library/St Patrick SportsDashboards.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Registration"
-      },
-      {
-        "label": "AdminDash"
-      },
-      {
-        "label": "UtilityToSetPlayerAges"
-      },
-      {
-        "label": "RegistrantDeduping"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "tawala-invoicing": {
-    "name": "Tawala Invoicing (stub)",
-    "category": "Advanced",
-    "featured": false,
-    "iconLabel": "TI",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (6 forms). Start points: Start.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/WebLibrary. 6 forms, 8 processes, 9 documents. Start points: Start.",
-    "jsonFile": "projects/library/Tawala Invoicing.json",
-    "themePath": "mvsc",
-    "sourcePile": "library",
-    "stub": true,
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Start"
-      }
-    ],
-    "testDriveUrl": null
   }
+  // signup-sheet — removed from public Library (owner Aug 10, 2026):
+  // old/broken Library seed + Test Drive uniqueId; use Designer → File → New Project
+  // → Sign-up Sheet (`designer-web/public/samples/templates/signup-sheet.json`).
+  // signup-sheet-email — retired Aug 1, 2026 (Designer New Project only).
+  // WebLibrary stubs (AlexTimon, DirtBowl, …) discarded Aug 10, 2026 — do not re-seed.
 };
+
+/**
+ * Former public-Library seed ids that must never reappear via localStorage overlay
+ * (Save a copy / Rename used to snapshot full catalog rows into tawala.mock.libraryOverlay).
+ * transfer.js scrub + withLibraryOverlay filter against this list every Library load.
+ */
+window.TAWALA_LIBRARY_DISCARDED_IDS = [
+  "signup-sheet",
+  "signup-sheet-email",
+  "sign-up-sheet",
+  "sign-up-sheet-template",
+  "alextimon",
+  "automated-list-builder",
+  "clientprofiler",
+  "cyo-checkdeposit-request1",
+  "cyo-exceptions-app",
+  "dirtbowl",
+  "genericlistmanager",
+  "league-age-calculator",
+  "lunch-order-menu",
+  "mvsc-communicator",
+  "mvsc-registration",
+  "sportsdashboards-template",
+  "st-patrick-sportsdashboards",
+  "tawala-invoicing",
+];
 window.TAWALA_MYTAWALA = {
   "bbbulkmail": {
     "name": "BBBulkMail",
@@ -990,6 +639,10 @@ window.TAWALA_DEMO_RESPONSE_SEEDS = {
   },
 };
 
+/** Short-lived :8080 probe cache — shared by Library Test Drive and My Tawala Use. */
+let _runtimeProbeCache = { at: 0, ok: null };
+const _RUNTIME_PROBE_TTL_MS = 4000;
+
 window.TawalaDemo = {
   /** Listing title — never show file extensions (.json / .tawala). On-disk format may still be JSON. */
   displayName(name) {
@@ -997,6 +650,92 @@ window.TawalaDemo = {
       .replace(/\.tawala\.xml$/i, "")
       .replace(/\.tawala$/i, "")
       .replace(/\.json$/i, "");
+  },
+  /** True when href targets local Tomcat (:8080) — live form runtime Test Drive / Use open. */
+  isLocalJavaRuntimeUrl(url) {
+    if (!url || url === "#") return false;
+    try {
+      const u = new URL(url, typeof location !== "undefined" ? location.href : "http://localhost/");
+      const host = (u.hostname || "").toLowerCase();
+      if (host !== "localhost" && host !== "127.0.0.1") return false;
+      const port = String(u.port || (u.protocol === "https:" ? "443" : "80"));
+      return port === "8080";
+    } catch {
+      return /(?:localhost|127\.0\.0\.1):8080/i.test(String(url));
+    }
+  },
+  /**
+   * Probe local Java/Tomcat. Uses no-cors so CORS never false-negatives when :8080 is up;
+   * connection refused / abort → unreachable. Hits `/home` (not `/` — that 404s and used to
+   * mark Docker unhealthy). Does not prove World finished init or that a project token exists.
+   */
+  async probeLocalJavaRuntime(timeoutMs) {
+    const now = Date.now();
+    if (_runtimeProbeCache.ok !== null && now - _runtimeProbeCache.at < _RUNTIME_PROBE_TTL_MS) {
+      return _runtimeProbeCache.ok;
+    }
+    const ms = typeof timeoutMs === "number" ? timeoutMs : 1200;
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+      await fetch("http://127.0.0.1:8080/home", {
+        method: "GET",
+        mode: "no-cors",
+        cache: "no-store",
+        signal: ctrl.signal,
+      });
+      _runtimeProbeCache = { at: Date.now(), ok: true };
+      return true;
+    } catch {
+      _runtimeProbeCache = { at: Date.now(), ok: false };
+      return false;
+    } finally {
+      clearTimeout(timer);
+    }
+  },
+  /**
+   * Server-side check via :3001 (Tomcat has no CORS). Detects the legacy “We are very sorry”
+   * fail page when World is not initialized or the form path is missing — HTTP 200 alone is
+   * not enough. Returns { ok:true } | { ok:false, reason, detail }.
+   */
+  async probeFormStartUrl(url, timeoutMs) {
+    if (!url || !this.isLocalJavaRuntimeUrl(url)) {
+      return { ok: true, skipped: true };
+    }
+    const ms = typeof timeoutMs === "number" ? timeoutMs : 2500;
+    const api =
+      this.purgeApiBase().replace(/\/$/, "") +
+      "/api/probe-java-url?url=" +
+      encodeURIComponent(url);
+    const ctrl = new AbortController();
+    const timer = setTimeout(() => ctrl.abort(), ms);
+    try {
+      const res = await fetch(api, { method: "GET", cache: "no-store", signal: ctrl.signal });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          ok: false,
+          reason: "probe-http",
+          detail: data.error || `HTTP ${res.status}`,
+        };
+      }
+      if (data.ok === true) return { ok: true, status: data.status, title: data.title };
+      return {
+        ok: false,
+        reason: data.reason || "fail-page",
+        detail: data.detail || data.error || "Java form URL is not ready",
+        status: data.status,
+      };
+    } catch (e) {
+      /* :3001 down — don’t block Test Drive; Tomcat reachability was already probed. */
+      return {
+        ok: true,
+        skipped: true,
+        detail: String((e && e.message) || e),
+      };
+    } finally {
+      clearTimeout(timer);
+    }
   },
   /** Base repo categories + admin Add/Rename/Delete overlay (see transfer.js § category defs). */
   libraryCategories() {
@@ -1016,6 +755,15 @@ window.TawalaDemo = {
     return this.libraryCategories().find((c) => c.label === label) || null;
   },
   libraryEntries() {
+    // Strip discarded stub snapshots from localStorage before merging (Save a copy / Rename
+    // used to freeze full catalog rows into tawala.mock.libraryOverlay).
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.scrubDiscardedLibraryStubs === "function"
+    ) {
+      window.TawalaTransfer.scrubDiscardedLibraryStubs();
+    }
     const base = Object.keys(window.TAWALA_LIBRARY).map((id) => ({
       id,
       ...window.TAWALA_LIBRARY[id],
@@ -1061,12 +809,36 @@ window.TawalaDemo = {
         typeof window.TawalaTransfer.getLibraryOverlayEntry === "function"
           ? window.TawalaTransfer.getLibraryOverlayEntry(id)
           : null;
+      if (
+        overlayOnly &&
+        typeof window.TawalaTransfer.isDiscardedPublicLibraryEntry === "function" &&
+        window.TawalaTransfer.isDiscardedPublicLibraryEntry(id, overlayOnly)
+      ) {
+        return null;
+      }
       return overlayOnly;
     }
     const base = window.TAWALA_LIBRARY[id] || null;
     if (hasTransfer && typeof window.TawalaTransfer.getLibraryOverlayEntry === "function") {
       const overlay = window.TawalaTransfer.getLibraryOverlayEntry(id);
-      if (overlay) return base ? { ...base, ...overlay, id } : { ...overlay, id };
+      if (overlay) {
+        const merged = base ? { ...base, ...overlay, id } : { ...overlay, id };
+        if (
+          typeof window.TawalaTransfer.isDiscardedPublicLibraryEntry === "function" &&
+          window.TawalaTransfer.isDiscardedPublicLibraryEntry(id, merged)
+        ) {
+          return null;
+        }
+        return merged;
+      }
+    }
+    if (
+      !base &&
+      hasTransfer &&
+      typeof window.TawalaTransfer.isDiscardedPublicLibraryEntry === "function" &&
+      window.TawalaTransfer.isDiscardedPublicLibraryEntry(id, null)
+    ) {
+      return null;
     }
     return base;
   },
@@ -1614,7 +1386,9 @@ window.TawalaDemo = {
   /**
    * Purge project response data then open the :8080 form (clean slate each Test drive).
    * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
-   * then navigates after purge. Failed / timed-out purge never blocks opening the form.
+   * probes Tomcat before navigating (same offline gate as My Tawala Use), then
+   * navigates after purge. Failed / timed-out purge never blocks opening when :8080 is up.
+   * If :8080 is down: close the blank tab, alert, stay on :5500 — never “site can’t be reached.”
    * Post-tab-close purge is not available in this static mock.
    */
   async openTestDrive(url, opts) {
@@ -1626,6 +1400,44 @@ window.TawalaDemo = {
 
     // Capture gesture before any await — otherwise browsers block the popup.
     const tab = window.open("about:blank", "_blank");
+
+    const closeBlankTab = () => {
+      if (tab && !tab.closed) {
+        try {
+          tab.close();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
+
+    // Same :8080 gate as Project Data Use — don’t dump the owner onto a dead host
+    // or the legacy “We are very sorry” fail page (Tomcat up, World not initialized).
+    if (this.isLocalJavaRuntimeUrl(target)) {
+      const up = await this.probeLocalJavaRuntime();
+      if (!up) {
+        closeBlankTab();
+        window.alert(
+          "Test Drive needs the Java runtime on http://localhost:8080 — it isn’t reachable right now.\n\n" +
+            "You’re still on the :5500 mock (no navigation to a dead host).\n\n" +
+            "Start Tomcat / the local Java runtime, then try Test Drive again.\n" +
+            "Save a copy still works offline."
+        );
+        return { opened: false, purge: null, offline: true };
+      }
+      const formProbe = await this.probeFormStartUrl(target);
+      if (formProbe && formProbe.ok === false && formProbe.reason !== "probe-http") {
+        closeBlankTab();
+        window.alert(
+          "Test Drive cannot open this form on :8080 right now.\n\n" +
+            (formProbe.detail || "The Java runtime returned the legacy fail page.") +
+            "\n\nCommon fix when Postgres is healthy: docker restart tawala-tomcat\n" +
+            "(World must finish initializing before /p/… form URLs work).\n\n" +
+            "You’re still on the :5500 mock."
+        );
+        return { opened: false, purge: null, failPage: true, formProbe };
+      }
+    }
 
     let purge = null;
     try {
@@ -1649,7 +1461,7 @@ window.TawalaDemo = {
       console.warn("[TawalaDemo] purge before test drive threw:", purge.error);
     }
 
-    // Always navigate — blank tab must not stick on purge failure.
+    // Always navigate when runtime is up — blank tab must not stick on purge failure.
     if (tab && !tab.closed) {
       try {
         tab.opener = null;
@@ -1806,19 +1618,24 @@ window.TawalaDemo = {
     const scope = root || document;
     if (scope.__tawalaTestDriveBound) return;
     scope.__tawalaTestDriveBound = true;
-    scope.addEventListener("click", (ev) => {
-      const el = ev.target.closest("[data-testdrive-url], a.js-testdrive");
-      if (!el) return;
-      const href =
-        el.getAttribute("data-testdrive-url") ||
-        (el.classList.contains("js-testdrive") ? el.getAttribute("href") : null);
-      if (!href || href === "#") return;
-      ev.preventDefault();
-      // data-testdrive-purge="false" → open without wiping DB (My Tawala operate / exam after Admin setup).
-      const purgeAttr = el.getAttribute("data-testdrive-purge");
-      const purge = purgeAttr !== "false" && purgeAttr !== "0";
-      void this.openTestDrive(href, { purge });
-    });
+    /* Capture: Library Actions cell used to stopPropagation and skip purge-on-start. */
+    scope.addEventListener(
+      "click",
+      (ev) => {
+        const el = ev.target.closest("[data-testdrive-url], a.js-testdrive");
+        if (!el) return;
+        const href =
+          el.getAttribute("data-testdrive-url") ||
+          (el.classList.contains("js-testdrive") ? el.getAttribute("href") : null);
+        if (!href || href === "#") return;
+        ev.preventDefault();
+        // data-testdrive-purge="false" → open without wiping DB (My Tawala operate / exam after Admin setup).
+        const purgeAttr = el.getAttribute("data-testdrive-purge");
+        const purge = purgeAttr !== "false" && purgeAttr !== "0";
+        void this.openTestDrive(href, { purge });
+      },
+      true
+    );
   },
   /** Inline stars after the project name (no separate Rating column). Unrated → omit. */
   starsHtml(rating) {

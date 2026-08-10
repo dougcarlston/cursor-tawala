@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260809-chrome1" />
-  <script src="js/demo-urls.js?v=20260809-ident2"></script>
-  <script src="js/transfer.js?v=20260809-ident2"></script>
-  <script src="js/project-ops.js?v=20260809-ident2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-overwrite1" />
+  <script src="js/demo-urls.js?v=20260810-overwrite1"></script>
+  <script src="js/transfer.js?v=20260810-overwrite1"></script>
+  <script src="js/project-ops.js?v=20260810-overwrite1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -49,7 +49,7 @@
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">Public Library</span>
-          <span class="listing-pile">Shared catalog — WebLibrary pile + Main Menu templates. Dense icon rows like My Tawala (hover icon for action name). Groups use Designer [+]/[-] toggles.</span>
+          <span class="listing-pile">Shared catalog — browse, Test Drive, and Save a copy into My Tawala. Actions = Test Drive | Save a copy only (no Customize / SEE DEMO).</span>
           <span class="listing-switch">Your private projects? <a href="mytawala.html">My Tawala</a></span>
         </div>
         <div id="librarySubmenuHost"></div>
@@ -86,7 +86,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260809-chrome1"></script>
+  <script src="js/chrome.js?v=20260810-overwrite1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -129,11 +129,12 @@
           ? escapeHtml(String(p.cloneCount))
           : "—";
       const detailHref = `library-detail.html?project=${encodeURIComponent(p.id)}`;
-      /* Name-only rows — no letter-tile fallbacks, no “Not deployed” list banners.
-         liveReady → quiet “Live” cue (distinct from placeholders).
-         Actions = two spaced icons (Test drive | Save a copy); header sub-labels from project-ops.
-         Shared .library-cols grid keeps Name / Times used / Updated / Actions aligned. */
+      /* Name + short blurb; liveReady quiet cue; Actions = Test drive | Save a copy. */
       const liveCue = liveCueHtml(p);
+      const blurb = String(p.shortDescription || "").trim();
+      const blurbHtml = blurb
+        ? `<span class="description library-row-blurb">${escapeHtml(blurb)}</span>`
+        : "";
       const actionCell =
         typeof TawalaProjectOps !== "undefined" &&
         TawalaProjectOps.renderLibraryListingControlCells
@@ -141,12 +142,16 @@
           : '<div class="lib-col lib-col-actions"></div>';
       return (
         `<div class="library-project-row library-cols link${liveCue ? " library-row-live" : ""}" ` +
-        `role="link" tabindex="0" onclick="location.href='${detailHref}'" ` +
-        `onkeydown="if(event.key==='Enter')location.href='${detailHref}'">` +
+        `role="link" tabindex="0" ` +
+        `onclick="if(!event.target.closest('.lib-col-actions,a,button'))location.href='${detailHref}'" ` +
+        `onkeydown="if(event.key==='Enter'&&!event.target.closest('.lib-col-actions,a,button'))location.href='${detailHref}'">` +
         `<div class="lib-col lib-col-name info">` +
-        `<span class="title"><a href="${detailHref}" onclick="event.stopPropagation()">${escapeHtml(title)}</a></span>` +
+        `<div class="library-name-block">` +
+        `<span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>` +
         `${liveCue}` +
         `${TawalaDemo.starsHtml(p.rating)}` +
+        `${blurbHtml}` +
+        `</div>` +
         `</div>` +
         `<div class="lib-col lib-col-used clone-count">${timesUsed}</div>` +
         `<div class="lib-col lib-col-updated updated col-date">${escapeHtml(p.updated || "")}</div>` +
@@ -348,6 +353,10 @@
 
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
+    /* Auto-strip discarded stub snapshots from localStorage before first paint. */
+    if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.scrubDiscardedLibraryStubs) {
+      TawalaTransfer.scrubDiscardedLibraryStubs();
+    }
     renderCategoryNav();
     document.getElementById("librarySubmenuHost").innerHTML =
       TawalaProjectOps.renderLibrarySubmenu("Search");
