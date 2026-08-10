@@ -387,6 +387,11 @@ export async function exportProjectResponsesByUniqueId(uniqueId) {
  * `opts.source` is informational only (client already ran the field-mismatch check).
  * `opts.mode` — only `"replace"` is implemented; the mock does not support merge-import.
  *
+ * REGRESSION note: replace deletes *all* submissions for the uniqueId, then inserts only the
+ * rows flattened from `forms`. Callers doing form-scoped Import (website-mock/js/data-ops.js)
+ * must merge the target form into a full current export first — never POST a single-form
+ * payload alone or sibling forms’ Records are wiped.
+ *
  * @param {string} uniqueId
  * @param {Array<{form:string, rows:Array<{createdAt?:string, fields:Record<string,string[]>}>}>} forms
  * @param {{source?: "postgres"|"dev-session", mode?: "replace"}} [opts]

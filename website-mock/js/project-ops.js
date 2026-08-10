@@ -1976,7 +1976,7 @@
       `data-op="use" data-wired="use-project" data-project="${pid}" ` +
       `title="${escapeHtml(useOffTitle)}" aria-disabled="true">Use</a>` +
       `<button type="button" class="pm-data-ctrl is-scope-disabled" data-op="copy-link" ` +
-      `data-wired="copy-start-link" data-project="${pid}" disabled ` +
+      `data-wired="copy-start-link" data-project="${pid}" aria-disabled="true" ` +
       `title="${escapeHtml(copyOffTitle)}">Copy link</button>` +
       `</div>` +
       vrule +
@@ -2196,6 +2196,10 @@
 
   function setCtrlEnabled(el, enabled, titleWhenOff) {
     if (!el) return;
+    /* Soft-disable pm-data-ctrl / pm-action: keep hoverable so honest grey tooltips work.
+     * Native disabled=true swallows title tooltips in Chromium. */
+    const softDisable =
+      el.classList.contains("pm-data-ctrl") || el.classList.contains("pm-action");
     if (enabled) {
       el.classList.remove("is-scope-disabled");
       el.removeAttribute("aria-disabled");
@@ -2203,7 +2207,7 @@
     } else {
       el.classList.add("is-scope-disabled");
       el.setAttribute("aria-disabled", "true");
-      if (el.tagName === "BUTTON") el.disabled = true;
+      if (el.tagName === "BUTTON") el.disabled = softDisable ? false : true;
       if (titleWhenOff) el.title = titleWhenOff;
     }
   }
@@ -2217,17 +2221,24 @@
         op === "export"
           ? `Export response data for form “${sel.formName}” only`
           : op === "import"
-            ? `Import response data into form “${sel.formName}” only`
+            ? `Import into form “${sel.formName}” only (other forms’ Records stay intact)`
             : `Purge response data for form “${sel.formName}” only`;
+      /* Short visible cue — full form name stays in the title (toolbar width is tight). */
+      if (op === "export" || op === "import" || op === "purge") {
+        el.textContent = op === "export" ? "Export · form" : op === "import" ? "Import · form" : "Purge · form";
+      }
     } else {
       el.dataset.dataScope = "project";
       delete el.dataset.formName;
       el.title =
         op === "export"
-          ? "Export project response data (Excel-format mock — see README)"
+          ? "Export all project response data (forms list collapsed or project selected)"
           : op === "import"
-            ? "Import response data into this project (Excel/JSON mock — field mismatch fails)"
-            : "Purge project data";
+            ? "Import whole-project response data (collapsed / project selected). Form-scoped export files still merge that form only — siblings stay intact. Expand and highlight a form to target it from the button."
+            : "Purge all project response data (forms list collapsed or project selected)";
+      if (op === "export" || op === "import" || op === "purge") {
+        el.textContent = op === "export" ? "Export" : op === "import" ? "Import" : "Purge";
+      }
     }
   }
 
@@ -2295,10 +2306,6 @@
               op === "restore" || wired === "restore-mytawala"
                 ? "Restore this project from a backup"
                 : "Back up this project (definition + data + properties)";
-            el.disabled = false;
-            el.classList.remove("is-scope-disabled");
-          } else {
-            el.disabled = true;
           }
         }
       });
@@ -3019,6 +3026,9 @@
       })() +
       "</div>" +
       renderProjectActionsBar(project.id) +
+      `<p class="pm-detail-data-nav-hint" id="pmDataNavHint">` +
+      `Click on the ▸ before the project name once to show the Start Link forms, a second time to see all forms.` +
+      `</p>` +
       renderCollapsibleSection("pmSecData", "Project Data", projectDataSection, true) +
       renderCollapsibleSection("pmSecVersions", "Versions", versionOps, versionsOpen) +
       renderCollapsibleSection("pmSecOther", "Backups, emails & library publish", backupOps, false) +
@@ -4149,11 +4159,15 @@
 
   async function handleOpClick(ev) {
     const btn = ev.target.closest("[data-op], .pm-action, .pm-icon-action");
-    if (!btn || !btn.dataset || btn.disabled) return;
+    if (!btn || !btn.dataset) return;
     const wired = btn.dataset.wired;
     const confirmId = btn.dataset.confirm;
     const projectId = btn.dataset.project || "";
     const op = btn.dataset.op || "";
+    const scopeOff =
+      !!btn.disabled ||
+      btn.classList.contains("is-scope-disabled") ||
+      btn.getAttribute("aria-disabled") === "true";
 
     if (wired === "false" || !wired) return;
 
@@ -4163,7 +4177,7 @@
      * preventDefault must run before any await (popup / navigation race).
      */
     if (wired === "use-project") {
-      if (btn.classList.contains("is-scope-disabled") || btn.getAttribute("aria-disabled") === "true") {
+      if (scopeOff) {
         ev.preventDefault();
         return;
       }
@@ -4181,13 +4195,20 @@
 
     if (wired === "copy-start-link") {
       ev.preventDefault();
+      if (scopeOff) return;
       const tree = document.getElementById("pmDataTree");
-      const sel = readDataTreeSelection(tree);
+      const sel = effectiveDataSelection(tree);
       if (sel.kind === "start" && sel.url) {
         void copyUrlToClipboard(sel.url);
       } else {
         window.alert("Select a start point (▶) first, then Copy link.");
       }
+      return;
+    }
+
+    /* Soft-disabled Backup/Restore/etc. — ignore click; title explains why. */
+    if (scopeOff) {
+      ev.preventDefault();
       return;
     }
 

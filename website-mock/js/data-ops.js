@@ -192,7 +192,11 @@
 
   /**
    * Merge one form from `incomingForms` into a full current export, then replace-write.
-   * Import API replace deletes ALL submissions first — never send a single-form payload alone.
+   *
+   * REGRESSION (Aug 10, 2026): `/api/import-responses` replace deletes ALL submissions for the
+   * uniqueId, then inserts only the forms array you send. Sending a single-form payload alone
+   * (e.g. Answer export while Project Data is collapsed / project-scoped) wipes every other
+   * form’s Records. Form-scoped Import MUST always merge into a successful full export first.
    */
   function mergeFormIntoExport(currentForms, incomingFormEntry, formName) {
     const name = String(formName || "");
@@ -202,6 +206,13 @@
       (currentForms || []).find((f) => f && f.form === name) ||
       { form: name, rows: [] };
     return others.concat([{ form: name, rows: (incoming.rows || []).slice() }]);
+  }
+
+  /** Non-empty `payload.formName` from a form-scoped Export file (see handleExportClick bundle). */
+  function formNameFromExportPayload(payload) {
+    if (!payload || payload.formName == null) return "";
+    const name = String(payload.formName).trim();
+    return name;
   }
 
   // ---------------------------------------------------------------------
@@ -273,11 +284,14 @@
 
   // ---------------------------------------------------------------------
   // IMPORT — restore messed-up data into the CURRENT project; field mismatch fails.
-  // opts.formName → replace that form only (merge into full export, then replace-write).
+  // Form scope (merge → replace-write; never send one form alone):
+  //   • opts.formName — Project Data highlight (form / start row)
+  //   • payload.formName — form-scoped Export file (even when the tree is collapsed /
+  //     project-selected). Without this, Answer-only files wipe sibling forms.
   // ---------------------------------------------------------------------
   async function handleImportClick(projectId, opts) {
     const options = opts || {};
-    const formName = options.formName ? String(options.formName) : "";
+    const uiFormName = options.formName ? String(options.formName) : "";
     if (!requireDataApi()) return;
     const project = resolveProject(projectId);
     const displayName = displayNameFor(project, projectId);
@@ -310,6 +324,21 @@
       return;
     }
 
+    const fileFormName = formNameFromExportPayload(payload);
+    if (uiFormName && fileFormName && uiFormName !== fileFormName) {
+      const msg =
+        `Couldn't import into form “${uiFormName}”\n\n` +
+        `That file is a form-scoped export for “${fileFormName}”, not “${uiFormName}”. ` +
+        `Highlight the matching form (or collapse to project scope and import this file — siblings stay intact), or pick a whole-project export.`;
+      setStatus(`Import failed — file is for form “${fileFormName}”, not “${uiFormName}”.`);
+      window.alert(msg);
+      return;
+    }
+
+    /* Highlight wins; else form-scoped file metadata (project collapsed still safe). */
+    const formName = uiFormName || fileFormName;
+    const scopedFromFileOnly = !uiFormName && !!fileFormName;
+
     let formsForImport = payload.forms;
     let fieldsForCheck = payload.fieldsByForm || {};
     if (formName) {
@@ -332,6 +361,20 @@
     const scopeLabel = formName ? `form “${formName}” in “${displayName}”` : `“${displayName}”`;
     setStatus(`Checking fields for ${scopeLabel}…`);
     const current = await TawalaDemo.exportResponses(uniqueId);
+    /*
+     * Form-scoped path must read live siblings before replace. An empty merge base would
+     * reintroduce the wipe-siblings bug (import API deletes everything first).
+     */
+    if (formName && current.status !== "success") {
+      const msg =
+        `Couldn't import into form “${formName}”\n\n` +
+        `Need the project's current response data to preserve other forms, but export failed:\n` +
+        `${current.error || "unknown error"}\n\n${TawalaProjectOps.LOCAL_PURGE_HELP}`;
+      setStatus(`Import failed for ${scopeLabel}: could not read current rows to merge.`);
+      window.alert(msg);
+      return;
+    }
+
     const currentFieldsByForm = current.status === "success" ? current.fieldsByForm : {};
     const mismatch = findFieldMismatches(fieldsForCheck, currentFieldsByForm);
     if (mismatch.hard.length) {
@@ -351,15 +394,17 @@
       : "";
 
     if (formName) {
+      const fromFileNote = scopedFromFileOnly
+        ? `\n\nThis file is a form-scoped export for “${formName}” (Project Data is at project scope / collapsed). ` +
+          `Import still replaces that form only — other forms keep their current rows.`
+        : "";
       const body =
         `Replace response data for form “${formName}” only?\n\n` +
-        "Other forms in this project keep their current rows. Import does not change the project definition.";
+        "Other forms in this project keep their current rows. Import does not change the project definition." +
+        fromFileNote;
       if (!window.confirm(`Import Form Data — “${formName}”\n\n${body}`)) return;
-      const merged = mergeFormIntoExport(
-        current.status === "success" ? current.forms : [],
-        formsForImport[0],
-        formName
-      );
+      const merged = mergeFormIntoExport(current.forms || [], formsForImport[0], formName);
+      /* Defensive: merged payload must include every sibling form from `current`. */
       formsForImport = merged;
     } else {
       const c = TawalaProjectOps.CONFIRMS.importResponses;
