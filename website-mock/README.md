@@ -601,6 +601,21 @@ How names work when someone pulls a Library project into My Tawala, and when the
 
 Do **not** build Backup further until the package contents are decided. Default proposal on the table: Backup = **currently live (pushed) definition + current response data**. Remember: **Restore** is not the same as **Push this version** / today’s **Deploy this version** (Restore re-applies a backup package; Push this version switches which definition revision is live on `:8080`).
 
+### Email metering (billing)
+
+**Owner product note (Aug 10, 2026) — document only; do not implement email infra in this pass.**
+
+Emails matter for **billing**: we pay for outbound email, so we need to know **where email volume comes from**. Whenever a project generates emails, the product needs a **visible counter**, **resettable for a new billing period**.
+
+**Scope / place:**
+
+- **Cross-user** first — primarily **admin pages** (all users / all projects), so operators can see volume by account and project.
+- **Optional author surface** — a user we bill for email usage may also want a **per-project counter on Project Details** for their own project.
+
+**Not this stub:** Project Details still has an empty collapsible **“Backups, emails & library publish”** (`pmSecOther` in `project-ops.js`) with greyed fake chips and a hint line. **Recommendation remains: remove or hide that dead section.** Real email metering is a **separate future feature** — do **not** fill that stub with greyed fake buttons, and do **not** pretend metering lives there until a real counter exists.
+
+**HOLD:** no send pipeline, no provider wiring, no fake counts in the mock — wait for a dedicated billing/metering design.
+
 ### Test Drive
 
 **Test Drive** belongs on the **Library**. When the visitor leaves the Test Drive, **purge** the demo responses. While they are in the drive, they may use **all start points** before that wipe (so multi-step apps like Exam + Admin Setup still work during the session).
@@ -621,6 +636,7 @@ These four lists framed the Aug 9 walkthrough. Lists **1** and **4** are now dec
 - **Aug 7:** **Deploy this version** wired (definition snapshots on Deploy → Show in My Tawala; radios + button switch live `:8080`). Tony stills / `FROM_TONY_IMAGES_NOTES.md`; `legacy-reference/` HTML; comparison canvas; stills under `legacy-reference/stills/`. Initial feature triage into the four lists; **Responses** already clarified as project-wide submission count.
 - **Aug 9:** Walked lists 1+4 to agreement. Publish = new Library entry; update existing = new version on that entry; drop the third “update library with this version?” prompt unless evidence returns. Library CTAs = Test Drive + Save a copy. Active/De-activate = temporary take-down (not Purge/Delete). Invite = Start-point help + Copy link + optional labels + Include-in-Web-Page embed (no ACL). Records on list + Details; clones = Library copies; Times used = new respondent sessions from start URLs. Project Data selection + Export/Import/Purge toolbar; whole-project Purge first. Designer only from Details as “Edit project in Designer.” Make a Copy = own fork with new uniqueId. Backup parked pending package decision. Test Drive = Library, purge on leave, all start points allowed first.
 - **Aug 10 (decision + Deploy share slice):** After owning a My Tawala copy — **Use** = for yourself; **Publish** = put a copy in the public Library; **Deploy** (website Details) = administer for others → share/embed help (Task #10). Details **DEPLOY** + Invite/Include open the share panel (Copy link / iframe embed; multi-start picker; honest empty-acquire message). Designer authoring verb → **Push** (to My Tawala library); rename parked on Designer chat list — no Designer UI mass-rename. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project).
+- **Aug 10 (product note — email metering):** Emails are a billed cost → need visible, period-resettable email volume counters (admin cross-user first; optional per-project on Details for billed authors). Separate from the empty **Backups, emails & library publish** stub — remove/hide that dead section; do not fill with fake buttons. See § [Email metering (billing)](#email-metering-billing).
 
 ### Task List (Aug 9)
 
@@ -633,7 +649,7 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 5. **Theme / Appearance** — **DONE (Aug 9 slice):** Details identity-rail dropdown (legacy theme labels/paths); persists `themePath` on My Tawala overlay (does not push CSS to :8080).
 6. **Published indicator** — **DONE (Aug 9 slice):** Details shows Yes + Library link (catalog twin or `publishedToLibraryId` after Publish); No when unpublished.
 7. **Author / version / description rail** — **DONE (Aug 9 slice; blurb placement clarified):** Author (mock user) + Version # (+ Deploy `versionDescription` only) in the left rail. Project **shortDescription** blurb lives **once** under the main title — not repeated under Version / in the sidebar.
-8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10) for listing + My Tawala Get from Library:** Listing CTAs = **Test Drive** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe honesty remains Task #14. **PARK (separate priority — do not fix in Make a Copy sessions):** public **`library-detail.html` “Save a copy”** is broken; ≠ My Tawala **Make a Copy**.
+8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10; library-detail Save a copy Aug 10 libsc1):** Listing + detail CTAs = **Test Drive** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe honesty remains Task #14. ≠ My Tawala **Make a Copy**.
 9. **Make a Copy (own project)** — **DONE (Aug 10; empty-runtime fix same day):** Project Details **MAKE A COPY** + My Tawala listing bar (selection-gated). Fork with new overlay id, rename dialog + overwrite warn, original untouched, **empty Records** (`uniqueId: null` — never share source/Library live id). ≠ Rename ≠ Library Save a copy. **HOLD:** optional copy-with-data (confirm) until needed.
 10. **Start points: distribute + embed** — **PARTIAL (Aug 10 Deploy doorway):** Details **DEPLOY** opens share panel — help copy, start picker (multi-start), **Copy link**, **Include in Web Page** (iframe embed). Invite / Include sidebar buttons open the same panel. Empty acquires: honest “need live project first”; Online Exam (and other seeded live rows) share now. Project Data banner **Copy link** still works for tree selection. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). Designer shell still says Deploy until the [Push rename checklist](#designer-push-rename-checklist-docs-first--do-not-mass-rename-yet) runs (parked on Designer chat list). **HOLD coded stretch:** uniqueId-in-URL hardening; optional participant/admin-style start labels polish.
 11. **Edit project in Designer** — **Confirmed DONE (Aug 10):** Owner tested successfully. Details-only **Edit project in Designer** resolves a definition (version snapshot / catalog `jsonFile`) and opens `:5173` with `?snapshot=` or `?mockJson=` so Designer **loads that project** — not a blank canvas. Catalog paths: `projects/mytawala|library/*.json` or `designer-web/public/samples/…/*.json` via `:3001/api/open-mock-json`. Honest alert when no definition (e.g. Library acquire with no catalog JSON and no Push / Show in My Tawala snapshot). Cancel → `designer.html` stub. **HOLD:** Home sidebar Designer link later, placed away from Library.
@@ -645,6 +661,7 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 17. **HOLD / park — Shared Data, Access column, SEE DEMO videos, reputation/ratings product, ACL collaborators** — No build in this phase.
 18. **Ongoing — Library stub cleanup** — Separate catalog work: Designer → Deploy → Publish a real replacement, then retire the stub (see § Library stubs).
 19. **Empty My Tawala seed + Get from Library acquire** — **DONE (Aug 10):** `TAWALA_MYTAWALA = {}`; discarded archive seed ids scrubbed on load. Listing = Push + Save a copy only. **Get from Library…** = Library picker → Save a copy (not nav to `library.html`). Online Exam via Get/Save a copy or Designer Push.
+20. **HOLD — Email metering (billing)** — Visible email-volume counter, resettable per billing period; **admin** (cross-user / all projects) first, optional **Project Details** counter for authors we bill. Do **not** implement send infra or fake counts now. Related cleanup (when convenient): **remove/hide** the empty Details collapsible **“Backups, emails & library publish”** — metering is a separate future feature, not greyed chips in that stub. See § [Email metering (billing)](#email-metering-billing).
 
 ### Aug 9 afternoon UI (implementation slice — committed)
 
@@ -663,11 +680,19 @@ Plain-English note of what landed in the My Tawala / Project Details / chrome pa
 - **Versioning polish (Aug 10 — pause for review, no commit):** Listing **Version** column (after Name); Save a copy / Get from Library / Make a Copy seed integer **1**; older overlays backfill on load; Details Versions lists seed + Push history; identity rail Version stays in sync. Still stub: **Delete this version** / delete selected; Download = metadata-only; Backup package HOLD; **Deploy this version** label (Push rename parked).
 - **Project Data responsive polish** — committed (`1e68891`): fluid name track, RECORDS subgrid alignment, Times/Last drop when tight, sidebar hide below 1024px. Visual sign-off still welcome on owner screens.
 - **Purge (project + form)** — wired for review: scoped confirms, form path via data-ops, Records refresh on `tawala:project-purged` / import / restore. Pause for browser review before treating as signed off.
-- **PARK — Library detail Save a copy broken** — `library-detail.html` **Save a copy** link/button fails (owner Aug 10). Separate priority from My Tawala **Make a Copy** (#9, done). Do **not** fix in Make a Copy / rename sessions; use Library listing or Get from Library until a dedicated pass.
+- **Library detail Save a copy** — **FIXED (Aug 10 libsc1):** `getLibrary()` now stamps catalog `id` (seed rows had none); detail CTAs share listing / Get from Library rename → overwrite warn → My Tawala `?highlight=` land. Review: `http://localhost:5500/library-detail.html?project=simple-survey&v=20260810-libsc1`
+- **HOLD — Email metering (billing):** document-only Aug 10 — visible period-resettable email counters (admin cross-user + optional Details). Do not wire email send or fill **Backups, emails & library publish**; prefer remove/hide that dead section. Task List [#20](#task-list-aug-9).
 
 **Next**
 
-Continue the [Task List](#task-list-aug-9): Versioning slice ready for review. Next open item is Task #14 (Test Drive leave/wipe). Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears.
+Continue the [Task List](#task-list-aug-9): Versioning slice ready for review. Library-detail Save a copy fixed (pause for review). Next open item is Task #14 (Test Drive leave/wipe). Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears.
+
+**Aug 10 review (Library detail Save a copy — no commit until owner asks):**
+
+- **Use this host:** `http://localhost:5500/…` (owner data). `127.0.0.1:5500` is the same server but a **different localStorage**.
+- Library detail: `http://localhost:5500/library-detail.html?project=simple-survey&v=20260810-libsc1`
+- Smoke **Save a copy** on detail: button opens rename dialog (suggested name selected) → confirm → lands on My Tawala listing with highlight, **Version 1**, Use-ready in the mock. Sidebar **Acquire → Save a copy** same flow. Overwrite warn if name taken.
+- Also from listing: `http://localhost:5500/library.html?v=20260810-libsc1` (unchanged acquire path).
 
 **Aug 10 review (Version column + acquire version seed — no commit until owner asks):**
 
@@ -677,7 +702,7 @@ Continue the [Task List](#task-list-aug-9): Versioning slice ready for review. N
 - Smoke **Version column:** listing shows Version right after Name; existing acquires/forks backfill to **1** on load.
 - Smoke **Save a copy / Get from Library:** new row Version **1**; Details Versions shows one row (*Saved from Library…*, No snapshot); sidebar Version **1**.
 - Smoke **Make a Copy:** fork Version **1** (*Copy of …*); source versions untouched.
-- Library: `http://localhost:5500/library.html?v=20260810-vercol1`
+- Library: `http://localhost:5500/library.html?v=20260810-libsc1`
 
 **Aug 10 review (Make a Copy #9 + rename stick + empty fork Records — no commit until owner asks):**
 
