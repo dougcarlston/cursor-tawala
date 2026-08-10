@@ -763,10 +763,12 @@ function insertHtmlAtSelection(html: string): boolean {
   return true;
 }
 
-/** Local symbiotic hop: website-mock My Tawala (Project Manager surface). */
-export const LOCAL_WEBSITE_MOCK_MYTAWALA_URL = "http://localhost:5500/mytawala.html";
-export const LOCAL_WEBSITE_MOCK_LIBRARY_URL = "http://localhost:5500/library.html";
-export const LOCAL_WEBSITE_MOCK_BASE = "http://localhost:5500";
+/** Local symbiotic hop: website-mock My Tawala (Project Manager surface).
+ * Use 127.0.0.1 — same origin as website-mock/serve.sh. localhost ≠ 127.0.0.1 for localStorage,
+ * so Show in My Tawala on localhost would miss Save a copy rows acquired on 127.0.0.1. */
+export const LOCAL_WEBSITE_MOCK_MYTAWALA_URL = "http://127.0.0.1:5500/mytawala.html";
+export const LOCAL_WEBSITE_MOCK_LIBRARY_URL = "http://127.0.0.1:5500/library.html";
+export const LOCAL_WEBSITE_MOCK_BASE = "http://127.0.0.1:5500";
 
 /** Catalog / overlay id — matches website-mock `TawalaTransfer.slugifyProjectId`. */
 export function mockProjectIdFromName(name?: string): string {
@@ -793,7 +795,7 @@ export function openProjectManagerLocal(): void {
     useProjectStore
       .getState()
       .setStatus(
-        `Opened Project Details for “${name}” (localhost:5500). Start mock: cd website-mock && ./serve.sh`,
+        `Opened Project Details for “${name}” (127.0.0.1:5500). Start mock: cd website-mock && ./serve.sh`,
       );
   } catch {
     useProjectStore
@@ -809,7 +811,7 @@ export function openWebsiteMockMyTawala(): void {
     window.open(LOCAL_WEBSITE_MOCK_MYTAWALA_URL, "_blank", "noopener,noreferrer");
     useProjectStore
       .getState()
-      .setStatus("Opened website mock My Tawala (localhost:5500). Start mock: cd website-mock && ./serve.sh");
+      .setStatus("Opened website mock My Tawala (127.0.0.1:5500). Start mock: cd website-mock && ./serve.sh");
   } catch {
     useProjectStore
       .getState()
@@ -822,7 +824,7 @@ export function openWebsiteMockMyTawala(): void {
 export function openWebsiteMockLibrary(): void {
   try {
     window.open(LOCAL_WEBSITE_MOCK_LIBRARY_URL, "_blank", "noopener,noreferrer");
-    useProjectStore.getState().setStatus("Opened website mock Library (localhost:5500).");
+    useProjectStore.getState().setStatus("Opened website mock Library (127.0.0.1:5500).");
   } catch {
     useProjectStore
       .getState()

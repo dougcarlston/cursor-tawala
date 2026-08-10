@@ -237,380 +237,37 @@ window.TAWALA_LIBRARY_DISCARDED_IDS = [
   "st-patrick-sportsdashboards",
   "tawala-invoicing",
 ];
-window.TAWALA_MYTAWALA = {
-  "bbbulkmail": {
-    "name": "BBBulkMail",
-    "category": "Business",
-    "featured": false,
-    "iconLabel": "BB",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (2 forms). Start points: Start.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 2 forms, 3 processes, 2 documents. Start points: Start.",
-    "jsonFile": "projects/mytawala/BBBulkMail.json",
-    "themePath": "default",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Start"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "campaigndashboards": {
-    "name": "CampaignDashboards",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "CA",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (35 forms). Start points: AdminDash.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 35 forms, 42 processes, 26 documents. Start points: AdminDash.",
-    "jsonFile": "projects/mytawala/CampaignDashboards.json",
-    "themePath": "lime",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "AdminDash"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "cyo-check-request": {
-    "name": "CYO Check Request",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "CC",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (6 forms). Start points: Start, CheckReqForm.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 6 forms, 7 processes, 4 documents. Start points: Start, CheckReqForm.",
-    "jsonFile": "projects/mytawala/CYO Check Request.json",
-    "themePath": "mvsc",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Start"
-      },
-      {
-        "label": "CheckReqForm"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "cyo-checkdeposit-request": {
-    "name": "CYO CheckDeposit Request",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "CC",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (8 forms). Start points: Admin, CheckReqForm, Setup.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 8 forms, 8 processes, 3 documents. Start points: Admin, CheckReqForm, Setup.",
-    "jsonFile": "projects/mytawala/CYO CheckDeposit Request.json",
-    "themePath": "mvsc",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Admin"
-      },
-      {
-        "label": "CheckReqForm"
-      },
-      {
-        "label": "Setup"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "designer-candidate-app-01": {
-    "name": "Designer Candidate App 01",
-    "category": "Dev / test",
-    "featured": false,
-    "iconLabel": "DC",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (3 forms). Start points: Form 1, Form 2, Form 3.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 3 forms, 3 processes, 3 documents. Start points: Form 1, Form 2, Form 3.",
-    "jsonFile": "projects/mytawala/Designer Candidate App 01.json",
-    "themePath": "default",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Form 1"
-      },
-      {
-        "label": "Form 2"
-      },
-      {
-        "label": "Form 3"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "dirtbowl-communicator": {
-    "name": "Dirtbowl Communicator",
-    "category": "Sports",
-    "featured": false,
-    "iconLabel": "DC",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (19 forms). Start points: Start.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 19 forms, 23 processes, 6 documents. Start points: Start.",
-    "jsonFile": "projects/mytawala/Dirtbowl Communicator.json",
-    "themePath": "dirtbowl2",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Start"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "displaylabeltest": {
-    "name": "DisplayLabelTest",
-    "category": "Dev / test",
-    "featured": false,
-    "iconLabel": "DI",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (1 forms). Start points: Form 1.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 1 forms, 0 processes, 0 documents. Start points: Form 1.",
-    "jsonFile": "projects/mytawala/DisplayLabelTest.json",
-    "themePath": "default",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Form 1"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "emailer-with-signup": {
-    "name": "Emailer With Signup.dgmod",
-    "category": "Activities",
-    "featured": false,
-    "iconLabel": "EW",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (15 forms). Start points: EmailerStart, JoinMailingList.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 15 forms, 21 processes, 7 documents. Start points: EmailerStart, JoinMailingList.",
-    "jsonFile": "projects/mytawala/Emailer With Signup.dgmod.json",
-    "themePath": "mvsc",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "EmailerStart"
-      },
-      {
-        "label": "JoinMailingList"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "online-exam-builder": {
-    "name": "Online Exam Builder",
-    "category": "Polls and Surveys",
-    "featured": false,
-    "iconLabel": "OE",
-    "rating": 0,
-    "comments": 0,
-    "updated": "8/4/26",
-    "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
-    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Seeded into My Tawala for lean-list + Project Data UI review (same :8080 deploy as Library). Demo Records (below) let Purge be reviewed offline when :3001/Postgres is down — not live Use submissions.",
-    "jsonFile": "projects/mytawala/Online Exam Builder.json",
-    "themePath": "default",
-    "sourcePile": "mytawala",
-    "liveReady": true,
-    "deployed": true,
-    "uniqueId": "u3hkqgwtrepjlur",
-    /* First-paint listing total; live hydrate / mock store may replace. Sum of recordsByForm. */
-    "recordCount": 50,
-    "recordsByForm": {
-      "Exam": 12,
-      "Answer": 15,
-      "Question": 8,
-      "ShowExamineeDetail": 6,
-      "Scoring": 4,
-      "Administration": 3,
-      "Setup": 2
-    },
-    "formNames": [
-      "SetupVariables",
-      "Question",
-      "Exam",
-      "Answer",
-      "Administration",
-      "CustomizationPreview",
-      "Setup",
-      "Scoring",
-      "Delete Question",
-      "Edit Question",
-      "ShowExamineeDetail"
-    ],
-    "startPoints": [
-      {
-        "label": "Exam",
-        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/sto3lpi.Exam"
-      },
-      {
-        "label": "Administration",
-        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
-      },
-      {
-        "label": "CustomizationPreview",
-        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/oio6z9y.CustomizationPreview"
-      },
-      {
-        "label": "Setup",
-        "url": "http://localhost:8080/p/u3hkqgwtrepjlur/dc2nyex.Setup"
-      }
-    ],
-    "testDriveUrl": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
-  },
-  "paypal-tester": {
-    "name": "PayPal Tester",
-    "category": "Business",
-    "featured": false,
-    "iconLabel": "PT",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (3 forms). Start points: Start.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 3 forms, 3 processes, 2 documents. Start points: Start.",
-    "jsonFile": "projects/mytawala/PayPal Tester.json",
-    "themePath": "mvsc",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Start"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "potluck-kids-too": {
-    "name": "Potluck - Kids Too",
-    "category": "Meetings",
-    "featured": false,
-    "iconLabel": "PK",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (4 forms). Start points: Setup, Potluck Organizer, Administration.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 4 forms, 7 processes, 11 documents. Start points: Setup, Potluck Organizer, Administration.",
-    "jsonFile": "projects/mytawala/Potluck - Kids Too.json",
-    "themePath": "basicyellow",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Setup"
-      },
-      {
-        "label": "Potluck Organizer"
-      },
-      {
-        "label": "Administration"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "realdirtwheader": {
-    "name": "RealDirtwHeader",
-    "category": "Advanced",
-    "featured": false,
-    "iconLabel": "RE",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (60 forms). Start points: Registration, AdminDash.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 60 forms, 69 processes, 35 documents. Start points: Registration, AdminDash.",
-    "jsonFile": "projects/mytawala/RealDirtwHeader.json",
-    "themePath": "dirtbowl2",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Registration"
-      },
-      {
-        "label": "AdminDash"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "shared-to-do": {
-    "name": "Shared To-Do",
-    "category": "Activities",
-    "featured": false,
-    "iconLabel": "ST",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (9 forms). Start points: Administration, Setup, Signup.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 9 forms, 13 processes, 10 documents. Start points: Administration, Setup, Signup.",
-    "jsonFile": "projects/mytawala/Shared To-Do.json",
-    "themePath": "default",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Administration"
-      },
-      {
-        "label": "Setup"
-      },
-      {
-        "label": "Signup"
-      }
-    ],
-    "testDriveUrl": null
-  },
-  "single-question-poll-or-survey": {
-    "name": "Single Question Poll or Survey",
-    "category": "Polls",
-    "featured": false,
-    "iconLabel": "SQ",
-    "rating": 0,
-    "comments": 0,
-    "updated": "7/28/26",
-    "shortDescription": "Converted project (5 forms). Start points: Customize, Start Questionnaire, Administration.",
-    "longDescription": "Backup copy from ~/Projects/Tawala Projects/MyTawala. 5 forms, 6 processes, 5 documents. Start points: Customize, Start Questionnaire, Administration.",
-    "jsonFile": "projects/mytawala/Single Question Poll or Survey.json",
-    "themePath": "default",
-    "sourcePile": "mytawala",
-    "deployed": false,
-    "startPoints": [
-      {
-        "label": "Customize"
-      },
-      {
-        "label": "Start Questionnaire"
-      },
-      {
-        "label": "Administration"
-      }
-    ],
-    "testDriveUrl": null
-  }
-};
+/**
+ * My Tawala seed — empty by design (owner Aug 10, 2026).
+ * Listing shows only: Designer Push / Show in My Tawala (overlay) + Library Save a copy
+ * (overlay). Not a fake catalog of converted-backup / archive rows. JSON under
+ * projects/mytawala/ may remain on disk for Edit-in-Designer / archives — do not re-seed
+ * broken undeployed stubs into TAWALA_MYTAWALA. Online Exam lives on Library; Save a copy
+ * or Push to get it into My Tawala.
+ */
+window.TAWALA_MYTAWALA = {};
+
+/**
+ * Former fake My Tawala seed ids (converted backups + fake live Online Exam seed).
+ * transfer.js marks these deleted on load when they are not a real Push/Save-a-copy overlay
+ * row, so hard-refresh never resurrects archive stubs from an old browser cache of the seed.
+ */
+window.TAWALA_MYTAWALA_DISCARDED_SEED_IDS = [
+  "bbbulkmail",
+  "campaigndashboards",
+  "cyo-check-request",
+  "cyo-checkdeposit-request",
+  "designer-candidate-app-01",
+  "dirtbowl-communicator",
+  "displaylabeltest",
+  "emailer-with-signup",
+  "online-exam-builder",
+  "paypal-tester",
+  "potluck-kids-too",
+  "realdirtwheader",
+  "shared-to-do",
+  "single-question-poll-or-survey",
+];
 
 /** @deprecated Use TAWALA_LIBRARY — kept so older snippets keep working. */
 window.TAWALA_DEMO_URLS = window.TAWALA_LIBRARY;
@@ -846,11 +503,20 @@ window.TawalaDemo = {
     if (!id) return null;
     if (
       typeof window !== "undefined" &&
-      window.TawalaTransfer &&
-      typeof window.TawalaTransfer.isMyTawalaDeleted === "function" &&
-      window.TawalaTransfer.isMyTawalaDeleted(id)
+      window.TawalaTransfer
     ) {
-      return null;
+      if (typeof window.TawalaTransfer.scrubDiscardedMyTawalaSeeds === "function") {
+        window.TawalaTransfer.scrubDiscardedMyTawalaSeeds();
+      }
+      if (typeof window.TawalaTransfer.rehydrateAcquireLiveUrls === "function") {
+        window.TawalaTransfer.rehydrateAcquireLiveUrls();
+      }
+      if (
+        typeof window.TawalaTransfer.isMyTawalaDeleted === "function" &&
+        window.TawalaTransfer.isMyTawalaDeleted(id)
+      ) {
+        return null;
+      }
     }
     const base = window.TAWALA_MYTAWALA[id] || null;
     if (
@@ -1294,6 +960,45 @@ window.TawalaDemo = {
         error:
           String(e.message || e) +
           " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+  /**
+   * Persist a Designer definition for deep-link open / Deploy-this-version.
+   * POST /api/version-snapshots (same store as Show in My Tawala).
+   */
+  async saveVersionSnapshot(input) {
+    const project = input && input.project;
+    if (!project || !project.name) {
+      return { status: "failure", error: "project required" };
+    }
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/version-snapshots";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          project,
+          uniqueId: (input && input.uniqueId) || null,
+          projectId: (input && input.projectId) || null,
+          versionDescription: (input && input.versionDescription) || "",
+          at: (input && input.at) || null,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          status: "failure",
+          error: data.error || `HTTP ${res.status}`,
+        };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run keep)",
       };
     }
   },

@@ -18,7 +18,8 @@
  *         downloads a JSON bundle: definition + data + properties, see README § Backup/Restore)
  * wired: "restore-mytawala" → TawalaDataOps.handleRestoreClick — confirm + overlay properties +
  *         POST /api/import-responses (replace mode)
- * wired: "get-from-library" → navigate to library.html (acquire / Save a copy; not selection-gated)
+ * wired: "get-from-library" → openGetFromLibraryDialog (Library picker → Save a copy rename;
+ *         not a nav duplicate of Library; always enabled on My Tawala listing bar)
  * wired: "pull-library" → openPullDialog (Refresh from Library) — selection + Library link required;
  *         TawalaTransfer.pullFromLibrary refreshes content only (name/deploy/data preserved)
  * wired: "download-version" → download minimal JSON for the selected Versions row
@@ -190,7 +191,7 @@
 
   /**
    * My Projects listing — top action bar (owner Aug 9 breakpoint + option 3).
-   * Get from Library… — always on (opens public Library acquire path).
+   * Get from Library… — always on (opens Library picker → Save a copy acquire).
    * Refresh from Library — selected row + linked Library entry (existing Pull metadata refresh).
    * Delete — selected row only.
    * Not a dense per-row icon strip.
@@ -199,7 +200,7 @@
     {
       id: "get-library",
       label: "GET FROM LIBRARY…",
-      title: "Browse the public Library and Save a copy into My Tawala",
+      title: "Pick a public Library project and Save a copy into My Tawala",
       wired: "get-from-library",
       alwaysEnabled: true,
     },
@@ -406,7 +407,7 @@
       wired: "use-project",
     },
     { label: "Publish / move to Library", source: "My Tawala → Library", wired: "publish-mytawala" },
-    { label: "Get from Library…", source: "My Tawala listing → library.html (acquire)", wired: "get-from-library" },
+    { label: "Get from Library…", source: "My Tawala listing → Library picker → Save a copy", wired: "get-from-library" },
     { label: "Refresh from Library", source: "Library → My Tawala upgrade (linked row)", wired: "pull-library" },
     { label: "Deploy from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
   ];
@@ -898,9 +899,51 @@
     return !!(projectUseUrl(project) || startPointsWithUrls(project).length);
   }
 
-  /** Listing / Details badge when the row came from Library Save a copy. */
+  /**
+   * Local calendar YMD key (browser timezone) for same-day chip expiry.
+   * Accepts ISO, epoch ms, or short `M/D/YY` listing dates.
+   */
+  function localCalendarDayKey(value) {
+    if (value == null || value === "" || value === "—") return "";
+    let ms = 0;
+    if (typeof value === "number" && Number.isFinite(value)) {
+      ms = value > 0 ? value : 0;
+    } else {
+      const str = String(value).trim();
+      if (!str) return "";
+      if (/^\d{4}-\d{2}-\d{2}/.test(str) || str.includes("T")) {
+        ms = Date.parse(str);
+      } else if (/^\d{10,13}$/.test(str)) {
+        const n = Number(str);
+        ms = n < 1e12 ? n * 1000 : n;
+      } else {
+        const m = str.match(/^(\d{1,2})\/(\d{1,2})\/(\d{2,4})$/);
+        if (m) {
+          let y = Number(m[3]);
+          if (y < 100) y += 2000;
+          ms = new Date(y, Number(m[1]) - 1, Number(m[2])).getTime();
+        } else {
+          ms = Date.parse(str);
+        }
+      }
+    }
+    if (!ms || Number.isNaN(ms)) return "";
+    const d = new Date(ms);
+    return `${d.getFullYear()}-${d.getMonth() + 1}-${d.getDate()}`;
+  }
+
+  /**
+   * My Tawala listing chip only — blue “from Library” when Save a copy / Get from Library
+   * happened today (same local calendar date as now). Hidden after midnight next day.
+   * Details sidebar Source / provenance stays forever (fromLibraryProvenanceLine).
+   */
   function fromLibraryAcquireBadge(project) {
     if (!project || !(project.fromLibraryAcquire || project.sourcePile === "library-acquire")) {
+      return "";
+    }
+    const acquiredDay =
+      localCalendarDayKey(project.createdAt) || localCalendarDayKey(project.created);
+    if (!acquiredDay || acquiredDay !== localCalendarDayKey(Date.now())) {
       return "";
     }
     const src = librarySourceDisplayName(project) || "Library";
@@ -1004,15 +1047,42 @@
     );
   }
 
-  function projectDetailsHref(projectId, hash) {
-    const base = `mytawala-project.html?project=${encodeURIComponent(projectId || "")}`;
+  function projectDetailsHref(projectId, hash, queryExtra) {
+    const params = new URLSearchParams();
+    params.set("project", projectId || "");
+    if (queryExtra && typeof queryExtra === "object") {
+      Object.keys(queryExtra).forEach((key) => {
+        const val = queryExtra[key];
+        if (val == null || val === "") return;
+        params.set(key, String(val));
+      });
+    }
+    const base = `mytawala-project.html?${params.toString()}`;
     return hash ? `${base}#${hash}` : base;
+  }
+
+  /**
+   * Listing Use (multi-start) lands on Details with starts expanded + first start selected.
+   * Double-click / plain Details links omit this — tree stays collapsed.
+   */
+  function wantsOpenStartsFromLocation() {
+    if (typeof location === "undefined") return false;
+    try {
+      const params = new URLSearchParams(location.search || "");
+      if (params.get("openStarts") === "1" || params.get("fromUse") === "1") return true;
+    } catch {
+      /* ignore */
+    }
+    const h = location.hash || "";
+    return h === "#pmSecData" || h === "#pmDataStartPoints";
   }
 
   /**
    * Use navigation: multi-entry apps (2+ start points) go to Project Details so the
    * user picks Setup vs Exam (etc.). Single-start opens the one :8080 URL in a new tab.
    * Owner Aug 4, 2026 — jumping straight to Exam skipped setup and hit stale sessions.
+   * Owner Aug 10 — Details entry opens Project Data to starts + first start highlighted
+   * so banner Use / Copy link are immediately meaningful.
    */
   function projectUseTarget(project) {
     if (!project) return null;
@@ -1022,7 +1092,7 @@
     if (!withUrls.length && !runtimeUrl) return null;
     if (listed.length > 1) {
       return {
-        href: projectDetailsHref(project.id, "pmSecData"),
+        href: projectDetailsHref(project.id, "pmSecData", { openStarts: "1" }),
         openInNewTab: false,
         title: "Choose a start point on Project Details (multi-entry project)",
         mode: "details",
@@ -1159,19 +1229,14 @@
           ` data-wired="${escapeHtml(String(op.wired))}"` +
           (op.alwaysEnabled ? ' data-always-enabled="true"' : "") +
           (op.requiresLibraryLink ? ' data-requires-library-link="true"' : "");
-        if (op.wired === "get-from-library") {
-          return (
-            `<a class="pm-action is-active" href="library.html" title="${escapeHtml(op.title || op.label)}" ${data}>` +
-            `${escapeHtml(op.label)}</a>`
-          );
-        }
         const startDisabled = op.alwaysEnabled ? "" : " disabled";
+        const activeClass = op.wired === "get-from-library" ? " is-active" : "";
         return (
-          `<button type="button" class="pm-action${dangerClass}"${startDisabled} title="${escapeHtml(op.title || op.label)}" ${data}>` +
+          `<button type="button" class="pm-action${activeClass}${dangerClass}"${startDisabled} title="${escapeHtml(op.title || op.label)}" ${data}>` +
           `${escapeHtml(op.label)}</button>`
         );
       }).join("") +
-      '<span class="pm-listing-bar-hint" id="myProjectsListingBarHint">Get from Library is always available · select a linked project to Refresh · select any project to Delete</span>' +
+      '<span class="pm-listing-bar-hint" id="myProjectsListingBarHint">Get from Library saves a copy into My Tawala · select a linked project to Refresh · select any project to Delete</span>' +
       "</div>"
     );
   }
@@ -1198,7 +1263,7 @@
       if (el.dataset.alwaysEnabled === "true" || opId === "get-library") {
         el.dataset.project = "";
         if ("disabled" in el) el.disabled = false;
-        el.title = "Browse the public Library and Save a copy into My Tawala";
+        el.title = "Pick a public Library project and Save a copy into My Tawala";
         return;
       }
 
@@ -1229,7 +1294,7 @@
     if (hint) {
       if (!id) {
         hint.textContent =
-          "Get from Library is always available · select a linked project to Refresh · select any project to Delete";
+          "Get from Library saves a copy into My Tawala · select a linked project to Refresh · select any project to Delete";
       } else if (link) {
         hint.textContent = `Selected “${selectedName}” · linked to Library “${link.name}” — Refresh / Delete available`;
       } else {
@@ -1915,17 +1980,20 @@
    * Form-row label: full name in the DOM; CSS ellipsis shortens only when the
    * name track is tight (minmax ~6ch last resort). title keeps the full string.
    */
-  function formRowHtml(name, startInfo, countsState) {
+  function formRowHtml(name, startInfo, countsState, opts) {
     const isStart = !!startInfo;
+    const selected = !!(opts && opts.selected);
     const label = isStart && startInfo.label ? startInfo.label : name;
     const full = String(label || "");
     const urlAttr =
       isStart && startInfo.url ? ` data-pm-url="${escapeHtml(startInfo.url)}"` : "";
     const idxAttr = isStart ? ` data-pm-start-idx="${startInfo.idx}"` : "";
+    const selClass = selected ? " is-selected" : "";
+    const ariaSel = selected ? ` aria-selected="true"` : "";
     return (
-      `<li class="pm-data-tree-row pm-data-tree-form${isStart ? " is-start" : ""}" role="treeitem" tabindex="0" ` +
+      `<li class="pm-data-tree-row pm-data-tree-form${isStart ? " is-start" : ""}${selClass}" role="treeitem" tabindex="0" ` +
       `data-pm-sel="${isStart ? "start" : "form"}" data-pm-form="${escapeHtml(name)}" ` +
-      `data-pm-is-start="${isStart ? "1" : "0"}"${idxAttr}${urlAttr}>` +
+      `data-pm-is-start="${isStart ? "1" : "0"}"${idxAttr}${urlAttr}${ariaSel}>` +
       (isStart
         ? `<span class="pm-data-tree-play" title="Starting point" aria-label="Starting point">▶</span>`
         : `<span class="pm-data-tree-play-spacer" aria-hidden="true"></span>`) +
@@ -2009,16 +2077,25 @@
     const displayName = projectDisplayName(project);
     const formNames = collectFormNames(project);
     const entries = orderedFormEntries(project, formNames);
-    const preferLevel =
-      typeof location !== "undefined" &&
-      location.hash &&
-      (location.hash === "#pmSecData" || location.hash === "#pmDataStartPoints")
-        ? 1
-        : 0;
+    /* Listing Use → #pmSecData / ?openStarts=1: level 1 (starts). Plain Details stays 0. */
+    const preferLevel = wantsOpenStartsFromLocation() ? 1 : 0;
+    const firstStartEntry =
+      preferLevel >= 1 ? entries.find((e) => e && e.start) || null : null;
+    const selectFirstStart = !!(firstStartEntry && firstStartEntry.name);
     const projectChrome = projectToggleChrome(preferLevel);
-    const formRows = entries.map((e) => formRowHtml(e.name, e.start, null)).join("");
+    const formRows = entries
+      .map((e) =>
+        formRowHtml(e.name, e.start, null, {
+          selected: selectFirstStart && e.name === firstStartEntry.name && !!e.start,
+        })
+      )
+      .join("");
     const hasStarts = entries.some((e) => e.start);
     const scrollClass = entries.length > 10 ? " is-scrollable" : "";
+    const selKind = selectFirstStart ? "start" : "project";
+    const selKey = selectFirstStart ? firstStartEntry.name : "";
+    const projectSelClass = selectFirstStart ? "" : " is-selected";
+    const projectAria = selectFirstStart ? "" : ` aria-selected="true"`;
 
     const hint = deployed
       ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
@@ -2039,11 +2116,11 @@
       `data-expand-level="${preferLevel}" ` +
       `data-project-open="${preferLevel >= 1 ? "1" : "0"}" ` +
       `data-forms-open="${preferLevel >= 2 ? "1" : "0"}" ` +
-      `data-sel-kind="project" data-sel-key="">` +
+      `data-sel-kind="${escapeHtml(selKind)}" data-sel-key="${escapeHtml(selKey)}">` +
       /* One shared column grid for banner heads, banner values, and every form row. */
       `<div class="pm-data-grid${scrollClass}">` +
-      `<div class="pm-data-project-block is-selected" role="treeitem" tabindex="0" ` +
-      `data-pm-sel="project" aria-selected="true" id="pmDataStartPoints">` +
+      `<div class="pm-data-project-block${projectSelClass}" role="treeitem" tabindex="0" ` +
+      `data-pm-sel="project"${projectAria} id="pmDataStartPoints">` +
       /* Row 1 — name + column heads + command groups (vrules span both rows). */
       renderDataTreeToggle(projectChrome.title, projectChrome.expanded) +
       `<span class="pm-data-tree-label pm-data-tree-project-name" title="${escapeHtml(
@@ -2076,6 +2153,27 @@
       hint +
       "</div>"
     );
+  }
+
+  /** Select the first start-marked form (banner Use / Copy enablement). */
+  function selectFirstStartRow(tree) {
+    if (!tree) return false;
+    const row =
+      tree.querySelector('.pm-data-tree-form.is-start[data-pm-is-start="1"]') ||
+      tree.querySelector('.pm-data-tree-form[data-pm-is-start="1"]');
+    if (!row) return false;
+    setDataTreeSelection(tree, "start", row);
+    return true;
+  }
+
+  /**
+   * Use → Details entry: expand to starts (level 1) and highlight the first start.
+   * No-op when location is a plain Details open (double-click / no openStarts hash).
+   */
+  function applyOpenStartsEntry(tree) {
+    if (!tree || !wantsOpenStartsFromLocation()) return false;
+    setExpandLevel(tree, 1);
+    return selectFirstStartRow(tree);
   }
 
   function readDataTreeSelection(tree) {
@@ -2573,7 +2671,12 @@
           break;
         }
       }
-      if (!restored) syncProjectActionsForDataSelection(tree);
+      if (!restored) {
+        /* Use entry: prefer first start over falling back to grey Use/Copy. */
+        if (!applyOpenStartsEntry(tree)) syncProjectActionsForDataSelection(tree);
+      }
+    } else if (wantsOpenStartsFromLocation()) {
+      applyOpenStartsEntry(tree);
     } else {
       syncProjectActionsForDataSelection(tree);
     }
@@ -2867,8 +2970,8 @@
     );
   }
 
-  /** Open browser Designer (:5173) with a clear message; fall back to designer.html stub. */
-  function openEditInDesigner(projectId) {
+  /** Open browser Designer (:5173) with this project's definition loaded (not a blank canvas). */
+  async function openEditInDesigner(projectId) {
     const project =
       projectId && typeof TawalaDemo !== "undefined" && typeof TawalaDemo.getMyTawala === "function"
         ? TawalaDemo.getMyTawala(projectId)
@@ -2886,21 +2989,138 @@
       encodeURIComponent(name) +
       (jsonFile ? "&json=" + encodeURIComponent(jsonFile) : "");
 
+    if (!project) {
+      window.alert("Couldn't open in Designer\n\nProject not found in My Tawala.");
+      return;
+    }
+
+    const resolved = await resolveDefinitionForEdit(project);
+    if (!resolved.ok) {
+      window.alert(
+        `Can't open “${name}” in Designer — no project definition is available to edit.\n\n` +
+          (resolved.message ||
+            "Library copies need a catalog JSON (or Deploy → Show in My Tawala) before Edit works.")
+      );
+      setStatus(`Edit in Designer — no definition for “${name}”.`);
+      return;
+    }
+
+    let openUrl = "";
+    if (resolved.snapshotId) {
+      openUrl =
+        designerApp + "?snapshot=" + encodeURIComponent(String(resolved.snapshotId));
+    } else if (resolved.mockJson) {
+      openUrl =
+        designerApp + "?mockJson=" + encodeURIComponent(String(resolved.mockJson));
+    } else if (resolved.definition && typeof TawalaDemo.saveVersionSnapshot === "function") {
+      const saved = await TawalaDemo.saveVersionSnapshot({
+        project: resolved.definition,
+        uniqueId: project.uniqueId || null,
+        projectId: project.id || projectId,
+        versionDescription: "Open in Designer",
+      });
+      if (!saved || saved.status === "failure" || !saved.snapshotId) {
+        window.alert(
+          `Couldn't prepare “${name}” for Designer.\n\n` +
+            ((saved && saved.error) || "snapshot save failed") +
+            "\n\nIs designer-web API on :3001? (cd designer-web && npm run keep)"
+        );
+        setStatus(`Edit in Designer failed — could not save snapshot.`);
+        return;
+      }
+      openUrl = designerApp + "?snapshot=" + encodeURIComponent(String(saved.snapshotId));
+    }
+
+    if (!openUrl) {
+      window.alert(
+        `Can't open “${name}” in Designer — no open path resolved.\n\n` +
+          "Try again after confirming Designer API (:3001) is running."
+      );
+      return;
+    }
+
     const lines = [
-      `Open “${name}” in the browser Designer.`,
+      `Open “${name}” in the browser Designer with its definition loaded.`,
       "",
-      "Designer (:5173) and this mock (:5500) do not share storage — use File → Open on the project JSON if it is not already loaded.",
+      "OK opens Designer at localhost:5173. Cancel opens the Designer stub page instead.",
     ];
-    if (jsonFile) lines.push("", `Repo path: ${jsonFile}`);
-    lines.push("", "OK opens Designer at localhost:5173. Cancel opens the Designer stub page instead.");
+    if (resolved.from === "jsonFile" && resolved.mockJson) {
+      lines.splice(1, 0, "", `Source: ${resolved.mockJson}`);
+    } else if (resolved.from === "overlay" || resolved.from === "api") {
+      lines.splice(1, 0, "", "Source: My Tawala version snapshot.");
+    }
 
     const goLive = window.confirm(lines.join("\n"));
     if (goLive) {
-      window.open(designerApp, "_blank", "noopener");
-      setStatus(`Opened Designer for “${name}” — File → Open if needed.`);
+      window.open(openUrl, "_blank", "noopener");
+      setStatus(`Opened “${name}” in Designer.`);
     } else {
       location.href = stubQs;
     }
+  }
+
+  /**
+   * Resolve a Designer-loadable definition for Edit project in Designer.
+   * Prefers version snapshot / cached definition, then catalog jsonFile under projects/.
+   */
+  async function resolveDefinitionForEdit(project) {
+    const versions = Array.isArray(project.versions) ? project.versions.slice() : [];
+    const ordered = [];
+    const current = versions.find((v) => v && v.deployed);
+    if (current) ordered.push(current);
+    for (let i = versions.length - 1; i >= 0; i--) {
+      const v = versions[i];
+      if (v && v !== current) ordered.push(v);
+    }
+    for (let i = 0; i < ordered.length; i++) {
+      const v = ordered[i];
+      if (!versionIsRedeployable(v)) continue;
+      const r = await resolveDefinitionForVersion(v);
+      if (r.ok) {
+        return {
+          ok: true,
+          definition: r.definition,
+          snapshotId: r.snapshotId || (v && v.snapshotId) || null,
+          from: r.from || "version",
+        };
+      }
+    }
+
+    const jsonFile = project.jsonFile ? String(project.jsonFile) : "";
+    const catalogPath =
+      jsonFile &&
+      !jsonFile.includes("..") &&
+      !jsonFile.startsWith("/") &&
+      (/^projects\/(mytawala|library)\//.test(jsonFile) ||
+        /^designer-web\/public\/samples\//.test(jsonFile))
+        ? jsonFile
+        : "";
+    if (catalogPath) {
+      /* Prefer API disk read via Designer ?mockJson= (works even if :5500 CORS is off). */
+      if (catalogPath.startsWith("projects/")) {
+        try {
+          const res = await fetch(encodeMockRelPath(catalogPath), { cache: "no-store" });
+          if (res.ok) {
+            const def = await res.json();
+            if (def && def.name) {
+              return { ok: true, definition: def, mockJson: catalogPath, from: "jsonFile" };
+            }
+          }
+        } catch {
+          /* still offer mockJson deep-link — Designer API may read the file from disk */
+        }
+      }
+      return { ok: true, mockJson: catalogPath, from: "jsonFile" };
+    }
+
+    return {
+      ok: false,
+      error: "no-definition",
+      message:
+        "This My Tawala row has no Designer definition yet.\n\n" +
+        "Seeded apps (e.g. Online Exam Builder) should have a catalog JSON. " +
+        "A Library acquire with no Push / Show in My Tawala snapshot also cannot be edited until a definition exists.",
+    };
   }
 
   function applyThemeSelection(projectId, themePath) {
@@ -3149,6 +3369,7 @@
   const PUBLISH_MODAL_ID = "tawalaPublishModal";
   const DEPLOY_SHARE_MODAL_ID = "tawalaDeployShareModal";
   const SAVE_COPY_MODAL_ID = "tawalaSaveCopyModal";
+  const GET_LIBRARY_MODAL_ID = "tawalaGetLibraryModal";
   const RENAME_MODAL_ID = "tawalaRenameModal";
   const DESC_MODAL_ID = "tawalaDescModal";
 
@@ -3180,6 +3401,16 @@
 
   function handleSaveCopyModalKeydown(ev) {
     if (ev.key === "Escape") closeSaveCopyModal();
+  }
+
+  function closeGetLibraryModal() {
+    const el = document.getElementById(GET_LIBRARY_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handleGetLibraryModalKeydown, true);
+  }
+
+  function handleGetLibraryModalKeydown(ev) {
+    if (ev.key === "Escape") closeGetLibraryModal();
   }
 
   function closeRenameModal() {
@@ -3446,6 +3677,123 @@
    * Library Save a copy — rename-on-acquire into private My Tawala (Aug 9 Task #8).
    * libraryId is the public catalog id (not a My Tawala row).
    */
+  /**
+   * Get from Library… (My Tawala listing) — pick a public Library project, then the same
+   * Save a copy rename flow. Not a nav duplicate of Library chrome.
+   */
+  function openGetFromLibraryDialog() {
+    if (typeof TawalaDemo === "undefined") {
+      window.alert("Get from Library isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    closeGetLibraryModal();
+    closeSaveCopyModal();
+
+    const entries =
+      typeof TawalaDemo.libraryEntries === "function" ? TawalaDemo.libraryEntries() : [];
+    const list = entries
+      .slice()
+      .filter((p) => p && p.id && p.inactive !== true && p.libraryActive !== false)
+      .sort((a, b) => {
+        const ca = String(a.category || "Uncategorized").localeCompare(String(b.category || "Uncategorized"));
+        if (ca !== 0) return ca;
+        const na = TawalaDemo.displayName ? TawalaDemo.displayName(a.name) : String(a.name || a.id);
+        const nb = TawalaDemo.displayName ? TawalaDemo.displayName(b.name) : String(b.name || b.id);
+        return na.localeCompare(nb);
+      });
+
+    if (!list.length) {
+      window.alert(
+        "No public Library projects are available to copy right now.\n\n" +
+          "Open Library from the top nav if you want to browse; the catalog may be empty in this browser."
+      );
+      return;
+    }
+
+    const rowsHtml = list
+      .map((p, idx) => {
+        const title = TawalaDemo.displayName
+          ? TawalaDemo.displayName(p.name)
+          : String(p.name || p.id);
+        const cat = p.category || "Uncategorized";
+        const blurb = String(p.shortDescription || "").trim();
+        const live =
+          p.liveReady === true || (p.deployed && p.testDriveUrl)
+            ? ' <span class="get-lib-live" title="Live try-out on :8080">Live</span>'
+            : "";
+        const checked = idx === 0 ? " checked" : "";
+        return (
+          `<label class="get-lib-row">` +
+          `<input type="radio" name="getLibPick" value="${escapeHtml(p.id)}"${checked} />` +
+          `<span class="get-lib-row-body">` +
+          `<span class="get-lib-name">${escapeHtml(title)}${live}</span>` +
+          `<span class="get-lib-meta">${escapeHtml(cat)}</span>` +
+          (blurb ? `<span class="get-lib-blurb">${escapeHtml(blurb)}</span>` : "") +
+          `</span></label>`
+        );
+      })
+      .join("");
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = GET_LIBRARY_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish tawala-modal--get-library" role="dialog" aria-modal="true" aria-labelledby="getLibModalTitle">' +
+      `<h3 id="getLibModalTitle">Get from Library</h3>` +
+      `<p class="pm-hint tawala-modal-lede">Pick a public Library project to <b>Save a copy</b> into your private My Tawala. ` +
+      `You’ll name it next. This is not the same as browsing Library in the top nav.</p>` +
+      '<div class="tawala-modal-body">' +
+      `<div class="get-lib-list" role="radiogroup" aria-label="Public Library projects">${rowsHtml}</div>` +
+      '<p class="pm-hint" id="getLibModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="getLibModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="getLibModalContinue">Continue…</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", handleGetLibraryModalKeydown, true);
+
+    const errEl = backdrop.querySelector("#getLibModalError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+
+    function selectedLibraryId() {
+      const picked = backdrop.querySelector('input[name="getLibPick"]:checked');
+      return picked ? picked.value : "";
+    }
+
+    function continueAcquire() {
+      const libraryId = selectedLibraryId();
+      if (!libraryId) {
+        showErr("Pick a Library project to continue.");
+        return;
+      }
+      closeGetLibraryModal();
+      openSaveCopyDialog(libraryId);
+    }
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeGetLibraryModal();
+    });
+    backdrop.querySelector("#getLibModalCancel").addEventListener("click", closeGetLibraryModal);
+    backdrop.querySelector("#getLibModalContinue").addEventListener("click", continueAcquire);
+    backdrop.querySelectorAll(".get-lib-row").forEach((row) => {
+      row.addEventListener("dblclick", (ev) => {
+        const radio = row.querySelector('input[name="getLibPick"]');
+        if (radio) radio.checked = true;
+        ev.preventDefault();
+        continueAcquire();
+      });
+    });
+
+    const first = backdrop.querySelector('input[name="getLibPick"]');
+    if (first) first.focus();
+  }
+
   function openSaveCopyDialog(libraryId) {
     if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
       window.alert("Save a copy isn't available — required scripts didn't load. Refresh and try again.");
@@ -3461,6 +3809,7 @@
       return;
     }
     closeSaveCopyModal();
+    closeGetLibraryModal();
     closeRenameModal();
     closeDescModal();
 
@@ -3478,7 +3827,8 @@
       `<h3 id="saveCopyModalTitle">Save a copy</h3>` +
       `<p class="pm-hint tawala-modal-lede">Save “${escapeHtml(sourceName)}” into your private My Tawala. ` +
       `<b>Choose a name</b> you’ll recognize later — the suggestion below is only a starting point (you can keep it or type your own). ` +
-      `This creates a new project identity; renaming alone later does not. Response data starts empty (Deploy before Use).</p>` +
+      `This creates a new project identity; renaming alone later does not. ` +
+      `<b>Use</b> works when the copy lands (mock shares the Library live start URLs for review — production must mint a private uniqueId).</p>` +
       '<div class="tawala-modal-body">' +
       '<label class="tawala-modal-field" for="saveCopyNameInput">Your project name' +
       `<input type="text" id="saveCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
@@ -3572,12 +3922,9 @@
           detail: { libraryId, myTawalaId: result.id, name: nameVal, result },
         })
       );
-      /* Land on Project Details of the NEW copy with an on-page success banner (acquired=1).
-       * Avoid a blocking alert that can feel like the only confirmation — then disappear. */
+      /* Land on My Tawala listing with the new row selected (not Project Details). */
       window.location.href =
-        "mytawala-project.html?project=" +
-        encodeURIComponent(result.id) +
-        "&acquired=1";
+        "mytawala.html?highlight=" + encodeURIComponent(result.id);
     }
 
     backdrop.querySelector("#saveCopyModalConfirm").addEventListener("click", confirmSave);
@@ -4265,7 +4612,8 @@
     }
 
     if (wired === "get-from-library") {
-      /* Native <a href="library.html"> — let the browser navigate. */
+      ev.preventDefault();
+      openGetFromLibraryDialog();
       return;
     }
 
@@ -4594,10 +4942,12 @@
     hydrateThemeFromProjectJson,
     resolveProjectThemePath,
     syncProjectActionsForDataSelection,
+    applyOpenStartsEntry,
     renderOpsCatalog,
     openPublishDialog,
     openDeployShareDialog,
     openSaveCopyDialog,
+    openGetFromLibraryDialog,
     openRenameDialog,
     openEditDescriptionDialog,
     renderLibrarySaveCopyButton,

@@ -380,14 +380,14 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
         <div className="menu-separator" />
         <button
           type="button"
-          title="Open website-mock Library (localhost:5500)"
+          title="Open website-mock Library (127.0.0.1:5500)"
           onClick={() => openWebsiteMockLibrary()}
         >
           Website mock (Library)…
         </button>
         <button
           type="button"
-          title="Open website-mock My Tawala listing (localhost:5500)"
+          title="Open website-mock My Tawala listing (127.0.0.1:5500)"
           onClick={() => openWebsiteMockMyTawala()}
         >
           Website mock (My Tawala)…

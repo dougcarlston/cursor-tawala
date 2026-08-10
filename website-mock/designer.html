@@ -22,8 +22,10 @@
             <a class="button" id="designerOpenLive" href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer → localhost:5173</a>
           </p>
           <p>
-            Designer (:5173) and this mock (:5500) do <b>not</b> share storage. After opening Designer, use
-            <b>File → Open</b> on the project JSON if it is not already loaded.
+            Designer (:5173) and this mock (:5500) do <b>not</b> share storage. Prefer
+            <b>Project Details → Edit project in Designer</b> (loads via
+            <code>?mockJson=</code> / <code>?snapshot=</code>). Otherwise use
+            <b>File → Open</b> on the project JSON.
           </p>
           <p>
             To deploy templates to local Java without the Designer Deploy button, use:
@@ -53,11 +55,24 @@
       if (name) parts.push("Project: <b>" + name.replace(/</g, "&lt;") + "</b>");
       if (projectId) parts.push("Id: <code>" + projectId.replace(/</g, "&lt;") + "</code>");
       if (json) parts.push("Repo JSON: <code>" + json.replace(/</g, "&lt;") + "</code>");
-      parts.push("Open localhost:5173, then File → Open that JSON if needed.");
+      if (json) {
+        parts.push(
+          "Live open: <code>http://localhost:5173/?mockJson=" +
+            encodeURIComponent(json).replace(/</g, "&lt;") +
+            "</code>"
+        );
+        const live = document.getElementById("designerOpenLive");
+        if (live) {
+          live.href =
+            "http://localhost:5173/?mockJson=" + encodeURIComponent(json);
+        }
+      } else {
+        parts.push("Open localhost:5173, then File → Open that JSON if needed.");
+      }
       hint.innerHTML = parts.join("<br />");
-      const live = document.getElementById("designerOpenLive");
-      if (live && name) {
-        live.title = "Open browser Designer for “" + name + "”";
+      const liveBtn = document.getElementById("designerOpenLive");
+      if (liveBtn && name) {
+        liveBtn.title = "Open browser Designer for “" + name + "”";
       }
     })();
   </script>

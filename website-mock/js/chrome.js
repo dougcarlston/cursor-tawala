@@ -37,7 +37,7 @@
       ready: true,
     },
     websiteMock: {
-      href: "http://localhost:5500/",
+      href: "http://127.0.0.1:5500/",
       label: "Website mock",
       ready: true,
     },

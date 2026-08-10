@@ -1,4 +1,7 @@
 import express from "express";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { XMLParser } from "fast-xml-parser";
 import * as store from "./store.mjs";
 import * as runtime from "./runtime.mjs";
@@ -27,6 +30,9 @@ import {
 } from "./projectResponses.mjs";
 import { getVersionSnapshot, saveVersionSnapshot } from "./versionSnapshots.mjs";
 
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+/** Repo root (…/Tawala) — website-mock/projects lives beside designer-web. */
+const REPO_ROOT = path.resolve(__dirname, "../..");
 const PORT = Number(process.env.TAWALA_DEV_PORT || 3001);
 let HOST = process.env.TAWALA_DEV_HOST || "http://localhost:5173";
 let JAVA_URL = process.env.TAWALA_JAVA_URL || "";
@@ -630,6 +636,57 @@ app.get("/api/version-snapshots/:snapshotId", (req, res) => {
     return;
   }
   res.json({ status: "success", ...record });
+});
+
+/**
+ * Read a seeded website-mock / samples catalog JSON for Edit project in Designer
+ * (`?mockJson=` on :5173). Path-restricted to:
+ *   website-mock/projects/{mytawala|library}/*.json
+ *   designer-web/public/samples/…/*.json (any depth under samples)
+ */
+app.options("/api/open-mock-json", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+app.get("/api/open-mock-json", (req, res) => {
+  allowMockCors(req, res);
+  const rel = String(req.query.path || "").trim().replace(/\\/g, "/");
+  if (rel.includes("..") || rel.startsWith("/") || rel.includes("\0")) {
+    res.status(400).json({ status: "failure", error: "invalid path" });
+    return;
+  }
+  const projectsOk = /^projects\/(mytawala|library)\/[^/]+\.json$/i.test(rel);
+  const samplesOk = /^designer-web\/public\/samples\/.+\.json$/i.test(rel);
+  if (!projectsOk && !samplesOk) {
+    res.status(400).json({
+      status: "failure",
+      error: "invalid path (projects/mytawala|library/*.json or designer-web/public/samples/…/*.json only)",
+    });
+    return;
+  }
+  const full = path.resolve(path.join(REPO_ROOT, rel.startsWith("designer-web/") ? rel : path.join("website-mock", rel)));
+  const allowedRoot = projectsOk
+    ? path.resolve(path.join(REPO_ROOT, "website-mock", "projects"))
+    : path.resolve(path.join(REPO_ROOT, "designer-web", "public", "samples"));
+  if (full !== allowedRoot && !full.startsWith(allowedRoot + path.sep)) {
+    res.status(400).json({ status: "failure", error: "path escapes allowed root" });
+    return;
+  }
+  if (!fs.existsSync(full)) {
+    res.status(404).json({ status: "failure", error: "file not found" });
+    return;
+  }
+  try {
+    const project = JSON.parse(fs.readFileSync(full, "utf8"));
+    if (!project || typeof project !== "object" || !project.name) {
+      res.status(400).json({ status: "failure", error: "file is not a Designer project JSON" });
+      return;
+    }
+    res.json({ status: "success", path: rel, project });
+  } catch (e) {
+    res.status(400).json({ status: "failure", error: String(e.message ?? e) });
+  }
 });
 
 /** Server-owned outbound email status (no secrets returned). */

@@ -26,7 +26,9 @@
  *       description is the only mutable field on an existing version (updateVersionDescription)
  *       Deploy-this-version needs snapshotId and/or definition (saved from Show in My Tawala)
  *   tawala.mock.myTawalaDeleted — { [projectId]: true } account-private My Tawala removals
- *     (does not touch public Library / TAWALA_LIBRARY / liveReady)
+ *     (does not touch public Library / TAWALA_LIBRARY / liveReady). Also used to hide discarded
+ *     fake seed archive ids (TAWALA_MYTAWALA_DISCARDED_SEED_IDS) that are not real Push /
+ *     Save-a-copy overlay rows.
  *   tawala.mock.libraryOverlay — { [libraryId]: catalog-shaped entry } merged into the public
  *     Library — Publish (My Tawala → Library) writes here. Mock-only; shipping an overlay entry
  *     into the repo catalog / demo-urls.js (and liveReady) stays a separate maintainer step.
@@ -352,10 +354,189 @@
     return writeJson(DELETED_KEY, o);
   }
 
+  /** Former fake My Tawala catalog seed ids — see window.TAWALA_MYTAWALA_DISCARDED_SEED_IDS. */
+  function discardedMyTawalaSeedIdSet() {
+    const list =
+      (typeof window !== "undefined" && window.TAWALA_MYTAWALA_DISCARDED_SEED_IDS) || [];
+    return new Set(Array.isArray(list) ? list.map(String) : []);
+  }
+
+  /**
+   * True when an overlay row is a real user acquire (Push / Save a copy / Publish retire
+   * safety copy) — not a stray snapshot of an old fake seed.
+   */
+  function isRealMyTawalaOverlayRow(data) {
+    if (!data || typeof data !== "object") return false;
+    if (data.fromLibraryAcquire === true || data.sourcePile === "library-acquire") return true;
+    if (data.pulledFromLibraryId) return true;
+    if (data.lastDeployAt || data.fromDeployOverlay === true) return true;
+    if (data.sourcePile === "publish-overlay" || data.retiredFromLibraryId) return true;
+    if (data.sourcePile === "library-retired") return true;
+    if (Array.isArray(data.versions) && data.versions.length) return true;
+    return false;
+  }
+
+  /**
+   * Save a copy / Publish-retire safety rows must survive Push at the same slug.
+   * Push mints a new id instead of replacing them (owner Aug 10 — merge keeps acquires).
+   */
+  function isProtectedAcquireOverlayRow(data) {
+    if (!data || typeof data !== "object") return false;
+    if (data.fromLibraryAcquire === true || data.sourcePile === "library-acquire") return true;
+    if (data.sourcePile === "library-retired" || data.retiredFromLibraryId) return true;
+    return false;
+  }
+
+  /**
+   * Hide discarded fake seed archive ids on every My Tawala load. Does not touch real
+   * Push / Save-a-copy overlay rows (even when they reuse a former seed slug).
+   */
+  function scrubDiscardedMyTawalaSeeds() {
+    const discarded = discardedMyTawalaSeedIdSet();
+    if (!discarded.size) return { ok: true, marked: [] };
+    const overlay = getMyTawalaOverlay();
+    const marked = [];
+    let overlayChanged = false;
+    discarded.forEach((id) => {
+      const data = overlay[id];
+      if (data && isRealMyTawalaOverlayRow(data)) {
+        clearMyTawalaDeleted(id);
+        return;
+      }
+      if (data) {
+        delete overlay[id];
+        overlayChanged = true;
+      }
+      if (!isMyTawalaDeleted(id)) {
+        markMyTawalaDeleted(id);
+        marked.push(id);
+      }
+    });
+    if (overlayChanged) writeJson(PILE_KEY, overlay);
+    return { ok: true, marked };
+  }
+
+  /**
+   * Copy Library live start URLs / uniqueId onto a Save-a-copy row so Use works in the mock.
+   * Demo limitation: shares the Library try-out :8080 identity until production mints a
+   * private uniqueId (clone-on-acquire). Flag: mockSharedLibraryRuntime.
+   */
+  function liveRuntimeFromLibrarySource(source) {
+    const startPoints = (Array.isArray(source && source.startPoints) ? source.startPoints : [])
+      .map((sp) => ({
+        label: (sp && (sp.label || sp.form)) || "Start",
+        url: (sp && sp.url) || null,
+      }))
+      .filter((sp) => sp.label);
+    let uniqueId = (source && source.uniqueId) || null;
+    if (
+      !uniqueId &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdForProject === "function"
+    ) {
+      uniqueId = window.TawalaDemo.uniqueIdForProject(source);
+    }
+    if (
+      !uniqueId &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdFromUrl === "function"
+    ) {
+      uniqueId = window.TawalaDemo.uniqueIdFromUrl(source && source.testDriveUrl);
+      if (!uniqueId) {
+        for (let i = 0; i < startPoints.length; i++) {
+          uniqueId = window.TawalaDemo.uniqueIdFromUrl(startPoints[i].url);
+          if (uniqueId) break;
+        }
+      }
+    }
+    let testDriveUrl = (source && source.testDriveUrl) || null;
+    if (
+      !testDriveUrl &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.primaryStartUrl === "function"
+    ) {
+      testDriveUrl = window.TawalaDemo.primaryStartUrl(startPoints, null);
+    }
+    if (!testDriveUrl) {
+      const withUrl = startPoints.find((s) => s && s.url);
+      testDriveUrl = (withUrl && withUrl.url) || null;
+    }
+    const hasLive = !!(uniqueId || testDriveUrl || startPoints.some((s) => s && s.url));
+    return {
+      startPoints,
+      testDriveUrl,
+      uniqueId: uniqueId || null,
+      deployed: hasLive,
+      mockSharedLibraryRuntime: hasLive,
+    };
+  }
+
+  function acquireHasLiveStart(entry) {
+    if (!entry) return false;
+    if (entry.testDriveUrl) return true;
+    if (entry.uniqueId) return true;
+    const sps = entry.startPoints || [];
+    return sps.some((s) => s && s.url);
+  }
+
+  /**
+   * Fix older Save-a-copy overlay rows that stripped uniqueId / :8080 URLs (Use was grey).
+   * Re-copies live start metadata from pulledFromLibraryId. Persists into overlay.
+   */
+  function rehydrateAcquireLiveUrls() {
+    const overlay = getMyTawalaOverlay();
+    let changed = false;
+    const hydrated = [];
+    Object.keys(overlay).forEach((id) => {
+      const entry = overlay[id];
+      if (!entry || typeof entry !== "object") return;
+      const libId = entry.pulledFromLibraryId;
+      if (!libId) return;
+      if (entry.fromLibraryAcquire !== true && entry.sourcePile !== "library-acquire") {
+        /* Pull-refresh may set pulledFromLibraryId without being an acquire — only
+         * rehydrate empty acquires (no live starts). */
+        if (acquireHasLiveStart(entry)) return;
+      }
+      if (acquireHasLiveStart(entry) && entry.mockSharedLibraryRuntime === true) return;
+      if (acquireHasLiveStart(entry) && !entry.mockSharedLibraryRuntime) {
+        /* Push / private deploy already has live URLs — leave alone. */
+        if (entry.lastDeployAt || (Array.isArray(entry.versions) && entry.versions.length)) return;
+      }
+      if (acquireHasLiveStart(entry)) return;
+
+      const source =
+        (typeof window !== "undefined" &&
+          window.TawalaDemo &&
+          typeof window.TawalaDemo.getLibrary === "function" &&
+          window.TawalaDemo.getLibrary(libId)) ||
+        libraryReplaceCandidates().find((c) => c.id === libId) ||
+        null;
+      if (!source) return;
+      const live = liveRuntimeFromLibrarySource(source);
+      if (!acquireHasLiveStart(live)) return;
+      overlay[id] = {
+        ...entry,
+        startPoints: live.startPoints,
+        testDriveUrl: live.testDriveUrl,
+        uniqueId: live.uniqueId,
+        deployed: live.deployed,
+        mockSharedLibraryRuntime: true,
+        fromLibraryAcquire: entry.fromLibraryAcquire !== false,
+      };
+      changed = true;
+      hydrated.push(id);
+    });
+    if (changed) writeJson(PILE_KEY, overlay);
+    return { ok: true, hydrated };
+  }
+
   /**
    * Account-private My Tawala Delete: remove this account’s row + Deploy overlay /
    * inbox receipt. Does not touch public Library catalog, liveReady, or :8080 XML.
-   * Seed rows from TAWALA_MYTAWALA stay hidden via deleted set until re-Deploy restores them.
+   * Former seed rows stay hidden via deleted set; re-Deploy / Save a copy clears the mark.
    */
   function deleteMyTawalaProject(projectId) {
     if (!projectId) {
@@ -376,7 +557,16 @@
    */
   function upsertMyTawalaFromDeploy(receipt) {
     if (!receipt || !receipt.name) return null;
-    const id = receipt.id || slugifyProjectId(receipt.name);
+    let id = receipt.id || slugifyProjectId(receipt.name);
+    const overlay = getMyTawalaOverlay();
+    /* Never replace a Save a copy / retire-safety row at the same slug — mint a sibling id.
+     * Re-Push onto an existing deploy-overlay row still merges versions in place. */
+    let prev = overlay[id] || null;
+    if (prev && isProtectedAcquireOverlayRow(prev)) {
+      id = uniqueMyTawalaSlug(id);
+      receipt.id = id;
+      prev = null;
+    }
     /* Re-Deploy / Show in My Tawala restores a previously deleted row. */
     clearMyTawalaDeleted(id);
     const startPoints = (Array.isArray(receipt.startpoints) ? receipt.startpoints : []).map((sp) => ({
@@ -419,8 +609,6 @@
     }
     const nowIso = timestampNow(receipt.at);
     const now = formatListDate(nowIso);
-    const overlay = getMyTawalaOverlay();
-    const prev = overlay[id] || null;
     const versionDescription = String(
       receipt.versionDescription != null
         ? receipt.versionDescription
@@ -745,16 +933,23 @@
 
   /** Merge overlay on top of catalog entries (overlay wins on id collision for deploy fields). */
   function withMyTawalaOverlay(entries) {
+    scrubDiscardedMyTawalaSeeds();
+    rehydrateAcquireLiveUrls();
     const overlay = getMyTawalaOverlay();
     const deleted = getMyTawalaDeleted();
+    const discarded = discardedMyTawalaSeedIdSet();
     const byId = new Map();
     (entries || []).forEach((p) => {
-      if (p && p.id && !deleted[p.id]) byId.set(p.id, p);
+      if (!p || !p.id || deleted[p.id]) return;
+      /* Empty seed is the contract — never list discarded archive ids from a stale base. */
+      if (discarded.has(p.id) && !isRealMyTawalaOverlayRow(overlay[p.id])) return;
+      byId.set(p.id, p);
     });
     Object.keys(overlay).forEach((id) => {
       if (deleted[id]) return;
       const data = overlay[id];
       if (!data || typeof data !== "object") return;
+      if (discarded.has(id) && !isRealMyTawalaOverlayRow(data)) return;
       const existing = byId.get(id);
       if (existing) {
         byId.set(id, {
@@ -1471,10 +1666,11 @@
   }
 
   /**
-   * Save a copy (Library → My Tawala acquire, Aug 9 Task #8). Mints a *new* private My Tawala
-   * row with rename-on-acquire. Empty-data default: no uniqueId / no :8080 start URLs (Use stays
-   * grey until Deploy) — never share the Library demo's submission identity. Start-point *labels*
-   * are kept for Project Data chrome. Bumps Library cloneCount (overlay) for Times-used later.
+   * Save a copy (Library → My Tawala acquire, Aug 9 Task #8; Use-ready Aug 10).
+   * Mints a *new* private My Tawala row with rename-on-acquire. Owner priority: Use must work
+   * when the copy lands — mock copies Library :8080 start URLs + uniqueId
+   * (`mockSharedLibraryRuntime: true`). Production must mint a private uniqueId (not share
+   * Library demo data forever). Bumps Library cloneCount (overlay) for Times-used later.
    *
    * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
    * On overwrite:true, deleteMyTawalaProject the existing same-name row, then write this acquire
@@ -1524,11 +1720,7 @@
     const id = uniqueMyTawalaSlug(slugifyProjectId(copyName));
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
-    const startPoints = (Array.isArray(source.startPoints) ? source.startPoints : [])
-      .map((sp) => ({
-        label: (sp && (sp.label || sp.form)) || "Start",
-      }))
-      .filter((sp) => sp.label);
+    const live = liveRuntimeFromLibrarySource(source);
 
     const entry = {
       name: copyName,
@@ -1550,11 +1742,12 @@
       pulledFromLibraryId: libraryId,
       pulledFromLibraryName: source.name,
       pulledAt: nowIso,
-      /* Empty data / private identity — do not inherit Library uniqueId or live start URLs. */
-      uniqueId: null,
-      deployed: false,
-      testDriveUrl: null,
-      startPoints,
+      /* Mock: Use works via Library live start URLs. Production must mint a private uniqueId. */
+      uniqueId: live.uniqueId,
+      deployed: live.deployed,
+      testDriveUrl: live.testDriveUrl,
+      startPoints: live.startPoints,
+      mockSharedLibraryRuntime: live.mockSharedLibraryRuntime,
     };
 
     clearMyTawalaDeleted(id);
@@ -1736,7 +1929,8 @@
     if (!parsed.id && parsed.name) parsed.id = slugifyProjectId(parsed.name);
     upsertMyTawalaFromDeploy(parsed);
     recordDeploy(parsed);
-    if (parsed.id && !params.get("project")) {
+    /* Always sync ?project= — upsert may mint a new id when a Save a copy already owns the slug. */
+    if (parsed.id) {
       params.set("project", parsed.id);
     }
     params.delete("deployReceipt");
@@ -1768,8 +1962,9 @@
         snapshotId: receipt.snapshotId || null,
       })
     );
+    /* 127.0.0.1 — same origin as website-mock/serve.sh (localhost ≠ 127.0.0.1 localStorage). */
     return (
-      "http://localhost:5500/mytawala-project.html?project=" +
+      "http://127.0.0.1:5500/mytawala-project.html?project=" +
       encodeURIComponent(id) +
       "&deployReceipt=" +
       payload
@@ -1795,7 +1990,7 @@
         snapshotId: receipt.snapshotId || null,
       })
     );
-    return "http://localhost:5500/mytawala.html?deployReceipt=" + payload;
+    return "http://127.0.0.1:5500/mytawala.html?deployReceipt=" + payload;
   }
 
   window.TawalaTransfer = {
@@ -1850,6 +2045,8 @@
     removeLibraryOverlay,
     clearLibraryOverlay,
     scrubDiscardedLibraryStubs,
+    scrubDiscardedMyTawalaSeeds,
+    rehydrateAcquireLiveUrls,
     isDiscardedPublicLibraryEntry,
     getLibraryRetired,
     isLibraryRetired,

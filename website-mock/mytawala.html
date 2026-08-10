@@ -6,11 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-import-form1" />
-  <script src="js/demo-urls.js?v=20260810-import-form1"></script>
-  <script src="js/transfer.js?v=20260810-import-form1"></script>
-  <script src="js/project-ops.js?v=20260810-import-form1"></script>
-  <script src="js/data-ops.js?v=20260810-import-form1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-usestarts1" />
+  <script src="js/demo-urls.js?v=20260810-usestarts1"></script>
+  <script src="js/transfer.js?v=20260810-usestarts1"></script>
+  <script src="js/project-ops.js?v=20260810-usestarts1"></script>
+  <script src="js/data-ops.js?v=20260810-usestarts1"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -53,7 +53,7 @@
       <div class="content">
         <div class="listing-identity" role="status">
           <span class="listing-where">Private</span>
-          <span class="listing-pile">MyTawala pile — Get from Library… always available; select a linked row to Refresh; select any row to Delete. Click a heading to sort; drag header edges to resize.</span>
+          <span class="listing-pile">Your projects — Push from Designer or Get from Library… (Save a copy). Select a linked row to Refresh; select any row to Delete.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
         <div id="deployInboxHost" class="deploy-inbox" hidden></div>
@@ -122,7 +122,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-import-form1"></script>
+  <script src="js/chrome.js?v=20260810-usestarts1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -428,6 +428,21 @@
       if (ingested) refreshProjects();
     }
 
+    /* Save a copy / Get from Library → listing with new row selected (?highlight=id). */
+    (function applyHighlightFromQuery() {
+      const params = new URLSearchParams(location.search);
+      const highlightId = (params.get("highlight") || params.get("select") || "").trim();
+      if (!highlightId) return;
+      selectedProjectId = highlightId;
+      params.delete("highlight");
+      params.delete("select");
+      const next = params.toString();
+      const path = location.pathname + (next ? "?" + next : "") + (location.hash || "");
+      if (typeof history !== "undefined" && history.replaceState) {
+        history.replaceState(null, "", path);
+      }
+    })();
+
     document.getElementById("myProjectsListingBarHost").innerHTML =
       TawalaProjectOps.renderListingSelectionBar();
 
@@ -502,6 +517,15 @@
 
     renderRows();
     enableColumnResize(document.getElementById("myProjectsTable"));
+
+    if (selectedProjectId) {
+      document.querySelectorAll("#projectRows tr[data-project-id]").forEach((tr) => {
+        if (tr.dataset.projectId !== selectedProjectId) return;
+        if (typeof tr.scrollIntoView === "function") {
+          tr.scrollIntoView({ block: "nearest", behavior: "smooth" });
+        }
+      });
+    }
 
     const projectRows = document.getElementById("projectRows");
     /*

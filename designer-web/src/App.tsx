@@ -29,6 +29,7 @@ import {
   subscribeSaveAsDialog,
   syncProjectNameFromFileName,
 } from "@/lib/shellCommands";
+import { tryOpenProjectFromQuery } from "@/lib/openFromQuery";
 import { getViewChrome, subscribeViewChrome } from "@/lib/viewChrome";
 
 const ITEMS_COLUMN_WIDTH = 76 + 1; // .designer-items + border
@@ -82,6 +83,11 @@ export default function App() {
   // Re-assert boot guards after Fast Refresh of App (idempotent in shellCommands).
   useEffect(() => {
     installDesignerShellGuards();
+  }, []);
+
+  // My Tawala → Edit project in Designer deep-link (?snapshot= / ?mockJson=).
+  useEffect(() => {
+    void tryOpenProjectFromQuery();
   }, []);
 
   // Project Explorer: drag its right edge. Min ≈ icon-toolbar strip; leave room for Fields.
