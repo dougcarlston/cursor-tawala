@@ -37,7 +37,7 @@
       ready: true,
     },
     websiteMock: {
-      href: "http://127.0.0.1:5500/",
+      href: "http://localhost:5500/",
       label: "Website mock",
       ready: true,
     },
@@ -138,7 +138,7 @@
   }
 
   function renderBanner(activePage) {
-    return (
+    let html =
       `<strong>Website mock</strong> — static draft from legacy JSP. Grey controls = not implemented. Test-drive → :8080. ` +
       `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500` +
       ` · <a href="docs.html" title="Mock ops docs (Publish, Export/Import, admin…)">Docs</a>.` +
@@ -148,8 +148,28 @@
           ? ` · <b>Library</b> (public) · <a href="mytawala.html">My Tawala</a>`
           : activePage === "docs"
             ? ` · <b>Docs</b> · <a href="README.md">README.md</a>`
-            : "")
-    );
+            : "");
+    /* localhost vs 127.0.0.1 = different origins / separate localStorage. Owner data lives on localhost. */
+    try {
+      if (typeof location !== "undefined" && location.hostname === "127.0.0.1") {
+        const path =
+          activePage === "library"
+            ? "library.html"
+            : activePage === "mytawala"
+              ? location.pathname && location.pathname.indexOf("mytawala-project") >= 0
+                ? "mytawala-project.html" + (location.search || "")
+                : "mytawala.html"
+              : "mytawala.html";
+        const href = "http://localhost:5500/" + path.replace(/^\//, "");
+        html +=
+          `<span class="mock-banner-where">My Tawala / Library data is stored <b>per address</b> — ` +
+          `you’re on <code>127.0.0.1</code>. If your projects are missing, open ` +
+          `<a href="${href}">http://localhost:5500/…</a> (same server, different localStorage).</span>`;
+      }
+    } catch {
+      /* ignore */
+    }
+    return html;
   }
 
   function bindAccountMenus(root) {

@@ -1780,6 +1780,135 @@
     };
   }
 
+  /**
+   * Suggest a free My Tawala name for Make a Copy (own fork).
+   * Always starts with "Copy of …" (unlike Save a copy, which prefers the Library title when free).
+   */
+  function suggestMakeCopyName(baseName) {
+    const display = stripStubSuffix(baseName) || "Project";
+    const copyBase = `Copy of ${display}`;
+    if (!myTawalaNameTaken(copyBase)) return copyBase;
+    let n = 2;
+    while (myTawalaNameTaken(`${copyBase} ${n}`)) n++;
+    return `${copyBase} ${n}`;
+  }
+
+  /**
+   * Make a Copy — fork an existing My Tawala project (Aug 9 Task #9).
+   * Mints a *new* overlay id + display name. Original row is untouched.
+   * Copies definition metadata (jsonFile, descriptions, formNames, start labels).
+   * Response data stays empty by default (no local count copy). Mock: if the source has
+   * live :8080 starts / uniqueId, copy them so Use works immediately
+   * (`mockSharedForkRuntime` — same demo limitation as Save a copy; production must mint
+   * a private uniqueId with empty private data).
+   *
+   * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
+   * Cannot reuse the source project's own display name (that would destroy the original).
+   */
+  function makeCopyOfMyTawalaProject({ sourceId, name, overwrite } = {}) {
+    if (!sourceId) {
+      return { ok: false, error: "Source project id is required." };
+    }
+    const source =
+      (typeof window !== "undefined" &&
+        window.TawalaDemo &&
+        typeof window.TawalaDemo.getMyTawala === "function" &&
+        window.TawalaDemo.getMyTawala(sourceId)) ||
+      getOverlayEntry(sourceId) ||
+      null;
+    if (!source) {
+      return { ok: false, error: `Unknown My Tawala project: ${sourceId}` };
+    }
+    const copyName = String(name || "").trim();
+    if (!copyName) {
+      return { ok: false, error: "Name is required." };
+    }
+    const sourceDisplay =
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.displayName === "function"
+        ? window.TawalaDemo.displayName(source.name)
+        : String(source.name || sourceId);
+    if (compactNameKey(copyName) === compactNameKey(sourceDisplay)) {
+      return {
+        ok: false,
+        error:
+          "Choose a different name — Make a Copy keeps the original project. Use Rename to change this project’s name.",
+      };
+    }
+    const conflict = findMyTawalaByName(copyName, sourceId);
+    if (conflict) {
+      if (!overwrite) {
+        const conflictName =
+          typeof window !== "undefined" &&
+          window.TawalaDemo &&
+          typeof window.TawalaDemo.displayName === "function"
+            ? window.TawalaDemo.displayName(conflict.name)
+            : String(conflict.name || conflict.id);
+        return {
+          ok: false,
+          needsOverwrite: true,
+          conflictId: conflict.id,
+          conflictName,
+          error: `You already have a project named “${copyName}”. Confirm to replace it.`,
+        };
+      }
+      deleteMyTawalaProject(conflict.id);
+    }
+
+    const id = uniqueMyTawalaSlug(slugifyProjectId(copyName));
+    const nowIso = timestampNow();
+    const now = formatListDate(nowIso);
+    const live = liveRuntimeFromLibrarySource(source);
+
+    const entry = {
+      name: copyName,
+      category: source.category || "Uncategorized",
+      featured: false,
+      iconLabel: iconLabelFromName(copyName),
+      rating: 0,
+      comments: 0,
+      created: now,
+      createdAt: nowIso,
+      updated: now,
+      updatedAt: nowIso,
+      shortDescription: source.shortDescription || "",
+      longDescription: source.longDescription || "",
+      jsonFile: source.jsonFile || null,
+      formNames: Array.isArray(source.formNames) ? source.formNames.slice() : undefined,
+      themePath: source.themePath || undefined,
+      sourcePile: "mytawala-fork",
+      forkedFromId: sourceId,
+      forkedFromName: sourceDisplay,
+      forkedAt: nowIso,
+      /* Keep Library link so Refresh still works when forking an acquire. */
+      pulledFromLibraryId: source.pulledFromLibraryId || undefined,
+      pulledFromLibraryName: source.pulledFromLibraryName || undefined,
+      /* Mock: Use works via source live start URLs. Production must mint a private uniqueId. */
+      uniqueId: live.uniqueId,
+      deployed: live.deployed,
+      testDriveUrl: live.testDriveUrl,
+      startPoints: live.startPoints,
+      mockSharedForkRuntime: live.mockSharedLibraryRuntime,
+    };
+
+    clearMyTawalaDeleted(id);
+    const overlay = getMyTawalaOverlay();
+    overlay[id] = entry;
+    if (!writeJson(PILE_KEY, overlay)) {
+      return { ok: false, error: "Could not write My Tawala overlay (localStorage)." };
+    }
+
+    return {
+      ok: true,
+      id,
+      sourceId,
+      sourceName: sourceDisplay,
+      replacedId: conflict ? conflict.id : null,
+      entry: { id, ...entry },
+    };
+  }
+
   /** Mock-only client gate for library-admin.html — no real auth. See README § Library admin path. */
   function isLibraryAdmin() {
     try {
@@ -1962,9 +2091,9 @@
         snapshotId: receipt.snapshotId || null,
       })
     );
-    /* 127.0.0.1 — same origin as website-mock/serve.sh (localhost ≠ 127.0.0.1 localStorage). */
+    /* localhost — same origin as owner review tabs (127.0.0.1 ≠ localhost localStorage). */
     return (
-      "http://127.0.0.1:5500/mytawala-project.html?project=" +
+      "http://localhost:5500/mytawala-project.html?project=" +
       encodeURIComponent(id) +
       "&deployReceipt=" +
       payload
@@ -1990,7 +2119,7 @@
         snapshotId: receipt.snapshotId || null,
       })
     );
-    return "http://127.0.0.1:5500/mytawala.html?deployReceipt=" + payload;
+    return "http://localhost:5500/mytawala.html?deployReceipt=" + payload;
   }
 
   window.TawalaTransfer = {
@@ -2066,6 +2195,8 @@
     suggestUniqueMyTawalaName,
     renameMyTawalaProject,
     saveCopyFromLibrary,
+    suggestMakeCopyName,
+    makeCopyOfMyTawalaProject,
     ADMIN_KEY,
     isLibraryAdmin,
     setLibraryAdmin,

@@ -334,7 +334,7 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Library thread`
 
-**Status (Aug 9 evening, 2026):** Task List #8 (Save a copy) code fix is in the working tree (**uncommitted**). Test Drive catalog URLs were fine — Tomcat “World not initialized” was the fail-page cause (restart fixed it tonight). Purge offline demo already committed earlier (`2dab7ec`). Continue #8 visual review + Task List next.
+**Status (Aug 10, 2026):** Task List #9 (**Make a Copy**) wired in working tree (**uncommitted**). Review on **`http://localhost:5500`** — owner localStorage lives there; `127.0.0.1:5500` is a separate origin (banner redirects). Rename ≠ Make a Copy ≠ Library Save a copy.
 
 ### Clean start tomorrow (plain English)
 
@@ -350,29 +350,33 @@ Do these in order. Wait for each step to finish before the next.
    `docker restart tawala-tomcat`  
    Wait ~15 seconds, try the form URL again.
 5. **Start the website mock** (static pages on port 5500):  
-   `cd ~/Projects/Tawala/website-mock && python3 -m http.server 5500 --bind 127.0.0.1`
+   `cd ~/Projects/Tawala/website-mock && ./serve.sh`  
+   (or `python3 -m http.server 5500 --bind 127.0.0.1` — either host works; **open as localhost**)
 6. **Optional — Designer API** (needed for Purge / Records / Test Drive fail-page probe):  
    `cd ~/Projects/Tawala/designer-web && npm run dev`  
    (or `./scripts/ensure-dev-api.sh` if Vite is already up and only `:3001` died).
-7. **Open these review URLs** (hard-refresh / use the `?v=` so you get tonight’s JS):
-   - Library: http://127.0.0.1:5500/library.html?v=20260809-libfix1  
-   - Simple Survey detail: http://127.0.0.1:5500/library-detail.html?project=simple-survey&v=20260809-libfix1  
-   - Online Exam (My Tawala Details): http://127.0.0.1:5500/mytawala-project.html?project=online-exam-builder&v=20260809-libfix1  
+7. **Open these review URLs** (hard-refresh / use the `?v=` so you get tonight’s JS) — **always `localhost`, not `127.0.0.1`** (separate localStorage):
+   - My Tawala: http://localhost:5500/mytawala.html?v=20260810-makecopy1  
+   - Library: http://localhost:5500/library.html?v=20260810-makecopy1  
    - Direct form smoke (should show a real form, not “We are very sorry”):  
      http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey  
      http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration
 8. **Rename the chat** to **Library thread**. Paste: `Clean start Library thread`  
-   or: “Continue Task List #8 review — Save a Copy + Test Drive; read docs/CHAT_HANDOFF.md Chat 3 clean-start.”
+   or: “Continue Make a Copy (#9) review — read docs/CHAT_HANDOFF.md Chat 3.”
+
+#### localhost vs 127.0.0.1 (owner Aug 10)
+
+Same `serve.sh` / `:5500` server. Different browser origins → **different localStorage**. Owner has been adding projects on **localhost**; agent review links that used **127.0.0.1** looked empty. **Standardize on `http://localhost:5500`.** If you open `127.0.0.1`, the yellow mock banner shows a tip with a localhost link.
 
 #### DONE vs OPEN (for tomorrow)
 
 | Item | Status |
 |------|--------|
 | Purge offline demo Records | **DONE / committed** (`2dab7ec`) |
-| Aug 9 Task List #8 Save a copy (rename → My Tawala) | **WIP in files, not committed** — listing click was swallowed by `stopPropagation`; fixed to open rename dialog → Project Details. **Owner should click-test.** |
-| Test Drive → legacy fail page | **Runtime fixed tonight** by `docker restart tawala-tomcat` (World init). Catalog URLs were already correct. Docker HEALTHCHECK path fix in Dockerfile is also uncommitted. |
-| Commit of tonight’s Save a Copy / probe / HEALTHCHECK edits | **OPEN** — do after owner confirms Save a Copy + Test Drive in the browser |
-| Task List #8 leave/wipe honesty (#14), Times used (#13) | Still later |
+| Aug 9 Task List #8 Save a copy | Wired in tree (Use-ready); visual review ongoing |
+| Aug 9 Task List #9 Make a Copy | **WIP in files, not committed** — Details + listing bar; fork ≠ Rename. **Owner should click-test on localhost.** |
+| localhost vs 127.0.0.1 localStorage | **Documented + banner on 127.0.0.1**; Designer Show-in-My-Tawala → localhost |
+| Commit of Make a Copy / host standardization | **OPEN** — do after owner confirms |
 
 ### Session checkpoint — Aug 9 evening (Library thread)
 

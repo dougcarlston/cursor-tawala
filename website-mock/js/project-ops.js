@@ -116,17 +116,18 @@
    * Project Details main action bar (detail.jsp Project Actions).
    *
    * Aug 9, 2026 (Project Data banner): Use / Copy link / Export / Import / Purge live on
-   * the Project Data line (selection-scoped). This bar keeps Rename / Backup / Restore /
-   * Deploy (share) / Publish. Pull + Delete stay on the My Tawala listing selection bar.
+   * the Project Data line (selection-scoped). This bar keeps Rename / Make a Copy / Backup /
+   * Restore / Deploy (share) / Publish. Pull + Delete stay on the My Tawala listing selection bar.
    * Title double-click also opens Rename (no separate Rename control under the title).
    * Description under the title: double-click only (no hint / no button) → edit shortDescription.
    *
-   * Owner enablement (Aug 9; Deploy Aug 10):
+   * Owner enablement (Aug 9; Deploy Aug 10; Make a Copy Aug 10):
    *   A) Forms collapsed (expand 0) OR project root highlighted → Backup/Restore/Publish on;
-   *      Use/Copy off; Export/Import/Purge on (project scope). Rename + Deploy always on.
+   *      Use/Copy off; Export/Import/Purge on (project scope). Rename + Make a Copy + Deploy always on.
    *   B) Starting-point form highlighted → Use/Copy/Export/Import/Purge/Publish on; Backup/Restore off.
    *   C) Non-start form highlighted → Export/Import/Purge/Publish on; Use/Copy/Backup/Restore off.
    * Deploy (website share/embed) stays available on A/B/C — dialog explains when no live URL yet.
+   * Rename = same project, new display name. Make a Copy = new project identity (own fork).
    */
   const PROJECT_ACTIONS = [
     {
@@ -134,6 +135,13 @@
       label: "RENAME",
       title: "Rename this project in My Tawala (or double-click the title)",
       wired: "rename-project",
+    },
+    {
+      id: "make-copy",
+      label: "MAKE A COPY",
+      title:
+        "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Save a copy.",
+      wired: "make-copy-mytawala",
     },
     { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
     { id: "restore", label: "RESTORE", title: "Restore this project from a backup", wired: "restore-mytawala" },
@@ -190,9 +198,10 @@
   ];
 
   /**
-   * My Projects listing — top action bar (owner Aug 9 breakpoint + option 3).
+   * My Projects listing — top action bar (owner Aug 9 breakpoint + option 3; Make a Copy Aug 10).
    * Get from Library… — always on (opens Library picker → Save a copy acquire).
    * Refresh from Library — selected row + linked Library entry (existing Pull metadata refresh).
+   * Make a Copy — selected row (own fork; ≠ Rename; ≠ Library Save a copy).
    * Delete — selected row only.
    * Not a dense per-row icon strip.
    */
@@ -211,6 +220,14 @@
       wired: "pull-library",
       requiresSelection: true,
       requiresLibraryLink: true,
+    },
+    {
+      id: "make-copy",
+      label: "MAKE A COPY",
+      title:
+        "Fork the selected project into a new My Tawala identity (new name; original untouched)",
+      wired: "make-copy-mytawala",
+      requiresSelection: true,
     },
     {
       id: "delete",
@@ -547,7 +564,7 @@
       id: "actions",
       title: "Project Details — action bar",
       where:
-        "projectmanager/detail.jsp — RENAME · BACKUP · RESTORE · DEPLOY · PUBLISH (flush right). " +
+        "projectmanager/detail.jsp — RENAME · MAKE A COPY · BACKUP · RESTORE · DEPLOY · PUBLISH (flush right). " +
         "Use / Copy / Export / Import / Purge moved to Project Data banner (Aug 9). " +
         "Get/Refresh/Delete on listing bar (Aug 9 option 3).",
       items: PROJECT_ACTIONS,
@@ -629,6 +646,7 @@
       op.wired === "pull-library" ||
       op.wired === "save-copy-library" ||
       op.wired === "rename-project" ||
+      op.wired === "make-copy-mytawala" ||
       op.wired === "download-version" ||
       op.wired === "deploy-version"
     );
@@ -645,6 +663,9 @@
       return "active (Deploy share panel — copy start link / iframe embed)";
     }
     if (item.wired === "rename-project") return "active (Rename dialog → My Tawala overlay)";
+    if (item.wired === "make-copy-mytawala") {
+      return "active (Make a Copy dialog → new My Tawala fork; original untouched)";
+    }
     if (item.wired === "export-mytawala") return "active (download JSON — data only, see README)";
     if (item.wired === "import-mytawala") return "active (field-mismatch check + POST :3001)";
     if (item.wired === "backup-mytawala") return "active (download JSON — definition + data + properties)";
@@ -1236,7 +1257,7 @@
           `${escapeHtml(op.label)}</button>`
         );
       }).join("") +
-      '<span class="pm-listing-bar-hint" id="myProjectsListingBarHint">Get from Library saves a copy into My Tawala · select a linked project to Refresh · select any project to Delete</span>' +
+      '<span class="pm-listing-bar-hint" id="myProjectsListingBarHint">Get from Library saves a copy into My Tawala · select a project to Make a Copy or Delete · select a linked project to Refresh</span>' +
       "</div>"
     );
   }
@@ -1283,6 +1304,14 @@
         return;
       }
 
+      if (opId === "make-copy" || el.dataset.wired === "make-copy-mytawala") {
+        el.disabled = !id;
+        el.title = id
+          ? `Fork “${selectedName}” into a new My Tawala project (original untouched)`
+          : "Select a project to Make a Copy";
+        return;
+      }
+
       if (opId === "delete" || el.dataset.wired === "delete-mytawala") {
         el.disabled = !id;
         el.title = id
@@ -1294,11 +1323,11 @@
     if (hint) {
       if (!id) {
         hint.textContent =
-          "Get from Library saves a copy into My Tawala · select a linked project to Refresh · select any project to Delete";
+          "Get from Library saves a copy into My Tawala · select a project to Make a Copy or Delete · select a linked project to Refresh";
       } else if (link) {
-        hint.textContent = `Selected “${selectedName}” · linked to Library “${link.name}” — Refresh / Delete available`;
+        hint.textContent = `Selected “${selectedName}” · linked to Library “${link.name}” — Make a Copy / Refresh / Delete available`;
       } else {
-        hint.textContent = `Selected “${selectedName}” · not linked to Library — Delete available; use Get from Library… to acquire`;
+        hint.textContent = `Selected “${selectedName}” · not linked to Library — Make a Copy / Delete available; use Get from Library… to acquire`;
       }
     }
   }
@@ -2360,7 +2389,7 @@
     /* A only: Backup / Restore when project-level (collapsed or project root highlighted). */
     const backupRestoreEnabled = projectSelected && !formRowHighlighted;
 
-    /* Main Details bar: Rename + Deploy always; Backup / Restore (A only); Publish always (A/B/C). */
+    /* Main Details bar: Rename + Make a Copy + Deploy always; Backup / Restore (A only); Publish always (A/B/C). */
     const bar = detail && detail.querySelector(".pm-detail-actions");
     if (bar) {
       bar.querySelectorAll("button.pm-action, a.pm-action").forEach((el) => {
@@ -2369,6 +2398,13 @@
         if (op === "rename" || wired === "rename-project") {
           setCtrlEnabled(el, true);
           el.title = "Rename this project in My Tawala (or double-click the title)";
+          if ("disabled" in el) el.disabled = false;
+          return;
+        }
+        if (op === "make-copy" || wired === "make-copy-mytawala") {
+          setCtrlEnabled(el, true);
+          el.title =
+            "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Save a copy.";
           if ("disabled" in el) el.disabled = false;
           return;
         }
@@ -3369,6 +3405,7 @@
   const PUBLISH_MODAL_ID = "tawalaPublishModal";
   const DEPLOY_SHARE_MODAL_ID = "tawalaDeployShareModal";
   const SAVE_COPY_MODAL_ID = "tawalaSaveCopyModal";
+  const MAKE_COPY_MODAL_ID = "tawalaMakeCopyModal";
   const GET_LIBRARY_MODAL_ID = "tawalaGetLibraryModal";
   const RENAME_MODAL_ID = "tawalaRenameModal";
   const DESC_MODAL_ID = "tawalaDescModal";
@@ -3401,6 +3438,16 @@
 
   function handleSaveCopyModalKeydown(ev) {
     if (ev.key === "Escape") closeSaveCopyModal();
+  }
+
+  function closeMakeCopyModal() {
+    const el = document.getElementById(MAKE_COPY_MODAL_ID);
+    if (el) el.remove();
+    document.removeEventListener("keydown", handleMakeCopyModalKeydown, true);
+  }
+
+  function handleMakeCopyModalKeydown(ev) {
+    if (ev.key === "Escape") closeMakeCopyModal();
   }
 
   function closeGetLibraryModal() {
@@ -3452,6 +3499,7 @@
     }
     closeRenameModal();
     closeSaveCopyModal();
+    closeMakeCopyModal();
     closeDescModal();
 
     const currentName = TawalaDemo.displayName(project.name || projectId);
@@ -3602,6 +3650,7 @@
     closeDescModal();
     closeRenameModal();
     closeSaveCopyModal();
+    closeMakeCopyModal();
 
     const current = String(project.shortDescription || "").trim();
     const backdrop = document.createElement("div");
@@ -3811,6 +3860,7 @@
     closeSaveCopyModal();
     closeGetLibraryModal();
     closeRenameModal();
+    closeMakeCopyModal();
     closeDescModal();
 
     const sourceName = TawalaDemo.displayName(project.name || libraryId);
@@ -3939,6 +3989,177 @@
       nameInput.focus();
       nameInput.select();
       checkSaveCopyCollisionLive();
+    }, 0);
+  }
+
+  /**
+   * Make a Copy — fork own My Tawala project (Aug 9 Task #9).
+   * Distinct from Rename (same id, new name) and Library Save a copy (acquire from catalog).
+   */
+  function openMakeCopyDialog(sourceId) {
+    if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
+      window.alert("Make a Copy isn't available — required scripts didn't load. Refresh and try again.");
+      return;
+    }
+    if (typeof TawalaTransfer.makeCopyOfMyTawalaProject !== "function") {
+      window.alert("Make a Copy isn't available — transfer support is outdated. Hard-refresh and try again.");
+      return;
+    }
+    const project = sourceId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(sourceId) : null;
+    if (!project) {
+      window.alert(`Can't Make a Copy — unknown My Tawala project: ${sourceId || "(none)"}`);
+      return;
+    }
+    closeMakeCopyModal();
+    closeSaveCopyModal();
+    closeRenameModal();
+    closeDescModal();
+    closeGetLibraryModal();
+
+    const sourceName = TawalaDemo.displayName(project.name || sourceId);
+    const defaultName =
+      typeof TawalaTransfer.suggestMakeCopyName === "function"
+        ? TawalaTransfer.suggestMakeCopyName(sourceName)
+        : `Copy of ${sourceName}`;
+
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = MAKE_COPY_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="makeCopyModalTitle">' +
+      `<h3 id="makeCopyModalTitle">Make a Copy</h3>` +
+      `<p class="pm-hint tawala-modal-lede">Fork “${escapeHtml(sourceName)}” into a <b>new</b> My Tawala project. ` +
+      `The original stays as-is. This is <b>not</b> Rename (same project, new name) and <b>not</b> Library Save a copy. ` +
+      `<b>Use</b> works when the copy lands if the source already has live start URLs (mock shares that runtime — production must mint a private uniqueId with empty response data).</p>` +
+      '<div class="tawala-modal-body">' +
+      '<label class="tawala-modal-field" for="makeCopyNameInput">Name for the copy' +
+      `<input type="text" id="makeCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
+      "</label>" +
+      '<p class="pm-hint tawala-modal-hint-tight">Pick a name different from the original. If it matches another My Tawala project (not case-sensitive), you’ll be asked to confirm before replacing that other project.</p>' +
+      '<p class="pm-hint" id="makeCopyModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="makeCopyModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="makeCopyModalConfirm">Make a Copy</button>' +
+      "</div>" +
+      "</div>";
+    document.body.appendChild(backdrop);
+
+    const nameInput = backdrop.querySelector("#makeCopyNameInput");
+    const errEl = backdrop.querySelector("#makeCopyModalError");
+    function showErr(msg) {
+      if (!errEl) return;
+      errEl.textContent = msg || "";
+      errEl.style.display = msg ? "" : "none";
+    }
+    function checkMakeCopyCollisionLive() {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal) {
+        showErr("");
+        return;
+      }
+      if (
+        typeof TawalaTransfer.compactNameKey === "function" &&
+        TawalaTransfer.compactNameKey(nameVal) === TawalaTransfer.compactNameKey(sourceName)
+      ) {
+        showErr(
+          "Choose a different name — Make a Copy keeps the original. Use Rename to change this project’s name."
+        );
+        return;
+      }
+      if (
+        typeof TawalaTransfer.myTawalaNameTaken === "function" &&
+        TawalaTransfer.myTawalaNameTaken(nameVal, sourceId)
+      ) {
+        showErr(
+          `Warning: you already have a project named “${nameVal}”. Making a copy will replace that other project.`
+        );
+        return;
+      }
+      showErr("");
+    }
+
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop) closeMakeCopyModal();
+    });
+    backdrop.querySelector("#makeCopyModalCancel").addEventListener("click", closeMakeCopyModal);
+    document.addEventListener("keydown", handleMakeCopyModalKeydown, true);
+
+    function confirmMakeCopy() {
+      const nameVal = nameInput.value.trim();
+      if (!nameVal) {
+        showErr("Enter a name for the copy.");
+        nameInput.focus();
+        return;
+      }
+      if (
+        typeof TawalaTransfer.compactNameKey === "function" &&
+        TawalaTransfer.compactNameKey(nameVal) === TawalaTransfer.compactNameKey(sourceName)
+      ) {
+        showErr(
+          "Choose a different name — Make a Copy keeps the original. Use Rename to change this project’s name."
+        );
+        nameInput.focus();
+        return;
+      }
+      const conflict =
+        typeof TawalaTransfer.findMyTawalaByName === "function"
+          ? TawalaTransfer.findMyTawalaByName(nameVal, sourceId)
+          : null;
+      if (conflict) {
+        const conflictLabel =
+          typeof TawalaDemo.displayName === "function"
+            ? TawalaDemo.displayName(conflict.name)
+            : conflict.name || conflict.id;
+        const ok = window.confirm(
+          `You already have a project named “${nameVal}”.\n\n` +
+            `Replace “${conflictLabel}” with this Make a Copy?\n\n` +
+            `The other project will be removed from My Tawala (its Deploy / response identity goes with it). ` +
+            `The original “${sourceName}” stays untouched.`
+        );
+        if (!ok) {
+          nameInput.focus();
+          return;
+        }
+      }
+      const result = TawalaTransfer.makeCopyOfMyTawalaProject({
+        sourceId,
+        name: nameVal,
+        overwrite: !!conflict,
+      });
+      if (!result || !result.ok) {
+        showErr((result && result.error) || "Unknown error");
+        nameInput.focus();
+        return;
+      }
+      closeMakeCopyModal();
+      setStatus(
+        result.replacedId
+          ? `Made a copy as “${nameVal}” (replaced the previous project with that name). Original “${sourceName}” unchanged.`
+          : `Made a copy as “${nameVal}”. Original “${sourceName}” unchanged.`
+      );
+      document.dispatchEvent(
+        new CustomEvent("tawala:mytawala-made-copy", {
+          detail: { sourceId, myTawalaId: result.id, name: nameVal, result },
+        })
+      );
+      /* Land on My Tawala listing with the new row selected (same as Save a copy). */
+      window.location.href =
+        "mytawala.html?highlight=" + encodeURIComponent(result.id);
+    }
+
+    backdrop.querySelector("#makeCopyModalConfirm").addEventListener("click", confirmMakeCopy);
+    nameInput.addEventListener("input", checkMakeCopyCollisionLive);
+    nameInput.addEventListener("keydown", (ev) => {
+      if (ev.key === "Enter") {
+        ev.preventDefault();
+        confirmMakeCopy();
+      }
+    });
+    setTimeout(() => {
+      nameInput.focus();
+      nameInput.select();
+      checkMakeCopyCollisionLive();
     }, 0);
   }
 
@@ -4596,6 +4817,12 @@
       return;
     }
 
+    if (wired === "make-copy-mytawala" || op === "make-copy") {
+      ev.preventDefault();
+      openMakeCopyDialog(projectId);
+      return;
+    }
+
     if (wired === "edit-in-designer") {
       openEditInDesigner(projectId);
       return;
@@ -4947,6 +5174,7 @@
     openPublishDialog,
     openDeployShareDialog,
     openSaveCopyDialog,
+    openMakeCopyDialog,
     openGetFromLibraryDialog,
     openRenameDialog,
     openEditDescriptionDialog,
