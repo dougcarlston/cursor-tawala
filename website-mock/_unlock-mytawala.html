@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Unlock My Tawala</title>
+  <meta http-equiv="refresh" content="0;url=mytawala.html" />
+</head>
+<body>
+  <p>Unlocking My Tawala as <b>dev</b>…</p>
+  <p><a id="go" href="mytawala.html">Continue to My Tawala</a></p>
+  <script src="js/chrome.js?v=20260810-login2"></script>
+  <script>
+    if (typeof TawalaChrome !== "undefined" && TawalaChrome.setSession) {
+      TawalaChrome.setSession("dev");
+    }
+    location.replace("mytawala.html");
+  </script>
+</body>
+</html>

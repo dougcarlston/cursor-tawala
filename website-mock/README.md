@@ -116,7 +116,11 @@ See `projects/README.md` for refresh commands and MANIFEST files.
 
 ### Library Actions / Use framing (owner Aug 1, 2026)
 
-**Product split (implemented in mock):** Library = discovery / acquire; My Tawala = operate. Library Actions are **Test drive** | **Save a copy** only — **no Use** on Library. **Use** lives on **My Tawala** (listing icon + Project Details **USE**): **single start point** → opens that `:8080` URL; **multiple start points** (e.g. Online Exam Setup + Exam) → navigates to **Project Details** so the user chooses an entry point (does **not** jump straight to Exam). Grey when no deploy URL. Does **not** purge-on-start (unlike Library Test drive). This is **not** legacy CloneAndCustomize / web customize — that path stays deferred (Sophisticated in-project customize vs retire).
+**Product split (implemented in mock):** Library = discovery / acquire; My Tawala = operate. Library Actions are **Test drive** (with **Times used** metric) | **Copy link** (with **Copies downloaded** metric) | **Save to MyTawala** (logged-in only; hidden for guests) — **no Use** on Library. Public **Library Project Details** pages are **retired** (Aug 10) — listing is enough; multi-start uses the hot-link picker. **Copy link** copies the same live `:8080` URL Test Drive opens (viral share; no account). **Use** lives on **My Tawala** (listing icon + Project Details **USE**): **single start point** → opens that `:8080` URL; **multiple start points** (e.g. Online Exam Setup + Exam) → navigates to **Project Details** so the user chooses an entry point (does **not** jump straight to Exam). Grey when no deploy URL. Does **not** purge-on-start (unlike Library Test drive). This is **not** legacy CloneAndCustomize / web customize — that path stays deferred (Sophisticated in-project customize vs retire).
+
+**Guest taste (Aug 10):** Top-nav **MY TAWALA** while in **guest mode** (after Logout) opens `mytawala-demo.html` — canned sample portfolio; row → inert Details. Mock defaults to **logged in as `dev`** (same as before) so you are not locked out of real My Tawala. **Logout** sets guest mode; **Login** / `_unlock-mytawala.html` clears it. Library **Save to MyTawala** is hidden only in guest mode. Not Auth Task #21.
+
+**Locked out?** Open http://localhost:5500/_unlock-mytawala.html or http://localhost:5500/login.html?v=20260810-login2 and click **Log in as dev**.
 
 **Background:** Most users are not comfortable with Designer. Some projects cannot really be used without going through Designer first (e.g. **Sign-up Sheet Template w Email** — customize in Designer); those belong on **Designer → File → New Project**, not the public Library (retired from catalog Aug 1, 2026). The alternative path is versions customizable entirely from within the Project (no Designer) — historically **"Sophisticated"**. Users who will not pull into Designer may just want a **copy in My Tawala to run**, then **Use** from My Tawala.
 
@@ -124,7 +128,7 @@ See `projects/README.md` for refresh commands and MANIFEST files.
 
 - Library should prefer **runnable / admin-from-runtime** projects, or clearly label **Designer-required** starters.
 - Designer-only starters stay on the New Project menu; `signup-sheet` and `signup-sheet-email` are no longer in `TAWALA_LIBRARY` (Aug 10 / Aug 1).
-- Glossary: **Use** (My Tawala — single-start run link, or Project Details with starts expanded + first start selected when multi-entry) ≠ **Save a copy** (Library → My Tawala) ≠ **open in Designer** ≠ legacy **USE IT** / CloneAndCustomize (not wired).
+- Glossary: **Use** (My Tawala — single-start run link, or Project Details with starts expanded + first start selected when multi-entry) ≠ **Save to MyTawala** (Library → My Tawala; requires login) ≠ **open in Designer** ≠ legacy **USE IT** / CloneAndCustomize (not wired).
 - Aligns with tenancy: **Publish** to Library; **operate** from My Tawala.
 - **Owner evidence (Aug 1, 2026):** *“Every year the sports leagues asked how to move over rosters from previous years so they wouldn't have to re-enter all that data.”* **Refinement:** leagues **exported via Excel** at end of season and **archived** it; they only **reused player data**, stripping graduates and adding new kids. Season handoff ≈ **Export (Excel) archive + selective Import/reuse of a roster subset** — not full **Backup/Restore** of everything, not delete-and-re-pull Library. Aligns with the documented **EXPORT/IMPORT** data spine (Excel). Soft open: a future “roll season” could mean export-archive + import filtered roster. Reinforces **named long-lived instances + cross-season data move**; distinct from Designer Customize vs Copy to My Tawala. (Parked — no feature invented here; see Parked / backlog.)
 
@@ -158,23 +162,24 @@ cd website-mock && node scripts/list-library-stubs.mjs   # should print 0 stubs
 
 ## Navigation and stub pages
 
-Shared chrome lives in `js/chrome.js` (header, footer, guest/logged-in status).
+Shared chrome lives in `js/chrome.js` (header, footer, guest/logged-in status via `tawala.mock.session`).
 
 | Page | File |
 |------|------|
 | Home | `index.html` |
 | Library | `library.html` |
-| Project detail (Library) | `library-detail.html?project=…` |
-| My Tawala — My Projects | `mytawala.html` |
-| My Tawala — Project Details | `mytawala-project.html?project=…` |
+| Project detail (Library) | **Retired** — `library-detail.html` redirects to `library.html?highlight=…` |
+| My Tawala — My Projects | `mytawala.html` (requires mock login; guests redirect to demo) |
+| My Tawala — Project Details | `mytawala-project.html?project=…` (requires mock login) |
+| My Tawala — guest preview | `mytawala-demo.html` / `mytawala-demo-project.html` (static snapshots under `images/guest/`) |
 | Library admin tools (maintainer, gated) | `library-admin.html` (see § Library admin path) |
 | Ops archive review | `project-ops-review.html` |
 | **Docs** (curated mock ops HTML) | `docs.html` — linked from mock banner + footer; also `README.md` via static server |
 | About / Company Info | `about.html` |
 | FAQ | `faq.html` |
-| Login | `login.html` |
+| Login | `login.html` (sets mock session) |
 | Sign up | `signup.html` |
-| Logout | `logout.html` |
+| Logout | `logout.html` (clears mock session) |
 | Designer | `designer.html` |
 | Terms | `terms.html` |
 | Privacy | `privacy.html` |
@@ -227,7 +232,7 @@ Short product meanings for Website + Designer hops. Sits next to Project Version
 
 | Verb | Scope | Meaning |
 |------|--------|---------|
-| **Save a copy** (Library) | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (acquire). Invites a name on the way in (suggested Library title or `Copy of …`); **warn + confirm overwrite** if the name matches an existing My Tawala row (case-insensitive trim) — never silent. **Owner priority (Aug 10):** Use must work when the copy lands — mock copies Library live start URLs / uniqueId (`mockSharedLibraryRuntime`; demo limitation — production mints a private uniqueId). **Version:** starts at integer **1** (description *Saved from Library (…)*); does **not** inherit the Library’s published revision. Stays private until Publish. Rename anytime later on Project Details. Not open in Designer. Wired Aug 9 #8; naming + Use-ready Aug 10 (`TawalaTransfer.saveCopyFromLibrary`). See § Acquire naming. |
+| **Save to MyTawala** (Library; was Save a copy) | Library → My Tawala | Copy a public Library project into *this account’s* private My Tawala (acquire). **Hidden for guests** — requires mock login (`tawala.mock.session`). Invites a name on the way in (suggested Library title or `Copy of …`); **warn + confirm overwrite** if the name matches an existing My Tawala row (case-insensitive trim) — never silent. **Owner priority (Aug 10):** Use must work when the copy lands — mock copies Library live start URLs / uniqueId (`mockSharedLibraryRuntime`; demo limitation — production mints a private uniqueId). **Version:** starts at integer **1** (description *Saved from Library (…)*); does **not** inherit the Library’s published revision. Stays private until Publish. Rename anytime later on Project Details. Not open in Designer. Wired Aug 9 #8; naming + Use-ready Aug 10; rename/gate Aug 10 (`TawalaTransfer.saveCopyFromLibrary`). See § Acquire naming. |
 | **Make a Copy** (My Tawala) | Own project fork | Fork a private My Tawala project into a **new** identity (Details + listing bar). Name dialog + overwrite warn; original untouched; **empty Records** (`uniqueId: null`, Use grey until Push). **Version:** fresh line at **1** (*Copy of …*); does **not** copy source `versions[]`. ≠ **Rename** (same id) ≠ Library **Save a copy**. Wired Aug 10 #9 (`TawalaTransfer.makeCopyOfMyTawalaProject`). |
 | **Use** | My Tawala listing + Details | For the owner *themselves* — try/run for personal testing or personal use (not the primary “administer to others” path). Single-start: open that `:8080` URL. Multi-start: open **Project Details** to pick Setup vs Exam (etc.). Wired Aug 1 / Aug 4, 2026 — active when a live start URL exists; grey otherwise. Does **not** purge-on-start. ≠ Save a copy ≠ open in Designer ≠ legacy CloneAndCustomize. See § Library Actions / Use framing and § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). |
 | **Open in Designer** | Library / My Tawala → Designer | Author / customize the project definition in Designer. Required for some starters (e.g. Sign-up Sheet w Email); majority of users are not comfortable here — prefer runtime-admin or My Tawala copy-to-run paths when possible. |
@@ -630,26 +635,28 @@ These are **required before a real public launch**, but **not** near-term websit
 
 ### Viral Test Drive / soft gating (owner product direction — Aug 10, 2026)
 
-**Document only — do not over-implement in this pass.** Marketing / growth direction for how strangers discover and try Library projects. Reputation / ratings remain **parked** (Task [#17](#task-list-aug-9)).
+Marketing / growth direction for how strangers discover and try Library projects. Reputation / ratings remain **parked** (Task [#17](#task-list-aug-9)).
 
 **Direction**
 
-1. **No account required to Test Drive** a Library project — logged-out visitors can try the live app.
-2. **Shareable Test Drive link** — a URL you can text or email to others **without** registering (viral access). Same idea as “try this” without a login wall.
-3. **End page** — projects should finish on a page that promotes the **public Library**, and (for a few projects) the **Designer**.
-4. **Library sections / categories** matter long-term for featured audiences (examples: HR, self-knowledge, honors / teacher prizes, public office candidates, …). Catalog organization is product strategy, not just a filter chip.
-5. **Want Registrants eventually**, but the **gating moment** is when someone wants to **save data** about themselves or their users — **or** a soft gate: **N free uses**, then sign up. Both options stay open; pick later with evidence.
+1. **No account required to Test Drive** a Library project — logged-out visitors can try the live app. **Mock:** already true — `openTestDrive` probes `:8080` only; no My Tawala / login wall.
+2. **Shareable Test Drive link** — a URL you can text or email to others **without** registering (viral access). **Mock (Aug 10 tdshare1):** Library listing + detail **Copy link** copies `libraryTestDriveUrl` (the same live `:8080` start URL Test Drive opens). Alert: “Link copied”. ≠ My Tawala Deploy **Copy link**.
+3. **End page** — projects should finish on a page that promotes the **public Library**, and (for a few projects) the **Designer**. **HOLD** as Designer/runtime Task [#23](#task-list-aug-9) — checklist below; optional mock stub only; do not block on full runtime.
+4. **Library sections / categories** matter long-term for featured audiences (examples: HR, self-knowledge, honors / teacher prizes, public office candidates, …). Catalog organization is product strategy, not just a filter chip. **HOLD** Task [#25](#task-list-aug-9).
+5. **Soft gate (DECIDED Aug 10):** gate when someone wants to **save data** about themselves or their users (account / Registrants). ~~N free uses, then sign up~~ is **not** the preferred gate — struck. Full auth remains pre-live HOLD [#21](#task-list-aug-9).
 6. **Reputation** still parked (no ratings product in this phase).
 
 **Near-term vs later**
 
-| Near-term (implementable soon) | Later (HOLD — do not half-build) |
+| Near-term (Aug 10 tdshare1) | Later (HOLD — do not half-build) |
 |---|---|
-| Ensure **Test Drive works logged-out** | Project **end page** (Library + selective Designer promo) |
-| **Copy Test Drive link** CTA on Library (listing / detail) | **N-use soft gate** + full **auth / Registrants** |
-| Leave/wipe honesty still Task [#14](#task-list-aug-9) | Full **Library category** IA for featured audiences |
+| **Test Drive works logged-out** — verified (no auth wall; probes `:8080`) | Project **end page** (Library + selective Designer promo) — [#23](#task-list-aug-9) |
+| **Copy Test Drive link** CTA on Library listing + detail | Full **auth / Registrants** when saving data — [#21](#task-list-aug-9) / [#24](#task-list-aug-9) |
+| Leave/wipe honesty still open under Task [#14](#task-list-aug-9) | Full **Library category** IA for featured audiences — [#25](#task-list-aug-9) |
 
 Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala Details **Deploy → Copy link** (owner distributing *their* live start URLs).
+
+**What Copy copies:** `TawalaDemo.libraryTestDriveUrl(project)` — e.g. Simple Survey `http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey`; Online Exam prefers Administration/Setup first (`…/ef6sx16.Administration`). Same URL primary Test Drive opens after purge-on-start.
 
 ---
 
@@ -669,7 +676,7 @@ These four lists framed the Aug 9 walkthrough. Lists **1** and **4** are now dec
 - **Aug 10 (decision + Deploy share slice):** After owning a My Tawala copy — **Use** = for yourself; **Publish** = put a copy in the public Library; **Deploy** (website Details) = administer for others → share/embed help (Task #10). Details **DEPLOY** + Invite/Include open the share panel (Copy link / iframe embed; multi-start picker; honest empty-acquire message). Designer authoring verb → **Push** (to My Tawala library); rename parked on Designer chat list — no Designer UI mass-rename. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project).
 - **Aug 10 (product note — email metering):** Emails are a billed cost → need visible, period-resettable email volume counters (admin cross-user first; optional per-project on Details for billed authors). Dead **Backups, emails & library publish** Details section **removed** the same day; metering stays a separate future feature. See § [Email metering (billing)](#email-metering-billing).
 - **Aug 10 (pre-live HOLD — not near-term):** Before real public: **Registration / accounts / passwords / lost password** (security), **Payments** (legacy PayPal never wired), and **Email metering**. See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
-- **Aug 10 (product direction — Viral Test Drive / soft gating):** No account to Test Drive; shareable Test Drive links (viral); project end page → Library (+ Designer for few); Library categories for featured audiences long-term; Registrants / gate when saving data **or** N free uses then sign up (open); reputation still parked. Near-term = logged-out Test Drive + Copy Test Drive link CTA; end-page / N-use / full auth = later. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
+- **Aug 10 (product direction — Viral Test Drive / soft gating):** No account to Test Drive; shareable Test Drive links (viral); project end page → Library (+ Designer for few); Library categories for featured audiences long-term; **soft gate = save data** (N-uses struck as preferred); reputation still parked. Near-term logged-out Test Drive + Copy Test Drive link **shipped in mock (tdshare1)**; end-page / full auth = later. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
 
 ### Task List (Aug 9)
 
@@ -679,26 +686,30 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 2. **Project Details ops rail** — **PARTIAL (Aug 9 afternoon):** wider left **Project options** sidebar — Author / Version / Published / Status / Theme, Invite/Include stubs under Theme, Edit in Designer + Active/De-activate; Backup/Restore/Publish on action bar; data ops on Project Data banner. Full grouping polish (Purge/Delete adjacency) can continue later. Keep Purge ≠ Delete ≠ De-activate.
 3. **Records (Responses) count** — **DONE (Aug 9 slice; demorec1 fix):** project-wide total on My Tawala list + Details (`TawalaDemo.countResponses` → `:3001/api/export-responses`). Per-form counts in Project Data. Live export **success** wins (including real **0**). When live export fails (`:3001` down **or** Docker/Postgres unreachable while health is still 200), **Online Exam Builder** falls back to seeded demo Records (**50**) instead of **"—"**; Purge → **0**; **Reseed demo Records** restores. Other projects still show honest **"—"** when counts are unavailable. No dedicated count endpoint yet — export is the path.
 4. **Project Data section** — **DONE (tree + forms + Purge scope, Aug 9):** project **+** cycles closed → start points → all forms (second click; Forms **+** optional). Online Exam seeded `formNames` + `projects/mytawala/Online Exam Builder.json` hydrate. Selection scopes Export / Import / Purge (enablement matrix A/B/C). **Whole-project Purge** (`:3001/api/purge-responses`) and **Selective (per-form) Purge** (export → drop form → replace) share the Project Data **Purge** control; confirm copy names the scope; Records re-hydrate after success. Responsive polish (fluid names, aligned RECORDS, hide sidebar below 1024px) committed separately. **HOLD nuance:** sports “stats-only” Selective Purge after commissioner feedback if needed.
-5. **Theme / Appearance** — **DONE (Aug 9 slice):** Details identity-rail dropdown (legacy theme labels/paths); persists `themePath` on My Tawala overlay (does not push CSS to :8080).
+5. **Theme / Appearance** — **PARTIAL (Aug 10 theme1):** Details identity-rail dropdown lists legacy Designer themes (same labels/paths as `designer-web` `projectThemes`); shows current `themePath`; change persists on My Tawala overlay. Acquire / Push / Publish / Refresh / Make a Copy carry `themePath`; hydrate recovers Library twin / version definition / `jsonFile` when overlay lacked it. **HOLD:** does **not** push CSS to `:8080` — runtime theme still comes from Designer **Push / Redeploy** (definition `themePath`). Dropdown is metadata + honest status, not live Tomcat restyle. **Parked on Designer ToDo** (`.cursor/rules/tawala-designer-parked-post-website.mdc` MUST DO + `docs/CHAT_HANDOFF.md` Chat 1) — do not implement live restyle in website chat.
 6. **Published indicator** — **DONE (Aug 9 slice):** Details shows Yes + Library link (catalog twin or `publishedToLibraryId` after Publish); No when unpublished.
 7. **Author / version / description rail** — **DONE (Aug 9 slice; blurb placement clarified):** Author (mock user) + Version # (+ Deploy `versionDescription` only) in the left rail. Project **shortDescription** blurb lives **once** under the main title — not repeated under Version / in the sidebar.
-8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10; library-detail Save a copy Aug 10 libsc1):** Listing + detail CTAs = **Test Drive** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe honesty remains Task #14. ≠ My Tawala **Make a Copy**.
+8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10; library-detail Save a copy Aug 10 libsc1; Copy link Aug 10 tdshare1):** Listing + detail CTAs = **Test Drive** + **Copy link** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe honesty remains Task #14. ≠ My Tawala **Make a Copy**.
 9. **Make a Copy (own project)** — **DONE (Aug 10; empty-runtime fix same day):** Project Details **MAKE A COPY** + My Tawala listing bar (selection-gated). Fork with new overlay id, rename dialog + overwrite warn, original untouched, **empty Records** (`uniqueId: null` — never share source/Library live id). ≠ Rename ≠ Library Save a copy. **HOLD:** optional copy-with-data (confirm) until needed.
 10. **Start points: distribute + embed** — **PARTIAL (Aug 10 Deploy doorway):** Details **DEPLOY** opens share panel — help copy, start picker (multi-start), **Copy link**, **Include in Web Page** (iframe embed). Invite / Include sidebar buttons open the same panel. Empty acquires: honest “need live project first”; Online Exam (and other seeded live rows) share now. Project Data banner **Copy link** still works for tree selection. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). Designer shell still says Deploy until the [Push rename checklist](#designer-push-rename-checklist-docs-first--do-not-mass-rename-yet) runs (parked on Designer chat list). **HOLD coded stretch:** uniqueId-in-URL hardening; optional participant/admin-style start labels polish.
 11. **Edit project in Designer** — **Confirmed DONE (Aug 10):** Owner tested successfully. Details-only **Edit project in Designer** resolves a definition (version snapshot / catalog `jsonFile`) and opens `:5173` with `?snapshot=` or `?mockJson=` so Designer **loads that project** — not a blank canvas. Catalog paths: `projects/mytawala|library/*.json` or `designer-web/public/samples/…/*.json` via `:3001/api/open-mock-json`. Honest alert when no definition (e.g. Library acquire with no catalog JSON and no Push / Show in My Tawala snapshot). Cancel → `designer.html` stub. **HOLD:** Home sidebar Designer link later, placed away from Library.
 12. **Active / De-activate** — **DONE (Aug 9 slice):** Details Activate / De-activate; overlay `inactive` hides from Library listing; My Tawala keeps Offline badge.
 13. **Times used / Last used / Copies downloaded** — **PARTIAL (Aug 10 Task #13; listing cols Aug 10):** Aug 9 meanings wired in the mock. **Records** = submissions (unchanged). **Copies downloaded** (field `cloneCount`) = Library Save a copy / Get from Library acquires (≠ Records) — bumps on acquire (already); Library listing column + detail sidebar label **Copies downloaded** (was **Clone count**, earlier mislabeled Times used). **Times used** / **Last used** on My Tawala listing + Project Data banner = mock localStorage counters (`tawala.mock.usageStats`) incremented when My Tawala **Use** successfully opens a start URL on `:8080` — **not** Library Test Drive, **not** live respondent telemetry. Still **`0`** / **"—"** until first Use in that browser. Production session accounting later.
-14. **Test Drive contract** — **PARTIAL (direction Aug 10):** Keep Library-owned; allow all start points during the drive; purge when the visitor leaves (document and implement the leave/wipe path honestly in the mock’s limits). **Near-term add:** ensure Test Drive works **logged-out**; Library **Copy Test Drive link** CTA (viral share — ≠ My Tawala Deploy Copy link). See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
+14. **Test Drive contract** — **PARTIAL (Aug 10 tdshare1):** Keep Library-owned; allow all start points during the drive; purge when the visitor leaves (leave/wipe honesty still open in the mock’s limits). **Near-term done:** Test Drive works **logged-out** (no auth wall); Library **Copy Test Drive link** on listing + detail (copies `libraryTestDriveUrl` / live `:8080`; alert “Link copied”). ≠ My Tawala Deploy Copy link. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
 15. **HOLD — Backup package** — Do not expand Backup/Restore until the owner confirms the default proposal (deployed definition + current responses) and how Restore differs from Deploy this version in the UI copy.
 16. **HOLD — Download latest** — Talk later; prefer Pull into Designer over site Push/Download.
 17. **HOLD / park — Shared Data, Access column, SEE DEMO videos, reputation/ratings product, ACL collaborators** — No build in this phase. Reputation still parked under Viral Test Drive direction.
 18. **Ongoing — Library stub cleanup** — Separate catalog work: Designer → Deploy → Publish a real replacement, then retire the stub (see § Library stubs).
 19. **Empty My Tawala seed + Get from Library acquire** — **DONE (Aug 10):** `TAWALA_MYTAWALA = {}`; discarded archive seed ids scrubbed on load. Listing = Push + Save a copy only. **Get from Library…** = Library picker → Save a copy (not nav to `library.html`). Online Exam via Get/Save a copy or Designer Push.
 20. **HOLD — Email metering (billing)** — Visible email-volume counter, resettable per billing period; **admin** (cross-user / all projects) first, optional **Project Details** counter for authors we bill. Do **not** implement send infra or fake counts now. **Done (cleanup):** empty Details collapsible **“Backups, emails & library publish”** removed Aug 10 — metering remains a separate future feature. See § [Email metering (billing)](#email-metering-billing).
-21. **HOLD (pre-live, not near-term) — Registration / accounts / passwords / lost password** — Must exist before real public; countless UI examples, but **real security** concerns. Do not implement in this phase. Product gate timing (save-data vs N free uses) still open — see § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026). See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
+21. **HOLD (pre-live, not near-term) — Registration / accounts / passwords / lost password** — Must exist before real public; countless UI examples, but **real security** concerns. Do not implement in this phase. Soft gate moment = **save data** (see [#24](#task-list-aug-9)). See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
 22. **HOLD (pre-live, not near-term) — Payments** — Must exist before real public; legacy PayPal-style functions in samples were never wired. Do not implement in this phase. See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
-23. **HOLD — Project end page (Library + Designer promo)** — After a Test Drive / respondent flow, land on a page promoting the public Library (and Designer for a few projects). Do not half-build; wait for copy + which projects get Designer CTA. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
-24. **HOLD — Soft gate (N free uses) / Registrants** — Want Registrants eventually; gate when user wants to **save data** (self or their users) **or** after **N free uses** then sign up. Options stay open — no build until chosen. Ties to [#21](#task-list-aug-9).
+23. **HOLD — Project end page (Library + Designer promo)** — **Designer / runtime follow-up** (not website-mock chrome). After a Test Drive / respondent flow, land on a page promoting the **public Library** (and **Designer** for a few projects). Do not half-build runtime here; optional tiny mock stub only. Minimum checklist when reopened:
+    - **Simple Survey** — end / thank-you form after Survey submit → promo Library (+ optional Designer CTA).
+    - **Online Exam Builder** — end after Exam (and/or Admin flow) → promo Library (+ Designer for authors who want to build their own).
+    - Confirm which other liveReady try-outs get Designer CTA vs Library-only.
+    - Deploy/runtime path (Document / Process thank-you), not Library listing polish.
+24. **HOLD — Soft gate / Registrants (save data)** — **Decision (Aug 10):** gate when the user wants to **save data** about themselves or their users. ~~N free uses then sign up~~ struck as preferred. Want Registrants eventually; ties to [#21](#task-list-aug-9). No build until auth pass.
 25. **HOLD — Library sections / categories (featured audiences)** — Long-term catalog IA for audiences (HR, self-knowledge, honors / teacher prizes, public office candidates, …). Not near-term chrome polish; product strategy for featured Library.
 
 ### Aug 9 afternoon UI (implementation slice — committed)
@@ -721,12 +732,34 @@ Plain-English note of what landed in the My Tawala / Project Details / chrome pa
 - **Library detail Save a copy** — **FIXED (Aug 10 libsc1):** `getLibrary()` now stamps catalog `id` (seed rows had none); detail CTAs share listing / Get from Library rename → overwrite warn → My Tawala `?highlight=` land. Review: `http://localhost:5500/library-detail.html?project=simple-survey&v=20260810-libsc1`
 - **HOLD — Email metering (billing):** document-only Aug 10 — visible period-resettable email counters (admin cross-user + optional Details). Dead Details section removed; do not reintroduce fake chips. Task List [#20](#task-list-aug-9).
 - **Removed (Aug 10):** Project Details **“Backups, emails & library publish”** (`pmSecOther`) — review: `http://localhost:5500/mytawala-project.html?project=<id>&v=20260810-othergone1` (section gone; Versions then Comments).
+- **Theme / Appearance (Aug 10 theme1 — pause for review, no commit):** Task #5 was marked DONE Aug 9 but acquire/Push/Publish dropped `themePath`, so the dropdown often stuck on Default and felt unwired. Fixed transfer carry + hydrate; overlay persist was already wired. **HOLD** remains: no `:8080` CSS push from the Details dropdown.
 - **Pre-live HOLD (not near-term):** Auth/accounts/password recovery + Payments/PayPal — Task List [#21](#task-list-aug-9) / [#22](#task-list-aug-9); § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
-- **Viral Test Drive / soft gating (docs Aug 10):** No account to try; shareable Test Drive link; end page + N-use gate + category IA + full auth = HOLD ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)). Near-term only: logged-out Test Drive + Copy Test Drive link on Task [#14](#task-list-aug-9). Reputation still parked ([#17](#task-list-aug-9)).
+- **Viral Test Drive / soft gating (Aug 10 tdshare1 — pause for review, no commit):** Soft gate **DECIDED** = save data (N-uses struck). Logged-out Test Drive verified (no auth wall). Library listing + detail **Copy link** copies live `:8080` `libraryTestDriveUrl`; alert “Link copied”. End page = Designer/runtime [#23](#task-list-aug-9) with Simple Survey / Online Exam checklist. Reputation still parked ([#17](#task-list-aug-9)).
 
 **Next**
 
-Continue the [Task List](#task-list-aug-9): Versioning slice ready for review. Library-detail Save a copy fixed (pause for review). Next open item is Task #14 (Test Drive leave/wipe + near-term logged-out / Copy Test Drive link). Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears. Pre-live Auth / Payments / Email metering stay HOLD. End page / N-use gate / Library category IA ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)) stay HOLD.
+Continue the [Task List](#task-list-aug-9): Versioning + Library visual (libvis2) + Save a copy + Viral Test Drive (tdshare1) ready for review — **no commit until owner asks**. Leave/wipe honesty under Task #14 still open. Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears. Pre-live Auth / Payments / Email metering stay HOLD. End page / save-data auth / Library category IA ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)) stay HOLD.
+
+**Aug 10 review (Theme / Appearance — Task #5 — no commit until owner asks):**
+
+- **Use this host:** `http://localhost:5500/…` (owner data). `127.0.0.1:5500` is a **different localStorage**.
+- My Tawala: `http://localhost:5500/mytawala.html?v=20260810-theme1`
+- Project Details (any row): `http://localhost:5500/mytawala-project.html?project=<id>&v=20260810-theme1`
+- Smoke **Horses acquire:** Library **Save a copy** of Horses and Penguins → open Details → Theme should show **Big Q** (`style2`), not Default.
+- Smoke **change + reload:** pick another theme (e.g. Green Tea) → status says overlay-only / Push for `:8080` → hard-refresh Details → selection sticks.
+- Smoke **ops still work:** Active/De-activate, Deploy share, Edit in Designer unchanged.
+- Honest limit: changing Theme here does **not** restyle live `:8080` forms until Designer Push / Redeploy.
+
+**Aug 10 review (Viral Test Drive / Copy link — no commit until owner asks):**
+
+- **Use this host:** `http://localhost:5500/…` (owner data). Guest / logged-out is fine — Test Drive does not require My Tawala login.
+- Library listing: `http://localhost:5500/library.html?v=20260810-tdshare1`
+- Library detail: `http://localhost:5500/library-detail.html?project=simple-survey&v=20260810-tdshare1`
+- Online Exam detail: `http://localhost:5500/library-detail.html?project=online-exam-builder&v=20260810-tdshare1`
+- Smoke **logged-out Test Drive:** ensure chrome shows Log in (not logged in) → click Test Drive on Simple Survey → probes `:8080` → opens Survey (no login redirect).
+- Smoke **Copy link:** listing or detail **Copy link** → alert “Link copied” → paste should be the live try-out URL, e.g. `http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey` (Simple Survey) or Administration for Online Exam.
+- Soft gate recorded: **save data** (not N-uses). End-page promo = Task #23 follow-up (Simple Survey + Online Exam checklist in Task List).
+- Prior visual / Save a copy still on same dirty tree: `?v=20260810-libvis2` / `libsc1` folded into `tdshare1` cache-bust for Library pages.
 
 **Aug 10 review (Library detail Save a copy — no commit until owner asks):**
 

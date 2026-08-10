@@ -16,6 +16,8 @@ alwaysApply: true
 
 **Rename Designer Deploy → Push (owner Aug 10, 2026 — park; do not implement in website chat):** User-facing **Deploy…** / **Deploy this version** (and similar shell copy) → **Push to My Tawala** / *Push Project to your MyTawala library* (short button / long help). **Deploy this version** → **Push this version**. Keep `/api/deploy`, `deployProject`, and related code ids for now — UI/status/help only. Inventory: `website-mock/README.md` § **Designer Push rename checklist**. Website My Tawala Details keeps the verb **Deploy** (go live + share/embed) — do not conflate.
 
+**Theme applies on Push (owner Aug 10, 2026 — park; do not implement in website chat):** My Tawala Project Details Theme dropdown already persists `themePath` on the overlay (PARTIAL — website Task #5). Changing Theme does **not** restyle live `:8080` forms yet. Fix via **Designer Push / Redeploy** so deployed project CSS/theme follows `themePath` (live Tomcat restyle), not overlay metadata alone. Cross-ref: `website-mock/README.md` Task List #5 Theme / Appearance HOLD. Owner will switch to Designer chat once the Library plate is emptier.
+
 ## Parked until site is up
 
 1. **Document smoothness P0s** — Face/Size multi-chip, invent-with-tables, chip drag, table reflow

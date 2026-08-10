@@ -53,6 +53,9 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
+    "versionNumber": 1,
+    "timesUsed": 210,
+    "cloneCount": 56,
     "startPoints": [
       {
         "label": "Survey",
@@ -80,6 +83,9 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
+    "versionNumber": 1,
+    "timesUsed": 128,
+    "cloneCount": 34,
     "startPoints": [
       {
         "label": "Potluck Organizer",
@@ -107,6 +113,9 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
+    "versionNumber": 1,
+    "timesUsed": 67,
+    "cloneCount": 18,
     "startPoints": [
       {
         "label": "Survey",
@@ -134,6 +143,9 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
+    "versionNumber": 1,
+    "timesUsed": 19,
+    "cloneCount": 5,
     "startPoints": [
       {
         "label": "Form 1",
@@ -157,6 +169,9 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
+    "versionNumber": 1,
+    "timesUsed": 44,
+    "cloneCount": 12,
     "startPoints": [
       {
         "label": "Survey",
@@ -185,6 +200,9 @@ window.TAWALA_LIBRARY = {
     "liveReady": true,
     "deployed": true,
     "uniqueId": "u3hkqgwtrepjlur",
+    "versionNumber": 1,
+    "timesUsed": 95,
+    "cloneCount": 22,
     "startPoints": [
       {
         "label": "Exam",
@@ -473,7 +491,8 @@ window.TawalaDemo = {
       ) {
         return null;
       }
-      return overlayOnly;
+      /* Catalog keys are not on the row object — always stamp id (library-detail Save a copy). */
+      return overlayOnly ? { ...overlayOnly, id } : null;
     }
     const base = window.TAWALA_LIBRARY[id] || null;
     if (hasTransfer && typeof window.TawalaTransfer.getLibraryOverlayEntry === "function") {
@@ -497,7 +516,9 @@ window.TawalaDemo = {
     ) {
       return null;
     }
-    return base;
+    /* Seed rows live under TAWALA_LIBRARY[id] without an id field — stamp it for callers
+     * (library-detail Save a copy uses project.id; libraryEntries() already injects id). */
+    return base ? { ...base, id } : null;
   },
   getMyTawala(id) {
     if (!id) return null;
@@ -539,7 +560,7 @@ window.TawalaDemo = {
         return merged;
       }
     }
-    return base;
+    return base ? { ...base, id } : null;
   },
   /** @deprecated Prefer libraryEntries() */
   entries() {
@@ -1337,6 +1358,15 @@ window.TawalaDemo = {
         // data-testdrive-purge="false" → open without wiping DB (My Tawala operate / exam after Admin setup).
         const purgeAttr = el.getAttribute("data-testdrive-purge");
         const purge = purgeAttr !== "false" && purgeAttr !== "0";
+        const libraryId = el.getAttribute("data-project") || "";
+        if (
+          libraryId &&
+          purge &&
+          typeof window.TawalaTransfer !== "undefined" &&
+          typeof window.TawalaTransfer.bumpLibraryTimesUsed === "function"
+        ) {
+          window.TawalaTransfer.bumpLibraryTimesUsed(libraryId);
+        }
         void this.openTestDrive(href, { purge });
       },
       true

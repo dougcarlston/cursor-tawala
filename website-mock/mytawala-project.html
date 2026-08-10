@@ -6,13 +6,13 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-othergone1" />
-  <script src="js/demo-urls.js?v=20260810-othergone1"></script>
-  <script src="js/transfer.js?v=20260810-othergone1"></script>
-  <script src="js/project-ops.js?v=20260810-othergone1"></script>
-  <script src="js/data-ops.js?v=20260810-othergone1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-guest2" />
+  <script src="js/demo-urls.js?v=20260810-guest2"></script>
+  <script src="js/transfer.js?v=20260810-guest2"></script>
+  <script src="js/project-ops.js?v=20260810-guest2"></script>
+  <script src="js/data-ops.js?v=20260810-guest2"></script>
 </head>
-<body data-tawala-page="mytawala" data-tawala-user="dev">
+<body data-tawala-page="mytawala">
   <div id="doc">
     <div id="tawala-chrome-banner"></div>
     <div id="tawala-chrome-header"></div>
@@ -26,8 +26,11 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-othergone1"></script>
+  <script src="js/chrome.js?v=20260810-login2"></script>
   <script>
+    if (typeof TawalaChrome !== "undefined" && !TawalaChrome.isLoggedIn()) {
+      location.replace("mytawala-demo.html");
+    }
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
 
@@ -49,15 +52,10 @@
       const project = projectId ? TawalaDemo.getMyTawala(projectId) : null;
       const host = document.getElementById("pmDetailHost");
       if (!project) {
-        const lib = projectId ? TawalaDemo.getLibrary(projectId) : null;
-        if (lib) {
-          location.replace("library-detail.html?project=" + encodeURIComponent(projectId));
-        } else {
-          host.innerHTML =
-            '<p class="pm-hint">Unknown project' +
-            (projectId ? " (“" + projectId.replace(/</g, "&lt;") + "”)" : "") +
-            '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Tawala</a>.</p>';
-        }
+        host.innerHTML =
+          '<p class="pm-hint">Unknown project' +
+          (projectId ? " (“" + projectId.replace(/</g, "&lt;") + "”)" : "") +
+          '. Deploy from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Tawala</a>.</p>';
         return;
       }
       document.title = "Tawala - " + TawalaDemo.displayName(project.name);

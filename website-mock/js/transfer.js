@@ -18,6 +18,8 @@
  *   tawala.mock.deployInbox — recent Designer deploy receipts
  *   tawala.mock.myTawalaOverlay — { [projectId]: catalog-shaped entry } merged into My Tawala pile
  *     Deploy overlay rows may carry:
+ *       designerName — original Designer project name at first Push / Show in My Tawala
+ *         (provenance; Rename must not overwrite; Details sidebar Source: “from Designer: …”)
  *       versionNumber — monotonic int (latest Push / current). New acquires & forks start at 1.
  *       versionDescription — optional note (Push dialog, or acquire/fork seed text)
  *       versions — [{ versionNumber, description, at, uniqueId, mode, startPoints, deployed,
@@ -41,8 +43,11 @@
  *     Mock **Times used** / **Last used** (Aug 9 Task #13): count a new respondent session when
  *     My Tawala **Use** successfully opens a start URL on :8080. Does **not** count Library
  *     Test Drive. Not live server telemetry — localStorage only until production sessions exist.
- *   Library **cloneCount** (catalog seed and/or libraryOverlay): times **Save a copy** / Get from
- *     Library acquired this public entry into My Tawala (≠ Records, ≠ Times used).
+ *   Library **cloneCount** (catalog seed and/or libraryOverlay): times **Save to MyTawala** /
+ *     Get from Library acquired this public entry (≠ Records, ≠ Library Times used).
+ *   Library **timesUsed** (catalog seed and/or libraryOverlay): mock popularity — how often
+ *     people opened Library **Test Drive** for this entry (hottest signal on the listing).
+ *     Separate from My Tawala usageStats.
  *
  * Publish (My Tawala → Library, owner Aug 1, 2026):
  *   - Owner can rename the project on the way in (temporary until real versioning exists).
@@ -296,11 +301,40 @@
     return Array.isArray(list) ? list : [];
   }
 
+  /**
+   * Original Designer display name for a Push overlay row (never invent).
+   * Prefer existing overlay field, then receipt.designerName / receipt.name, then oldest
+   * deploy-inbox receipt for this id. Leave blank when nothing trustworthy is available.
+   */
+  function resolveDesignerName(prev, receipt, projectId) {
+    const fromPrev = prev && String(prev.designerName || "").trim();
+    if (fromPrev) return fromPrev;
+    if (receipt) {
+      const fromReceipt =
+        String(receipt.designerName || "").trim() || String(receipt.name || "").trim();
+      if (fromReceipt) return fromReceipt;
+    }
+    const id = String(projectId || (receipt && receipt.id) || "").trim();
+    if (!id) return "";
+    const inbox = getDeployInbox()
+      .filter((e) => e && e.id === id && String(e.name || "").trim())
+      .slice()
+      .sort((a, b) => {
+        const ta = Date.parse(a.at) || 0;
+        const tb = Date.parse(b.at) || 0;
+        return ta - tb;
+      });
+    if (inbox.length) return String(inbox[0].name).trim();
+    return "";
+  }
+
   function recordDeploy(receipt) {
     if (!receipt || !receipt.name) return getDeployInbox();
     const entry = {
       id: receipt.id || slugifyProjectId(receipt.name),
       name: String(receipt.name),
+      designerName:
+        String(receipt.designerName || "").trim() || String(receipt.name || "").trim() || null,
       uniqueId: receipt.uniqueId || null,
       startpoints: Array.isArray(receipt.startpoints) ? receipt.startpoints : [],
       mode: receipt.mode || null,
@@ -725,6 +759,23 @@
     // Stamp receipt so callers (inbox / UI) see the minted number.
     receipt.versionNumber = versionNumber;
     if (versionDescription) receipt.versionDescription = versionDescription;
+    /* First Push wins — Rename / later Push must not clobber Designer provenance. */
+    const designerName = resolveDesignerName(prev, receipt, id);
+    if (designerName) receipt.designerName = designerName;
+    /* Theme: Designer definition / receipt wins; else keep overlay choice (do not wipe). */
+    const defTheme =
+      definition && definition.themePath != null && String(definition.themePath).trim()
+        ? String(definition.themePath).trim()
+        : "";
+    const receiptTheme =
+      receipt.themePath != null && String(receipt.themePath).trim()
+        ? String(receipt.themePath).trim()
+        : "";
+    const prevTheme =
+      prev && prev.themePath != null && String(prev.themePath).trim()
+        ? String(prev.themePath).trim()
+        : "";
+    const themePath = defTheme || receiptTheme || prevTheme || undefined;
     const entry = {
       name: String(receipt.name),
       category: (prev && prev.category) || receipt.category || "My Projects",
@@ -743,11 +794,18 @@
         "Added via Deploy → Show in My Tawala. Stored in this browser’s localStorage until copied into demo-urls.js / the MyTawala pile.",
       sourcePile: "deploy-overlay",
       fromDeployOverlay: true,
+      designerName: designerName || (prev && prev.designerName) || undefined,
       deployed: !!firstUrl,
       startPoints: startPoints.length ? startPoints : (prev && prev.startPoints) || [],
       testDriveUrl: firstUrl || (prev && prev.testDriveUrl) || null,
       uniqueId: uniqueId || (prev && prev.uniqueId) || null,
       mode: receipt.mode || (prev && prev.mode) || null,
+      themePath,
+      jsonFile: (prev && prev.jsonFile) || null,
+      formNames:
+        Array.isArray(prev && prev.formNames) && prev.formNames.length
+          ? prev.formNames.slice()
+          : undefined,
       lastDeployAt: nowIso,
       versionNumber,
       versionDescription: versionDescription || "",
@@ -1091,6 +1149,31 @@
     return { ok: true, changed };
   }
 
+  /**
+   * Backfill designerName on Push overlay rows from deploy-inbox (oldest receipt name)
+   * or an existing field. Does not invent from the current display name.
+   */
+  function ensureOverlayDesignerNames() {
+    const overlay = getMyTawalaOverlay();
+    let changed = false;
+    Object.keys(overlay).forEach((id) => {
+      const entry = overlay[id];
+      if (!entry || typeof entry !== "object") return;
+      if (String(entry.designerName || "").trim()) return;
+      const isPush =
+        entry.fromDeployOverlay === true ||
+        entry.sourcePile === "deploy-overlay" ||
+        !!entry.lastDeployAt;
+      if (!isPush) return;
+      const resolved = resolveDesignerName(entry, null, id);
+      if (!resolved) return;
+      overlay[id] = { ...entry, designerName: resolved };
+      changed = true;
+    });
+    if (changed) writeJson(PILE_KEY, overlay);
+    return { ok: true, changed };
+  }
+
   /** Listing / identity display helper — current versionNumber or "—". */
   function formatCurrentVersion(project) {
     if (!project) return "—";
@@ -1113,6 +1196,7 @@
     scrubDiscardedMyTawalaSeeds();
     rehydrateAcquireLiveUrls();
     ensureOverlayStartingVersions();
+    ensureOverlayDesignerNames();
     const overlay = getMyTawalaOverlay();
     const deleted = getMyTawalaDeleted();
     const discarded = discardedMyTawalaSeedIdSet();
@@ -1531,6 +1615,17 @@
       testDriveUrl = (sourceProject && sourceProject.testDriveUrl) || null;
     }
 
+    /* Published Library version = My Tawala current version at Publish time (what's in the catalog). */
+    let publishedVersion = STARTING_VERSION_NUMBER;
+    if (sourceProject && sourceProject.versionNumber != null && Number.isFinite(Number(sourceProject.versionNumber))) {
+      publishedVersion = Math.max(1, Math.floor(Number(sourceProject.versionNumber)));
+    } else if (typeof formatCurrentVersion === "function" && sourceProject) {
+      const fmt = formatCurrentVersion(sourceProject);
+      if (fmt && fmt !== "—") publishedVersion = Math.max(1, Math.floor(Number(fmt)) || STARTING_VERSION_NUMBER);
+    }
+    const publishedVersionDesc =
+      (sourceProject && String(sourceProject.versionDescription || "").trim()) || "";
+
     const entry = {
       name: publishName,
       category:
@@ -1560,12 +1655,16 @@
       startPoints: sourceStartPoints,
       testDriveUrl,
       uniqueId,
+      themePath: (sourceProject && sourceProject.themePath) || undefined,
+      jsonFile: (sourceProject && sourceProject.jsonFile) || (baseTarget && baseTarget.jsonFile) || null,
+      versionNumber: publishedVersion,
+      versionDescription: publishedVersionDesc || undefined,
     };
     /* liveReady is an owner-vetted cue — a fresh Publish overlay never claims it automatically. */
 
     upsertLibraryOverlay(libraryId, entry);
 
-    /* Stamp the source My Tawala row so Details can show Published → Library link. */
+    /* Stamp the source My Tawala row so Details can show Published → Library link + version. */
     if (sourceProjectId) {
       const myOverlay = getMyTawalaOverlay();
       const prevMine = myOverlay[sourceProjectId] || {};
@@ -1573,6 +1672,7 @@
         ...prevMine,
         publishedToLibraryId: libraryId,
         publishedToLibraryName: publishName,
+        publishedToLibraryVersion: publishedVersion,
         publishedAt: nowIso,
         updated: now,
         updatedAt: nowIso,
@@ -1691,6 +1791,12 @@
       longDescription: source.longDescription || prev.longDescription || "",
       iconLabel: prev.iconLabel || source.iconLabel || iconLabelFromName(prev.name || myTawalaProjectId),
       jsonFile: source.jsonFile || prev.jsonFile || null,
+      themePath: source.themePath || prev.themePath || undefined,
+      formNames: Array.isArray(source.formNames)
+        ? source.formNames.slice()
+        : Array.isArray(prev.formNames)
+          ? prev.formNames.slice()
+          : undefined,
       startPoints: source.startPoints && source.startPoints.length ? source.startPoints : prev.startPoints || [],
       testDriveUrl: source.testDriveUrl || prev.testDriveUrl || null,
       pulledFromLibraryId: libraryId,
@@ -1843,6 +1949,9 @@
       ...rest
     } = current;
     const prevOverlay = getMyTawalaOverlay()[id] || {};
+    /* designerName is provenance — Rename only changes display name / iconLabel. */
+    const designerName =
+      String(prevOverlay.designerName || rest.designerName || "").trim() || undefined;
     const entry = {
       ...rest,
       ...prevOverlay,
@@ -1850,6 +1959,7 @@
       iconLabel,
       updated: now,
       updatedAt: nowIso,
+      ...(designerName ? { designerName } : {}),
     };
     clearMyTawalaDeleted(id);
     const overlay = getMyTawalaOverlay();
@@ -1947,6 +2057,7 @@
       longDescription: source.longDescription || "",
       jsonFile: source.jsonFile || null,
       formNames: Array.isArray(source.formNames) ? source.formNames.slice() : undefined,
+      themePath: source.themePath || undefined,
       sourcePile: "library-acquire",
       fromLibraryAcquire: true,
       pulledFromLibraryId: libraryId,
@@ -2010,6 +2121,43 @@
         : projectOrCount;
     const n = Number(raw);
     return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+  }
+
+  /**
+   * Display helper for Library listing **Times used** (Test Drive opens / popularity).
+   * Field `timesUsed` on catalog / libraryOverlay — not My Tawala usageStats.
+   */
+  function formatLibraryTimesUsed(projectOrCount) {
+    const raw =
+      projectOrCount && typeof projectOrCount === "object"
+        ? projectOrCount.timesUsed
+        : projectOrCount;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+  }
+
+  /**
+   * Bump Library timesUsed when Test Drive opens a start (mock hottest signal).
+   * Thin overlay write — does not snapshot the full catalog row.
+   */
+  function bumpLibraryTimesUsed(libraryId) {
+    if (!libraryId) return null;
+    let source = null;
+    if (typeof window.TawalaDemo !== "undefined" && window.TawalaDemo.getLibrary) {
+      source = window.TawalaDemo.getLibrary(libraryId);
+    }
+    if (!source && typeof window.TAWALA_LIBRARY !== "undefined") {
+      source = window.TAWALA_LIBRARY[libraryId] || null;
+    }
+    if (!source) return null;
+    const prevFields =
+      (getLibraryOverlayEntry && getLibraryOverlayEntry(libraryId)) || {};
+    const base = Number(
+      prevFields.timesUsed != null ? prevFields.timesUsed : source.timesUsed
+    );
+    const next = (Number.isFinite(base) && base >= 0 ? Math.floor(base) : 0) + 1;
+    upsertLibraryOverlay(libraryId, { ...prevFields, timesUsed: next });
+    return next;
   }
 
   /**
@@ -2480,6 +2628,8 @@
     renameMyTawalaProject,
     saveCopyFromLibrary,
     formatCloneCount,
+    formatLibraryTimesUsed,
+    bumpLibraryTimesUsed,
     formatCurrentVersion,
     STARTING_VERSION_NUMBER,
     getUsageStats,

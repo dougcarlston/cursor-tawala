@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - Project Details (preview)</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-guest3" />
+  <script src="js/guest-demo.js?v=20260810-guest3"></script>
+</head>
+<body data-tawala-page="mytawala-demo">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd" class="pm-detail-bd">
+      <div class="content pm-detail-content">
+        <div id="pmDetailHost"></div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js?v=20260810-login2"></script>
+  <script>
+    if (TawalaChrome.isLoggedIn()) {
+      location.replace("mytawala.html");
+    } else {
+      TawalaChrome.mount();
+      const params = new URLSearchParams(location.search);
+      const id = params.get("project") || "";
+      const project = TawalaGuestDemo.getDemoProject(id) || TawalaGuestDemo.DEMO_PROJECTS[0];
+      if (project) {
+        document.title = "Tawala - " + project.name + " (preview)";
+      }
+      document.getElementById("pmDetailHost").innerHTML =
+        TawalaGuestDemo.detailHtml(project);
+    }
+  </script>
+</body>
+</html>

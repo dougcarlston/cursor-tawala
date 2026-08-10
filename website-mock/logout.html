@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <title>Tawala - Logout</title>
-  <link rel="stylesheet" href="css/tawala-mock.css?v=20260809-chrome1" />
+  <link rel="stylesheet" href="css/tawala-mock.css?v=20260810-login2" />
 </head>
 <body data-tawala-page="home" class="stub-page">
   <div id="doc">
@@ -13,15 +13,28 @@
       <div class="content">
         <div class="pageTitle"><h1>Logged out</h1></div>
         <div class="block">
-          <p>You have been logged out of the <b>website mock</b> (no session was active).</p>
-          <p><a href="login.html">Login again</a> · <a href="index.html">Home</a></p>
-          <p class="stub-form note">Stub page — legacy logout clears server session and redirects to home.</p>
+          <p id="logoutMsg">Clearing mock session…</p>
+          <p>
+            <a class="pm-action is-active" href="login.html?next=mytawala.html">Log in again</a>
+            · <a href="mytawala-demo.html">Guest My Tawala preview</a>
+            · <a href="library.html">Library</a>
+            · <a href="index.html">Home</a>
+          </p>
+          <p class="stub-form note">
+            Logout puts the mock in <b>guest mode</b> (Save to MyTawala hidden; MY TAWALA shows the sample preview).
+            Log in (or one-click <b>dev</b>) to return to your private projects.
+          </p>
         </div>
       </div>
     </div>
     <div id="tawala-chrome-footer"></div>
   </div>
-  <script src="js/chrome.js?v=20260809-chrome1"></script>
-  <script>TawalaChrome.mount();</script>
+  <script src="js/chrome.js?v=20260810-login2"></script>
+  <script>
+    TawalaChrome.clearSession();
+    TawalaChrome.mount();
+    document.getElementById("logoutMsg").innerHTML =
+      "You are in <b>guest mode</b>. My Tawala shows the sample preview until you log in again.";
+  </script>
 </body>
 </html>

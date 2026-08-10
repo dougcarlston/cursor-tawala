@@ -1,8 +1,83 @@
 /**
  * Shared header/footer for website-mock.
  * Links with ready: false get class link-pending (greyed, non-clickable).
+ *
+ * Mock session (not real Auth Task #21): localStorage `tawala.mock.session`
+ * `{ user, at }`. Login sets it; Logout clears it. Drives Welcome chrome,
+ * Library “Save to MyTawala” visibility, and guest vs real My Tawala routing.
  */
 (function () {
+  const SESSION_KEY = "tawala.mock.session";
+  /** Explicit guest/browse mode — set by Logout. Cleared by Login. */
+  const GUEST_KEY = "tawala.mock.guest";
+
+  function readSession() {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (parsed && typeof parsed === "object" && parsed.user) return parsed;
+    } catch {
+      /* ignore */
+    }
+    return null;
+  }
+
+  function isGuestMode() {
+    try {
+      return localStorage.getItem(GUEST_KEY) === "1";
+    } catch {
+      return false;
+    }
+  }
+
+  /**
+   * Mock auth: default logged-in as "dev" (matches prior hard-coded My Tawala).
+   * Logout → guest mode (Library Save hidden; MY TAWALA → sample preview).
+   * Login clears guest mode and stores a session.
+   */
+  function isLoggedIn() {
+    if (isGuestMode()) return false;
+    if (readSession()) return true;
+    /* No session and not explicitly guest → treat as logged-in for mock UX. */
+    return true;
+  }
+
+  function currentUser() {
+    if (isGuestMode()) return "";
+    const s = readSession();
+    if (s && s.user) return String(s.user);
+    return "dev";
+  }
+
+  function setSession(user) {
+    const name = String(user || "dev").trim() || "dev";
+    try {
+      localStorage.removeItem(GUEST_KEY);
+      localStorage.setItem(
+        SESSION_KEY,
+        JSON.stringify({ user: name, at: new Date().toISOString() })
+      );
+    } catch {
+      /* ignore */
+    }
+    return name;
+  }
+
+  function clearSession() {
+    try {
+      localStorage.removeItem(SESSION_KEY);
+      localStorage.setItem(GUEST_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+  }
+
+  /** Guest taste My Tawala; logged-in users get the real private pile. */
+  function myTawalaHref() {
+    return isLoggedIn() ? "mytawala.html" : "mytawala-demo.html";
+  }
+
   const LINKS = {
     about: { href: "about.html", label: "ABOUT", nav: true, ready: true },
     faq: { href: "faq.html", label: "FAQ", nav: true, ready: true },
@@ -55,6 +130,12 @@
   /** LTR: Home · Library · My Tawala · Designer · FAQ · About */
   const NAV_ORDER = ["home", "library", "mytawala", "designer", "faq", "about"];
 
+  function resolveHref(key) {
+    if (key === "mytawala") return myTawalaHref();
+    const item = LINKS[key];
+    return item ? item.href : "#";
+  }
+
   function anchor(key, labelOverride) {
     const item = LINKS[key];
     if (!item) return "";
@@ -65,19 +146,22 @@
     }
     const target =
       item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
-    return `<a href="${item.href}"${target}>${text}</a>`;
+    return `<a href="${resolveHref(key)}"${target}>${text}</a>`;
   }
 
   function renderNav(activePage) {
     return NAV_ORDER.map((key) => {
       const item = LINKS[key];
-      const selected = key === activePage;
+      const selected =
+        key === activePage ||
+        (key === "mytawala" &&
+          (activePage === "mytawala" || activePage === "mytawala-demo"));
       if (!item.ready) {
         return `<li class="${selected ? "selected" : ""}"><span class="link-pending" aria-disabled="true">${item.label}</span></li>`;
       }
       const target =
         item.target === "_blank" ? ' target="_blank" rel="noopener"' : "";
-      return `<li class="${selected ? "selected" : ""}"><a href="${item.href}"${target}${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
+      return `<li class="${selected ? "selected" : ""}"><a href="${resolveHref(key)}"${target}${selected ? ' aria-current="page"' : ""}>${item.label}</a></li>`;
     }).join("\n          ");
   }
 
@@ -104,7 +188,12 @@
   }
 
   function renderGuestStatus() {
-    return `Welcome. Please register or Log in ${renderAccountMenu("")}`;
+    return (
+      `Welcome. Please ` +
+      `<a href="signup.html">register</a> or ` +
+      `<a href="login.html?next=mytawala.html">Log in</a> ` +
+      renderAccountMenu("")
+    );
   }
 
   function renderHeader(activePage, user) {
@@ -138,28 +227,35 @@
   }
 
   function renderBanner(activePage) {
+    const mtHref = myTawalaHref();
     let html =
       `<strong>Website mock</strong> — static draft from legacy JSP. Grey controls = not implemented. Test-drive → :8080. ` +
       `<a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a> · this site :5500` +
       ` · <a href="docs.html" title="Mock ops docs (Publish, Export/Import, admin…)">Docs</a>.` +
       (activePage === "mytawala"
         ? ` · <b>My Tawala</b> (private) · <a href="library.html">Library</a>`
-        : activePage === "library"
-          ? ` · <b>Library</b> (public) · <a href="mytawala.html">My Tawala</a>`
-          : activePage === "docs"
-            ? ` · <b>Docs</b> · <a href="README.md">README.md</a>`
-            : "");
+        : activePage === "mytawala-demo"
+          ? ` · <b>My Tawala</b> (guest preview) · <a href="library.html">Library</a> · <a href="signup.html">Register</a>`
+          : activePage === "library"
+            ? ` · <b>Library</b> (public) · <a href="${mtHref}">My Tawala</a>`
+            : activePage === "docs"
+              ? ` · <b>Docs</b> · <a href="README.md">README.md</a>`
+              : "");
     /* localhost vs 127.0.0.1 = different origins / separate localStorage. Owner data lives on localhost. */
     try {
       if (typeof location !== "undefined" && location.hostname === "127.0.0.1") {
         const path =
           activePage === "library"
             ? "library.html"
-            : activePage === "mytawala"
-              ? location.pathname && location.pathname.indexOf("mytawala-project") >= 0
-                ? "mytawala-project.html" + (location.search || "")
-                : "mytawala.html"
-              : "mytawala.html";
+            : activePage === "mytawala-demo"
+              ? location.pathname && location.pathname.indexOf("mytawala-demo-project") >= 0
+                ? "mytawala-demo-project.html" + (location.search || "")
+                : "mytawala-demo.html"
+              : activePage === "mytawala"
+                ? location.pathname && location.pathname.indexOf("mytawala-project") >= 0
+                  ? "mytawala-project.html" + (location.search || "")
+                  : "mytawala.html"
+                : "mytawala.html";
         const href = "http://localhost:5500/" + path.replace(/^\//, "");
         html +=
           `<span class="mock-banner-where">My Tawala / Library data is stored <b>per address</b> — ` +
@@ -229,7 +325,9 @@
   function mount() {
     const body = document.body;
     const activePage = body.dataset.tawalaPage || "home";
-    const user = body.dataset.tawalaUser || "";
+    /* Session wins. data-tawala-user is display-only when logged in (legacy pages). */
+    const sessionUser = currentUser();
+    const user = sessionUser || "";
     const showBanner = body.dataset.tawalaBanner !== "false";
 
     const bannerEl = document.getElementById("tawala-chrome-banner");
@@ -252,5 +350,18 @@
     }
   }
 
-  window.TawalaChrome = { mount, anchor, LINKS };
+  window.TawalaChrome = {
+    mount,
+    anchor,
+    LINKS,
+    SESSION_KEY,
+    GUEST_KEY,
+    isLoggedIn,
+    isGuestMode,
+    currentUser,
+    setSession,
+    clearSession,
+    myTawalaHref,
+    readSession,
+  };
 })();

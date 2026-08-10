@@ -2,233 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Tawala - Project Details</title>
-  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
-  <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-vercol1" />
-  <script src="js/demo-urls.js?v=20260810-vercol1"></script>
-  <script src="js/transfer.js?v=20260810-vercol1"></script>
-  <script src="js/project-ops.js?v=20260810-vercol1"></script>
-</head>
-<body data-tawala-page="library" data-tawala-status="compact">
-  <div id="doc">
-    <div id="tawala-chrome-banner"></div>
-    <div id="tawala-chrome-header"></div>
-
-    <div id="bd">
-      <div class="sidebar-left">
-        <div class="block">
-          <h3>Library</h3>
-          <p><a href="library.html">← Back to search</a></p>
-          <p><a href="mytawala.html">My Tawala</a></p>
-          <p><a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a></p>
-        </div>
-        <div class="block" id="sidebarMeta"></div>
-        <div class="block" id="sidebarCategory"></div>
-        <div class="block" id="sidebarAcquire"></div>
-        <div class="block" id="sidebarTestDrive"></div>
-      </div>
-
-      <div class="content">
-        <div class="pageTitle"><h1 id="pageTitle">Project Details</h1></div>
-
-        <div class="section" id="projectDetails">
-          <div class="project-heading">
-            <h1 id="projectName"></h1>
-            <p id="projectBlurb" class="library-detail-blurb"></p>
-            <div id="projectAcquireCtas" class="library-acquire-ctas"></div>
-          </div>
-          <div id="description" class="section">
-            <h3 class="sectionHeading">Description</h3>
-            <div class="sectionContent">
-              <div id="longDescription"></div>
-            </div>
-          </div>
-          <div id="comments" class="section">
-            <h3 class="sectionHeading">Comments</h3>
-            <div class="sectionContent">
-              <p class="pm-hint">
-                Comments / reputation are parked (Aug 9). Stub only — not wired in this mock.
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <div class="testDriveBox" id="testDriveBox">
-          <b>Test drive this project</b> (local Java runtime)
-          <p id="testDriveBlurb"></p>
-          <div class="start-points-heading">Start points</div>
-          <ul class="startPointList" id="startPoints"></ul>
-        </div>
-      </div>
-    </div>
-
-    <div id="tawala-chrome-footer"></div>
-  </div>
-
-  <script src="js/chrome.js?v=20260810-vercol1"></script>
+  <meta http-equiv="refresh" content="0;url=library.html" />
+  <title>Tawala - Library (redirect)</title>
   <script>
-    function escapeHtml(s) {
-      return String(s)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;");
-    }
-
-    TawalaChrome.mount();
-    if (typeof TawalaProjectOps !== "undefined" && TawalaProjectOps.bind) {
-      TawalaProjectOps.bind(document);
-    }
-
-    const id = new URLSearchParams(location.search).get("project") || "simple-survey";
-    const project = TawalaDemo.getLibrary(id);
-    if (!project) {
-      document.querySelector("#doc .content").innerHTML =
-        "<p>Unknown project. <a href='library.html'>Back to library</a></p>";
-    } else {
-      document.title = "Tawala - " + TawalaDemo.displayName(project.name);
-      const nameEl = document.getElementById("projectName");
-      nameEl.textContent = TawalaDemo.displayName(project.name);
-      if (TawalaDemo.isLiveReady(project)) {
-        nameEl.insertAdjacentHTML("afterend", " " + TawalaDemo.liveReadyHtml(project));
-      }
-
-      const blurb = String(project.shortDescription || "").trim();
-      const blurbEl = document.getElementById("projectBlurb");
-      if (blurb) {
-        blurbEl.textContent = blurb;
-      } else {
-        blurbEl.hidden = true;
-      }
-      document.getElementById("longDescription").textContent =
-        project.longDescription || blurb || "No detailed description yet.";
-
-      const deployed = TawalaDemo.isDeployed(project);
-      const driveUrl =
-        typeof TawalaDemo.libraryTestDriveUrl === "function"
-          ? TawalaDemo.libraryTestDriveUrl(project)
-          : project.testDriveUrl;
-
-      /* Primary CTAs under title: Test Drive + Save a copy only (Aug 9 #8). */
-      const ctas = document.getElementById("projectAcquireCtas");
-      let ctaHtml = "";
-      if (deployed && driveUrl) {
-        ctaHtml +=
-          `<a class="pm-action is-active js-testdrive" href="${escapeHtml(driveUrl)}" ` +
-          `data-testdrive-url="${escapeHtml(driveUrl)}" target="_blank" rel="noopener" ` +
-          `title="Needs Java on :8080 — probes first; purges prior responses, then opens">Test Drive</a>`;
-      } else {
-        ctaHtml +=
-          `<button type="button" class="pm-action" disabled title="No local test-drive yet">Test Drive</button>`;
-      }
-      if (
-        typeof TawalaProjectOps !== "undefined" &&
-        typeof TawalaProjectOps.renderLibrarySaveCopyButton === "function"
-      ) {
-        ctaHtml += TawalaProjectOps.renderLibrarySaveCopyButton(project, "text");
-      } else {
-        ctaHtml +=
-          `<button type="button" class="pm-action is-active" data-op="save-my-tawala" ` +
-          `data-wired="save-copy-library" data-project="${escapeHtml(id)}">Save a copy</button>`;
-      }
-      ctas.innerHTML = ctaHtml;
-
-      if (deployed && driveUrl) {
-        document.getElementById("testDriveBlurb").textContent =
-          "Primary Test Drive purges prior responses, then opens localhost:8080 (Admin/Setup first for Online Exam). Start-point links below keep data so Setup → Exam works without wiping questions. Leave/wipe honesty is Task #14.";
-        document.getElementById("sidebarTestDrive").innerHTML =
-          "<h3>Quick start</h3><p><a class=\"js-testdrive\" href=\"" +
-          escapeHtml(driveUrl) +
-          "\" data-testdrive-url=\"" +
-          escapeHtml(driveUrl) +
-          "\" target=\"_blank\" rel=\"noopener\" title=\"Needs Java on :8080 — probes first; purges prior responses, then opens\">Test Drive</a></p>";
-      } else {
-        document.getElementById("testDriveBlurb").textContent =
-          "No local :8080 test-drive for this project yet. Open it in the Web Designer, then Deploy when you want a live start point.";
-        document.getElementById("sidebarTestDrive").innerHTML =
-          "<h3>Test Drive</h3><p class=\"deploy-hint-quiet\">No local deploy yet</p>";
-      }
-
-      const cats =
-        typeof TawalaDemo.libraryCategories === "function"
-          ? TawalaDemo.libraryCategories()
-          : [];
-      const effectiveCat =
-        typeof TawalaTransfer !== "undefined"
-          ? TawalaTransfer.effectiveCategory(id, project.category)
-          : project.category;
-      const catOpts = cats
-        .map((c) => {
-          const sel = c.label === effectiveCat ? " selected" : "";
-          return `<option value="${escapeHtml(c.label)}"${sel}>${escapeHtml(c.label)}</option>`;
-        })
-        .join("");
-      document.getElementById("sidebarCategory").innerHTML =
-        "<h3>Library category</h3>" +
-        '<label class="pm-hint" for="detailCatSelect">Group</label> ' +
-        `<select id="detailCatSelect" class="library-cat-select" data-project="${escapeHtml(id)}" aria-label="Library category">` +
-        catOpts +
-        "</select>" +
-        '<p class="pm-hint" id="detailCatStatus" style="margin-top:6px;"></p>';
-
-      document.getElementById("sidebarAcquire").innerHTML =
-        "<h3>Acquire</h3>" +
-        '<div class="pm-sidebar-ops pm-sidebar-stack">' +
-        (typeof TawalaProjectOps !== "undefined" &&
-        typeof TawalaProjectOps.renderLibrarySaveCopyButton === "function"
-          ? TawalaProjectOps.renderLibrarySaveCopyButton(project, "text")
-          : "") +
-        '<a class="pm-action is-active" href="mytawala.html" title="Operate / run projects from My Tawala (Use lives there)">Open My Tawala</a>' +
-        "</div>" +
-        '<p class="pm-hint" style="margin-top:8px;">No Customize → Designer. SEE DEMO parked until videos exist.</p>';
-
-      document.getElementById("sidebarMeta").innerHTML =
-        "<p><b>Category:</b> " +
-        escapeHtml(effectiveCat) +
-        "</p><p><b>Copies downloaded:</b> " +
-        escapeHtml(
-          String(
-            typeof TawalaTransfer !== "undefined" &&
-              typeof TawalaTransfer.formatCloneCount === "function"
-              ? TawalaTransfer.formatCloneCount(project)
-              : Number(project.cloneCount) > 0
-                ? Math.floor(Number(project.cloneCount))
-                : 0
-          )
-        ) +
-        ' <span class="pm-hint">(Save a copy acquires — not Records)</span>' +
-        "</p><p><b>Rating:</b> " +
-        TawalaDemo.starsHtml(project.rating) +
-        "</p><p><b>Updated:</b> " +
-        escapeHtml(project.updated || "") +
-        "</p>";
-
-      document.getElementById("startPoints").innerHTML = (project.startPoints || [])
-        .map((sp) => `<li>${TawalaDemo.startPointHtml(sp, { purge: false })}</li>`)
-        .join("");
-
-      const catSelect = document.getElementById("detailCatSelect");
-      if (catSelect && typeof TawalaTransfer !== "undefined") {
-        catSelect.addEventListener("change", () => {
-          TawalaTransfer.setProjectCategory(id, catSelect.value);
-          const st = document.getElementById("detailCatStatus");
-          if (st) st.textContent = "Saved in this browser — listing groups update on Library.";
-          const meta = document.getElementById("sidebarMeta");
-          if (meta) {
-            meta.innerHTML =
-              "<p><b>Category:</b> " +
-              escapeHtml(catSelect.value) +
-              "</p><p><b>Rating:</b> " +
-              TawalaDemo.starsHtml(project.rating) +
-              "</p><p><b>Updated:</b> " +
-              escapeHtml(project.updated || "") +
-              "</p>";
-          }
-        });
-      }
-    }
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get("project") || params.get("id") || "";
+      var next = "library.html";
+      if (id) next += "?highlight=" + encodeURIComponent(id);
+      location.replace(next);
+    })();
+  </script>
+</head>
+<body>
+  <p>Public Library project detail pages were retired. <a id="redir" href="library.html">Continue to the Library listing</a>.</p>
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var id = params.get("project") || params.get("id") || "";
+      var a = document.getElementById("redir");
+      if (a && id) a.href = "library.html?highlight=" + encodeURIComponent(id);
+    })();
   </script>
 </body>
 </html>

@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-vercol1" />
-  <script src="js/demo-urls.js?v=20260810-vercol1"></script>
-  <script src="js/transfer.js?v=20260810-vercol1"></script>
-  <script src="js/project-ops.js?v=20260810-vercol1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-libact1" />
+  <script src="js/demo-urls.js?v=20260810-guest2"></script>
+  <script src="js/transfer.js?v=20260810-guest2"></script>
+  <script src="js/project-ops.js?v=20260810-libact1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -25,7 +25,7 @@
             <li><span class="link-pending" title="Additional community libraries" aria-disabled="true">More libraries…</span></li>
           </ul>
           <p style="margin-top:10px;"><a href="http://localhost:5173" target="_blank" rel="noopener">Web Designer :5173</a></p>
-          <p class="pm-hint"><a href="mytawala.html"><b>My Tawala</b></a> (private projects) · <a href="project-ops-review.html">Ops archive</a></p>
+          <p class="pm-hint"><a href="mytawala-demo.html" id="sidebarMyTawalaLink"><b>My Tawala</b></a> (private projects) · <a href="project-ops-review.html">Ops archive</a></p>
         </div>
         <div class="block category-tree">
           <h3>Categories</h3>
@@ -49,8 +49,8 @@
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">Public Library</span>
-          <span class="listing-pile">Shared catalog — browse, Test Drive, and Save a copy into My Tawala. Actions = Test Drive | Save a copy only (no Customize / SEE DEMO).</span>
-          <span class="listing-switch">Your private projects? <a href="mytawala.html">My Tawala</a></span>
+          <span class="listing-pile">Browse templates · Test Drive on :8080 · Copy link to share · Save to MyTawala when logged in</span>
+          <span class="listing-switch">Private projects? <a href="mytawala-demo.html" id="listingMyTawalaLink">My Tawala</a></span>
         </div>
         <div id="librarySubmenuHost"></div>
         <div id="libraryCategoryEditor" class="library-category-editor" hidden></div>
@@ -69,9 +69,9 @@
           <div class="library-listing-frame" id="libraryListingFrame">
             <div class="library-colhead-bar library-cols" role="row" aria-label="Column headers" id="libraryColHead">
               <div class="lib-col lib-col-name" role="columnheader" title="Name"><span class="th-label">Name</span></div>
-              <div class="lib-col lib-col-used" role="columnheader" title="How many times people used Save a copy (or Get from Library) to download a copy of this project — copies of the app, not response data"><span class="th-label">Copies downloaded</span></div>
+              <div class="lib-col lib-col-version" role="columnheader" title="Published version in the public Library"><span class="th-label">Version</span></div>
               <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label">Updated</span></div>
-              <!-- Actions + Test drive | Save a copy filled by project-ops.js -->
+              <!-- Actions + Test drive (Times used) | Copy link (Copies) | Save to MyTawala filled by project-ops.js -->
               <div class="lib-col lib-col-actions" role="columnheader"><span class="th-label">Actions</span></div>
             </div>
             <div id="libraryGroups" class="library-groups" aria-label="Public Library catalog by category"></div>
@@ -86,7 +86,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-vercol1"></script>
+  <script src="js/chrome.js?v=20260810-login2"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -124,15 +124,14 @@
 
     function projectRowHtml(p) {
       const title = TawalaDemo.displayName(p.name);
-      const cloneCount =
+      const versionLabel =
         typeof TawalaTransfer !== "undefined" &&
-        typeof TawalaTransfer.formatCloneCount === "function"
-          ? TawalaTransfer.formatCloneCount(p)
-          : Number(p.cloneCount) > 0
-            ? Math.floor(Number(p.cloneCount))
-            : 0;
-      const detailHref = `library-detail.html?project=${encodeURIComponent(p.id)}`;
-      /* Name + short blurb; liveReady quiet cue; Actions = Test drive | Save a copy. */
+        typeof TawalaTransfer.formatCurrentVersion === "function"
+          ? TawalaTransfer.formatCurrentVersion(p)
+          : p.versionNumber != null && Number.isFinite(Number(p.versionNumber))
+            ? String(Math.floor(Number(p.versionNumber)))
+            : "—";
+      /* Name + Version + Updated; Actions = Test drive (+ Times used) | Copy link (+ Copies) | Save to MyTawala (logged-in). */
       const liveCue = liveCueHtml(p);
       const blurb = String(p.shortDescription || "").trim();
       const blurbHtml = blurb
@@ -143,21 +142,24 @@
         TawalaProjectOps.renderLibraryListingControlCells
           ? TawalaProjectOps.renderLibraryListingControlCells(p)
           : '<div class="lib-col lib-col-actions"></div>';
+      const highlight =
+        typeof URLSearchParams !== "undefined" &&
+        new URLSearchParams(location.search).get("highlight") === p.id
+          ? " is-highlight"
+          : "";
       return (
-        `<div class="library-project-row library-cols link${liveCue ? " library-row-live" : ""}" ` +
-        `role="link" tabindex="0" ` +
-        `onclick="if(!event.target.closest('.lib-col-actions,a,button'))location.href='${detailHref}'" ` +
-        `onkeydown="if(event.key==='Enter'&&!event.target.closest('.lib-col-actions,a,button'))location.href='${detailHref}'">` +
+        `<div class="library-project-row library-cols${liveCue ? " library-row-live" : ""}${highlight}" ` +
+        `data-project-id="${escapeHtml(p.id)}" role="row">` +
         `<div class="lib-col lib-col-name info">` +
         `<div class="library-name-block">` +
-        `<span class="title"><a href="${detailHref}">${escapeHtml(title)}</a></span>` +
+        `<span class="title">${escapeHtml(title)}</span>` +
         `${liveCue}` +
         `${TawalaDemo.starsHtml(p.rating)}` +
         `${blurbHtml}` +
         `</div>` +
         `</div>` +
-        `<div class="lib-col lib-col-used clone-count" title="Copies downloaded — Save a copy / Get from Library acquires">${escapeHtml(
-          String(cloneCount)
+        `<div class="lib-col lib-col-version" title="Published version in the public Library">${escapeHtml(
+          versionLabel
         )}</div>` +
         `<div class="lib-col lib-col-updated updated col-date">${escapeHtml(p.updated || "")}</div>` +
         `${actionCell}` +
@@ -323,9 +325,9 @@
               : "";
             return (
               `<tr data-project-id="${escapeHtml(p.id)}">` +
-              `<td class="left"><a href="library-detail.html?project=${encodeURIComponent(p.id)}">${escapeHtml(
+              `<td class="left">${escapeHtml(
                 TawalaDemo.displayName(p.name)
-              )}</a>${mark}</td>` +
+              )}${mark}</td>` +
               `<td class="left"><select class="library-cat-select" data-project="${escapeHtml(p.id)}" aria-label="Category for ${escapeHtml(
                 TawalaDemo.displayName(p.name)
               )}">${opts}</select></td></tr>`
@@ -358,6 +360,16 @@
 
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
+    (function wireMyTawalaLinks() {
+      const href =
+        typeof TawalaChrome.myTawalaHref === "function"
+          ? TawalaChrome.myTawalaHref()
+          : "mytawala-demo.html";
+      ["sidebarMyTawalaLink", "listingMyTawalaLink"].forEach((id) => {
+        const a = document.getElementById(id);
+        if (a) a.setAttribute("href", href);
+      });
+    })();
     /* Auto-strip discarded stub snapshots from localStorage before first paint. */
     if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.scrubDiscardedLibraryStubs) {
       TawalaTransfer.scrubDiscardedLibraryStubs();

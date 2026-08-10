@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Tawala - My Tawala (preview)</title>
+  <link rel="stylesheet" href="css/legacy/tawala-base.css" />
+  <link rel="stylesheet" href="css/legacy/pages/library.css" />
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-guest3" />
+  <script src="js/guest-demo.js?v=20260810-guest3"></script>
+</head>
+<body data-tawala-page="mytawala-demo">
+  <div id="doc">
+    <div id="tawala-chrome-banner"></div>
+    <div id="tawala-chrome-header"></div>
+
+    <div id="bd">
+      <div class="sidebar-left">
+        <div class="block">
+          <h3>Guest preview</h3>
+          <p>You are not logged in. This is a <b>sample</b> My Tawala — not your private projects.</p>
+          <p class="pm-hint"><a href="signup.html">Register free</a> · <a href="login.html?next=mytawala.html">Log in</a></p>
+        </div>
+        <div class="block">
+          <h3>Public Library</h3>
+          <p><a href="library.html">Browse templates</a> — Test Drive without an account.</p>
+        </div>
+        <div class="block">
+          <h3>Web Designer</h3>
+          <p><a href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer</a></p>
+        </div>
+      </div>
+
+      <div class="content">
+        <div class="listing-identity" role="status">
+          <span class="listing-where">Preview</span>
+          <span class="listing-pile">Sample projects so you can see My Tawala before you register. Click a row for Project Details (controls are inert).</span>
+          <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
+        </div>
+
+        <div id="guestBannerHost"></div>
+
+        <div id="projectManager" class="section">
+          <div class="mytawala-listing-frame">
+            <p class="mytawala-listing-nav-hint">
+              Click almost anywhere on a row to open a sample Project Details page. Buttons do nothing until you register.
+            </p>
+            <table
+              id="guestProjectsTable"
+              class="projectListing mytawala-listing stripe"
+              aria-label="My Tawala guest preview"
+            >
+              <thead>
+                <tr>
+                  <th class="left" scope="col">Name</th>
+                  <th scope="col">Version</th>
+                  <th scope="col">Created</th>
+                  <th scope="col">Updated</th>
+                  <th scope="col">Records</th>
+                  <th scope="col">Times used</th>
+                  <th scope="col">Last used</th>
+                  <th scope="col">Use</th>
+                </tr>
+              </thead>
+              <tbody id="guestProjectRows"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tawala-chrome-footer"></div>
+  </div>
+
+  <script src="js/chrome.js?v=20260810-login2"></script>
+  <script>
+    if (TawalaChrome.isLoggedIn()) {
+      location.replace("mytawala.html");
+    } else {
+      TawalaChrome.mount();
+      document.getElementById("guestBannerHost").innerHTML =
+        TawalaGuestDemo.registerBannerHtml("My Tawala");
+      document.getElementById("guestProjectRows").innerHTML =
+        TawalaGuestDemo.listingRowsHtml();
+      TawalaGuestDemo.bindListingClicks(document);
+    }
+  </script>
+</body>
+</html>

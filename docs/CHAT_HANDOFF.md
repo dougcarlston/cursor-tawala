@@ -274,12 +274,13 @@ Constraints: Do not mix 8080 CSS/docker or website-mock in this chat; preview/de
 
 0. **MUST (Jul 31 framing):** Unify Insert → Invitation + Hyperlink into one Link dialog — Form-in-project **primary**, external URL secondary, private InviteeID tertiary. Spec: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § unified Link. Do not treat Hyperlink as a peer product.
 1. **Rename Deploy → Push (parked Aug 10 — UI/copy only):** Designer **Deploy…** / **Deploy this version** → **Push to My Tawala** / *Push Project to your MyTawala library*; keep `/api/deploy` code ids. Checklist: `website-mock/README.md` § Designer Push rename; also `.cursor/rules/tawala-designer-parked-post-website.mdc`. Do **not** rename website My Tawala Details **Deploy** (share/embed).
-2. **Designer architecture backlog** — MDI, explorer collapse, form–process links, properties popups, menu bars ([`DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)).
-3. **Owner verify** — DirtBowl Registration page 1 Q4 email-note alignment on `:8080` vs `:5173`; then commit `project.css` + doc updates.
-4. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
-5. **UX feedback** — canvas layout, inspector after architecture items land.
-6. **Backlog** — DirtBowl → website Library link, FIB free-mix layout, `.tawala` import, outbound email (separate session).
-7. **Parked polish** from `.cursor/rules/tawala-designer-parked-post-website.mdc` (Document P0s, confirm, Font Color, Skip stubs, Jul 30 FIB/Text Deploy bugs).
+2. **Theme applies on Push (parked Aug 10 — Designer Push / Redeploy):** My Tawala Details Theme dropdown persists overlay `themePath` only (PARTIAL). Changing Theme does **not** restyle live `:8080` yet — Push/Redeploy must write CSS/theme into the deployed project from `themePath`. Cross-ref: `website-mock/README.md` Task #5 HOLD; `.cursor/rules/tawala-designer-parked-post-website.mdc`. Do **not** implement in website chat.
+3. **Designer architecture backlog** — MDI, explorer collapse, form–process links, properties popups, menu bars ([`DESIGNER_BACKLOG_ARCHITECTURE.md`](DESIGNER_BACKLOG_ARCHITECTURE.md)).
+4. **Owner verify** — DirtBowl Registration page 1 Q4 email-note alignment on `:8080` vs `:5173`; then commit `project.css` + doc updates.
+5. **Insertion-point + Move Up/Down** — required before serious Process editing (see ROADMAP Phase 4 prerequisites).
+6. **UX feedback** — canvas layout, inspector after architecture items land.
+7. **Backlog** — DirtBowl → website Library link, FIB free-mix layout, `.tawala` import, outbound email (separate session).
+8. **Parked polish** from `.cursor/rules/tawala-designer-parked-post-website.mdc` (Document P0s, confirm, Font Color, Skip stubs, Jul 30 FIB/Text Deploy bugs).
 
 ---
 
