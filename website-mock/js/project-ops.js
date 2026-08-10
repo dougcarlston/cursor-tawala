@@ -241,11 +241,11 @@
   ];
 
   /**
-   * My Projects listing — lean columns (Aug 9 Task List item 1).
+   * My Projects listing — lean columns (Aug 9 Task List item 1; usage cols Aug 10).
    * Only **Use** remains as a row action; Export / Import / Backup / Restore / Purge /
    * Publish live on Project Details. Pull / Delete are on the listing selection bar.
    * Click row → highlight/select; double-click → Project Details (no name link / Details cue).
-   * Records (Responses) column is rendered in mytawala.html (placeholder until count API).
+   * Records + Times used / Last used rendered in mytawala.html (usage via TawalaTransfer.getUsageStats).
    */
   const LISTING_ACTIONS = [
     {
@@ -489,7 +489,7 @@
     "Archive sources: projectmanager/detail.jsp (Project Actions), view.jsp (listing Purge/Delete historically), " +
     "block-projectManagerProjectDetails.jsp (REVISE / ONLINE-OFFLINE / Include / Invite), " +
     "submenu-mytawala.jsp, submenu-library.jsp, confirmationdialogs.jsp. " +
-    "Mock My Tawala listing is lean (Aug 9): Name · Created · Updated · Records · Use; " +
+    "Mock My Tawala listing is lean (Aug 9/10): Name · Created · Updated · Records · Times used · Last used · Use; " +
     "selection bar Get/Refresh/Delete; Details bar Backup/Restore/Publish; " +
     "Project Data banner Use/Copy/Export/Import/Purge. " +
     "Catalog is split: Public Library controls vs My Tawala / Project Manager. " +
@@ -554,8 +554,8 @@
       id: "listing",
       title: "My Projects listing row",
       where:
-        "mytawala.html — lean listing (Aug 9): click row to select · double-click → Details · " +
-        "Name · Created · Updated · Records · Use. " +
+        "mytawala.html — lean listing (Aug 9/10): click row to select · double-click → Details · " +
+        "Name · Created · Updated · Records · Times used · Last used · Use. " +
         "Use: single-start opens :8080; multi-start opens Project Details (no purge). Get/Refresh/Delete via listing bar.",
       items: LISTING_ACTIONS,
     },
@@ -586,6 +586,7 @@
       where:
         "One unified form list (Aug 9): collapsed → starts (▶) → all forms; same tight row style. " +
         "Banner: Records / Times used / Last used heads + Use / Copy link | Export Import | Purge. " +
+        "Records = submissions; Times used / Last used = mock My Tawala Use→:8080 sessions (not Test Drive). " +
         "Project caret (▸) expands; start rows use a muted left-pointing cue (not an expander). " +
         "Project-level Times used / Last used on a row under the banner; form rows show Records only. " +
         "Enablement: collapsed/project → E/I/Purge + Backup/Restore/Publish (Use/Copy off); " +
@@ -1045,7 +1046,7 @@
     "  4. Click Purge — do not click Use\n\n" +
     "Copy link still copies the real :8080 start URL if you need it later.";
 
-  async function openUseRuntimeUrl(url) {
+  async function openUseRuntimeUrl(url, opts) {
     if (!url || url === "#") return;
     setStatus("Checking Java runtime on :8080…");
     const up = await probeLocalJavaRuntime();
@@ -1053,6 +1054,17 @@
       setStatus("Use blocked — :8080 unreachable. For offline review: select project/form → Purge (not Use).");
       window.alert(USE_OFFLINE_ALERT);
       return;
+    }
+    const projectId = opts && opts.projectId ? String(opts.projectId) : "";
+    /* Mock Times used / Last used (Task #13): count a successful Use → :8080 open.
+     * Not Library Test Drive. Not live respondent telemetry. */
+    if (
+      projectId &&
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.recordRespondentSession === "function"
+    ) {
+      const stats = TawalaTransfer.recordRespondentSession(projectId);
+      if (stats) setUsageStatsDisplay(document, stats);
     }
     setStatus("Opening start form on :8080…");
     window.open(url, "_blank", "noopener");
@@ -1553,7 +1565,9 @@
     if (!rows.length) {
       return (
         chips +
-        '<p class="pm-hint">No Deploy versions yet — open in Web Designer, Deploy, optionally add a version note, then <b>Show in My Tawala</b>. Listing stays flat; history appears here only.</p>'
+        '<p class="pm-hint">No versions yet — <b>Save a copy</b> / <b>Make a Copy</b> start at version <b>1</b>; ' +
+        "open in Web Designer, Push (Deploy), optionally add a version note, then <b>Show in My Tawala</b> to mint the next. " +
+        "Listing shows the current Version number only; full history appears here.</p>"
       );
     }
     const body = rows
@@ -2125,6 +2139,18 @@
     const selKey = selectFirstStart ? firstStartEntry.name : "";
     const projectSelClass = selectFirstStart ? "" : " is-selected";
     const projectAria = selectFirstStart ? "" : ` aria-selected="true"`;
+    const usage =
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.getUsageStats === "function"
+        ? TawalaTransfer.getUsageStats(project.id)
+        : { timesUsed: 0, lastUsed: null };
+    const timesLabel = String(usage.timesUsed || 0);
+    const lastLabel = usage.lastUsed || "—";
+    const timesTitle =
+      "Times used — mock count of My Tawala Use sessions that opened a start URL (not Test Drive; not live telemetry)";
+    const lastTitle = usage.lastUsed
+      ? `Last used — ${usage.lastUsed} (most recent My Tawala Use → :8080)`
+      : "Last used — no My Tawala Use session recorded yet in this browser";
 
     const hint = deployed
       ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
@@ -2163,8 +2189,12 @@
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
       `<span class="pm-data-stat-val pm-data-stat-records" id="pmDataProjectRecords" title="Project-wide Records (Responses)">—</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-placeholder pm-data-stat-times" title="Times used — not wired yet">—</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-placeholder pm-data-stat-last" title="Last used — not wired yet">—</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-times" id="pmDataProjectTimesUsed" title="${escapeHtml(
+        timesTitle
+      )}">${escapeHtml(timesLabel)}</span>` +
+      `<span class="pm-data-stat-val pm-data-stat-last" id="pmDataProjectLastUsed" title="${escapeHtml(
+        lastTitle
+      )}">${escapeHtml(lastLabel)}</span>` +
       `</div>` +
       `<ul class="pm-data-tree-list pm-data-forms-list${preferLevel >= 1 ? "" : " is-collapsed"}" ` +
       `id="pmDataFormsList" role="group" aria-label="Forms">` +
@@ -2605,6 +2635,36 @@
     }
   }
 
+  /**
+   * Project Data banner — Times used / Last used (Task #13 mock).
+   * Records stay separate (submissions). Copies downloaded (`cloneCount`) is Library-only.
+   */
+  function setUsageStatsDisplay(scope, stats) {
+    const root = scope && scope.querySelector ? scope : document;
+    const timesEl =
+      (root.querySelector && root.querySelector("#pmDataProjectTimesUsed")) ||
+      document.getElementById("pmDataProjectTimesUsed");
+    const lastEl =
+      (root.querySelector && root.querySelector("#pmDataProjectLastUsed")) ||
+      document.getElementById("pmDataProjectLastUsed");
+    const timesUsed = stats && Number(stats.timesUsed) > 0 ? Math.floor(Number(stats.timesUsed)) : 0;
+    const lastUsed = (stats && stats.lastUsed) || null;
+    if (timesEl) {
+      timesEl.textContent = String(timesUsed);
+      timesEl.title =
+        "Times used — mock count of My Tawala Use sessions that opened a start URL (not Test Drive; not live telemetry)" +
+        (timesUsed ? `: ${timesUsed}` : "");
+      timesEl.classList.remove("pm-data-stat-placeholder");
+    }
+    if (lastEl) {
+      lastEl.textContent = lastUsed || "—";
+      lastEl.title = lastUsed
+        ? `Last used — ${lastUsed} (most recent My Tawala Use → :8080)`
+        : "Last used — no My Tawala Use session recorded yet in this browser";
+      lastEl.classList.toggle("pm-data-stat-placeholder", !lastUsed);
+    }
+  }
+
   /** Restore Online Exam (etc.) demo Records after Purge — no DevTools needed. */
   async function reseedDemoRecords(tree) {
     const projectId = tree && tree.dataset.projectId;
@@ -2694,6 +2754,12 @@
     const formNames = collectFormNames(project, extras);
     rebuildFormsList(tree, formNames, project, countsState);
     setProjectRecordsDisplay(scope, countsState);
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.getUsageStats === "function"
+    ) {
+      setUsageStatsDisplay(scope, TawalaTransfer.getUsageStats(projectId));
+    }
 
     /* Preserve selection highlight after rebuild. */
     const sel = readDataTreeSelection(tree);
@@ -4794,7 +4860,7 @@
       }
       if (href && isLocalJavaRuntimeUrl(href)) {
         ev.preventDefault();
-        void openUseRuntimeUrl(href);
+        void openUseRuntimeUrl(href, { projectId });
       }
       return;
     }

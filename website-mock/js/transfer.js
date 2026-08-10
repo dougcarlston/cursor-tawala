@@ -18,13 +18,14 @@
  *   tawala.mock.deployInbox — recent Designer deploy receipts
  *   tawala.mock.myTawalaOverlay — { [projectId]: catalog-shaped entry } merged into My Tawala pile
  *     Deploy overlay rows may carry:
- *       versionNumber — monotonic int (latest Deploy)
- *       versionDescription — optional note from Designer Deploy dialog
+ *       versionNumber — monotonic int (latest Push / current). New acquires & forks start at 1.
+ *       versionDescription — optional note (Push dialog, or acquire/fork seed text)
  *       versions — [{ versionNumber, description, at, uniqueId, mode, startPoints, deployed,
  *         snapshotId?, definition?, hasDefinition? }]
- *       history is Details-only (listing stays flat; see README Sequencing / hold)
+ *       history is Details-only; listing shows the scalar current Version column (not piles)
  *       description is the only mutable field on an existing version (updateVersionDescription)
  *       Deploy-this-version needs snapshotId and/or definition (saved from Show in My Tawala)
+ *       Save a copy / Make a Copy seed version 1 (no snapshot); next Push mints max+1
  *   tawala.mock.myTawalaDeleted — { [projectId]: true } account-private My Tawala removals
  *     (does not touch public Library / TAWALA_LIBRARY / liveReady). Also used to hide discarded
  *     fake seed archive ids (TAWALA_MYTAWALA_DISCARDED_SEED_IDS) that are not real Push /
@@ -36,6 +37,12 @@
  *     (removed from the public Library listing; safety copy lives in the My Tawala overlay,
  *     still marked " (stub)"). Replacing a **non-stub** Library entry (e.g. an outdated Main
  *     Menu template) does NOT set this — it just overwrites that id in libraryOverlay in place.
+ *   tawala.mock.usageStats — { [myTawalaProjectId]: { timesUsed, lastUsedAt, lastUsed } }
+ *     Mock **Times used** / **Last used** (Aug 9 Task #13): count a new respondent session when
+ *     My Tawala **Use** successfully opens a start URL on :8080. Does **not** count Library
+ *     Test Drive. Not live server telemetry — localStorage only until production sessions exist.
+ *   Library **cloneCount** (catalog seed and/or libraryOverlay): times **Save a copy** / Get from
+ *     Library acquired this public entry into My Tawala (≠ Records, ≠ Times used).
  *
  * Publish (My Tawala → Library, owner Aug 1, 2026):
  *   - Owner can rename the project on the way in (temporary until real versioning exists).
@@ -66,6 +73,7 @@
   const DELETED_KEY = "tawala.mock.myTawalaDeleted";
   const LIBRARY_OVERLAY_KEY = "tawala.mock.libraryOverlay";
   const LIBRARY_RETIRED_KEY = "tawala.mock.libraryRetired";
+  const USAGE_KEY = "tawala.mock.usageStats";
   const ADMIN_KEY = "tawala.mock.libraryAdmin";
   const INBOX_MAX = 12;
 
@@ -578,6 +586,7 @@
       hydrated.push(id);
     });
     if (changed) writeJson(PILE_KEY, overlay);
+    ensureOverlayStartingVersions();
     return { ok: true, hydrated };
   }
 
@@ -979,10 +988,131 @@
     return writeJson(PILE_KEY, {});
   }
 
+  /**
+   * Starting definition version for new private copies (Library Save a copy / Get from
+   * Library / Make a Copy). Integer **1** — matches Push minting (monotonic ints, not
+   * semver “1.0”). Does not inherit the Library’s published revision; next Push → Show
+   * in My Tawala mints max(versions)+1.
+   */
+  const STARTING_VERSION_NUMBER = 1;
+
+  function buildStartingVersionRow({ description, at, uniqueId, startPoints, deployed } = {}) {
+    return {
+      versionNumber: STARTING_VERSION_NUMBER,
+      description: String(description || "").trim(),
+      at: at || timestampNow(),
+      uniqueId: uniqueId || null,
+      mode: null,
+      startPoints: Array.isArray(startPoints) ? startPoints.slice() : [],
+      deployed: !!deployed,
+      snapshotId: null,
+      definition: null,
+      hasDefinition: false,
+    };
+  }
+
+  /**
+   * Attach versionNumber + versions[0] when a new private row has none.
+   * Does not overwrite an existing versionNumber or non-empty versions[].
+   */
+  function seedStartingVersionOnEntry(entry, description) {
+    if (!entry || typeof entry !== "object") return entry;
+    const hasNum = entry.versionNumber != null && Number.isFinite(Number(entry.versionNumber));
+    const hasVersions = Array.isArray(entry.versions) && entry.versions.length > 0;
+    if (hasNum && hasVersions) return entry;
+    const at = entry.createdAt || entry.updatedAt || entry.lastDeployAt || timestampNow();
+    const num = hasNum
+      ? Math.floor(Number(entry.versionNumber))
+      : STARTING_VERSION_NUMBER;
+    const desc =
+      description ||
+      entry.versionDescription ||
+      (entry.fromLibraryAcquire || entry.sourcePile === "library-acquire"
+        ? "Saved from Library"
+        : entry.sourcePile === "mytawala-fork" || entry.forkedFromId
+          ? "Copy of project"
+          : "Initial version");
+    const row = {
+      versionNumber: num,
+      description: String(desc || "").trim(),
+      at,
+      uniqueId: entry.uniqueId || null,
+      mode: entry.mode || null,
+      startPoints: Array.isArray(entry.startPoints) ? entry.startPoints.slice() : [],
+      deployed: !!entry.deployed || !!entry.uniqueId,
+      snapshotId: null,
+      definition: null,
+      hasDefinition: false,
+    };
+    if (!hasNum) {
+      entry.versionNumber = STARTING_VERSION_NUMBER;
+      if (!entry.versionDescription) entry.versionDescription = row.description;
+    }
+    if (!hasVersions) entry.versions = [row];
+    return entry;
+  }
+
+  /**
+   * Persist starting version 1 onto older overlay rows that never got one (pre–Aug 10
+   * acquires/forks). Leaves Push history alone when versions[] already exists.
+   */
+  function ensureOverlayStartingVersions() {
+    const overlay = getMyTawalaOverlay();
+    let changed = false;
+    Object.keys(overlay).forEach((id) => {
+      const entry = overlay[id];
+      if (!entry || typeof entry !== "object") return;
+      const hasNum = entry.versionNumber != null && Number.isFinite(Number(entry.versionNumber));
+      const hasVersions = Array.isArray(entry.versions) && entry.versions.length > 0;
+      if (hasNum && hasVersions) return;
+      if (hasVersions && !hasNum) {
+        let maxNum = 0;
+        let current = null;
+        entry.versions.forEach((v) => {
+          const n = Number(v && v.versionNumber);
+          if (!Number.isFinite(n)) return;
+          if (n > maxNum) maxNum = n;
+          if (v && v.deployed === true) current = n;
+        });
+        overlay[id] = {
+          ...entry,
+          versionNumber: current != null ? current : maxNum || STARTING_VERSION_NUMBER,
+        };
+        changed = true;
+        return;
+      }
+      /* Missing versionNumber and/or versions[] — seed without clobbering an existing number. */
+      const next = { ...entry };
+      seedStartingVersionOnEntry(next);
+      overlay[id] = next;
+      changed = true;
+    });
+    if (changed) writeJson(PILE_KEY, overlay);
+    return { ok: true, changed };
+  }
+
+  /** Listing / identity display helper — current versionNumber or "—". */
+  function formatCurrentVersion(project) {
+    if (!project) return "—";
+    if (project.versionNumber != null && Number.isFinite(Number(project.versionNumber))) {
+      return String(Math.floor(Number(project.versionNumber)));
+    }
+    if (Array.isArray(project.versions) && project.versions.length) {
+      let maxNum = 0;
+      project.versions.forEach((v) => {
+        const n = Number(v && v.versionNumber);
+        if (Number.isFinite(n) && n > maxNum) maxNum = n;
+      });
+      if (maxNum > 0) return String(maxNum);
+    }
+    return "—";
+  }
+
   /** Merge overlay on top of catalog entries (overlay wins on id collision for deploy fields). */
   function withMyTawalaOverlay(entries) {
     scrubDiscardedMyTawalaSeeds();
     rehydrateAcquireLiveUrls();
+    ensureOverlayStartingVersions();
     const overlay = getMyTawalaOverlay();
     const deleted = getMyTawalaDeleted();
     const discarded = discardedMyTawalaSeedIdSet();
@@ -1749,7 +1879,8 @@
    * Mints a *new* private My Tawala row with rename-on-acquire. Owner priority: Use must work
    * when the copy lands — mock copies Library :8080 start URLs + uniqueId
    * (`mockSharedLibraryRuntime: true`). Production must mint a private uniqueId (not share
-   * Library demo data forever). Bumps Library cloneCount (overlay) for Times-used later.
+   * Library demo data forever). Bumps Library **cloneCount** (overlay) — copies of the app,
+   * not Records and not Times used (Task #13).
    *
    * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
    * On overwrite:true, deleteMyTawalaProject the existing same-name row, then write this acquire
@@ -1828,6 +1959,14 @@
       startPoints: live.startPoints,
       mockSharedLibraryRuntime: live.mockSharedLibraryRuntime,
     };
+    /* Private copy starts at version 1 (does not inherit Library revision). Next Push → +1. */
+    const libLabel =
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.displayName === "function"
+        ? window.TawalaDemo.displayName(source.name)
+        : String(source.name || libraryId);
+    seedStartingVersionOnEntry(entry, `Saved from Library (${libLabel})`);
 
     clearMyTawalaDeleted(id);
     const overlay = getMyTawalaOverlay();
@@ -1836,7 +1975,7 @@
       return { ok: false, error: "Could not write My Tawala overlay (localStorage)." };
     }
 
-    /* Clone count = times Save a copy was used (overlay bump; catalog seed may already have a number).
+    /* Copies downloaded (`cloneCount`) = times Save a copy was used (overlay bump; catalog seed may already have a number).
      * Only bump cloneCount — never snapshot the full catalog row into libraryOverlay.
      * Spreading baseLib used to freeze discarded stubs in localStorage so they reappeared
      * after TAWALA_LIBRARY seed cleanup. */
@@ -1857,6 +1996,59 @@
       replacedId: conflict ? conflict.id : null,
       entry: { id, ...entry },
     };
+  }
+
+  /**
+   * Display helper for Library **Copies downloaded** (Save a copy / Get from Library acquires).
+   * Missing / non-numeric → 0 (honest empty catalog, not "—" for an unused metric).
+   * Field remains `cloneCount` in catalog / overlay.
+   */
+  function formatCloneCount(projectOrCount) {
+    const raw =
+      projectOrCount && typeof projectOrCount === "object"
+        ? projectOrCount.cloneCount
+        : projectOrCount;
+    const n = Number(raw);
+    return Number.isFinite(n) && n >= 0 ? Math.floor(n) : 0;
+  }
+
+  /**
+   * Mock Times used / Last used for a My Tawala project (Task #13).
+   * Keyed by private My Tawala id — not uniqueId (mock acquires may share Library uniqueIds).
+   */
+  function getUsageStats(projectId) {
+    if (!projectId) return { timesUsed: 0, lastUsedAt: null, lastUsed: null };
+    const store = readJson(USAGE_KEY, {});
+    const row = store[projectId];
+    if (!row || typeof row !== "object") {
+      return { timesUsed: 0, lastUsedAt: null, lastUsed: null };
+    }
+    const timesUsed = Number(row.timesUsed);
+    return {
+      timesUsed: Number.isFinite(timesUsed) && timesUsed > 0 ? Math.floor(timesUsed) : 0,
+      lastUsedAt: row.lastUsedAt || null,
+      lastUsed: row.lastUsed || null,
+    };
+  }
+
+  /**
+   * Count one mock respondent session when My Tawala Use opens a start URL successfully.
+   * Do not call from Library Test Drive (Aug 9).
+   */
+  function recordRespondentSession(projectId) {
+    if (!projectId) return null;
+    const store = readJson(USAGE_KEY, {});
+    const prev = store[projectId] && typeof store[projectId] === "object" ? store[projectId] : {};
+    const prevCount = Number(prev.timesUsed);
+    const nowIso = timestampNow();
+    const next = {
+      timesUsed: (Number.isFinite(prevCount) && prevCount > 0 ? Math.floor(prevCount) : 0) + 1,
+      lastUsedAt: nowIso,
+      lastUsed: formatListDate(nowIso),
+    };
+    store[projectId] = next;
+    if (!writeJson(USAGE_KEY, store)) return null;
+    return next;
   }
 
   /**
@@ -1881,6 +2073,8 @@
    * live :8080 start URLs. Sharing those made forks reuse Tomcat submissions (e.g.
    * Broderbund picnic data on a 4th-of-July copy). uniqueId:null, deployed:false,
    * start points label-only → Records empty / "—"; Use grey until Push → Show in My Tawala.
+   *
+   * Version history is **not** copied — fork starts at version **1** (fresh private line).
    *
    * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
    * Cannot reuse the source project's own display name (that would destroy the original).
@@ -1977,6 +2171,8 @@
       startPoints,
       mockSharedForkRuntime: false,
     };
+    /* Fresh version line at 1 — do not copy source versions[] / versionNumber. */
+    seedStartingVersionOnEntry(entry, `Copy of ${sourceDisplay}`);
 
     clearMyTawalaDeleted(id);
     const overlay = getMyTawalaOverlay();
@@ -2215,6 +2411,7 @@
     DELETED_KEY,
     LIBRARY_OVERLAY_KEY,
     LIBRARY_RETIRED_KEY,
+    USAGE_KEY,
     slugifyProjectId,
     getCategoryOverrides,
     setProjectCategory,
@@ -2282,6 +2479,11 @@
     suggestUniqueMyTawalaName,
     renameMyTawalaProject,
     saveCopyFromLibrary,
+    formatCloneCount,
+    formatCurrentVersion,
+    STARTING_VERSION_NUMBER,
+    getUsageStats,
+    recordRespondentSession,
     suggestMakeCopyName,
     makeCopyOfMyTawalaProject,
     ADMIN_KEY,

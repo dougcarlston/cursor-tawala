@@ -677,8 +677,8 @@ table.projectListing td.clone-count {
 
 /* Collapsible Library groups — one shared CSS grid for header + every project row */
 .library-listing-frame {
-  /* Name flexes; Times used / Updated / Actions (2 icon slots + sub-labels) stay fixed */
-  --library-cols: minmax(12rem, 1fr) 7em 7.5em 10rem;
+  /* Name flexes; Copies downloaded / Updated / Actions (2 icon slots + sub-labels) stay fixed */
+  --library-cols: minmax(12rem, 1fr) 10em 7.5em 10rem;
   --library-action-gap: 12px;
   --library-action-slots: repeat(2, minmax(0, 1fr));
   margin-top: 0;
@@ -763,7 +763,7 @@ table.projectListing td.clone-count {
 
 .library-action-subhead {
   display: block;
-  /* Match Times used / Updated: inherit .lib-col (0.82em of colhead-bar 0.88em) */
+  /* Match Copies downloaded / Updated: inherit .lib-col (0.82em of colhead-bar 0.88em) */
   font-size: 1em;
   font-weight: 700;
   line-height: 1.15;
@@ -1686,7 +1686,9 @@ body.col-resizing {
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.28);
 }
 
-table.projectListing.mytawala-listing td.col-records {
+table.projectListing.mytawala-listing td.col-records,
+table.projectListing.mytawala-listing td.col-times-used,
+table.projectListing.mytawala-listing td.col-version {
   text-align: right;
   font-size: 0.9em;
   color: #445;
@@ -1694,9 +1696,24 @@ table.projectListing.mytawala-listing td.col-records {
   white-space: nowrap;
 }
 
-table.projectListing.mytawala-listing thead th.col-records {
+table.projectListing.mytawala-listing thead th.col-records,
+table.projectListing.mytawala-listing thead th.col-times-used,
+table.projectListing.mytawala-listing thead th.col-version {
   text-align: right;
   padding-right: 10px;
+}
+
+table.projectListing.mytawala-listing td.col-last-used {
+  text-align: right;
+  font-size: 0.85em;
+  color: #445;
+  padding-right: 8px;
+  white-space: nowrap;
+}
+
+table.projectListing.mytawala-listing thead th.col-last-used {
+  text-align: right;
+  padding-right: 8px;
 }
 
 table.projectListing.mytawala-listing .listing-details-cue {

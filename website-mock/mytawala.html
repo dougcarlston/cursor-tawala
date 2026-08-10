@@ -6,11 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-rename2" />
-  <script src="js/demo-urls.js?v=20260810-rename2"></script>
-  <script src="js/transfer.js?v=20260810-rename2"></script>
-  <script src="js/project-ops.js?v=20260810-rename2"></script>
-  <script src="js/data-ops.js?v=20260810-rename2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-vercol1" />
+  <script src="js/demo-urls.js?v=20260810-vercol1"></script>
+  <script src="js/transfer.js?v=20260810-vercol1"></script>
+  <script src="js/project-ops.js?v=20260810-vercol1"></script>
+  <script src="js/data-ops.js?v=20260810-vercol1"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -81,16 +81,27 @@
               aria-label="My Projects — private My Tawala list"
             >
               <colgroup id="myProjectsCols">
-                <col class="col-name col-group-info" style="width: 43%" />
-                <col class="col-created col-group-info" style="width: 12%" />
-                <col class="col-updated col-group-info" style="width: 12%" />
-                <col class="col-records col-group-info" style="width: 10%" />
-                <col class="col-op col-group-info" style="width: 8%" />
+                <col class="col-name col-group-info" style="width: 28%" />
+                <col class="col-version col-group-info" style="width: 7%" />
+                <col class="col-created col-group-info" style="width: 11%" />
+                <col class="col-updated col-group-info" style="width: 11%" />
+                <col class="col-records col-group-info" style="width: 8%" />
+                <col class="col-times-used col-group-info" style="width: 9%" />
+                <col class="col-last-used col-group-info" style="width: 10%" />
+                <col class="col-op col-group-info" style="width: 7%" />
               </colgroup>
               <thead>
                 <tr id="myProjectsHead">
                   <th class="left sortable col-group-info" scope="col" data-sort="name" title="Sort by name">
                     <span class="th-label">Name</span>
+                  </th>
+                  <th
+                    class="col-version sortable col-group-info"
+                    scope="col"
+                    data-sort="version"
+                    title="Current definition version (Push / Show in My Tawala; acquires &amp; forks start at 1)"
+                  >
+                    <span class="th-label">Version</span>
                   </th>
                   <th class="col-date sortable col-group-info" scope="col" data-sort="created" title="Sort by created">
                     <span class="th-label">Created</span>
@@ -104,6 +115,22 @@
                     title="Records (Responses) — project-wide submission count via :3001 when uniqueId + Docker/Postgres are available; otherwise —"
                   >
                     <span class="th-label">Records</span>
+                  </th>
+                  <th
+                    class="col-times-used sortable col-group-info"
+                    scope="col"
+                    data-sort="timesUsed"
+                    title="Times used — mock My Tawala Use → :8080 sessions (not Library Test Drive; not live telemetry). Sort by count."
+                  >
+                    <span class="th-label">Times used</span>
+                  </th>
+                  <th
+                    class="col-last-used sortable col-group-info"
+                    scope="col"
+                    data-sort="lastUsed"
+                    title="Last used — most recent My Tawala Use → :8080 in this browser. Sort by date."
+                  >
+                    <span class="th-label">Last used</span>
                   </th>
                 </tr>
               </thead>
@@ -122,7 +149,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-rename2"></script>
+  <script src="js/chrome.js?v=20260810-vercol1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -210,15 +237,41 @@
       return `mytawala-project.html?project=${encodeURIComponent(projectId || "")}`;
     }
 
+    /** Mock Times used / Last used — same store as Project Data (`tawala.mock.usageStats`). */
+    function usageForProject(p) {
+      if (
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.getUsageStats === "function"
+      ) {
+        return TawalaTransfer.getUsageStats(p && p.id);
+      }
+      return { timesUsed: 0, lastUsedAt: null, lastUsed: null };
+    }
+
     function sortValue(p, key) {
       if (key === "name") {
         return TawalaDemo.displayName(p.name).toLowerCase();
+      }
+      if (key === "version") {
+        const n =
+          p && p.versionNumber != null && Number.isFinite(Number(p.versionNumber))
+            ? Number(p.versionNumber)
+            : NaN;
+        return Number.isFinite(n) ? n : -1;
       }
       if (key === "created") {
         return createdSortMs(p);
       }
       if (key === "updated") {
         return updatedSortMs(p);
+      }
+      if (key === "timesUsed") {
+        const n = Number(usageForProject(p).timesUsed);
+        return Number.isFinite(n) && n > 0 ? Math.floor(n) : 0;
+      }
+      if (key === "lastUsed") {
+        const u = usageForProject(p);
+        return parseListDate(u.lastUsedAt) || parseListDate(u.lastUsed) || 0;
       }
       return "";
     }
@@ -265,6 +318,13 @@
 
     function projectRowHtml(p) {
       const title = TawalaDemo.displayName(p.name);
+      const version =
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.formatCurrentVersion === "function"
+          ? TawalaTransfer.formatCurrentVersion(p)
+          : p && p.versionNumber != null
+            ? String(p.versionNumber)
+            : "—";
       const created = displayListDate(p.created || p.createdAt || p.updated || p.updatedAt || "");
       const updated = displayListDate(p.updated || p.updatedAt || p.lastDeployAt || "");
       const uid =
@@ -296,15 +356,32 @@
         typeof TawalaProjectOps.fromLibraryAcquireBadge === "function"
           ? TawalaProjectOps.fromLibraryAcquireBadge(p)
           : "";
+      const usage = usageForProject(p);
+      const timesUsed =
+        Number(usage.timesUsed) > 0 ? String(Math.floor(Number(usage.timesUsed))) : "0";
+      const lastUsed = usage.lastUsed || "—";
+      const timesTitle =
+        "Times used — mock count of My Tawala Use sessions that opened a start URL (not Test Drive; not live telemetry)" +
+        (timesUsed !== "0" ? `: ${timesUsed}` : "");
+      const lastTitle = usage.lastUsed
+        ? `Last used — ${usage.lastUsed} (most recent My Tawala Use → :8080)`
+        : "Last used — no My Tawala Use session recorded yet in this browser";
+      const versionTitle =
+        version === "—"
+          ? "Version — none yet (Push → Show in My Tawala, or Save a copy / Make a Copy starts at 1)"
+          : `Current definition version: ${version}`;
       return `<tr data-project-id="${escapeHtml(p.id)}" role="row" tabindex="0" aria-selected="${
         selected ? "true" : "false"
       }"${selected ? ' class="is-selected"' : ""} title="Click to select · Double-click for Project Details">
         <td class="info left col-group-info">
           <span class="title listing-project-name">${escapeHtml(title)}${fromLib}${offline}</span>
         </td>
+        <td class="col-version col-group-info" title="${escapeHtml(versionTitle)}">${escapeHtml(version)}</td>
         <td class="date-created col-date col-group-info">${escapeHtml(created)}</td>
         <td class="updated col-date col-group-info">${escapeHtml(updated)}</td>
         <td class="col-records col-group-info" data-records-cell="1" title="${escapeHtml(recordsTitle)}">${escapeHtml(records)}</td>
+        <td class="col-times-used col-group-info" title="${escapeHtml(timesTitle)}">${escapeHtml(timesUsed)}</td>
+        <td class="col-last-used col-date col-group-info" title="${escapeHtml(lastTitle)}">${escapeHtml(lastUsed)}</td>
         ${TawalaProjectOps.renderListingControlCells(p.id)}
       </tr>`;
     }
@@ -509,7 +586,7 @@
         SORT_STATE.dir *= -1;
       } else {
         SORT_STATE.key = key;
-        // Name A→Z; Created/Updated newest-first (dir -1 = descending).
+        // Name A→Z; Version/Created/Updated/Times/Last newest-or-highest-first (dir -1).
         SORT_STATE.dir = key === "name" ? 1 : -1;
       }
       renderRows();

@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-rename2" />
-  <script src="js/demo-urls.js?v=20260810-rename2"></script>
-  <script src="js/transfer.js?v=20260810-rename2"></script>
-  <script src="js/project-ops.js?v=20260810-rename2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-vercol1" />
+  <script src="js/demo-urls.js?v=20260810-vercol1"></script>
+  <script src="js/transfer.js?v=20260810-vercol1"></script>
+  <script src="js/project-ops.js?v=20260810-vercol1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -69,7 +69,7 @@
           <div class="library-listing-frame" id="libraryListingFrame">
             <div class="library-colhead-bar library-cols" role="row" aria-label="Column headers" id="libraryColHead">
               <div class="lib-col lib-col-name" role="columnheader" title="Name"><span class="th-label">Name</span></div>
-              <div class="lib-col lib-col-used" role="columnheader" title="Times this project was used (clone count)"><span class="th-label">Times used</span></div>
+              <div class="lib-col lib-col-used" role="columnheader" title="How many times people used Save a copy (or Get from Library) to download a copy of this project — copies of the app, not response data"><span class="th-label">Copies downloaded</span></div>
               <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label">Updated</span></div>
               <!-- Actions + Test drive | Save a copy filled by project-ops.js -->
               <div class="lib-col lib-col-actions" role="columnheader"><span class="th-label">Actions</span></div>
@@ -86,7 +86,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-rename2"></script>
+  <script src="js/chrome.js?v=20260810-vercol1"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -124,10 +124,13 @@
 
     function projectRowHtml(p) {
       const title = TawalaDemo.displayName(p.name);
-      const timesUsed =
-        p.cloneCount != null && p.cloneCount !== ""
-          ? escapeHtml(String(p.cloneCount))
-          : "—";
+      const cloneCount =
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.formatCloneCount === "function"
+          ? TawalaTransfer.formatCloneCount(p)
+          : Number(p.cloneCount) > 0
+            ? Math.floor(Number(p.cloneCount))
+            : 0;
       const detailHref = `library-detail.html?project=${encodeURIComponent(p.id)}`;
       /* Name + short blurb; liveReady quiet cue; Actions = Test drive | Save a copy. */
       const liveCue = liveCueHtml(p);
@@ -153,7 +156,9 @@
         `${blurbHtml}` +
         `</div>` +
         `</div>` +
-        `<div class="lib-col lib-col-used clone-count">${timesUsed}</div>` +
+        `<div class="lib-col lib-col-used clone-count" title="Copies downloaded — Save a copy / Get from Library acquires">${escapeHtml(
+          String(cloneCount)
+        )}</div>` +
         `<div class="lib-col lib-col-updated updated col-date">${escapeHtml(p.updated || "")}</div>` +
         `${actionCell}` +
         `</div>`
