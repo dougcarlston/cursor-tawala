@@ -6,11 +6,11 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-makecopy1" />
-  <script src="js/demo-urls.js?v=20260810-makecopy1"></script>
-  <script src="js/transfer.js?v=20260810-makecopy1"></script>
-  <script src="js/project-ops.js?v=20260810-makecopy1"></script>
-  <script src="js/data-ops.js?v=20260810-makecopy1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-rename2" />
+  <script src="js/demo-urls.js?v=20260810-rename2"></script>
+  <script src="js/transfer.js?v=20260810-rename2"></script>
+  <script src="js/project-ops.js?v=20260810-rename2"></script>
+  <script src="js/data-ops.js?v=20260810-rename2"></script>
 </head>
 <body data-tawala-page="mytawala" data-tawala-user="dev">
   <div id="doc">
@@ -26,7 +26,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-makecopy1"></script>
+  <script src="js/chrome.js?v=20260810-rename2"></script>
   <script>
     TawalaChrome.mount();
     TawalaProjectOps.bind(document);
@@ -86,8 +86,9 @@
     }
 
     const justAcquired = params.get("acquired") === "1";
-    renderProject(id, { justAcquired });
-    if (justAcquired && id) {
+    const justForked = params.get("forked") === "1";
+    renderProject(id, { justAcquired, justForked });
+    if ((justAcquired || justForked) && id) {
       try {
         history.replaceState(
           {},
@@ -99,8 +100,9 @@
       }
       const status = document.getElementById("pmOpStatus");
       if (status) {
-        status.textContent =
-          "Saved a copy — Use stays grey until Deploy. Sort My Tawala by Created to find this row.";
+        status.textContent = justForked
+          ? "Made a copy — Records empty; Use grey until Push. Rename anytime."
+          : "Saved a copy — Use stays grey until Deploy. Sort My Tawala by Created to find this row.";
       }
     }
 

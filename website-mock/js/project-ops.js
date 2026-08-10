@@ -3235,6 +3235,7 @@
             .replace(/\.json$/i, "");
     const inactive = project.inactive === true || project.libraryActive === false;
     const justAcquired = !!(opts && opts.justAcquired);
+    const justForked = !!(opts && opts.justForked);
     const libSrcName = librarySourceDisplayName(project);
     const acquiredBanner = justAcquired
       ? `<div class="pm-acquire-success" role="status">` +
@@ -3245,7 +3246,15 @@
         `(hover the grey Use control for the tip). ` +
         `<a href="mytawala.html">← Back to My Tawala</a> and sort by <b>Created</b> to see this row with today’s date.</p>` +
         `</div>`
-      : "";
+      : justForked
+        ? `<div class="pm-acquire-success" role="status">` +
+          `<p><b>Made a copy</b> as “${escapeHtml(displayName)}”. Original project unchanged.</p>` +
+          `<p class="pm-hint">Records start empty — this fork does <b>not</b> share the source’s live data. ` +
+          `<b>Use</b> stays grey until you Push from Designer → Show in My Tawala. ` +
+          `Rename anytime (button or double-click the title). ` +
+          `<a href="mytawala.html">← Back to My Tawala</a></p>` +
+          `</div>`
+        : "";
 
     return (
       `<div class="pm-detail-layout" id="pmDetail" data-project-id="${escapeHtml(project.id)}">` +
@@ -3492,9 +3501,15 @@
       window.alert("Rename isn't available — transfer support is outdated. Hard-refresh and try again.");
       return;
     }
-    const project = projectId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    /* Prefer explicit id; fall back to Details host so a stale/empty data-project never no-ops. */
+    let id = String(projectId || "").trim();
+    if (!id) {
+      const host = document.getElementById("pmDetail");
+      id = (host && host.dataset.projectId) || "";
+    }
+    const project = id && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(id) : null;
     if (!project) {
-      window.alert(`Can't rename — unknown My Tawala project: ${projectId || "(none)"}`);
+      window.alert(`Can't rename — unknown My Tawala project: ${id || "(none)"}`);
       return;
     }
     closeRenameModal();
@@ -3502,17 +3517,18 @@
     closeMakeCopyModal();
     closeDescModal();
 
-    const currentName = TawalaDemo.displayName(project.name || projectId);
+    const currentName = TawalaDemo.displayName(project.name || id);
     const backdrop = document.createElement("div");
     backdrop.className = "tawala-modal-backdrop";
     backdrop.id = RENAME_MODAL_ID;
+    backdrop.dataset.projectId = id;
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="renameModalTitle">' +
       `<h3 id="renameModalTitle">Rename</h3>` +
       `<p class="pm-hint tawala-modal-lede">Pick a name you’ll recognize in My Tawala. This does not create a new project or change any Library entry — only the display name on this private copy.</p>` +
       '<div class="tawala-modal-body">' +
       '<label class="tawala-modal-field" for="renameNameInput">Your project name' +
-      `<input type="text" id="renameNameInput" value="${escapeHtml(currentName)}" autocomplete="off" />` +
+      `<input type="text" id="renameNameInput" name="tawala-rename-name" value="${escapeHtml(currentName)}" autocomplete="off" spellcheck="false" />` +
       "</label>" +
       '<p class="pm-hint tawala-modal-hint-tight">If the name matches another My Tawala project (not case-sensitive), you’ll be asked to confirm before replacing that other project.</p>' +
       '<p class="pm-hint" id="renameModalError" role="alert" style="display:none;"></p>' +
@@ -3531,22 +3547,25 @@
       errEl.textContent = msg || "";
       errEl.style.display = msg ? "" : "none";
     }
+    function readRenameInput() {
+      /* Always read live from the open modal — never a stale closure value. */
+      const live =
+        document.querySelector("#tawalaRenameModal #renameNameInput") || nameInput;
+      return live ? String(live.value || "").trim() : "";
+    }
     function checkRenameCollisionLive() {
-      const nameVal = nameInput.value.trim();
+      const nameVal = readRenameInput();
       if (!nameVal) {
         showErr("");
         return;
       }
-      if (
-        typeof TawalaTransfer.compactNameKey === "function" &&
-        TawalaTransfer.compactNameKey(nameVal) === TawalaTransfer.compactNameKey(currentName)
-      ) {
+      if (nameVal === currentName) {
         showErr("");
         return;
       }
       if (
         typeof TawalaTransfer.myTawalaNameTaken === "function" &&
-        TawalaTransfer.myTawalaNameTaken(nameVal, projectId)
+        TawalaTransfer.myTawalaNameTaken(nameVal, id)
       ) {
         showErr(
           `Warning: you already have a project named “${nameVal}”. Renaming will replace that other project (this project keeps its identity under the new name).`
@@ -3563,20 +3582,19 @@
     document.addEventListener("keydown", handleRenameModalKeydown, true);
 
     function confirmRename() {
-      const nameVal = nameInput.value.trim();
+      const nameVal = readRenameInput();
       if (!nameVal) {
         showErr("Enter a project name.");
-        nameInput.focus();
+        if (nameInput) nameInput.focus();
         return;
       }
-      const sameAsCurrent =
-        typeof TawalaTransfer.compactNameKey === "function" &&
-        TawalaTransfer.compactNameKey(nameVal) === TawalaTransfer.compactNameKey(currentName);
+      const targetId = backdrop.dataset.projectId || id;
+      const sameAsCurrent = nameVal === currentName;
       const conflict =
         !sameAsCurrent && typeof TawalaTransfer.findMyTawalaByName === "function"
-          ? TawalaTransfer.findMyTawalaByName(nameVal, projectId)
+          ? TawalaTransfer.findMyTawalaByName(nameVal, targetId)
           : null;
-      if (conflict) {
+      if (conflict && conflict.id !== targetId) {
         const conflictLabel =
           typeof TawalaDemo.displayName === "function"
             ? TawalaDemo.displayName(conflict.name)
@@ -3588,19 +3606,31 @@
             `This project keeps its own identity under the new name.`
         );
         if (!ok) {
-          nameInput.focus();
+          if (nameInput) nameInput.focus();
           return;
         }
       }
-      const result = TawalaTransfer.renameMyTawalaProject(projectId, nameVal, {
-        overwrite: !!conflict,
+      const result = TawalaTransfer.renameMyTawalaProject(targetId, nameVal, {
+        overwrite: !!(conflict && conflict.id !== targetId),
       });
       if (!result || !result.ok) {
         showErr((result && result.error) || "Unknown error");
-        nameInput.focus();
+        if (nameInput) nameInput.focus();
         return;
       }
       closeRenameModal();
+      /* Paint title immediately so a slow re-render cannot look like “ignored”. */
+      const title = document.querySelector("h2.pm-detail-title");
+      if (title && result.name) {
+        const badge = title.querySelector(".pm-status-badge");
+        const badgeClone = badge ? badge.cloneNode(true) : null;
+        title.textContent = "";
+        title.appendChild(document.createTextNode(result.name));
+        if (badgeClone) {
+          title.appendChild(document.createTextNode(" "));
+          title.appendChild(badgeClone);
+        }
+      }
       if (!result.unchanged) {
         setStatus(
           result.replacedId
@@ -3610,16 +3640,21 @@
       }
       document.dispatchEvent(
         new CustomEvent("tawala:project-renamed", {
-          detail: { projectId, name: result.name, result },
+          detail: { projectId: targetId, name: result.name, result },
         })
       );
     }
 
-    backdrop.querySelector("#renameModalConfirm").addEventListener("click", confirmRename);
+    backdrop.querySelector("#renameModalConfirm").addEventListener("click", (ev) => {
+      ev.preventDefault();
+      ev.stopPropagation();
+      confirmRename();
+    });
     nameInput.addEventListener("input", checkRenameCollisionLive);
     nameInput.addEventListener("keydown", (ev) => {
       if (ev.key === "Enter") {
         ev.preventDefault();
+        ev.stopPropagation();
         confirmRename();
       }
     });
@@ -4030,7 +4065,8 @@
       `<h3 id="makeCopyModalTitle">Make a Copy</h3>` +
       `<p class="pm-hint tawala-modal-lede">Fork “${escapeHtml(sourceName)}” into a <b>new</b> My Tawala project. ` +
       `The original stays as-is. This is <b>not</b> Rename (same project, new name) and <b>not</b> Library Save a copy. ` +
-      `<b>Use</b> works when the copy lands if the source already has live start URLs (mock shares that runtime — production must mint a private uniqueId with empty response data).</p>` +
+      `Copies the definition only — <b>Records start empty</b>; <b>Use</b> stays grey until you Push from Designer ` +
+      `(does not share the source’s live :8080 data).</p>` +
       '<div class="tawala-modal-body">' +
       '<label class="tawala-modal-field" for="makeCopyNameInput">Name for the copy' +
       `<input type="text" id="makeCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
@@ -4143,9 +4179,11 @@
           detail: { sourceId, myTawalaId: result.id, name: nameVal, result },
         })
       );
-      /* Land on My Tawala listing with the new row selected (same as Save a copy). */
+      /* Land on the new fork’s Details so Rename is obvious and Records show empty. */
       window.location.href =
-        "mytawala.html?highlight=" + encodeURIComponent(result.id);
+        "mytawala-project.html?project=" +
+        encodeURIComponent(result.id) +
+        "&forked=1";
     }
 
     backdrop.querySelector("#makeCopyModalConfirm").addEventListener("click", confirmMakeCopy);
@@ -4813,7 +4851,12 @@
 
     if (wired === "rename-project" || op === "rename") {
       ev.preventDefault();
-      openRenameDialog(projectId);
+      let renameId = projectId;
+      if (!renameId) {
+        const host = document.getElementById("pmDetail");
+        renameId = (host && host.dataset.projectId) || "";
+      }
+      openRenameDialog(renameId);
       return;
     }
 

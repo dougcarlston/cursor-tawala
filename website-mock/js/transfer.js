@@ -368,6 +368,7 @@
   function isRealMyTawalaOverlayRow(data) {
     if (!data || typeof data !== "object") return false;
     if (data.fromLibraryAcquire === true || data.sourcePile === "library-acquire") return true;
+    if (data.sourcePile === "mytawala-fork" || data.forkedFromId) return true;
     if (data.pulledFromLibraryId) return true;
     if (data.lastDeployAt || data.fromDeployOverlay === true) return true;
     if (data.sourcePile === "publish-overlay" || data.retiredFromLibraryId) return true;
@@ -483,16 +484,63 @@
   }
 
   /**
+   * Make a Copy once shared source uniqueId (`mockSharedForkRuntime`). Strip those so
+   * existing forks no longer show Library/picnic Records. Idempotent.
+   */
+  function scrubSharedForkRuntimes() {
+    const overlay = getMyTawalaOverlay();
+    let changed = false;
+    const scrubbed = [];
+    Object.keys(overlay).forEach((id) => {
+      const entry = overlay[id];
+      if (!entry || typeof entry !== "object") return;
+      if (entry.sourcePile !== "mytawala-fork" && !entry.forkedFromId) return;
+      const needs =
+        entry.mockSharedForkRuntime === true ||
+        !!entry.uniqueId ||
+        !!entry.testDriveUrl ||
+        (Array.isArray(entry.startPoints) && entry.startPoints.some((s) => s && s.url));
+      if (!needs) return;
+      const startPoints = (Array.isArray(entry.startPoints) ? entry.startPoints : [])
+        .map((sp) => ({
+          label: (sp && (sp.label || sp.form)) || "Start",
+          url: null,
+        }))
+        .filter((sp) => sp.label);
+      overlay[id] = {
+        ...entry,
+        uniqueId: null,
+        deployed: false,
+        testDriveUrl: null,
+        startPoints,
+        mockSharedForkRuntime: false,
+        mockSharedLibraryRuntime: false,
+      };
+      changed = true;
+      scrubbed.push(id);
+    });
+    if (changed) writeJson(PILE_KEY, overlay);
+    return { ok: true, scrubbed };
+  }
+
+  /**
    * Fix older Save-a-copy overlay rows that stripped uniqueId / :8080 URLs (Use was grey).
    * Re-copies live start metadata from pulledFromLibraryId. Persists into overlay.
+   *
+   * Never rehydrate Make a Copy forks (`mytawala-fork`) — those intentionally have empty
+   * private runtime (uniqueId null). Rehydrating them from Library brought Broderbund /
+   * picnic submissions onto the fork.
    */
   function rehydrateAcquireLiveUrls() {
+    scrubSharedForkRuntimes();
     const overlay = getMyTawalaOverlay();
     let changed = false;
     const hydrated = [];
     Object.keys(overlay).forEach((id) => {
       const entry = overlay[id];
       if (!entry || typeof entry !== "object") return;
+      if (entry.sourcePile === "mytawala-fork" || entry.forkedFromId) return;
+      if (entry.mockSharedForkRuntime === false && entry.uniqueId == null) return;
       const libId = entry.pulledFromLibraryId;
       if (!libId) return;
       if (entry.fromLibraryAcquire !== true && entry.sourcePile !== "library-acquire") {
@@ -1596,21 +1644,26 @@
    * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
    * On overwrite:true, deleteMyTawalaProject the *other* conflicting row, then keep this
    * project's id with the new display name (A→B's name removes B; A stays A with name B).
+   *
+   * Always materializes a full overlay row from the current merged view (not a name-only
+   * stub via upsert onto missing prev). Second rename must keep sticking — never bail just
+   * because a thin overlay key was missing after Make a Copy / host switches.
    */
   function renameMyTawalaProject(projectId, newName, opts) {
     const overwrite = !!(opts && opts.overwrite);
-    if (!projectId) {
+    const id = String(projectId || "").trim();
+    if (!id) {
       return { ok: false, error: "Project id is required." };
     }
     const current =
       (typeof window !== "undefined" &&
         window.TawalaDemo &&
         typeof window.TawalaDemo.getMyTawala === "function" &&
-        window.TawalaDemo.getMyTawala(projectId)) ||
-      getOverlayEntry(projectId) ||
+        window.TawalaDemo.getMyTawala(id)) ||
+      getOverlayEntry(id) ||
       null;
     if (!current) {
-      return { ok: false, error: `Unknown My Tawala project: ${projectId}` };
+      return { ok: false, error: `Unknown My Tawala project: ${id}` };
     }
     const name = String(newName || "").trim();
     if (!name) {
@@ -1621,13 +1674,17 @@
       window.TawalaDemo &&
       typeof window.TawalaDemo.displayName === "function"
         ? window.TawalaDemo.displayName(current.name)
-        : String(current.name || projectId);
-    if (compactNameKey(name) === compactNameKey(currentDisplay)) {
-      return { ok: true, id: projectId, name: currentDisplay, unchanged: true };
+        : String(current.name || id);
+    /* Exact trimmed match only for no-op — do not use compactNameKey here (punctuation
+     * differences are real renames the author typed). */
+    if (name === currentDisplay) {
+      return { ok: true, id, name: currentDisplay, unchanged: true };
     }
-    const conflict = findMyTawalaByName(name, projectId);
+    const conflict = findMyTawalaByName(name, id);
     if (conflict) {
-      if (!overwrite) {
+      if (conflict.id === id) {
+        /* Self should never be a conflict; treat as rename-in-place. */
+      } else if (!overwrite) {
         const conflictName =
           typeof window !== "undefined" &&
           window.TawalaDemo &&
@@ -1641,27 +1698,49 @@
           conflictName,
           error: `You already have a project named “${name}”. Confirm to replace it.`,
         };
+      } else {
+        deleteMyTawalaProject(conflict.id);
       }
-      deleteMyTawalaProject(conflict.id);
     }
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
-    if (
-      !upsertMyTawalaProperties(projectId, {
-        name,
-        iconLabel: iconLabelFromName(name),
-        updated: now,
-        updatedAt: nowIso,
-      })
-    ) {
+    const iconLabel = iconLabelFromName(name);
+    /* Drop ephemeral / computed fields; keep the rest so rename never replaces a full
+     * fork/acquire row with a name-only stub (second rename must still find the row). */
+    const {
+      id: _dropId,
+      fromDeployOverlay: _fdo,
+      ...rest
+    } = current;
+    const prevOverlay = getMyTawalaOverlay()[id] || {};
+    const entry = {
+      ...rest,
+      ...prevOverlay,
+      name,
+      iconLabel,
+      updated: now,
+      updatedAt: nowIso,
+    };
+    clearMyTawalaDeleted(id);
+    const overlay = getMyTawalaOverlay();
+    overlay[id] = entry;
+    if (!writeJson(PILE_KEY, overlay)) {
       return { ok: false, error: "Could not write My Tawala overlay (localStorage)." };
+    }
+    /* Read back — surface silent write / key mismatches instead of looking like a no-op. */
+    const verify = getMyTawalaOverlay()[id];
+    if (!verify || String(verify.name || "").trim() !== name) {
+      return {
+        ok: false,
+        error: "Rename did not stick in localStorage — try again, or hard-refresh and retry.",
+      };
     }
     return {
       ok: true,
-      id: projectId,
+      id,
       name,
-      replacedId: conflict ? conflict.id : null,
-      entry: { id: projectId, ...current, name, iconLabel: iconLabelFromName(name), updated: now, updatedAt: nowIso },
+      replacedId: conflict && conflict.id !== id ? conflict.id : null,
+      entry: { id, ...entry },
     };
   }
 
@@ -1796,11 +1875,12 @@
   /**
    * Make a Copy — fork an existing My Tawala project (Aug 9 Task #9).
    * Mints a *new* overlay id + display name. Original row is untouched.
-   * Copies definition metadata (jsonFile, descriptions, formNames, start labels).
-   * Response data stays empty by default (no local count copy). Mock: if the source has
-   * live :8080 starts / uniqueId, copy them so Use works immediately
-   * (`mockSharedForkRuntime` — same demo limitation as Save a copy; production must mint
-   * a private uniqueId with empty private data).
+   * Copies definition metadata (jsonFile, descriptions, formNames, start *labels*).
+   *
+   * Empty response data by default (owner Aug 10): do **not** copy source uniqueId /
+   * live :8080 start URLs. Sharing those made forks reuse Tomcat submissions (e.g.
+   * Broderbund picnic data on a 4th-of-July copy). uniqueId:null, deployed:false,
+   * start points label-only → Records empty / "—"; Use grey until Push → Show in My Tawala.
    *
    * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
    * Cannot reuse the source project's own display name (that would destroy the original).
@@ -1859,7 +1939,13 @@
     const id = uniqueMyTawalaSlug(slugifyProjectId(copyName));
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
-    const live = liveRuntimeFromLibrarySource(source);
+    /* Labels only — never inherit source uniqueId / :8080 URLs (empty Records until Push). */
+    const startPoints = (Array.isArray(source.startPoints) ? source.startPoints : [])
+      .map((sp) => ({
+        label: (sp && (sp.label || sp.form)) || "Start",
+        url: null,
+      }))
+      .filter((sp) => sp.label);
 
     const entry = {
       name: copyName,
@@ -1884,12 +1970,12 @@
       /* Keep Library link so Refresh still works when forking an acquire. */
       pulledFromLibraryId: source.pulledFromLibraryId || undefined,
       pulledFromLibraryName: source.pulledFromLibraryName || undefined,
-      /* Mock: Use works via source live start URLs. Production must mint a private uniqueId. */
-      uniqueId: live.uniqueId,
-      deployed: live.deployed,
-      testDriveUrl: live.testDriveUrl,
-      startPoints: live.startPoints,
-      mockSharedForkRuntime: live.mockSharedLibraryRuntime,
+      /* Private empty runtime — do not share source/Library uniqueId or picnic data. */
+      uniqueId: null,
+      deployed: false,
+      testDriveUrl: null,
+      startPoints,
+      mockSharedForkRuntime: false,
     };
 
     clearMyTawalaDeleted(id);
@@ -2175,6 +2261,7 @@
     clearLibraryOverlay,
     scrubDiscardedLibraryStubs,
     scrubDiscardedMyTawalaSeeds,
+    scrubSharedForkRuntimes,
     rehydrateAcquireLiveUrls,
     isDiscardedPublicLibraryEntry,
     getLibraryRetired,
