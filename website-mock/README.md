@@ -628,6 +628,29 @@ These are **required before a real public launch**, but **not** near-term websit
 
 **Test Drive** belongs on the **Library**. When the visitor leaves the Test Drive, **purge** the demo responses. While they are in the drive, they may use **all start points** before that wipe (so multi-step apps like Exam + Admin Setup still work during the session).
 
+### Viral Test Drive / soft gating (owner product direction — Aug 10, 2026)
+
+**Document only — do not over-implement in this pass.** Marketing / growth direction for how strangers discover and try Library projects. Reputation / ratings remain **parked** (Task [#17](#task-list-aug-9)).
+
+**Direction**
+
+1. **No account required to Test Drive** a Library project — logged-out visitors can try the live app.
+2. **Shareable Test Drive link** — a URL you can text or email to others **without** registering (viral access). Same idea as “try this” without a login wall.
+3. **End page** — projects should finish on a page that promotes the **public Library**, and (for a few projects) the **Designer**.
+4. **Library sections / categories** matter long-term for featured audiences (examples: HR, self-knowledge, honors / teacher prizes, public office candidates, …). Catalog organization is product strategy, not just a filter chip.
+5. **Want Registrants eventually**, but the **gating moment** is when someone wants to **save data** about themselves or their users — **or** a soft gate: **N free uses**, then sign up. Both options stay open; pick later with evidence.
+6. **Reputation** still parked (no ratings product in this phase).
+
+**Near-term vs later**
+
+| Near-term (implementable soon) | Later (HOLD — do not half-build) |
+|---|---|
+| Ensure **Test Drive works logged-out** | Project **end page** (Library + selective Designer promo) |
+| **Copy Test Drive link** CTA on Library (listing / detail) | **N-use soft gate** + full **auth / Registrants** |
+| Leave/wipe honesty still Task [#14](#task-list-aug-9) | Full **Library category** IA for featured audiences |
+
+Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala Details **Deploy → Copy link** (owner distributing *their* live start URLs).
+
 ---
 
 ### Earlier triage lists (Aug 7–8 — historical)
@@ -646,6 +669,7 @@ These four lists framed the Aug 9 walkthrough. Lists **1** and **4** are now dec
 - **Aug 10 (decision + Deploy share slice):** After owning a My Tawala copy — **Use** = for yourself; **Publish** = put a copy in the public Library; **Deploy** (website Details) = administer for others → share/embed help (Task #10). Details **DEPLOY** + Invite/Include open the share panel (Copy link / iframe embed; multi-start picker; honest empty-acquire message). Designer authoring verb → **Push** (to My Tawala library); rename parked on Designer chat list — no Designer UI mass-rename. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project).
 - **Aug 10 (product note — email metering):** Emails are a billed cost → need visible, period-resettable email volume counters (admin cross-user first; optional per-project on Details for billed authors). Dead **Backups, emails & library publish** Details section **removed** the same day; metering stays a separate future feature. See § [Email metering (billing)](#email-metering-billing).
 - **Aug 10 (pre-live HOLD — not near-term):** Before real public: **Registration / accounts / passwords / lost password** (security), **Payments** (legacy PayPal never wired), and **Email metering**. See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
+- **Aug 10 (product direction — Viral Test Drive / soft gating):** No account to Test Drive; shareable Test Drive links (viral); project end page → Library (+ Designer for few); Library categories for featured audiences long-term; Registrants / gate when saving data **or** N free uses then sign up (open); reputation still parked. Near-term = logged-out Test Drive + Copy Test Drive link CTA; end-page / N-use / full auth = later. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
 
 ### Task List (Aug 9)
 
@@ -664,15 +688,18 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 11. **Edit project in Designer** — **Confirmed DONE (Aug 10):** Owner tested successfully. Details-only **Edit project in Designer** resolves a definition (version snapshot / catalog `jsonFile`) and opens `:5173` with `?snapshot=` or `?mockJson=` so Designer **loads that project** — not a blank canvas. Catalog paths: `projects/mytawala|library/*.json` or `designer-web/public/samples/…/*.json` via `:3001/api/open-mock-json`. Honest alert when no definition (e.g. Library acquire with no catalog JSON and no Push / Show in My Tawala snapshot). Cancel → `designer.html` stub. **HOLD:** Home sidebar Designer link later, placed away from Library.
 12. **Active / De-activate** — **DONE (Aug 9 slice):** Details Activate / De-activate; overlay `inactive` hides from Library listing; My Tawala keeps Offline badge.
 13. **Times used / Last used / Copies downloaded** — **PARTIAL (Aug 10 Task #13; listing cols Aug 10):** Aug 9 meanings wired in the mock. **Records** = submissions (unchanged). **Copies downloaded** (field `cloneCount`) = Library Save a copy / Get from Library acquires (≠ Records) — bumps on acquire (already); Library listing column + detail sidebar label **Copies downloaded** (was **Clone count**, earlier mislabeled Times used). **Times used** / **Last used** on My Tawala listing + Project Data banner = mock localStorage counters (`tawala.mock.usageStats`) incremented when My Tawala **Use** successfully opens a start URL on `:8080` — **not** Library Test Drive, **not** live respondent telemetry. Still **`0`** / **"—"** until first Use in that browser. Production session accounting later.
-14. **Test Drive contract** — Keep Library-owned; allow all start points during the drive; purge when the visitor leaves (document and implement the leave/wipe path honestly in the mock’s limits).
+14. **Test Drive contract** — **PARTIAL (direction Aug 10):** Keep Library-owned; allow all start points during the drive; purge when the visitor leaves (document and implement the leave/wipe path honestly in the mock’s limits). **Near-term add:** ensure Test Drive works **logged-out**; Library **Copy Test Drive link** CTA (viral share — ≠ My Tawala Deploy Copy link). See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
 15. **HOLD — Backup package** — Do not expand Backup/Restore until the owner confirms the default proposal (deployed definition + current responses) and how Restore differs from Deploy this version in the UI copy.
 16. **HOLD — Download latest** — Talk later; prefer Pull into Designer over site Push/Download.
-17. **HOLD / park — Shared Data, Access column, SEE DEMO videos, reputation/ratings product, ACL collaborators** — No build in this phase.
+17. **HOLD / park — Shared Data, Access column, SEE DEMO videos, reputation/ratings product, ACL collaborators** — No build in this phase. Reputation still parked under Viral Test Drive direction.
 18. **Ongoing — Library stub cleanup** — Separate catalog work: Designer → Deploy → Publish a real replacement, then retire the stub (see § Library stubs).
 19. **Empty My Tawala seed + Get from Library acquire** — **DONE (Aug 10):** `TAWALA_MYTAWALA = {}`; discarded archive seed ids scrubbed on load. Listing = Push + Save a copy only. **Get from Library…** = Library picker → Save a copy (not nav to `library.html`). Online Exam via Get/Save a copy or Designer Push.
 20. **HOLD — Email metering (billing)** — Visible email-volume counter, resettable per billing period; **admin** (cross-user / all projects) first, optional **Project Details** counter for authors we bill. Do **not** implement send infra or fake counts now. **Done (cleanup):** empty Details collapsible **“Backups, emails & library publish”** removed Aug 10 — metering remains a separate future feature. See § [Email metering (billing)](#email-metering-billing).
-21. **HOLD (pre-live, not near-term) — Registration / accounts / passwords / lost password** — Must exist before real public; countless UI examples, but **real security** concerns. Do not implement in this phase. See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
+21. **HOLD (pre-live, not near-term) — Registration / accounts / passwords / lost password** — Must exist before real public; countless UI examples, but **real security** concerns. Do not implement in this phase. Product gate timing (save-data vs N free uses) still open — see § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026). See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
 22. **HOLD (pre-live, not near-term) — Payments** — Must exist before real public; legacy PayPal-style functions in samples were never wired. Do not implement in this phase. See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
+23. **HOLD — Project end page (Library + Designer promo)** — After a Test Drive / respondent flow, land on a page promoting the public Library (and Designer for a few projects). Do not half-build; wait for copy + which projects get Designer CTA. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
+24. **HOLD — Soft gate (N free uses) / Registrants** — Want Registrants eventually; gate when user wants to **save data** (self or their users) **or** after **N free uses** then sign up. Options stay open — no build until chosen. Ties to [#21](#task-list-aug-9).
+25. **HOLD — Library sections / categories (featured audiences)** — Long-term catalog IA for audiences (HR, self-knowledge, honors / teacher prizes, public office candidates, …). Not near-term chrome polish; product strategy for featured Library.
 
 ### Aug 9 afternoon UI (implementation slice — committed)
 
@@ -695,10 +722,11 @@ Plain-English note of what landed in the My Tawala / Project Details / chrome pa
 - **HOLD — Email metering (billing):** document-only Aug 10 — visible period-resettable email counters (admin cross-user + optional Details). Dead Details section removed; do not reintroduce fake chips. Task List [#20](#task-list-aug-9).
 - **Removed (Aug 10):** Project Details **“Backups, emails & library publish”** (`pmSecOther`) — review: `http://localhost:5500/mytawala-project.html?project=<id>&v=20260810-othergone1` (section gone; Versions then Comments).
 - **Pre-live HOLD (not near-term):** Auth/accounts/password recovery + Payments/PayPal — Task List [#21](#task-list-aug-9) / [#22](#task-list-aug-9); § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
+- **Viral Test Drive / soft gating (docs Aug 10):** No account to try; shareable Test Drive link; end page + N-use gate + category IA + full auth = HOLD ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)). Near-term only: logged-out Test Drive + Copy Test Drive link on Task [#14](#task-list-aug-9). Reputation still parked ([#17](#task-list-aug-9)).
 
 **Next**
 
-Continue the [Task List](#task-list-aug-9): Versioning slice ready for review. Library-detail Save a copy fixed (pause for review). Next open item is Task #14 (Test Drive leave/wipe). Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears. Pre-live Auth / Payments / Email metering stay HOLD.
+Continue the [Task List](#task-list-aug-9): Versioning slice ready for review. Library-detail Save a copy fixed (pause for review). Next open item is Task #14 (Test Drive leave/wipe + near-term logged-out / Copy Test Drive link). Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears. Pre-live Auth / Payments / Email metering stay HOLD. End page / N-use gate / Library category IA ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)) stay HOLD.
 
 **Aug 10 review (Library detail Save a copy — no commit until owner asks):**
 
