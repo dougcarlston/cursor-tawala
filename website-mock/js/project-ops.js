@@ -384,7 +384,10 @@
   const NO_VERSION_SNAPSHOT_MSG =
     "This version has no saved definition — only versions created after Deploy → Show in My Tawala started saving snapshots (Aug 7, 2026+) can be redeployed.";
 
-  /** Backups / emails / publish dialogs (admin-ish; still useful memory jogs) */
+  /**
+   * Backups / emails / publish dialogs (admin-ish) — archive labels only.
+   * Removed from Project Details UI Aug 10, 2026; kept for project-ops-review.html memory.
+   */
   const OTHER_OPS = [
     { label: "SCHEDULE BACKUP", title: "Schedule daily backup", wired: false },
     { label: "CHANGE BACKUP", title: "Change backup schedule", wired: false },
@@ -604,8 +607,9 @@
     {
       surface: "mytawala",
       id: "other",
-      title: "Project Details — Backups / emails / publish / admin",
-      where: "detail.jsp + confirmation dialogs — schedule, restore, emails, library publish",
+      title: "Archive — Backups / emails / publish / admin (removed from Details UI)",
+      where:
+        "Was detail.jsp + confirmation dialogs; labels kept on project-ops-review only (Aug 10, 2026)",
       items: OTHER_OPS,
     },
   ];
@@ -3271,6 +3275,7 @@
    * Full Project Details layout (separate page).
    * Owner Aug 9: wider left sidebar — identity (incl. Theme), then Invite/Include under Theme,
    * then Edit in Designer; main column = title + actions + Project Data / Versions / Comments.
+   * (Backups/emails/publish collapsible removed Aug 10 — OTHER_OPS archive-only.)
    * Project Data tree: expand (project → starts → all forms); selection scopes E/I/Purge.
    * Start URLs open live :8080 when deployed — do NOT purge-on-click (unlike Library Test drive).
    * @param {object} project
@@ -3281,12 +3286,6 @@
     const projectDataSection = renderProjectDataTree(project);
 
     const versionOps = renderVersionsSection(project);
-
-    const backupOps =
-      '<div class="pm-chip-row">' +
-      OTHER_OPS.map(disabledChip).join("") +
-      "</div>" +
-      '<p class="pm-hint">Backups, project emails, library publish dialogs, and admin UPDATE.</p>';
 
     const commentsStub =
       '<p class="pm-hint">Comments / reputation are parked (Aug 9). Stub only — not wired in this mock.</p>';
@@ -3362,7 +3361,6 @@
       `</p>` +
       renderCollapsibleSection("pmSecData", "Project Data", projectDataSection, true) +
       renderCollapsibleSection("pmSecVersions", "Versions", versionOps, versionsOpen) +
-      renderCollapsibleSection("pmSecOther", "Backups, emails & library publish", backupOps, false) +
       renderCollapsibleSection("pmSecComments", "Comments", commentsStub, false, {
         greyed: true,
         summaryTitle: "Comments / reputation — stub (not wired)",
