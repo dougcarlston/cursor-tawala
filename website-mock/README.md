@@ -688,6 +688,26 @@ Worth doing, but **not initial wiring**. These are **look & feel / organization*
 6. **Versions / Deploy this version (wired Aug 7, 2026)** — radios + **Deploy this version** switch snapshot-backed rows; delete-version still grey; Download still metadata-only; Restore ≠ make-definition-version-current. Documented under glossary **Owner smoke Aug 7**. Still easy to get in trouble with response/schema mismatch — see smoke steps.
 7. **Selective Purge by form** — **wired (Aug 9)** in Project Data (select form → Purge); sports stats-only nuance may refine later after commissioner feedback.
 
+## Pre-public gate — Project uniqueId audit
+
+**Before anything public:** verify that **independent** projects do not share a Tomcat `:8080` **uniqueId** (`/p/{uniqueId}/…` / `user_project.unique_random_id`). One uniqueId = one live project identity (shared submissions, Purge, Records). If two named products collide, either keep **one** public Library entry or **mint new IDs** for the others — do not ship overlapping try-outs.
+
+**Audit sources (Aug 10, 2026 pass — seeds clean):**
+
+| Source | Status |
+|--------|--------|
+| `js/demo-urls.js` `TAWALA_LIBRARY` | 6 liveReady entries, **6 distinct** uniqueIds (no seed collisions) |
+| `TAWALA_MYTAWALA` | **Empty seed** — no Library ↔ My Tawala dual-entry collision in repo |
+| Hardcoded `:8080` `/p/…` outside seeds | Docs/tests only (Registration, retired Sign-up, historical notes) — not a second Library catalog |
+| `designer-web` samples/templates | No baked-in `/p/{uniqueId}/` URLs |
+| Docker/Postgres `user_project.unique_random_id` | Re-check when Postgres is up: `docker compose exec -T postgres psql -U tawala_admin -d tawala -c "SELECT unique_random_id, COUNT(*), string_agg(name, ' \| ') FROM user_project WHERE unique_random_id IS NOT NULL AND unique_random_id <> '' GROUP BY 1 HAVING COUNT(*) > 1;"` |
+
+**Known intentional / resolved:** Online Exam Builder (`u3hkqgwtrepjlur`) was briefly in Library **and** a fake My Tawala seed with the same id — My Tawala seed emptied Aug 10; Library keeps the Live entry.
+
+**Known mock debt (not a seed collision):** Library **Save a copy** sets `mockSharedLibraryRuntime` and **copies** the Library item’s start URLs + uniqueId so **Use** works without Tomcat clone-on-acquire. That means a localStorage acquire can share Live Library demo submissions until production mints a **private** uniqueId. **Make a Copy** (own fork) correctly clears runtime (`uniqueId: null`). Do not treat shared-runtime acquires as separate public products.
+
+**Do not mass-mint IDs** unless the owner asks after reviewing the collision report.
+
 ## Owner checklist — product ready for Library (Deploy → Live)
 
 This is also the checklist for **replacing a stub** (§ Library stubs above) — run it for the stub's equivalent working copy, then ask an agent to retire the old `" (stub)"` entry once the new one is live.
