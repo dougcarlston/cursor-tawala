@@ -31,15 +31,17 @@ alwaysApply: true
 - **Sample JSON replacement** (Jul 28 conversions) — owner reviewing offline; not blocking
 - **Page Header / banner graphics** — parked; Deploy has sophisticated image processing — do not interfere until understood
 
-## Owner-reported Jul 30 — park (Not blocking for Live Library)
+## Owner-reported Jul 30 / Aug 11 — park (Not blocking for Live Library)
 
-**Do not fix in website chat.** Post-website Designer pass. Detail + screenshots: `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` § “Parked Jul 30 (Not blocking)”.
+**Do not fix until return ~Aug 20 Designer pass** (owner traveling). Detail + screenshots: `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` § “Parked Jul 30 / reconfirmed Aug 11”. Catchup: `docs/CATCHUP_MEMO_RETURN_AUG20.md`.
 
-Owner policy: will not ship projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. These two are explicitly **Not blocking** for Live Library.
+Owner policy: will not ship projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. These are explicitly **Not blocking** for Live Library (polish / authoring UX).
 
-1. **FIB Styles — “Align right side” radio squashed** — Main Menu → Project → Styles → FIBs → **Blanks**. Labels radios (Above / Left / Right justified / Freeform) look normal; **Align right side** renders as a narrow vertical blue pill instead of a round radio. Shot: `Tawala_Key_Documents/assets/Bug_-_FIB-Styles-AlignRight-squashed-radio.png`.
-
-2. **Form Text — paragraph blank-line separation lost on Deploy + image breaks highlighting** — Design shows blank lines between paragraphs (e.g. Multiple Question Survey instructional text); Deploy/runtime packs paragraphs with no blank-line gap. Also: inserting an image breaks selection highlight so it will not include paragraphs that contain the image or text beyond it. Shots: `…/Bug_-_Text-paragraph-spacing-Design.png`, `…/Bug_-_Text-paragraph-spacing-Deploy.png`.
+1. **FIB Styles — “Align right side” almost gone** — Project → Styles → FIBs → **Blanks**. Squashed control. Shots: `Bug_-_FIB-Styles-AlignRight-squashed-radio.png` + Aug 11 reconfirm.
+2. **Form Text — paragraph blank-line separation lost on Deploy + image breaks highlighting** — Jul 30 stash (not in Aug 11 recreations). Shots: `Bug_-_Text-paragraph-spacing-*.png`.
+3. **Form canvas badges — uneven widths** — Qn / `{Qn}` chips should share a straight right edge; **SKIP** may stick out with a distinct color. Shot: `Bug_-_Form-badge-uneven-widths-Aug11.png`.
+4. **Sign-up Template — Right justified FIB labels bounce vertically** (mid vs bottom of blanks). Shot: `Bug_-_Signup-FIB-right-justified-vertical-bounce-Aug11.png`.
+5. **Online Exam Builder Setup — expanded Text font size chaotic / cross-talk** between the two instruction Text boxes. Shot: `Bug_-_OnlineExam-Setup-expanded-Text-font-size-chaos-Aug11.png`.
 
 ## Next focus (separate chat)
 

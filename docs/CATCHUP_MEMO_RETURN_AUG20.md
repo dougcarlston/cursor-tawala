@@ -49,6 +49,12 @@ Do these in order; each is short.
 
 ## Backlog that can wait until after the smokes
 
+- **Lost-stash bugs (owner Aug 11 — documented, not fixed):** Full write-up + screenshots in `DESIGNER_OPEN_BUGS.md` § “Parked Jul 30 / reconfirmed Aug 11”. Summary:
+  1. FIB Styles **Align right side** control almost invisible (already known Jul 30; reconfirmed).
+  2. Form canvas **Qn badges uneven widths** — want a straight right edge; SKIP may stick out.
+  3. Sign-up Template **Right justified** — labels bounce mid vs bottom of blanks.
+  4. Online Exam Builder **Setup** — two expanded Text boxes: font size random + formatting bleeds between boxes.
+  5. (Still parked from Jul 30) Form Text blank-line spacing on Push + image selection break.
 - **Page Header image editor** — reinstall mothballed tool; allow horizontal stretch (`DESIGNER_PAGE_HEADER.md`, TODO #17).
 - Remaining template Deploy/Push smokes in `DESIGNER_TEMPLATE_MATRIX.md`.
 - Polish: form Cut/Copy/Paste; Get RecordList Fields branch; column-level `displayCondition` editor (item-level is done).
@@ -71,9 +77,10 @@ You can fold **docs + browser Designer** into one product lane when you return. 
 |------|-----|
 | `docs/CATCHUP_MEMO_RETURN_AUG20.md` | This memo |
 | `docs/DESIGNER_RESUME_FROM_WEBSITE_AUG10.md` | Morning Website → Designer handoff |
+| `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` | Lost-stash bugs (FIB Styles, badges, Sign-up align, Online Exam Text) |
 | `Tawala_Key_Documents/DESIGNER_OPEN_TODOS.md` | Live backlog (#17 Page Header, #16 reconvert, etc.) |
 | `Tawala_Key_Documents/DESIGNER_FORM_ITEMS_CONDITIONAL_DISPLAY.md` | Conditional display contract |
 | `Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` | MAX/MIN / FORM RECORD COUNT / function matrix |
 | `Tawala_Key_Documents/DESIGNER_PAGE_HEADER.md` | Banner tool reopen notes |
 
-Welcome back — start with the WAR rebuild + MAX/MIN/Remove Duplicates smoke, then pick Page Header or Library reconvert.
+Welcome back — start with the WAR rebuild + MAX/MIN/Remove Duplicates smoke, then pick lost-stash bugs, Page Header, or Library reconvert.

@@ -27,17 +27,19 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
-### Parked Jul 30 (Not blocking for Live Library) — **do not fix until post-website Designer pass**
+### Parked Jul 30 / reconfirmed Aug 11 (Not blocking for Live Library) — **fix after return ~Aug 20**
 
-Website chat stays primary. Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc`.
+Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catchup `docs/CATCHUP_MEMO_RETURN_AUG20.md`.
 
-**Owner policy:** will not deploy projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. The two items below are explicitly **Not blocking** for Live Library (ugly / polish only).
+**Owner policy:** will not deploy projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. Items below are **Not blocking** for Live Library (ugly / polish), except treat #5 as **Design authoring quality** for Online Exam Setup (still not Live-Library-blocking unless Setup is the only start users hit).
 
-#### 1) FIB Styles — “Align right side” radio squashed (Not blocking)
+**Owner Aug 11:** Recreated a lost-stash set before travel; write-ups below. Do **not** require owner on the machine to start these — screenshots are enough.
+
+#### 1) FIB Styles — “Align right side” control almost gone (Not blocking)
 
 - **Path:** Main Menu → Project → Styles → FIBs → dialog **“Fill in the Blank Styles”**.
-- **Symptom:** Under **Blanks**, the control for **“Align right side”** is squashed — a narrow vertical blue pill instead of a round radio. **Labels** radios (Above / Left justified / Right justified / Freeform) look OK.
-- **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_FIB-Styles-AlignRight-squashed-radio.png` (source chat asset: `SquashedRadioButton-…png`).
+- **Symptom:** Under **Blanks**, the control for **“Align right side”** is squashed — a narrow vertical blue sliver instead of a usable radio/checkbox. **Labels** radios (Above / Left justified / Right justified / Freeform) look OK.
+- **Screenshots:** `Tawala_Key_Documents/assets/Bug_-_FIB-Styles-AlignRight-squashed-radio.png` (Jul 30); **reconfirm Aug 11** `…/Bug_-_FIB-Styles-AlignRight-squashed-radio-Aug11.png` (owner “Styles BUG”).
 
 #### 2) Form Text — paragraph separation lost on Deploy + image breaks highlighting (Not blocking but ugly)
 
@@ -45,6 +47,29 @@ Website chat stays primary. Also listed in `.cursor/rules/tawala-designer-parked
 - **Symptom A:** Paragraphs created with a couple of Return key presses show blank-line separation in Design, but on Deploy/runtime the paragraphs pack together (blank-line separation lost).
 - **Symptom B:** Inserting an image breaks highlighting — selection will not include any paragraphs that include the image or text beyond it.
 - **Screenshots:** Design (separated) `Tawala_Key_Documents/assets/Bug_-_Text-paragraph-spacing-Design.png`; Deploy/runtime (packed) `…/Bug_-_Text-paragraph-spacing-Deploy.png` (source chat assets: `LossofParSpacing-…png`, `ParSpacing2-…png`).
+- **Note:** Not in the Aug 11 recreations; keep from Jul 30 stash.
+
+#### 3) Form canvas badges — uneven widths (Not blocking) — **NEW / reconfirmed Aug 11**
+
+- **Path:** Form Design canvas — left Qn / `{Qn}` / SKIP / Tn badges (e.g. Campaign Dashboards or any form with mixed conditional braces + Skip).
+- **Symptom:** Badge chips are different widths (`Q1` vs `{Q2}` vs orange selected `Q4` vs long `SKIP`). Owner wants a **straight vertical line down the right edge** of the normal question badges so the column reads clean.
+- **Exception (owner):** **SKIP** may use a different color and may stick out past that line — Skips interrupt the flow.
+- **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_Form-badge-uneven-widths-Aug11.png` (owner “Uneven Labels”).
+
+#### 4) Sign-up Template — Right justified FIB labels bounce vertically (Not blocking) — **NEW / reconfirmed Aug 11**
+
+- **Path:** Sign-up Sheet Template (or similar) with FIB **Right justified** (+ Align right side as used). Preview / Push / `:8080` form.
+- **Symptom:** Labels **bounce** between vertical middle of the blank and vertical bottom of the blank (e.g. “First Name:” centered vs “Last name:” bottom-aligned on the same row; same for Email vs Telephone). Horizontal right-edge of left-column labels may also be slightly uneven.
+- **Contract reminder:** Spec wants label **bottoms** aligned with field **bottoms** (`DESIGNER_FORM_FORMAT_TOOLBAR.md` / form-layout-core) — not mixed mid/bottom.
+- **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_Signup-FIB-right-justified-vertical-bounce-Aug11.png` (owner “Bug in Alignment”).
+
+#### 5) Online Exam Builder Setup — expanded Text font size chaotic / cross-talk (Not blocking but serious UX) — **NEW / reconfirmed Aug 11**
+
+- **Path:** Project **Online Exam Builder** (`~/Website Staging/3-Ready-for-Public-Library` or Library JSON). Run start form **Setup**. Two large rich **Text** / instruction boxes: “Pre-test instructions…” and “Comments or instructions… upon completion…”.
+- **Symptom A:** Font size control appears random — toolbar may show `4 (14pt)` while some lines are huge and others tiny; trying larger/smaller does not reliably apply.
+- **Symptom B:** Formatting / content effects seem to **bleed between the two expanded Text boxes** (same phrases/sizes appearing in both after edits).
+- **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_OnlineExam-Setup-expanded-Text-font-size-chaos-Aug11.png` (owner “Expanded text boxes”).
+- **Likely area:** Form Text contenteditable / shared format toolbar state — isolate per-editor document + selection; do not share one `document.execCommand` target across two open Text items.
 
 ### Legacy `.tawala` → JSON conversion (batch fix queue) — **Aug 2, 2026 morning**
 
