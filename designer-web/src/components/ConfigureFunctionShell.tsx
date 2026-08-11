@@ -100,7 +100,7 @@ export function ConfigureFunctionShell({
 
         <div className="cfg-fn-main">
           <div className="cfg-fn-left">
-            <div className="cfg-fn-fields configure-function-fields">{children}</div>
+            <div className="cfg-fn-fields configure-function-fields legacy-scrollbar">{children}</div>
             <div className="cfg-fn-footer">
               {toolbar ? (
                 <div className="cfg-fn-footer-toolbar configure-function-column-toolbar">

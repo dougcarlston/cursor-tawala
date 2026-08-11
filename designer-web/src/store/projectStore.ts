@@ -1783,21 +1783,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   deploy: async () => {
     const { project, credentials } = get();
     if (!credentials) {
-      set({ showLogin: true, statusMessage: "Enter deploy credentials (dev/dev)" });
+      set({ showLogin: true, statusMessage: "Enter Push credentials (dev/dev)" });
       return;
     }
-    set({ statusMessage: "Deploying…" });
+    set({ statusMessage: "Pushing…" });
     try {
       const result = await apiDeploy(project, credentials);
       if (result.status === "failure") {
         set({
           lastDeploy: { ...result, project: project.name },
           showDeployResult: true,
-          statusMessage: `Deploy failed: ${result.error}`,
+          statusMessage: `Push failed: ${result.error}`,
         });
         return;
       }
-      // Clear File→New marker after first successful Deploy (data was purged/new id minted).
+      // Clear File→New marker after first successful Push (data was purged/new id minted).
       const { _freshFromTemplate: _f, ...clean } = project as TawalaProject & {
         _freshFromTemplate?: boolean;
       };
@@ -1808,11 +1808,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         dirty: false,
         statusMessage:
           project._freshFromTemplate && result.mode === "java"
-            ? `Deployed ${project.name} (prior test responses purged)`
-            : `Deployed ${project.name}`,
+            ? `Pushed ${project.name} (prior test responses purged)`
+            : `Pushed ${project.name}`,
       });
     } catch (e) {
-      set({ statusMessage: `Deploy error: ${e instanceof Error ? e.message : String(e)}` });
+      set({ statusMessage: `Push error: ${e instanceof Error ? e.message : String(e)}` });
     }
   },
 }));

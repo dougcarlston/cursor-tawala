@@ -71,8 +71,8 @@ export function DeployDialog() {
           window.alert(
             "Couldn’t save a definition snapshot for this version.\n\n" +
               (data.error || `HTTP ${res.status}`) +
-              "\n\nMy Tawala will still record version metadata, but “Deploy this version” " +
-              "won’t be able to redeploy this row until a later Deploy → Show in My Tawala succeeds with :3001 up.",
+              "\n\nMy Tawala will still record version metadata, but “Push this version” " +
+              "won’t be able to re-push this row until a later Push → Show in My Tawala succeeds with :3001 up.",
           );
         }
       }
@@ -98,6 +98,7 @@ export function DeployDialog() {
       at: new Date().toISOString(),
       versionDescription: note,
       snapshotId,
+      themePath: String(project?.themePath || "default").trim() || "default",
     };
     // Project Details deep link + receipt → mock upserts My Tawala pile overlay
     // (mints monotonic versionNumber; history on Details Versions only).
@@ -111,7 +112,7 @@ export function DeployDialog() {
 
   return (
     <DesignerDialog
-      title={failed ? "Deploy Failed" : "Project Deployed"}
+      title={failed ? "Push Failed" : "Project pushed"}
       titleId="deploy-dialog-title"
       onClose={close}
       closeOnBackdrop
@@ -145,7 +146,7 @@ export function DeployDialog() {
         </p>
         {failed ? (
           <p className="hint" role="alert">
-            {lastDeploy.error ?? "Unknown deploy error."}
+            {lastDeploy.error ?? "Unknown Push error."}
           </p>
         ) : (
           <>
@@ -167,7 +168,7 @@ export function DeployDialog() {
                 </ul>
               </>
             ) : (
-              <p className="hint">Deploy succeeded. Check server response for URLs.</p>
+              <p className="hint">Push succeeded. Check server response for URLs.</p>
             )}
             <label className="deploy-version-note">
               <span>Version description (optional)</span>
@@ -175,14 +176,14 @@ export function DeployDialog() {
                 rows={2}
                 value={versionDescription}
                 onChange={(e) => setVersionDescription(e.target.value)}
-                placeholder="What changed in this deploy?"
+                placeholder="What changed in this push?"
                 maxLength={500}
               />
             </label>
             <p className="hint">
               <strong>Show in My Tawala</strong> opens Project Details on :5500, mints the next
               version number on the mock overlay, saves a definition snapshot (for later{" "}
-              <strong>Deploy this version</strong>), and records the note above. Listing stays
+              <strong>Push this version</strong>), and records the note above. Listing stays
               flat — history is under Project Details → Versions. Mock must be running:{" "}
               <code>cd website-mock && ./serve.sh</code>. Listing:{" "}
               <a href={LOCAL_WEBSITE_MOCK_MYTAWALA_URL} target="_blank" rel="noreferrer">

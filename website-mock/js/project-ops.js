@@ -400,7 +400,7 @@
   /** Versions section — Deploy-this-version wired; delete stays grey; Download = metadata. */
   const VERSION_OPS = [
     {
-      label: "Deploy this version",
+      label: "Push this version",
       title: "Make this version the active deployed definition on :8080 (same uniqueId)",
       wired: "deploy-version",
       id: "deploy-version",
@@ -469,7 +469,7 @@
     { label: "Publish / move to Library", source: "My Tawala → Library", wired: "publish-mytawala" },
     { label: "Get from Library…", source: "My Tawala listing → Library picker → Save a copy", wired: "get-from-library" },
     { label: "Refresh from Library", source: "Library → My Tawala upgrade (linked row)", wired: "pull-library" },
-    { label: "Deploy from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
+    { label: "Push from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
   ];
 
   /** Confirm dialog titles/copy from confirmationdialogs.jsp */
@@ -1848,7 +1848,7 @@
       "<th scope=\"col\">Status</th>" +
       "</tr></thead>" +
       `<tbody>${body}</tbody></table>` +
-      '<p class="pm-hint"><b>Deploy this version</b> switches the live :8080 definition to the selected row ' +
+      '<p class="pm-hint"><b>Push this version</b> switches the live :8080 definition to the selected row ' +
       "(same uniqueId; does not mint a new version). Needs a saved snapshot from " +
       "<b>Deploy → Show in My Tawala</b>. <b>Download</b> is still metadata-only. Delete version stays deferred. " +
       "Listing remains one row per project. Response data may not match an older schema — you’ll be asked to confirm.</p>"
@@ -1923,7 +1923,7 @@
     const payload = {
       kind: "tawala.project-version",
       format: 1,
-      note: "Minimal metadata download. Deploy this version uses the saved definition snapshot, not this file.",
+      note: "Minimal metadata download. Push this version uses the saved definition snapshot, not this file.",
       projectId: project.id || projectId,
       projectName: project.name || null,
       versionNumber: Number(version.versionNumber),
@@ -1983,19 +1983,41 @@
     return { ok: true, definition: snap.project, from: "api", snapshotId };
   }
 
+  /**
+   * Stamp My Tawala Theme / Appearance onto a Designer definition before Push / Redeploy.
+   * Java/Tomcat CSS follows project (+ form) themePath in the uploaded XML.
+   */
+  function stampThemeOnDefinition(definition, themePath) {
+    const path = String(themePath || "default").trim() || "default";
+    if (!definition || typeof definition !== "object") return definition;
+    let next;
+    try {
+      next = JSON.parse(JSON.stringify(definition));
+    } catch {
+      next = { ...definition };
+    }
+    next.themePath = path;
+    if (Array.isArray(next.forms)) {
+      next.forms = next.forms.map((f) =>
+        f && typeof f === "object" ? { ...f, themePath: path } : f
+      );
+    }
+    return next;
+  }
+
   async function deploySelectedVersion(projectId) {
     const project =
       (typeof TawalaDemo !== "undefined" && TawalaDemo.getMyTawala && TawalaDemo.getMyTawala(projectId)) ||
       null;
     if (!project) {
-      setStatus("Deploy this version — project not found.");
+      setStatus("Push this version — project not found.");
       window.alert("Couldn't deploy version\n\nProject not found in My Tawala.");
       return;
     }
     const host = document.getElementById("pmDetailHost") || document;
     const version = getSelectedVersionRow(project, host);
     if (!version) {
-      setStatus("Deploy this version — no version selected.");
+      setStatus("Push this version — no version selected.");
       window.alert("Couldn't deploy version\n\nNo Deploy versions recorded yet.");
       return;
     }
@@ -2014,7 +2036,7 @@
 
     const resolved = await resolveDefinitionForVersion(version);
     if (!resolved.ok) {
-      setStatus(`Deploy this version failed — ${resolved.error || "no definition"}.`);
+      setStatus(`Push this version failed — ${resolved.error || "no definition"}.`);
       window.alert("Couldn't deploy version\n\n" + (resolved.message || NO_VERSION_SNAPSHOT_MSG));
       return;
     }
@@ -2033,27 +2055,31 @@
     }
 
     const ok = window.confirm(
-      `Deploy version ${version.versionNumber} as the live definition?\n\n` +
+      `Push version ${version.versionNumber} as the live definition?\n\n` +
         "Responses collected under a newer form may not match this version. Continue?\n\n" +
         "This re-uploads the saved definition to :8080 (same project name / uniqueId when Java matches by name). " +
+        "My Tawala Theme / Appearance is applied to this Push. " +
         "It does not mint a new Versions row."
     );
     if (!ok) {
-      setStatus("Deploy this version cancelled.");
+      setStatus("Push this version cancelled.");
       return;
     }
 
     if (typeof TawalaDemo === "undefined" || typeof TawalaDemo.deployProjectDefinition !== "function") {
-      setStatus("Deploy this version — deploy API helper missing.");
-      window.alert("Couldn't deploy version\n\nDeploy support didn’t load. Refresh and try again.");
+      setStatus("Push this version — Push API helper missing.");
+      window.alert("Couldn't push version\n\nPush support didn’t load. Refresh and try again.");
       return;
     }
 
-    setStatus(`Deploying version ${version.versionNumber}…`);
-    const result = await TawalaDemo.deployProjectDefinition(resolved.definition);
+    const overlayTheme = resolveProjectThemePath(project);
+    const stamped = stampThemeOnDefinition(resolved.definition, overlayTheme);
+
+    setStatus(`Pushing version ${version.versionNumber} (theme ${overlayTheme})…`);
+    const result = await TawalaDemo.deployProjectDefinition(stamped);
     if (!result || result.status === "failure") {
       const err = (result && result.error) || "unknown";
-      setStatus(`Deploy this version failed: ${err}`);
+      setStatus(`Push this version failed: ${err}`);
       window.alert(`Couldn't deploy version ${version.versionNumber}\n\n${err}`);
       return;
     }
@@ -3512,7 +3538,7 @@
 
     const themeTitle =
       `Theme: ${themeLabelForPath(themePath)} (${themePath}). ` +
-      "Stored on this My Tawala overlay — does not push CSS to :8080 until Push / Redeploy.";
+      "Changing Theme saves on My Tawala and Pushes CSS to :8080 when a live definition exists.";
 
     return (
       `<div class="pm-identity-rail" id="pmIdentityRail" data-theme-path="${escapeHtml(themePath)}">` +
@@ -3692,7 +3718,7 @@
     };
   }
 
-  function applyThemeSelection(projectId, themePath) {
+  async function applyThemeSelection(projectId, themePath) {
     if (!projectId || !themePath) return;
     if (typeof TawalaTransfer === "undefined" || typeof TawalaTransfer.upsertMyTawalaProperties !== "function") {
       window.alert("Couldn't save theme — transfer script didn't load.");
@@ -3710,10 +3736,72 @@
     if (sel) {
       sel.title =
         `Theme: ${themeLabelForPath(path)} (${path}). ` +
-        "Stored on this My Tawala overlay — does not push CSS to :8080 until Push / Redeploy.";
+        "Saved on My Tawala; Push / Redeploy applies CSS on :8080.";
     }
+
+    const project =
+      typeof TawalaDemo !== "undefined" && typeof TawalaDemo.getMyTawala === "function"
+        ? TawalaDemo.getMyTawala(projectId)
+        : null;
+    const uniqueId =
+      (project && project.uniqueId) ||
+      (typeof TawalaDemo !== "undefined" &&
+        typeof TawalaDemo.resolvePurgeUniqueId === "function" &&
+        TawalaDemo.resolvePurgeUniqueId(projectId)) ||
+      null;
+
+    if (!project || !uniqueId) {
+      setStatus(
+        `Theme set to ${themeLabelForPath(path)} (overlay only — Push from Designer → Show in My Tawala to apply on :8080).`
+      );
+      return;
+    }
+
+    if (typeof TawalaDemo.deployProjectDefinition !== "function") {
+      setStatus(
+        `Theme set to ${themeLabelForPath(path)} (overlay saved — Push API missing; refresh and try again).`
+      );
+      return;
+    }
+
+    setStatus(`Applying theme ${themeLabelForPath(path)} on :8080…`);
+    const resolved = await resolveDefinitionForEdit(project);
+    if (!resolved.ok || !resolved.definition) {
+      setStatus(
+        `Theme set to ${themeLabelForPath(path)} (overlay only — no definition snapshot to Push; use Designer Push first).`
+      );
+      return;
+    }
+
+    const stamped = stampThemeOnDefinition(resolved.definition, path);
+    const result = await TawalaDemo.deployProjectDefinition(stamped);
+    if (!result || result.status === "failure") {
+      const err = (result && result.error) || "unknown";
+      setStatus(`Theme overlay saved; :8080 Push failed: ${err}`);
+      window.alert(
+        `Theme saved on My Tawala, but couldn’t apply CSS on :8080.\n\n${err}\n\n` +
+          "Is Designer API on :3001 and Tomcat on :8080? Try Push this version or Push from Designer."
+      );
+      return;
+    }
+
+    /* Keep the current version’s cached definition in sync so later Push this version matches. */
+    const versions = Array.isArray(project.versions) ? project.versions : [];
+    const current = versions.find((v) => v && (v.deployed || v.current));
+    if (
+      current &&
+      typeof TawalaTransfer.attachVersionDefinition === "function"
+    ) {
+      TawalaTransfer.attachVersionDefinition(
+        projectId,
+        current.versionNumber,
+        stamped,
+        current.snapshotId || resolved.snapshotId || null
+      );
+    }
+
     setStatus(
-      `Theme set to ${themeLabelForPath(path)} (overlay only — Push / Redeploy to apply CSS on :8080).`
+      `Theme ${themeLabelForPath(path)} applied on :8080 (hard-refresh the form if CSS looks cached).`
     );
   }
 
@@ -3781,7 +3869,7 @@
         `<p><b>Saved a copy</b> as “${escapeHtml(displayName)}” in your My Tawala.` +
         (libSrcName ? ` Source: ${escapeHtml(libSrcName)}.` : "") +
         `</p>` +
-        `<p class="pm-hint">Records start empty. <b>Use</b> stays unavailable until you Deploy from Designer ` +
+        `<p class="pm-hint">Records start empty. <b>Use</b> stays unavailable until you Push from Designer ` +
         `(hover the grey Use control for the tip). ` +
         `<a href="mytawala.html">← Back to My Tawala</a> and sort by <b>Created</b> to see this row with today’s date.</p>` +
         `</div>`
@@ -4870,11 +4958,11 @@
         '<p class="pm-hint" role="status">' +
         (fromAcquire
           ? "<b>This copy is not live yet.</b> Library <b>Save a copy</b> creates an empty private row " +
-            "(no :8080 uniqueId / start URLs). Open it in Designer, push the definition to the runtime " +
-            "(Designer still says <b>Deploy</b> until the Push rename), then <b>Show in My Tawala</b> — " +
+            "(no :8080 uniqueId / start URLs). Open it in Designer, <b>Push</b> the definition to the runtime, " +
+            "then <b>Show in My Tawala</b> — " +
             "after that, Deploy here can copy links and embed snippets."
           : "<b>No live start URLs on this project yet.</b> Deploy share needs a :8080 uniqueId and start points. " +
-            "From Designer, push the project (UI still says Deploy) → <b>Show in My Tawala</b>, " +
+            "From Designer, <b>Push</b> the project → <b>Show in My Tawala</b>, " +
             "or open a seeded live project such as <b>Online Exam Builder</b>.") +
         "</p>" +
         '<p class="pm-hint tawala-modal-hint-tight">Use is for trying the form yourself; Publish puts a copy in the public Library. ' +
@@ -5590,7 +5678,7 @@
             : null;
       if (!uniqueId) {
         const hint = project
-          ? `“${displayName}” isn’t linked to a live :8080 deploy yet. Deploy from Designer (or use a deployed project), then try Purge again.`
+          ? `“${displayName}” isn’t linked to a live :8080 deploy yet. Push from Designer (or use a deployed project), then try Purge again.`
           : `Unknown My Tawala project: ${projectId || "(none)"}`;
         setStatus(`PURGE for “${displayName}” — not linked to a live deploy.`);
         window.alert(`Couldn't purge “${displayName}”\n\n${hint}`);
@@ -5721,7 +5809,7 @@
     scope.addEventListener("change", (ev) => {
       const sel = ev.target.closest && ev.target.closest('select[data-wired="theme-select"]');
       if (!sel) return;
-      applyThemeSelection(sel.dataset.project || "", sel.value);
+      void applyThemeSelection(sel.dataset.project || "", sel.value);
     });
     scope.addEventListener("keydown", (ev) => {
       const row = ev.target.closest && ev.target.closest("#pmDataTree [data-pm-sel]");

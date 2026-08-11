@@ -9,6 +9,8 @@
 			<tr:element-id>popular-choice-correlation-table</tr:element-id>
 			<tr:element-id>popular-choice-display</tr:element-id>
 			<tr:element-id>sum</tr:element-id>
+			<tr:element-id>max</tr:element-id>
+			<tr:element-id>min</tr:element-id>
 			<tr:element-id>record-count</tr:element-id>
 			<tr:element-id>popular-choice-count</tr:element-id>
 			<tr:element-id>question-correlation-table</tr:element-id>
@@ -30,6 +32,8 @@
 		</tr:category>
 		<tr:category name="Math Functions">
 			<tr:element-id>sum</tr:element-id>
+			<tr:element-id>max</tr:element-id>
+			<tr:element-id>min</tr:element-id>
 		</tr:category>
 		<tr:category name="Database Functions">
 			<tr:element-id>popular-choice-display</tr:element-id>
@@ -287,6 +291,24 @@
 		</tr:parameter>
 		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="true">
 			<tr:description>Only the records that match these conditions will be included in the calculation of the sum.</tr:description>
+		</tr:parameter>
+	</tr:function>
+	<tr:function id="max" name="MAX" version="1" return-type="double">
+		<tr:description>Returns the maximum numeric value in a fill-in-the-blank question or hidden field across matching records.</tr:description>
+		<tr:parameter id="field" type="tawala-blank" name="Name of question or hidden field" required="true">
+			<tr:description>The blank or hidden field whose values you wish to compare.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="true">
+			<tr:description>Only the records that match these conditions will be included.</tr:description>
+		</tr:parameter>
+	</tr:function>
+	<tr:function id="min" name="MIN" version="1" return-type="double">
+		<tr:description>Returns the minimum numeric value in a fill-in-the-blank question or hidden field across matching records.</tr:description>
+		<tr:parameter id="field" type="tawala-blank" name="Name of question or hidden field" required="true">
+			<tr:description>The blank or hidden field whose values you wish to compare.</tr:description>
+		</tr:parameter>
+		<tr:parameter id="conditions" type="tawala-conditions" name="Include only the records" required="true">
+			<tr:description>Only the records that match these conditions will be included.</tr:description>
 		</tr:parameter>
 	</tr:function>
 	<tr:function id="record-count" name="FORM RECORD COUNT" version="3" return-type="int">

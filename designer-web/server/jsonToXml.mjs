@@ -24,19 +24,16 @@ function escText(s) {
     .replace(/>/g, "&gt;");
 }
 
-/** JSON `{ field, op, value }` → legacy `<displayConditions>` (inside form items). */
+/** JSON condition tree → legacy `<displayConditions>` (inside form items). */
 function displayConditionsXml(cond) {
-  if (!cond?.field) return "";
-  const field = escAttr(cond.field);
-  const op = cond.op ?? "equals";
-  if (op === "isBlank" || op === "isNotBlank") {
-    return `<displayConditions><${op} field="${field}"/></displayConditions>`;
+  if (!cond) return "";
+  // Flat single clause still works; and/or trees need conditionToXml (import fidelity).
+  if (cond.field || Array.isArray(cond.and) || Array.isArray(cond.or) || cond.op === "and" || cond.op === "or") {
+    const inner = conditionToXml(cond);
+    if (!inner) return "";
+    return `<displayConditions>${inner}</displayConditions>`;
   }
-  return (
-    `<displayConditions>` +
-    `<${op} field="${field}">${conditionValueXml(cond.value)}</${op}>` +
-    `</displayConditions>`
-  );
+  return "";
 }
 
 /** Column-level conditions use hyphenated tag in legacy itemization XML. */
@@ -945,6 +942,24 @@ function commandToXml(cmd, ctx = {}) {
         ? `<conditions>${conditionToXml(cmd.where)}</conditions>`
         : "";
       return `<delete><form name="${escAttr(cmd.form)}"/>${where}</delete>`;
+    }
+    case "remove-duplicates": {
+      const keep = cmd.keep === "first" ? "first" : "latest";
+      let field = String(cmd.field ?? "").trim();
+      if (field.startsWith("<<") && field.endsWith(">>")) field = field.slice(2, -2).trim();
+      if (field && !/^Record:/i.test(field) && field.includes(":")) {
+        const colon = field.indexOf(":");
+        field = `Record:${field.slice(0, colon).trim()}:${field.slice(colon + 1).trim()}`;
+      }
+      const where = cmd.where
+        ? `<conditions>${conditionToXml(cmd.where)}</conditions>`
+        : "";
+      return (
+        `<remove-duplicates keep="${escAttr(keep)}">` +
+        `<form name="${escAttr(cmd.form)}"/>` +
+        `<field>${escText(field)}</field>` +
+        `${where}</remove-duplicates>`
+      );
     }
     case "show":
     case "showDocument":

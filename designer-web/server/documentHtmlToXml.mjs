@@ -342,7 +342,7 @@ export function unwrapOuterFont(xml) {
  * Function tokens already emit a single `<font><itemization-table|…></font>`.
  */
 const FONT_WRAPPED_DISPLAY_COMPONENT_RE =
-  /^<font(?:\s[^>]*)?>\s*<(itemization-table|display-mcq-label|record-count|sum|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|project-email-count)\b/i;
+  /^<font(?:\s[^>]*)?>\s*<(itemization-table|display-mcq-label|record-count|sum|max|min|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|project-email-count)\b/i;
 
 function isFontWrappedDisplayComponent(xml) {
   return FONT_WRAPPED_DISPLAY_COMPONENT_RE.test(String(xml ?? "").trim());
@@ -906,6 +906,20 @@ function functionTokenToXml(attrs, escAttr, escText) {
         conditionsXml(config, escAttr) +
         `</sum>`
       );
+    case "max":
+      return (
+        `<max version="1">` +
+        `<field>${escText(itemizationContentsField(config.field ?? ""))}</field>` +
+        conditionsXml(config, escAttr) +
+        `</max>`
+      );
+    case "min":
+      return (
+        `<min version="1">` +
+        `<field>${escText(itemizationContentsField(config.field ?? ""))}</field>` +
+        conditionsXml(config, escAttr) +
+        `</min>`
+      );
     case "project-email-count":
       return `<project-email-count version="1"/>`;
     case "display-image": {
@@ -1261,7 +1275,7 @@ function wrapTableCellDivision(inner) {
     const looksLikeDisplay =
       isFontWrappedDisplayComponent(unwrapped) ||
       isFontWrappedDisplayComponent(`<font>${unwrapped}</font>`) ||
-      /^<(sum|itemization-table|record-count|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|display-mcq-label|project-email-count)\b/i.test(
+      /^<(sum|max|min|itemization-table|record-count|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|display-mcq-label|project-email-count)\b/i.test(
         unwrapped.trim(),
       );
     if (!looksLikeDisplay) break;
@@ -1270,7 +1284,7 @@ function wrapTableCellDivision(inner) {
   if (isFontWrappedDisplayComponent(body) || /^<font\b/i.test(body)) {
     return body;
   }
-  if (/^<(sum|itemization-table|record-count|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|display-mcq-label|project-email-count)\b/i.test(
+  if (/^<(sum|max|min|itemization-table|record-count|choice-tally-table|response-totals-table|question-correlation-table|popular-choice-(?:display|count|correlation-table)|simple-list|display-image|display-mcq-label|project-email-count)\b/i.test(
     body,
   )) {
     return `<font>${body}</font>`;

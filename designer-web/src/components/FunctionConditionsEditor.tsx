@@ -16,6 +16,7 @@ import { lookupFormFieldMcItem } from "@/lib/projectModel";
 import { useProjectStore } from "@/store/projectStore";
 import type { TawalaProject } from "@/types/tawala";
 import { useEffect, useRef } from "react";
+import { scrollConfigureFieldIntoView } from "@/lib/configureFunctionScroll";
 
 interface Props {
   /** Parameter label from catalog (e.g. "Count only the records"). */
@@ -90,6 +91,19 @@ export function FunctionConditionsEditor({
     const next = [...rows];
     next.splice(index + 1, 0, { field: "", op: defaultOpForKind("hybrid"), value: "" });
     onChange({ ...state, rows: next });
+    requestAnimationFrame(() => {
+      const rowsEl = document.querySelectorAll(
+        ".cfg-fn-fields .function-conditions-row .skip-if-field",
+      );
+      const el = rowsEl[index + 1] as HTMLElement | undefined;
+      if (!el) return;
+      try {
+        el.focus({ preventScroll: true });
+      } catch {
+        el.focus();
+      }
+      scrollConfigureFieldIntoView(el);
+    });
   };
 
   const removeRow = (index: number) => {
@@ -176,7 +190,10 @@ export function FunctionConditionsEditor({
               placeholder="Record:Form:Field"
               value={row.field}
               disabled={disabled}
-              onFocus={onFocus}
+              onFocus={(e) => {
+                onFocus?.();
+                scrollConfigureFieldIntoView(e.currentTarget);
+              }}
               onValueChange={(v) => onFieldChange(i, v)}
             />
             <select
@@ -184,7 +201,10 @@ export function FunctionConditionsEditor({
               value={opValue}
               aria-label="Operator"
               disabled={disabled}
-              onFocus={onFocus}
+              onFocus={(e) => {
+                onFocus?.();
+                scrollConfigureFieldIntoView(e.currentTarget);
+              }}
               onChange={(e) => patchRow(i, { op: e.target.value })}
             >
               {ops.map((op) => (
@@ -200,7 +220,10 @@ export function FunctionConditionsEditor({
                 placeholder={valuePlaceholder}
                 value={row.value}
                 disabled={disabled}
-                onFocus={onFocus}
+                onFocus={(e) => {
+                  onFocus?.();
+                  scrollConfigureFieldIntoView(e.currentTarget);
+                }}
                 onValueChange={(v) => patchRow(i, { value: v })}
               />
             ) : (

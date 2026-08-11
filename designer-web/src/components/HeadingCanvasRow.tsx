@@ -8,6 +8,8 @@ import {
   setActiveFieldTarget,
 } from "@/lib/fieldInsertion";
 import { insertFieldTokenAtSelection, selectFieldDropTarget } from "@/lib/fieldTokens";
+import { formItemHasDisplayCondition } from "@/lib/preservedImportGaps";
+import { CanvasItemBadgeStack } from "./CanvasItemBadgeStack";
 import { FormItemDeleteButton } from "./FormItemDeleteButton";
 import { clearFormattingFocus, setFormattingFocus } from "@/lib/formattingPaletteContext";
 
@@ -399,7 +401,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
         e.stopPropagation();
         setSelectedItemIndex(index);
         const target = e.target as HTMLElement;
-        if (target.closest(".heading-badge, .heading-badge-input, .canvas-item-delete")) return;
+        if (target.closest(".heading-badge, .heading-badge-input, .canvas-item-delete, .canvas-item-badge-stack")) return;
         if (target.closest(".heading-canvas-main")) {
           if (!editing) setEditing(true);
           return;
@@ -410,6 +412,11 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
       onBlur={handleBlur}
     >
       <FormItemDeleteButton formName={formName} index={index} visible={selected} />
+      <CanvasItemBadgeStack
+        showCond={formItemHasDisplayCondition(item)}
+        formName={formName}
+        itemIndex={index}
+      >
       {editingLabel ? (
         <input
           ref={labelInputRef}
@@ -449,6 +456,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
           {item.label}
         </div>
       )}
+      </CanvasItemBadgeStack>
       <div className="heading-canvas-main">
         {editing ? (
           <>

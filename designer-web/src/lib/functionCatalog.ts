@@ -210,7 +210,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
         type: "enumeration",
         name: "Display",
         description:
-          "How responses will be displayed. “only labels…” is blank on the same form until after Submit (use on a Document/review page). “all choices…” shows the checkbox layout on Deploy even before answers.",
+          "How responses will be displayed. “only labels…” is blank on the same form until after Submit (use on a Document/review page). “all choices…” shows the checkbox layout on Push even before answers.",
         required: true,
         defaultValue: "label_only",
         choices: [
@@ -535,7 +535,7 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
         type: "enumeration",
         name: "Table Layout",
         required: true,
-        description: 'Tall = "Choice" and "Count" columns; Wide = rows. Deploy shows the MCQ question text above each table.',
+        description: 'Tall = "Choice" and "Count" columns; Wide = rows. Push shows the MCQ question text above each table.',
         defaultValue: "vertical",
         choices: [
           { value: "vertical", description: "Tall" },
@@ -586,6 +586,38 @@ export const FUNCTION_CATALOG: FunctionDef[] = [
         name: "Name of question or hidden field",
         required: true,
         description: "Blank or hidden field whose values to sum.",
+      },
+      CONDITIONS_PARAM,
+    ],
+  },
+  {
+    id: "max",
+    name: "MAX",
+    description:
+      "Returns the maximum numeric value in a fill-in-the-blank question or hidden field across matching records.",
+    parameters: [
+      {
+        id: "field",
+        type: "tawala-blank",
+        name: "Name of question or hidden field",
+        required: true,
+        description: "Blank or hidden field whose values to compare.",
+      },
+      CONDITIONS_PARAM,
+    ],
+  },
+  {
+    id: "min",
+    name: "MIN",
+    description:
+      "Returns the minimum numeric value in a fill-in-the-blank question or hidden field across matching records.",
+    parameters: [
+      {
+        id: "field",
+        type: "tawala-blank",
+        name: "Name of question or hidden field",
+        required: true,
+        description: "Blank or hidden field whose values to compare.",
       },
       CONDITIONS_PARAM,
     ],
@@ -658,7 +690,7 @@ export const FUNCTION_CATEGORIES: FunctionCategory[] = [
   {
     id: "math",
     label: "Math Functions",
-    functionIds: ["sum"],
+    functionIds: ["sum", "max", "min"],
   },
   {
     id: "tables",

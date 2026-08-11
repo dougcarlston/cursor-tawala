@@ -78,6 +78,7 @@ export function SkipCanvasRow({ item, index, formName, selected }: Props) {
             saveCommands(commands);
             setDialogOpen(false);
           }}
+          onCancel={() => setDialogOpen(false)}
         />
       ) : null}
     </>

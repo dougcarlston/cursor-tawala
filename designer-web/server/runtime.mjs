@@ -860,7 +860,7 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
   const formFooter = options.designerPreview
     ? `<div class="form-footer form-footer-preview">
       <input type="submit" name="submit" value="${esc(submitLabel)}" disabled title="Submit is disabled in Design Preview" />
-      <span class="preview-only-hint">Preview only — Submit disabled so you can review the full form. Use Deploy to run it live.</span>
+      <span class="preview-only-hint">Preview only — Submit disabled so you can review the full form. Use Push to run it live.</span>
     </div>`
     : `<div class="form-footer">
       <input type="submit" name="submit" value="${esc(submitLabel)}" />

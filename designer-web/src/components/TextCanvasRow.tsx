@@ -348,7 +348,11 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
       onBlur={handleBlur}
     >
       <FormItemDeleteButton formName={formName} index={index} visible={selected} />
-      <CanvasItemBadgeStack showCond={formItemHasDisplayCondition(item)}>
+      <CanvasItemBadgeStack
+        showCond={formItemHasDisplayCondition(item)}
+        formName={formName}
+        itemIndex={index}
+      >
         {editingLabel ? (
           <input
             ref={labelInputRef}

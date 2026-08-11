@@ -1,5 +1,5 @@
 /**
- * Persist Designer project JSON for My Tawala “Deploy this version”.
+ * Persist Designer project JSON for My Tawala “Push this version”.
  * Receipts in the :5500 URL cannot carry a full definition — Show in My Tawala
  * POSTs here, then the mock stores snapshotId (and may hydrate definition into
  * localStorage). Redeploy fetches by id when the overlay has no cached body.

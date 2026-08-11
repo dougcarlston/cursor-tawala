@@ -242,14 +242,14 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 **Cue hierarchy (outer → inner) — wired in `designer-web`:**
 
-1. **Project Explorer** — Form or Document node shows an amber warning cue if **anything inside** has a preserved `displayCondition` (item-level or itemization column / Document HTML embed).
-2. **Form / Document canvas** — item row left edge + **`cond` chip** beside T/Q badge when `item.displayCondition` is set; **function chip** turns amber when columns carry `displayCondition`.
-3. **Configure Function dialog** — column-level **`cond` badge** next to “Column N” when that column has `displayCondition` (round-trip preserves the marker).
-4. **Status bar** — live count of preserved gap markers still in the open project JSON (tooltip summarizes item vs column counts). Convert warn *strings* are still discarded on Open; cues are driven by JSON markers.
+1. **Project Explorer** — Form or Document node shows an amber warning cue if **anything inside** still has an **uneditable** gap (itemization **column** `displayCondition` / Document HTML embed). Item-level Form Item conditions are editable and no longer flag Explorer.
+2. **Form / Document canvas** — **`{Qn}` braces** on the badge when `item.displayCondition` is set (product state, not a warning). Orange left-edge gap stripe only for rows that still embed **column** conditions. **Function chip** turns amber when columns carry `displayCondition`.
+3. **Configure Function dialog** — column-level **`cond` badge** next to “Column N” when that column has `displayCondition` (round-trip preserves the marker; edit UI still deferred).
+4. **Status bar** — count of **uneditable** preserved gap markers (column conditions). Item-level conditions are not counted as gaps.
 
-**Still not visually flagged** (honest remainder): Send/email path limits, dropped `<styles>`, multi-source-form itemization primary-only, Dynamic MCQ nested record-selector `where`, skipped `<file>` uploaders, empty `<show/>`, and other convert messages that leave no durable `displayCondition`-like marker (or leave data that Design already edits via Where rows).
+**Still not visually flagged** (honest remainder): Send/email path limits, dropped `<styles>`, multi-source-form itemization primary-only, Dynamic MCQ nested record-selector `where`, skipped `<file>` uploaders, empty `<show/>`, and other convert messages that leave no durable column-`displayCondition`-like marker (or leave data that Design already edits via Where rows).
 
-**Related:** Legacy `.tawala` → JSON batch queue; import lossy notes in `DESIGNER_OPEN_TODOS.md`. Helpers: `designer-web/src/lib/preservedImportGaps.ts`. **Edit UI for item `displayCondition`** (legacy right-click label → where-clause; parenthetical label) is **not** this cue work — parked/sequestered in `DESIGNER_OPEN_TODOS.md` § **Form items & Fields**.
+**Related:** Legacy `.tawala` → JSON batch queue; import lossy notes in `DESIGNER_OPEN_TODOS.md`. Helpers: `designer-web/src/lib/preservedImportGaps.ts`. **Edit UI for item `displayCondition`:** Done Aug 10 — right-click badge → **Display conditionally…**; canvas **`{Qn}` braces** (`DESIGNER_FORM_ITEMS_CONDITIONAL_DISPLAY.md`). Column-level Configure cues remain read-only. When an item condition is cleared or only braces remain, the orange “convert error” stripe goes away — gaps clear when cured.
 
 ### Hold-list (Jul 18 gated pass)
 

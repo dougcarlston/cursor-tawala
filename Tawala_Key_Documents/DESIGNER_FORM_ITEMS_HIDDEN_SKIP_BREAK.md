@@ -87,7 +87,7 @@ Modal titled **Edit Skip Instructions** (project name in title bar).
 
 **Main area:** Mini process editor — build statements top to bottom; blue arrow marks insertion point.
 
-**Footer:** **Close** (saves into the skip item).
+**Footer:** **Close** (saves into the skip item). **Cancel** / title-bar **×** / Escape (when idle) discard the dialog draft and leave the skip item unchanged. Statement **Cancel** (Modify mode only) leaves Modify without discarding other Adds already in the script draft.
 
 ### If statement
 

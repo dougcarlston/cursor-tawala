@@ -712,6 +712,77 @@ export function buildDeleteCommand(state: DeleteBuilderState): TawalaProcessComm
   return cmd;
 }
 
+export type RemoveDuplicatesKeep = "latest" | "first";
+
+export interface RemoveDuplicatesBuilderState {
+  sourceForm: string;
+  field: string;
+  keep: RemoveDuplicatesKeep;
+  whereCombinator: ConditionCombinator;
+  whereRows: ConditionRow[];
+}
+
+export const EMPTY_REMOVE_DUPLICATES_BUILDER: RemoveDuplicatesBuilderState = {
+  sourceForm: "",
+  field: "",
+  keep: "latest",
+  whereCombinator: "and",
+  whereRows: [{ ...EMPTY_CONDITION_ROW }],
+};
+
+export function removeDuplicatesBuilderIsValid(
+  state: RemoveDuplicatesBuilderState,
+  formNames: readonly string[],
+  knownVariables: ReadonlySet<string>,
+): boolean {
+  if (!state.sourceForm.trim() || !formNames.includes(state.sourceForm)) return false;
+  if (!state.field.trim()) return false;
+  return getWhereIsValid(state.whereRows, knownVariables);
+}
+
+export function removeDuplicatesBuilderHasDraft(state: RemoveDuplicatesBuilderState): boolean {
+  return (
+    state.sourceForm.trim() !== "" ||
+    state.field.trim() !== "" ||
+    conditionRowsHaveDraft(state.whereRows)
+  );
+}
+
+export function removeDuplicatesBuilderFromCommand(command: {
+  form?: unknown;
+  field?: unknown;
+  keep?: unknown;
+  where?: unknown;
+  [key: string]: unknown;
+}): RemoveDuplicatesBuilderState {
+  const { combinator, rows } = parseConditionToRows(
+    command.where as ConditionShape | undefined,
+  );
+  const keepRaw = String(command.keep ?? "latest").trim().toLowerCase();
+  return {
+    sourceForm: String(command.form ?? ""),
+    field: String(command.field ?? ""),
+    keep: keepRaw === "first" ? "first" : "latest",
+    whereCombinator: combinator,
+    whereRows: rows,
+  };
+}
+
+export function buildRemoveDuplicatesCommand(
+  state: RemoveDuplicatesBuilderState,
+): TawalaProcessCommand {
+  const cmd: TawalaProcessCommand = {
+    cmd: "remove-duplicates",
+    form: state.sourceForm.trim(),
+    field: state.field.trim(),
+    keep: state.keep,
+  };
+  if (state.whereRows.some((r) => r.field.trim())) {
+    cmd.where = buildConditionFromRows(state.whereCombinator, state.whereRows);
+  }
+  return cmd;
+}
+
 export interface CommentBuilderState {
   text: string;
 }

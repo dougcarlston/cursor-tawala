@@ -25,7 +25,7 @@ import {
   insertFieldTokenAtSelection,
   selectFieldDropTarget,
 } from "@/lib/fieldTokens";
-import { formItemHasDisplayCondition } from "@/lib/preservedImportGaps";
+import { formItemHasDisplayCondition, formItemHasPreservedGap } from "@/lib/preservedImportGaps";
 import { CanvasItemBadgeStack } from "./CanvasItemBadgeStack";
 import {
   clearActivePaletteEditor,
@@ -354,7 +354,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   return (
     <div
       className={`fib-canvas-row ${editing ? "editing" : "idle"}${selected ? " selected" : ""}${
-        formItemHasDisplayCondition(item) ? " has-preserved-gap" : ""
+        formItemHasPreservedGap(item) ? " has-preserved-gap" : ""
       }`}
       onClick={(e) => {
         e.stopPropagation();
@@ -380,7 +380,11 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
       }}
       onBlur={handleBlur}
     >
-      <CanvasItemBadgeStack showCond={formItemHasDisplayCondition(item)}>
+      <CanvasItemBadgeStack
+        showCond={formItemHasDisplayCondition(item)}
+        formName={formName}
+        itemIndex={index}
+      >
         {editingLabel ? (
           <input
             ref={labelInputRef}

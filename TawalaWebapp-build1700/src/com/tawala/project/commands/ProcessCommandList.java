@@ -28,6 +28,7 @@ public class ProcessCommandList extends ProcessCommand implements List<ProcessCo
         FACTORY.register("divideBy", MathCommand.DivideBy.class);
         FACTORY.register("get", Get.class);
         FACTORY.register("delete", Delete.class);
+        FACTORY.register("remove-duplicates", RemoveDuplicates.class);
         FACTORY.register("foreach", ForEach.class);
         FACTORY.register("forEachMc", ForEachMc.class);
         FACTORY.ignore("comment");

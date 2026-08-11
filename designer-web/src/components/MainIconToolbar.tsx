@@ -83,7 +83,7 @@ export function MainIconToolbar({
       >
         <SaveIcon />
       </ToolIcon>
-      <ToolIcon tip="Deploy Project" onClick={onDeploy} disabled={!canDeploy}>
+      <ToolIcon tip="Push Project" onClick={onDeploy} disabled={!canDeploy}>
         <DeployIcon />
       </ToolIcon>
       <span className="main-icon-toolbar-sep" aria-hidden />

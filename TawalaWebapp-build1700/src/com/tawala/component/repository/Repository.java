@@ -22,6 +22,8 @@ import com.tawala.component.function.Function;
 import com.tawala.component.function.FunctionMetadata;
 import com.tawala.component.function.PopularChoiceCountFunction;
 import com.tawala.component.function.ProjectEmailCountFunction;
+import com.tawala.component.function.MaxFunction;
+import com.tawala.component.function.MinFunction;
 import com.tawala.component.function.RecordCountFunction;
 import com.tawala.component.function.SumFunction;
 import com.tawala.component.validator.DollarAmountValidatorMetadata;
@@ -122,7 +124,8 @@ public class Repository {
 	// ------------------ Functions ----------------------
 	public static Category<FunctionMetadata> FUNCTION_CATEGORY_ALL = new Category<FunctionMetadata>(
 			"category.function.all.name", new FunctionMetadata[] {
-					new SumFunction(), new RecordCountFunction(),
+					new SumFunction(), new MaxFunction(), new MinFunction(),
+					new RecordCountFunction(),
 					new PopularChoiceCountFunction(),
 					new ProjectEmailCountFunction() });
 
@@ -132,6 +135,7 @@ public class Repository {
 					new ItemizationTable(), new ChoiceTallyTable(),
 					new ResponseTotalsTable(), new PopularChoiceTable(),
 					new DisplayPopularChoice(), new SumFunction(),
+					new MaxFunction(), new MinFunction(),
 					new RecordCountFunction(),
 					new PopularChoiceCountFunction(),
 					new QuestionCorrelationTable(),
@@ -150,7 +154,8 @@ public class Repository {
 
 	// ------------------ Math Category ----------------------
 	public static Category<ComponentMetadata> CATEGORY_MATH = new Category<ComponentMetadata>(
-			"category.math.name", new ComponentMetadata[] { new SumFunction() });
+			"category.math.name", new ComponentMetadata[] { new SumFunction(),
+					new MaxFunction(), new MinFunction() });
 
 	// ------------------ Database Category ----------------------
 	public static Category<ComponentMetadata> CATEGORY_DATABASE = new Category<ComponentMetadata>(

@@ -25,10 +25,9 @@ export function StatusBar() {
   const gapTip =
     gapSummary.totalMarkers > 0
       ? [
-          `${gapSummary.itemDisplayConditions} item displayCondition(s)`,
           `${gapSummary.columnDisplayConditions} column displayCondition(s)`,
           `${gapSummary.formsAffected} form(s), ${gapSummary.documentsAffected} document(s)`,
-          "Explorer / canvas / Configure Function show amber cues — Designer cannot edit these yet",
+          "Amber cues = column visibility still uneditable in Configure Function",
         ].join(" · ")
       : undefined;
 
@@ -47,7 +46,7 @@ export function StatusBar() {
         ) : null}
         {" · "}
         <span className={runtime === "java" ? "runtime-java" : "runtime-dev"}>
-          deploy → {runtime === "java" ? "Java :8080" : "dev runtime :5173"}
+          push → {runtime === "java" ? "Java :8080" : "dev runtime :5173"}
         </span>
         {credentials ? ` · ${credentials.user}` : null}
       </span>

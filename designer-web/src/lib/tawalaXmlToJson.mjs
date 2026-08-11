@@ -50,6 +50,8 @@ const CONDITION_OPS = new Set([
  */
 const DISPLAY_FUNCTION_IDS = new Set([
   "sum",
+  "max",
+  "min",
   "record-count",
   "question-correlation-table",
   "choice-tally-table",
@@ -70,6 +72,8 @@ const DISPLAY_FUNCTION_IDS = new Set([
 /** Chip title (legacy Insert → Function display name). */
 const DISPLAY_FUNCTION_TITLES = {
   sum: "SUM",
+  max: "MAX",
+  min: "MIN",
   "record-count": "FORM RECORD COUNT",
   "question-correlation-table": "QUESTION CORRELATION TABLE",
   "choice-tally-table": "RESPONSE BAR GRAPH",
@@ -325,7 +329,7 @@ function displayConditionFromItem(itemBody) {
   const cond = parseConditions(dc);
   if (cond) {
     warn(
-      `Preserved displayCondition in JSON (Designer UI cannot edit yet): ${JSON.stringify(cond)}`,
+      `Preserved displayCondition in JSON: ${JSON.stringify(cond)}`,
     );
   }
   return cond;
@@ -655,6 +659,9 @@ function convertDisplayFunction(wrapNode, functionId) {
 
   if (functionId === "sum" && !config.field) {
     warn("Document <sum> missing field — placeholder chip still emitted");
+  }
+  if ((functionId === "max" || functionId === "min") && !config.field) {
+    warn(`Document <${functionId}> missing field — placeholder chip still emitted`);
   }
   if (functionId === "question-correlation-table" && !config["question-field-name"]) {
     warn("Document <question-correlation-table> missing question-field-name — placeholder chip still emitted");
@@ -1592,6 +1599,29 @@ function convertDeleteCommand(delNode) {
   return cmd;
 }
 
+function convertRemoveDuplicatesCommand(node) {
+  const body = node["remove-duplicates"] ?? [];
+  let form = "";
+  let field = "";
+  let where;
+  for (const c of children(body)) {
+    const t = tagName(c);
+    if (t === "form") form = attr(c, "name") ?? "";
+    if (t === "field") field = flattenPlainText(c.field);
+    if (t === "conditions") where = parseConditions(c.conditions);
+  }
+  if (field.startsWith("Record:")) field = field.slice("Record:".length);
+  const keepRaw = String(attr(node, "keep") ?? "latest").trim().toLowerCase();
+  const cmd = {
+    cmd: "remove-duplicates",
+    form,
+    field,
+    keep: keepRaw === "first" ? "first" : "latest",
+  };
+  if (where) cmd.where = where;
+  return cmd;
+}
+
 function convertShowCommand(showNode) {
   const form = attr(showNode, "form");
   const document = attr(showNode, "document");
@@ -1742,6 +1772,9 @@ function convertProcessCommands(nodes) {
         break;
       case "delete":
         cmds.push(convertDeleteCommand(n));
+        break;
+      case "remove-duplicates":
+        cmds.push(convertRemoveDuplicatesCommand(n));
         break;
       case "show":
         cmds.push(convertShowCommand(n));

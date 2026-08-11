@@ -13,6 +13,7 @@ import { LoginDialog } from "./components/LoginDialog";
 import { DeployDialog } from "./components/DeployDialog";
 import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { LinkInsertHost } from "./components/LinkInsertHost";
+import { ConditionalDisplayHost } from "./components/ConditionalDisplayHost";
 import { ProjectChromeHost } from "./components/ProjectChromeHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import { AboutDialog } from "./components/AboutDialog";
@@ -79,6 +80,12 @@ export default function App() {
   const [leftWidth, setLeftWidth] = useState(() => loadPanelWidths().left);
   const [rightWidth, setRightWidth] = useState(() => loadPanelWidths().right);
   const viewChrome = useSyncExternalStore(subscribeViewChrome, getViewChrome, getViewChrome);
+
+  // Skip / Configure overlays leave this much clear on the right for the Fields dock.
+  useEffect(() => {
+    const dock = viewChrome.fieldsPalette ? rightWidth + 4 : 0;
+    document.documentElement.style.setProperty("--designer-fields-dock-width", `${dock}px`);
+  }, [rightWidth, viewChrome.fieldsPalette]);
 
   // Re-assert boot guards after Fast Refresh of App (idempotent in shellCommands).
   useEffect(() => {
@@ -300,6 +307,7 @@ export default function App() {
       <SaveAsDialog open={showSaveAs} />
       <FunctionPickerHost />
       <LinkInsertHost />
+      <ConditionalDisplayHost />
       <ProjectChromeHost />
     </div>
   );

@@ -463,6 +463,11 @@ table.component tfoot td {
 	border: 1px solid #dddddd;
 }
 
+/* Totals cells — center under icon columns (body uses td.center). Legend stays right. */
+table.component tfoot td {
+	text-align: center;
+}
+
 table.component tfoot tr.legend td {
 	font-size: 0.85em;
 	text-align: right;

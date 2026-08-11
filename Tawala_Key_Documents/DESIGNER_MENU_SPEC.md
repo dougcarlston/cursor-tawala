@@ -418,9 +418,9 @@ Insert contents depend on the **active MDI child** (Form, Process, or Document).
 
 | Context | Always available | Requires rich-text focus |
 |---------|------------------|--------------------------|
-| **Form** | Top 7 form items (Heading … Skip Instructions) | Image…, Invitation…, Hyperlink…, Function… |
+| **Form** | Top 7 form items (Heading … Skip Instructions) | Image…, **Link…**, Function… |
 | **Process** | Statement types only | — |
-| **Document** | Image…, Invitation…, Hyperlink…, Function… (per rules) | **Field** when Fields palette selection |
+| **Document** | Image…, **Link…**, Function… (per rules) | **Field** when Fields palette selection |
 
 **Field** appears **only** on Document Insert — not listed on Form Insert.
 

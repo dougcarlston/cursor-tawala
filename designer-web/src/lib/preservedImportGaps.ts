@@ -1,7 +1,10 @@
 /**
  * Detect import gaps that remain in project JSON so Design can cue authors
  * (Explorer → canvas → Configure Function). Driven by data markers the converter
- * leaves — primarily `displayCondition` — not by discarded warn strings.
+ * leaves — primarily **uneditable** leftovers (e.g. per-column `displayCondition`).
+ *
+ * Item-level Form Item `displayCondition` is editable (Aug 10: Display conditionally…)
+ * so it is **not** a preserved gap — braces mark it as product state instead.
  *
  * See DESIGNER_OPEN_BUGS.md § Hierarchical convert / preserved-warning cues.
  */
@@ -16,7 +19,7 @@ import type {
 } from "@/types/tawala";
 
 export const PRESERVED_CONDITION_TOOLTIP =
-  "Visibility condition preserved; Designer cannot edit yet";
+  "Displayed conditionally — right-click the badge to edit";
 
 export const PRESERVED_COLUMN_CONDITION_TOOLTIP =
   "Column visibility condition preserved; Designer cannot edit yet";
@@ -79,9 +82,12 @@ function walkNodesForColumnDc(nodes: unknown): boolean {
   return false;
 }
 
-/** True when a form item itself or an embedded function table needs a warning cue. */
+/**
+ * True when a form item still has an **uneditable** convert leftover cue.
+ * Item-level displayCondition is editable → not a gap (use braces only).
+ * Embedded itemization column displayCondition remains a gap.
+ */
 export function formItemHasPreservedGap(item: FormItem): boolean {
-  if (formItemHasDisplayCondition(item)) return true;
   if (item.type === "text" && Array.isArray(item.content)) {
     return contentHasColumnDisplayCondition(item.content);
   }
@@ -105,11 +111,13 @@ export function projectDocumentNamesWithGaps(project: TawalaProject): string[] {
 }
 
 export type PreservedGapSummary = {
+  /** Item-level conditions (editable) — informational only; not counted in totalMarkers. */
   itemDisplayConditions: number;
+  /** Uneditable column / embed conditions — real preserved gaps. */
   columnDisplayConditions: number;
   formsAffected: number;
   documentsAffected: number;
-  /** Approximate total cues (item + column markers). */
+  /** Uneditable gap cues only (column markers). */
   totalMarkers: number;
 };
 
@@ -121,21 +129,20 @@ export function summarizePreservedGaps(project: TawalaProject): PreservedGapSumm
   let documentsAffected = 0;
 
   for (const form of project.forms ?? []) {
-    let hit = false;
+    let gapHit = false;
     for (const item of form.items ?? []) {
       if (formItemHasDisplayCondition(item)) {
         itemDisplayConditions += 1;
-        hit = true;
       }
       if (item.type === "text" && Array.isArray(item.content)) {
         const n = countColumnDisplayConditions(item.content);
         if (n > 0) {
           columnDisplayConditions += n;
-          hit = true;
+          gapHit = true;
         }
       }
     }
-    if (hit) formsAffected += 1;
+    if (gapHit) formsAffected += 1;
   }
 
   for (const doc of project.documents ?? []) {
@@ -161,7 +168,7 @@ export function summarizePreservedGaps(project: TawalaProject): PreservedGapSumm
     columnDisplayConditions,
     formsAffected,
     documentsAffected,
-    totalMarkers: itemDisplayConditions + columnDisplayConditions,
+    totalMarkers: columnDisplayConditions,
   };
 }
 

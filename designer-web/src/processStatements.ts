@@ -8,7 +8,7 @@ import { TawalaProcessCommand } from "@/types/tawala";
  *   1. If
  *   2. Show, Send
  *   3. Append
- *   4. Get, ForEach, Delete
+ *   4. Get, ForEach, Delete, Remove Duplicates
  *   5. Set
  *   6. Comment
  *
@@ -54,6 +54,16 @@ export const PROCESS_STATEMENT_PALETTE: ProcessStatementDef[] = [
     template: { cmd: "foreach", recordName: "Rec", recordList: "Record List 1", do: [] },
   },
   { label: "Delete", group: 4, template: { cmd: "delete", form: "Form 1" } },
+  {
+    label: "Remove Duplicates",
+    group: 4,
+    template: {
+      cmd: "remove-duplicates",
+      form: "Form 1",
+      field: "",
+      keep: "latest",
+    },
+  },
   { label: "Set", group: 5, template: { cmd: "set", field: "Completed", value: "Yes" } },
   { label: "Comment", group: 6, template: { cmd: "comment", text: "-- note" } },
 ];
@@ -69,6 +79,7 @@ export type ProcessStatementPanel =
   | "get"
   | "foreach"
   | "delete"
+  | "remove-duplicates"
   | "comment";
 
 export const PROCESS_PANEL_LABELS = new Set([
@@ -80,11 +91,12 @@ export const PROCESS_PANEL_LABELS = new Set([
   "Get",
   "ForEach",
   "Delete",
+  "Remove Duplicates",
   "Comment",
 ]);
 
 export function processPanelKeyForLabel(label: string): ProcessStatementPanel | null {
-  const key = label.toLowerCase();
+  const key = label.toLowerCase().replace(/\s+/g, "-");
   if (
     key === "if" ||
     key === "set" ||
@@ -94,6 +106,7 @@ export function processPanelKeyForLabel(label: string): ProcessStatementPanel | 
     key === "get" ||
     key === "foreach" ||
     key === "delete" ||
+    key === "remove-duplicates" ||
     key === "comment"
   ) {
     return key;
@@ -113,6 +126,7 @@ export function processPanelKeyForCommand(
   if (cmd.cmd === "get") return "get";
   if (cmd.cmd === "foreach") return "foreach";
   if (cmd.cmd === "delete") return "delete";
+  if (cmd.cmd === "remove-duplicates") return "remove-duplicates";
   if (cmd.cmd === "comment") return "comment";
   return null;
 }

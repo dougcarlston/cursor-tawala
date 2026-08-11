@@ -128,6 +128,8 @@ describe("documentHtmlToXml function emit matrix", () => {
   const cases = [
     ["record-count", { "form-name": "Survey" }, "record-count"],
     ["sum", { field: "<<Survey:Count>>" }, "sum"],
+    ["max", { field: "<<Survey:Count>>" }, "max"],
+    ["min", { field: "<<Survey:Count>>" }, "min"],
     ["project-email-count", {}, "project-email-count"],
     ["display-image", { source: "https://example.com/a.png", width: "200" }, "display-image"],
     ["display-mcq-label", { "field-name": "<<Survey:Q1>>", display: "label_only" }, "display-mcq-label"],

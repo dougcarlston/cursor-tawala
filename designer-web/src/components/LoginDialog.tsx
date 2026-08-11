@@ -32,14 +32,14 @@ export function LoginDialog() {
             Cancel
           </button>
           <button type="submit" form="login-dialog-form">
-            Login &amp; Deploy
+            Login &amp; Push
           </button>
         </>
       }
     >
       <form id="login-dialog-form" className="designer-dialog-panel" onSubmit={submit}>
         <p className="hint">
-          Credentials for deploy (not DirtBowl participant login). Dev server accepts{" "}
+          Credentials for Push (not DirtBowl participant login). Dev server accepts{" "}
           <code>dev/dev</code>.
         </p>
         <label>

@@ -837,8 +837,8 @@ table.projectListing td.clone-count {
 
 .library-actions-head .th-label {
   display: block;
-  text-align: left;
-  padding-left: 2px;
+  text-align: center;
+  padding-left: 0;
 }
 
 .library-action-subheads,
@@ -848,7 +848,7 @@ table.projectListing td.clone-count {
   column-gap: var(--library-action-gap);
   width: 100%;
   align-items: center;
-  justify-items: stretch;
+  justify-items: center;
 }
 
 .library-action-subhead {
@@ -856,12 +856,12 @@ table.projectListing td.clone-count {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: baseline;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 0.35em;
   font-size: 1em;
   font-weight: 700;
   line-height: 1.15;
-  text-align: left;
+  text-align: center;
   color: var(--tw-muted);
   white-space: nowrap;
   max-width: 100%;
@@ -891,7 +891,7 @@ table.projectListing td.clone-count {
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
   gap: 0.45em;
   min-width: 0;
 }
@@ -1273,7 +1273,7 @@ body[data-tawala-page="library"] .rating-stars .star.on {
 
 .library-row-actions .pm-op-icon-btn,
 .library-row-actions .pm-icon-action {
-  justify-self: start;
+  justify-self: center;
   flex: 0 0 auto;
 }
 
@@ -1298,7 +1298,8 @@ button.pm-op-icon-btn.library-row-action {
   box-sizing: border-box;
 }
 
-/* Beat Designer-blue .pm-op-icon-btn.is-active — Library warm red chrome */
+/* Beat Designer-blue .pm-op-icon-btn.is-active — Library warm red chrome.
+ * Same soft look for all Actions (including single-start Test Drive links). */
 body[data-tawala-page="library"] .pm-op-icon-btn.is-active.library-row-action:not(:disabled),
 body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action {
   color: #6b2418;
@@ -1307,27 +1308,12 @@ body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action {
   background-image: linear-gradient(180deg, #fff8f4 0%, #f0ddd3 48%, #e8cfc2 100%);
 }
 
-body[data-tawala-page="library"] .pm-op-icon-btn.is-active.library-row-action.js-testdrive:not(:disabled),
-body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action.js-testdrive {
-  color: #fff;
-  border-color: #8a2418;
-  background-color: #c24322;
-  background-image: linear-gradient(180deg, #d45a3c 0%, #c24322 48%, #a31c1c 100%);
-}
-
 body[data-tawala-page="library"] .pm-op-icon-btn.is-active.library-row-action:not(:disabled):hover,
 body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action:hover {
   text-decoration: none;
   border-color: var(--lib-red, #c24322);
   color: var(--lib-red-deep, #a31c1c);
   background-image: linear-gradient(180deg, #fffaf7 0%, #f5e4da 48%, #ecc9b8 100%);
-}
-
-body[data-tawala-page="library"] .pm-op-icon-btn.is-active.library-row-action.js-testdrive:not(:disabled):hover,
-body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action.js-testdrive:hover {
-  color: #fff;
-  border-color: #6b1a12;
-  background-image: linear-gradient(180deg, #de6a4c 0%, #d04d2c 48%, #b3221c 100%);
 }
 
 #projectDetails h1 {

@@ -28,7 +28,7 @@ Same order as **Insert → Process**:
 | | *(gap)* |
 | 3 | **Append** |
 | | *(gap)* |
-| 4 | **Get**, **ForEach**, **Delete** |
+| 4 | **Get**, **ForEach**, **Delete**, **Remove Duplicates** (browser) |
 | | *(gap)* |
 | 5 | **Set** |
 | | *(gap)* |

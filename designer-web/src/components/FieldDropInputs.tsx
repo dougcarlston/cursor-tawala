@@ -72,6 +72,7 @@ function targetContext(options: FieldDropOptions): FieldTargetContext {
     formFieldsOnly: options.formFieldsOnly,
     knownVariables: options.knownVariables,
     configureDialog: options.configureDialog,
+    allowOutsideMdi: options.allowOutsideMdi,
   };
 }
 
@@ -266,6 +267,8 @@ export function QualifiedFieldInput({
     bare: true,
     formFieldsOnly,
     knownVariables,
+    // Skip Instructions is portaled outside `.mdi-window.active`.
+    allowOutsideMdi: true,
   });
   return (
     <input

@@ -3013,6 +3013,7 @@ div.skip-script-line[role="button"]:hover {
 
 .skip-dialog-footer {
   justify-content: center;
+  gap: 12px;
   padding: 10px 12px;
   background: #f0f0f0;
 }
@@ -3532,13 +3533,100 @@ div.skip-script-line[role="button"]:hover {
   width: 64px;
 }
 
+.canvas-item-badge-stack.has-display-condition {
+  width: 72px;
+}
+
 .canvas-item-badge-stack .text-badge,
 .canvas-item-badge-stack .fib-badge,
 .canvas-item-badge-stack .mcq-badge,
+.canvas-item-badge-stack .heading-badge,
 .canvas-item-badge-stack .text-badge-input,
 .canvas-item-badge-stack .fib-badge-input,
-.canvas-item-badge-stack .mcq-badge-input {
+.canvas-item-badge-stack .mcq-badge-input,
+.canvas-item-badge-stack .heading-badge-input {
   width: 100%;
+  box-sizing: border-box;
+}
+
+/* Legacy cue: braces inside the badge cell — `{Q4}` — not outside the border. */
+.canvas-item-badge-stack.has-display-condition .fib-badge::before,
+.canvas-item-badge-stack.has-display-condition .text-badge::before,
+.canvas-item-badge-stack.has-display-condition .mcq-badge::before,
+.canvas-item-badge-stack.has-display-condition .heading-badge::before {
+  content: "{";
+  margin-right: 1px;
+  font-weight: 600;
+}
+
+.canvas-item-badge-stack.has-display-condition .fib-badge::after,
+.canvas-item-badge-stack.has-display-condition .text-badge::after,
+.canvas-item-badge-stack.has-display-condition .mcq-badge::after,
+.canvas-item-badge-stack.has-display-condition .heading-badge::after {
+  content: "}";
+  margin-left: 1px;
+  font-weight: 600;
+}
+
+.form-item-badge-context-menu {
+  min-width: 200px;
+  padding: 4px 0;
+  background: #f0f0f0;
+  border: 1px solid #999;
+  box-shadow: 2px 2px 6px rgba(0, 0, 0, 0.25);
+  font-size: 12px;
+}
+
+.form-item-badge-context-menu button {
+  display: flex;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 4px 16px;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: default;
+  font: inherit;
+  color: #222;
+}
+
+.form-item-badge-context-menu button:not(:disabled):hover {
+  background: #316ac5;
+  color: #fff;
+}
+
+.form-item-badge-context-menu button:disabled {
+  color: #999;
+}
+
+.form-item-badge-context-accel {
+  color: inherit;
+  opacity: 0.75;
+  font-size: 11px;
+}
+
+.form-item-badge-context-menu hr {
+  margin: 4px 0;
+  border: 0;
+  border-top: 1px solid #ccc;
+}
+
+.conditional-display-dialog {
+  min-width: 520px;
+}
+
+.conditional-display-body {
+  padding: 12px 16px 8px;
+}
+
+.conditional-display-enable {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-size: 13px;
 }
 
 .preserved-cond-chip {
@@ -4100,6 +4188,11 @@ button.font-color-picker-recent-slot:hover {
   padding: 1px 2px;
   font-weight: 600;
   user-select: none;
+  cursor: pointer;
+}
+
+.fields-branch-header .fields-tree-toggle:disabled {
+  cursor: default;
 }
 
 .fields-branch-header.active .fields-branch-name {
@@ -6653,6 +6746,41 @@ button.font-color-picker-recent-slot:hover {
   margin-top: 12px;
 }
 
+/* Unified Insert → Link… (Form primary / Web address secondary) */
+.insert-link-dialog {
+  width: min(440px, 94vw);
+}
+
+.insert-link-dialog.insert-link-dialog-wide {
+  width: min(560px, 94vw);
+}
+
+.insert-link-panel {
+  gap: 12px;
+}
+
+.insert-link-mode {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px 20px;
+  padding: 2px 0 4px;
+  border-bottom: 1px solid var(--border, #c0c0c0);
+  margin-bottom: 4px;
+}
+
+.insert-link-mode-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 12px/1.3 Tahoma, "Segoe UI", sans-serif;
+  color: #222;
+  cursor: pointer;
+}
+
+.insert-link-mode-option input {
+  margin: 0;
+}
+
 .insert-link-dialog .insert-link-checkbox {
   display: flex;
   align-items: center;
@@ -6688,7 +6816,7 @@ button.font-color-picker-recent-slot:hover {
   gap: 12px;
 }
 
-/* Legacy Insert Invitation — Form / in / Project row + InviteeID help */
+/* Insert Invitation panel (also used inside unified Insert Link) */
 .insert-invitation-dialog {
   width: min(440px, 94vw);
 }
@@ -7203,8 +7331,8 @@ button.font-color-picker-recent-slot:hover {
   background: rgba(0, 0, 0, 0.4);
 }
 
-/* File/Project/Help dialogs block the canvas; Insert/Configure keep Fields clickable. */
-.designer-dialog-overlay:not(.configure-function-overlay) {
+/* File/Project/Help dialogs block the canvas; Insert/Configure/Skip keep Fields clickable. */
+.designer-dialog-overlay:not(.configure-function-overlay):not(.skip-modal-overlay) {
   pointer-events: auto;
 }
 
@@ -7858,11 +7986,38 @@ body.configure-function-open .designer-right-splitter {
   z-index: 1200;
 }
 
-/* Skip dialog: portaled to body; dimmed overlay but Fields column stays interactive. */
+/* Skip dialog: portaled to body. Overlay must not steal Fields clicks
+ * (excluded from .designer-dialog-overlay pointer-events:auto above).
+ * Fields is raised above the wide Skip dialog (If panel sits under the Fields
+ * column on typical layouts). During a Fields drag, punch through so drop
+ * reaches the If Form:Field box underneath. */
 .skip-modal-overlay {
   background: rgba(0, 0, 0, 0.2);
-  /* Above PE / Items / Fields chrome so drag no longer bisects under the explorer edge. */
   z-index: 2000;
+  pointer-events: none;
+  /* Keep the Skip dialog clear of the Fields dock so If boxes can accept drops. */
+  padding-right: var(--designer-fields-dock-width, 284px);
+  box-sizing: border-box;
+}
+
+.skip-modal-overlay .modal-dialog,
+.skip-modal-overlay .skip-instructions-dialog {
+  pointer-events: auto;
+}
+
+body.skip-instructions-open .designer-right,
+body.skip-instructions-open .designer-right-splitter {
+  position: relative;
+  z-index: 2100;
+  pointer-events: auto;
+}
+
+/* Do NOT set pointer-events:none on Fields during drag — that cancels the HTML5
+ * drag in Chromium. Drop the column under the Skip overlay instead so If boxes
+ * (often under the Fields dock) receive dragover/drop. */
+body.fields-palette-dragging.skip-instructions-open .designer-right,
+body.fields-palette-dragging.skip-instructions-open .designer-right-splitter {
+  z-index: 1500;
 }
 
 /*

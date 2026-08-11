@@ -11,9 +11,10 @@ When the owner sends **screenshots**, **hover text**, or **narrative** about the
    - `DESIGNER_MENU_SPEC.md` — menus, toolbars, explorer, Fields panel
    - `DESIGNER_STARTUP_AND_FORM_CANVAS.md` — startup, templates, canvas tabs
    - `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` — Text, FIB, MCQ, File Uploader (deferred)
-   - `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` — Hidden Field, Page Break, Skip Instructions
-   - `DESIGNER_FORM_ITEMS_HEADING.md` — Heading item
-   - `DESIGNER_FORM_FORMAT_TOOLBAR.md` — Form format toolbar vs Document
+ - `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` — Hidden Field, Page Break, Skip Instructions
+ - `DESIGNER_FORM_ITEMS_HEADING.md` — Heading item
+ - `DESIGNER_FORM_ITEMS_CONDITIONAL_DISPLAY.md` — Form item Display conditionally… (`{Qn}` braces)
+ - `DESIGNER_FORM_FORMAT_TOOLBAR.md` — Form format toolbar vs Document
    - `DESIGNER_TEMPLATE_MATRIX.md` — New Project templates + deploy smoke tests
    - `DESIGNER_PROCESS_STATEMENTS_*.md` — If, Show, Send, Append/Get/ForEach/Delete/Set/Comment
    - `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` — Insert menu (Form/Process/Document), Invitation, Hyperlink, Function picker

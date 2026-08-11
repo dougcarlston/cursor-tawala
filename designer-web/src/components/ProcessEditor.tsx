@@ -1,6 +1,7 @@
 import { useEffect, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { CommentStatementBuilder } from "@/components/CommentStatementBuilder";
 import { DeleteStatementBuilder } from "@/components/DeleteStatementBuilder";
+import { RemoveDuplicatesStatementBuilder } from "@/components/RemoveDuplicatesStatementBuilder";
 import { AppendStatementBuilder } from "@/components/AppendStatementBuilder";
 import { ForEachStatementBuilder } from "@/components/ForEachStatementBuilder";
 import { GetStatementBuilder } from "@/components/GetStatementBuilder";
@@ -35,6 +36,7 @@ import {
   EMPTY_APPEND_BUILDER,
   EMPTY_COMMENT_BUILDER,
   EMPTY_DELETE_BUILDER,
+  EMPTY_REMOVE_DUPLICATES_BUILDER,
   EMPTY_FOREACH_BUILDER,
   EMPTY_GET_BUILDER,
   EMPTY_IF_BUILDER,
@@ -46,6 +48,7 @@ import {
   buildAppendCommand,
   buildCommentCommand,
   buildDeleteCommand,
+  buildRemoveDuplicatesCommand,
   buildForEachCommand,
   buildGetCommand,
   buildSendCommand,
@@ -56,6 +59,8 @@ import {
   commentBuilderHasDraft,
   deleteBuilderFromCommand,
   deleteBuilderHasDraft,
+  removeDuplicatesBuilderFromCommand,
+  removeDuplicatesBuilderHasDraft,
   foreachBuilderFromCommand,
   foreachBuilderHasDraft,
   getBuilderFromCommand,
@@ -73,6 +78,7 @@ import {
   type AppendBuilderState,
   type CommentBuilderState,
   type DeleteBuilderState,
+  type RemoveDuplicatesBuilderState,
   type ForEachBuilderState,
   type GetBuilderState,
   type IfBuilderState,
@@ -180,6 +186,8 @@ export function ProcessEditor({ processName }: Props) {
   const [getBuilder, setGetBuilder] = useState<GetBuilderState>(EMPTY_GET_BUILDER);
   const [forEachBuilder, setForEachBuilder] = useState<ForEachBuilderState>(EMPTY_FOREACH_BUILDER);
   const [deleteBuilder, setDeleteBuilder] = useState<DeleteBuilderState>(EMPTY_DELETE_BUILDER);
+  const [removeDuplicatesBuilder, setRemoveDuplicatesBuilder] =
+    useState<RemoveDuplicatesBuilderState>(EMPTY_REMOVE_DUPLICATES_BUILDER);
   const [commentBuilder, setCommentBuilder] = useState<CommentBuilderState>(EMPTY_COMMENT_BUILDER);
   const [connectionDialogOpen, setConnectionDialogOpen] = useState(false);
   const [dragInsertPath, setDragInsertPath] = useState<string | null>(null);
@@ -259,6 +267,10 @@ export function ProcessEditor({ processName }: Props) {
     processStatementPanel === "delete" &&
     selectedCommand?.cmd === "delete" &&
     selectedProcessCommandPath != null;
+  const isModifyRemoveDuplicates =
+    processStatementPanel === "remove-duplicates" &&
+    selectedCommand?.cmd === "remove-duplicates" &&
+    selectedProcessCommandPath != null;
   const isModifyComment =
     processStatementPanel === "comment" &&
     selectedCommand?.cmd === "comment" &&
@@ -273,6 +285,7 @@ export function ProcessEditor({ processName }: Props) {
       processStatementPanel === "get" ||
       processStatementPanel === "foreach" ||
       processStatementPanel === "delete" ||
+      processStatementPanel === "remove-duplicates" ||
       processStatementPanel === "comment");
   const showPaletteHint =
     isActiveProcess && commands.length === 0 && processStatementPanel === "none";
@@ -288,6 +301,7 @@ export function ProcessEditor({ processName }: Props) {
       processStatementPanel === "get" ||
       processStatementPanel === "foreach" ||
       processStatementPanel === "delete" ||
+      processStatementPanel === "remove-duplicates" ||
       processStatementPanel === "comment"
     )
       return;
@@ -320,6 +334,11 @@ export function ProcessEditor({ processName }: Props) {
       setForEachBuilder(foreachBuilderFromCommand(cmd));
     } else if (processStatementPanel === "delete" && cmd.cmd === "delete") {
       setDeleteBuilder(deleteBuilderFromCommand(cmd));
+    } else if (
+      processStatementPanel === "remove-duplicates" &&
+      cmd.cmd === "remove-duplicates"
+    ) {
+      setRemoveDuplicatesBuilder(removeDuplicatesBuilderFromCommand(cmd));
     } else if (processStatementPanel === "comment" && cmd.cmd === "comment") {
       setCommentBuilder(commentBuilderFromCommand(cmd));
     }
@@ -361,6 +380,11 @@ export function ProcessEditor({ processName }: Props) {
     }
     if (processStatementPanel === "delete" && !selectedProcessCommandPath) {
       setDeleteBuilder((prev) => (deleteBuilderHasDraft(prev) ? prev : EMPTY_DELETE_BUILDER));
+    }
+    if (processStatementPanel === "remove-duplicates" && !selectedProcessCommandPath) {
+      setRemoveDuplicatesBuilder((prev) =>
+        removeDuplicatesBuilderHasDraft(prev) ? prev : EMPTY_REMOVE_DUPLICATES_BUILDER,
+      );
     }
     if (processStatementPanel === "comment" && !selectedProcessCommandPath) {
       setCommentBuilder((prev) => (commentBuilderHasDraft(prev) ? prev : EMPTY_COMMENT_BUILDER));
@@ -523,6 +547,15 @@ export function ProcessEditor({ processName }: Props) {
     insertAtArrow(cmd);
   };
 
+  const submitRemoveDuplicates = () => {
+    const cmd = buildRemoveDuplicatesCommand(removeDuplicatesBuilder);
+    if (isModifyRemoveDuplicates && selectedProcessCommandPath) {
+      setCommands(replaceProcessCommandAtPath(commands, selectedProcessCommandPath, cmd));
+      return;
+    }
+    insertAtArrow(cmd);
+  };
+
   const submitComment = () => {
     const cmd = buildCommentCommand(commentBuilder);
     if (isModifyComment && selectedProcessCommandPath) {
@@ -657,6 +690,17 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setDeleteBuilder}
                   submitLabel={isModifyDelete ? "Modify" : "Add"}
                   onSubmit={submitDelete}
+                  formNames={formNames}
+                  knownVariables={knownVariables}
+                />
+              )}
+              {processStatementPanel === "remove-duplicates" && (
+                <RemoveDuplicatesStatementBuilder
+                  embedded
+                  state={removeDuplicatesBuilder}
+                  onStateChange={setRemoveDuplicatesBuilder}
+                  submitLabel={isModifyRemoveDuplicates ? "Modify" : "Add"}
+                  onSubmit={submitRemoveDuplicates}
                   formNames={formNames}
                   knownVariables={knownVariables}
                 />

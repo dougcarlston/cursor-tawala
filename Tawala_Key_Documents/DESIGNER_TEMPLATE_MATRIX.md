@@ -164,6 +164,8 @@ Good first deploy target — small XML, no documents, one process statement.
 
 **Visual assets (July 2026):** Docker image now patches `docker/tomcat/images/silk/` (tick.gif, star.png) and legacy `default.css` + theme CSS (`greentea`, `style2`, `baseball` stub). Rebuild: `docker compose build tawala && docker compose up -d tawala`. The star on the best-option totals cell is intentional.
 
+**Totals alignment (Aug 10 / Y6):** Footer totals were left-aligned (and legend `<tr>` unclosed) while body icons use `td.center`, so counts looked shifted under date columns. Fixed: `QuestionCorrelationTable` footer cells use `class="center"` + close legend row; `default.css` centers `tfoot td` (legend stays right). **Smoke:** Broderbund Picnic / Get Together Report — totals `N (p)` sit centered under each date column’s icons.
+
 Prior caveats before patch:
 1. Selected vs preferred icons looked identical — missing `/images/silk/`.
 2. Erratic table alignment — incomplete `default.css`.

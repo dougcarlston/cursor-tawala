@@ -471,6 +471,66 @@ describe("xmlCommentText", () => {
       expect(body.endsWith("-")).toBe(false);
     }
   });
+
+  it("exports remove-duplicates with keep, key field, and optional Where", () => {
+    const xml = projectToXml({
+      name: "Dedupe",
+      forms: [{ name: "Form 1", startPoint: true, items: [] }],
+      processes: [
+        {
+          name: "Cleanup",
+          commands: [
+            {
+              cmd: "remove-duplicates",
+              form: "Form 1",
+              field: "Form 1:PlayerID",
+              keep: "latest",
+              where: { field: "Form 1:Active", op: "equals", value: "Yes" },
+            },
+          ],
+        },
+      ],
+      documents: [],
+    });
+    expect(xml).toContain('<remove-duplicates keep="latest">');
+    expect(xml).toContain('<form name="Form 1"/>');
+    expect(xml).toContain("<field>Record:Form 1:PlayerID</field>");
+    expect(xml).toContain("<conditions>");
+    expect(xml).toMatch(/<equals\b/);
+  });
+
+  it("exports form item displayConditions including and/or trees", () => {
+    const xml = projectToXml({
+      name: "Cond",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "fib",
+              label: "Q2",
+              prompt: "Title: _____",
+              blanks: [{ name: "a", length: 5 }],
+              displayCondition: {
+                op: "and",
+                conditions: [
+                  { field: "QEmail2", op: "equals", value: "Yes" },
+                  { field: "Q1", op: "isNotBlank" },
+                ],
+              },
+            },
+          ],
+        },
+      ],
+      processes: [],
+      documents: [],
+    });
+    expect(xml).toContain("<displayConditions>");
+    expect(xml).toContain("<and>");
+    expect(xml).toMatch(/<equals field="QEmail2">/);
+    expect(xml).toMatch(/<isNotBlank field="Q1"\s*\/>/);
+  });
 });
 
 /**

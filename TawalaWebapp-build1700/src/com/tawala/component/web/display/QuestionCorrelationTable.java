@@ -248,10 +248,11 @@ public class QuestionCorrelationTable extends WebComponentMetadataSupport {
 					preferredCount == bestOption[1] &&
 					includePreferredOptions;
 
-				result.append("<td>");
+				// Match body cells (`class="center"`) so totals sit under the icons.
+				result.append("<td class=\"center\">");
 				
 				if (thisIsTheBestOption) {
-					result.append(" <b>");
+					result.append("<b>");
 				}
 				
 				result.append(total);
@@ -261,11 +262,11 @@ public class QuestionCorrelationTable extends WebComponentMetadataSupport {
 				}
 				
 				if (thisIsTheBestOption) {
-					result.append(" </b>&nbsp;");
+					result.append("</b>&nbsp;");
 				}
 				
 				if (thisIsTheBestOption && includePreferredOptions) {
-					result.append(" <img src=\"/images/silk/star.png\" alt=\"x\" />");
+					result.append("<img src=\"/images/silk/star.png\" alt=\"x\" />");
 				}
 				
 				result.append("</td>");
@@ -291,6 +292,7 @@ public class QuestionCorrelationTable extends WebComponentMetadataSupport {
 			}
 			
 			result.append("</td>");
+			result.append("</tr>\n");
 
 			result.append("</tfoot>\n");
 		}

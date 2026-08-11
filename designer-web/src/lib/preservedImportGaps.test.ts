@@ -8,13 +8,13 @@ import {
 import type { TawalaForm, TawalaProject } from "@/types/tawala";
 
 describe("preservedImportGaps", () => {
-  it("flags form items with displayCondition", () => {
+  it("does not flag editable item-level displayCondition as a preserved gap", () => {
     const item = {
       type: "fib" as const,
       label: "Q1",
       displayCondition: { field: "X", op: "equals", value: "1" },
     };
-    expect(formItemHasPreservedGap(item)).toBe(true);
+    expect(formItemHasPreservedGap(item)).toBe(false);
   });
 
   it("flags nested itemization column displayCondition", () => {
@@ -61,7 +61,7 @@ describe("preservedImportGaps", () => {
     ).toBe(true);
   });
 
-  it("summarizes project markers", () => {
+  it("summarizes project markers — item DC informational; column DC are gaps", () => {
     const form: TawalaForm = {
       name: "F",
       items: [
@@ -104,6 +104,19 @@ describe("preservedImportGaps", () => {
     expect(s.columnDisplayConditions).toBe(2);
     expect(s.formsAffected).toBe(1);
     expect(s.documentsAffected).toBe(1);
+    expect(s.totalMarkers).toBe(2);
     expect(formHasPreservedGaps(form)).toBe(true);
+    expect(
+      formHasPreservedGaps({
+        name: "OnlyItems",
+        items: [
+          {
+            type: "fib",
+            label: "Q2",
+            displayCondition: { field: "A", op: "equals", value: "1" },
+          },
+        ],
+      }),
+    ).toBe(false);
   });
 });

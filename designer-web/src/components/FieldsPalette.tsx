@@ -1,4 +1,4 @@
-import { useMemo, useState, useSyncExternalStore } from "react";
+import { useMemo, useState, useSyncExternalStore, type MouseEvent } from "react";
 import type { TawalaProcessCommand, TawalaProject } from "@/types/tawala";
 import {
   collectProjectVariables,
@@ -82,9 +82,19 @@ export function FieldsPalette({
   );
   const variablesDisabled = activeFieldContext.formFieldsOnly === true;
 
+  const formSignature = project.forms.map((f) => f.name).join("|");
+  const recordSignature = recordBranches.map((b) => b.recordName).join("|");
+  /** Structure only — insert-path changes must NOT collapse open Form folders (Skip/If / Process). */
+  const structureSignature = `${formSignature}|${recordSignature}|${conditionsRecordForm ?? ""}`;
+  const [prevStructureSignature, setPrevStructureSignature] = useState(structureSignature);
+
   const defaultCollapsed = () => {
     const initial = new Set<string>();
-    for (const form of project.forms) initial.add(`form:${form.name}`);
+    for (const form of project.forms) {
+      // Prefer the active form open so Skip/If authors see fields without hunting [+].
+      if (activeFormName && form.name === activeFormName) continue;
+      initial.add(`form:${form.name}`);
+    }
     // Leave Record / ForEach branches expanded — author needs the prefixed list.
     initial.add("node:Variables");
     return initial;
@@ -93,12 +103,8 @@ export function FieldsPalette({
   const [collapsed, setCollapsed] = useState<Set<string>>(defaultCollapsed);
   const [selectedKey, setSelectedKey] = useState<string | null>(null);
 
-  const formSignature = project.forms.map((f) => f.name).join("|");
-  const recordSignature = recordBranches.map((b) => b.recordName).join("|");
-  const treeSignature = `${formSignature}|${recordSignature}|${conditionsRecordForm ?? ""}|${processRecordContext?.insertPath ?? ""}`;
-  const [prevSignature, setPrevSignature] = useState(treeSignature);
-  if (treeSignature !== prevSignature) {
-    setPrevSignature(treeSignature);
+  if (structureSignature !== prevStructureSignature) {
+    setPrevStructureSignature(structureSignature);
     setCollapsed(defaultCollapsed());
     setSelectedKey(null);
     setFieldsPaletteSelection(null);
@@ -113,6 +119,9 @@ export function FieldsPalette({
       return next;
     });
 
+  const keepFieldTargetFocus = (e: MouseEvent) => {
+    e.preventDefault();
+  };
   if (project.forms.length === 0 && variables.length === 0 && recordBranches.length === 0) {
     return <p className="hint fields-tree-empty">No forms or variables yet.</p>;
   }
@@ -153,6 +162,7 @@ export function FieldsPalette({
                 setFieldsPaletteSelection(null);
                 toggle(key);
               }}
+              onMouseDown={keepFieldTargetFocus}
             />
             {open && branch.fields.length > 0 ? (
               <ul className="fields-leaf-list">
@@ -189,6 +199,7 @@ export function FieldsPalette({
                 setFieldsPaletteSelection(null);
                 toggle(key);
               }}
+              onMouseDown={keepFieldTargetFocus}
             />
             {open && branch.leaves.length > 0 ? (
               <ul className="fields-leaf-list">
@@ -221,6 +232,7 @@ export function FieldsPalette({
               setFieldsPaletteSelection(null);
               toggle("node:Variables");
             }}
+            onMouseDown={keepFieldTargetFocus}
           />
           {isOpen("node:Variables") ? (
             <ul className="fields-leaf-list">
@@ -252,6 +264,7 @@ function BranchHeader({
   star,
   record,
   onToggle,
+  onMouseDown,
 }: {
   label: string;
   open: boolean;
@@ -260,18 +273,38 @@ function BranchHeader({
   star?: boolean;
   record?: boolean;
   onToggle: () => void;
+  onMouseDown?: (e: MouseEvent) => void;
 }) {
   return (
     <div
       className={`fields-branch-header${active ? " active" : ""}${record ? " fields-record-header" : ""}`}
+      onMouseDown={onMouseDown}
+      onClick={() => {
+        if (hasChildren) onToggle();
+      }}
+      role="button"
+      tabIndex={hasChildren ? 0 : -1}
+      onKeyDown={(e) => {
+        if (!hasChildren) return;
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onToggle();
+        }
+      }}
+      aria-expanded={hasChildren ? open : undefined}
     >
       <button
         type="button"
         className="fields-tree-toggle"
-        onClick={onToggle}
+        onClick={(e) => {
+          e.stopPropagation();
+          if (hasChildren) onToggle();
+        }}
+        onMouseDown={onMouseDown}
         aria-expanded={open}
         aria-label={open ? `Collapse ${label}` : `Expand ${label}`}
         disabled={!hasChildren}
+        tabIndex={-1}
       >
         {hasChildren ? (open ? "[-]" : "[+]") : "\u00a0\u00a0\u00a0"}
       </button>

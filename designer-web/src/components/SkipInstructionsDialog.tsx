@@ -18,7 +18,7 @@ import {
   replaceProcessCommandAtPath,
 } from "@/lib/processScript";
 import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
-import { setActiveFieldTarget } from "@/lib/fieldInsertion";
+import { setActiveFieldTarget, setFieldDragActive } from "@/lib/fieldInsertion";
 import { collectKnownVariables } from "@/lib/projectModel";
 import {
   clearSkipDialogSession,
@@ -54,7 +54,10 @@ interface Props {
   commands: SkipCommand[];
   /** Stable key for draft survival across accidental remounts (formName::index). */
   sessionKey: string;
+  /** Commit dialog draft into the skip item (Close). */
   onSave: (commands: SkipCommand[]) => void;
+  /** Discard draft and close without touching the project (Cancel / Escape). */
+  onCancel: () => void;
 }
 
 const SKIP_STATEMENT_BUTTONS = [
@@ -110,6 +113,7 @@ export function SkipInstructionsDialog({
   commands: initialCommands,
   sessionKey,
   onSave,
+  onCancel,
 }: Props) {
   const restored = readSkipDialogSession(sessionKey);
   const [commands, setCommands] = useState<SkipCommand[]>(
@@ -166,6 +170,18 @@ export function SkipInstructionsDialog({
     commentText,
   ]);
 
+  // Raise Fields above Skip overlay/dialog so expand/collapse works; while dragging,
+  // Fields drops under the overlay (see body.fields-palette-dragging) so drops reach
+  // If boxes if the dialog was moved over the dock.
+  useEffect(() => {
+    document.body.classList.add("skip-instructions-open");
+    return () => {
+      document.body.classList.remove("skip-instructions-open");
+      document.body.classList.remove("fields-palette-dragging");
+      setFieldDragActive(false);
+    };
+  }, []);
+
   // Legacy: selecting Statements → Comment (or a comment line) focuses the text box.
   useLayoutEffect(() => {
     if (panel !== "comment") return;
@@ -176,6 +192,12 @@ export function SkipInstructionsDialog({
   const finish = (nextCommands: SkipCommand[]) => {
     clearSkipDialogSession(sessionKey);
     onSave(nextCommands);
+  };
+
+  /** Abandon in-dialog Adds/Modifies — project skip item stays as opened. */
+  const discard = () => {
+    clearSkipDialogSession(sessionKey);
+    onCancel();
   };
 
   const scriptLines = useMemo(() => buildScriptLines(commands), [commands]);
@@ -407,7 +429,7 @@ export function SkipInstructionsDialog({
     }
   };
 
-  // Escape leaves Modify / closes the open builder (same idea as Process Send Cancel).
+  // Escape: leave Modify → close builder → discard dialog (do not save draft).
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.key !== "Escape") return;
@@ -419,11 +441,14 @@ export function SkipInstructionsDialog({
       if (panel !== "none") {
         e.preventDefault();
         closeBuilderPanel();
+        return;
       }
+      e.preventDefault();
+      discard();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedCommandPath, panel, commands]);
+  }, [selectedCommandPath, panel, sessionKey]);
 
   const toolbarDeleteEnabled = selectedCommandPath != null;
 
@@ -433,7 +458,7 @@ export function SkipInstructionsDialog({
     <DesignerDialog
       title={`Edit Skip Instructions — ${projectName}`}
       titleId="skip-instructions-title"
-      onClose={() => finish(commands)}
+      onClose={discard}
       dialogRef={dialogRef}
       style={{ transform: `translate(${offset.x}px, ${offset.y}px)` }}
       titleBarClassName="skip-dialog-titlebar"
@@ -443,9 +468,14 @@ export function SkipInstructionsDialog({
       bodyClassName="skip-designer-body"
       footerClassName="skip-dialog-footer"
       footer={
-        <button type="button" onClick={() => finish(commands)}>
-          Close
-        </button>
+        <>
+          <button type="button" onClick={discard} title="Discard edits and close">
+            Cancel
+          </button>
+          <button type="button" onClick={() => finish(commands)} title="Save skip instructions">
+            Close
+          </button>
+        </>
       }
     >
       <div className="skip-dialog-toolbar explorer-toolbar" role="toolbar" aria-label="Edit commands">

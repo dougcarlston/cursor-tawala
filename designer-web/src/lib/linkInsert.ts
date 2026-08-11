@@ -1,6 +1,6 @@
 /**
- * Insert → Invitation… / Hyperlink… — request store + Design canvas tokens.
- * Spec: DESIGNER_INSERT_MENU_AND_FUNCTIONS.md
+ * Insert → Link… (unified Form / Web address) — request store + Design canvas tokens.
+ * Spec: DESIGNER_INSERT_MENU_AND_FUNCTIONS.md § Insert → Link / Invitation…
  */
 
 import {
@@ -59,30 +59,28 @@ export function clearLinkInsertRequest(): void {
   notify();
 }
 
-export function openInvitationInsertFromEditor(): void {
+/** Unified Insert → Link… — Form-in-project (default) or Web address. */
+export function openLinkInsertFromEditor(mode: "form" | "url" = "form"): void {
   const editor = getActivePaletteEditor();
   if (!editor?.el?.isConnected) {
     useProjectStore
       .getState()
-      .setStatus("Click inside a Form Text or Document first, then Insert → Invitation…");
+      .setStatus("Click inside a Form Text or Document first, then Insert → Link…");
     return;
   }
   editor.saveSelection();
-  request = { kind: "invitation", editor };
+  request = { kind: mode === "form" ? "invitation" : "hyperlink", editor };
   notify();
 }
 
+/** @deprecated Prefer {@link openLinkInsertFromEditor}("form"). */
+export function openInvitationInsertFromEditor(): void {
+  openLinkInsertFromEditor("form");
+}
+
+/** @deprecated Prefer {@link openLinkInsertFromEditor}("url"). */
 export function openHyperlinkInsertFromEditor(): void {
-  const editor = getActivePaletteEditor();
-  if (!editor?.el?.isConnected) {
-    useProjectStore
-      .getState()
-      .setStatus("Click inside a Form Text or Document first, then Insert → Hyperlink…");
-    return;
-  }
-  editor.saveSelection();
-  request = { kind: "hyperlink", editor };
-  notify();
+  openLinkInsertFromEditor("url");
 }
 
 /**

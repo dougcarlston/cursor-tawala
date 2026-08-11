@@ -12,8 +12,7 @@ import {
 } from "@/lib/functionPicker";
 import { openLocalImageInsertFromEditor } from "@/lib/localImageInsert";
 import {
-  openHyperlinkInsertFromEditor,
-  openInvitationInsertFromEditor,
+  openLinkInsertFromEditor,
 } from "@/lib/linkInsert";
 import { openFormItemStylesDialog, stylesKindForFormItem } from "@/lib/formItemStyles";
 import { openPageHeaderDialog } from "@/lib/pageHeaderDialog";
@@ -167,8 +166,13 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
           <span className="menu-accel">{saveAsAccel}</span>
         </button>
         <div className="menu-separator" />
-        <button type="button" disabled={!canDeploy} onClick={onDeploy}>
-          Deploy…
+        <button
+          type="button"
+          disabled={!canDeploy}
+          onClick={onDeploy}
+          title="Push Project to your MyTawala library"
+        >
+          Push…
         </button>
       </MenuDrop>
       <MenuDrop label="Edit">
@@ -237,8 +241,13 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
         />
       </MenuDrop>
       <MenuDrop label="Project">
-        <button type="button" disabled={!canDeploy} onClick={onDeploy}>
-          Deploy
+        <button
+          type="button"
+          disabled={!canDeploy}
+          onClick={onDeploy}
+          title="Push Project to your MyTawala library"
+        >
+          Push to My Tawala
         </button>
         <button type="button" onClick={openProjectManagerLocal}>
           Project Manager…
@@ -253,7 +262,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
         <div className="menu-separator" />
         <button
           type="button"
-          title="Project-wide banner text and optional image on deployed pages"
+          title="Project-wide banner text and optional image on pushed pages"
           onClick={() => openPageHeaderDialog()}
         >
           Page Header…
@@ -271,15 +280,15 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
                 }
                 title={
                   theme.hasLocalCss
-                    ? `Set themePath to "${theme.path}" (local Deploy CSS available)`
-                    : `Stub — sets themePath to "${theme.path}" (no local CSS yet; Deploy may still find it on Tomcat)`
+                    ? `Set themePath to "${theme.path}" (local Push CSS available)`
+                    : `Stub — sets themePath to "${theme.path}" (no local CSS yet; Push may still find it on Tomcat)`
                 }
                 onClick={() => {
                   setProjectTheme(theme.path);
                   setStatus(
                     theme.hasLocalCss
-                      ? `Theme: ${theme.label} (${theme.path}) — Deploy uses local CSS`
-                      : `Theme: ${theme.label} (${theme.path}) — stub; Redeploy when CSS is installed`,
+                      ? `Theme: ${theme.label} (${theme.path}) — Push uses local CSS`
+                      : `Theme: ${theme.label} (${theme.path}) — stub; Push again when CSS is installed`,
                   );
                 }}
               >
@@ -518,24 +527,10 @@ function InsertMenuBody({
               onStub("Place the cursor in the document text first");
               return;
             }
-            openInvitationInsertFromEditor();
+            openLinkInsertFromEditor("form");
           }}
         >
-          Invitation…
-        </button>
-        <button
-          type="button"
-          disabled={!canFunction}
-          onClick={() => {
-            const editor = getActivePaletteEditor();
-            if (!editor?.el || !isInsideActiveMdiWindow(editor.el)) {
-              onStub("Place the cursor in the document text first");
-              return;
-            }
-            openHyperlinkInsertFromEditor();
-          }}
-        >
-          Hyperlink…
+          Link…
         </button>
         <button
           type="button"
@@ -548,7 +543,7 @@ function InsertMenuBody({
     );
   }
 
-  // Form context — top 7 match Items palette; then Image / Invitation / Hyperlink / Function.
+  // Form context — top 7 match Items palette; then Image / Link / Function.
   const canFormItems = designActive;
   const inTextBody = focusKind === "text";
   const canRichImage = inTextBody;
@@ -594,20 +589,10 @@ function InsertMenuBody({
         disabled={!canTextExtras}
         onClick={() => {
           if (!canTextExtras) return;
-          openInvitationInsertFromEditor();
+          openLinkInsertFromEditor("form");
         }}
       >
-        Invitation…
-      </button>
-      <button
-        type="button"
-        disabled={!canTextExtras}
-        onClick={() => {
-          if (!canTextExtras) return;
-          openHyperlinkInsertFromEditor();
-        }}
-      >
-        Hyperlink…
+        Link…
       </button>
       <button type="button" disabled={!canTextExtras} onClick={openFunctionPickerFromEditor}>
         Function…

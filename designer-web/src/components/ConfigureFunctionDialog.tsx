@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState, type ReactNode } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { FieldTextInput } from "./FieldDropInputs";
 import { FunctionConditionsEditor } from "./FunctionConditionsEditor";
@@ -23,6 +23,7 @@ import {
 } from "./ConfigureFunctionShell";
 import { PreservedCondChip } from "./PreservedCondChip";
 import { hasDisplayCondition } from "@/lib/preservedImportGaps";
+import { focusConfigureField } from "@/lib/configureFunctionScroll";
 
 interface Props {
   def: FunctionDef;
@@ -97,6 +98,11 @@ export function ConfigureFunctionDialog({ def, initialConfig, onCancel, onSave }
       setSelectedColumn(Math.max(0, columns.length - 1));
     }
   }, [columns.length, selectedColumn]);
+
+  // MQL / long param lists: keep the active control in the left scroll pane (Y1).
+  useLayoutEffect(() => {
+    focusConfigureField(focused);
+  }, [focused, columns.length]);
 
   const help = focusedHelp(def, focused, config);
 
@@ -259,6 +265,7 @@ function ParamField({
               <span>Heading:</span>
               <FieldTextInput
                 configureDialog
+                data-cfg-focus={`column-${i}-header`}
                 value={col.header ?? ""}
                 onFocus={() => {
                   onSelectColumn(i);
@@ -275,6 +282,7 @@ function ParamField({
               <span>Contents:</span>
               <FieldTextInput
                 configureDialog
+                data-cfg-focus={`column-${i}-contents`}
                 value={col.contents ?? ""}
                 onFocus={() => {
                   onSelectColumn(i);
@@ -290,6 +298,7 @@ function ParamField({
             <button
               type="button"
               className="configure-function-column-always"
+              data-cfg-focus={`column-${i}-always`}
               onClick={() => {
                 onSelectColumn(i);
                 onFocus(`column-${i}-always`);
@@ -308,6 +317,7 @@ function ParamField({
       <label>
         <span>{param.name}:</span>
         <select
+          data-cfg-focus={param.id}
           value={String(config[param.id] ?? "")}
           onFocus={() => onFocus(param.id)}
           onChange={(e) => onPatch(param.id, e.target.value)}
@@ -328,6 +338,7 @@ function ParamField({
       <label>
         <span>{param.name}:</span>
         <select
+          data-cfg-focus={param.id}
           value={String(config[param.id] ?? param.defaultValue ?? "")}
           onFocus={() => onFocus(param.id)}
           onChange={(e) => onPatch(param.id, e.target.value)}
@@ -363,6 +374,7 @@ function ParamField({
       {isExpression ? (
         <FieldTextInput
           configureDialog
+          data-cfg-focus={param.id}
           value={String(config[param.id] ?? "")}
           onFocus={() => onFocus(param.id)}
           onValueChange={(v) => onPatch(param.id, v)}
@@ -371,6 +383,7 @@ function ParamField({
       ) : (
         <input
           type="text"
+          data-cfg-focus={param.id}
           value={String(config[param.id] ?? "")}
           onFocus={() => onFocus(param.id)}
           onChange={(e) => onPatch(param.id, e.target.value)}

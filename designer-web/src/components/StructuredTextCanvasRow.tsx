@@ -58,7 +58,7 @@ export function StructuredTextCanvasRow({ item, index, formName, selected }: Pro
   };
 
   const badge = (
-    <CanvasItemBadgeStack showCond={showCond}>
+    <CanvasItemBadgeStack showCond={showCond} formName={formName} itemIndex={index}>
       {editingLabel ? (
         <input
           ref={labelInputRef}

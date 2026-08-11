@@ -23,8 +23,8 @@ Related: `DESIGNER_MENU_SPEC.md`, `DESIGNER_DOCUMENT_EDITOR.md`, `DESIGNER_UI_RE
 | 7 | Skip Instructions | Active | Always |
 | | *(separator)* | | |
 | 8 | Image… | Greyed | Cursor in a **rich-text** area (owner: “text window”; source: `CanInsertImage`) |
-| 9 | Invitation… / **Link…** (unified) | Greyed | Cursor in **Text** item body (`TextItemView`) — **primary Insert for all links** (Jul 31 framing) |
-| 10 | Hyperlink… | Greyed | **Transitional / demoted** — fold into Invitation/Link dialog as “External URL” mode; do not treat as peer to Form links |
+| 9 | **Link…** | Greyed | Cursor in **Text** item body — unified Form / Web / private InviteeID (Aug 10) |
+| 10 | ~~Hyperlink…~~ | — | Folded into **Link…** as **Web address** mode |
 | 11 | Function… | Greyed | Cursor in **Text** item body |
 
 **Field** does **not** appear on the Form Insert menu at all.
@@ -45,8 +45,8 @@ No Image, Invitation, Hyperlink, Function, or Field.
 |------|--------------|
 | **Field** | When a **field leaf** is selected in the **Fields** palette (Document-only menu item). Browser Jul 17: enabled from palette highlight; inserts at last document caret (same as double-click). |
 | **Image…** | When document editor active |
-| **Invitation… / Link…** | Available in document context — **primary** (unified Link; Form-in-project default) |
-| **Hyperlink…** | Available today; **demote** into unified Link as External URL mode |
+| **Link…** | Available in document context — Form-in-project default; Web address mode for external URLs |
+| ~~**Hyperlink…**~~ | Removed Aug 10 — use **Link…** → Web address |
 | **Function…** | When project has **≥1 form**; same as **fx** on document format toolbar |
 
 **Document Field — intentional UX (owner Jul 17, not a bug):**
@@ -155,6 +155,8 @@ Screenshot: [`assets/Insert_Hyperlink.png`](assets/Insert_Hyperlink.png)
 **Deploy:** `<link>…</link>` (`target="_blank"` when new-window set). Runtime: live `<a href=…>`.
 
 **Until unified UI ships:** both menu items may remain wired as today; **docs and future work treat Form link as primary and Hyperlink as secondary mode**, not equals.
+
+**Browser (Aug 10 / A3):** One Insert → **Link…** dialog — radios **Form in project** (default) vs **Web address (URL)**; private InviteeID stays under Form mode. Editing a chip locks the mode. Deploy still `<invitation>` / `<link>`. Separate **Invitation…** / **Hyperlink…** menu peers removed.
 
 ---
 
@@ -456,6 +458,8 @@ Screenshot: [`assets/Function_-_Multiple_Question_List.png`](assets/Function_-_M
 
 Owner (July 10): browser Configure is **functionally the same** for the core params, but legacy is easier to scan visually.
 
+**Scroll-with-caret (Aug 10 / Y1):** Left param pane (`.cfg-fn-fields`) scrolls so the focused control stays visible. Adding MQL columns (footer **+**) focuses the new **Contents** box and scrolls it into view; Tab / click into lower columns or Where rows does the same. **Smoke:** Configure MULTIPLE QUESTION LIST → add columns past the fold with **+** → new Contents stays in view without dragging the dialog.
+
 | Area | Legacy | Browser today |
 |------|--------|----------------|
 | Print / Excel export dropdowns | Yes | Yes (`show-print-control`, `show-export-control`) |
@@ -735,11 +739,31 @@ Catalog matches. Document HTML→XML: **yes** (`<sum>`). **Owner smoke Jul 19: P
 
 ---
 
-## Function status matrix (Jul 24, 2026)
+## Configure Function: MAX (`max`) / MIN (`min`)
+
+Browser Designer addition (Aug 2026). Same Configure shape as **SUM** (blank/hidden field + optional Where). Math Functions category.
+
+| Field | Required | Notes |
+|-------|----------|-------|
+| **Name of question or hidden field** | Yes | Numeric blank/hidden values across matching records. |
+| **Include only the records where** | Conditions | Optional; leave blank for all records from the form inferred by the field. |
+
+Document HTML→XML: `<max version="1">` / `<min version="1">`. Java runtime: `MaxFunction` / `MinFunction` (SUM family).
+
+### Smoke
+
+1. Insert → Function → **MAX** (or **MIN**) → pick a numeric FIB/hidden field → OK.
+2. Push Document that shows the chip; submit several numeric values → result is max/min of stored rows (same process-timing caveat as SUM).
+
+**Note (Aug 10):** A proposed separate **COUNT** function was dropped — it duplicated **FORM RECORD COUNT** (same Form + Where record count). Use FORM RECORD COUNT for equals / is blank / etc.
+
+---
+
+## Function status matrix (Jul 24, 2026; updated Aug 10 for MAX/MIN)
 
 Source of truth for Document HTML→XML: `designer-web/server/documentHtmlToXml.mjs` (`default` → XML comment only for the four parked stubs). Form Text structured nodes also export via `jsonToXml.mjs` where noted.
 
-**XML emit yes (13):** `record-count`, `sum`, `project-email-count`, `display-image`, `display-mcq-label`, `choice-tally-table`, `response-totals-table`, `question-correlation-table`, `popular-choice-display`, `popular-choice-count`, `popular-choice-correlation-table`, `simple-list`, `itemization-table`.
+**XML emit yes (15):** `record-count`, `sum`, `max`, `min`, `project-email-count`, `display-image`, `display-mcq-label`, `choice-tally-table`, `response-totals-table`, `question-correlation-table`, `popular-choice-display`, `popular-choice-count`, `popular-choice-correlation-table`, `simple-list`, `itemization-table`.
 
 **XML emit no / Deferred stub (4):** `categorizer`, `export-team-roster`, `link-to-project-details`, `paypal-single-item-button` — Insert picker hides them (`pickerHidden`).
 
@@ -764,7 +788,9 @@ Ship this Designer build **without** wiring the four HTML→XML stubs below. Cat
 | 2 | DISPLAY IMAGE | `display-image` | **Yes** | **Passed** — owner Jul 18 (Configure URL → Design token → Preview placeholder → Deploy live image) |
 | 3 | DISPLAY MCQ RESPONSES | `display-mcq-label` | **Yes** | **Passed** — owner Jul 18 (Configure + Deploy; spacing between stacked chips fixed same day) |
 | 4 | EXPORT TEAM ROSTER | `export-team-roster` | **Parked stub (Jul 24)** | Hidden from Insert picker; revisit after other project branches |
-| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Passed** — owner Jul 19 (core Deploy + **WHERE re-smoke Passed** — all conditions incl. numeric) |
+| 5 | FORM RECORD COUNT | `record-count` | **Yes** | **Passed** — owner Jul 19 (core Deploy + **WHERE re-smoke Passed** — all conditions incl. numeric). Covers “count where field equals / is blank” use cases (Aug 10: duplicate COUNT dropped). |
+| 5b | MAX | `max` | **Yes** | **Aug 10** — SUM-family field + Where |
+| 5c | MIN | `min` | **Yes** | **Aug 10** — SUM-family field + Where |
 | 6 | LINK TO PROJECT DETAILS | `link-to-project-details` | **Parked stub (Jul 24)** | Hidden from Insert picker; revisit after other project branches |
 | 7 | MULTIPLE QUESTION LIST | `itemization-table` | **Yes** | **Done** — SignupSheet Jul 16. **WHERE re-smoke Passed Jul 19** |
 | 8 | PAYPAL BUTTON | `paypal-single-item-button` | **Parked stub (Jul 24)** | Hidden from Insert picker; **future = generic payment API**, not PayPal-only |
@@ -778,18 +804,15 @@ Ship this Designer build **without** wiring the four HTML→XML stubs below. Cat
 | 16 | SINGLE QUESTION LIST | `simple-list` | **Yes** | **Passed w/ caveats** — owner Jul 19 (`version="2"`; post-process Document is one response behind — legacy persist-after-process). **WHERE re-smoke Passed Jul 19** |
 | 17 | SUM | `sum` | **Yes** | **Passed** — owner Jul 19 (Browser Designer Configure + export + live Deploy total). **WHERE re-smoke Passed Jul 19** |
 
-**Insert siblings (not in the 17):** Invitation… + Hyperlink… — **wired Jul 16** as two peers; **Jul 31 framing:** conflate into one Insert Link (Form primary, external URL secondary). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
+**Insert siblings (not in the 17):** **Link…** (Aug 10 unified Form / Web / private InviteeID; Deploy `<invitation>` / `<link>`). **Image → From your PC…** — Approach A (Jul 16): project `images[]` + Deploy `<imagedef>`. **Image → From the Web** → DISPLAY IMAGE Configure works.
 
-### Smoke — Invitation / Hyperlink (Jul 16; unified dialog later)
+### Smoke — Link… (unified Form / Web — Aug 10)
 
-**Owner OK Jul 16** — both live and valid on Deploy (after config double-encode fix).
-
-1. Form Text → Insert → **Invitation…** (future **Link…**) → Form + Project on one row with **in** between; Display Text; OK → blue underline chip in Design. **Primary path.**
-2. Redeploy → runtime shows a **live** `<a>` (blue underline), not plain text. Click navigates to the invited form.
-3. Insert → **Hyperlink…** (or unified mode **Web address**) → Url + optional Display text + **Open in new browser window.** → OK → chip → Redeploy opens URL (`target=_blank` when checked). **Secondary path.**
-4. Private invitation: check private, drop a field into the InviteeID box → Redeploy includes `<authenticationTokenValue>`. **Tertiary.**
-5. If step 2/3 shows plain text only: restart API (`:3001`) so export includes `<invitation>` / `<link>`, then Redeploy.
-6. If links are blue but **invalid** (JS alert / empty href): chips were double-encoded in Design — fixed Jul 16 (`setAttribute` uses raw JSON; Deploy decodes `&amp;quot;`). Hard-refresh Designer, re-insert chips **or** Redeploy existing content after API restart.
+1. Form Text → Insert → **Link…** → defaults to **Form in project** → Form + Display Text → OK → blue chip. Redeploy → live `<a>`.
+2. Same dialog → **Web address (URL)** → Url + optional Display + new window → OK → Redeploy opens URL.
+3. Form mode → **Make this a private invitation** + InviteeID field → Redeploy includes auth token.
+4. Double-click an existing Form or Web chip → dialog opens locked on that mode; OK updates in place.
+5. If step 1–2 show plain text only: restart API (`:3001`), then Redeploy.
 
 ---
 
@@ -803,8 +826,8 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 | Area | Legacy | Browser today |
 |------|--------|----------------|
-| Context Insert menus | Form / Process / Document | Form / Process / Document context OK (Jul 12); Invitation / Hyperlink live (Jul 16) |
-| Invitation / Hyperlink dialogs | Yes (two menu peers) | **Two peers today (Jul 16)**; **target (Jul 31):** one Insert Link dialog — Form primary, external URL secondary, private InviteeID tertiary; Deploy still `<invitation>` / `<link>` |
+| Context Insert menus | Form / Process / Document | Form / Process / Document; Insert → **Link…** (Aug 10) |
+| Invitation / Hyperlink dialogs | Yes (two menu peers) | **Aug 10:** one Insert → **Link…** — Form primary, Web URL secondary, private InviteeID tertiary; Deploy still `<invitation>` / `<link>` |
 | Function picker + Configure | Full repository | Picker + Configure for all 17; see status matrix above |
 | Image from PC / Web URL | Yes | **From your PC** Approach A (Jul 16); **From the Web…** = DISPLAY IMAGE (Jul 17 rename); File Uploader form item omitted from palette |
 | Insert Field (document) | Yes | **Jul 17:** Insert → Field from Fields selection; **Jul 17 fix:** only active MDI Document (stale prior cleared on window activate); status nudge when no caret |
@@ -824,4 +847,4 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 ---
 
-*Last updated: July 31, 2026 — **Conflate Invitation + Hyperlink** into one Insert Link flow: Form-in-project primary; external URL secondary; private InviteeID tertiary. Dual menu items transitional until unified dialog ships.*
+*Last updated: August 10, 2026 — **Insert → Link…** unified (Form / Web / private InviteeID). Prior: July 31 framing.*

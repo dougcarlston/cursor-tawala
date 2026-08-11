@@ -102,6 +102,14 @@ function formatProcessCommandText(cmd: TawalaProcessCommand): string {
       const where = cond ? ` where ${formatConditionClause(cond)}` : "";
       return `Delete records from ${form}${where}`;
     }
+    case "remove-duplicates": {
+      const form = cmd.form ?? "?";
+      const field = String(cmd.field ?? "?").trim() || "?";
+      const keep = cmd.keep === "first" ? "first" : "most recent";
+      const cond = cmd.where as ConditionShape | undefined;
+      const where = cond ? ` where ${formatConditionClause(cond)}` : "";
+      return `Remove duplicates from ${form} by ${field} (keep ${keep})${where}`;
+    }
     default:
       return String(cmd.cmd ?? "?");
   }

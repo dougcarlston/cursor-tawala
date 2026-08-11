@@ -565,30 +565,30 @@ After the author **owns** a private copy (Library **Save a copy**, or Details / 
 
 **Open question (owner phrasing ambiguous — do not invent):** Owner said *“I think so. I don't mind leaving it on the MyTawala page too”* — unclear what “it” is (likely description double-click or rename discoverability). Confirm before wiring any My Tawala listing affordance from that remark.
 
-### Designer Push rename checklist (docs first — do not mass-rename yet)
+### Designer Push rename checklist (**done Aug 10, 2026** — Designer UI/copy)
 
-Owner Aug 10: Designer user-facing **Deploy** → **Push** (to My Tawala library / show in My Tawala). **Parked on the Designer chat list** — do not implement in website sessions. See `.cursor/rules/tawala-designer-parked-post-website.mdc` (MUST DO) and `docs/CHAT_HANDOFF.md` Chat 1 phase 1. Inventory below until that Designer pass runs. Internal API paths (`/api/deploy`, `deployProject`, code comments, tests) may stay `deploy` for now; this list is **UI / status / help copy** people see.
+Owner Aug 10: Designer user-facing **Deploy** → **Push** (to My Tawala library / show in My Tawala). Implemented in Designer chat (UI/status/help only). Internal API paths (`/api/deploy`, `deployProject`, code comments, tests) still use `deploy`. Website My Tawala Details **Deploy** (share/embed) was **not** renamed.
 
-**Proposed labels:** button short **Push to My Tawala** (or menu **Push…** / toolbar tip **Push Project**); help long form *Push Project to your MyTawala library*. **Deploy this version** → **Push this version** (or equivalent). Dialog titles e.g. *Project pushed* / *Push failed*.
+**Labels shipped:** File **Push…**; Project **Push to My Tawala**; toolbar tip **Push Project**; help long form *Push Project to your MyTawala library*. Dialog **Project pushed** / **Push Failed**. Versions **Push this version**. My Tawala listing link **Push from Designer**.
 
-**`designer-web/` user-facing strings (~20+ sites; primary files below):**
+**`designer-web/` user-facing strings (updated):**
 
-| Location | Current copy (rename candidates) |
-|----------|----------------------------------|
-| `src/components/MenuBar.tsx` | File menu **Deploy…**; Project menu **Deploy**; theme tooltips mentioning Deploy / Redeploy |
-| `src/components/MainIconToolbar.tsx` | Toolbar tip **Deploy Project** |
-| `src/components/LoginDialog.tsx` | **Login & Deploy**; “Credentials for deploy…” |
-| `src/components/DeployDialog.tsx` | Titles **Deploy Failed** / **Project Deployed**; “Deploy succeeded…”; help cites **Deploy this version** / Deploy → Show in My Tawala; placeholder “What changed in this deploy?” |
-| `src/store/projectStore.ts` | Status: **Deploying…**, **Deploy failed:**, **Deployed {name}**, **Deploy error:**, **Enter deploy credentials** |
-| `src/components/StatusBar.tsx` | **deploy →** Java / dev runtime |
-| `src/components/PageHeaderDialog.tsx` | Status “Page Header saved — **Deploy** shows it…” |
-| `src/components/SendStatementBuilder.tsx` | Hint “On **Deploy** (:8080)…” |
-| `src/lib/functionCatalog.ts` | Function-picker blurbs that say “on **Deploy**…” (user-visible) |
-| `server/runtime.mjs` | Preview chrome: “Use **Deploy** to run it live” |
+| Location | Copy |
+|----------|------|
+| `src/components/MenuBar.tsx` | File **Push…**; Project **Push to My Tawala**; theme tooltips Push |
+| `src/components/MainIconToolbar.tsx` | Toolbar tip **Push Project** |
+| `src/components/LoginDialog.tsx` | **Login & Push**; “Credentials for Push…” |
+| `src/components/DeployDialog.tsx` | **Push Failed** / **Project pushed**; **Push this version**; placeholder “What changed in this push?” |
+| `src/store/projectStore.ts` | Status: **Pushing…**, **Push failed:**, **Pushed {name}**, **Push error:**, **Enter Push credentials** |
+| `src/components/StatusBar.tsx` | **push →** Java / dev runtime |
+| `src/components/PageHeaderDialog.tsx` | Status “Page Header saved — **Push** shows it…” |
+| `src/components/SendStatementBuilder.tsx` | Hint “On **Push** (:8080)…” |
+| `src/lib/functionCatalog.ts` | Function-picker blurbs “on **Push**…” |
+| `server/runtime.mjs` | Preview chrome: “Use **Push** to run it live” |
 
-**Also mirror on website-mock when Designer renames** (same product verb family — not the new Details **Deploy**): Versions button **Deploy this version** + related alerts/hints in `js/project-ops.js`; My Tawala **Deploy from Designer** link / inbox copy; Use tooltips “Deploy … before Use”; symbiotic hop docs that say Designer **Deploy** dialog.
+**Website-mock mirrored (Designer verb family only):** Versions **Push this version** + related alerts; listing **Push from Designer**; Export/Import/Purge “Push from Designer” hints. Details share verb remains **Deploy**.
 
-**Out of scope for the rename pass:** code identifiers, `/api/deploy`, Java “auto-deploy” jargon in maintainer docs, template instructional text that literally shows a Deploy *button screenshot* inside sample projects (product content, not shell chrome) — call those out separately if the owner wants them updated.
+**Still out of scope:** code identifiers, `/api/deploy`, Java “auto-deploy” jargon in maintainer docs, template instructional screenshots that literally show a Deploy button inside sample projects.
 
 ### Acquire naming (owner Aug 10, 2026)
 
@@ -686,7 +686,7 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 2. **Project Details ops rail** — **PARTIAL (Aug 9 afternoon):** wider left **Project options** sidebar — Author / Version / Published / Status / Theme, Invite/Include stubs under Theme, Edit in Designer + Active/De-activate; Backup/Restore/Publish on action bar; data ops on Project Data banner. Full grouping polish (Purge/Delete adjacency) can continue later. Keep Purge ≠ Delete ≠ De-activate.
 3. **Records (Responses) count** — **DONE (Aug 9 slice; demorec1 fix):** project-wide total on My Tawala list + Details (`TawalaDemo.countResponses` → `:3001/api/export-responses`). Per-form counts in Project Data. Live export **success** wins (including real **0**). When live export fails (`:3001` down **or** Docker/Postgres unreachable while health is still 200), **Online Exam Builder** falls back to seeded demo Records (**50**) instead of **"—"**; Purge → **0**; **Reseed demo Records** restores. Other projects still show honest **"—"** when counts are unavailable. No dedicated count endpoint yet — export is the path.
 4. **Project Data section** — **DONE (tree + forms + Purge scope, Aug 9):** project **+** cycles closed → start points → all forms (second click; Forms **+** optional). Online Exam seeded `formNames` + `projects/mytawala/Online Exam Builder.json` hydrate. Selection scopes Export / Import / Purge (enablement matrix A/B/C). **Whole-project Purge** (`:3001/api/purge-responses`) and **Selective (per-form) Purge** (export → drop form → replace) share the Project Data **Purge** control; confirm copy names the scope; Records re-hydrate after success. Responsive polish (fluid names, aligned RECORDS, hide sidebar below 1024px) committed separately. **HOLD nuance:** sports “stats-only” Selective Purge after commissioner feedback if needed.
-5. **Theme / Appearance** — **PARTIAL (Aug 10 theme1):** Details identity-rail dropdown lists legacy Designer themes (same labels/paths as `designer-web` `projectThemes`); shows current `themePath`; change persists on My Tawala overlay. Acquire / Push / Publish / Refresh / Make a Copy carry `themePath`; hydrate recovers Library twin / version definition / `jsonFile` when overlay lacked it. **HOLD:** does **not** push CSS to `:8080` — runtime theme still comes from Designer **Push / Redeploy** (definition `themePath`). Dropdown is metadata + honest status, not live Tomcat restyle. **Parked on Designer ToDo** (`.cursor/rules/tawala-designer-parked-post-website.mdc` MUST DO + `docs/CHAT_HANDOFF.md` Chat 1) — do not implement live restyle in website chat.
+5. **Theme / Appearance** — **DONE for live CSS (Aug 10 theme2):** Details dropdown persists `themePath` on My Tawala overlay; acquire / Push receipt / Publish / Refresh / Make a Copy carry it. **Changing Theme** (when a live definition + uniqueId exist) **Pushes** the stamped `themePath` to `:8080` via `/api/deploy` (no new Versions row). **Push this version** also stamps overlay Theme onto the definition before upload. Hard-refresh the form if CSS looks cached. Overlay-only when no definition/uniqueId yet (Push from Designer first).
 6. **Published indicator** — **DONE (Aug 9 slice):** Details shows Yes + Library link (catalog twin or `publishedToLibraryId` after Publish); No when unpublished.
 7. **Author / version / description rail** — **DONE (Aug 9 slice; blurb placement clarified):** Author (mock user) + Version # (+ Deploy `versionDescription` only) in the left rail. Project **shortDescription** blurb lives **once** under the main title — not repeated under Version / in the sidebar.
 8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10; library-detail Save a copy Aug 10 libsc1; Copy link Aug 10 tdshare1):** Listing + detail CTAs = **Test Drive** + **Copy link** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe honesty remains Task #14. ≠ My Tawala **Make a Copy**.

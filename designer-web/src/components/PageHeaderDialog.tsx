@@ -145,7 +145,7 @@ export function PageHeaderDialog({ open, onClose }: Props) {
     setPageHeader(next.pageHeader, next.images ?? []);
     setStatus(
       next.pageHeader
-        ? "Page Header saved — Deploy shows it on form pages"
+        ? "Page Header saved — Push shows it on form pages"
         : "Page Header cleared",
     );
     onClose();

@@ -88,4 +88,23 @@ describe("MDI-aware field insert targets", () => {
     expect(insertFieldIntoActiveTarget("Form 1:Name")).toBe(true);
     expect(inserted).toEqual(["Form 1:MCQ4", "Form 1:Name"]);
   });
+
+  it("Skip Instructions If field accepts Fields double-click outside the MDI window", () => {
+    const modal = document.createElement("div");
+    modal.className = "modal-dialog designer-dialog skip-instructions-dialog";
+    const input = document.createElement("input");
+    modal.appendChild(input);
+    document.body.appendChild(modal);
+
+    setActiveFieldTarget((name) => inserted.push(name), { bare: true }, input);
+    expect(fieldLeafAcceptedByActiveTarget("Form 1:Email")).toBe(true);
+    expect(insertFieldIntoActiveTarget("Form 1:Email")).toBe(true);
+    expect(inserted).toEqual(["Form 1:Email"]);
+
+    winA.classList.remove("active");
+    winB.classList.add("active");
+    syncDesignerTargetsToActiveMdiWindow();
+    expect(insertFieldIntoActiveTarget("Form 1:Tel")).toBe(true);
+    expect(inserted).toEqual(["Form 1:Email", "Form 1:Tel"]);
+  });
 });

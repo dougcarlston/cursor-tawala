@@ -40,7 +40,7 @@ On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `_
 
 **Done:** dialog, JSON schema, `.tawala` import, Deploy export, Preview banner, Send checkbox gate, Design-canvas stand-in; opaque/larger dialog.
 
-**Parked:** in-dialog pan/crop/resize (baking to banner size made Deploy banners soft). Deploy keeps the full photo and theme cover crop.
+**Parked → reopen (owner Aug 10):** in-dialog pan/crop/resize was mothballed because baking to banner size looked soft vs Deploy’s full-res + theme `object-fit: cover`. **When back:** reinstall that graphics tool; consider **dropping aspect-lock / non-distort** so banners can stretch sideways. Prefer a crop/viewport that keeps source sharp on Push.
 
 **Design canvas:** When Page Header has text and/or image, Form Design shows a top row with chip **`<<Project Header>>`** (optional thumb + title text). Click opens the dialog. This is **not** a Form Heading item — authors may still add Main/Sub headings below the banner.
 
@@ -65,4 +65,4 @@ On **OK**, saves to `project.pageHeader` + optional `project.images` entry id `_
 
 ---
 
-*Last updated: July 28, 2026.*
+*Last updated: August 10, 2026.*

@@ -300,6 +300,12 @@ export type FieldTargetContext = {
   knownVariables?: ReadonlySet<string>;
   /** Allow register while Configure Function lock is on (Configure dialog inputs only). */
   configureDialog?: boolean;
+  /**
+   * Accept Fields double-click when the owner input is outside `.mdi-window.active`
+   * (e.g. Skip Instructions portal). Prefer DOM detection via `activeTargetUsableOutsideMdi`;
+   * this flag is an explicit override.
+   */
+  allowOutsideMdi?: boolean;
 };
 
 let activeInserter: ActiveInserter | null = null;
@@ -337,6 +343,10 @@ let fieldDragActive = false;
 
 export function setFieldDragActive(active: boolean): void {
   fieldDragActive = active;
+  if (typeof document === "undefined") return;
+  // Skip If boxes can sit under the raised Fields column — drop Fields under the
+  // Skip overlay while dragging (CSS: body.fields-palette-dragging).
+  document.body.classList.toggle("fields-palette-dragging", active);
 }
 
 export function isFieldDragActive(): boolean {
@@ -419,7 +429,7 @@ export function syncDesignerTargetsToActiveMdiWindow(): void {
   if (
     activeOwnerEl &&
     !activeWin.contains(activeOwnerEl) &&
-    !activeTargetContext.configureDialog
+    !activeTargetUsableOutsideMdi()
   ) {
     setActiveFieldTarget(null);
   }
@@ -472,11 +482,26 @@ export function isValidIfConditionField(
 }
 
 /**
- * Configure Function / Invitation / Hyperlink field boxes live in a modal overlay,
- * not inside `.mdi-window.active`. They must still accept Fields double-click.
+ * Configure Function / Skip Instructions / other modal field boxes live outside
+ * `.mdi-window.active`. They must still accept Fields double-click / drag.
  */
 function activeTargetUsableOutsideMdi(): boolean {
-  return Boolean(activeTargetContext.configureDialog);
+  if (activeTargetContext.configureDialog) return true;
+  if (activeTargetContext.allowOutsideMdi) return true;
+  if (
+    activeOwnerEl?.closest?.(
+      [
+        ".modal-dialog",
+        ".designer-dialog",
+        ".skip-instructions-dialog",
+        ".configure-function-dialog",
+        ".cfg-fn-dialog",
+      ].join(", "),
+    )
+  ) {
+    return true;
+  }
+  return false;
 }
 
 /** Whether a Fields-panel leaf may insert into the active target. */

@@ -9,14 +9,14 @@ alwaysApply: true
 
 ## MUST DO when Designer resumes (owner Jul 31, 2026)
 
-**Conflate Insert → Invitation… and Insert → Hyperlink…** into one Insert Link dialog — **pride of place to Form-in-project links** (today’s Invitation). External URL (Hyperlink) = secondary mode; private InviteeID = tertiary. Deploy XML stays `<invitation>` vs `<link>` by mode. Dual menu peers are transitional only.
+**Conflate Insert → Invitation… and Insert → Hyperlink…** into one Insert Link dialog — **pride of place to Form-in-project links** (today’s Invitation). External URL (Hyperlink) = secondary mode; private InviteeID = tertiary. Deploy XML stays `<invitation>` vs `<link>` by mode. **DONE Aug 10** — Insert → **Link…**; dual menu peers removed.
 
-- Spec (do not re-debate framing): `Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § **Insert → Link / Invitation… (unified — Form links first)**
+- Spec: `Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § **Insert → Link / Invitation… (unified — Form links first)**
 - Also noted in: `docs/CHAT_HANDOFF.md` Chat 1 opener; triage note on *Private Invitations.doc*
 
-**Rename Designer Deploy → Push (owner Aug 10, 2026 — park; do not implement in website chat):** User-facing **Deploy…** / **Deploy this version** (and similar shell copy) → **Push to My Tawala** / *Push Project to your MyTawala library* (short button / long help). **Deploy this version** → **Push this version**. Keep `/api/deploy`, `deployProject`, and related code ids for now — UI/status/help only. Inventory: `website-mock/README.md` § **Designer Push rename checklist**. Website My Tawala Details keeps the verb **Deploy** (go live + share/embed) — do not conflate.
+**Rename Designer Deploy → Push (owner Aug 10, 2026 — DONE Aug 10):** User-facing **Deploy…** / **Deploy this version** → **Push…** / **Push to My Tawala** / **Push this version**. Keep `/api/deploy`, `deployProject`, and related code ids. Inventory: `website-mock/README.md` § **Designer Push rename checklist**. Website My Tawala Details keeps the verb **Deploy** (go live + share/embed).
 
-**Theme applies on Push (owner Aug 10, 2026 — park; do not implement in website chat):** My Tawala Project Details Theme dropdown already persists `themePath` on the overlay (PARTIAL — website Task #5). Changing Theme does **not** restyle live `:8080` forms yet. Fix via **Designer Push / Redeploy** so deployed project CSS/theme follows `themePath` (live Tomcat restyle), not overlay metadata alone. Cross-ref: `website-mock/README.md` Task List #5 Theme / Appearance HOLD. Owner will switch to Designer chat once the Library plate is emptier.
+**Theme applies on Push (owner Aug 10, 2026 — DONE Aug 10):** My Tawala Theme dropdown persists `themePath` and, when a live definition exists, **Pushes** stamped project/form `themePath` to `:8080` via `/api/deploy`. **Push this version** stamps overlay Theme onto the definition before upload. Designer Push receipt carries `themePath`. Cross-ref: `website-mock/README.md` Task List #5.
 
 ## Parked until site is up
 

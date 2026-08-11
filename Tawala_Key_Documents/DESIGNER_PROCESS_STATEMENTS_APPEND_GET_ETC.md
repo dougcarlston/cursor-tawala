@@ -145,6 +145,45 @@ Delete records from Followup Q where …
 
 ---
 
+## Remove Duplicates (browser Designer — Aug 2026)
+
+Deletes submissions that share a **key field** value (e.g. `PlayerID`), keeping either the **most recently added** or the **first** row per key. Optional **Where** narrows which rows are considered before deduping.
+
+Not present on the owner’s Jan 2011 desktop Statements palette; added in browser Designer as a Process statement (not an Insert → Function).
+
+### UI
+
+| Control | Label |
+|---------|-------|
+| Form dropdown | **records from form:** |
+| Key field | **key field:** (e.g. `Record:Form:PlayerID`) |
+| Keep | **most recently added** (default) or **first added** |
+| **Where (optional)** | Same condition rows as Delete / Get |
+
+### Deploy XML
+
+```xml
+<remove-duplicates keep="latest|first">
+  <form name="Form 1"/>
+  <field>Record:Form 1:PlayerID</field>
+  <conditions>…</conditions>  <!-- optional -->
+</remove-duplicates>
+```
+
+### Expected script
+
+```
+Remove duplicates from Form 1 by Form 1:PlayerID (keep most recent)
+```
+
+### Smoke
+
+1. Process → Add **Remove Duplicates** → form + key field → Add.
+2. Push; run process against a form with two rows sharing the key → one row remains (latest or first per keep).
+3. Optional Where: only rows matching Where enter the dedupe set.
+
+---
+
 ## Set
 
 Assigns a value to a **variable** (creates the variable if it does not exist).
