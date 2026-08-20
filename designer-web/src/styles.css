@@ -1097,8 +1097,34 @@ textarea {
   background: #fff7ed;
 }
 
+/* Keep amber readable when the row is selected (selection color otherwise wins). */
+.tree-node.has-preserved-warning.selected .tree-label {
+  color: #7c2d12;
+  font-weight: 700;
+}
+
 .tree-node.has-preserved-warning .tree-icon {
   filter: sepia(0.35) saturate(2.2) hue-rotate(-20deg);
+}
+
+/* Explicit mark — sits before the name so ellipsis cannot hide it. */
+.tree-preserved-warning-mark {
+  flex: 0 0 auto;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 3px;
+  background: #c2410c;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 14px;
+  text-align: center;
+}
+
+.tree-node .tree-label {
+  flex: 1;
+  min-width: 0;
 }
 
 /* Shared [-]/[+] collapse control for Project Explorer and Fields tree. */
@@ -3722,7 +3748,17 @@ div.skip-script-line[role="button"]:hover {
 .fib-canvas-row.has-preserved-gap,
 .text-canvas-row.has-preserved-gap,
 .mcq-canvas-row.has-preserved-gap {
-  box-shadow: inset 3px 0 0 #ea580c;
+  box-shadow: inset 4px 0 0 #c2410c;
+  background: linear-gradient(90deg, #fff7ed 0, #fff7ed 8px, transparent 8px);
+}
+
+/* Item badge matches Explorer: amber chrome when a nested function still has column DC. */
+.form-canvas .text-badge.has-preserved-gap-badge,
+.canvas-item-badge-stack .text-badge.has-preserved-gap-badge {
+  border-color: #c2410c;
+  background: #fff7ed;
+  color: #9a3412;
+  box-shadow: inset 0 0 0 1px rgba(194, 65, 12, 0.25);
 }
 
 .configure-function-cond-chip {

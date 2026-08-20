@@ -35,7 +35,8 @@ export function StructuredTextCanvasRow({ item, index, formName, selected }: Pro
   const content: RichContentBlock[] = Array.isArray(item.content) ? item.content : [];
   const table = findEditableStructuredFunctionNode(content);
   const showCond = formItemHasDisplayCondition(item);
-  const gapClass = formItemHasPreservedGap(item) ? " has-preserved-gap" : "";
+  const hasPreservedGap = formItemHasPreservedGap(item);
+  const gapClass = hasPreservedGap ? " has-preserved-gap" : "";
 
   const update = (next: RichContentBlock[]) => {
     updateFormItem(formName, index, { ...item, content: next });
@@ -79,14 +80,16 @@ export function StructuredTextCanvasRow({ item, index, formName, selected }: Pro
         />
       ) : (
         <div
-          className={`text-badge${table ? " editing" : ""}`}
+          className={`text-badge${table ? " editing" : ""}${hasPreservedGap ? " has-preserved-gap-badge" : ""}`}
           draggable={!!table && selected}
           title={
-            selected
-              ? table
-                ? "Drag to reorder, or click to edit text label"
-                : "Click to rename, or use × to delete"
-              : "Click to select"
+            hasPreservedGap
+              ? "Preserved column visibility in a function — open Configure on the amber chip"
+              : selected
+                ? table
+                  ? "Drag to reorder, or click to edit text label"
+                  : "Click to rename, or use × to delete"
+                : "Click to select"
           }
           onDragStart={(e) => {
             if (!table || !selected) {

@@ -284,8 +284,8 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 **Cue hierarchy (outer → inner) — wired in `designer-web`:**
 
-1. **Project Explorer** — Form or Document node shows an amber warning cue if **anything inside** still has an **uneditable** gap (itemization **column** `displayCondition` / Document HTML embed). Item-level Form Item conditions are editable and no longer flag Explorer.
-2. **Form / Document canvas** — **`{Qn}` braces** on the badge when `item.displayCondition` is set (product state, not a warning). Orange left-edge gap stripe only for rows that still embed **column** conditions. **Function chip** turns amber when columns carry `displayCondition`.
+1. **Project Explorer** — **Forms** / **Documents** folders and Form/Document nodes show an orange **`!`** when anything inside still has an **uneditable** gap. **Aug 20:** Forms with gaps list drill-down rows (`T2 (preserved)`) under the form — click opens that item. Item-level Form Item conditions are editable and no longer flag Explorer.
+2. **Form / Document canvas** — **`{Qn}` braces** on the badge when `item.displayCondition` is set (product state, not a warning). Orange left-edge gap stripe **and amber T-badge** for rows that still embed **column** conditions. **Function chip** turns amber when columns carry `displayCondition`.
 3. **Configure Function dialog** — column-level **`cond` badge** next to “Column N” when that column has `displayCondition` (round-trip preserves the marker; edit UI still deferred).
 4. **Status bar** — count of **uneditable** preserved gap markers (column conditions). Item-level conditions are not counted as gaps.
 

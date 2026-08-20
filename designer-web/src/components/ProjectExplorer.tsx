@@ -5,6 +5,7 @@ import { linkedProcessesForForm } from "@/lib/projectModel";
 import {
   documentHasPreservedGaps,
   formHasPreservedGaps,
+  formItemsWithPreservedGaps,
 } from "@/lib/preservedImportGaps";
 import { fieldDropRejectHandlers } from "./FieldDropInputs";
 import {
@@ -29,6 +30,7 @@ export function ProjectExplorer() {
   const selection = useProjectStore((s) => s.selection);
   const setSelection = useProjectStore((s) => s.setSelection);
   const openWindow = useProjectStore((s) => s.openWindow);
+  const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
   const addForm = useProjectStore((s) => s.addForm);
   const addProcess = useProjectStore((s) => s.addProcess);
   const addDocument = useProjectStore((s) => s.addDocument);
@@ -230,14 +232,18 @@ export function ProjectExplorer() {
                 onToggle={() => toggle("forms")}
                 selected={selection.kind === "forms"}
                 onSelect={() => setSelection({ kind: "forms" })}
+                warning={project.forms.some((f) => formHasPreservedGaps(f))}
+                warningTitle="One or more forms have preserved visibility conditions Designer cannot edit yet"
                 icon={<FolderIcon />}
               />
               {expanded.forms && (
                 <ul>
                   {project.forms.map((form) => {
                     const links = linkedProcessesForForm(form, project.processes);
+                    const gapItems = formItemsWithPreservedGaps(form);
                     const formExpanded = expandedForms.has(form.name);
                     const formKey = `form:${form.name}`;
+                    const hasChildren = links.length > 0 || gapItems.length > 0;
                     return (
                       <li key={form.name}>
                         <TreeNode
@@ -246,7 +252,7 @@ export function ProjectExplorer() {
                           onToggle={() => toggleForm(form.name)}
                           selected={isSelected({ kind: "form", name: form.name })}
                           onSelect={() => openWindow("form", form.name)}
-                          leaf={links.length === 0}
+                          leaf={!hasChildren}
                           dragKind="form"
                           dragName={form.name}
                           acceptProcessAsPost={!form.process}
@@ -263,8 +269,12 @@ export function ProjectExplorer() {
                           onRenameSubmit={(next) =>
                             submitRename({ key: formKey, kind: "form", name: form.name }, next)
                           }
-                          warning={formHasPreservedGaps(form)}
-                          warningTitle="Form has preserved visibility conditions Designer cannot edit yet"
+                          warning={gapItems.length > 0}
+                          warningTitle={
+                            gapItems.length === 1
+                              ? `Preserved visibility on item ${gapItems[0].label} — expand to open`
+                              : `Preserved visibility on ${gapItems.length} items — expand to open`
+                          }
                           icon={
                             <FormNodeIcon
                               startPoint={form.startPoint}
@@ -273,8 +283,26 @@ export function ProjectExplorer() {
                             />
                           }
                         />
-                        {formExpanded && links.length > 0 && (
+                        {formExpanded && hasChildren && (
                           <ul>
+                            {gapItems.map((gap) => (
+                              <li key={`gap:${form.name}:${gap.index}`}>
+                                <TreeNode
+                                  label={`${gap.label} (preserved)`}
+                                  expanded={false}
+                                  onToggle={() => {}}
+                                  selected={false}
+                                  onSelect={() => {
+                                    openWindow("form", form.name);
+                                    setSelectedItemIndex(gap.index);
+                                  }}
+                                  leaf
+                                  warning
+                                  warningTitle="Open this item — function chip has column visibility Designer cannot edit yet"
+                                  icon={<WarningGapIcon />}
+                                />
+                              </li>
+                            ))}
                             {links.map((link) => {
                               const linkKey = `${form.name}:${link.role}:${link.name}`;
                               return (
@@ -372,6 +400,8 @@ export function ProjectExplorer() {
                 onToggle={() => toggle("documents")}
                 selected={selection.kind === "documents"}
                 onSelect={() => setSelection({ kind: "documents" })}
+                warning={(project.documents ?? []).some((d) => documentHasPreservedGaps(d))}
+                warningTitle="One or more documents have preserved visibility conditions Designer cannot edit yet"
                 icon={<FolderIcon />}
               />
               {expanded.documents && (
@@ -603,6 +633,18 @@ function TreeNode({
           {icon}
         </span>
       ) : null}
+      {warning ? (
+        <span
+          className="tree-preserved-warning-mark"
+          title={
+            warningTitle ??
+            "Contains preserved visibility conditions Designer cannot edit yet"
+          }
+          aria-label="Preserved import warning"
+        >
+          !
+        </span>
+      ) : null}
       {editing ? (
         <RenameInput initial={label} onSubmit={(next) => onRenameSubmit?.(next)} />
       ) : (
@@ -688,6 +730,26 @@ function FolderIcon() {
         stroke="#c48f16"
         strokeWidth="0.8"
       />
+    </svg>
+  );
+}
+
+/** Preserved-gap drill-down under a Form (column displayCondition). */
+function WarningGapIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" aria-hidden focusable="false">
+      <circle cx="8" cy="8" r="7" fill="#c2410c" />
+      <text
+        x="8"
+        y="12"
+        textAnchor="middle"
+        fontSize="11"
+        fontWeight="700"
+        fill="#fff"
+        fontFamily="system-ui, sans-serif"
+      >
+        !
+      </text>
     </svg>
   );
 }

@@ -48,6 +48,17 @@ describe("preservedImportGaps", () => {
     ).toBe(true);
   });
 
+  it("flags Form Text HTML string content with preserved-import-warning", () => {
+    expect(
+      formItemHasPreservedGap({
+        type: "text",
+        label: "T1",
+        content:
+          '<span class="function-token preserved-import-warning" data-function-config="%22displayCondition%22"></span>',
+      }),
+    ).toBe(true);
+  });
+
   it("flags document HTML that embeds displayCondition", () => {
     expect(
       contentHasColumnDisplayCondition(

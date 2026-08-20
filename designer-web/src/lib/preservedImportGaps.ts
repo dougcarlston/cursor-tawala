@@ -88,10 +88,30 @@ function walkNodesForColumnDc(nodes: unknown): boolean {
  * Embedded itemization column displayCondition remains a gap.
  */
 export function formItemHasPreservedGap(item: FormItem): boolean {
-  if (item.type === "text" && Array.isArray(item.content)) {
-    return contentHasColumnDisplayCondition(item.content);
+  if (item.type !== "text") return false;
+  const content = item.content;
+  if (Array.isArray(content)) {
+    if (contentHasColumnDisplayCondition(content)) return true;
+    // Belt-and-suspenders: nested columns / URI payloads some walks miss.
+    return JSON.stringify(content).includes('"displayCondition"');
+  }
+  if (typeof content === "string") {
+    return contentHasColumnDisplayCondition(content);
   }
   return false;
+}
+
+/** Form Text items that still embed uneditable column visibility (Explorer drill-down). */
+export function formItemsWithPreservedGaps(
+  form: TawalaForm,
+): { index: number; label: string }[] {
+  const out: { index: number; label: string }[] = [];
+  (form.items ?? []).forEach((item, index) => {
+    if (formItemHasPreservedGap(item)) {
+      out.push({ index, label: String(item.label ?? `Item ${index + 1}`) });
+    }
+  });
+  return out;
 }
 
 export function formHasPreservedGaps(form: TawalaForm): boolean {
