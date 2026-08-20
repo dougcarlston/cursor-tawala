@@ -351,7 +351,8 @@ h1.pageHeading:has(img) img {
 	width: 100% !important;
 	height: 100% !important;
 	max-width: none !important;
-	object-fit: cover !important;
+	/* fill — Designer already baked the crop; cover re-cropped top/bottom on wide forms */
+	object-fit: fill !important;
 	z-index: 0 !important;
 	border: 0 !important;
 }

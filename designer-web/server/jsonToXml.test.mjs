@@ -432,6 +432,28 @@ describe("projectToXml pageHeader", () => {
     );
     expect(xml).toContain('<imagedef id="__HEADER__">');
   });
+
+  it("omits designer-only __HEADER_SOURCE__ from Deploy XML", () => {
+    const xml = projectToXml({
+      name: "Banner",
+      forms: [{ name: "Form 1", startPoint: true, items: [] }],
+      pageHeader: {
+        text: "Hello Camp",
+        imageId: "__HEADER__",
+        width: 40,
+        height: 60,
+        imageViewport: { x: 0, y: -10, scaleX: 1, scaleY: 1 },
+      },
+      images: [
+        { id: "__HEADER__", imageFormat: "PNG", data: "QkFLRQ==" },
+        { id: "__HEADER_SOURCE__", imageFormat: "JPEG", data: "U09VUkNF" },
+      ],
+    });
+    expect(xml).toContain('<imagedef id="__HEADER__">');
+    expect(xml).not.toContain("__HEADER_SOURCE__");
+    expect(xml).not.toContain("U09VUkNF");
+    expect(xml).not.toContain("imageViewport");
+  });
 });
 
 describe("xmlCommentText", () => {

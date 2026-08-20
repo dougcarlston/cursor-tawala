@@ -1,6 +1,7 @@
 /**
- * Project → Page Header… — plain text + optional banner image (Browse / Remove).
+ * Project → Page Header… — plain text + optional banner image with pan/zoom/stretch.
  * Legacy: `PageHeaderDialog` / `PageHeaderPresenter`.
+ * Bake keeps source crop resolution (not CSS 520×160) so Deploy stays sharp.
  */
 
 import { useEffect, useRef, useState } from "react";
@@ -17,7 +18,16 @@ import {
   PAGE_HEADER_IMAGE_ID,
   applyPageHeaderToProject,
   pageHeaderImage,
+  pageHeaderSourceImage,
 } from "@/lib/pageHeader";
+import {
+  PAGE_HEADER_FRAME_H,
+  PAGE_HEADER_FRAME_W,
+  type PageHeaderImageViewport,
+  bakePageHeaderViewport,
+  clampViewport,
+  coverViewport,
+} from "@/lib/pageHeaderImageFit";
 import type { TawalaImageFormat } from "@/types/tawala";
 
 interface Props {
@@ -26,50 +36,68 @@ interface Props {
 }
 
 interface PendingImage {
-  data: string;
-  imageFormat: TawalaImageFormat;
+  /** Full-resolution source (before bake). */
+  sourceData: string;
+  sourceFormat: TawalaImageFormat;
   fileName?: string;
-  width: number;
-  height: number;
+  naturalW: number;
+  naturalH: number;
   previewUrl: string;
+  viewport: PageHeaderImageViewport;
 }
+
+type DragMode = "pan" | "zoom" | "stretchX" | null;
 
 export function PageHeaderDialog({ open, onClose }: Props) {
   const project = useProjectStore((s) => s.project);
   const setPageHeader = useProjectStore((s) => s.setPageHeader);
   const setStatus = useProjectStore((s) => s.setStatus);
   const fileRef = useRef<HTMLInputElement>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
+  const dragRef = useRef<{
+    mode: DragMode;
+    startX: number;
+    startY: number;
+    origin: PageHeaderImageViewport;
+  } | null>(null);
+  /** Keep natural size / viewport for pointer handlers without rebinding every move. */
+  const pendingRef = useRef<PendingImage | null>(null);
 
   const [text, setText] = useState("");
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   /** True after Remove until Browse again — OK clears the stored image. */
   const [imageRemoved, setImageRemoved] = useState(false);
+  const [baking, setBaking] = useState(false);
+
+  pendingRef.current = pendingImage;
 
   useEffect(() => {
     if (!open) return;
     const ph = project.pageHeader;
     setText(ph?.text ?? "");
     setImageRemoved(false);
-    const existing = pageHeaderImage(project);
+    // Prefer full original + saved viewport so OK → Push → reopen stays editable.
+    const source = pageHeaderSourceImage(project);
+    const baked = pageHeaderImage(project);
+    const existing = source ?? baked;
     if (existing) {
       const previewUrl = dataUrlForImage(existing);
-      setPendingImage({
-        data: existing.data,
-        imageFormat: existing.imageFormat,
-        fileName: existing.fileName,
-        width: ph?.width ?? 0,
-        height: ph?.height ?? 0,
-        previewUrl,
-      });
-      if (!ph?.width || !ph?.height) {
-        void loadImageNaturalSize(previewUrl).then((sz) => {
-          setPendingImage((cur) =>
-            cur
-              ? { ...cur, width: sz.width, height: sz.height }
-              : cur,
-          );
+      void loadImageNaturalSize(previewUrl).then((sz) => {
+        const saved = ph?.imageViewport;
+        const viewport =
+          source && saved
+            ? clampViewport(saved, sz.width, sz.height)
+            : coverViewport(sz.width, sz.height);
+        setPendingImage({
+          sourceData: existing.data,
+          sourceFormat: existing.imageFormat,
+          fileName: existing.fileName,
+          naturalW: sz.width,
+          naturalH: sz.height,
+          previewUrl,
+          viewport,
         });
-      }
+      });
     } else {
       setPendingImage(null);
     }
@@ -86,12 +114,100 @@ export function PageHeaderDialog({ open, onClose }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose]);
 
+  useEffect(() => {
+    if (!open) return;
+    const onMove = (e: PointerEvent) => {
+      const drag = dragRef.current;
+      const img = pendingRef.current;
+      if (!drag || !drag.mode || !img) return;
+      const dx = e.clientX - drag.startX;
+      const dy = e.clientY - drag.startY;
+      let next = { ...drag.origin };
+      if (drag.mode === "pan") {
+        next.x = drag.origin.x + dx;
+        next.y = drag.origin.y + dy;
+      } else if (drag.mode === "zoom") {
+        // Drag right/down = zoom in (uniform).
+        const factor = Math.exp((dx + dy) * 0.004);
+        next.scaleX = Math.max(0.05, drag.origin.scaleX * factor);
+        next.scaleY = Math.max(0.05, drag.origin.scaleY * factor);
+        // Keep frame center stable while zooming.
+        const cx = PAGE_HEADER_FRAME_W / 2;
+        const cy = PAGE_HEADER_FRAME_H / 2;
+        const sx = (cx - drag.origin.x) / drag.origin.scaleX;
+        const sy = (cy - drag.origin.y) / drag.origin.scaleY;
+        next.x = cx - sx * next.scaleX;
+        next.y = cy - sy * next.scaleY;
+      } else if (drag.mode === "stretchX") {
+        const factor = Math.exp(dx * 0.006);
+        next.scaleX = Math.max(0.05, drag.origin.scaleX * factor);
+        const cx = PAGE_HEADER_FRAME_W / 2;
+        const sx = (cx - drag.origin.x) / drag.origin.scaleX;
+        next.x = cx - sx * next.scaleX;
+      }
+      next = clampViewport(next, img.naturalW, img.naturalH);
+      setPendingImage((cur) => (cur ? { ...cur, viewport: next } : cur));
+    };
+    const onUp = () => {
+      dragRef.current = null;
+    };
+    // Stable listeners — do not depend on pendingImage (that rebinding killed pan).
+    window.addEventListener("pointermove", onMove);
+    window.addEventListener("pointerup", onUp);
+    window.addEventListener("pointercancel", onUp);
+    return () => {
+      window.removeEventListener("pointermove", onMove);
+      window.removeEventListener("pointerup", onUp);
+      window.removeEventListener("pointercancel", onUp);
+    };
+  }, [open]);
+
   if (!open) return null;
 
   const showImage = !imageRemoved && pendingImage;
+  const panRoomY =
+    showImage != null
+      ? Math.max(0, showImage.naturalH * showImage.viewport.scaleY - PAGE_HEADER_FRAME_H)
+      : 0;
   const imageLabel = showImage
-    ? `Image (${showImage.width || "?"}×${showImage.height || "?"} px)`
+    ? panRoomY > 0.5
+      ? `Image (${showImage.naturalW}×${showImage.naturalH} px) — drag to pan; corner = zoom; side = stretch`
+      : `Image (${showImage.naturalW}×${showImage.naturalH} px) — zoom in (corner) first, then drag to pan; side = stretch`
     : "Image";
+
+  const beginDrag = (mode: DragMode, e: React.PointerEvent) => {
+    if (!pendingImage || !mode) return;
+    e.preventDefault();
+    e.stopPropagation();
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    dragRef.current = {
+      mode,
+      startX: e.clientX,
+      startY: e.clientY,
+      origin: { ...pendingImage.viewport },
+    };
+  };
+
+  const nudgeVertical = (where: "top" | "center" | "bottom") => {
+    setPendingImage((cur) => {
+      if (!cur) return cur;
+      const dh = cur.naturalH * cur.viewport.scaleY;
+      let y = cur.viewport.y;
+      if (dh <= PAGE_HEADER_FRAME_H) {
+        y = (PAGE_HEADER_FRAME_H - dh) / 2;
+      } else if (where === "top") {
+        y = 0; // image top aligned with frame → show top of photo
+      } else if (where === "bottom") {
+        y = PAGE_HEADER_FRAME_H - dh;
+      } else {
+        y = (PAGE_HEADER_FRAME_H - dh) / 2;
+      }
+      return {
+        ...cur,
+        viewport: clampViewport({ ...cur.viewport, y }, cur.naturalW, cur.naturalH),
+      };
+    });
+  };
 
   const onBrowse = () => {
     fileRef.current?.click();
@@ -114,12 +230,13 @@ export function PageHeaderDialog({ open, onClose }: Props) {
         parsed.imageFormat || imageFormatFromMimeOrName(file.type, file.name);
       const natural = await loadImageNaturalSize(dataUrl);
       setPendingImage({
-        data: parsed.data,
-        imageFormat,
+        sourceData: parsed.data,
+        sourceFormat: imageFormat,
         fileName: file.name,
-        width: natural.width,
-        height: natural.height,
+        naturalW: natural.width,
+        naturalH: natural.height,
         previewUrl: dataUrl,
+        viewport: coverViewport(natural.width, natural.height),
       });
       setImageRemoved(false);
     } catch {
@@ -127,29 +244,71 @@ export function PageHeaderDialog({ open, onClose }: Props) {
     }
   };
 
-  const onOk = () => {
-    const image =
-      !imageRemoved && pendingImage
-        ? {
-            data: pendingImage.data,
-            imageFormat: pendingImage.imageFormat,
-            fileName: pendingImage.fileName,
-          }
-        : null;
-    const next = applyPageHeaderToProject(project, {
-      text,
-      image,
-      width: pendingImage && !imageRemoved ? pendingImage.width : undefined,
-      height: pendingImage && !imageRemoved ? pendingImage.height : undefined,
-    });
-    setPageHeader(next.pageHeader, next.images ?? []);
-    setStatus(
-      next.pageHeader
-        ? "Page Header saved — Push shows it on form pages"
-        : "Page Header cleared",
-    );
-    onClose();
+  const onOk = async () => {
+    if (imageRemoved || !pendingImage) {
+      const next = applyPageHeaderToProject(project, {
+        text,
+        image: null,
+      });
+      setPageHeader(next.pageHeader, next.images ?? []);
+      setStatus(next.pageHeader ? "Page Header saved" : "Page Header cleared");
+      onClose();
+      return;
+    }
+    setBaking(true);
+    try {
+      const baked = await bakePageHeaderViewport(
+        pendingImage.previewUrl,
+        pendingImage.naturalW,
+        pendingImage.naturalH,
+        pendingImage.viewport,
+      );
+      const parsed = parseDataUrl(baked.dataUrl);
+      if (!parsed) {
+        setStatus("Could not prepare Page Header image");
+        return;
+      }
+      const next = applyPageHeaderToProject(project, {
+        text,
+        image: {
+          data: parsed.data,
+          imageFormat: "PNG",
+          fileName: pendingImage.fileName,
+        },
+        sourceImage: {
+          data: pendingImage.sourceData,
+          imageFormat: pendingImage.sourceFormat,
+          fileName: pendingImage.fileName,
+        },
+        viewport: pendingImage.viewport,
+        width: baked.width,
+        height: baked.height,
+      });
+      setPageHeader(next.pageHeader, next.images ?? []);
+      setStatus("Page Header saved — Push to preview; reopen to keep adjusting");
+      onClose();
+    } catch {
+      setStatus("Could not prepare Page Header image");
+    } finally {
+      setBaking(false);
+    }
   };
+
+  const vp = showImage?.viewport;
+  const imgStyle =
+    showImage && vp
+      ? {
+          position: "absolute" as const,
+          left: vp.x,
+          top: vp.y,
+          width: showImage.naturalW * vp.scaleX,
+          height: showImage.naturalH * vp.scaleY,
+          maxWidth: "none",
+          maxHeight: "none",
+          userSelect: "none" as const,
+          pointerEvents: "none" as const,
+        }
+      : undefined;
 
   return (
     <div
@@ -189,9 +348,30 @@ export function PageHeaderDialog({ open, onClose }: Props) {
           <fieldset className="page-header-image-group">
             <legend>{imageLabel}</legend>
             <div className="page-header-image-row">
-              <div className="page-header-image-preview">
+              <div
+                ref={frameRef}
+                className={`page-header-image-preview${showImage ? " page-header-image-preview-edit" : ""}`}
+                style={{ width: PAGE_HEADER_FRAME_W, height: PAGE_HEADER_FRAME_H }}
+                onPointerDown={(e) => beginDrag("pan", e)}
+              >
                 {showImage ? (
-                  <img src={showImage.previewUrl} alt="" />
+                  <>
+                    <img src={showImage.previewUrl} alt="" draggable={false} style={imgStyle} />
+                    <div className="page-header-crop-highlight" aria-hidden>
+                      <button
+                        type="button"
+                        className="page-header-handle page-header-handle-zoom"
+                        title="Drag to zoom"
+                        onPointerDown={(e) => beginDrag("zoom", e)}
+                      />
+                      <button
+                        type="button"
+                        className="page-header-handle page-header-handle-stretch"
+                        title="Drag to stretch sideways"
+                        onPointerDown={(e) => beginDrag("stretchX", e)}
+                      />
+                    </div>
+                  </>
                 ) : (
                   <span className="page-header-image-empty">No image</span>
                 )}
@@ -212,6 +392,47 @@ export function PageHeaderDialog({ open, onClose }: Props) {
                 >
                   Remove
                 </button>
+                {showImage ? (
+                  <>
+                    <button
+                      type="button"
+                      title="Align photo so the top is visible in the banner"
+                      onClick={() => nudgeVertical("top")}
+                    >
+                      Show top
+                    </button>
+                    <button
+                      type="button"
+                      title="Center the photo in the banner"
+                      onClick={() => nudgeVertical("center")}
+                    >
+                      Show center
+                    </button>
+                    <button
+                      type="button"
+                      title="Align photo so the bottom is visible in the banner"
+                      onClick={() => nudgeVertical("bottom")}
+                    >
+                      Show bottom
+                    </button>
+                    <button
+                      type="button"
+                      title="Reset pan / zoom / stretch to cover"
+                      onClick={() => {
+                        setPendingImage((cur) =>
+                          cur
+                            ? {
+                                ...cur,
+                                viewport: coverViewport(cur.naturalW, cur.naturalH),
+                              }
+                            : cur,
+                        );
+                      }}
+                    >
+                      Reset view
+                    </button>
+                  </>
+                ) : null}
               </div>
             </div>
           </fieldset>
@@ -230,10 +451,10 @@ export function PageHeaderDialog({ open, onClose }: Props) {
         />
 
         <div className="modal-footer">
-          <button type="button" onClick={onOk}>
-            OK
+          <button type="button" onClick={() => void onOk()} disabled={baking}>
+            {baking ? "Preparing…" : "OK"}
           </button>
-          <button type="button" onClick={onClose}>
+          <button type="button" onClick={onClose} disabled={baking}>
             Cancel
           </button>
         </div>

@@ -23,7 +23,7 @@ h1.pageHeading { position: relative; margin: 0 0 0.75rem; padding: 0.5em 1em; fo
 h1.pageHeading:has(img),
 h1.pageHeading.pageHeading-withImage { padding: 0; color: #fff; text-shadow: 0 1px 3px rgba(0,0,0,0.75); max-height: 160px; }
 h1.pageHeading:has(img) img,
-h1.pageHeading.pageHeading-withImage img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; border: 0; }
+h1.pageHeading.pageHeading-withImage img { position: absolute; left: 0; top: 0; width: 100%; height: 100%; object-fit: fill; z-index: 0; border: 0; }
 h1.pageHeading:has(img) > div,
 h1.pageHeading.pageHeading-withImage div { position: relative; z-index: 1; margin: 0; padding: 0.75em 1em; }
 .dev-banner { background: #fff3cd; border: 1px solid #ffc107; padding: 8px 12px; margin-bottom: 1rem; font-size: 13px; }

@@ -213,10 +213,20 @@ export interface TawalaImageDef {
 export interface TawalaPageHeader {
   /** Plain (unformatted) banner text. */
   text?: string;
-  /** Id in `project.images` (legacy often `__HEADER__…`). */
+  /** Id in `project.images` (legacy often `__HEADER__…`) — baked crop for Deploy. */
   imageId?: string;
   width?: number;
   height?: number;
+  /**
+   * Designer-only: pan/zoom/stretch of the full source image inside the banner frame.
+   * Not exported to legacy XML. Lets OK → Push → reopen keep editing the same photo.
+   */
+  imageViewport?: {
+    x: number;
+    y: number;
+    scaleX: number;
+    scaleY: number;
+  };
 }
 
 export interface TawalaProject {

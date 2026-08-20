@@ -30,7 +30,7 @@ My Tawala + Library mock is in good shape: Use / Test Drive / Save to MyTawala /
 | **SUM** | Already existed; left alone. |
 | **Get Together totals** | Correlation / totals CSS tweak so columns line up better on default theme. |
 | **Form Item conditional display** | Right-click the form-item badge → **Display conditionally…** (Where rows). When set, badges show `{Qn}` braces. Push exports the conditions. Spec + screenshots: `DESIGNER_FORM_ITEMS_CONDITIONAL_DISPLAY.md`. This unblocked ~7 Library projects that had been sequestered for “convert errors.” |
-| **Page Header image tool** | **Not rebuilt yet** — only put back on the TODO list (#17). You asked to reinstall the mothballed pan/crop/resize tool and allow sideways stretch (drop non-distort). |
+| **Page Header image tool** | **Done Aug 20** — pan/zoom/stretch (no aspect lock); bake at source crop resolution. |
 
 ---
 

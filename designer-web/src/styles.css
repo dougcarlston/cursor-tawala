@@ -7812,27 +7812,70 @@ button.font-color-picker-recent-slot:hover {
 }
 
 .page-header-image-preview {
-  flex: 1 1 auto;
-  min-width: 0;
-  /* Legacy panelImage ~520×220 */
-  min-height: 220px;
-  height: 220px;
+  flex: 0 0 auto;
+  /* Banner aspect — matches Deploy ~160px-tall cover crop. */
+  width: 520px;
+  height: 160px;
   border: 1px solid #999;
-  background: #fff;
+  background: #1a1a1a;
   display: flex;
   align-items: center;
   justify-content: center;
-  overflow: auto;
+  overflow: hidden;
+  position: relative;
+  cursor: default;
+}
+
+.page-header-image-preview-edit {
+  cursor: grab;
+  touch-action: none;
+}
+
+.page-header-image-preview-edit:active {
+  cursor: grabbing;
 }
 
 .page-header-image-preview img {
-  max-width: 100%;
-  max-height: 210px;
   display: block;
 }
 
+/* Highlight = the live banner crop frame (what Push will show). */
+.page-header-crop-highlight {
+  position: absolute;
+  inset: 0;
+  border: 2px solid #3b82f6;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.85);
+  pointer-events: none;
+  z-index: 2;
+}
+
+.page-header-handle {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  padding: 0;
+  border: 1px solid #1e3a8a;
+  background: #93c5fd;
+  box-sizing: border-box;
+  pointer-events: auto;
+  cursor: nwse-resize;
+}
+
+.page-header-handle-zoom {
+  right: -6px;
+  bottom: -6px;
+  cursor: nwse-resize;
+}
+
+.page-header-handle-stretch {
+  right: -6px;
+  top: 50%;
+  margin-top: -6px;
+  cursor: ew-resize;
+}
+
 .page-header-image-empty {
-  color: #888;
+  color: #ccc;
   font-size: 12px;
   font-style: italic;
 }

@@ -1179,6 +1179,8 @@ export function collectProjectImages(project) {
     const id = String(img?.id ?? "").trim();
     const data = String(img?.data ?? "").replace(/\s+/g, "");
     if (!id || !data) continue;
+    // Designer-only Page Header original — never ship to Java.
+    if (id === "__HEADER_SOURCE__") continue;
     byId.set(id, {
       id,
       imageFormat: img.imageFormat,
