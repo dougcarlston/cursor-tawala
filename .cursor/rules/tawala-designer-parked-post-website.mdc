@@ -41,7 +41,7 @@ Owner policy: will not ship projects to **Library Live** that cannot be fixed un
 2. **Form Text — paragraph blank-line separation lost on Deploy + image breaks highlighting** — Jul 30 stash (not in Aug 11 recreations). Shots: `Bug_-_Text-paragraph-spacing-*.png`.
 3. **Form canvas badges — uneven widths** — Qn / `{Qn}` chips should share a straight right edge; **SKIP** may stick out with a distinct color. Shot: `Bug_-_Form-badge-uneven-widths-Aug11.png`.
 4. **Sign-up Template — Right justified FIB labels bounce vertically** (mid vs bottom of blanks). Shot: `Bug_-_Signup-FIB-right-justified-vertical-bounce-Aug11.png`.
-5. **Online Exam Builder Setup — expanded Text font size chaotic / cross-talk** between the two instruction Text boxes. Shot: `Bug_-_OnlineExam-Setup-expanded-Text-font-size-chaos-Aug11.png`.
+5. **Online Exam Builder SetupVariables — TinyMCE on multi-line FIBs** font size chaotic / cross-talk (live `:8080`). Shot: `Bug_-_OnlineExam-Setup-expanded-Text-font-size-chaos-Aug11.png`. **Fixed Aug 20** — see `DESIGNER_OPEN_BUGS.md`.
 
 ## Next focus (separate chat)
 

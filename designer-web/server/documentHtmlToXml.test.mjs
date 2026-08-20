@@ -834,6 +834,28 @@ describe("documentHtmlToXml placed vertical gaps (DISPLAY MCQ spacing)", () => {
     expect(xml).toContain("MCQ2");
   });
 
+  it("Form Text keepEmptyParagraphs: bare <p></p> Double-Return spacers survive Deploy", () => {
+    // Multiple Question Survey instructional Text uses unmarked empty <p></p>
+    // between paragraphs (owner Jul 30 blank-line packing on Deploy).
+    const html =
+      `<p><span>Line one with Deploy button</span></p>` +
+      `<p></p>` +
+      `<p></p>` +
+      `<p><span>Line two after blank lines</span></p>`;
+    const formXml = documentHtmlToXml(html, escAttr, escText, {
+      formName: "Survey",
+      keepEmptyParagraphs: true,
+    });
+    expect(formXml.match(/<paragraph\b/g)?.length).toBe(4);
+    expect(formXml).toMatch(
+      /Line one[\s\S]*?<tabPositions>[\s\S]*?<tabPositions>[\s\S]*?Line two/,
+    );
+    // Document path still drops unmarked empties (Signup Sheet / placed husks).
+    const docXml = documentHtmlToXml(html, escAttr, escText);
+    expect(docXml.match(/<paragraph\b/g)?.length).toBe(2);
+    expect(docXml).not.toContain("<tabPositions>");
+  });
+
   it("still drops unmarked empty husks (no content above+below blank mark)", () => {
     const html =
       `<p class="doc-placed-text" style="position: absolute; left: 36pt; top: 0pt"><br></p>` +

@@ -1946,7 +1946,8 @@ Tawala.findTextExceptInLinks = function(element, pattern, callback) {
 
 YAHOO.util.Event.onDOMReady(Tawala.convertTextToLinks);
 
-// Turn on TinyMCE for textareas
+// Turn on TinyMCE for multi-line FIB textareas (height > 1). Online Exam Setup
+// has two on one page — keep sizes in real pt and commands on the focused editor.
 tinyMCE.init({
 	mode : "textareas",
     theme : "advanced",
@@ -1968,6 +1969,9 @@ tinyMCE.init({
     theme_advanced_resizing_min_height : 50,
 	theme_advanced_resize_horizontal : false,
 	content_css : "/css/tinymce/custom_content.css",
+	// Explicit pt — not legacy HTML 1–7 ("4 (14pt)"), which stacked huge without content_css.
+	theme_advanced_font_sizes : "8pt,10pt,12pt,14pt,16pt,18pt,24pt,36pt",
+	theme_advanced_runtime_fontsize : true,
 
 	convert_newlines_to_brs : false,
 	remove_linebreaks : true,
@@ -1987,6 +1991,15 @@ tinyMCE.init({
 				}
 			}
 			o.content = temp.join("\n");
+		});
+		// Multi-textarea pages (e.g. Online Exam SetupVariables): keep the active
+		// editor pointer on the instance that received focus so Font/Size/B/I/U
+		// do not apply into the sibling iframe.
+		ed.onActivate.add(function(editor) {
+			tinyMCE.activeEditor = editor;
+		});
+		ed.onFocus.add(function(editor) {
+			tinyMCE.activeEditor = editor;
 		});
 	}
 	

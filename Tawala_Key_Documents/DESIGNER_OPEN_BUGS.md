@@ -49,14 +49,15 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Symptom B:** Inserting an image breaks highlighting — selection will not include any paragraphs that include the image or text beyond it.
 - **Screenshots:** Design (separated) `Tawala_Key_Documents/assets/Bug_-_Text-paragraph-spacing-Design.png`; Deploy/runtime (packed) `…/Bug_-_Text-paragraph-spacing-Deploy.png` (source chat assets: `LossofParSpacing-…png`, `ParSpacing2-…png`).
 - **Note:** Not in the Aug 11 recreations; keep from Jul 30 stash.
+- **Fixed Aug 20 (Symptom A):** Form Text Deploy passes `keepEmptyParagraphs` into `documentHtmlToXml` so bare `<p></p>` / `<p><br></p>` (MQS instructional Double-Return) become spacer `<paragraph>`s. Document path still drops unmarked empties (Signup Sheet placed husks). Unit: `documentHtmlToXml.test.mjs`. **Symptom B (image selection) still open.**
 
 #### 3) Form canvas badges — uneven widths (Not blocking) — **NEW / reconfirmed Aug 11**
 
 - **Path:** Form Design canvas — left Qn / `{Qn}` / SKIP / Tn badges (e.g. Campaign Dashboards or any form with mixed conditional braces + Skip).
 - **Symptom:** Badge chips are different widths (`Q1` vs `{Q2}` vs orange selected `Q4` vs long `SKIP`). Owner wants a **straight vertical line down the right edge** of the normal question badges so the column reads clean.
-- **Exception (owner):** **SKIP** may use a different color and may stick out past that line — Skips interrupt the flow.
+- **Exception (owner):** **SKIP** may use a different color and may stick out past that line — Skips interrupt the flow. **Over-long Labels** may also widen that row’s badge so text stays inside the chip (do not clip or spill past the border).
 - **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_Form-badge-uneven-widths-Aug11.png` (owner “Uneven Labels”).
-- **Fixed Aug 20:** Badge stack always **88px** (braces no longer widen the column). SKIP uses a light red chip and may grow past 88px.
+- **Fixed Aug 20:** Badge column **min-width 88px** so short Qn / `{Qn}` share one right edge (braces no longer widen the default). SKIP (light red) and over-long Labels grow past 88px on that row only.
 
 #### 4) Sign-up Template — Right justified FIB labels bounce vertically (Not blocking) — **NEW / reconfirmed Aug 11**
 
@@ -66,13 +67,14 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_Signup-FIB-right-justified-vertical-bounce-Aug11.png` (owner “Bug in Alignment”).
 - **Fixed Aug 20:** `form-layout-core.css` FIB table cells use `vertical-align: bottom` (was `middle`, which mixed with remainder `flex-end`). Hard-refresh / redeploy CSS on `:8080` after `docker cp` or image rebuild.
 
-#### 5) Online Exam Builder Setup — expanded Text font size chaotic / cross-talk (Not blocking but serious UX) — **NEW / reconfirmed Aug 11**
+#### 5) Online Exam Builder Setup — multi-line FIB TinyMCE font size chaotic / cross-talk (Not blocking but serious UX) — **NEW / reconfirmed Aug 11**
 
-- **Path:** Project **Online Exam Builder** (`~/Website Staging/3-Ready-for-Public-Library` or Library JSON). Run start form **Setup**. Two large rich **Text** / instruction boxes: “Pre-test instructions…” and “Comments or instructions… upon completion…”.
+- **Path:** Project **Online Exam Builder** → form **SetupVariables** (first-run / Update Setup UI — owner often calls this “Setup”). Multi-line FIB blanks (`height: 3`) for “Pre-test instructions…” and “Comments or instructions… upon completion…”. **Live `:8080` only** (Java `default.js` turns every `<textarea>` into TinyMCE). Design canvas / Node Preview do **not** use TinyMCE.
 - **Symptom A:** Font size control appears random — toolbar may show `4 (14pt)` while some lines are huge and others tiny; trying larger/smaller does not reliably apply.
-- **Symptom B:** Formatting / content effects seem to **bleed between the two expanded Text boxes** (same phrases/sizes appearing in both after edits).
+- **Symptom B:** Formatting / content effects seem to **bleed between the two** TinyMCE instances (same phrases/sizes appearing in both after edits).
 - **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_OnlineExam-Setup-expanded-Text-font-size-chaos-Aug11.png` (owner “Expanded text boxes”).
-- **Likely area:** Form Text contenteditable / shared format toolbar state — isolate per-editor document + selection; do not share one `document.execCommand` target across two open Text items.
+- **Root cause (Aug 20):** Not Form Text / Design palette. Runtime TinyMCE (`mode: textareas`) + missing `/css/tinymce/custom_content.css` in the WAR (404) left iframe body at browser default while toolbar used relative HTML sizes 1–7. Multi-editor focus was weakly pinned.
+- **Fixed Aug 20:** Ship `custom_content.css` (13px body); TinyMCE `theme_advanced_font_sizes` in real **pt**; `theme_advanced_runtime_fontsize`; onActivate/onFocus pin `tinyMCE.activeEditor`. Smoke on `:8080` after hard-refresh (not Design Preview).
 
 ### Legacy `.tawala` → JSON conversion (batch fix queue) — **Aug 2, 2026 morning**
 

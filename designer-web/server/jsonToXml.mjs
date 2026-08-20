@@ -398,7 +398,10 @@ function textContentToXml(content, style, project = null, formName = "") {
     // Canvas Text items store WYSIWYG HTML (field/function tokens). Escape-as-text
     // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
     if (/<[a-z][\s\S]*>/i.test(content)) {
-      const xml = documentHtmlToXml(content, escAttr, escText, { formName });
+      const xml = documentHtmlToXml(content, escAttr, escText, {
+        formName,
+        keepEmptyParagraphs: true,
+      });
       const styled = applyTextItemStyleToXml(xml, style, { sourceHtml: content });
       return injectResponseTotalsQuestionTitles(styled, project);
     }

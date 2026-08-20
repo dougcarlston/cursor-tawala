@@ -1,0 +1,12 @@
+/* TinyMCE iframe body — referenced by scripts/project/default.js (content_css).
+ * Missing from build-1700 ROOT.war; without it, HTML font size 1–7 paints huge
+ * relative to the browser default and multi-line FIB editors look chaotic. */
+body, td, pre {
+  color: #000;
+  font-family: Verdana, Geneva, Arial, sans-serif;
+  font-size: 13px;
+  margin: 4px;
+}
+p {
+  margin: 0;
+}

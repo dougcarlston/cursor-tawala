@@ -1326,14 +1326,18 @@ textarea {
 .form-canvas .mcq-badge,
 .form-canvas .hidden-field-badge,
 .form-canvas .break-badge {
-  width: 88px;
+  /* Default column = 88px; over-long Labels grow the chip (owner Aug 20). */
+  width: auto;
+  min-width: 88px;
   min-height: 36px;
+  padding: 0 8px;
   border: none;
   border-right: 1px solid #808080;
   border-radius: 0;
   background: #dcdcdc;
   align-self: stretch;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
 /* SKIP may stick past the Qn column and use a distinct color (owner Aug 11). */
@@ -1349,13 +1353,17 @@ textarea {
   color: #8b0000;
   align-self: stretch;
   box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .form-canvas .heading-badge-input,
 .form-canvas .text-badge-input,
 .form-canvas .fib-badge-input,
 .form-canvas .mcq-badge-input {
-  width: 88px;
+  width: auto;
+  min-width: 88px;
+  padding: 2px 8px;
+  box-sizing: border-box;
 }
 
 .form-canvas .heading-canvas-main,
@@ -3545,18 +3553,20 @@ div.skip-script-line[role="button"]:hover {
 }
 
 .canvas-item-badge-stack {
-  flex: 0 0 88px;
+  /* Short Qn / {Qn} share an 88px right edge; long Labels (and SKIP) widen that row only. */
+  flex: 0 0 auto;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 2px;
-  width: 88px;
+  width: auto;
+  min-width: 88px;
   box-sizing: border-box;
 }
 
-/* Braces stay inside the same width so Qn / {Qn} share one right edge (owner Aug 11). */
+/* Braces stay inside the badge — do not widen the default column past min-width. */
 .canvas-item-badge-stack.has-display-condition {
-  width: 88px;
+  min-width: 88px;
 }
 
 .canvas-item-badge-stack .text-badge,
@@ -3567,7 +3577,8 @@ div.skip-script-line[role="button"]:hover {
 .canvas-item-badge-stack .fib-badge-input,
 .canvas-item-badge-stack .mcq-badge-input,
 .canvas-item-badge-stack .heading-badge-input {
-  width: 100%;
+  width: auto;
+  min-width: 100%;
   box-sizing: border-box;
 }
 

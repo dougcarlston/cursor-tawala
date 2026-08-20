@@ -1364,11 +1364,14 @@ function mixedFlowInnerToXml(innerHtml, escAttr, escText, align = "left", opts =
           parts.push(
             `<paragraph indent="0" align="${escAttr(nestedAlign)}">${body}</paragraph>`,
           );
-        } else if (/\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs)) {
+        } else if (
+          opts.keepEmptyParagraphs ||
+          /\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs)
+        ) {
           parts.push(BLANK_PARAGRAPH_XML);
         }
-        // Skip unmarked empty nested <p></p> / <br> husks — trailing empties would
-        // stack with placed-gap spacers (Signup Sheet contact block).
+        // Document: skip unmarked empty nested <p></p> / <br> husks — trailing empties
+        // would stack with placed-gap spacers (Signup Sheet contact block).
       }
     }
     rest = matched.rest;
@@ -1423,6 +1426,15 @@ function blockHtmlToXml(blockHtml, escAttr, escText, opts = {}) {
     }
 
     if (!meaningful) {
+      // Form Text Double-Return stores bare `<p></p>` / `<p><br></p>` (no data-doc-blank).
+      // Keep those as Deploy spacers so blank-line separation survives Push.
+      // Document placed canvas still drops unmarked husks (Signup Sheet contact block).
+      if (
+        opts.keepEmptyParagraphs ||
+        /\bdata-doc-blank\s*=\s*["']?1["']?/i.test(open.attrs)
+      ) {
+        return BLANK_PARAGRAPH_XML;
+      }
       return "";
     }
     return `<paragraph indent="0" align="${escAttr(align)}">${body}</paragraph>`;
@@ -1506,13 +1518,16 @@ function collectBlocksInDeployOrder(html) {
 }
 
 /** Convert document editor HTML string to legacy xmlData body markup.
- * @param {{ formName?: string }} [options] — when set (Form Text Deploy), bare
- *   `<<attendeeName>>` becomes `<field name="Form:attendeeName"/>` (legacy Potluck).
+ * @param {{ formName?: string, keepEmptyParagraphs?: boolean }} [options] — when
+ *   `formName` is set (Form Text Deploy), bare `<<attendeeName>>` becomes
+ *   `<field name="Form:attendeeName"/>` (legacy Potluck). `keepEmptyParagraphs`
+ *   (Form Text) keeps bare `<p></p>` / `<p><br></p>` as Deploy spacer paragraphs.
  */
 export function documentHtmlToXml(html, escAttr, escText, options = {}) {
   const source = String(html ?? "").trim();
   const opts = {
     formName: options.formName ?? "",
+    keepEmptyParagraphs: options.keepEmptyParagraphs === true,
     // Dual-chip: detect modern MQL on the full document, not per paragraph.
     hasModernMqlToken: /data-function-id\s*=\s*["']itemization-table["']/i.test(source),
   };

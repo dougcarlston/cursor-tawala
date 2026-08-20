@@ -35,6 +35,10 @@ Project theme styles loaded per `themePath` in `.tawala` XML.
 
 `default.css` copied from owner legacy **Project Themes Test** bundle. Theme-specific `project.css` + `images/` under `greentea/` and `style2/` from the same source.
 
+## `css/tinymce/custom_content.css`
+
+TinyMCE iframe body CSS referenced by `web/scripts/project/default.js` (`content_css: /css/tinymce/custom_content.css`). Missing from build-1700 `ROOT.war`; without it, multi-line FIB editors (Online Exam SetupVariables Pre/Post instructions) use relative HTML font sizes on the browser default and look huge / chaotic. Also copied into `TawalaWebapp-build1700/web/css/tinymce/` for WAR rebuilds. Dockerfile patches this folder into the image.
+
 Rebuild after changes:
 
 ```bash
