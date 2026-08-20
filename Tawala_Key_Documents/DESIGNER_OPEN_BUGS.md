@@ -40,6 +40,7 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Path:** Main Menu → Project → Styles → FIBs → dialog **“Fill in the Blank Styles”**.
 - **Symptom:** Under **Blanks**, the control for **“Align right side”** is squashed — a narrow vertical blue sliver instead of a usable radio/checkbox. **Labels** radios (Above / Left justified / Right justified / Freeform) look OK.
 - **Screenshots:** `Tawala_Key_Documents/assets/Bug_-_FIB-Styles-AlignRight-squashed-radio.png` (Jul 30); **reconfirm Aug 11** `…/Bug_-_FIB-Styles-AlignRight-squashed-radio-Aug11.png` (owner “Styles BUG”).
+- **Fixed Aug 20:** `.form-item-styles-dialog` was overriding checkbox `width` to `auto`, which collapses `appearance:none` Win32-style boxes to a sliver. Restored 13×13 sizing + slightly wider Labels/Blanks column.
 
 #### 2) Form Text — paragraph separation lost on Deploy + image breaks highlighting (Not blocking but ugly)
 
@@ -55,6 +56,7 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Symptom:** Badge chips are different widths (`Q1` vs `{Q2}` vs orange selected `Q4` vs long `SKIP`). Owner wants a **straight vertical line down the right edge** of the normal question badges so the column reads clean.
 - **Exception (owner):** **SKIP** may use a different color and may stick out past that line — Skips interrupt the flow.
 - **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_Form-badge-uneven-widths-Aug11.png` (owner “Uneven Labels”).
+- **Fixed Aug 20:** Badge stack always **88px** (braces no longer widen the column). SKIP uses a light red chip and may grow past 88px.
 
 #### 4) Sign-up Template — Right justified FIB labels bounce vertically (Not blocking) — **NEW / reconfirmed Aug 11**
 
@@ -62,6 +64,7 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Symptom:** Labels **bounce** between vertical middle of the blank and vertical bottom of the blank (e.g. “First Name:” centered vs “Last name:” bottom-aligned on the same row; same for Email vs Telephone). Horizontal right-edge of left-column labels may also be slightly uneven.
 - **Contract reminder:** Spec wants label **bottoms** aligned with field **bottoms** (`DESIGNER_FORM_FORMAT_TOOLBAR.md` / form-layout-core) — not mixed mid/bottom.
 - **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_Signup-FIB-right-justified-vertical-bounce-Aug11.png` (owner “Bug in Alignment”).
+- **Fixed Aug 20:** `form-layout-core.css` FIB table cells use `vertical-align: bottom` (was `middle`, which mixed with remainder `flex-end`). Hard-refresh / redeploy CSS on `:8080` after `docker cp` or image rebuild.
 
 #### 5) Online Exam Builder Setup — expanded Text font size chaotic / cross-talk (Not blocking but serious UX) — **NEW / reconfirmed Aug 11**
 

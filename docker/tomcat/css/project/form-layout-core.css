@@ -34,7 +34,8 @@ form table.fib {
  */
 form table.fib > tbody > tr > td,
 form table.fib > tr > td {
-	vertical-align: middle !important;
+	/* Spec: label bottoms align with field bottoms (not mid/top bounce). */
+	vertical-align: bottom !important;
 	padding-top: 0.45em !important;
 	padding-bottom: 0.45em !important;
 	padding-right: 0.5em;
@@ -62,11 +63,11 @@ form table.fib > tr > td:not(.label) {
 	width: auto;
 }
 
-/* Nested remainder = same visual row as its label — keep tight. */
+/* Nested remainder = same visual row as its label — keep tight; bottom-align with label. */
 form table.fib table.remainder td {
 	padding-top: 0 !important;
 	padding-bottom: 0 !important;
-	vertical-align: middle !important;
+	vertical-align: bottom !important;
 }
 
 /* --- Without Align right side: honor HTML size= (underscore length) ------ */

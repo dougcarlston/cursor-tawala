@@ -1325,8 +1325,7 @@ textarea {
 .form-canvas .fib-badge,
 .form-canvas .mcq-badge,
 .form-canvas .hidden-field-badge,
-.form-canvas .break-badge,
-.form-canvas .skip-badge {
+.form-canvas .break-badge {
   width: 88px;
   min-height: 36px;
   border: none;
@@ -1334,6 +1333,22 @@ textarea {
   border-radius: 0;
   background: #dcdcdc;
   align-self: stretch;
+  box-sizing: border-box;
+}
+
+/* SKIP may stick past the Qn column and use a distinct color (owner Aug 11). */
+.form-canvas .skip-badge {
+  width: auto;
+  min-width: 88px;
+  min-height: 36px;
+  padding: 0 10px;
+  border: none;
+  border-right: 1px solid #808080;
+  border-radius: 0;
+  background: #f0d4d4;
+  color: #8b0000;
+  align-self: stretch;
+  box-sizing: border-box;
 }
 
 .form-canvas .heading-badge-input,
@@ -2422,17 +2437,20 @@ textarea {
 
 .skip-badge {
   flex: 0 0 auto;
-  width: 64px;
+  width: auto;
+  min-width: 64px;
   min-height: 28px;
+  padding: 0 8px;
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: bold;
   font-size: 13px;
   font-style: italic;
-  background: #ececec;
+  background: #f0d4d4;
   border: 1px solid #cfcfcf;
   color: #8b0000;
+  box-sizing: border-box;
 }
 
 .skip-main {
@@ -3527,16 +3545,18 @@ div.skip-script-line[role="button"]:hover {
 }
 
 .canvas-item-badge-stack {
-  flex: 0 0 auto;
+  flex: 0 0 88px;
   display: flex;
   flex-direction: column;
   align-items: stretch;
   gap: 2px;
-  width: 64px;
+  width: 88px;
+  box-sizing: border-box;
 }
 
+/* Braces stay inside the same width so Qn / {Qn} share one right edge (owner Aug 11). */
 .canvas-item-badge-stack.has-display-condition {
-  width: 72px;
+  width: 88px;
 }
 
 .canvas-item-badge-stack .text-badge,
@@ -8336,10 +8356,11 @@ body.fields-palette-dragging.skip-instructions-open .designer-right-splitter {
 }
 
 .form-item-styles-fib-controls {
-  flex: 0 0 118px;
+  flex: 0 0 148px;
   display: flex;
   flex-direction: column;
   gap: 10px;
+  min-width: 148px;
 }
 
 .form-item-styles-preview-pane {
@@ -8384,13 +8405,18 @@ body.fields-palette-dragging.skip-instructions-open .designer-right-splitter {
   width: auto;
 }
 
+/* Keep native/custom control boxes visible — `width: auto` collapses
+ * appearance:none checkboxes to a vertical sliver (owner Aug 11 Styles BUG). */
 .form-item-styles-dialog input[type="radio"],
 .form-item-styles-dialog input[type="checkbox"] {
   display: inline-block;
-  width: auto;
+  width: 13px;
+  height: 13px;
+  min-width: 13px;
   margin: 0;
   padding: 0;
   flex-shrink: 0;
+  box-sizing: border-box;
 }
 
 .form-item-styles-dialog select.form-item-styles-columns-select {
