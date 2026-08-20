@@ -50,14 +50,14 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 | 1 | **Simple Survey Template** | **Passed** | Survey → Report tally on 8080 |
 | 2 | **Signup Sheet Template** | **Passed** (Jul 16 refresh) | Submit → table rows; Form MQL path; FIB Deploy formatting |
 | 3 | **Form with process** | **Passed** | Empty Form 1 + Process 1 (Designer demo) |
-| 4 | **Form with process connecting a document** | **Unmarked** | Submit → **Document 1** HTML visible |
+| 4 | **Form with process connecting a document** | **Passed** (owner Aug 20) | Submit → **Document 1** HTML visible (nearly blank; no Submit — easy to confuse with empty Form 1) |
 | 5 | **Sign-up Sheet w Email** | **Passed** (Jul 28) | FIB submit + table; NewSignup body uses `Form 1:*` refs; Gate A mail wiring closed Jul 28; Designer Form-branch insert qualifies |
 | 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
 | 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026) | Multi **choice-tally** + **itemization** on Report — see reference section below |
 | 8 | **Potluck** | **New Project JSON updated Jul 24** | Browser Designer **File → New Project → Potluck** uses owner-supplied `00-WebDesigner-MainMenu_Potluck.json` (installed as `designer-web/public/samples/templates/potluck.json`). Legacy `node scripts/deploy-tawala-template.mjs "Potluck"` also **Owner Passed Jul 20**. |
 | — | **DirtBowl (legacy `.tawala`)** | **Owner Passed Jul 20** | Full project (dozens of Forms/Processes/Documents) via `designer-web/public/samples/legacy/DirtBowl.tawala` — worked flawlessly. Corrupted JSON copies are not a smoke target. |
 
-**#9 function smoke ladder (Jul 24):** Multi Survey (#7) and peers above that are **Passed** already exercise the main emitters (choice-tally, itemization, correlation, sum). Remaining optional matrix work is **#4** (Form + Process + Document) — not reopening the four Deferred function stubs. **#5 Sign-up Sheet w Email** passed Jul 28 (Gate A + Designer field qualification).
+**#9 function smoke ladder (Jul 24):** Multi Survey (#7) and peers above that are **Passed** already exercise the main emitters (choice-tally, itemization, correlation, sum). **#4** Form + Process + Document **Passed Aug 20** (owner: Document 1 result is nearly blank — distinguished mainly by no Submit button). Phase 2 template Deploy smokes are complete. **#5 Sign-up Sheet w Email** passed Jul 28 (Gate A + Designer field qualification).
 
 Update this table when each passes owner click-test. Function-level status: `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Function status matrix.
 
@@ -190,6 +190,8 @@ Prior caveats before patch:
 **Smoke test:** Open Form 1 → submit (no fields) → runtime shows **Document 1**. In the shipped template, Document 1 is intentionally empty (one blank paragraph → `&nbsp;` on the page). That is correct for this Designer pedagogy demo (Form + Process + Document windows), not a user-facing sample app.
 
 **Owner confirmed (July 2026):** Saw **“Processing, please wait…”** modal with a broken image icon. That modal is legacy submit UX (appears if the round-trip takes more than ~5 seconds); the broken icon was a missing `/images/submit-progress.gif` in our Docker image (patched in `docker/tomcat/images/`). After submit, the result page is nearly blank — as expected for an empty document.
+
+**Owner reconfirmed (Aug 20, 2026):** Browser Designer New Project → Push → Submit Form 1 → lands on Document 1. Pass. Note: empty Document 1 looks a lot like empty Form 1; absence of **Submit** is the clearest cue.
 
 ---
 
