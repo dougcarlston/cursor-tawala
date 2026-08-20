@@ -156,6 +156,7 @@ Skip Instructions is **wired** (canvas Edit dialog: If / SkipTo / Set / Comment;
 
 ## Architectural / DirtBowl (not Designer UI bugs)
 
+- **DirtBowl Registration Page 1 → Designer exemplar triage (Aug 20)** — Owner walkthrough: use Page 1 as a **ceiling sample** of formatting authors want from stock Designer (not a theme pack to copy). Triage buckets: Version 1 / next version / not immediate. Full write-up: [`docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md`](../docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md). V1 spine: theme width fit → shared field-column (incl. phones) → per-blank captions → Date/Address Insert presets → basic Form Text table Push fidelity.
 - **DirtBowl Preview vs Deploy data/seed mismatch** (local Preview defaults vs Java persisted admin/division data). **Deferred** as architectural distinction. (Source: Designer Sign-up DirtBowl)
 
 ---

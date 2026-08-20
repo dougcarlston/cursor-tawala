@@ -57,9 +57,10 @@ Do these in order; each is short.
   4. Online Exam Builder **SetupVariables** — multi-line FIB TinyMCE: font size random + bleed between boxes (**Fixed Aug 20** — `custom_content.css` + pt sizes; smoke on `:8080`).
   5. (Still parked from Jul 30) Form Text blank-line spacing on Push + image selection break.
 - **Page Header image editor** — reinstall mothballed tool; allow horizontal stretch (`DESIGNER_PAGE_HEADER.md`, TODO #17).
-- Remaining template Deploy/Push smokes in `DESIGNER_TEMPLATE_MATRIX.md`.
-- Polish: form Cut/Copy/Paste; Get RecordList Fields branch; column-level `displayCondition` editor (item-level is done).
+- Remaining template Deploy/Push smokes in `DESIGNER_TEMPLATE_MATRIX.md` — **Done Aug 20** (#4 Form+Process+Document Passed; Phase 2 complete).
+- Polish: form Cut/Copy/Paste; Get RecordList Fields branch; column-level `displayCondition` editor (item-level is done) — see **Deferred / next version** in `docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md`.
 - Three-browser look-and-feel / menu audit — still gated until Designer is “basically finished.”
+- **DirtBowl Page 1 → Designer exemplar** — **Triaged Aug 20:** `docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md` (V1 vs next vs not immediate). Page 2+ still paused as further exemplar only after that list is stable.
 - Registration / DirtBowl Page 2+ on `:8080` — still paused unless you reopen that track.
 
 ---
@@ -83,5 +84,6 @@ You can fold **docs + browser Designer** into one product lane when you return. 
 | `Tawala_Key_Documents/DESIGNER_FORM_ITEMS_CONDITIONAL_DISPLAY.md` | Conditional display contract |
 | `Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` | MAX/MIN / FORM RECORD COUNT / function matrix |
 | `Tawala_Key_Documents/DESIGNER_PAGE_HEADER.md` | Banner tool reopen notes |
+| `docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md` | Page 1 → Designer feature triage (Aug 20) |
 
 Welcome back — start with the WAR rebuild + MAX/MIN/Remove Duplicates smoke, then pick lost-stash bugs, Page Header, or Library reconvert.
