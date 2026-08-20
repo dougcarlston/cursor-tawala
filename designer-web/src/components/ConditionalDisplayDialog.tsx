@@ -48,6 +48,9 @@ export function ConditionalDisplayDialog({
       title="Conditional Display of Form Item"
       titleId="conditional-display-title"
       onClose={onCancel}
+      /* Punch-through to Fields (like Insert Link). Do NOT set body.configure-function-open
+       * — that raises Fields above the dialog and steals clicks from the value box. */
+      overlayClassName="configure-function-overlay conditional-display-overlay"
       className="conditional-display-dialog"
       bodyClassName="conditional-display-body"
       footer={

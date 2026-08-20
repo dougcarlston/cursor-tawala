@@ -164,6 +164,18 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Fixed (session):** `ExecutionContext.getStorageAttribute()` now appends `userProjectId`; class hot-copied into Tomcat Jul 22 evening.
 - **Ops clean-up (Jul 22 evening):** Deleted contaminated Tomcat Deploy **`Simple Survey`** (`qyzju5cyuagbidj`) + its 7 submissions; see `CONTAMINATED_SIMPLE_SURVEY_JUL22.md`. Prefer **New Project** (not overwrite) between featured apps; Redeploy under a fresh name if lists look wrong.
 
+### New Project / distinct uniqueId must never inherit old submissions (Aug 20) — **OPEN**
+
+- **Owner smoke Aug 20:** MAX / MIN **Passed**. New Project with a new FIB blank (`Form1:FIB1:a`) showed a **pre-filled value `24` on live `:8080` after Push** — not in Design, not in Preview. Remove Duplicates **Passed** the same day.
+- **Invariant to enforce:** Projects with **different uniqueIds** must never share or inherit each other’s submission values (including blank defaults painted from prior rows). A **New Project** first Push must land on a **fresh** uniqueId with **empty** response data for that id.
+- **Suspected causes (investigate when scheduled):**
+  1. Push / Redeploy-by-**name** reuses an existing `UserProject` and keeps old submissions (Jul 22 Redeploy-by-name pattern).
+  2. First Push fails to mint a new uniqueId when `_freshFromTemplate` / File→New should have forced one.
+  3. Less likely given “only on `:8080`”: blank **name** collision across projects under one reused id (not a true cross-uniqueId leak).
+- **Ops workaround until fixed:** `?reset=1` on the start URL; Purge responses for that uniqueId; or Push under a **unique project name** so Java cannot match an old row by name.
+- **Related:** Jul 22 Deploy data isolation notes above; Jul 16 “Session junk rows” mitigated-ops row; website-mock Make a Copy already clears `uniqueId` for forks — Library Save-to-MyTawala mock still shares Library uniqueId by design until production mint.
+- **Do not close** until New Project → Push → `:8080` blank fields are empty when no submissions exist for **that** uniqueId, and two live projects with distinct uniqueIds cannot paint each other’s field values.
+
 ### Online Exam Builder — Admin → Scores first-hit “session expired” (Aug 3)
 
 - **Symptom:** Java Deploy (`:8080`, MADE WITH TAWALA chrome). From **Administration**, select **Scores** → first POST yields legacy error *“An error occured while running this application…”* (BackButton / session page). **This page** recovery often opens **Setup** (not Admin). Second Scores works and shows the Student Scores table.
@@ -429,7 +441,7 @@ Any future Registration-only helper must be gated. Add a **non-DirtBowl** test (
 | 5 | **Print / Excel export links** | **Owner OK on Deploy.** Configure toggles persist; Preview emits Print / CSV export (`itemizationPreview.mjs`). |
 | 7 | **Java Deploy (8080) parity** | **Owner OK** for Signup Form+MQL path (Tomcat up, `dev`/`dev`). Also: Document MQL field tokens + no nested font/division; FIB multi-blank soft-rows; Design B/I/U→Deploy (`fibRichPromptToXml`). **Re-smoke:** Redeploy after `fcebcfa` to confirm latest FIB formatting on 8080. |
 | 8 | **Dev API on 3001 dies** | **Mitigated:** `designer-web/scripts/ensure-dev-api.sh` + README; check `/api/health` when Preview/Deploy fails. |
-| 9 | **Session junk rows** | **Mitigated (ops):** cleared stale Java submissions / Preview sessions once; use `?reset=1` or fresh Deploy uniqueId if lists look wrong. |
+| 9 | **Session junk / cross-project values** | **OPEN Aug 20 (raised):** New Project showed leftover blank value **only on `:8080` after Push**. Track: distinct uniqueIds must never inherit each other’s submissions; New Project first Push must mint empty data. Detail: § **New Project / distinct uniqueId must never inherit old submissions**. Ops: `?reset=1` / Purge / unique Push name until fixed. |
 | — | **FIB Design formatting → Deploy** | **Fixed Jul 16:** freeform prompts mirror B/I/U / face / size / color into Java font XML (`fibToXml` + tests). |
 
 **Still open (leave MQL when these are done or explicitly deferred):**

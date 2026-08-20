@@ -39,11 +39,12 @@ My Tawala + Library mock is in good shape: Use / Test Drive / Save to MyTawala /
 Do these in order; each is short.
 
 1. **Hard-refresh** Designer (`:5173`), API health (`:3001/api/health`), Tomcat (`:8080`), website mock (`:5500`) if you use Library flow.
-2. **Rebuild / redeploy the Java WAR** so **MAX**, **MIN**, and **Remove Duplicates** actually run on `:8080`. Until that rebuild, Pushing those features will look empty or no-op even though Designer JSON/XML is fine. (FORM RECORD COUNT and SUM already work on today’s WAR.)
-3. **Smoke MAX / MIN** in a Document → Push → open on `:8080`.
-4. **Smoke Remove Duplicates** in a Process → Push → confirm duplicate rows drop as expected (first vs last keep).
+2. **Rebuild / redeploy the Java WAR** — **Done Aug 20** (RemoveDuplicates ConfigElement fix + Tomcat recreate).
+3. **Smoke MAX / MIN** — **Owner Passed Aug 20.** (Leftover blank value on `:8080` only — tracked separately, not a MAX/MIN failure.)
+4. **Smoke Remove Duplicates** — **Owner Passed Aug 20.**
 5. **Spot-check sequestered → released projects** that used item-level display conditions (Campaign Dashboards was one you looked at Aug 10). Open → Push → confirm braces/editor still feel right.
-6. **Optional:** Library `.tawala` reconvert quality pass (`DESIGNER_OPEN_TODOS` owner queue #16).
+6. **OPEN:** New Project / distinct uniqueIds must never inherit old submissions — `DESIGNER_OPEN_BUGS.md` § Aug 20.
+7. **Optional:** Library `.tawala` reconvert quality pass (`DESIGNER_OPEN_TODOS` owner queue #16).
 
 ---
 

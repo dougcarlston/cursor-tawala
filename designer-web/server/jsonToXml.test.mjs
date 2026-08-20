@@ -531,6 +531,40 @@ describe("xmlCommentText", () => {
     expect(xml).toMatch(/<equals field="QEmail2">/);
     expect(xml).toMatch(/<isNotBlank field="Q1"\s*\/>/);
   });
+
+  it("exports displayConditions on Text and Heading items", () => {
+    const xml = projectToXml({
+      name: "CondText",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "text",
+              label: "T1",
+              style: "normal",
+              content: "<p>Secret</p>",
+              displayCondition: { field: "Form 1:Show", op: "equals", value: "Yes" },
+            },
+            {
+              type: "heading",
+              label: "H1",
+              level: "main",
+              content: "Hidden heading",
+              displayCondition: { field: "Q1", op: "isNotBlank" },
+            },
+          ],
+        },
+      ],
+      processes: [],
+      documents: [],
+    });
+    expect(xml).toMatch(/<text[^>]*>[\s\S]*<displayConditions>/);
+    expect(xml).toMatch(/<equals field="Form 1:Show">/);
+    expect(xml).toMatch(/<heading[^>]*>[\s\S]*<displayConditions>/);
+    expect(xml).toMatch(/<isNotBlank field="Q1"\s*\/>/);
+  });
 });
 
 /**

@@ -110,9 +110,9 @@ Per-column itemization `displayCondition` is a related but separate Configure Fu
 
 ### Smoke (browser)
 
-1. Form with FIB Q2 → right-click badge → **Display conditionally…** → check box → Where `QEmail2` equals `Yes` → OK → badge shows `{Q2}`.
+1. Form with FIB Q2 → right-click badge → **Display conditionally…** → check box → click Where field → **drag or double-click** a Fields leaf into the Where box (Fields stays usable — Aug 20 overlay fix) → set operator/value → OK → badge shows `{Q2}`.
 2. Uncheck → OK → braces clear.
-3. Push: item hidden until condition true (existing Java `displayConditions`).
+3. **Push** (not Design Preview alone): item hidden until the condition is true. Design canvas always shows the row (braces only). Design Preview matches Java preview mode and also keeps items visible. Live `:8080` / Node runtime (non-preview) hide when the Where fails. Text/Heading conditions export as of Aug 20.
 4. Import CreateStaffDashboard-style project → braces on Q2/Q4–Q7; right-click edits preserved conditions.
 
 ---

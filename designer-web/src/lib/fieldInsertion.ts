@@ -363,7 +363,7 @@ export function retainEditorFocusOnBlur(relatedTarget: EventTarget | null): bool
   if (!el?.closest) return false;
   // Fields panel, main menu (Insert → Function/Image), and Configure/Insert Function dialogs
   // must not collapse the Form Text / Document editor mid-insert.
-  return Boolean(
+      return Boolean(
     el.closest(
       [
         ".fields-tree",
@@ -379,6 +379,7 @@ export function retainEditorFocusOnBlur(relatedTarget: EventTarget | null): bool
         ".configure-function-dialog",
         ".insert-function-dialog",
         ".fib-validation-dialog",
+        ".conditional-display-dialog",
       ].join(", "),
     ),
   );
@@ -496,6 +497,7 @@ function activeTargetUsableOutsideMdi(): boolean {
         ".skip-instructions-dialog",
         ".configure-function-dialog",
         ".cfg-fn-dialog",
+        ".conditional-display-dialog",
       ].join(", "),
     )
   ) {

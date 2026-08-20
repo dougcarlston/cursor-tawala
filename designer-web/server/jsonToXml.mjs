@@ -748,14 +748,18 @@ function conditionToXml(cond) {
     return `<${cond.op}>${inner}</${cond.op}>`;
   }
   const op = cond.op ?? "equals";
+  let field = String(cond.field ?? "").trim();
+  if (field.startsWith("<<") && field.endsWith(">>")) {
+    field = field.slice(2, -2).trim();
+  }
   const unaryOps = new Set(["isBlank", "isNotBlank", "mcIsBlank", "mcIsNotBlank"]);
   if (unaryOps.has(op)) {
-    return `<${op} field="${escAttr(cond.field)}"/>`;
+    return `<${op} field="${escAttr(field)}"/>`;
   }
   if (cond.value === undefined || cond.value === null) {
-    return `<${op} field="${escAttr(cond.field)}"><string value=""/></${op}>`;
+    return `<${op} field="${escAttr(field)}"><string value=""/></${op}>`;
   }
-  return `<${op} field="${escAttr(cond.field)}">${conditionValueXml(cond.value)}</${op}>`;
+  return `<${op} field="${escAttr(field)}">${conditionValueXml(cond.value)}</${op}>`;
 }
 
 /**
@@ -1052,14 +1056,22 @@ function itemToXml(item, formName = "", project = null, form = null) {
 
   switch (item.type) {
     case "heading":
-    case "subheading":
+    case "subheading": {
       // Mixed Main/Sub lines → multiple `<heading>` elements (Java one type each).
-      return headingToXml(item, escAttr, escText);
+      const raw = headingToXml(item, escAttr, escText);
+      const dc = displayConditionsXml(item.displayCondition ?? item.displayConditions);
+      if (!dc) return raw;
+      // Same condition on each segment so the whole Design heading hides together.
+      return raw.replace(/<\/heading>/g, `${dc}</heading>`);
+    }
     case "text": {
       const legacy = registrationTextToXml(item, formName, form);
       const body = legacy ?? textContentToXml(item.content, item.style, project, formName);
       const padAttr = item.paddingBottom === false ? ` paddingBottom="false"` : "";
-      return `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}"${padAttr}>${body}</text>`;
+      return withDisplayConditions(
+        `<text label="${escAttr(item.label)}"${altAttr} style="${escAttr(item.style ?? "normal")}"${padAttr}>${body}</text>`,
+        item,
+      );
     }
     case "fib": {
       // DirtBowl-only layout export; non-DirtBowl Registration (e.g. CYO) → generic fibToXml.

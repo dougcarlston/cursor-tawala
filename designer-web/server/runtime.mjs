@@ -1,5 +1,6 @@
 import {
   buildContext,
+  evalCondition,
   expandChoiceLabelHtml,
   expandDynamicChoices,
   getFieldValue,
@@ -449,6 +450,21 @@ function renderItem(item, ctx, project) {
   }
 }
 
+/**
+ * Java FormItem.toHtml: hide when displayConditions fail — except preview mode
+ * (Design Preview) which always paints the item.
+ */
+function itemPassesDisplayCondition(item, ctx, options = {}) {
+  if (options.designerPreview) return true;
+  const dc = item?.displayCondition ?? item?.displayConditions;
+  if (!dc) return true;
+  try {
+    return evalCondition(dc, ctx);
+  } catch {
+    return true;
+  }
+}
+
 const COMPONENT_TABLE_CSS = `
 table.component { border-collapse: collapse; font-size: 1em; margin: 12px 0; }
 table.component.outline { border: 1px solid #cccccc; }
@@ -835,6 +851,7 @@ export function buildFormPageParts(project, formName, baseUrl, uniqueId, session
         const n = item.content.replace(/^__preview_segment__|__$/g, "");
         return `<hr class="preview-segment-rule" /><p class="preview-segment-label">Page ${esc(n)} (after Submit)</p>`;
       }
+      if (!itemPassesDisplayCondition(item, ctx, options)) return "";
       return renderItem(item, ctx, project);
     })
     .join("\n");
