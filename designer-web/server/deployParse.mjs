@@ -45,6 +45,17 @@ export function parseStartpointsForProject(xmlText, projectName) {
     if (name.toLowerCase() === lower) return parseStartpointsFromBlock(body);
   }
 
+  // Catalog / unicode-dash mismatch: "for reconversion — Foo" vs Java "Foo"
+  const leaf = lower.split(/\s+[—–-]\s+/).pop()?.trim() ?? lower;
+  if (leaf && leaf !== lower) {
+    for (const [, name, body] of allDeployments) {
+      const n = name.toLowerCase();
+      if (n === leaf || n.endsWith(leaf)) {
+        return parseStartpointsFromBlock(body);
+      }
+    }
+  }
+
   return [];
 }
 

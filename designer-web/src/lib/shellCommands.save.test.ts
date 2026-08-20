@@ -215,6 +215,14 @@ describe("projectDisplayNameFromFileName / syncProjectNameFromFileName", () => {
     expect(projectDisplayNameFromFileName("/tmp/Foo Bar.json")).toBe("Foo Bar");
     expect(projectDisplayNameFromFileName("Untitled.json")).toBe("Untitled");
   });
+
+  it("strips flat-convert catalog prefixes so Push keeps the real project name", () => {
+    expect(projectDisplayNameFromFileName("for reconversion — CampaignDashboards.json")).toBe(
+      "CampaignDashboards",
+    );
+    expect(projectDisplayNameFromFileName("customizable — Potluck.json")).toBe("Potluck");
+    expect(projectDisplayNameFromFileName("Publishable - cs v95.json")).toBe("cs v95");
+  });
 });
 
 describe("in-app Save As dialog request", () => {

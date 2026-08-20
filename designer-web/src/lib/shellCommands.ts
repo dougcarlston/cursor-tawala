@@ -92,6 +92,8 @@ export function suggestedProjectFileName(projectName?: string): string {
 
 /**
  * Display / JSON `project.name` from a disk leaf name (`Demo.json` → `Demo`).
+ * Flat convert catalogs may use `folder — ProjectName.json` — use the project
+ * leaf only so Push/Java identity stays `CampaignDashboards`, not the folder prefix.
  * Exported for unit tests.
  */
 export function projectDisplayNameFromFileName(filename: string): string {
@@ -104,7 +106,14 @@ export function projectDisplayNameFromFileName(filename: string): string {
   } else {
     withoutExt = withoutExt.replace(/\.json$/i, "");
   }
-  return withoutExt.trim() || "Untitled";
+  let name = withoutExt.trim() || "Untitled";
+  // "for reconversion — CampaignDashboards" / "customizable - Potluck"
+  const catalog = name.split(/\s+[—–-]\s+/);
+  if (catalog.length >= 2) {
+    const tail = catalog[catalog.length - 1]?.trim();
+    if (tail) name = tail;
+  }
+  return name || "Untitled";
 }
 
 /**
