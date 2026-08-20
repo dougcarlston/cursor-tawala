@@ -29,8 +29,9 @@ public class RemoveDuplicates extends ProcessCommand {
 
 	public RemoveDuplicates(ConfigElement config) {
 		this.fieldName = config.child("field").text();
-		String keep = config.attributeValue("keep");
-		this.keepLatest = keep == null || !"first".equalsIgnoreCase(keep.trim());
+		String keep = config.attribute("keep").stringValue();
+		this.keepLatest = keep == null || keep.trim().isEmpty()
+				|| !"first".equalsIgnoreCase(keep.trim());
 		// Same shape as Delete: <form> (+ optional <conditions>) under the command root.
 		this.recordSelector = RecordSelector.instantiateFrom(config);
 	}
