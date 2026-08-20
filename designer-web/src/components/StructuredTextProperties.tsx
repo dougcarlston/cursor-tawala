@@ -47,20 +47,40 @@ function isEditableStructuredType(type: string): type is StructuredFunctionNode[
   );
 }
 
+/**
+ * Walk inline wrappers (font / bold / italic / underline) for MQL / correlation /
+ * choice-tally nodes. Converter often nests itemization under `<font>`; a shallow
+ * top-level scan made Design show the “cannot be edited” fallback and dropped the
+ * orange preserved-import (column displayCondition) cue.
+ */
+function findEditableInNodes(
+  nodes: RichTextNode[],
+): { node: StructuredFunctionNode; nodeIndex: number } | null {
+  for (let nodeIndex = 0; nodeIndex < nodes.length; nodeIndex += 1) {
+    const node = nodes[nodeIndex];
+    if (isEditableStructuredType(node.type)) {
+      return { node: node as StructuredFunctionNode, nodeIndex };
+    }
+    const nested = node.nodes ?? [];
+    if (nested.length) {
+      const hit = findEditableInNodes(nested);
+      if (hit) return hit;
+    }
+  }
+  return null;
+}
+
 function findEditableStructuredFunction(content: RichContentBlock[]): StructuredLocation | null {
   for (let blockIndex = 0; blockIndex < content.length; blockIndex += 1) {
     const block = content[blockIndex];
-    const nodes = block.nodes ?? [];
-    for (let nodeIndex = 0; nodeIndex < nodes.length; nodeIndex += 1) {
-      const node = nodes[nodeIndex];
-      if (isEditableStructuredType(node.type)) {
-        return {
-          block,
-          blockIndex,
-          node: node as StructuredFunctionNode,
-          nodeIndex,
-        };
-      }
+    const hit = findEditableInNodes(block.nodes ?? []);
+    if (hit) {
+      return {
+        block,
+        blockIndex,
+        node: hit.node,
+        nodeIndex: hit.nodeIndex,
+      };
     }
   }
   return null;
@@ -95,12 +115,20 @@ function stripEditorCaretGuards(text: string) {
   return text.replace(/\u200b/g, "");
 }
 
+function patchItemizationInNodes(nodes: RichTextNode[], columns: ItemizationColumn[]): RichTextNode[] {
+  return nodes.map((node) => {
+    if (node.type === "itemizationTable") return { ...node, columns };
+    if (Array.isArray(node.nodes) && node.nodes.length) {
+      return { ...node, nodes: patchItemizationInNodes(node.nodes, columns) };
+    }
+    return node;
+  });
+}
+
 function patchItemizationColumns(content: RichContentBlock[], columns: ItemizationColumn[]): RichContentBlock[] {
   return content.map((block) => ({
     ...block,
-    nodes: (block.nodes ?? []).map((node) =>
-      node.type === "itemizationTable" ? { ...node, columns } : node,
-    ),
+    nodes: patchItemizationInNodes(block.nodes ?? [], columns),
   }));
 }
 

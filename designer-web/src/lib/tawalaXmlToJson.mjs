@@ -2026,6 +2026,46 @@ function convertProjectImages(projectBody) {
  * @param {{ sourceLabel?: string }} [options]
  * @returns {{ project: object, warnings: string[] }}
  */
+/**
+ * Some Master List `.tawala` files are upload wrappers (`<request>…<project>`)
+ * or have a few binary bytes before `<?xml`. Normalize before parse.
+ * @param {string} xmlString
+ */
+function normalizeTawalaXmlInput(xmlString) {
+  let s = String(xmlString ?? "");
+  // Strip UTF-8 BOM
+  if (s.charCodeAt(0) === 0xfeff) s = s.slice(1);
+  // Drop leading junk before the XML declaration or root element
+  const decl = s.search(/<\?xml\b/i);
+  if (decl > 0) s = s.slice(decl);
+  else {
+    const root = s.search(/<(?:request|project)\b/i);
+    if (root > 0) s = s.slice(root);
+  }
+  return s;
+}
+
+/**
+ * Locate `<project>` at document root or nested under `<request>` (upload wrapper).
+ * @param {unknown[]} doc
+ */
+function findProjectElement(doc) {
+  if (!Array.isArray(doc)) return null;
+  const atRoot = doc.find((e) => e && typeof e === "object" && e.project);
+  if (atRoot) return atRoot;
+  for (const el of doc) {
+    if (!el || typeof el !== "object" || !el.request) continue;
+    const body = el.request;
+    if (!Array.isArray(body)) continue;
+    const nested = body.find((e) => e && typeof e === "object" && e.project);
+    if (nested) {
+      warn("<request> upload wrapper unwrapped — credentials ignored");
+      return nested;
+    }
+  }
+  return null;
+}
+
 export function convertTawalaXmlToProject(xmlString, options = {}) {
   warnings = [];
   nextImportedFunctionInstanceId = 1;
@@ -2039,11 +2079,11 @@ export function convertTawalaXmlToProject(xmlString, options = {}) {
     trimValues: false,
     commentPropName: "#comment",
   });
-  const doc = parser.parse(xmlString);
+  const doc = parser.parse(normalizeTawalaXmlInput(xmlString));
   if (!Array.isArray(doc)) {
     throw new Error("Failed to parse project XML");
   }
-  const projectEl = doc.find((e) => e.project);
+  const projectEl = findProjectElement(doc);
   if (!projectEl) {
     throw new Error("No <project> root found");
   }
