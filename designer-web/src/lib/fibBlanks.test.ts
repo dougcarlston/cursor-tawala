@@ -32,6 +32,7 @@ describe("FIB underscore → blanks (Design metadata)", () => {
         alternateLabel: "Surveyee",
         required: true,
         height: 2,
+        caption: "First",
       },
     ];
     const blanks = syncBlanksFromPrompt("Name ________", existing, "FIB1");
@@ -42,7 +43,32 @@ describe("FIB underscore → blanks (Design metadata)", () => {
       alternateLabel: "Surveyee",
       required: true,
       height: 2,
+      caption: "First",
     });
+  });
+});
+
+describe("fibIdleHtmlWithCaptions", () => {
+  it("wraps underscore runs with caption spans when captions are set", async () => {
+    const { fibIdleHtmlWithCaptions } = await import("@/lib/fibBlanks");
+    const html = fibIdleHtmlWithCaptions(
+      "Name: ________ ________",
+      [
+        { name: "a", length: 8, caption: "First" },
+        { name: "b", length: 8, caption: "Last" },
+      ],
+      (s) => s,
+    );
+    expect(html).toContain('class="fib-blank-caption">First<');
+    expect(html).toContain('class="fib-blank-caption">Last<');
+    expect(html).toContain("________");
+  });
+
+  it("returns null when no captions (caller keeps normal idle HTML)", async () => {
+    const { fibIdleHtmlWithCaptions } = await import("@/lib/fibBlanks");
+    expect(
+      fibIdleHtmlWithCaptions("Name ________", [{ name: "a", length: 8 }], (s) => s),
+    ).toBeNull();
   });
 });
 

@@ -154,10 +154,57 @@ export function syncBlanksFromPrompt(
       required: prev?.required ?? false,
       alternateLabel: prev?.alternateLabel ?? defaultAlt,
       displayLabel: prev?.displayLabel,
+      caption: prev?.caption,
       height: prev?.height ?? 1,
       validation: prev?.validation,
     };
   });
+}
+
+/** Escape caption text for Design idle HTML. */
+function escapeIdleText(s: string): string {
+  return s
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+/**
+ * Design idle: when any blank has a caption, wrap each underscore run so the
+ * caption sits tight above that run (not Styles→Above; edit mode stays plain).
+ * Returns null when captions are absent — caller should use the normal idle path.
+ * `embedSlice` turns plain slices (incl. <<Field>> tokens) into HTML.
+ */
+export function fibIdleHtmlWithCaptions(
+  plainText: string,
+  blanks: TawalaBlank[],
+  embedSlice: (plain: string) => string,
+): string | null {
+  const runs = parseUnderscoreRuns(plainText);
+  if (runs.length === 0 || !blanks.some((b) => b.caption?.trim())) {
+    return null;
+  }
+  let out = "";
+  let last = 0;
+  for (let i = 0; i < runs.length; i++) {
+    const run = runs[i];
+    out += embedSlice(plainText.slice(last, run.start));
+    const unders = plainText.slice(run.start, run.end);
+    const cap = blanks[i]?.caption?.trim();
+    if (cap) {
+      out +=
+        `<span class="fib-blank-unit">` +
+        `<span class="fib-blank-caption">${escapeIdleText(cap)}</span>` +
+        `<span class="fib-blank-underscores">${unders}</span>` +
+        `</span>`;
+    } else {
+      out += unders;
+    }
+    last = run.end;
+  }
+  out += embedSlice(plainText.slice(last));
+  return out;
 }
 
 /**

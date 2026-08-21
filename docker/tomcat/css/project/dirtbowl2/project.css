@@ -20,10 +20,16 @@
     var(--reg-name-first-width) + var(--reg-name-gap) + var(--reg-name-last-width)
   );
   --reg-field-area-width: var(--reg-name-pair-width);
+  --reg-content-inner: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
   --reg-q4-row-gap: 0.5rem;
-  /* form-layout-core.css reads these (loads after this file). */
+  /* Product layout (form-layout-core) — theme supplies sizes, not geometry rules. */
   --tawala-fib-label-width: var(--reg-label-width);
+  --tawala-tabbed-label-width: var(--reg-tabbed-label-width);
+  --tawala-field-area-width: var(--reg-field-area-width);
   --tawala-fib-table-max-width: calc(var(--reg-label-width) + var(--reg-field-width) + 0.75rem);
+  /* Horizontal pad × 2 must match #tawalaProjectContainer padding (breathing room past fields). */
+  --tawala-form-pad-x: 3rem;
+  --tawala-form-content-max: calc(var(--reg-content-inner) + (2 * var(--tawala-form-pad-x)));
 }
 
 body {
@@ -34,11 +40,12 @@ body {
   line-height: 1.45;
 }
 
+/* Brand chrome only — width/containment live in form-layout-core.css */
 #tawalaProjectContainer {
-  max-width: 720px;
   margin: 0 auto;
-  padding: 1.5rem 1.25rem 2.5rem;
+  padding: 1.5rem var(--tawala-form-pad-x, 2rem) 2.5rem;
   font-size: 16px;
+  background-color: #ffffff;
 }
 
 #form {
@@ -265,7 +272,7 @@ table.TAWALA-tabbed-paragraph:has(input[name="Address"]) {
 table.TAWALA-tabbed-paragraph:has(input[name="Address"]) td:nth-child(2) {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto 10ch auto 5ch;
-  column-gap: 0.75rem;
+  column-gap: 1rem;
   align-items: center;
   width: var(--reg-field-area-width) !important;
   box-sizing: border-box;
@@ -312,7 +319,7 @@ table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail"]) td:nth-child(2),
 table.TAWALA-tabbed-paragraph:has(input[name="ParentEmail2"]) td:nth-child(2) {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-  column-gap: 0.75rem;
+  column-gap: 1rem;
   align-items: center;
   align-content: start;
   vertical-align: top !important;
@@ -429,87 +436,8 @@ div.fib:has(input[name="ParentFirstName"]) > div:not([class]) {
   margin-left: var(--reg-tabbed-label-width) !important;
 }
 
-/* Parent Phone Numbers — four columns: label | P1 | P2 | P3 */
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) {
-  table-layout: fixed;
-  width: calc(var(--reg-tabbed-label-width) + var(--reg-field-area-width));
-  max-width: 100%;
-}
 
-/* The 0.5rem column-gap also sits between the label track and the P1 column,
-   which pushed P1 ~8px right of the field column (email input / note line). Shrink
-   the label track by that gap so P1 lands flush at the label-column width, matching
-   Preview and the email/note alignment. Inter-phone gap stays 0.5rem. */
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) tr {
-  display: grid;
-  grid-template-columns: calc(var(--reg-tabbed-label-width) - 0.5rem) repeat(3, minmax(0, 1fr));
-  column-gap: 0.5rem;
-  align-items: start;
-}
-
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child {
-  width: calc(var(--reg-tabbed-label-width) - 0.5rem) !important;
-  min-width: calc(var(--reg-tabbed-label-width) - 0.5rem) !important;
-  max-width: calc(var(--reg-tabbed-label-width) - 0.5rem) !important;
-  padding-left: 0 !important;
-  padding-right: 12px !important;
-  font-weight: bold;
-  font-style: normal;
-  font-size: 16px;
-  text-align: left;
-  vertical-align: top !important;
-  padding-top: 2px !important;
-  padding-bottom: 0 !important;
-  line-height: 1.45;
-  box-sizing: border-box;
-}
-
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child i {
-  display: block;
-  font-weight: normal;
-  font-style: italic;
-  font-size: 0.9em;
-  margin-top: 0.1rem;
-  text-align: left;
-}
-
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2),
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3),
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4) {
-  display: flex;
-  align-items: center;
-  gap: 0.35rem;
-  vertical-align: top !important;
-  padding-top: 2px !important;
-  padding-right: 0 !important;
-  white-space: nowrap;
-  width: auto !important;
-  max-width: none !important;
-  min-width: 0;
-  box-sizing: border-box;
-}
-
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2) strong,
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3) strong,
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4) strong {
-  font-weight: bold;
-  white-space: nowrap;
-  margin-right: 0;
-  flex: 0 0 auto;
-}
-
-table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) input {
-  flex: 1 1 auto;
-  width: 100% !important;
-  max-width: none;
-  min-width: 0;
-  margin: 0;
-  padding: 2px 6px;
-  line-height: 1.25;
-  display: inline-block !important;
-  vertical-align: middle;
-  box-sizing: border-box;
-}
+/* Phone row geometry → form-layout-core.css (theme-agnostic). */
 
 /* Hint text — italic (First / Last) */
 table.TAWALA-tabbed-paragraph td i {

@@ -123,11 +123,18 @@ function blankXml(blank, letter, escAttr, escText) {
   const len = blank.length ?? 20;
   const heightAttr = blank.height && blank.height > 1 ? ` height="${blank.height}"` : "";
   const altAttr = alt && alt !== letter ? ` alternateLabel="${escAttr(alt)}"` : "";
+  const caption = String(blank.caption ?? "").trim();
+  const captionAttr = caption ? ` caption="${escAttr(caption)}"` : "";
   const validator = escText ? validatorXml(blank.validation, escText) : "";
   if (validator) {
-    return `<blank label="${escAttr(letter)}" length="${len}"${heightAttr} required="${req}"${altAttr}>${validator}</blank>`;
+    return `<blank label="${escAttr(letter)}" length="${len}"${heightAttr} required="${req}"${altAttr}${captionAttr}>${validator}</blank>`;
   }
-  return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${heightAttr}/>`;
+  return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${captionAttr}${heightAttr}/>`;
+}
+
+/** True when Design set blank.caption (Java Blank renders above the input). */
+function rowUsesBlankCaptions(fields) {
+  return fields.some((f) => String(f.blank?.caption ?? "").trim());
 }
 
 function labelFont(text, escAttr, escText, { bold = false } = {}) {
@@ -137,7 +144,15 @@ function labelFont(text, escAttr, escText, { bold = false } = {}) {
   return textWithFieldRefsXml(withColon, escAttr, escText, { bold });
 }
 
-function hintParagraph(hints, escText) {
+/**
+ * Legacy `[hint]` only — tabbed italic row for DefaultLayout.
+ * Design `blank.caption` is emitted on `<blank caption="…">` so leftAlign /
+ * justified (AlignedLabelsLayout) can stack it above each input in Java.
+ */
+function legacyHintParagraphFromFields(fields, escText) {
+  if (rowUsesBlankCaptions(fields)) return null;
+  const hints = fields.map((f) => String(f.hint ?? "").trim()).filter(Boolean);
+  if (hints.length === 0) return null;
   let body = "";
   for (const h of hints) {
     body += `<tab/>${fontXml(h, escText, { italic: true })}`;
@@ -189,6 +204,52 @@ function dobRowsXml(row, letters, escAttr, escText) {
   body += blankXml(fields[2].blank, letters.get(fields[2].blank), escAttr, escText);
 
   return [paragraph(body)];
+}
+
+/**
+ * Address: Street / City: / Zip: on one line — same shape as registrationFibToXml.
+ * Requires freeform/DefaultLayout (AlignedLabelsLayout would orphan Street alone).
+ */
+function isAddressRow(row) {
+  const fields = fibRowFields(row.segments);
+  if (fields.length < 3) return false;
+  const texts = row.segments
+    .filter((s) => s.type === "text")
+    .map((s) => String(s.text ?? "").toLowerCase())
+    .join(" ");
+  const meta = fields
+    .map((f) =>
+      `${f.blank?.alternateLabel ?? ""} ${f.blank?.caption ?? ""}`.toLowerCase(),
+    )
+    .join(" ");
+  const hay = `${texts} ${meta}`;
+  return /\baddress\b/.test(hay) && /\bcity\b/.test(hay) && /\bzip\b/.test(hay);
+}
+
+function addressRowsXml(row, letters, escAttr, escText) {
+  let body = "";
+  let seenBlank = false;
+  for (const seg of row.segments) {
+    if (seg.type === "text") {
+      const raw = seg.text ?? "";
+      const t = raw.trim();
+      if (!t) continue;
+      if (!seenBlank) {
+        let label = raw;
+        if (t.endsWith(":") && !/\s$/.test(raw)) label = `${raw} `;
+        body += labelFont(label, escAttr, escText, { bold: true });
+      } else {
+        body += fontXml(t, escText, { bold: /^(city|zip)\b/i.test(t) });
+      }
+      continue;
+    }
+    if (!seenBlank) {
+      body += "<tab/>";
+      seenBlank = true;
+    }
+    body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
+  }
+  return [paragraph(body, TAB_FREEFORM)];
 }
 
 /**
@@ -286,17 +347,17 @@ function richFormattedRowParagraph(rowStr, blanks, bi, letters, escAttr, escText
 
 /** Default/freeform: one paragraph per Design soft-row (preserve multi-blank WYSIWYG lines). */
 function defaultRowXml(row, letters, escAttr, escText) {
-  if (isDobRow(row)) {
-    return dobRowsXml(row, letters, escAttr, escText);
-  }
+    if (isDobRow(row)) {
+      return dobRowsXml(row, letters, escAttr, escText);
+    }
+    if (isAddressRow(row)) {
+      return addressRowsXml(row, letters, escAttr, escText);
+    }
 
   const fields = fibRowFields(row.segments);
-  const hints = fields.map((f) => f.hint).filter(Boolean);
   const parts = [];
-
-  if (hints.length >= 2) {
-    parts.push(hintParagraph(hints, escText));
-  }
+  const hintPara = legacyHintParagraphFromFields(fields, escText);
+  if (hintPara) parts.push(hintPara);
 
   // Walk text/blank segments in order so "First ____ Last ____" stays one Deploy line.
   // (Previously each blank became its own <paragraph>, which ignored Design layout.)
@@ -362,8 +423,8 @@ function freeformRowsXml(prompt, blanks, letters, escAttr, escText) {
     );
     if (richPara) {
       const fields = fibRowFields(row.segments);
-      const hints = fields.map((f) => f.hint).filter(Boolean);
-      if (hints.length >= 2) parts.push(hintParagraph(hints, escText));
+      const hintPara = legacyHintParagraphFromFields(fields, escText);
+      if (hintPara) parts.push(hintPara);
       parts.push(richPara);
       bi += blankCount;
       continue;
@@ -392,11 +453,21 @@ export function fibToXml(item, escAttr, escText) {
     const blanks = item.blanks ?? [];
     const style = item.style ?? "";
     const alternateLabel = item.alternateLabel ?? item.name;
-    const left = fibUsesLeftLabels(style);
     const letters = new Map(blanks.map((b, i) => [b, blankLetter(i)]));
 
+    // AlignedLabelsLayout keeps only the *first* blank in the field column; remainder
+    // holds the rest. DOB mo/day/yr and Address Street/City/Zip need DefaultLayout
+    // (freeform), like DirtBowl Registration FIBs that omit style.
+    const parsedRows = parseFibPrompt(prompt, blanks);
+    const needsFreeformLayout =
+      (fibUsesLeftLabels(style) || fibUsesRightAlignLabels(style)) &&
+      parsedRows.some((row) => isDobRow(row) || isAddressRow(row));
+    const layoutStyle = needsFreeformLayout ? "freeform" : style;
+    const left = fibUsesLeftLabels(layoutStyle);
+    const right = fibUsesRightAlignLabels(layoutStyle);
+
     let parts = [];
-    if (style === "topLabels") {
+    if (layoutStyle === "topLabels") {
       const hasDisplayLabels = blanks.some((b) => b.displayLabel?.trim());
       parts = hasDisplayLabels
         ? topLabelsFromBlanks(item, letters, escAttr, escText)
@@ -406,17 +477,19 @@ export function fibToXml(item, escAttr, escText) {
       }
     } else if (!prompt.trim() && blanks.length > 0) {
       parts = emptyPromptBlanksXml(blanks, escAttr, escText);
+    } else if (right || left) {
+      parts = alignedRowsXml(prompt, blanks, letters, escAttr, escText, right);
     } else {
-      const right = fibUsesRightAlignLabels(style);
-      if (right || left) {
-        parts = alignedRowsXml(prompt, blanks, letters, escAttr, escText, right);
-      } else {
-        // Freeform / default: preserve Design soft-rows + character formatting.
-        parts = freeformRowsXml(prompt, blanks, letters, escAttr, escText);
-      }
+      // Freeform / default: preserve Design soft-rows + character formatting.
+      parts = freeformRowsXml(prompt, blanks, letters, escAttr, escText);
     }
 
-    const styleAttr = style ? ` style="${escAttr(style)}"` : "";
+    // Emit freeform (or omit) when we coerced DOB off leftAlign — Java must not use
+    // AlignedLabelsLayout for that item.
+    const styleAttr =
+      layoutStyle && layoutStyle !== "freeform"
+        ? ` style="${escAttr(layoutStyle)}"`
+        : "";
     const altAttr =
       alternateLabel && alternateLabel !== item.label
         ? ` alternateLabel="${escAttr(alternateLabel)}"`
@@ -446,6 +519,19 @@ function alignedRowsXml(prompt, blanks, letters, escAttr, escText, right) {
     const rowStr = rowStrs[i] ?? "";
     const blankCount = fibRowFields(row.segments).length;
 
+    // Same DOB/Address rewrite as freeform: needs <tab/> + DefaultLayout.
+    // Plain leftAlign orphans the first blank from the rest (AlignedLabelsLayout).
+    if (isDobRow(row)) {
+      parts.push(...dobRowsXml(row, letters, escAttr, escText));
+      bi += blankCount;
+      continue;
+    }
+    if (isAddressRow(row)) {
+      parts.push(...addressRowsXml(row, letters, escAttr, escText));
+      bi += blankCount;
+      continue;
+    }
+
     const richPara = richFormattedRowParagraph(
       rowStr,
       blanks,
@@ -456,6 +542,8 @@ function alignedRowsXml(prompt, blanks, letters, escAttr, escText, right) {
       tabsXml,
     );
     if (richPara) {
+      // Captions travel on <blank caption="…"> — AlignedLabelsLayout cannot place
+      // a separate tabbed hint row above the field columns.
       parts.push(richPara);
       bi += blankCount;
       continue;
@@ -495,7 +583,10 @@ function topLabelsFromPrompt(prompt, blanks, letters, escAttr, escText) {
       escText,
       TAB_TOPLABELS,
     );
-    if (richPara) {
+    // Multi-blank Above: prefer split (label paragraph + blanks paragraph) so
+    // VerticalLabelLayout's block wrappers do not stack same-line blanks. Rich
+    // character formatting on one-blank rows still uses the rich path.
+    if (richPara && blankCount <= 1) {
       parts.push(richPara);
       bi += blankCount;
       continue;
@@ -533,38 +624,69 @@ function topLabelsFromBlanks(item, letters, escAttr, escText) {
   return parts;
 }
 
-/** One topLabels soft-row via plain segments (no Design character formatting). */
+/** One topLabels soft-row via plain segments (no Design character formatting).
+ * Above moves the *question label* above the blanks — it must not stack same-line
+ * blanks. Leading text before the first blank becomes its own paragraph; blanks
+ * (and any interstitial text) stay on the following paragraph / soft-row.
+ */
 function topLabelsOneRowXml(row, letters, escAttr, escText) {
-  let body = "";
-  let emittedBlank = false;
+  const leadingSegs = [];
+  const fieldSegs = [];
+  let seenBlank = false;
   for (const seg of row.segments) {
-    if (seg.type === "text") {
-      const t = seg.text.trim();
-      if (!t) continue;
-      // Parenthetical notes in the prompt render italic (legacy SignupSheets Max field).
-      if (t.startsWith("(")) {
-        body += fontXml(t.endsWith(":") ? `${t} ` : t, escText, { italic: true });
-      } else {
-        body += fontXml(
-          t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `,
-          escText,
-        );
+    if (seg.type === "blank") seenBlank = true;
+    if (!seenBlank) leadingSegs.push(seg);
+    else fieldSegs.push(seg);
+  }
+
+  const renderTextSeg = (seg) => {
+    const t = (seg.text ?? "").trim();
+    if (!t) return "";
+    if (t.startsWith("(")) {
+      return fontXml(t.endsWith(":") ? `${t} ` : t, escText, { italic: true });
+    }
+    return fontXml(
+      t.endsWith(":") || t.endsWith(": ") ? (t.endsWith(" ") ? t : `${t} `) : `${t} `,
+      escText,
+    );
+  };
+
+  const renderFieldSegs = (segs) => {
+    let body = "";
+    let emittedBlank = false;
+    for (const seg of segs) {
+      if (seg.type === "text") {
+        body += renderTextSeg(seg);
+        continue;
       }
-      continue;
+      const hint = seg.hint?.trim();
+      if (hint) {
+        const label = hint.startsWith("[") ? hint : `[${hint}]`;
+        body += fontXml(label, escText, { bold: true, italic: true });
+        body += fontXml("  ", escText);
+      }
+      body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
+      emittedBlank = true;
     }
-    const hint = seg.hint?.trim();
-    if (hint) {
-      const label = hint.startsWith("[") ? hint : `[${hint}]`;
-      body += fontXml(label, escText, { bold: true, italic: true });
-      body += fontXml("  ", escText);
-    }
-    body += blankXml(seg.blank, letters.get(seg.blank), escAttr, escText);
-    emittedBlank = true;
+    return { body, emittedBlank };
+  };
+
+  const parts = [];
+  let leadingBody = "";
+  for (const seg of leadingSegs) {
+    if (seg.type === "text") leadingBody += renderTextSeg(seg);
   }
-  if (emittedBlank || body) {
-    return [paragraph(body, TAB_TOPLABELS)];
+  if (leadingBody.trim()) {
+    parts.push(paragraph(leadingBody, TAB_TOPLABELS));
   }
-  return [];
+
+  const { body: fieldBody, emittedBlank } = renderFieldSegs(fieldSegs);
+  if (emittedBlank || fieldBody) {
+    parts.push(paragraph(fieldBody, TAB_TOPLABELS));
+  } else if (parts.length === 0 && leadingBody) {
+    // Label-only soft-row (no blanks) — already pushed.
+  }
+  return parts;
 }
 
 /** Legacy Friend rows: empty prompt, one blank per paragraph (DirtBowl Q10). */

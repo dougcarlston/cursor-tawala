@@ -227,4 +227,110 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(paras[1]).toMatch(/Name:/);
     expect(paras[1]).toMatch(/<blank\b/);
   });
+
+  it("emits per-blank caption attribute for leftAlign (AlignedLabelsLayout)", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      style: "leftAlignLabels",
+      prompt: "Name of Registrant: ________ ________",
+      blanks: [
+        { name: "a", alternateLabel: "FirstName", length: 8, caption: "First" },
+        { name: "b", alternateLabel: "LastName", length: 8, caption: "Last" },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain('caption="First"');
+    expect(xml).toContain('caption="Last"');
+    // Must NOT use a separate hint paragraph — leftAlign drops/misplaces those.
+    expect(xml).not.toMatch(/<paragraph[^>]*>[\s\S]*<i>First<\/i>[\s\S]*<\/paragraph>[\s\S]*<blank/);
+    const paras = [...xml.matchAll(/<paragraph[\s\S]*?<\/paragraph>/g)].map((m) => m[0]);
+    expect(paras).toHaveLength(1);
+    expect(paras[0]).toMatch(/<blank[^>]*caption="First"/);
+    expect(paras[0]).toMatch(/<blank[^>]*caption="Last"/);
+  });
+
+  it("leftAlign Date preset uses DOB layout (hint before tab, then mo/day/yr)", () => {
+    const item = {
+      type: "fib",
+      label: "FIB1",
+      style: "leftAlignLabels",
+      prompt: "Date of Birth: __ / __ / ____ (mm/dd/yyyy)",
+      blanks: [
+        { name: "a", length: 2, alternateLabel: "Month" },
+        { name: "b", length: 2, alternateLabel: "Day" },
+        { name: "c", length: 4, alternateLabel: "Year" },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    // Must not emit leftAlign — AlignedLabelsLayout would orphan mo from /day/year.
+    expect(xml).not.toMatch(/style="leftAlignLabels"/);
+    const paras = [...xml.matchAll(/<paragraph[\s\S]*?<\/paragraph>/g)].map((m) => m[0]);
+    expect(paras).toHaveLength(1);
+    const body = paras[0];
+    expect(body).toMatch(
+      /Date of Birth:[\s\S]*<i>\(mm\/dd\/yyyy\)<\/i>[\s\S]*<tab\/>[\s\S]*<blank[\s\S]*\/[\s\S]*<blank[\s\S]*\/[\s\S]*<blank/,
+    );
+    expect(body.indexOf("(mm/dd/yyyy)")).toBeLessThan(body.indexOf("<tab/>"));
+    expect(body.indexOf("<tab/>")).toBeLessThan(body.indexOf("<blank"));
+  });
+
+  it("Address preset emits tabbed freeform Street/City/Zip (not leftAlign)", () => {
+    const item = {
+      type: "fib",
+      label: "FIB3",
+      style: "leftAlignLabels",
+      prompt: "Address: ____________________ ________ _____",
+      blanks: [
+        { name: "a", length: 20, alternateLabel: "Street", caption: "Street" },
+        { name: "b", length: 8, alternateLabel: "City", caption: "City" },
+        { name: "c", length: 5, alternateLabel: "Zip", caption: "Zip" },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).not.toMatch(/style="leftAlignLabels"/);
+    expect(xml).toMatch(/Address:[\s\S]*<tab\/>[\s\S]*<blank[\s\S]*<blank[\s\S]*<blank/);
+    expect(xml).toContain('caption="Street"');
+    expect(xml).toContain('caption="City"');
+    expect(xml).toContain('caption="Zip"');
+    expect(xml).not.toMatch(/>City:</);
+    expect(xml).not.toMatch(/>Zip:</);
+  });
+
+  it("prefers blank.caption attribute over legacy [hint] paragraph", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      prompt: "[old] Name ____ ____",
+      blanks: [
+        { name: "a", length: 4, caption: "First" },
+        { name: "b", length: 4, caption: "Last" },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain('caption="First"');
+    expect(xml).toContain('caption="Last"');
+    expect(xml).not.toMatch(/<i>old<\/i>/);
+  });
+
+  it("topLabels keeps same soft-row blanks side-by-side (label on its own paragraph)", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      style: "topLabels",
+      prompt: "Name of Registrant: ________ ________",
+      blanks: [
+        { name: "a", alternateLabel: "FirstName", length: 8, caption: "First" },
+        { name: "b", alternateLabel: "LastName", length: 8, caption: "Last" },
+      ],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    const paras = [...xml.matchAll(/<paragraph[\s\S]*?<\/paragraph>/g)].map((m) => m[0]);
+    expect(paras.length).toBe(2);
+    expect(paras[0]).toMatch(/Name of Registrant/);
+    expect(paras[0]).not.toMatch(/<blank\b/);
+    expect(paras[1]).toMatch(/caption="First"/);
+    expect(paras[1]).toMatch(/caption="Last"/);
+    expect(paras[1]).not.toMatch(/Name of Registrant/);
+  });
 });

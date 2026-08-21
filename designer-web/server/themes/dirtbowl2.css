@@ -11,15 +11,33 @@
   --tawala-submit-bg: #5c4033;
 }
 
+.tawala-theme-dirtbowl2 {
+  --reg-label-width: 13.25rem;
+  --reg-field-width: 28rem;
+  --reg-block-indent: 2rem;
+  --reg-q4-row-gap: 0.5rem;
+  --reg-name-gap: 1.25rem;
+  --reg-name-first-width: 12em;
+  --reg-name-last-width: 18em;
+  --reg-content-inner: calc(var(--reg-label-width) + 0.75rem + var(--reg-field-width));
+}
+
 body.tawala-theme-dirtbowl2 {
   font-family: Georgia, "Times New Roman", Times, serif;
-  background: var(--tawala-bg);
   color: var(--tawala-text);
-  max-width: 720px;
+  box-sizing: border-box;
+  max-width: calc(var(--reg-content-inner, 42rem) + 2.5rem);
+  width: 100%;
   margin: 0 auto;
   padding: 1.5rem 1.25rem 2.5rem;
   line-height: 1.45;
   font-size: 15px;
+  background-color: #ffffff;
+}
+
+/* Beige page behind the white form panel (Preview shell). */
+html:has(body.tawala-theme-dirtbowl2) {
+  background: var(--tawala-bg, #f3ece1);
 }
 
 .tawala-theme-dirtbowl2 .dev-banner {
@@ -203,16 +221,7 @@ body.tawala-theme-dirtbowl2 {
   margin-top: 0.5rem;
 }
 
-/* Registration layout — aligned field column */
-.tawala-theme-dirtbowl2 {
-  --reg-label-width: 13.25rem;
-  --reg-field-width: 28rem;
-  --reg-block-indent: 2rem;
-  --reg-q4-row-gap: 0.5rem;
-  --reg-name-gap: 1.25rem;
-  --reg-name-first-width: 12em;
-  --reg-name-last-width: 18em;
-}
+/* Registration layout — aligned field column (vars set on .tawala-theme-dirtbowl2 above) */
 
 .tawala-theme-dirtbowl2 .reg-field-row {
   display: flex;
@@ -416,11 +425,12 @@ body.tawala-theme-dirtbowl2 {
 
 .tawala-theme-dirtbowl2 .reg-phone-line {
   display: grid;
-  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr) auto minmax(0, 1fr);
+  grid-template-columns: auto minmax(4.5em, 1fr) auto minmax(4.5em, 1fr) auto minmax(4.5em, 1fr);
   column-gap: 0.5rem;
   align-items: center;
   width: 100%;
-  max-width: var(--reg-field-width);
+  max-width: none;
+  box-sizing: border-box;
 }
 
 .tawala-theme-dirtbowl2 .reg-phone-row .reg-inline-label {

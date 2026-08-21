@@ -53,6 +53,21 @@ describe("registrationLayout DirtBowl gate", () => {
     expect(
       isDirtBowlRegistrationForm({
         name: "Registration",
+        items: [
+          {
+            type: "fib",
+            label: "Q1",
+            blanks: [
+              { name: "a", alternateLabel: "FirstName", length: 15 },
+              { name: "b", alternateLabel: "LastName", length: 15 },
+            ],
+          },
+        ],
+      }),
+    ).toBe(true);
+    expect(
+      isDirtBowlRegistrationForm({
+        name: "Registration",
         items: [cyoLikeQ1()],
       }),
     ).toBe(false);

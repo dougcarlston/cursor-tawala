@@ -184,8 +184,9 @@ function renderFib(item, ctx) {
             }
             if (seg.type === "blank") {
               seenBlank = true;
-              const hint = seg.hint ? `<em class="fib-hint">${esc(seg.hint)}</em>` : "";
-              return `<span class="fib-field">${hint}${blankInput(item, seg.blank, ctx)}</span>`;
+              const cap = String(seg.blank?.caption ?? seg.hint ?? "").trim();
+              const capHtml = cap ? `<em class="fib-blank-caption">${esc(cap)}</em>` : "";
+              return `<span class="fib-field${cap ? " fib-field-captioned" : ""}">${capHtml}${blankInput(item, seg.blank, ctx)}</span>`;
             }
             return "";
           })
@@ -209,8 +210,9 @@ function renderFib(item, ctx) {
             return `<span class="fib-inline-text">${esc(text)}</span>`;
           }
           if (seg.type === "blank") {
-            const hint = seg.hint ? `<em class="fib-hint">${esc(seg.hint)}</em>` : "";
-            return `<span class="fib-field">${hint}${blankInput(item, seg.blank, ctx)}</span>`;
+            const cap = String(seg.blank?.caption ?? seg.hint ?? "").trim();
+            const capHtml = cap ? `<em class="fib-blank-caption">${esc(cap)}</em>` : "";
+            return `<span class="fib-field${cap ? " fib-field-captioned" : ""}">${capHtml}${blankInput(item, seg.blank, ctx)}</span>`;
           }
           return "";
         })

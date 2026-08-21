@@ -1411,13 +1411,22 @@ textarea {
   color: var(--muted);
 }
 
-/* Ephemeral insert caret — legacy Insert.png, left of items, only while dragging. */
+/* Insert caret — legacy Insert.png, left of items.
+   Drag: full opacity. Idle: shows where Insert menu / palette will place the next item. */
 .form-canvas-insert-caret {
   position: absolute;
   left: 6px;
   height: 0;
   z-index: 5;
   pointer-events: none;
+}
+
+.form-canvas-insert-caret-idle {
+  opacity: 0.55;
+}
+
+.form-canvas-insert-caret-drag {
+  opacity: 1;
 }
 
 .form-canvas-insert-caret-marker {
@@ -2035,6 +2044,27 @@ textarea {
   white-space: pre-wrap;
   word-break: break-word;
   border: 1px solid transparent;
+}
+
+.fib-rendered .fib-blank-unit {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Keep prompt labels with the underscore run, not the caption above it. */
+  vertical-align: bottom;
+  margin: 0 2px;
+}
+
+.fib-rendered .fib-blank-caption {
+  font-size: 0.85em;
+  font-style: italic;
+  line-height: 1.2;
+  color: #444;
+}
+
+.fib-rendered .fib-blank-underscores {
+  font: inherit;
+  line-height: 1.2;
 }
 
 .fib-rendered.placeholder {

@@ -421,7 +421,10 @@ function InsertMenuBody({
   formCount: number;
   focusKind: string;
   fieldsPaletteSelection: string | null;
-  onInsertFormItem: (type: (typeof FORM_ITEM_PALETTE)[number]["type"]) => void;
+  onInsertFormItem: (
+    type: (typeof FORM_ITEM_PALETTE)[number]["type"],
+    options?: { fibPreset?: "date" | "address" },
+  ) => void;
   onInsertProcess: (
     label: string,
     template: (typeof PROCESS_STATEMENT_PALETTE)[number]["template"],
@@ -561,6 +564,21 @@ function InsertMenuBody({
           {label}
         </button>
       ))}
+      <div className="menu-separator" />
+      <button
+        type="button"
+        disabled={!canFormItems}
+        onClick={() => onInsertFormItem("fib", { fibPreset: "date" })}
+      >
+        Date
+      </button>
+      <button
+        type="button"
+        disabled={!canFormItems}
+        onClick={() => onInsertFormItem("fib", { fibPreset: "address" })}
+      >
+        Address
+      </button>
       <div className="menu-separator" />
       <MenuSubmenu label="Image…" disabled={!canRichImage}>
         <button

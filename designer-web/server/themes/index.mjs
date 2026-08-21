@@ -45,6 +45,21 @@ i, em { font-style: italic; }
 .fib-style-rightAlignLabelsJustified .fib-row .fib-label { text-align: right; }
 .fib-row .fib-fields { flex: 1 1 auto; display: flex; flex-wrap: nowrap; align-items: flex-end; gap: 8px 12px; min-width: 0; }
 .fib-row .fib-fields .fib-field { flex: 0 1 auto; min-width: 0; }
+.fib-field.fib-field-captioned {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-end;
+  vertical-align: bottom;
+}
+.fib-blank-caption {
+  display: block;
+  font-size: 0.85em;
+  font-style: italic;
+  line-height: 1.2;
+  margin: 0 0 0.1em 0;
+  font-weight: normal;
+}
 .fib-row .fib-fields input[type=text] { max-width: 100%; min-width: 3ch; box-sizing: content-box; }
 /* Stack FIB items (do not sit Email | Address side-by-side). */
 .fib:not(.fib-style-topLabels) {

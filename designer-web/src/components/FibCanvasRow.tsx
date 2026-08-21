@@ -6,6 +6,7 @@ import {
   activeBlankIndex,
   defaultValidation,
   fibHintHighlightEnd,
+  fibIdleHtmlWithCaptions,
   htmlToPlainText,
   isAlternateLabelUnique,
   selectionIsSingleBlank,
@@ -350,6 +351,10 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const isEmpty = plainPrompt.trim() === "";
   const currentBlank = activeBlank >= 0 ? blanks[activeBlank] : null;
   const stripEnabled = activeBlank >= 0 && !!currentBlank;
+  const idleHtml = isEmpty
+    ? FIB_PLACEHOLDER
+    : fibIdleHtmlWithCaptions(plainPrompt, blanks, embedPlainFieldTokensAsHtml) ??
+      embedPlainFieldTokensAsHtml(prompt);
 
   return (
     <div
@@ -524,6 +529,23 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
                 />
               </label>
               <label>
+                Caption
+                <input
+                  type="text"
+                  title="Small label above this blank (e.g. First, Last)"
+                  placeholder="e.g. First"
+                  value={currentBlank?.caption ?? ""}
+                  disabled={!stripEnabled}
+                  onChange={(e) => {
+                    updateBlank(activeBlank, { caption: e.target.value });
+                  }}
+                  onBlur={(e) => {
+                    const trimmed = e.target.value.trim();
+                    updateBlank(activeBlank, { caption: trimmed || undefined });
+                  }}
+                />
+              </label>
+              <label>
                 Height
                 <input
                   type="number"
@@ -584,7 +606,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
             key="fib-rendered"
             className={`fib-rendered${isEmpty ? " placeholder" : ""}`}
             dangerouslySetInnerHTML={{
-              __html: isEmpty ? FIB_PLACEHOLDER : embedPlainFieldTokensAsHtml(prompt),
+              __html: idleHtml,
             }}
           />
         )}

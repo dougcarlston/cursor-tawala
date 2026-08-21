@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
@@ -33,14 +33,15 @@ interface Props {
 
 /**
  * Form design canvas — legacy insert/move:
- * compact item list (no permanent insert bars); floating caret only while dragging
- * a palette item or reordering a selected row; edge auto-scroll during drag.
+ * compact item list; insert caret while dragging OR idle (shows where Insert menu /
+ * palette will place the next item — legacy InsertionPoint).
  */
 export function FormEditor({ formName }: Props) {
   const project = useProjectStore((s) => s.project);
   const editorTab = useProjectStore((s) => s.editorTab);
   const setEditorTab = useProjectStore((s) => s.setEditorTab);
   const selectedItemIndex = useProjectStore((s) => s.selectedItemIndex);
+  const insertBeforeIndex = useProjectStore((s) => s.insertBeforeIndex);
   const setSelectedItemIndex = useProjectStore((s) => s.setSelectedItemIndex);
   const setInsertBeforeIndex = useProjectStore((s) => s.setInsertBeforeIndex);
   const openWindow = useProjectStore((s) => s.openWindow);
@@ -52,6 +53,7 @@ export function FormEditor({ formName }: Props) {
   /** Live insert-before index while dragging (palette or reorder). */
   const [dragBeforeIndex, setDragBeforeIndex] = useState<number | null>(null);
   const [dragCaretTop, setDragCaretTop] = useState<number | null>(null);
+  const [idleCaretTop, setIdleCaretTop] = useState<number | null>(null);
   const [reorderFromIndex, setReorderFromIndex] = useState<number | null>(null);
   const canvasRef = useRef<HTMLDivElement>(null);
 
@@ -60,6 +62,8 @@ export function FormEditor({ formName }: Props) {
   const canMoveUp = selectedItemIndex !== null && selectedItemIndex > 0;
   const canMoveDown = selectedItemIndex !== null && selectedItemIndex < itemCount - 1;
   const dragActive = dragBeforeIndex !== null;
+  const caretTop = dragActive ? dragCaretTop : idleCaretTop;
+  const showCaret = caretTop != null && editorTab === "design";
 
   useEffect(() => {
     if (!form) return;
@@ -119,6 +123,18 @@ export function FormEditor({ formName }: Props) {
       cancelled = true;
     };
   }, [editorTab, project, formName, form]);
+
+  // Idle caret tracks store InsertionPoint so Insert menu / palette match drag drops.
+  useLayoutEffect(() => {
+    if (!form || editorTab !== "design") {
+      setIdleCaretTop(null);
+      return;
+    }
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const before = Math.max(0, Math.min(insertBeforeIndex, form.items.length));
+    setIdleCaretTop(caretOffsetTop(canvas, before, form.items.length));
+  }, [editorTab, form, form?.items.length, insertBeforeIndex, selectedItemIndex]);
 
   if (!form) {
     return <div className="placeholder-editor">Form not found: {formName}</div>;
@@ -337,11 +353,12 @@ export function FormEditor({ formName }: Props) {
             }}
             onDragEnd={clearDragUi}
           >
-            {dragActive && dragCaretTop != null ? (
+            {showCaret ? (
               <div
-                className="form-canvas-insert-caret"
-                style={{ top: dragCaretTop }}
+                className={`form-canvas-insert-caret${dragActive ? " form-canvas-insert-caret-drag" : " form-canvas-insert-caret-idle"}`}
+                style={{ top: caretTop ?? undefined }}
                 aria-hidden
+                title="Next Insert lands here (select a row = before it; click empty canvas = end)"
               >
                 <img
                   className="form-canvas-insert-caret-marker"

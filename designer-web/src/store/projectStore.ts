@@ -25,6 +25,7 @@ import { cascadeFormRenameInProject } from "@/lib/formRenameCascade";
 import { nextLinkedProcessName } from "@/lib/projectModel";
 import { addOrReuseImage } from "@/lib/projectImages";
 import { migrateProjectMqlTokens } from "@/lib/mqlTokenMigrate";
+import { createFibInsertPreset } from "@/lib/fibInsertPresets";
 import {
   moveProcessCommandAtPath,
   moveProcessCommandBefore,
@@ -295,7 +296,12 @@ interface ProjectState {
   renameDocument: (oldName: string, newName: string) => boolean;
   insertFormItem: (
     type: FormItemType,
-    options?: { formName?: string; beforeIndex?: number },
+    options?: {
+      formName?: string;
+      beforeIndex?: number;
+      /** Ordinary FIB layout snippets (Insert → Date / Address). */
+      fibPreset?: "date" | "address";
+    },
   ) => void;
   updateFormItem: (formName: string, index: number, item: FormItem) => void;
   updateForm: (formName: string, patch: Partial<TawalaForm>) => void;
@@ -1581,6 +1587,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
             ? "SKIP"
             : nextLabel(prefix, labels);
     let item: FormItem = createDefaultItem(type, label);
+    if (options?.fibPreset && type === "fib") {
+      item = createFibInsertPreset(options.fibPreset, label);
+    }
     if (type === "field") {
       const fieldName = nextHiddenFieldName(s.project);
       item = { ...item, type: "field", fieldName, name: fieldName };
@@ -1597,7 +1606,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       selection: { kind: "form", name: formName },
       selectedItemIndex: insertAt,
       insertBeforeIndex: insertAt + 1,
-      statusMessage: `Inserted ${type} (${label})`,
+      statusMessage: options?.fibPreset
+        ? `Inserted ${options.fibPreset === "date" ? "Date" : "Address"} FIB (${label}) before row ${insertAt + 1}`
+        : `Inserted ${type} (${label}) before row ${insertAt + 1}`,
     });
   },
 

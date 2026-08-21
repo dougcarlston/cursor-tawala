@@ -54,11 +54,15 @@ export function itemHasNamedBlanks(item, names) {
  * DirtBowl-style Registration layout is hardcoded for labels Q1/Q3/… and T2/….
  * Many projects also name a form "Registration" (e.g. CYO Dance Agreement) with
  * different blanks — only apply the special layout when Q1 looks like DirtBowl.
+ *
+ * Require FirstName + LastName only (not RegAge*). Authors may Insert → Date as a
+ * separate FIB; dropping RegAgeMo from Q1 must not turn off T2–T4 header/box XML
+ * (empty League/Admin* cells → lone "," and "Cost per player: $").
  */
 export function isDirtBowlRegistrationForm(form) {
   if (!form || form.name !== "Registration") return false;
   const q1 = (form.items ?? []).find((i) => i.type === "fib" && i.label === "Q1");
-  return itemHasNamedBlanks(q1, ["FirstName", "LastName", "RegAgeMo"]);
+  return itemHasNamedBlanks(q1, ["FirstName", "LastName"]);
 }
 
 function textInput(formName, item, blank, ctx, { size, className = "reg-input" } = {}) {

@@ -160,6 +160,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 | Control | Purpose |
 |---------|---------|
 | **Alternate Label** | Internal field name for **Fields** panel and **Processes** (e.g. `Surveyee` while user sees **Name:**) |
+| **Caption** | Small label **tight above this blank** (e.g. **First** / **Last**), left-aligned to the box. Not Styles→Above; not Alternate Label. |
 | **Height** | Line count for blank input area (`1` = single line; higher = multi-line for long answers) |
 | **Required** | Checkbox — response required |
 | **Validation** | Dropdown (see below) |
@@ -208,6 +209,8 @@ Run before merging FIB canvas, `fibBlanks`, `fibPrompt`, or Form Preview/runtime
 7. Design + Deploy: FIB prompt with a variable token `Your <<ContactType1>>: ____` shows the full `<<ContactType1>>` chip on Design idle (not `<>` / `>:`), and Deploy XML contains `<field name="ContactType1"/>` (not literal `Your >:`). Full-feature Signup Sheet Questionnaire Q2–Q4.
 8. Deploy: intro soft-row + later `Name:____` (e.g. after Enter in Design) must keep the input on the **Name** line — not an empty box under the intro and `Name:` orphaned below (`fibPrompt` must not let intro steal the blank).
 9. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata, Preview prompt parse, and field-token protection).
+10. **Per-blank captions:** Left-justified `Name: ____ ____`; set Caption **First** / **Last** on each blank → Design idle shows those labels above the underscore runs; Push (Default or dirtbowl2) shows italic First/Last **tight above each box** via Java `<blank caption="…">` (not a separate hint row — leftAlign’s AlignedLabelsLayout cannot place those). Requires rebuilt WAR after Blank.java changes.
+11. **Insert → Date / Address:** Select the row below the insert point (idle caret) → Insert → **Date** / **Address**. Both presets are **freeform** (DirtBowl-style): leftAlign’s AlignedLabelsLayout only keeps the first blank. Date → `__/__/____`; Address → Street/City/Zip **captions** on one tabbed line (Name First/Last pattern). Push coerces leftAlign DOB/Address rows to freeform. Restart `:3001` after `fibToXml` edits; `docker cp` `form-layout-core.css` after caption CSS changes. Re-insert Address if an older City:/Zip: prompt copy is on the form.
 
 ### Backlog parity note (July 2026)
 
@@ -365,6 +368,8 @@ Example (SportsDashboards template in test fixtures):
 | Table tools gated on `CursorInTable` | Yes | N/A |
 | Text inline rich edit (Properties) | N/A (canvas only) | `RichTextEditor` with embedded mini-toolbar (B/I/U + size only) |
 | FIB underscore → blanks | Yes | Design idle keeps `_`; Preview/`fibPrompt` strips `_` into blank inputs. Smoke + `npm test`. |
+| FIB per-blank caption | Yes — First/Last above each box | **Done** — `blank.caption` on strip; Design idle + `fibToXml` caption paragraph + Preview stack; smoke #10 |
+| Insert → Date / Address | — (author builds by hand) | **Done** — Insert menu presets → ordinary FIBs; smoke #11 |
 | Legacy import — sequential FIB blanks | Yes — each `_` run → own blank / field | **Gap (batch queue C1):** conversion often glues sequential blanks into one field and severs multi-blank alternate labels. See `DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**. Repro: Online Exam Builder. |
 | Legacy import — MCQ alternate labels | Yes — field name ≠ design Qn label | **Gap (batch queue C2):** alts lost; reverts to Q1, Q2, …. Same open-bugs section. |
 | FIB alternate label | Yes | `blank.name` / `alternateLabel` partial; multi-blank alts blocked by C1 |

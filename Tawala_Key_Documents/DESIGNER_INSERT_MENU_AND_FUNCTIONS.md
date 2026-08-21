@@ -22,6 +22,9 @@ Related: `DESIGNER_MENU_SPEC.md`, `DESIGNER_DOCUMENT_EDITOR.md`, `DESIGNER_UI_RE
 | 6 | Page Break | Active | Always |
 | 7 | Skip Instructions | Active | Always |
 | | *(separator)* | | |
+| 7a | **Date** | Active | Always (Design tab) — Insert → Date emits ordinary FIB `mm/dd/yyyy` with `/` separators |
+| 7b | **Address** | Active | Always — Insert → Address emits ordinary FIB Street / City: / Zip: (Street caption) |
+| | *(separator)* | | |
 | 8 | Image… | Greyed | Cursor in a **rich-text** area (owner: “text window”; source: `CanInsertImage`) |
 | 9 | **Link…** | Greyed | Cursor in **Text** item body — unified Form / Web / private InviteeID (Aug 10) |
 | 10 | ~~Hyperlink…~~ | — | Folded into **Link…** as **Web address** mode |
@@ -847,4 +850,4 @@ Inserted functions appear as inline tokens in rich text, e.g. `<<FORM RECORD COU
 
 ---
 
-*Last updated: August 10, 2026 — **Insert → Link…** unified (Form / Web / private InviteeID). Prior: July 31 framing.*
+*Last updated: August 20, 2026 — Insert → **Date** / **Address** FIB presets (ordinary FIBs). Prior: August 10 — **Insert → Link…** unified.*

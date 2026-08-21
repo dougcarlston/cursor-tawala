@@ -158,7 +158,8 @@ form div.fib:not(.vertical) > div {
 	display: flex !important;
 	flex-wrap: wrap !important;
 	align-items: center !important;
-	gap: 0.35em 0.65em !important;
+	/* Horizontal gap: blank → following City: / (again) label */
+	gap: 0.35em 0.9em !important;
 	margin: 0 0 0.85em 0 !important;
 	line-height: 1.7 !important;
 	box-sizing: border-box !important;
@@ -166,6 +167,102 @@ form div.fib:not(.vertical) > div {
 
 form div.fib:not(.vertical) > div:last-child {
 	margin-bottom: 0 !important;
+}
+
+/*
+ * Styles → Above (topLabels → div.fib.vertical): Java wraps each blank in
+ * <div class="blank"> (block). Keep same soft-row blanks side-by-side; only a
+ * Design Enter (separate paragraph) starts a new row. Leading question text is
+ * emitted as its own paragraph by fibToXml.
+ */
+form div.fib.vertical {
+	margin: 0 0 0.75em 0 !important;
+	padding-bottom: 0 !important;
+	line-height: 1.7 !important;
+}
+
+form div.fib.vertical > div {
+	margin: 0 0 0.5em 0 !important;
+	line-height: 1.7 !important;
+	box-sizing: border-box !important;
+}
+
+form div.fib.vertical > div:last-child {
+	margin-bottom: 0 !important;
+}
+
+form div.fib.vertical > div > div.blank {
+	display: inline-flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+	vertical-align: bottom !important;
+	margin: 0 0.65em 0.25em 0 !important;
+	max-width: 100%;
+}
+
+form div.fib.vertical > div > div.blank:last-child {
+	margin-right: 0 !important;
+}
+
+/*
+ * Per-blank captions (Design blank.caption → Java <blank caption="…">):
+ * stack sits above each input. inline-flex so freeform / remainder keep Street
+ * City Zip on one line; vertical-align:bottom keeps side labels with inputs.
+ */
+form .fib-blank-stack {
+	display: inline-flex !important;
+	flex-direction: column !important;
+	align-items: flex-start !important;
+	justify-content: flex-end !important;
+	vertical-align: bottom !important;
+	max-width: 100%;
+}
+
+form .fib-blank-caption {
+	display: block !important;
+	font-size: 0.9em !important;
+	font-style: italic !important;
+	font-weight: normal !important;
+	line-height: 1.2 !important;
+	margin: 0 0 0.1em 0 !important;
+}
+
+form .fib-blank-stack input.text,
+form .fib-blank-stack input[type="text"] {
+	margin-top: 0 !important;
+}
+
+/* Side labels share the input baseline when any blank on the row has a caption. */
+form table.fib tr:has(.fib-blank-stack) > td.label,
+form table.fib tr:has(.fib-blank-stack) > td.blank,
+form table.fib tr:has(.fib-blank-stack) > td.remainder {
+	vertical-align: bottom !important;
+}
+
+/*
+ * Legacy tabbed hint paragraphs (DefaultLayout only — not leftAlign).
+ */
+form div.fib > table.TAWALA-tabbed-paragraph:has(td i):not(:has(input)) {
+	margin-bottom: 0.15em !important;
+	line-height: 1.25 !important;
+}
+
+form div.fib > table.TAWALA-tabbed-paragraph:has(td i):not(:has(input)) td {
+	padding-top: 0 !important;
+	padding-bottom: 0 !important;
+	vertical-align: bottom !important;
+	font-size: 0.9em !important;
+	font-style: italic !important;
+	font-weight: normal !important;
+}
+
+form table.fib > tbody > tr:has(td i):not(:has(input)) > td,
+form table.fib > tr:has(td i):not(:has(input)) > td {
+	padding-top: 0.15em !important;
+	padding-bottom: 0 !important;
+	font-size: 0.9em !important;
+	font-style: italic !important;
+	vertical-align: bottom !important;
 }
 
 form div.fib:not(.vertical) input.text,
@@ -383,3 +480,188 @@ h1.heading + h1.heading,
 h2.subheading + h2.subheading {
 	margin-top: 2.25rem !important;
 }
+
+/*
+ * Form content column (theme-agnostic).
+ * Themes may set --tawala-form-content-max (e.g. label + field area + padding)
+ * so the white/content panel is wide enough for FIB rows. Without it, leave
+ * max-width unconstrained (legacy fixed-width themes keep their own rules).
+ */
+#tawalaProjectContainer {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: var(--tawala-form-content-max, none);
+	/* Themes set --tawala-form-pad-x for inset past the field column (default: none). */
+	padding-left: var(--tawala-form-pad-x, 0) !important;
+	padding-right: var(--tawala-form-pad-x, 0) !important;
+}
+
+/* Tabbed / multi-cell form rows must stay inside the container. */
+form table.TAWALA-tabbed-paragraph {
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+form table.TAWALA-tabbed-paragraph input.text,
+form table.TAWALA-tabbed-paragraph input[type="text"] {
+	box-sizing: border-box !important;
+	max-width: 100%;
+}
+
+/*
+ * Multi-blank phone rows (P1/P2/P3): three field cells share --tawala-field-area-width
+ * equally. Overrides Java inline width:165px from tab-stop twips so the row’s right
+ * edge matches Name/Email/School.
+ */
+form table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]),
+form table.TAWALA-tabbed-paragraph:has(input[name$="Phone1"]) {
+	table-layout: fixed !important;
+	width: calc(
+		var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) +
+			var(--tawala-field-area-width, 28rem)
+	) !important;
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:first-child,
+form table.TAWALA-tabbed-paragraph:has(input[name$="Phone1"]) td:first-child {
+	width: var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) !important;
+	min-width: var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) !important;
+	max-width: var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) !important;
+	box-sizing: border-box !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(2),
+form table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(3),
+form table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) td:nth-child(4),
+form table.TAWALA-tabbed-paragraph:has(input[name$="Phone1"]) td:nth-child(2),
+form table.TAWALA-tabbed-paragraph:has(input[name$="Phone1"]) td:nth-child(3),
+form table.TAWALA-tabbed-paragraph:has(input[name$="Phone1"]) td:nth-child(4) {
+	width: calc(var(--tawala-field-area-width, 28rem) / 3) !important;
+	min-width: 0 !important;
+	max-width: calc(var(--tawala-field-area-width, 28rem) / 3) !important;
+	box-sizing: border-box !important;
+	padding-left: 0 !important;
+	padding-right: 0.4rem !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Phone1"]) input,
+form table.TAWALA-tabbed-paragraph:has(input[name$="Phone1"]) input {
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+/*
+ * Address line (Insert → Address preset + DirtBowl Q4): Street|Address + City + Zip
+ * fill the shared field column (same right edge as Name/School).
+ * Grid: [street grows] [City:] [city] [Zip:] [zip].
+ */
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"]),
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"]) {
+	table-layout: fixed !important;
+	width: calc(
+		var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) +
+			var(--tawala-field-area-width, 28rem)
+	) !important;
+	max-width: 100% !important;
+	box-sizing: border-box !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:first-child,
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"])
+	td:first-child {
+	width: var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) !important;
+	min-width: var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) !important;
+	max-width: var(--tawala-tabbed-label-width, var(--tawala-fib-label-width, 9.5em)) !important;
+	box-sizing: border-box !important;
+}
+
+/*
+ * Side labels with captioned blanks: bottom-align with the inputs (never top of the
+ * caption stack). Specific enough to beat dirtbowl2 Q4 `vertical-align: top` on Address.
+ */
+form div.fib table.TAWALA-tabbed-paragraph:has(.fib-blank-stack) td:first-child,
+form div.fib table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]) td:first-child,
+form
+	div.fib
+	table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(.fib-blank-stack)
+	td:first-child,
+form table.fib tr:has(.fib-blank-stack) > td.label {
+	vertical-align: bottom !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2),
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2) {
+	display: grid !important;
+	/* DirtBowl inline City:/Zip: labels: street | City: | city | Zip: | zip */
+	grid-template-columns: minmax(0, 1fr) auto 10ch auto 5ch !important;
+	column-gap: 1rem !important;
+	align-items: end !important;
+	width: var(--tawala-field-area-width, 28rem) !important;
+	box-sizing: border-box !important;
+}
+
+/* Insert → Address Name-style: three caption stacks only (no City:/Zip: text). */
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2):has(> .fib-blank-stack:nth-child(3)):not(:has(> b)):not(:has(> strong)) {
+	grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.7fr) 5.5ch !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	input,
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	input {
+	width: 100% !important;
+	min-width: 0 !important;
+	max-width: none !important;
+	box-sizing: border-box !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	.fib-blank-stack,
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	.fib-blank-stack {
+	width: 100% !important;
+	min-width: 0 !important;
+}
+
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	b,
+form table.TAWALA-tabbed-paragraph:has(input[name="Street"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	strong,
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	b,
+form table.TAWALA-tabbed-paragraph:has(input[name="Address"]):has(input[name="City"]):has(input[name="Zip"])
+	td:nth-child(2)
+	strong {
+	font-weight: bold;
+	white-space: nowrap !important;
+}
+
+/*
+ * Extra air between a blank and the next inline label (City:, Zip:, (again)).
+ * Complements grid column-gap on address/email rows.
+ */
+form table.TAWALA-tabbed-paragraph td .fib-blank-stack + b,
+form table.TAWALA-tabbed-paragraph td .fib-blank-stack + strong,
+form table.TAWALA-tabbed-paragraph td .fib-blank-stack + i,
+form table.TAWALA-tabbed-paragraph td input + b,
+form table.TAWALA-tabbed-paragraph td input + strong,
+form table.TAWALA-tabbed-paragraph td input + i {
+	margin-left: 0.15rem;
+}
+
+

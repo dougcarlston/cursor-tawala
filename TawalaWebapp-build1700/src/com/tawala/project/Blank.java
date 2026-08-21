@@ -26,11 +26,15 @@ import com.tawala.web.oldhtml.FileInput;
 import com.tawala.web.oldhtml.Html;
 import com.tawala.web.oldhtml.HtmlItems;
 import com.tawala.web.oldhtml.HtmlString;
+import com.tawala.web.oldhtml.Italics;
+import com.tawala.web.oldhtml.Span;
 import com.tawala.web.oldhtml.TextInput;
 
 public class Blank implements Field, FormRenderable {
 	private final String id;
 	private final String alternateLabel;
+	/** Small label tight above this input (Designer blank.caption). */
+	private final String caption;
 	private String fibPrefix = "";
 	private final int length;
 	private final int height;
@@ -41,10 +45,10 @@ public class Blank implements Field, FormRenderable {
 
 	public Blank(ConfigElement config) {
 		this(config.attribute("label").stringValue(), config.attribute(
-				"alternateLabel").stringValue(), config.attribute("length")
-				.intValue(50), config.attribute("height").intValue(1), config
-				.attribute("required").booleanValue(), config.getName().equals(
-				"fileNameInput"));
+				"alternateLabel").stringValue(), config.attribute("caption")
+				.stringValue(), config.attribute("length").intValue(50), config
+				.attribute("height").intValue(1), config.attribute("required")
+				.booleanValue(), config.getName().equals("fileNameInput"));
 		validators = Repository.instantiateFIBValidators(config
 				.child("validator"));
 		addRequiredValidatorIfNeeded();
@@ -66,13 +70,14 @@ public class Blank implements Field, FormRenderable {
 	}
 
 	public Blank(String id, int length, int height) {
-		this(id, null, length, height, false, false);
+		this(id, null, null, length, height, false, false);
 	}
 
-	private Blank(String id, String alternateLabel, int length, int height,
-			boolean required, boolean isFileUpload) {
+	private Blank(String id, String alternateLabel, String caption, int length,
+			int height, boolean required, boolean isFileUpload) {
 		this.id = id;
 		this.alternateLabel = alternateLabel;
+		this.caption = caption;
 		this.length = Math.min(length, 60);
 		this.height = Math.max(height, 1);
 		this.required = required;
@@ -132,28 +137,42 @@ public class Blank implements Field, FormRenderable {
 			htmlItems.add(new Anchor("anchor-" + getHtmlId()));
 		}
 		AttributeSupport inputElement = null;
+		HtmlItems fieldBody = new HtmlItems();
 		if (isFileUpload) {
 			FileInput fileInput = new FileInput(getHtmlId(), getLength());
 			inputElement = fileInput;
-			htmlItems.add(fileInput);
+			fieldBody.add(fileInput);
 		} else {
 			TextInput textInput = new TextInput(getHtmlId(), getLength(),
 					getHeight(), getLastEnteredValue(context));
 			inputElement = textInput;
 
-			htmlItems.add(textInput);
+			fieldBody.add(textInput);
 		}
 		if (validators != null && validators.size() > 0) {
 			inputElement.setAttribute("onblur",
 					"Tawala.validation.validate(this);");
-			htmlItems.add(ValidationSupport.createRegisterFormValidatorsScript(context,
+			fieldBody.add(ValidationSupport.createRegisterFormValidatorsScript(context,
 					TextInput.elementId(getHtmlId()), validators));
 		}
 
 		if (isRequired()) {
 			Block star = new Block("span", false, new HtmlString(" *"));
 			star.setAttribute("class", "qinfo");
-			htmlItems.add(star);
+			fieldBody.add(star);
+		}
+
+		if (caption != null && caption.trim().length() > 0) {
+			Span stack = new Span("class", "fib-blank-stack");
+			Span cap = new Span("class", "fib-blank-caption");
+			Italics italic = new Italics();
+			italic.add(new HtmlString(caption.trim()));
+			cap.add(italic);
+			stack.add(cap);
+			stack.add(fieldBody);
+			htmlItems.add(stack);
+		} else {
+			htmlItems.add(fieldBody);
 		}
 		return htmlItems;
 	}

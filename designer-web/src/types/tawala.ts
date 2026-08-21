@@ -33,6 +33,11 @@ export interface TawalaBlank {
   alternateLabel?: string;
   /** Label shown above the input on the live form (topLabels and similar). */
   displayLabel?: string;
+  /**
+   * Small caption tight above this blank (e.g. First / Last), left-aligned to the box.
+   * Not Styles→Above (whole question) and not Alternate Label / displayLabel.
+   */
+  caption?: string;
 }
 
 export interface TawalaChoice {
