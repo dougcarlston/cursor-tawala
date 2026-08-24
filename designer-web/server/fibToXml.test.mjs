@@ -334,3 +334,40 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(paras[1]).not.toMatch(/Name of Registrant/);
   });
 });
+
+describe("fibToXml richText on multi-line blanks", () => {
+  it("emits richText=false for plain multi-line essay blanks", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      prompt: "Describe your experience ________________________________",
+      blanks: [{ name: "a", alternateLabel: "Essay", length: 30, height: 8, richText: false }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain('height="8"');
+    expect(xml).toContain('richText="false"');
+  });
+
+  it("omits richText when multi-line blank has no flag (live form defaults to plain textarea)", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      prompt: "Instructions ________________________________",
+      blanks: [{ name: "a", alternateLabel: "Body", length: 30, height: 3 }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain('height="3"');
+    expect(xml).not.toContain("richText=");
+  });
+
+  it("emits richText=true when explicitly enabled", () => {
+    const item = {
+      type: "fib",
+      label: "Q1",
+      prompt: "Pre-test ________________________________",
+      blanks: [{ name: "a", alternateLabel: "Pre", length: 30, height: 3, richText: true }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    expect(xml).toContain('richText="true"');
+  });
+});

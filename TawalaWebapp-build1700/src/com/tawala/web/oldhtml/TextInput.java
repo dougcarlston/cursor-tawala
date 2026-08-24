@@ -12,12 +12,19 @@ public class TextInput extends AttributeSupport implements Html {
 	private final int length;
 	private final int height;
 	private final Value value;
+	private final boolean richTextOnLiveForm;
 
 	public TextInput(String id, int length, int height, Value value) {
+		this(id, length, height, value, false);
+	}
+
+	public TextInput(String id, int length, int height, Value value,
+			boolean richTextOnLiveForm) {
 		this.id = id;
 		this.length = length;
 		this.height = height;
 		this.value = value;
+		this.richTextOnLiveForm = richTextOnLiveForm && height > 1;
 	}
 
 	public void render(PrintWriter out, RenderingContext renderingContext) {
@@ -39,7 +46,11 @@ public class TextInput extends AttributeSupport implements Html {
 			out.print(" />");
 		} else {
 			out.print("<textarea");
-			out.print(" class=\"textArea\"");
+			out.print(" class=\"textArea");
+			if (richTextOnLiveForm) {
+				out.print(" mceRichText");
+			}
+			out.print("\"");
 			out.print(" name=\"" + escapedId + "\"");
 			out.print(" id=\"" + elementId + "\"");
 			out.print(" cols=\"" + length + "\"");

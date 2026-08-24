@@ -2115,7 +2115,9 @@ textarea {
 }
 
 .fib-property-strip input[type="number"] {
-  width: 3em;
+  width: 4.75em;
+  min-width: 4.75em;
+  box-sizing: border-box;
 }
 
 .fib-prop-checkbox {

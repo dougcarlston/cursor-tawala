@@ -156,6 +156,7 @@ export function syncBlanksFromPrompt(
       displayLabel: prev?.displayLabel,
       caption: prev?.caption,
       height: prev?.height ?? 1,
+      richText: prev?.richText,
       validation: prev?.validation,
     };
   });

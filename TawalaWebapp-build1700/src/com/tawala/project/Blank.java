@@ -38,6 +38,7 @@ public class Blank implements Field, FormRenderable {
 	private String fibPrefix = "";
 	private final int length;
 	private final int height;
+	private final boolean richTextOnLiveForm;
 	private boolean required;
 	private final boolean isFileUpload;
 	private List<FieldValidator> validators;
@@ -48,10 +49,23 @@ public class Blank implements Field, FormRenderable {
 				"alternateLabel").stringValue(), config.attribute("caption")
 				.stringValue(), config.attribute("length").intValue(50), config
 				.attribute("height").intValue(1), config.attribute("required")
-				.booleanValue(), config.getName().equals("fileNameInput"));
+				.booleanValue(), config.getName().equals("fileNameInput"),
+				resolveRichTextOnLiveForm(config, config.attribute("height")
+						.intValue(1)));
 		validators = Repository.instantiateFIBValidators(config
 				.child("validator"));
 		addRequiredValidatorIfNeeded();
+	}
+
+	private static boolean resolveRichTextOnLiveForm(ConfigElement config,
+			int height) {
+		if (height <= 1) {
+			return false;
+		}
+		if (!config.hasAttribute("richText")) {
+			return false;
+		}
+		return config.attribute("richText").booleanValue(true);
 	}
 	
 	
@@ -70,11 +84,12 @@ public class Blank implements Field, FormRenderable {
 	}
 
 	public Blank(String id, int length, int height) {
-		this(id, null, null, length, height, false, false);
+		this(id, null, null, length, height, false, false, height > 1);
 	}
 
 	private Blank(String id, String alternateLabel, String caption, int length,
-			int height, boolean required, boolean isFileUpload) {
+			int height, boolean required, boolean isFileUpload,
+			boolean richTextOnLiveForm) {
 		this.id = id;
 		this.alternateLabel = alternateLabel;
 		this.caption = caption;
@@ -82,6 +97,7 @@ public class Blank implements Field, FormRenderable {
 		this.height = Math.max(height, 1);
 		this.required = required;
 		this.isFileUpload = isFileUpload;
+		this.richTextOnLiveForm = richTextOnLiveForm && this.height > 1;
 	}
 
 	public int getLength() {
@@ -144,7 +160,8 @@ public class Blank implements Field, FormRenderable {
 			fieldBody.add(fileInput);
 		} else {
 			TextInput textInput = new TextInput(getHtmlId(), getLength(),
-					getHeight(), getLastEnteredValue(context));
+					getHeight(), getLastEnteredValue(context),
+					richTextOnLiveForm);
 			inputElement = textInput;
 
 			fieldBody.add(textInput);
@@ -238,7 +255,9 @@ public class Blank implements Field, FormRenderable {
 		JSONObject result = new JSONObject();
 		if (height > 1) {
 			result.put("editor", "textarea");
-			result.put("formatter", "formatMultilineText");
+			if (richTextOnLiveForm) {
+				result.put("formatter", "formatMultilineText");
+			}
 		} else {
 			result.put("editor", "textbox");
 		}

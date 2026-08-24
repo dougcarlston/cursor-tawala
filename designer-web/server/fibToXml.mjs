@@ -117,19 +117,28 @@ function validatorXml(validation, escText) {
   return `<validator><${xmlId} version="1">${inner}</${xmlId}></validator>`;
 }
 
+function richTextAttr(blank) {
+  const height = Number(blank.height ?? 1);
+  if (height <= 1) return "";
+  if (blank.richText === false) return ` richText="false"`;
+  if (blank.richText === true) return ` richText="true"`;
+  return "";
+}
+
 function blankXml(blank, letter, escAttr, escText) {
   const alt = blank.alternateLabel ?? blank.name;
   const req = blank.required ? "true" : "false";
   const len = blank.length ?? 20;
   const heightAttr = blank.height && blank.height > 1 ? ` height="${blank.height}"` : "";
+  const richAttr = richTextAttr(blank);
   const altAttr = alt && alt !== letter ? ` alternateLabel="${escAttr(alt)}"` : "";
   const caption = String(blank.caption ?? "").trim();
   const captionAttr = caption ? ` caption="${escAttr(caption)}"` : "";
   const validator = escText ? validatorXml(blank.validation, escText) : "";
   if (validator) {
-    return `<blank label="${escAttr(letter)}" length="${len}"${heightAttr} required="${req}"${altAttr}${captionAttr}>${validator}</blank>`;
+    return `<blank label="${escAttr(letter)}" length="${len}"${heightAttr}${richAttr} required="${req}"${altAttr}${captionAttr}>${validator}</blank>`;
   }
-  return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${captionAttr}${heightAttr}/>`;
+  return `<blank label="${escAttr(letter)}" length="${len}" required="${req}"${altAttr}${captionAttr}${heightAttr}${richAttr}/>`;
 }
 
 /** True when Design set blank.caption (Java Blank renders above the input). */

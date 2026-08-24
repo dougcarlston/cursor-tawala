@@ -162,6 +162,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 | **Alternate Label** | Internal field name for **Fields** panel and **Processes** (e.g. `Surveyee` while user sees **Name:**) |
 | **Caption** | Small label **tight above this blank** (e.g. **First** / **Last**), left-aligned to the box. Not Styles→Above; not Alternate Label. |
 | **Height** | Line count for blank input area (`1` = single line; higher = multi-line for long answers) |
+| **Formatting toolbar on live form** | When **Height > 1**: checkbox on the blank strip. **Off** (default) = plain `<textarea>` on `:8080` after Push. **On** = Java TinyMCE mini-formatter (`mceRichText`). Omitting `richText` on a multi-line blank also means off. Design canvas never shows TinyMCE on FIBs. |
 | **Required** | Checkbox — response required |
 | **Validation** | Dropdown (see below) |
 | **Edit...** | Opens validation editor when a validation type is selected (greyed when `-- No Validation --`) |
@@ -211,6 +212,7 @@ Run before merging FIB canvas, `fibBlanks`, `fibPrompt`, or Form Preview/runtime
 9. Unit: `cd designer-web && npm test` (covers underscore → blanks metadata, Preview prompt parse, and field-token protection).
 10. **Per-blank captions:** Left-justified `Name: ____ ____`; set Caption **First** / **Last** on each blank → Design idle shows those labels above the underscore runs; Push (Default or dirtbowl2) shows italic First/Last **tight above each box** via Java `<blank caption="…">` (not a separate hint row — leftAlign’s AlignedLabelsLayout cannot place those). Requires rebuilt WAR after Blank.java changes.
 11. **Insert → Date / Address:** Select the row below the insert point (idle caret) → Insert → **Date** / **Address**. Both presets are **freeform** (DirtBowl-style): leftAlign’s AlignedLabelsLayout only keeps the first blank. Date → `__/__/____`; Address → Street/City/Zip **captions** on one tabbed line (Name First/Last pattern). Push coerces leftAlign DOB/Address rows to freeform. Restart `:3001` after `fibToXml` edits; `docker cp` `form-layout-core.css` after caption CSS changes. Re-insert Address if an older City:/Zip: prompt copy is on the form.
+12. **Live formatter off by default (Aug 24):** Raise Height to 2+ → **Formatting toolbar on live form** is unchecked; Height spinner shows two digits. Alternate Label / Caption stay put when Height changes. Push without checking the box → `:8080` is a plain textarea (no TinyMCE). Check the box → Push emits `richText="true"` (needs rebuilt WAR for Java `Blank.java`). Unit: `fibBlankRichText.test.ts` + `fibToXml.test.mjs` richText cases.
 
 ### Backlog parity note (July 2026)
 

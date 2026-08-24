@@ -27,6 +27,11 @@ export interface TawalaBlank {
   required?: boolean;
   /** Multi-line blank height in lines (legacy Blank.Height; default 1). */
   height?: number;
+  /**
+   * When height > 1: show Java TinyMCE toolbar on the live form (`:8080`).
+   * `true` = formatter. `false` or omit = plain textarea. New multi-line blanks default off.
+   */
+  richText?: boolean;
   /** Validation function for this blank (legacy ValidationFunction). */
   validation?: BlankValidation;
   /** Internal field name for Processes / Fields palette (legacy alternateLabel). */

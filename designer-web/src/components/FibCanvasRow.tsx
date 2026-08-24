@@ -16,6 +16,10 @@ import {
   validatorMeta,
 } from "@/lib/fibBlanks";
 import {
+  blankLiveRichTextEnabled,
+  FIB_NEW_MULTILINE_RICH_TEXT_DEFAULT,
+} from "@/lib/fibBlankRichText";
+import {
   hasFieldDrag,
   readFieldDragNameForTarget,
   retainEditorFocusOnBlur,
@@ -275,7 +279,13 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const updateBlank = (blankIndex: number, patch: Partial<(typeof blanks)[0]>) => {
     const next = [...blanks];
     if (!next[blankIndex]) return;
-    next[blankIndex] = { ...next[blankIndex], ...patch };
+    const merged = { ...next[blankIndex], ...patch };
+    for (const [key, value] of Object.entries(patch)) {
+      if (value === undefined) {
+        delete (merged as Record<string, unknown>)[key];
+      }
+    }
+    next[blankIndex] = merged;
     update({ blanks: next });
   };
 
@@ -545,19 +555,47 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
                   }}
                 />
               </label>
-              <label>
+              <label className="fib-prop-height">
                 Height
                 <input
                   type="number"
+                  className="fib-prop-height-input"
                   min={1}
                   max={20}
                   value={currentBlank?.height ?? 1}
                   disabled={!stripEnabled}
-                  onChange={(e) =>
-                    updateBlank(activeBlank, { height: Number(e.target.value) || 1 })
-                  }
+                  onChange={(e) => {
+                    const nextHeight = Number(e.target.value) || 1;
+                    const prevHeight = currentBlank?.height ?? 1;
+                    const patch: {
+                      height: number;
+                      richText?: boolean;
+                    } = { height: nextHeight };
+                    if (nextHeight <= 1) {
+                      patch.richText = undefined;
+                    } else if (
+                      prevHeight <= 1 &&
+                      currentBlank?.richText === undefined
+                    ) {
+                      patch.richText = FIB_NEW_MULTILINE_RICH_TEXT_DEFAULT;
+                    }
+                    updateBlank(activeBlank, patch);
+                  }}
                 />
               </label>
+              {(currentBlank?.height ?? 1) > 1 && (
+                <label className="fib-prop-checkbox" title="TinyMCE toolbar on the live form after Push (not Design canvas)">
+                  <input
+                    type="checkbox"
+                    checked={blankLiveRichTextEnabled(currentBlank ?? {})}
+                    disabled={!stripEnabled}
+                    onChange={(e) =>
+                      updateBlank(activeBlank, { richText: e.target.checked })
+                    }
+                  />
+                  Formatting toolbar on live form
+                </label>
+              )}
               <label className="fib-prop-checkbox">
                 <input
                   type="checkbox"

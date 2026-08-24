@@ -1946,10 +1946,11 @@ Tawala.findTextExceptInLinks = function(element, pattern, callback) {
 
 YAHOO.util.Event.onDOMReady(Tawala.convertTextToLinks);
 
-// Turn on TinyMCE for multi-line FIB textareas (height > 1). Online Exam Setup
-// has two on one page — keep sizes in real pt and commands on the focused editor.
+// Turn on TinyMCE for multi-line FIB textareas marked mceRichText (height > 1
+// and richText on the blank). Plain multi-line boxes stay raw textareas.
 tinyMCE.init({
-	mode : "textareas",
+	mode : "specific_textareas",
+	editor_selector : "mceRichText",
     theme : "advanced",
 	plugins: "paste",
 
@@ -1995,10 +1996,10 @@ tinyMCE.init({
 		// Multi-textarea pages (e.g. Online Exam SetupVariables): keep the active
 		// editor pointer on the instance that received focus so Font/Size/B/I/U
 		// do not apply into the sibling iframe.
+		// TinyMCE 3.x exposes onActivate/onDeactivate only — there is no ed.onFocus
+		// Dispatcher; calling .add on undefined aborts new Editor() and leaves raw
+		// textareas (raw HTML visible on Setup Pre/Post instructions).
 		ed.onActivate.add(function(editor) {
-			tinyMCE.activeEditor = editor;
-		});
-		ed.onFocus.add(function(editor) {
 			tinyMCE.activeEditor = editor;
 		});
 	}
