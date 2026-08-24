@@ -314,11 +314,47 @@ window.TAWALA_DEMO_RESPONSE_SEEDS = {
   },
 };
 
+/**
+ * Task #14 honesty (Aug 24, 2026). Product contract is wipe-on-leave; this static mock
+ * can only purge-on-start. Closing the :8080 tab is invisible to :5500. Copy link shares
+ * the Library uniqueId. Single source for Library / home / picker copy — do not invent
+ * leave-detection here. Rewire notes: website-mock/README.md § Test Drive leave/wipe.
+ */
+window.TAWALA_TEST_DRIVE_HONESTY = {
+  tooltipSingle:
+    "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080.",
+  tooltipMulti:
+    "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive.",
+  copyTooltipSingle:
+    "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy.",
+  copyTooltipMulti:
+    "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy.",
+  copyAlert:
+    "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.",
+  copyPromptLabel: "Copy this Test Drive link (shared Library demo — not a private copy):",
+  pickerOpenLede:
+    "“{name}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). Use every start during this drive.",
+  pickerCopyLede:
+    "“{name}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — not a private copy.",
+  pickerOpenLinkTitle: "Open this start. Clears demo answers on start, not when you close the tab.",
+  pickerCopyLinkTitle: "Copy this start’s URL (shared Library demo, not a private copy).",
+  pickerHint: "No account needed. Closing the Test Drive tab does not wipe answers.",
+  startLinkTitle:
+    "Clears this Library demo when you start, then opens :8080. Closing the tab does not wipe.",
+  homeNote:
+    "Clears this shared Library demo when you start (not when you close the tab). Needs :8080.",
+  listingPile:
+    "Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Save to MyTawala when logged in",
+  listingHint:
+    "Test Drive clears this shared Library demo when you start — not when you close the tab. Copied links use the same demo uniqueId (not a private copy).",
+};
+
 /** Short-lived :8080 probe cache — shared by Library Test Drive and My Tawala Use. */
 let _runtimeProbeCache = { at: 0, ok: null };
 const _RUNTIME_PROBE_TTL_MS = 4000;
 
 window.TawalaDemo = {
+  TEST_DRIVE_HONESTY: window.TAWALA_TEST_DRIVE_HONESTY,
   /** Listing title — never show file extensions (.json / .tawala). On-disk format may still be JSON. */
   displayName(name) {
     return String(name || "")
@@ -1110,12 +1146,14 @@ window.TawalaDemo = {
     return { ...result, uniqueId };
   },
   /**
-   * Purge project response data then open the :8080 form (clean slate each Test drive).
+   * Purge project response data then open the :8080 form (clean slate each Test Drive).
+   * Product contract (#14) is wipe-on-leave; this mock wipes on start because a static
+   * :5500 page cannot see the :8080 tab close. Honesty copy: TEST_DRIVE_HONESTY.
    * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
    * probes Tomcat before navigating (same offline gate as My Tawala Use), then
    * navigates after purge. Failed / timed-out purge never blocks opening when :8080 is up.
    * If :8080 is down: close the blank tab, alert, stay on :5500 — never “site can’t be reached.”
-   * Post-tab-close purge is not available in this static mock.
+   * Post-tab-close purge is not available in this static mock — do not fake it.
    */
   async openTestDrive(url, opts) {
     const options = opts || {};
@@ -1397,12 +1435,17 @@ window.TawalaDemo = {
     if (sp.url) {
       const safeUrl = String(sp.url).replace(/"/g, "&quot;");
       if (purge) {
+        const honestyTitle =
+          (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitle) ||
+          "Clears this Library demo when you start, then opens :8080. Closing the tab does not wipe.";
         return (
           '<a class="js-testdrive" href="' +
           sp.url +
           '" data-testdrive-url="' +
           safeUrl +
-          '" target="_blank" rel="noopener" title="Purges prior responses for this project, then opens :8080">' +
+          '" target="_blank" rel="noopener" title="' +
+          honestyTitle.replace(/"/g, "&quot;") +
+          '">' +
           escLabel +
           "</a>"
         );

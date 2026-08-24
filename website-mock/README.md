@@ -648,15 +648,48 @@ Marketing / growth direction for how strangers discover and try Library projects
 
 **Near-term vs later**
 
-| Near-term (Aug 10 tdshare1) | Later (HOLD — do not half-build) |
+| Near-term (Aug 10 tdshare1 + Aug 24 #14 honesty) | Later (HOLD — do not half-build) |
 |---|---|
 | **Test Drive works logged-out** — verified (no auth wall; probes `:8080`) | Project **end page** (Library + selective Designer promo) — [#23](#task-list-aug-9) |
 | **Copy Test Drive link** CTA on Library listing + detail | Full **auth / Registrants** when saving data — [#21](#task-list-aug-9) / [#24](#task-list-aug-9) |
-| Leave/wipe honesty still open under Task [#14](#task-list-aug-9) | Full **Library category** IA for featured audiences — [#25](#task-list-aug-9) |
+| **Honesty copy** — wipe-on-start, not leave; Copy link = shared Library uniqueId | Full **Library category** IA for featured audiences — [#25](#task-list-aug-9) |
+| Leave/wipe **behavior** still mock-limited (purge-on-start) | Real per-drive session + wipe-on-leave — see § below |
 
 Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala Details **Deploy → Copy link** (owner distributing *their* live start URLs).
 
 **What Copy copies:** `TawalaDemo.libraryTestDriveUrl(project)` — e.g. Simple Survey `http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey`; Online Exam prefers Administration/Setup first (`…/ef6sx16.Administration`). Same URL primary Test Drive opens after purge-on-start.
+
+**Smoke Test Drive honesty (#14 — Aug 24 lib1):** open `http://localhost:5500/library.html?v=20260824-lib1` (logged-out is fine).
+
+1. Listing hint under the title reads wipe-on-**start**, not leave; Copy link = shared uniqueId.
+2. Hover **Test Drive** on Simple Survey — tooltip says clears when you start, not when you close the tab.
+3. **Copy link** → alert starts with “Link copied” and says shared uniqueId / wipe-on-start. Paste is still `http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey`.
+4. Multi-start: **Test Drive** / **Copy link** on Online Exam Builder → picker lede repeats the same honesty; closing the picker does not purge.
+5. Behavior unchanged: Test Drive still purge-on-start; closing the `:8080` tab does **not** wipe. Home Quick test drive note matches (`index.html?v=20260824-lib1`).
+
+### When to leave the mock for real :8080 Test Drive sessions
+
+**Stay on the mock** while Library is a local review surface and Test Drive URLs are shared demo uniqueIds (`gy1zssbrwm4fgfm`, `u3hkqgwtrepjlur`, …). Honesty copy is enough until a stranger’s Copy-link click would collide with real respondent data.
+
+**Shift off the mock** when any of these becomes true:
+
+1. **Library Live / public visitors** — Copy link must not dump everyone onto one shared `/p/{libraryUniqueId}/…`.
+2. **True leave/wipe** — product contract is wipe when the visitor **leaves**, not when the next person **starts**.
+3. **Save a copy must not share Library submissions** — already documented (`mockSharedLibraryRuntime`); production mints a private uniqueId.
+
+**Rewire then (do not start these in the mock):**
+
+| Today (mock) | Needed on real website + `:8080` |
+|---|---|
+| Test Drive opens the catalog uniqueId; **purge-on-start** | Mint a **per-drive uniqueId** (clone of the published definition) or a short-lived session; wipe **that** id on leave / TTL |
+| Static `:5500` cannot see the `:8080` tab close | Website (or Tomcat) session: wrapper/start URL, idle TTL, or unload beacon — not a Library listing `alert` |
+| Copy link copies the raw `/p/{libraryUniqueId}/form` URL | Copy a **start-a-drive** website URL that mints/resumes a session, or a session-scoped `:8080` URL |
+| `mockSharedLibraryRuntime` copies Library uniqueId onto Save a copy | Mint a **private** uniqueId on acquire (Use-ready without sharing Library demo rows) |
+| `openTestDrive` POST `:3001/api/purge-responses` before navigate | Purge the **session** uniqueId on leave; keep catalog uniqueId empty/unshared. Publish-time `purgeAfterPublish` still applies to the author’s source project |
+| Library **Times used** mock bump | Count real drive sessions, not `:5500` localStorage |
+| Fail-page probe (`/api/probe-java-url`) | Keep — still useful when World is down |
+
+Do **not** implement leave-detection inside `website-mock/` as a fake `window.onunload` on the listing page — that page is not the form tab.
 
 ---
 
@@ -689,13 +722,13 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 5. **Theme / Appearance** — **DONE for live CSS (Aug 10 theme2):** Details dropdown persists `themePath` on My Tawala overlay; acquire / Push receipt / Publish / Refresh / Make a Copy carry it. **Changing Theme** (when a live definition + uniqueId exist) **Pushes** the stamped `themePath` to `:8080` via `/api/deploy` (no new Versions row). **Push this version** also stamps overlay Theme onto the definition before upload. Hard-refresh the form if CSS looks cached. Overlay-only when no definition/uniqueId yet (Push from Designer first).
 6. **Published indicator** — **DONE (Aug 9 slice):** Details shows Yes + Library link (catalog twin or `publishedToLibraryId` after Publish); No when unpublished.
 7. **Author / version / description rail** — **DONE (Aug 9 slice; blurb placement clarified):** Author (mock user) + Version # (+ Deploy `versionDescription` only) in the left rail. Project **shortDescription** blurb lives **once** under the main title — not repeated under Version / in the sidebar.
-8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10; library-detail Save a copy Aug 10 libsc1; Copy link Aug 10 tdshare1):** Listing + detail CTAs = **Test Drive** + **Copy link** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe honesty remains Task #14. ≠ My Tawala **Make a Copy**.
+8. **Library listing / detail acquire clarity** — **DONE (Aug 9 #8; Use-ready Aug 10; library-detail Save a copy Aug 10 libsc1; Copy link Aug 10 tdshare1):** Listing + detail CTAs = **Test Drive** + **Copy link** + **Save a copy**; rename dialog → My Tawala overlay (`pulledFromLibraryId`); **Use works** via Library live start metadata in the mock (`mockSharedLibraryRuntime` — production must mint private uniqueId). Copies downloaded (`cloneCount`) bumps on acquire; display wired in Task #13. Test Drive leave/wipe **honesty copy** is Task #14 (Aug 24); real leave/wipe waits for Library Live. ≠ My Tawala **Make a Copy**.
 9. **Make a Copy (own project)** — **DONE (Aug 10; empty-runtime fix same day):** Project Details **MAKE A COPY** + My Tawala listing bar (selection-gated). Fork with new overlay id, rename dialog + overwrite warn, original untouched, **empty Records** (`uniqueId: null` — never share source/Library live id). ≠ Rename ≠ Library Save a copy. **HOLD:** optional copy-with-data (confirm) until needed.
 10. **Start points: distribute + embed** — **PARTIAL (Aug 10 Deploy doorway):** Details **DEPLOY** opens share panel — help copy, start picker (multi-start), **Copy link**, **Include in Web Page** (iframe embed). Invite / Include sidebar buttons open the same panel. Empty acquires: honest “need live project first”; Online Exam (and other seeded live rows) share now. Project Data banner **Copy link** still works for tree selection. See § [Use / Deploy / Publish](#use--deploy--publish-after-owning-a-project). Designer shell still says Deploy until the [Push rename checklist](#designer-push-rename-checklist-docs-first--do-not-mass-rename-yet) runs (parked on Designer chat list). **HOLD coded stretch:** uniqueId-in-URL hardening; optional participant/admin-style start labels polish.
 11. **Edit project in Designer** — **Confirmed DONE (Aug 10):** Owner tested successfully. Details-only **Edit project in Designer** resolves a definition (version snapshot / catalog `jsonFile`) and opens `:5173` with `?snapshot=` or `?mockJson=` so Designer **loads that project** — not a blank canvas. Catalog paths: `projects/mytawala|library/*.json` or `designer-web/public/samples/…/*.json` via `:3001/api/open-mock-json`. Honest alert when no definition (e.g. Library acquire with no catalog JSON and no Push / Show in My Tawala snapshot). Cancel → `designer.html` stub. **HOLD:** Home sidebar Designer link later, placed away from Library.
 12. **Active / De-activate** — **DONE (Aug 9 slice):** Details Activate / De-activate; overlay `inactive` hides from Library listing; My Tawala keeps Offline badge.
 13. **Times used / Last used / Copies downloaded** — **PARTIAL (Aug 10 Task #13; listing cols Aug 10):** Aug 9 meanings wired in the mock. **Records** = submissions (unchanged). **Copies downloaded** (field `cloneCount`) = Library Save a copy / Get from Library acquires (≠ Records) — bumps on acquire (already); Library listing column + detail sidebar label **Copies downloaded** (was **Clone count**, earlier mislabeled Times used). **Times used** / **Last used** on My Tawala listing + Project Data banner = mock localStorage counters (`tawala.mock.usageStats`) incremented when My Tawala **Use** successfully opens a start URL on `:8080` — **not** Library Test Drive, **not** live respondent telemetry. Still **`0`** / **"—"** until first Use in that browser. Production session accounting later.
-14. **Test Drive contract** — **PARTIAL (Aug 10 tdshare1):** Keep Library-owned; allow all start points during the drive; purge when the visitor leaves (leave/wipe honesty still open in the mock’s limits). **Near-term done:** Test Drive works **logged-out** (no auth wall); Library **Copy Test Drive link** on listing + detail (copies `libraryTestDriveUrl` / live `:8080`; alert “Link copied”). ≠ My Tawala Deploy Copy link. See § [Viral Test Drive / soft gating](#viral-test-drive--soft-gating-owner-product-direction--aug-10-2026).
+14. **Test Drive contract** — **PARTIAL (honesty slice Aug 24 lib1):** Keep Library-owned; allow all start points during the drive. **Mock still purges on start** (not on leave) — a static `:5500` page cannot see the `:8080` tab close; do not fake leave-detection. **Honesty copy shipped:** Library listing hint + Test Drive / Copy link tooltips + Copy-link alert say wipe-on-start, shared Library uniqueId, closing the tab does not wipe. **Near-term done (Aug 10):** Test Drive works **logged-out**; Library **Copy Test Drive link**. ≠ My Tawala Deploy Copy link. **Still open:** real leave/wipe + per-drive uniqueId when Library goes public — see § [When to leave the mock for real :8080 Test Drive sessions](#when-to-leave-the-mock-for-real-8080-test-drive-sessions). End-page promo stays HOLD [#23](#task-list-aug-9).
 15. **HOLD — Backup package** — Do not expand Backup/Restore until the owner confirms the default proposal (deployed definition + current responses) and how Restore differs from Deploy this version in the UI copy.
 16. **HOLD — Download latest** — Talk later; prefer Pull into Designer over site Push/Download.
 17. **HOLD / park — Shared Data, Access column, SEE DEMO videos, reputation/ratings product, ACL collaborators** — No build in this phase. Reputation still parked under Viral Test Drive direction.
@@ -734,11 +767,11 @@ Plain-English note of what landed in the My Tawala / Project Details / chrome pa
 - **Removed (Aug 10):** Project Details **“Backups, emails & library publish”** (`pmSecOther`) — review: `http://localhost:5500/mytawala-project.html?project=<id>&v=20260810-othergone1` (section gone; Versions then Comments).
 - **Theme / Appearance (Aug 10 theme1 — pause for review, no commit):** Task #5 was marked DONE Aug 9 but acquire/Push/Publish dropped `themePath`, so the dropdown often stuck on Default and felt unwired. Fixed transfer carry + hydrate; overlay persist was already wired. **HOLD** remains: no `:8080` CSS push from the Details dropdown.
 - **Pre-live HOLD (not near-term):** Auth/accounts/password recovery + Payments/PayPal — Task List [#21](#task-list-aug-9) / [#22](#task-list-aug-9); § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
-- **Viral Test Drive / soft gating (Aug 10 tdshare1 — pause for review, no commit):** Soft gate **DECIDED** = save data (N-uses struck). Logged-out Test Drive verified (no auth wall). Library listing + detail **Copy link** copies live `:8080` `libraryTestDriveUrl`; alert “Link copied”. End page = Designer/runtime [#23](#task-list-aug-9) with Simple Survey / Online Exam checklist. Reputation still parked ([#17](#task-list-aug-9)).
+- **Viral Test Drive / soft gating (Aug 10 tdshare1 — pause for review, no commit):** Soft gate **DECIDED** = save data (N-uses struck). Logged-out Test Drive verified (no auth wall). Library listing + detail **Copy link** copies live `:8080` `libraryTestDriveUrl`; alert “Link copied” plus #14 honesty (Aug 24). End page = Designer/runtime [#23](#task-list-aug-9) with Simple Survey / Online Exam checklist. Reputation still parked ([#17](#task-list-aug-9)).
 
 **Next**
 
-Continue the [Task List](#task-list-aug-9): Versioning + Library visual (libvis2) + Save a copy + Viral Test Drive (tdshare1) ready for review — **no commit until owner asks**. Leave/wipe honesty under Task #14 still open. Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears. Pre-live Auth / Payments / Email metering stay HOLD. End page / save-data auth / Library category IA ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)) stay HOLD.
+Continue the [Task List](#task-list-aug-9): Versioning + Library visual (libvis2) + Save a copy + Viral Test Drive (tdshare1) ready for review — **no commit until owner asks**. Task #14 **honesty copy** landed Aug 24 (`?v=20260824-lib1`); real leave/wipe waits for public Library / per-drive uniqueId. Polish Task #10 (start labels / uniqueId hardening) as needed. Designer → **Push** rename stays on the Designer chat list. Do not re-debate Aug 9 list 1+4 decisions unless new evidence appears. Pre-live Auth / Payments / Email metering stay HOLD. End page / save-data auth / Library category IA ([#23](#task-list-aug-9)–[#25](#task-list-aug-9)) stay HOLD.
 
 **Aug 10 review (Theme / Appearance — Task #5 — no commit until owner asks):**
 
@@ -757,7 +790,7 @@ Continue the [Task List](#task-list-aug-9): Versioning + Library visual (libvis2
 - Library detail: `http://localhost:5500/library-detail.html?project=simple-survey&v=20260810-tdshare1`
 - Online Exam detail: `http://localhost:5500/library-detail.html?project=online-exam-builder&v=20260810-tdshare1`
 - Smoke **logged-out Test Drive:** ensure chrome shows Log in (not logged in) → click Test Drive on Simple Survey → probes `:8080` → opens Survey (no login redirect).
-- Smoke **Copy link:** listing or detail **Copy link** → alert “Link copied” → paste should be the live try-out URL, e.g. `http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey` (Simple Survey) or Administration for Online Exam.
+- Smoke **Copy link:** listing or detail **Copy link** → alert “Link copied” plus shared-uniqueId / wipe-on-start honesty → paste should be the live try-out URL, e.g. `http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey` (Simple Survey) or Administration for Online Exam.
 - Soft gate recorded: **save data** (not N-uses). End-page promo = Task #23 follow-up (Simple Survey + Online Exam checklist in Task List).
 - Prior visual / Save a copy still on same dirty tree: `?v=20260810-libvis2` / `libsc1` folded into `tdshare1` cache-bust for Library pages.
 

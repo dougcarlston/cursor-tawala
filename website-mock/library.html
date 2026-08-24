@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-libact3" />
-  <script src="js/demo-urls.js?v=20260810-guest2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260824-lib1" />
+  <script src="js/demo-urls.js?v=20260824-lib1"></script>
   <script src="js/transfer.js?v=20260810-guest2"></script>
-  <script src="js/project-ops.js?v=20260810-libact1"></script>
+  <script src="js/project-ops.js?v=20260824-lib1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -49,9 +49,12 @@
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">Public Library</span>
-          <span class="listing-pile">Browse templates · Test Drive on :8080 · Copy link to share · Save to MyTawala when logged in</span>
+          <span class="listing-pile">Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Save to MyTawala when logged in</span>
           <span class="listing-switch">Private projects? <a href="mytawala-demo.html" id="listingMyTawalaLink">My Tawala</a></span>
         </div>
+        <p class="pm-hint" id="libraryTestDriveHonesty" style="margin:8px 0 0;">
+          Test Drive clears this shared Library demo when you start — not when you close the tab. Copied links use the same demo uniqueId (not a private copy).
+        </p>
         <div id="librarySubmenuHost"></div>
         <div id="libraryCategoryEditor" class="library-category-editor" hidden></div>
 
@@ -95,6 +98,17 @@
         .replace(/>/g, "&gt;")
         .replace(/"/g, "&quot;");
     }
+
+    (function applyTestDriveHonestyChrome() {
+      const h =
+        (typeof TawalaDemo !== "undefined" && TawalaDemo.TEST_DRIVE_HONESTY) ||
+        (typeof window !== "undefined" && window.TAWALA_TEST_DRIVE_HONESTY) ||
+        {};
+      const pile = document.querySelector(".listing-pile");
+      if (pile && h.listingPile) pile.textContent = h.listingPile;
+      const hint = document.getElementById("libraryTestDriveHonesty");
+      if (hint && h.listingHint) hint.textContent = h.listingHint;
+    })();
 
     function renderCategoryNav() {
       const cats = TawalaDemo.libraryCategories();

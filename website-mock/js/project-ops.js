@@ -87,6 +87,25 @@
     },
   ];
 
+  function testDriveHonesty() {
+    if (typeof TawalaDemo !== "undefined" && TawalaDemo.TEST_DRIVE_HONESTY) {
+      return TawalaDemo.TEST_DRIVE_HONESTY;
+    }
+    if (typeof window !== "undefined" && window.TAWALA_TEST_DRIVE_HONESTY) {
+      return window.TAWALA_TEST_DRIVE_HONESTY;
+    }
+    return {};
+  }
+
+  function honestyText(key, fallback) {
+    const v = testDriveHonesty()[key];
+    return typeof v === "string" && v ? v : fallback;
+  }
+
+  function honestyNamed(key, name, fallback) {
+    return honestyText(key, fallback).replace(/\{name\}/g, name);
+  }
+
   /**
    * Public Library listing row actions — discovery / acquire only (owner Aug 1 / Aug 9 / Aug 10).
    * Single “Actions” column: icons + metrics beside Test drive / Copy link; Save to MyTawala
@@ -98,12 +117,16 @@
    *   Listing shows **Copies downloaded** under Copy link.
    * wired: "save-copy-library" → rename dialog → TawalaTransfer.saveCopyFromLibrary (logged-in only).
    * ≠ My Tawala Deploy / Project Data “Copy link” (owner distributing *their* live starts).
+   * Task #14: tooltips tell the mock truth (purge-on-start, shared uniqueId) — see TEST_DRIVE_HONESTY.
    */
   const LIBRARY_LISTING_ACTIONS = [
     {
       id: "test-drive",
       label: "Test drive",
-      title: "Test drive this project (no account; needs Java on :8080; probes before open)",
+      title: honestyText(
+        "tooltipSingle",
+        "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080."
+      ),
       wired: "test-drive",
       icon: "testdrive",
       metric: "timesUsed",
@@ -111,8 +134,10 @@
     {
       id: "copy-testdrive-link",
       label: "Copy link",
-      title:
-        "Share Test Drive — copy the live :8080 try-out URL (text/email; no account required)",
+      title: honestyText(
+        "copyTooltipSingle",
+        "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy."
+      ),
       wired: "copy-testdrive-link",
       icon: "link",
       metric: "cloneCount",
@@ -730,10 +755,10 @@
       return "active when :8080 start URL exists (single → run; multi → Project Details; no purge; My Tawala only)";
     }
     if (item.wired === "test-drive") {
-      return "active when :8080 deployed (single → open; multi → start hot links; purge-on-start; no account)";
+      return "active when :8080 deployed (single → open; multi → start hot links; purge-on-start not leave; no account)";
     }
     if (item.wired === "copy-testdrive-link") {
-      return "active when :8080 deployed — copy try-out URL (multi → start hot links; ≠ Deploy Copy link)";
+      return "active when :8080 deployed — copy shared Library uniqueId URL (multi → start hot links; ≠ Deploy Copy link)";
     }
     if (item.wired === true) return "active";
     return "disabled in mock";
@@ -924,8 +949,14 @@
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
     const multi = isLibraryMultiStart(project);
     const title = multi
-      ? "Choose a start point to Test Drive (Java on :8080; purges prior responses; no account)"
-      : "Needs Java on :8080 — probes first; purges prior responses, then opens (no account)";
+      ? honestyText(
+          "tooltipMulti",
+          "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive."
+        )
+      : honestyText(
+          "tooltipSingle",
+          "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080."
+        );
     if (variant === "text") {
       if (!deployed || !driveUrl) {
         return (
@@ -983,8 +1014,14 @@
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
     const multi = isLibraryMultiStart(project);
     const title = multi
-      ? "Share Test Drive — choose a start point, then copy its :8080 try-out URL (no account)"
-      : "Share Test Drive — copy the live :8080 try-out URL (text/email; no account required)";
+      ? honestyText(
+          "copyTooltipMulti",
+          "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy."
+        )
+      : honestyText(
+          "copyTooltipSingle",
+          "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy."
+        );
     if (variant === "text") {
       if (deployed && driveUrl) {
         return (
@@ -2843,24 +2880,33 @@
 
   /**
    * Library viral share — copy the same :8080 URL Test Drive opens.
-   * Alert “Link copied” (owner Aug 10). ≠ My Tawala Deploy Copy link.
+   * Alert includes #14 honesty (shared uniqueId; wipe-on-start not leave).
+   * ≠ My Tawala Deploy Copy link.
    */
   async function copyTestDriveLinkToClipboard(url) {
     if (!url) {
       window.alert("No Test Drive URL to copy yet — this project isn’t live on :8080.");
       return false;
     }
+    const copied = honestyText(
+      "copyAlert",
+      "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab."
+    );
+    const promptLabel = honestyText(
+      "copyPromptLabel",
+      "Copy this Test Drive link (shared Library demo — not a private copy):"
+    );
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
-        window.alert("Link copied");
-        setStatus("Copied Test Drive link.");
+        window.alert(copied);
+        setStatus("Copied Test Drive link (shared Library demo).");
         return true;
       }
     } catch {
       /* fall through to prompt */
     }
-    window.prompt("Copy this Test Drive link (no account needed):", url);
+    window.prompt(promptLabel, url);
     return false;
   }
 
@@ -2909,12 +2955,31 @@
         : String(project.name || projectId);
     const isCopy = intent === "copy";
     const title = isCopy ? "Copy link — choose a start" : "Test Drive — choose a start";
+    const safeName = escapeHtml(displayName);
     const lede = isCopy
-      ? `“${escapeHtml(displayName)}” has more than one start form. Click a name to copy its Test Drive URL.`
-      : `“${escapeHtml(displayName)}” has more than one start form. Click a name to open that Test Drive (purges prior responses, then opens :8080).`;
+      ? honestyNamed(
+          "pickerCopyLede",
+          safeName,
+          `“${safeName}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — not a private copy.`
+        )
+      : honestyNamed(
+          "pickerOpenLede",
+          safeName,
+          `“${safeName}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). Use every start during this drive.`
+        );
     const linkTitle = isCopy
-      ? "Copy this start’s Test Drive URL"
-      : "Open this start’s Test Drive (purge + :8080)";
+      ? honestyText(
+          "pickerCopyLinkTitle",
+          "Copy this start’s URL (shared Library demo, not a private copy)."
+        )
+      : honestyText(
+          "pickerOpenLinkTitle",
+          "Open this start. Clears demo answers on start, not when you close the tab."
+        );
+    const pickerHint = honestyText(
+      "pickerHint",
+      "No account needed. Closing the Test Drive tab does not wipe answers."
+    );
 
     const linksHtml = starts
       .map((sp, i) => {
@@ -2936,7 +3001,7 @@
       `<p class="pm-hint tawala-modal-lede">${lede}</p>` +
       '<div class="tawala-modal-body">' +
       `<ul class="testdrive-pick-list" role="list">${linksHtml}</ul>` +
-      '<p class="pm-hint tawala-modal-hint-tight">No account needed.</p>' +
+      `<p class="pm-hint tawala-modal-hint-tight">${escapeHtml(pickerHint)}</p>` +
       "</div>" +
       '<div class="tawala-modal-actions">' +
       '<button type="button" class="pm-action" id="testDrivePickClose">Close</button>' +
