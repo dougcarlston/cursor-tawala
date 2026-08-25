@@ -37,7 +37,19 @@ export function StatusBar() {
         {statusMessage}
       </span>
       <span className="status-bar-meta">
-        {project.name} · format {project.format}
+        {project.name}
+        {project.deployUniqueId ? (
+          <span title="Live Deploy uniqueId (from last Push; saved with the project)">
+            {" "}
+            · id {project.deployUniqueId}
+          </span>
+        ) : project.deployIdentityName ? (
+          <span title="Tomcat Deploy name (uniqueId not in this file yet — Push once more, then Save)">
+            {" "}
+            · identity {project.deployIdentityName}
+          </span>
+        ) : null}
+        {" · "}format {project.format}
         {dirty ? <span className="dirty"> · modified</span> : null}
         {gapSummary.totalMarkers > 0 ? (
           <span className="status-preserved-gaps" title={gapTip}>

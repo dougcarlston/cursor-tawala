@@ -11,13 +11,18 @@ export interface StartPoint {
 export interface DeployResult {
   status: "success" | "failure";
   mode?: "dev" | "java";
+  /** Designer display name (not necessarily the Tomcat project name). */
   project?: string;
+  /** Tomcat / Node upload name — stable Redeploy key; minted on File→New first Push. */
+  deployIdentityName?: string;
   uniqueId?: string;
   startpoints?: StartPoint[];
   error?: string;
   raw?: string;
-  /** True when Deploy handled a File→New (responses purged / new Node id). */
+  /** True when this Push came from File→New / template. */
   freshFromTemplate?: boolean;
+  /** True when a new non-colliding Tomcat name was minted on this Push. */
+  identityMinted?: boolean;
 }
 
 const CREDS_KEY = "tawala.designer.credentials";

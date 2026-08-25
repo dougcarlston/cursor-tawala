@@ -1112,6 +1112,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         : emptyProject()),
       _freshFromTemplate: true,
     };
+    // Never carry a prior Push identity into File→New.
+    delete (project as TawalaProject & { deployIdentityName?: string }).deployIdentityName;
+    delete (project as TawalaProject & { deployUniqueId?: string }).deployUniqueId;
     set({
       project,
       dirty: true,
@@ -1143,11 +1146,19 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     if (!res.ok) throw new Error(`Template not found: ${samplePath}`);
     const raw = await res.text();
     get().importJson(raw);
-    // Mark so Deploy does not reattach to prior Test Drive / Tomcat responses.
+    // Mark so first Push mints a non-colliding Tomcat identity (never Redeploy-by-name).
+    const {
+      deployIdentityName: _dropId,
+      deployUniqueId: _dropUid,
+      ...rest
+    } = get().project as TawalaProject & {
+      deployIdentityName?: string;
+      deployUniqueId?: string;
+    };
     set({
       dirty: true,
       statusMessage: `New project from template`,
-      project: { ...get().project, _freshFromTemplate: true },
+      project: { ...rest, _freshFromTemplate: true },
     });
     try {
       const { resetPreviewSession } = await import("@/api/preview");
@@ -1768,7 +1779,11 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       project,
       dirty: false,
       selection,
-      statusMessage: `Loaded ${project.name}`,
+      statusMessage: project.deployUniqueId
+        ? `Loaded ${project.name} · uniqueId ${project.deployUniqueId}`
+        : project.deployIdentityName
+          ? `Loaded ${project.name} · identity ${project.deployIdentityName}`
+          : `Loaded ${project.name}`,
       selectedItemIndex: null,
       insertBeforeIndex: 0,
       processInsertPath: ROOT_INSERT_PATH,
@@ -1808,19 +1823,26 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         });
         return;
       }
-      // Clear File→New marker after first successful Push (data was purged/new id minted).
+      // Clear File→New marker; keep minted Tomcat identity + uniqueId for later Open/Redeploy.
       const { _freshFromTemplate: _f, ...clean } = project as TawalaProject & {
         _freshFromTemplate?: boolean;
       };
+      const nextProject = {
+        ...clean,
+        ...(result.deployIdentityName
+          ? { deployIdentityName: result.deployIdentityName }
+          : {}),
+        ...(result.uniqueId ? { deployUniqueId: result.uniqueId } : {}),
+      } as TawalaProject;
+      const idBit = result.uniqueId ? ` · uniqueId ${result.uniqueId}` : "";
       set({
-        project: clean as TawalaProject,
+        project: nextProject,
         lastDeploy: result,
         showDeployResult: true,
-        dirty: false,
-        statusMessage:
-          project._freshFromTemplate && result.mode === "java"
-            ? `Pushed ${project.name} (prior test responses purged)`
-            : `Pushed ${project.name}`,
+        dirty: true, // identity fields changed — Save so Open can show uniqueId
+        statusMessage: result.identityMinted
+          ? `Pushed ${project.name} as new identity (${result.deployIdentityName})${idBit}`
+          : `Pushed ${project.name}${idBit}`,
       });
     } catch (e) {
       set({ statusMessage: `Push error: ${e instanceof Error ? e.message : String(e)}` });

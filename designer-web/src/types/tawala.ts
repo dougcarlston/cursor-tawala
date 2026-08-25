@@ -251,10 +251,22 @@ export interface TawalaProject {
   /** Project-wide deployed page banner (Project → Page Header…). */
   pageHeader?: TawalaPageHeader;
   /**
-   * Designer-only: File→New (template/blank). First Deploy purges prior responses for this
-   * project name (Tomcat reuses identity by name) and mints a new Node uniqueId. Not saved.
+   * Designer-only: File→New (template/blank). First Push mints a non-colliding
+   * `deployIdentityName` so Tomcat creates a new uniqueId (never Redeploy-by-name).
+   * Not saved to disk.
    */
   _freshFromTemplate?: boolean;
+  /**
+   * Tomcat / Node Deploy identity (`<project name>` on upload). Distinct from display
+   * `name` so File→New can keep a friendly label while Push lands on a fresh uniqueId.
+   * Persisted with the project so later Redeploys hit the same live app.
+   */
+  deployIdentityName?: string;
+  /**
+   * Last known live uniqueId from a successful Push (`/p/{uniqueId}/…`).
+   * Persisted so File→Open can show identity without Pushing again.
+   */
+  deployUniqueId?: string;
 }
 
 export type EditorTab = "design" | "preview";

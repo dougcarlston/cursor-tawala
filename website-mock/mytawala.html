@@ -6,10 +6,10 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260810-guest2" />
-  <script src="js/demo-urls.js?v=20260810-guest2"></script>
-  <script src="js/transfer.js?v=20260810-guest2"></script>
-  <script src="js/project-ops.js?v=20260810-guest2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260824-uid1" />
+  <script src="js/demo-urls.js?v=20260824-uid1"></script>
+  <script src="js/transfer.js?v=20260824-uid1"></script>
+  <script src="js/project-ops.js?v=20260824-uid1"></script>
   <script src="js/data-ops.js?v=20260810-guest2"></script>
 </head>
 <body data-tawala-page="mytawala">
@@ -53,7 +53,7 @@
       <div class="content">
         <div class="listing-identity" role="status">
           <span class="listing-where">Private</span>
-          <span class="listing-pile">Your projects — Push from Designer, Get from Library… (Save to MyTawala), or Make a Copy. Select a linked row to Refresh; select any row to Make a Copy or Delete.</span>
+          <span class="listing-pile">Your projects — Push from Designer, Get from Library… (Copy to MyTawala), or Make a Copy. Select a linked row to Refresh; select any row to Make a Copy or Delete.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
         <div id="deployInboxHost" class="deploy-inbox" hidden></div>
@@ -368,7 +368,7 @@
         : "Last used — no My Tawala Use session recorded yet in this browser";
       const versionTitle =
         version === "—"
-          ? "Version — none yet (Push → Show in My Tawala, or Save a copy / Make a Copy starts at 1)"
+          ? "Version — none yet (Push → Show in My Tawala, or Copy to MyTawala / Make a Copy starts at 1)"
           : `Current definition version: ${version}`;
       return `<tr data-project-id="${escapeHtml(p.id)}" role="row" tabindex="0" aria-selected="${
         selected ? "true" : "false"

@@ -11,6 +11,7 @@ import {
   isOpenableProjectFileName,
   isProjectJsonFileName,
   isSaveAsDialogOpen,
+  projectDeployStatusSuffix,
   projectDisplayNameFromFileName,
   saveAcceleratorLabel,
   saveAsAcceleratorLabel,
@@ -222,6 +223,29 @@ describe("projectDisplayNameFromFileName / syncProjectNameFromFileName", () => {
     );
     expect(projectDisplayNameFromFileName("customizable — Potluck.json")).toBe("Potluck");
     expect(projectDisplayNameFromFileName("Publishable - cs v95.json")).toBe("cs v95");
+  });
+});
+
+describe("projectDeployStatusSuffix", () => {
+  it("prefers uniqueId over Tomcat identity name", () => {
+    expect(
+      projectDeployStatusSuffix({
+        deployUniqueId: "abc123xyz",
+        deployIdentityName: "Exam Builder deadbeef",
+      }),
+    ).toBe(" · uniqueId abc123xyz");
+  });
+
+  it("falls back to identity when uniqueId was not saved yet", () => {
+    expect(
+      projectDeployStatusSuffix({
+        deployIdentityName: "Exam Builder deadbeef",
+      }),
+    ).toBe(" · identity Exam Builder deadbeef");
+  });
+
+  it("returns empty when neither is present", () => {
+    expect(projectDeployStatusSuffix({})).toBe("");
   });
 });
 

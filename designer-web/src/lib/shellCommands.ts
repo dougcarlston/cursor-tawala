@@ -130,6 +130,34 @@ export function syncProjectNameFromFileName(filename: string): void {
   });
 }
 
+/** Suffix for Open/Load status when a live Deploy identity is on the project JSON. */
+export function projectDeployStatusSuffix(project?: {
+  deployUniqueId?: string;
+  deployIdentityName?: string;
+}): string {
+  const p = project ?? useProjectStore.getState().project;
+  const uid = String(p.deployUniqueId ?? "").trim();
+  if (uid) return ` · uniqueId ${uid}`;
+  const identity = String(p.deployIdentityName ?? "").trim();
+  if (identity) return ` · identity ${identity}`;
+  return "";
+}
+
+/** Status after File→Open / import — includes uniqueId when the file was Saved after Push. */
+export function setOpenedProjectStatus(
+  filename: string,
+  kind: "json" | "tawala",
+  warningCount = 0,
+): void {
+  const suffix = projectDeployStatusSuffix();
+  if (kind === "tawala") {
+    const warnPart = warningCount > 0 ? ` (${warningCount} warnings)` : "";
+    useProjectStore.getState().setStatus(`Imported ${filename}${warnPart}${suffix}`);
+  } else {
+    useProjectStore.getState().setStatus(`Opened ${filename}${suffix}`);
+  }
+}
+
 /**
  * Apple Safari (not Chrome / Edge / Firefox / Android WebView).
  * Exported for unit tests.
@@ -471,16 +499,12 @@ export async function openProjectFromDisk(): Promise<boolean> {
       if (result.kind === "json") {
         projectFileHandle = handle;
         syncProjectNameFromFileName(handle.name);
-        useProjectStore.getState().setStatus(`Opened ${handle.name}`);
+        setOpenedProjectStatus(handle.name, "json");
       } else {
         // Do not bind Save to the .tawala — Save As writes format 2.0 JSON.
         projectFileHandle = null;
         syncProjectNameFromFileName(handle.name);
-        const warnPart =
-          result.warningCount > 0 ? ` (${result.warningCount} warnings)` : "";
-        useProjectStore
-          .getState()
-          .setStatus(`Imported ${handle.name}${warnPart}`);
+        setOpenedProjectStatus(handle.name, "tawala", result.warningCount);
       }
       return true;
     } catch (err) {

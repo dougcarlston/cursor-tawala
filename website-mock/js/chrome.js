@@ -4,7 +4,7 @@
  *
  * Mock session (not real Auth Task #21): localStorage `tawala.mock.session`
  * `{ user, at }`. Login sets it; Logout clears it. Drives Welcome chrome,
- * Library “Save to MyTawala” visibility, and guest vs real My Tawala routing.
+ * Library “Copy to MyTawala” visibility, and guest vs real My Tawala routing.
  */
 (function () {
   const SESSION_KEY = "tawala.mock.session";

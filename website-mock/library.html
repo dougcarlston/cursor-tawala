@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260824-lib1" />
-  <script src="js/demo-urls.js?v=20260824-lib1"></script>
-  <script src="js/transfer.js?v=20260810-guest2"></script>
-  <script src="js/project-ops.js?v=20260824-lib1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260824-uid1" />
+  <script src="js/demo-urls.js?v=20260824-uid1"></script>
+  <script src="js/transfer.js?v=20260824-uid1"></script>
+  <script src="js/project-ops.js?v=20260824-uid1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -49,7 +49,7 @@
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">Public Library</span>
-          <span class="listing-pile">Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Save to MyTawala when logged in</span>
+          <span class="listing-pile">Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Copy to MyTawala when logged in</span>
           <span class="listing-switch">Private projects? <a href="mytawala-demo.html" id="listingMyTawalaLink">My Tawala</a></span>
         </div>
         <p class="pm-hint" id="libraryTestDriveHonesty" style="margin:8px 0 0;">
@@ -74,7 +74,7 @@
               <div class="lib-col lib-col-name" role="columnheader" title="Name"><span class="th-label">Name</span></div>
               <div class="lib-col lib-col-version" role="columnheader" title="Published version in the public Library"><span class="th-label">Version</span></div>
               <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label">Updated</span></div>
-              <!-- Actions + Test drive (Times used) | Copy link (Copies) | Save to MyTawala filled by project-ops.js -->
+              <!-- Actions + Test drive (Times used) | Copy link (Copies) | Copy to MyTawala filled by project-ops.js -->
               <div class="lib-col lib-col-actions" role="columnheader"><span class="th-label">Actions</span></div>
             </div>
             <div id="libraryGroups" class="library-groups" aria-label="Public Library catalog by category"></div>
@@ -145,7 +145,7 @@
           : p.versionNumber != null && Number.isFinite(Number(p.versionNumber))
             ? String(Math.floor(Number(p.versionNumber)))
             : "—";
-      /* Name + Version + Updated; Actions = Test drive (+ Times used) | Copy link (+ Copies) | Save to MyTawala (logged-in). */
+      /* Name + Version + Updated; Actions = Test drive (+ Times used) | Copy link (+ Copies) | Copy to MyTawala (logged-in). */
       const liveCue = liveCueHtml(p);
       const blurb = String(p.shortDescription || "").trim();
       const blurbHtml = blurb

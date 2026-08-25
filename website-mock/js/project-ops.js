@@ -106,9 +106,12 @@
     return honestyText(key, fallback).replace(/\{name\}/g, name);
   }
 
+  /** Library acquire CTA — copies the project (not Library Test Drive answers) into private My Tawala. */
+  const COPY_TO_MYTAWALA_LABEL = "Copy to MyTawala";
+
   /**
    * Public Library listing row actions — discovery / acquire only (owner Aug 1 / Aug 9 / Aug 10).
-   * Single “Actions” column: icons + metrics beside Test drive / Copy link; Save to MyTawala
+   * Single “Actions” column: icons + metrics beside Test drive / Copy link; Copy to MyTawala
    * only when mock-logged-in. **Use** lives on My Tawala (operate), not Library.
    * wired: "test-drive" → active when project has a live :8080 URL; else disabled grey.
    *   Single-start opens directly; 2+ starts open a hot-link list (each start opens Test Drive).
@@ -144,8 +147,8 @@
     },
     {
       id: "save-my-tawala",
-      label: "Save to MyTawala",
-      title: "Save to MyTawala (rename on the way in) — requires login",
+      label: COPY_TO_MYTAWALA_LABEL,
+      title: "Copy this Library project into My Tawala (not Test Drive answers) — requires login",
       wired: "save-copy-library",
       icon: "save",
       requiresLogin: true,
@@ -203,7 +206,7 @@
       id: "make-copy",
       label: "MAKE A COPY",
       title:
-        "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Save a copy.",
+        "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Copy to MyTawala.",
       wired: "make-copy-mytawala",
     },
     { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
@@ -272,7 +275,7 @@
     {
       id: "get-library",
       label: "GET FROM LIBRARY…",
-      title: "Pick a public Library project and Save a copy into My Tawala",
+      title: "Pick a public Library project and Copy to MyTawala",
       wired: "get-from-library",
       alwaysEnabled: true,
     },
@@ -481,8 +484,8 @@
   /** Symbiotic transfer flows — Library ↔ My Tawala ↔ Designer (labels first; wire later). */
   const RELATED_SAVE_CLONE = [
     {
-      label: "Save a copy",
-      source: "Library → My Tawala (acquire; rename-on-acquire; empty data until Deploy)",
+      label: COPY_TO_MYTAWALA_LABEL,
+      source: "Library → My Tawala (acquire; project only, not Library Test Drive answers)",
       wired: "save-copy-library",
     },
     {
@@ -492,7 +495,7 @@
       wired: "use-project",
     },
     { label: "Publish / move to Library", source: "My Tawala → Library", wired: "publish-mytawala" },
-    { label: "Get from Library…", source: "My Tawala listing → Library picker → Save a copy", wired: "get-from-library" },
+    { label: "Get from Library…", source: "My Tawala listing → Library picker → Copy to MyTawala", wired: "get-from-library" },
     { label: "Refresh from Library", source: "Library → My Tawala upgrade (linked row)", wired: "pull-library" },
     { label: "Push from Web Designer", source: "Designer :5173 → My Tawala inbox", wired: false },
   ];
@@ -561,7 +564,7 @@
     "selection bar Get/Refresh/Delete; Details bar Backup/Restore/Publish; " +
     "Project Data banner Use/Copy/Export/Import/Purge. " +
     "Catalog is split: Public Library controls vs My Tawala / Project Manager. " +
-    "Library Actions = Test drive | Copy link | Save a copy; Use is on My Tawala only (single-start → :8080; multi-start → Project Details). " +
+    "Library Actions = Test drive | Copy link | Copy to MyTawala; Use is on My Tawala only (single-start → :8080; multi-start → Project Details). " +
     "SportsDashboards (not SportsBoard).";
 
   /** One-liner for API/plumbing failures only — never dump CLI / DirtBowl / Test-drive notes into Purge alerts. */
@@ -589,7 +592,7 @@
       id: "library-listing",
       title: "Public Library listing row",
       where:
-        "Library mock — Actions sub-labels: Test drive | Copy link | Save a copy (icons in rows; Test drive / Copy when :8080 deployed; no account). Use moved to My Tawala. searchLibrary.jsp was click-to-detail only.",
+        "Library mock — Actions sub-labels: Test drive | Copy link | Copy to MyTawala (icons in rows; Test drive / Copy when :8080 deployed; no account). Use moved to My Tawala. searchLibrary.jsp was click-to-detail only.",
       items: LIBRARY_LISTING_ACTIONS,
     },
     {
@@ -652,13 +655,13 @@
       id: "data",
       title: "Project Details — Project Data (collapsible)",
       where:
-        "One unified form list (Aug 9): collapsed → starts (▶) → all forms; same tight row style. " +
+        "One unified form list (Aug 9): collapsed → starts (◀) → all forms; same tight row style. " +
         "Banner: Records / Times used / Last used heads + Use / Copy link | Export Import | Purge. " +
         "Records = submissions; Times used / Last used = mock My Tawala Use→:8080 sessions (not Test Drive). " +
-        "Project caret (▸) expands; start rows use a muted left-pointing cue (not an expander). " +
+        "Project caret (▸) expands; start rows use a left-pointing cue (◀, not an expander). " +
         "Project-level Times used / Last used on a row under the banner; form rows show Records only. " +
         "Enablement: collapsed/project → E/I/Purge + Backup/Restore/Publish (Use/Copy off); " +
-        "start ▶ → Use/Copy + E/I/Purge/Publish (Backup/Restore off); " +
+        "start ◀ → Use/Copy + E/I/Purge/Publish (Backup/Restore off); " +
         "non-start form → E/I/Purge/Publish only. Legacy per-form View chips stay grey.",
       items: [...PROJECT_DATA_CONTROLS, ...PROJECT_DATA_OPS],
     },
@@ -683,7 +686,7 @@
     library: {
       heading: "Public Library controls",
       blurb:
-        "library.html listing — Test drive + Copy link (public); Save to MyTawala when logged in. Public Library detail pages retired. Use (run) is on My Tawala.",
+        "library.html listing — Test drive + Copy link (public); Copy to MyTawala when logged in. Public Library detail pages retired. Use (run) is on My Tawala.",
     },
     mytawala: {
       heading: "My Tawala / Project Manager controls",
@@ -832,7 +835,7 @@
 
   /**
    * Library “Actions” header — group label plus sub-labels aligned over icon slots.
-   * Labels: Test drive | Copy link | Save to MyTawala (Save only when logged in).
+   * Labels: Test drive | Copy link | Copy to MyTawala (logged-in only).
    */
   function renderLibraryListingActionHeaders() {
     const actions = visibleLibraryListingActions();
@@ -921,18 +924,19 @@
     /* Prefer project.id; libraryEntries() always sets it. getLibrary() now stamps id too
      * (Aug 10 libsc1) — empty pid used to break library-detail Save a copy. */
     const pid = (project && project.id) || "";
-    const title = "Save to MyTawala (rename on the way in)";
+    const title =
+      "Copy this Library project into My Tawala — the project only, not Test Drive answers (rename on the way in)";
     if (variant === "text") {
       return (
         `<button type="button" class="pm-action is-active library-save-copy" ` +
-        `title="${escapeHtml(title)}" aria-label="Save to MyTawala" ` +
+        `title="${escapeHtml(title)}" aria-label="${escapeHtml(COPY_TO_MYTAWALA_LABEL)}" ` +
         `data-op="save-my-tawala" data-wired="save-copy-library" ` +
-        `data-project="${escapeHtml(pid)}">Save to MyTawala</button>`
+        `data-project="${escapeHtml(pid)}">${escapeHtml(COPY_TO_MYTAWALA_LABEL)}</button>`
       );
     }
     return (
       `<button type="button" class="pm-icon-action pm-op-icon-btn is-active library-row-action" ` +
-      `title="${escapeHtml(title)}" aria-label="Save to MyTawala" ` +
+      `title="${escapeHtml(title)}" aria-label="${escapeHtml(COPY_TO_MYTAWALA_LABEL)}" ` +
       `data-op="save-my-tawala" data-wired="save-copy-library" ` +
       `data-project="${escapeHtml(pid)}">${listingIconHtml("save")}</button>`
     );
@@ -1094,7 +1098,7 @@
             `${escapeHtml(String(timesUsed))}</span>`;
         } else if (op.metric === "cloneCount") {
           metric =
-            `<span class="library-action-metric" title="Copies downloaded — Save to MyTawala / Get from Library">` +
+            `<span class="library-action-metric" title="Copies downloaded — Copy to MyTawala / Get from Library">` +
             `${escapeHtml(String(cloneCount))}</span>`;
         }
         return `<span class="library-action-slot">${ctrl}${metric}</span>`;
@@ -1164,7 +1168,7 @@
 
   /** Honest grey-Use tip when Save a copy left the row without :8080 start URLs. */
   const USE_NEEDS_DEPLOY_TITLE =
-    "Deploy this project before Use — no :8080 start URL yet (Save a copy starts empty)";
+    "Deploy this project before Use — no :8080 start URL yet (Make a Copy starts empty until Push)";
 
   function projectHasUseRuntime(project) {
     return !!(projectUseUrl(project) || startPointsWithUrls(project).length);
@@ -1564,7 +1568,7 @@
       if (el.dataset.alwaysEnabled === "true" || opId === "get-library") {
         el.dataset.project = "";
         if ("disabled" in el) el.disabled = false;
-        el.title = "Pick a public Library project and Save a copy into My Tawala";
+        el.title = "Pick a public Library project and Copy to MyTawala";
         return;
       }
 
@@ -1833,7 +1837,7 @@
     if (!rows.length) {
       return (
         chips +
-        '<p class="pm-hint">No versions yet — <b>Save a copy</b> / <b>Make a Copy</b> start at version <b>1</b>; ' +
+        '<p class="pm-hint">No versions yet — <b>Copy to MyTawala</b> / <b>Make a Copy</b> start at version <b>1</b>; ' +
         "open in Web Designer, Push (Deploy), optionally add a version note, then <b>Show in My Tawala</b> to mint the next. " +
         "Listing shows the current Version number only; full history appears here.</p>"
       );
@@ -2332,7 +2336,7 @@
       `data-pm-sel="${isStart ? "start" : "form"}" data-pm-form="${escapeHtml(name)}" ` +
       `data-pm-is-start="${isStart ? "1" : "0"}"${idxAttr}${urlAttr}${ariaSel}>` +
       (isStart
-        ? `<span class="pm-data-tree-play" title="Starting point" aria-label="Starting point">▶</span>`
+        ? `<span class="pm-data-tree-play" title="Starting point" aria-label="Starting point">◀</span>`
         : `<span class="pm-data-tree-play-spacer" aria-hidden="true"></span>`) +
       `<span class="pm-data-tree-label" title="${escapeHtml(full)}" ` +
       `aria-label="${escapeHtml(full)}">${escapeHtml(full)}</span>` +
@@ -2403,7 +2407,7 @@
   /**
    * Project Data — one unified form list (owner Aug 9):
    *   level 0 — project banner only
-   *   level 1 — start points (muted ◀ cue) in the same list
+   *   level 1 — start points (left-pointing ◀ cue) in the same list
    *   level 2 — all forms (starts still marked)
    * Banner row: name + stats headings + Use / Copy link | Export Import | Purge (nowrap).
    * Values row under that: project Records / Times used / Last used.
@@ -2448,7 +2452,7 @@
 
     const hint = deployed
       ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
-        "<b>Start ▶</b> → <b>Use</b> (run for yourself on <code>:8080</code>) + banner Copy link; " +
+        "<b>Start ◀</b> → <b>Use</b> (run for yourself on <code>:8080</code>) + banner Copy link; " +
         "<b>any form</b> → Export / Import / Purge; <b>project</b> (collapsed) → Backup / Restore. " +
         "<b>Deploy</b> (Details bar) = go live + share/embed for others — not the same as Use. " +
         "Use keeps data; Purge clears. Offline: select project/form → Purge (not Use). " +
@@ -2728,7 +2732,7 @@
         if (op === "make-copy" || wired === "make-copy-mytawala") {
           setCtrlEnabled(el, true);
           el.title =
-            "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Save a copy.";
+            "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Copy to MyTawala.";
           if ("disabled" in el) el.disabled = false;
           return;
         }
@@ -2799,11 +2803,11 @@
           if (hasRuntime) {
             offTitle =
               sel.kind === "form"
-                ? "Use is only for start points (▶). For offline Purge, keep this form selected and click Purge — not Use."
-                : "Select a start point (▶) to Use — or keep the project selected and click Purge for offline demo Records.";
+                ? "Use is only for start points (◀). For offline Purge, keep this form selected and click Purge — not Use."
+                : "Select a start point (◀) to Use — or keep the project selected and click Purge for offline demo Records.";
           } else if (sel.kind === "start") {
             offTitle =
-              "Deploy this project before Use — this start point has no :8080 URL yet (Save a copy starts empty)";
+              "Deploy this project before Use — this start point has no :8080 URL yet (Make a Copy starts empty until Push)";
           }
           setCtrlEnabled(el, false, offTitle);
           if (el.tagName === "A") {
@@ -2820,14 +2824,14 @@
       if (wired === "copy-start-link" || op === "copy-link") {
         const project = resolveMyTawalaProject(projectId);
         const hasRuntime = projectHasUseRuntime(project);
-        let offTitle = "Select a start point (▶) to copy its link";
+        let offTitle = "Select a start point (◀) to copy its link";
         if (!hasRuntime) {
           offTitle =
             sel.kind === "start"
               ? "Deploy this project before Copy link — this start point has no :8080 URL yet"
               : "Deploy this project before Copy link — no :8080 start URL yet";
         } else if (sel.kind === "form") {
-          offTitle = "Copy link is only for start points (▶) — highlight a starting form";
+          offTitle = "Copy link is only for start points (◀) — highlight a starting form";
         }
         setCtrlEnabled(el, startReady && hasRuntime, offTitle);
         if (startReady && hasRuntime) {
@@ -3623,15 +3627,118 @@
       `</dl>` +
       renderSidebarProjectOps(project.id) +
       `<div class="pm-identity-actions">` +
-      `<button type="button" class="pm-action is-active" data-wired="edit-in-designer" ` +
+      `<button type="button" class="pm-action is-active" data-op="edit-in-designer" data-wired="edit-in-designer" ` +
       `data-project="${pid}" title="Open this project in the browser Designer">Edit project in Designer</button>` +
       `</div>` +
       `</div>`
     );
   }
 
+  const DESIGNER_APP_URL = "http://localhost:5173/";
+  const DESIGNER_EDIT_WINDOW = "tawala-designer-edit";
+
+  /** Catalog JSON the Designer :3001 mock-json opener will load. */
+  function catalogJsonFilePath(project) {
+    const jsonFile = project && project.jsonFile ? String(project.jsonFile) : "";
+    if (
+      jsonFile &&
+      !jsonFile.includes("..") &&
+      !jsonFile.startsWith("/") &&
+      (/^projects\/(mytawala|library)\//.test(jsonFile) ||
+        /^designer-web\/public\/samples\//.test(jsonFile))
+    ) {
+      return jsonFile;
+    }
+    return "";
+  }
+
+  function designerUrlForSnapshot(snapshotId) {
+    return DESIGNER_APP_URL + "?snapshot=" + encodeURIComponent(String(snapshotId));
+  }
+
+  function designerUrlForMockJson(mockJson) {
+    return DESIGNER_APP_URL + "?mockJson=" + encodeURIComponent(String(mockJson));
+  }
+
+  /**
+   * Same-tick URL for Edit in Designer (must not await — popup blockers swallow
+   * window.open after confirm/fetch). Prefers a saved snapshot, else catalog jsonFile.
+   */
+  function syncDesignerEditUrl(project) {
+    if (!project) return "";
+    const versions = Array.isArray(project.versions) ? project.versions : [];
+    const current = versions.find((v) => v && v.deployed);
+    const ordered = [];
+    if (current) ordered.push(current);
+    for (let i = versions.length - 1; i >= 0; i--) {
+      const v = versions[i];
+      if (v && v !== current) ordered.push(v);
+    }
+    for (let i = 0; i < ordered.length; i++) {
+      const v = ordered[i];
+      if (!versionIsRedeployable(v)) continue;
+      const snap = v && v.snapshotId ? String(v.snapshotId).trim() : "";
+      if (snap) return designerUrlForSnapshot(snap);
+    }
+    const topSnap = project.snapshotId ? String(project.snapshotId).trim() : "";
+    if (topSnap) return designerUrlForSnapshot(topSnap);
+    const catalog = catalogJsonFilePath(project);
+    const isAcquire =
+      project.fromLibraryAcquire === true || project.sourcePile === "library-acquire";
+    /* Task #26: never open catalog JSON for a Library acquire — that file is named for
+     * the public Library template; Push would Redeploy the shared Test Drive. Snapshot
+     * (clone-on-acquire) is the only safe Designer open path. */
+    if (isAcquire) return "";
+    return catalog ? designerUrlForMockJson(catalog) : "";
+  }
+
+  function showDesignerOpenFallback(url, name) {
+    const actions = document.querySelector(".pm-identity-actions");
+    let bar = document.getElementById("pmDesignerOpenFallback");
+    if (!bar) {
+      bar = document.createElement("p");
+      bar.id = "pmDesignerOpenFallback";
+      bar.className = "pm-hint pm-designer-open-fallback";
+      bar.setAttribute("role", "status");
+      if (actions && actions.parentNode) {
+        actions.insertAdjacentElement("afterend", bar);
+      } else {
+        const host = document.getElementById("pmDetailHost");
+        if (host) host.insertAdjacentElement("afterbegin", bar);
+      }
+    }
+    bar.innerHTML =
+      `Browser blocked the Designer window. ` +
+      `<a href="${escapeHtml(url)}" target="_blank" rel="noopener">` +
+      `Open “${escapeHtml(name)}” in Designer</a> (localhost:5173).`;
+  }
+
+  function navigateDesignerWindow(win, url, name) {
+    if (win && !win.closed) {
+      try {
+        win.location.href = url;
+        setStatus(`Opened “${name}” in Designer.`);
+        return true;
+      } catch {
+        try {
+          win.close();
+        } catch {
+          /* ignore */
+        }
+      }
+    }
+    const opened = window.open(url, DESIGNER_EDIT_WINDOW);
+    if (opened) {
+      setStatus(`Opened “${name}” in Designer.`);
+      return true;
+    }
+    showDesignerOpenFallback(url, name);
+    setStatus("Browser blocked the Designer window — use the link under Edit project in Designer.");
+    return false;
+  }
+
   /** Open browser Designer (:5173) with this project's definition loaded (not a blank canvas). */
-  async function openEditInDesigner(projectId) {
+  async function openEditInDesigner(projectId, placeholderWin) {
     const project =
       projectId && typeof TawalaDemo !== "undefined" && typeof TawalaDemo.getMyTawala === "function"
         ? TawalaDemo.getMyTawala(projectId)
@@ -3640,22 +3747,32 @@
       project && window.TawalaDemo && window.TawalaDemo.displayName
         ? window.TawalaDemo.displayName(project.name)
         : (project && project.name) || projectId || "this project";
-    const jsonFile = (project && project.jsonFile) || "";
-    const designerApp = "http://localhost:5173/";
-    const stubQs =
-      "designer.html?project=" +
-      encodeURIComponent(projectId || "") +
-      "&name=" +
-      encodeURIComponent(name) +
-      (jsonFile ? "&json=" + encodeURIComponent(jsonFile) : "");
+
+    const closePlaceholder = () => {
+      if (placeholderWin && !placeholderWin.closed) {
+        try {
+          placeholderWin.close();
+        } catch {
+          /* ignore */
+        }
+      }
+    };
 
     if (!project) {
+      closePlaceholder();
       window.alert("Couldn't open in Designer\n\nProject not found in My Tawala.");
+      return;
+    }
+
+    const syncUrl = syncDesignerEditUrl(project);
+    if (syncUrl) {
+      navigateDesignerWindow(placeholderWin, syncUrl, name);
       return;
     }
 
     const resolved = await resolveDefinitionForEdit(project);
     if (!resolved.ok) {
+      closePlaceholder();
       window.alert(
         `Can't open “${name}” in Designer — no project definition is available to edit.\n\n` +
           (resolved.message ||
@@ -3667,11 +3784,9 @@
 
     let openUrl = "";
     if (resolved.snapshotId) {
-      openUrl =
-        designerApp + "?snapshot=" + encodeURIComponent(String(resolved.snapshotId));
+      openUrl = designerUrlForSnapshot(resolved.snapshotId);
     } else if (resolved.mockJson) {
-      openUrl =
-        designerApp + "?mockJson=" + encodeURIComponent(String(resolved.mockJson));
+      openUrl = designerUrlForMockJson(resolved.mockJson);
     } else if (resolved.definition && typeof TawalaDemo.saveVersionSnapshot === "function") {
       const saved = await TawalaDemo.saveVersionSnapshot({
         project: resolved.definition,
@@ -3680,6 +3795,7 @@
         versionDescription: "Open in Designer",
       });
       if (!saved || saved.status === "failure" || !saved.snapshotId) {
+        closePlaceholder();
         window.alert(
           `Couldn't prepare “${name}” for Designer.\n\n` +
             ((saved && saved.error) || "snapshot save failed") +
@@ -3688,10 +3804,11 @@
         setStatus(`Edit in Designer failed — could not save snapshot.`);
         return;
       }
-      openUrl = designerApp + "?snapshot=" + encodeURIComponent(String(saved.snapshotId));
+      openUrl = designerUrlForSnapshot(saved.snapshotId);
     }
 
     if (!openUrl) {
+      closePlaceholder();
       window.alert(
         `Can't open “${name}” in Designer — no open path resolved.\n\n` +
           "Try again after confirming Designer API (:3001) is running."
@@ -3699,24 +3816,7 @@
       return;
     }
 
-    const lines = [
-      `Open “${name}” in the browser Designer with its definition loaded.`,
-      "",
-      "OK opens Designer at localhost:5173. Cancel opens the Designer stub page instead.",
-    ];
-    if (resolved.from === "jsonFile" && resolved.mockJson) {
-      lines.splice(1, 0, "", `Source: ${resolved.mockJson}`);
-    } else if (resolved.from === "overlay" || resolved.from === "api") {
-      lines.splice(1, 0, "", "Source: My Tawala version snapshot.");
-    }
-
-    const goLive = window.confirm(lines.join("\n"));
-    if (goLive) {
-      window.open(openUrl, "_blank", "noopener");
-      setStatus(`Opened “${name}” in Designer.`);
-    } else {
-      location.href = stubQs;
-    }
+    navigateDesignerWindow(placeholderWin, openUrl, name);
   }
 
   /**
@@ -3746,15 +3846,7 @@
       }
     }
 
-    const jsonFile = project.jsonFile ? String(project.jsonFile) : "";
-    const catalogPath =
-      jsonFile &&
-      !jsonFile.includes("..") &&
-      !jsonFile.startsWith("/") &&
-      (/^projects\/(mytawala|library)\//.test(jsonFile) ||
-        /^designer-web\/public\/samples\//.test(jsonFile))
-        ? jsonFile
-        : "";
+    const catalogPath = catalogJsonFilePath(project);
     if (catalogPath) {
       /* Prefer API disk read via Designer ?mockJson= (works even if :5500 CORS is off). */
       if (catalogPath.startsWith("projects/")) {
@@ -3878,8 +3970,8 @@
     }
     const label = active ? "Activate" : "De-activate";
     const confirmMsg = active
-      ? "Activate this project?\n\nIf it is published, it will show again in the public Library (Test Drive / Save a copy)."
-      : "De-activate this project?\n\nIt stays on My Tawala with an Offline marker, but is hidden from the public Library (no Test Drive / Save a copy). This is not Purge or Delete.";
+      ? "Activate this project?\n\nIf it is published, it will show again in the public Library (Test Drive / Copy to MyTawala)."
+      : "De-activate this project?\n\nIt stays on My Tawala with an Offline marker, but is hidden from the public Library (no Test Drive / Copy to MyTawala). This is not Purge or Delete.";
     if (!window.confirm(confirmMsg)) return;
     const result = TawalaTransfer.setProjectLibraryActive(projectId, active);
     if (!result || !result.ok) {
@@ -3931,7 +4023,7 @@
     const libSrcName = librarySourceDisplayName(project);
     const acquiredBanner = justAcquired
       ? `<div class="pm-acquire-success" role="status">` +
-        `<p><b>Saved a copy</b> as “${escapeHtml(displayName)}” in your My Tawala.` +
+        `<p><b>Copied to My Tawala</b> as “${escapeHtml(displayName)}”.` +
         (libSrcName ? ` Source: ${escapeHtml(libSrcName)}.` : "") +
         `</p>` +
         `<p class="pm-hint">Records start empty. <b>Use</b> stays unavailable until you Push from Designer ` +
@@ -4526,8 +4618,8 @@
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish tawala-modal--get-library" role="dialog" aria-modal="true" aria-labelledby="getLibModalTitle">' +
       `<h3 id="getLibModalTitle">Get from Library</h3>` +
-      `<p class="pm-hint tawala-modal-lede">Pick a public Library project to <b>Save a copy</b> into your private My Tawala. ` +
-      `You’ll name it next. This is not the same as browsing Library in the top nav.</p>` +
+      `<p class="pm-hint tawala-modal-lede">Pick a public Library project to <b>Copy to MyTawala</b>. ` +
+      `You’ll name it next. This copies the project — not Library Test Drive answers. It is not the same as browsing Library in the top nav.</p>` +
       '<div class="tawala-modal-body">' +
       `<div class="get-lib-list" role="radiogroup" aria-label="Public Library projects">${rowsHtml}</div>` +
       '<p class="pm-hint" id="getLibModalError" role="alert" style="display:none;"></p>' +
@@ -4582,22 +4674,22 @@
 
   function openSaveCopyDialog(libraryId) {
     if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
-      window.alert("Save to MyTawala isn't available — required scripts didn't load. Refresh and try again.");
+      window.alert("Copy to MyTawala isn't available — required scripts didn't load. Refresh and try again.");
       return;
     }
     if (typeof TawalaTransfer.saveCopyFromLibrary !== "function") {
-      window.alert("Save to MyTawala isn't available — transfer support is outdated. Hard-refresh and try again.");
+      window.alert("Copy to MyTawala isn't available — transfer support is outdated. Hard-refresh and try again.");
       return;
     }
     if (!isMockLoggedIn()) {
       window.alert(
-        "Save to MyTawala requires a free account.\n\nLog in or Register, then try again."
+        "Copy to MyTawala requires a free account.\n\nLog in or Register, then try again."
       );
       return;
     }
     const project = libraryId && TawalaDemo.getLibrary ? TawalaDemo.getLibrary(libraryId) : null;
     if (!project) {
-      window.alert(`Can't Save to MyTawala — unknown Library project: ${libraryId || "(none)"}`);
+      window.alert(`Can't Copy to MyTawala — unknown Library project: ${libraryId || "(none)"}`);
       return;
     }
     closeSaveCopyModal();
@@ -4617,11 +4709,11 @@
     backdrop.id = SAVE_COPY_MODAL_ID;
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="saveCopyModalTitle">' +
-      `<h3 id="saveCopyModalTitle">Save to MyTawala</h3>` +
-      `<p class="pm-hint tawala-modal-lede">Save “${escapeHtml(sourceName)}” into your private My Tawala. ` +
+      `<h3 id="saveCopyModalTitle">${COPY_TO_MYTAWALA_LABEL}</h3>` +
+      `<p class="pm-hint tawala-modal-lede">Copy “${escapeHtml(sourceName)}” into your private My Tawala. ` +
+      `This copies the <b>project</b> — not Library Test Drive answers — onto a <b>private</b> live copy. ` +
       `<b>Choose a name</b> you’ll recognize later — the suggestion below is only a starting point (you can keep it or type your own). ` +
-      `This creates a new project identity; renaming alone later does not. ` +
-      `<b>Use</b> works when the copy lands (mock shares the Library live start URLs for review — production must mint a private uniqueId).</p>` +
+      `This creates a new project identity; renaming alone later does not.</p>` +
       '<div class="tawala-modal-body">' +
       '<label class="tawala-modal-field" for="saveCopyNameInput">Your project name' +
       `<input type="text" id="saveCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
@@ -4631,7 +4723,7 @@
       "</div>" +
       '<div class="tawala-modal-actions">' +
       '<button type="button" class="pm-action" id="saveCopyModalCancel">Cancel</button>' +
-      '<button type="button" class="pm-action is-active" id="saveCopyModalConfirm">Save to MyTawala</button>' +
+      `<button type="button" class="pm-action is-active" id="saveCopyModalConfirm">${COPY_TO_MYTAWALA_LABEL}</button>` +
       "</div>" +
       "</div>";
     document.body.appendChild(backdrop);
@@ -4654,7 +4746,7 @@
         TawalaTransfer.myTawalaNameTaken(nameVal)
       ) {
         showErr(
-          `Warning: you already have a project named “${nameVal}”. Saving will replace that My Tawala project with this copy.`
+          `Warning: you already have a project named “${nameVal}”. Copying will replace that My Tawala project with this copy.`
         );
         return;
       }
@@ -4667,13 +4759,14 @@
     backdrop.querySelector("#saveCopyModalCancel").addEventListener("click", closeSaveCopyModal);
     document.addEventListener("keydown", handleSaveCopyModalKeydown, true);
 
-    function confirmSave() {
+    async function confirmSave() {
       const nameVal = nameInput.value.trim();
       if (!nameVal) {
         showErr("Enter a name for your My Tawala copy.");
         nameInput.focus();
         return;
       }
+      if (backdrop.dataset.copying === "1") return;
       const conflict =
         typeof TawalaTransfer.findMyTawalaByName === "function"
           ? TawalaTransfer.findMyTawalaByName(nameVal)
@@ -4685,7 +4778,7 @@
             : conflict.name || conflict.id;
         const ok = window.confirm(
           `You already have a project named “${nameVal}”.\n\n` +
-            `Replace “${conflictLabel}” with this Save a copy?\n\n` +
+            `Replace “${conflictLabel}” with this Copy to MyTawala?\n\n` +
             `The existing project will be removed from My Tawala (its Deploy / response identity goes with it). ` +
             `This acquire becomes the sole row with that name.`
         );
@@ -4694,12 +4787,29 @@
           return;
         }
       }
-      const result = TawalaTransfer.saveCopyFromLibrary({
-        libraryId,
-        name: nameVal,
-        overwrite: !!conflict,
-      });
+      backdrop.dataset.copying = "1";
+      const confirmBtn = backdrop.querySelector("#saveCopyModalConfirm");
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Copying…";
+      }
+      showErr("Pushing a private live copy — this does not change the public Library.");
+      let result;
+      try {
+        result = await TawalaTransfer.saveCopyFromLibrary({
+          libraryId,
+          name: nameVal,
+          overwrite: !!conflict,
+        });
+      } catch (e) {
+        result = { ok: false, error: String((e && e.message) || e) };
+      }
       if (!result || !result.ok) {
+        delete backdrop.dataset.copying;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = COPY_TO_MYTAWALA_LABEL;
+        }
         showErr((result && result.error) || "Unknown error");
         nameInput.focus();
         return;
@@ -4707,8 +4817,8 @@
       closeSaveCopyModal();
       setStatus(
         result.replacedId
-          ? `Saved a copy as “${nameVal}” in My Tawala (replaced the previous project with that name).`
-          : `Saved a copy as “${nameVal}” in My Tawala.`
+          ? `Copied to My Tawala as “${nameVal}” (replaced the previous project with that name).`
+          : `Copied to My Tawala as “${nameVal}”.`
       );
       document.dispatchEvent(
         new CustomEvent("tawala:library-saved-copy", {
@@ -4737,7 +4847,7 @@
 
   /**
    * Make a Copy — fork own My Tawala project (Aug 9 Task #9).
-   * Distinct from Rename (same id, new name) and Library Save a copy (acquire from catalog).
+   * Distinct from Rename (same id, new name) and Library Copy to MyTawala (acquire from catalog).
    */
   function openMakeCopyDialog(sourceId) {
     if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
@@ -4772,7 +4882,7 @@
       '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="makeCopyModalTitle">' +
       `<h3 id="makeCopyModalTitle">Make a Copy</h3>` +
       `<p class="pm-hint tawala-modal-lede">Fork “${escapeHtml(sourceName)}” into a <b>new</b> My Tawala project. ` +
-      `The original stays as-is. This is <b>not</b> Rename (same project, new name) and <b>not</b> Library Save a copy. ` +
+      `The original stays as-is. This is <b>not</b> Rename (same project, new name) and <b>not</b> Library Copy to MyTawala. ` +
       `Copies the definition only — <b>Records start empty</b>; <b>Use</b> stays grey until you Push from Designer ` +
       `(does not share the source’s live :8080 data).</p>` +
       '<div class="tawala-modal-body">' +
@@ -5022,10 +5132,9 @@
         '<div class="tawala-modal-body">' +
         '<p class="pm-hint" role="status">' +
         (fromAcquire
-          ? "<b>This copy is not live yet.</b> Library <b>Save a copy</b> creates an empty private row " +
-            "(no :8080 uniqueId / start URLs). Open it in Designer, <b>Push</b> the definition to the runtime, " +
-            "then <b>Show in My Tawala</b> — " +
-            "after that, Deploy here can copy links and embed snippets."
+          ? "<b>This copy is not live yet.</b> <b>Make a Copy</b> starts empty until you <b>Push</b> from Designer. " +
+            "Library <b>Copy to MyTawala</b> should already have a private :8080 id — if Use is grey, the clone didn’t land; copy again with Tomcat and the Designer API up. " +
+            "After that, Deploy here can copy links and embed snippets."
           : "<b>No live start URLs on this project yet.</b> Deploy share needs a :8080 uniqueId and start points. " +
             "From Designer, <b>Push</b> the project → <b>Show in My Tawala</b>, " +
             "or open a seeded live project such as <b>Online Exam Builder</b>.") +
@@ -5515,7 +5624,7 @@
       if (sel.kind === "start" && sel.url) {
         void copyUrlToClipboard(sel.url);
       } else {
-        window.alert("Select a start point (▶) first, then Copy link.");
+        window.alert("Select a start point (◀) first, then Copy link.");
       }
       return;
     }
@@ -5554,7 +5663,7 @@
       ev.preventDefault();
       if (!isMockLoggedIn()) {
         window.alert(
-          "Save to MyTawala requires a free account.\n\nLog in or Register, then try again."
+          "Copy to MyTawala requires a free account.\n\nLog in or Register, then try again."
         );
         return;
       }
@@ -5613,8 +5722,30 @@
       return;
     }
 
-    if (wired === "edit-in-designer") {
-      openEditInDesigner(projectId);
+    if (wired === "edit-in-designer" || op === "edit-in-designer") {
+      ev.preventDefault();
+      const project =
+        projectId && typeof TawalaDemo !== "undefined" && typeof TawalaDemo.getMyTawala === "function"
+          ? TawalaDemo.getMyTawala(projectId)
+          : null;
+      const name =
+        project && window.TawalaDemo && window.TawalaDemo.displayName
+          ? window.TawalaDemo.displayName(project.name)
+          : (project && project.name) || projectId || "this project";
+      const syncUrl = syncDesignerEditUrl(project);
+      if (syncUrl) {
+        const opened = window.open(syncUrl, DESIGNER_EDIT_WINDOW);
+        if (!opened) {
+          showDesignerOpenFallback(syncUrl, name);
+          setStatus("Browser blocked the Designer window — use the link under Edit project in Designer.");
+        } else {
+          setStatus(`Opened “${name}” in Designer.`);
+        }
+        return;
+      }
+      /* Keep the popup in this click's user-gesture; fill URL after snapshot work. */
+      const placeholder = window.open("about:blank", DESIGNER_EDIT_WINDOW);
+      void openEditInDesigner(projectId, placeholder);
       return;
     }
 

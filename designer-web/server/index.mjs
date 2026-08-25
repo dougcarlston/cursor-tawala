@@ -13,6 +13,14 @@ import {
   startPointFormNames,
   uniqueIdFromStartpoints,
 } from "./deployParse.mjs";
+import { resolveProjectForDeploy } from "./deployIdentity.mjs";
+import {
+  decideNameOccupancy,
+  findOccupantInDeploymentsXml,
+  findOccupantInNodeIndex,
+  occupancyHatchAllowed,
+  queryDeploymentsRequestXml,
+} from "./deployOccupancy.mjs";
 import { clearFormAnswers, getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
 import {
   buildQueryEmailStatusXml,
@@ -201,6 +209,19 @@ app.options("/api/deploy", (req, res) => {
   res.status(204).end();
 });
 
+async function lookupOccupantForDeploy(user, password, tomcatName) {
+  if (JAVA_URL) {
+    const xml = queryDeploymentsRequestXml(user, password);
+    const text = await forwardToJava(xml);
+    const failure = parseDeployFailure(text);
+    if (failure || !/status="success"/i.test(text)) {
+      throw new Error(failure || "queryDeployments failed");
+    }
+    return findOccupantInDeploymentsXml(text, tomcatName);
+  }
+  return findOccupantInNodeIndex(store.listProjects(user), tomcatName);
+}
+
 /** JSON deploy from web Designer (also My Tawala Deploy-this-version via CORS). */
 app.post("/api/deploy", async (req, res) => {
   allowMockCors(req, res);
@@ -219,10 +240,47 @@ app.post("/api/deploy", async (req, res) => {
   }
 
   try {
-      // File→New from a template (and blank New) mark projects so Deploy does not reattach
-      // to prior responses accumulated under the same project name.
-      const freshFromTemplate = project._freshFromTemplate === true;
-      const { _freshFromTemplate: _drop, ...projectForDeploy } = project;
+      // File→New: mint a Tomcat name that cannot match an existing UserProject
+      // (Java put reuses by name and keeps submissions). Later Pushes use deployIdentityName.
+      const resolved = resolveProjectForDeploy(project);
+      const {
+        projectForDeploy,
+        deployIdentityName,
+        displayName,
+        freshFromTemplate,
+        identityMinted,
+      } = resolved;
+
+      let occupant = null;
+      let lookupFailed = false;
+      try {
+        occupant = await lookupOccupantForDeploy(
+          credentials.user,
+          credentials.password,
+          deployIdentityName,
+        );
+      } catch (e) {
+        lookupFailed = true;
+        console.error("occupancy lookup failed:", e);
+      }
+      const occupancy = decideNameOccupancy({
+        tomcatName: deployIdentityName,
+        incomingProject: project,
+        occupant,
+        hatch: occupancyHatchAllowed(req.body),
+        lookupFailed,
+      });
+      if (!occupancy.allow) {
+        const status = occupancy.code === "occupancy-lookup-failed" ? 503 : 409;
+        res.status(status).json({
+          status: "failure",
+          error: occupancy.message,
+          code: occupancy.code,
+          occupantName: occupant?.name || null,
+          occupantUniqueId: occupant?.uniqueId || null,
+        });
+        return;
+      }
 
       if (JAVA_URL) {
         const xml = buildUploadRequest(credentials, projectForDeploy);
@@ -244,7 +302,7 @@ app.post("/api/deploy", async (req, res) => {
           const marked = startPointFormNames(projectForDeploy);
           let error;
           if (marked.size === 0) {
-            error = `No forms marked as Starting Point in "${projectForDeploy.name}". Open a form, check Starting Point in Properties, then deploy again.`;
+            error = `No forms marked as Starting Point in "${displayName}". Open a form, check Starting Point in Properties, then deploy again.`;
           } else if (allForProject.length === 0) {
             error = `Java deploy returned no start points for project "${projectForDeploy.name}". Restart the dev API if you still see DirtBowl URLs.`;
           } else {
@@ -262,29 +320,21 @@ app.post("/api/deploy", async (req, res) => {
           return;
         }
         const uniqueId = uniqueIdFromStartpoints(startpoints);
-        // Tomcat reuses project identity by name — purge leftover form responses for File→New.
-        let purged = null;
-        if (freshFromTemplate && uniqueId) {
-          try {
-            purged = await purgeProjectResponsesByUniqueId(uniqueId);
-          } catch (e) {
-            purged = { status: "failure", error: String(e.message ?? e) };
-          }
-        }
         res.json({
           status: "success",
           mode: "java",
-          project: projectForDeploy.name,
+          project: displayName,
+          deployIdentityName,
           uniqueId,
           startpoints,
           freshFromTemplate,
-          purged,
+          identityMinted,
         });
         return;
       }
 
     const entry = store.saveProject(credentials.user, projectForDeploy, {
-      forceNewId: freshFromTemplate,
+      forceNewId: freshFromTemplate || identityMinted,
     });
     if (freshFromTemplate) {
       resetSession(entry.uniqueId, projectForDeploy);
@@ -298,10 +348,12 @@ app.post("/api/deploy", async (req, res) => {
     res.json({
       status: "success",
       mode: "dev",
-      project: projectForDeploy.name,
+      project: displayName,
+      deployIdentityName,
       uniqueId: entry.uniqueId,
       startpoints,
       freshFromTemplate,
+      identityMinted,
     });
   } catch (e) {
     console.error(e);

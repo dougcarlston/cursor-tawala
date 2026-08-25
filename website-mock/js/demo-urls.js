@@ -344,7 +344,7 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   homeNote:
     "Clears this shared Library demo when you start (not when you close the tab). Needs :8080.",
   listingPile:
-    "Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Save to MyTawala when logged in",
+    "Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Copy to MyTawala when logged in",
   listingHint:
     "Test Drive clears this shared Library demo when you start — not when you close the tab. Copied links use the same demo uniqueId (not a private copy).",
 };
@@ -1094,8 +1094,41 @@ window.TawalaDemo = {
     }
   },
   /**
+   * Read a catalog Designer JSON for Copy to MyTawala clone-on-acquire (Task #26).
+   * Path-restricted by :3001 `/api/open-mock-json`.
+   */
+  async fetchCatalogProject(relPath) {
+    const rel = String(relPath || "").trim().replace(/\\/g, "/");
+    if (!rel) {
+      return { status: "failure", error: "path required" };
+    }
+    const url =
+      this.purgeApiBase().replace(/\/$/, "") +
+      "/api/open-mock-json?path=" +
+      encodeURIComponent(rel);
+    try {
+      const res = await fetch(url);
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.project) {
+        return {
+          status: "failure",
+          error: data.error || `HTTP ${res.status}`,
+        };
+      }
+      return { status: "success", project: data.project, path: data.path || rel };
+    } catch (e) {
+      return {
+        status: "failure",
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run keep)",
+      };
+    }
+  },
+  /**
    * Redeploy a project definition to :8080 / Node runtime (same /api/deploy as Designer).
    * Java keeps the same uniqueId when the project name matches an existing deployment.
+   * Pass `_freshFromTemplate: true` to mint a new Tomcat name / uniqueId (clone-on-acquire).
    */
   async deployProjectDefinition(project) {
     if (!project || !project.name) {
@@ -1185,7 +1218,7 @@ window.TawalaDemo = {
           "Test Drive needs the Java runtime on http://localhost:8080 — it isn’t reachable right now.\n\n" +
             "You’re still on the :5500 mock (no navigation to a dead host).\n\n" +
             "Start Tomcat / the local Java runtime, then try Test Drive again.\n" +
-            "Save a copy still works offline."
+            "Copy to MyTawala still works offline."
         );
         return { opened: false, purge: null, offline: true };
       }
