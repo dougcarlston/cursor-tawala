@@ -1,35 +1,52 @@
-# Library task scratch
+# Library task scratch — tomorrow (Aug 25)
 
-Working copy — **not** the source of truth. Canonical list stays in `website-mock/README.md` § Task List.
+Working copy. Canonical detail: `website-mock/README.md` § Task List.  
+Review: `http://localhost:5500` only. Origin already has uniqueId + Designer session commits.
 
-Delete lines as you finish so remaining work stays on screen.
-
-Review host: `http://localhost:5500` (not `127.0.0.1`). No commit unless you ask.
+**Done Aug 24 (drop from daily view):** #26 clone-on-acquire · #27 occupancy slice 1 · Test Drive honesty copy · EXPORT/IMPORT smoke (field **names**).
 
 ---
 
-## Open now
+## Tomorrow — in this order
 
-- **#26 Private uniqueId on Copy to MyTawala** — WIRED + smoked Aug 24 (Smoke26 Puddle stayed on the copy; Library still `gy1zssbrwm4fgfm` / Pacific Ocean).
-- **#27 Push name occupancy** — slice 1 smoked Aug 24. Catalog Push of Simple Survey Template refused (`gy1zssbrwm4fgfm`). File→New still mints a private uniqueId. Admin hatch not on Designer. Later: Retire frees the `:8080` name.
-- **#2 Project Details ops rail** — PARTIAL. Grouping polish (Purge/Delete adjacency). Keep Purge ≠ Delete ≠ De-activate.
-- **#10 Start points: distribute + embed** — PARTIAL. Deploy share panel is in. HOLD stretch: uniqueId-in-URL; start-label polish.
-- **#13 Times used / Last used / Copies downloaded** — PARTIAL. Mock counters on My Tawala Use only (`0` / — until first Use).
-- **#14 Test Drive** — honesty copy DONE (wipe-on-start, shared uniqueId). Still open: real leave/wipe + per-drive uniqueId when Library goes public.
-- **#15 Backup package** — HOLD until you confirm default (deployed definition + current responses) and how Restore differs from Push this version.
-- **#18 Library stub cleanup** — Designer → Push → Publish a real replacement, then retire the stub.
-- **EXPORT / IMPORT** — smoked Aug 24 (mismatch is on field **names**).
-- **Delete / Purge** — scoped confirms + Records refresh.
+Stop after 1–2 build items if jetlag wins. Decisions first; do not start Auth0/Clerk wiring or live ratings.
 
-## Parked (delete this whole block if you don’t want to see it)
+### A. Owner decisions (talk, then maybe code)
 
-- **#16 Download latest** — talk later; prefer Pull into Designer.
-- **#17 Shared Data, Access column, SEE DEMO, ratings, ACL** — no build this phase.
-- **#20 Email metering** — billing; not now.
-- **#21 Auth / accounts / password recovery** — pre-live HOLD.
-- **#22 Payments** — pre-live HOLD.
-- **#23 Project end page** (Library + Designer promo) — Designer/runtime, not mock chrome.
-- **#24 Soft gate / Registrants** — gate when saving data; no build until auth.
-- **#25 Library sections / categories** — long-term catalog IA.
+1. **Bigger picture** — why registration + reputation now (you said you’ll explain). That sets whether we emulate a marketplace (Amazon-like) or a club roster (sports commissioners).
+2. **#15 Backup package** — confirm default: deployed definition + current responses? How Restore differs from **Push this version** in the UI. No Backup UI expansion until this is yes/no.
+3. **EXPORT / IMPORT + Delete / Purge** — owner sign-off on the Aug 24 smokes, or one more pass. Mismatch = field **names**, not MCQ wording.
 
-Designer Push rename, Document P0s, and parked Designer bugs stay on the Designer chat — not this list.
+### B. Small leftover from uniqueId (same track, short)
+
+4. **Online Exam uniqueId audit** — catalog Test Drive is `u3hkqgwtrepjlur`; occupancy saw Tomcat name **Online Exam Builder** as `455sem0swhcswu5`. Decide: update catalog URLs, or hatch-Redeploy stock onto the name you want public.
+5. **#27 slice 2 (optional)** — Retire must **free** the `:8080` name. Only if A is done and you still have steam. C# Designer → Tomcat stays ungated.
+
+### C. Product research (not implement)
+
+6. **User registration / accounts (#21 + #24)** — emulate, don’t invent. Shortlist 2–3 patterns (e.g. email magic-link, GitHub-style, school-roster). Soft gate stays **save data**, not N Test Drives. Real passwords/recovery = security pass; mock session `dev` is not that.
+7. **Project reputation (#17 reopen)** — Amazon-like *shape* (stars, reviews, “verified” signal, helpful votes). Do **not** ship gameable stars on the mock. Decide: who can rate (Copy to MyTawala? finished Test Drive? published author?), and what “verified use” means.
+
+---
+
+## This week (after tomorrow)
+
+8. **#2 Details ops rail** — Purge ≠ Delete ≠ De-activate grouping.
+9. **#10 Deploy / share** — picker/embed polish; uniqueId-in-URL still HOLD stretch.
+10. **#13 Times used / Last used** — mock counters on My Tawala **Use** only.
+11. **#18 Stub cleanup** — Designer Push → Publish replacement → retire stub (needs a live definition, not chrome).
+12. **#14 Test Drive** — per-drive uniqueId + real leave/wipe. Waits for **Library Live**, not tomorrow’s mock.
+
+## Parked (unless bigger picture unparks them)
+
+- **#16 Download latest** — prefer Pull into Designer.
+- **#20 Email metering** — billing.
+- **#22 Payments**.
+- **#23 End page** — Designer/runtime, not mock chrome.
+- **#25 Library categories** — featured-audience IA.
+- Designer Document P0s / Push rename — Designer chat (`43c253d`).
+
+## Other leftovers (not tomorrow’s product)
+
+- Uncommitted: `tawala.war.dev`, `_diag-*`, project-tray reorg, `START_LIBRARY_CHAT.md` + `start-library-chat.sh`.
+- Designer chat: review `43c253d`; do not reopen `218e624` unless a uniqueId regression.
