@@ -3673,6 +3673,7 @@ a.pm-action.is-active {
   padding: 4vh 16px 16px;
   z-index: 500;
   overflow-y: auto;
+  overflow-anchor: none;
 }
 
 .tawala-modal {
@@ -3751,12 +3752,49 @@ a.pm-action.is-active {
 
 .tawala-modal--deploy-share {
   max-width: 640px;
+  max-height: min(92vh, 640px);
+}
+
+.tawala-modal--deploy-share .tawala-modal-body {
+  overflow-anchor: none;
+}
+
+.tawala-modal--deploy-share:focus {
+  outline: none;
+}
+
+.tawala-modal--deploy-share .tawala-modal-field {
+  margin: 8px 0 2px;
+}
+
+.tawala-modal--deploy-share .tawala-modal-hint-tight {
+  margin: 4px 0 0;
+}
+
+.tawala-modal--deploy-share .tawala-modal-inline-actions {
+  margin: 2px 0 8px;
+}
+
+.tawala-modal--deploy-share .tawala-modal-code {
+  min-height: 0;
+}
+
+.tawala-modal--deploy-share #deployShareLink.tawala-modal-code {
+  min-height: 2.6em;
+}
+
+.tawala-modal--deploy-share #deployShareEmbed.tawala-modal-code {
+  min-height: 3.6em;
 }
 
 .tawala-modal-start-one {
-  margin: 8px 0 10px;
+  margin: 2px 0 6px;
   font-size: 0.92em;
   line-height: 1.4;
+}
+
+.tawala-modal--deploy-share code {
+  font-size: 0.92em;
 }
 
 .tawala-modal--testdrive-pick {

@@ -15,9 +15,9 @@
  * wired: "import-mytawala" → TawalaDataOps.handleImportClick — field-mismatch check, then
  *         confirm + POST /api/import-responses (replace mode)
  * wired: "backup-mytawala" → TawalaDataOps.handleBackupClick — no confirm (non-destructive;
- *         downloads a JSON bundle: definition + data + properties, see README § Backup/Restore)
- * wired: "restore-mytawala" → TawalaDataOps.handleRestoreClick — confirm + overlay properties +
- *         POST /api/import-responses (replace mode)
+ *         downloads a JSON bundle: live definition + data + properties, see README § Backup)
+ * wired: "restore-mytawala" → TawalaDataOps.handleRestoreClick — confirm + Redeploy definition
+ *         onto :8080 (same uniqueId via /api/deploy) + overlay properties + POST import data
  * wired: "get-from-library" → openGetFromLibraryDialog (Library picker → Save a copy rename;
  *         not a nav duplicate of Library; always enabled on My Tawala listing bar)
  * wired: "pull-library" → openPullDialog (Refresh from Library) — selection + Library link required;
@@ -213,7 +213,7 @@
       wired: "make-copy-mytawala",
     },
     { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
-    { id: "restore", label: "RESTORE", title: "Restore this project from a backup", wired: "restore-mytawala" },
+    { id: "restore", label: "RESTORE", title: "Restore this project from a backup (Redeploy definition, then data)", wired: "restore-mytawala" },
     {
       id: "deploy",
       label: "DEPLOY",
@@ -564,7 +564,7 @@
     restoreProject: {
       title: "Restore Project",
       body:
-        "Are you sure you want to restore this project from a backup? This replaces the project's My Tawala properties and response data with the backed-up version.",
+        "Are you sure you want to restore this project from a backup? This Redeploys the backed-up definition onto :8080 (same uniqueId), then replaces My Tawala properties and response data. It does not mint a new Versions row (that is Push this version).",
       submit: "Restore",
     },
   };
@@ -755,8 +755,10 @@
     }
     if (item.wired === "export-mytawala") return "active (download JSON — data only, see README)";
     if (item.wired === "import-mytawala") return "active (field-mismatch check + POST :3001)";
-    if (item.wired === "backup-mytawala") return "active (download JSON — definition + data + properties)";
-    if (item.wired === "restore-mytawala") return "active (properties overlay + POST :3001 data)";
+    if (item.wired === "backup-mytawala") return "active (download JSON — live definition + data + properties)";
+    if (item.wired === "restore-mytawala") {
+      return "active (Redeploy bundled definition to :8080 same uniqueId, then POST :3001 data)";
+    }
     if (item.wired === "pull-library") return "active (Pull dialog → overlay content refresh from Library)";
     if (item.wired === "save-copy-library") {
       return "active (rename dialog → new My Tawala row; empty data until Deploy)";
@@ -1170,12 +1172,18 @@
    */
   function projectUseUrl(project) {
     if (!project) return null;
+    const withUrls = startPointsWithUrls(project);
     if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.primaryStartUrl === "function") {
-      const preferred = TawalaDemo.primaryStartUrl(project.startPoints, null);
+      const preferred = TawalaDemo.primaryStartUrl(withUrls, null);
       if (preferred) return preferred;
     }
-    if (project.testDriveUrl) return project.testDriveUrl;
-    const sp = (project.startPoints || []).find((s) => s && s.url);
+    if (project.testDriveUrl) {
+      if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.liveStartUrl === "function") {
+        return TawalaDemo.liveStartUrl(project, { url: project.testDriveUrl });
+      }
+      return project.testDriveUrl;
+    }
+    const sp = withUrls[0];
     return sp ? sp.url : null;
   }
 
@@ -1369,14 +1377,33 @@
     noteMyTawalaUseOpen(projectId);
   }
 
+  function liveShareStarts(project) {
+    const Demo = typeof TawalaDemo !== "undefined" ? TawalaDemo : null;
+    return ((project && project.startPoints) || [])
+      .filter((s) => s && (s.url || s.label || s.form))
+      .map((s) => {
+        const form =
+          Demo && typeof Demo.startFormKey === "function"
+            ? Demo.startFormKey(s)
+            : String((s && (s.form || s.label)) || "");
+        const label =
+          Demo && typeof Demo.startShareLabel === "function"
+            ? Demo.startShareLabel(s)
+            : String((s && (s.label || s.form)) || "Start");
+        const url =
+          s && s.url && Demo && typeof Demo.liveStartUrl === "function"
+            ? Demo.liveStartUrl(project, s)
+            : (s && s.url) || "";
+        return { ...s, form, label, url };
+      });
+  }
+
   function startPointsWithUrls(project) {
-    return ((project && project.startPoints) || []).filter((s) => s && s.url);
+    return liveShareStarts(project).filter((s) => s && s.url);
   }
 
   function listedStartPoints(project) {
-    return ((project && project.startPoints) || []).filter(
-      (s) => s && (s.url || s.label || s.form)
-    );
+    return liveShareStarts(project);
   }
 
   function projectDetailsHref(projectId, hash, queryExtra) {
@@ -2216,7 +2243,7 @@
 
   /** Ordered start points for Project Data (Exam/Registration first when multi-start). */
   function orderedStartPoints(project) {
-    let startPoints = (project && project.startPoints) || [];
+    let startPoints = liveShareStarts(project);
     if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.pickPrimaryStartPoint === "function") {
       const primary = TawalaDemo.pickPrimaryStartPoint(startPoints);
       if (primary && startPoints.length > 1) {
@@ -2227,6 +2254,9 @@
   }
 
   function startPointFormKey(sp) {
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.startFormKey === "function") {
+      return TawalaDemo.startFormKey(sp) || "Start";
+    }
     return String((sp && (sp.form || sp.label)) || "Start");
   }
 
@@ -5147,13 +5177,14 @@
   }
 
   /**
-   * Website Deploy (My Tawala Details) — Task #10 doorway.
+   * Website Deploy (My Tawala Details) — Task #10.
    * Admin go-live + share help: copy a start URL / iframe embed. Not Publish, not Designer Push.
    * Empty Library acquires (no uniqueId / :8080 URLs) get an honest “need a live project first” message.
    * Seeded live projects (e.g. Online Exam Builder) share immediately.
    *
-   * Aug 25 polish: Invite opens on the link field; Include opens on the embed field;
-   * Project Data start highlight preselects that start. uniqueId-in-URL stays HOLD.
+   * Live URLs pin overlay uniqueId (`/p/{uniqueId}/{formToken}.FormName`).
+   * Owner share labels persist on overlay startPoints[].label (form name stays in .form).
+   * Unnamed starts show “Click here.” in the field — not the Designer form name.
    */
   function iframeEmbedSnippet(url, title) {
     const safeTitle = String(title || "Tawala form").replace(/"/g, "&quot;");
@@ -5183,6 +5214,11 @@
     if (byUrl >= 0) return byUrl;
     const name = String(sel.formName || "").toLowerCase();
     if (!name) return 0;
+    const byForm = starts.findIndex((s) => {
+      const form = String((s && (s.form || s.label)) || "").toLowerCase();
+      return form === name;
+    });
+    if (byForm >= 0) return byForm;
     const byName = starts.findIndex((s) => {
       const label = String((s && (s.label || s.form)) || "").toLowerCase();
       return label === name;
@@ -5190,9 +5226,45 @@
     return byName >= 0 ? byName : 0;
   }
 
-  function openDeployShareDialog(projectId, opts) {
-    const optionsIn = opts || {};
-    const focusField = optionsIn.focus === "embed" ? "embed" : "link";
+  /** Shown in the Deploy share field until the owner types their own name. */
+  const DEFAULT_SHARE_LABEL = "Click here.";
+
+  function startHasCustomShareLabel(sp) {
+    const form = String((sp && sp.form) || "").trim();
+    const label = String((sp && sp.label) || "").trim();
+    if (!label) return false;
+    if (label === DEFAULT_SHARE_LABEL) return true;
+    if (form && label.toLowerCase() === form.toLowerCase()) return false;
+    return true;
+  }
+
+  function displayShareLabel(sp) {
+    if (startHasCustomShareLabel(sp)) {
+      const lab = String((sp && sp.label) || "").trim();
+      if (lab) return lab;
+    }
+    return DEFAULT_SHARE_LABEL;
+  }
+
+  function startPickerOptionLabel(sp, index) {
+    if (startHasCustomShareLabel(sp)) {
+      const lab = String((sp && sp.label) || "").trim();
+      if (lab && lab !== DEFAULT_SHARE_LABEL) return lab;
+    }
+    return String((sp && (sp.form || sp.label)) || `Start ${index + 1}`).trim();
+  }
+
+  function oneStartLineHtml(sp) {
+    if (startHasCustomShareLabel(sp)) {
+      const lab = String((sp && sp.label) || "").trim();
+      if (lab && lab !== DEFAULT_SHARE_LABEL) {
+        return `This project has one start: <b>${escapeHtml(lab)}</b>`;
+      }
+    }
+    return "This project has one start.";
+  }
+
+  function openDeployShareDialog(projectId) {
     if (typeof TawalaDemo === "undefined") {
       window.alert("Deploy isn't available — required scripts didn't load. Refresh and try again.");
       return;
@@ -5237,38 +5309,46 @@
       const prefIdx = preferredDeployStartIndex(project, starts);
       let startPickerHtml;
       if (starts.length === 1) {
-        const only = starts[0];
-        const onlyLabel = escapeHtml(only.label || only.form || "Start");
         startPickerHtml =
-          `<p class="tawala-modal-start-one">This project has one start: <b>${onlyLabel}</b></p>` +
+          `<p class="tawala-modal-start-one" id="deployShareStartOne">${oneStartLineHtml(starts[0])}</p>` +
           `<input type="hidden" id="deployShareStartSelect" value="0" />`;
       } else {
         const optionHtml = starts
           .map((sp, i) => {
-            const label = sp.label || sp.form || `Start ${i + 1}`;
+            const label = startPickerOptionLabel(sp, i);
             const sel = i === prefIdx ? " selected" : "";
             return `<option value="${i}"${sel}>${escapeHtml(label)}</option>`;
           })
           .join("");
         startPickerHtml =
-          '<p class="pm-hint tawala-modal-hint-tight">If this project has more than one starting form, pick which one the link should open. ' +
-          "Online Exam, for example, has Exam for the person taking the test and Administration / Setup for you. " +
-          "If you already highlighted a start in Project Data, that one is selected.</p>" +
           '<label class="tawala-modal-field" for="deployShareStartSelect">Start point' +
           `<select id="deployShareStartSelect">${optionHtml}</select>` +
           "</label>";
       }
+      const firstSp = starts[prefIdx] || starts[0];
+      const firstLabel = escapeHtml(displayShareLabel(firstSp));
+      const firstUrl = (firstSp && firstSp.url) || "";
+      const embedTitle =
+        displayShareLabel(firstSp) === DEFAULT_SHARE_LABEL ? displayName : displayShareLabel(firstSp);
+      const firstEmbed = iframeEmbedSnippet(firstUrl, embedTitle);
       bodyHtml =
         '<div class="tawala-modal-body">' +
         startPickerHtml +
+        '<label class="tawala-modal-field" for="deployShareLabel">Share label' +
+        `<input type="text" id="deployShareLabel" value="${firstLabel}" autocomplete="off" />` +
+        "</label>" +
         '<label class="tawala-modal-field" for="deployShareLink">Form link (to send or paste)' +
-        '<textarea id="deployShareLink" class="tawala-modal-code" rows="2" readonly></textarea>' +
+        `<textarea id="deployShareLink" class="tawala-modal-code" rows="2" readonly>${escapeHtml(
+          firstUrl
+        )}</textarea>` +
         "</label>" +
         '<p class="tawala-modal-inline-actions">' +
         '<button type="button" class="pm-action is-active" id="deployShareCopyLink">Copy link</button>' +
         "</p>" +
         '<label class="tawala-modal-field" for="deployShareEmbed">Include in Web Page (iframe embed)' +
-        '<textarea id="deployShareEmbed" class="tawala-modal-code" rows="4" readonly></textarea>' +
+        `<textarea id="deployShareEmbed" class="tawala-modal-code" rows="3" readonly>${escapeHtml(
+          firstEmbed
+        )}</textarea>` +
         "</label>" +
         '<p class="tawala-modal-inline-actions">' +
         '<button type="button" class="pm-action is-active" id="deployShareCopyEmbed">Copy embed</button>' +
@@ -5286,7 +5366,7 @@
     backdrop.id = DEPLOY_SHARE_MODAL_ID;
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish tawala-modal--deploy-share" role="dialog" ' +
-      'aria-modal="true" aria-labelledby="deployShareModalTitle">' +
+      'tabindex="-1" aria-modal="true" aria-labelledby="deployShareModalTitle">' +
       '<h3 id="deployShareModalTitle">Share a live form</h3>' +
       `<p class="pm-hint tawala-modal-lede">Copy a link so other people can open “${escapeHtml(displayName)}”, or copy the embed snippet to paste on another site. ` +
       "This does not add the project to the Library (that is Publish).</p>" +
@@ -5301,32 +5381,115 @@
     const closeBtn = backdrop.querySelector("#deployShareClose");
     if (closeBtn) closeBtn.addEventListener("click", closeDeployShareModal);
 
+    const panel = backdrop.querySelector(".tawala-modal");
+    const bodyEl = backdrop.querySelector(".tawala-modal-body");
+    /* Root cause of the jump: focusing Form link / embed / Copy / Close (or
+     * input.select()) scrolls .tawala-modal-body to that control, hiding Share label.
+     * Focus the dialog or Share label with preventScroll; never a lower control. */
+    function revealDeployShareTop(focusEl) {
+      const target = focusEl || panel;
+      if (target) {
+        try {
+          target.focus({ preventScroll: true });
+        } catch {
+          target.focus();
+        }
+      }
+      backdrop.scrollTop = 0;
+      if (bodyEl) bodyEl.scrollTop = 0;
+      if (panel) panel.scrollTop = 0;
+    }
+
     if (!hasLive) {
-      if (closeBtn) closeBtn.focus();
+      revealDeployShareTop(null);
       return;
     }
 
     const startSelect = backdrop.querySelector("#deployShareStartSelect");
+    const labelInput = backdrop.querySelector("#deployShareLabel");
+    const startOneEl = backdrop.querySelector("#deployShareStartOne");
     const linkArea = backdrop.querySelector("#deployShareLink");
     const embedArea = backdrop.querySelector("#deployShareEmbed");
     const copyLinkBtn = backdrop.querySelector("#deployShareCopyLink");
     const copyEmbedBtn = backdrop.querySelector("#deployShareCopyEmbed");
 
-    function syncFields() {
+    function currentStart() {
       const idx = Number(startSelect && startSelect.value) || 0;
-      const sp = starts[idx] || starts[0];
+      return starts[idx] || starts[0];
+    }
+
+    function refreshStartOptionText(idx, label) {
+      if (!startSelect || startSelect.tagName !== "SELECT") return;
+      const opt = startSelect.options[idx];
+      if (opt) opt.textContent = label;
+    }
+
+    function syncTreeStartLabel(formKey, label) {
+      const tree = document.getElementById("pmDataTree");
+      if (!tree || !formKey) return;
+      const rows = tree.querySelectorAll(".pm-data-tree-form.is-start");
+      for (let i = 0; i < rows.length; i++) {
+        if (String(rows[i].dataset.pmForm || "").toLowerCase() !== String(formKey).toLowerCase()) {
+          continue;
+        }
+        const lab = rows[i].querySelector(".pm-data-tree-label");
+        if (lab) {
+          lab.textContent = label;
+          lab.setAttribute("title", label);
+          lab.setAttribute("aria-label", label);
+        }
+      }
+    }
+
+    function persistShareLabel() {
+      const sp = currentStart();
+      if (!sp) return;
+      const formKey = sp.form || sp.label || "";
+      const next = String((labelInput && labelInput.value) || "").trim() || DEFAULT_SHARE_LABEL;
+      if (typeof TawalaTransfer === "undefined" || typeof TawalaTransfer.updateStartShareLabel !== "function") {
+        return;
+      }
+      const result = TawalaTransfer.updateStartShareLabel(projectId, formKey, next);
+      if (!result || !result.ok) return;
+      const idx = Number(startSelect && startSelect.value) || 0;
+      if (starts[idx]) {
+        starts[idx].label = next;
+        starts[idx].form = starts[idx].form || formKey;
+      }
+      refreshStartOptionText(idx, startPickerOptionLabel(starts[idx], idx));
+      if (startOneEl) {
+        startOneEl.innerHTML = oneStartLineHtml({
+          form: formKey,
+          label: next,
+        });
+      }
+      syncTreeStartLabel(formKey, next);
+      syncFields();
+    }
+
+    function syncFields() {
+      const sp = currentStart();
       const url = (sp && sp.url) || "";
-      const label = (sp && (sp.label || sp.form)) || displayName;
+      const shareLabel = displayShareLabel(sp);
+      const embedTitle = shareLabel === DEFAULT_SHARE_LABEL ? displayName : shareLabel;
       if (linkArea) linkArea.value = url;
-      if (embedArea) embedArea.value = iframeEmbedSnippet(url, label);
+      if (embedArea) embedArea.value = iframeEmbedSnippet(url, embedTitle);
+      if (labelInput && document.activeElement !== labelInput) {
+        labelInput.value = shareLabel;
+      }
     }
     syncFields();
     if (startSelect && startSelect.tagName === "SELECT") {
       startSelect.addEventListener("change", syncFields);
     }
+    if (labelInput) {
+      labelInput.addEventListener("change", persistShareLabel);
+      labelInput.addEventListener("blur", persistShareLabel);
+    }
 
     if (copyLinkBtn) {
       copyLinkBtn.addEventListener("click", () => {
+        persistShareLabel();
         void copyUrlToClipboard(linkArea.value).then(() => {
           setStatus("Copied participant start link.");
           flashCopiedLabel(copyLinkBtn, "Copy link");
@@ -5335,6 +5498,7 @@
     }
     if (copyEmbedBtn) {
       copyEmbedBtn.addEventListener("click", async () => {
+        persistShareLabel();
         const text = embedArea.value;
         if (!text) {
           window.alert("No embed snippet yet — pick a start point with a :8080 URL.");
@@ -5355,15 +5519,7 @@
       });
     }
 
-    if (focusField === "embed" && embedArea) {
-      embedArea.focus();
-      embedArea.select();
-    } else if (linkArea) {
-      linkArea.focus();
-      linkArea.select();
-    } else if (startSelect && startSelect.tagName === "SELECT") {
-      startSelect.focus();
-    }
+    revealDeployShareTop(labelInput || panel);
   }
 
   /**
@@ -5776,9 +5932,7 @@
     }
 
     if (wired === "deploy-share") {
-      const op = String((btn && btn.dataset.op) || "").toLowerCase();
-      const focus = op.indexOf("include") !== -1 ? "embed" : "link";
-      openDeployShareDialog(projectId, { focus });
+      openDeployShareDialog(projectId);
       return;
     }
 

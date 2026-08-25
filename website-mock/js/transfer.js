@@ -557,13 +557,27 @@
     };
   }
 
-  function startPointsFromDeploy(deploy) {
-    return (Array.isArray(deploy && deploy.startpoints) ? deploy.startpoints : [])
-      .map((sp) => ({
-        label: (sp && (sp.form || sp.label)) || "Start",
-        url: (sp && sp.url) || null,
-      }))
-      .filter((sp) => sp.label && sp.url);
+  function rawStartPointsFromReceipt(deploy) {
+    const list =
+      (deploy && Array.isArray(deploy.startpoints) && deploy.startpoints) ||
+      (deploy && Array.isArray(deploy.startPoints) && deploy.startPoints) ||
+      [];
+    return list.map((sp) => ({
+      form: (sp && (sp.form || sp.label)) || "Start",
+      label: (sp && (sp.label || sp.form)) || "Start",
+      url: (sp && sp.url) || null,
+    }));
+  }
+
+  function startPointsFromDeploy(deploy, previous) {
+    const incoming = rawStartPointsFromReceipt(deploy).filter((sp) => sp.form && sp.url);
+    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
+    if (Demo && typeof Demo.mergeStartPointsPreservingLabels === "function") {
+      return Demo.mergeStartPointsPreservingLabels(incoming, previous, deploy && deploy.uniqueId).filter(
+        (sp) => sp.url
+      );
+    }
+    return incoming;
   }
 
   /**
@@ -622,7 +636,7 @@
           "The Library Test Drive is unchanged. Try again, or File → New in Designer and Push a private copy.",
       };
     }
-    const startPoints = startPointsFromDeploy(deploy);
+    const startPoints = startPointsFromDeploy(deploy, source.startPoints);
     if (!startPoints.length) {
       return {
         ok: false,
@@ -707,11 +721,11 @@
       if (privateClone) return;
       if (!sharesFlag && !sharesId) return;
       const startPoints = (Array.isArray(entry.startPoints) ? entry.startPoints : [])
-        .map((sp) => ({
-          label: (sp && (sp.label || sp.form)) || "Start",
-          url: null,
-        }))
-        .filter((sp) => sp.label);
+        .map((sp) => {
+          const form = (sp && (sp.form || sp.label)) || "Start";
+          return { form, label: (sp && (sp.label || sp.form)) || form, url: null };
+        })
+        .filter((sp) => sp.form);
       overlay[id] = {
         ...entry,
         uniqueId: null,
@@ -754,11 +768,11 @@
         (Array.isArray(entry.startPoints) && entry.startPoints.some((s) => s && s.url));
       if (!needs) return;
       const startPoints = (Array.isArray(entry.startPoints) ? entry.startPoints : [])
-        .map((sp) => ({
-          label: (sp && (sp.label || sp.form)) || "Start",
-          url: null,
-        }))
-        .filter((sp) => sp.label);
+        .map((sp) => {
+          const form = (sp && (sp.form || sp.label)) || "Start";
+          return { form, label: (sp && (sp.label || sp.form)) || form, url: null };
+        })
+        .filter((sp) => sp.form);
       overlay[id] = {
         ...entry,
         uniqueId: null,
@@ -827,10 +841,33 @@
     }
     /* Re-Deploy / Show in My Tawala restores a previously deleted row. */
     clearMyTawalaDeleted(id);
-    const startPoints = (Array.isArray(receipt.startpoints) ? receipt.startpoints : []).map((sp) => ({
-      label: sp.form || sp.label || "Start",
-      url: sp.url || null,
-    }));
+    const incomingStarts = rawStartPointsFromReceipt(receipt);
+    let uniqueId = receipt.uniqueId || null;
+    if (
+      !uniqueId &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdFromUrl === "function"
+    ) {
+      for (let i = 0; i < incomingStarts.length; i++) {
+        uniqueId = window.TawalaDemo.uniqueIdFromUrl(incomingStarts[i] && incomingStarts[i].url);
+        if (uniqueId) break;
+      }
+    }
+    const startPoints =
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.mergeStartPointsPreservingLabels === "function"
+        ? window.TawalaDemo.mergeStartPointsPreservingLabels(
+            incomingStarts.filter((s) => s.form),
+            prev && prev.startPoints,
+            uniqueId
+          )
+        : incomingStarts.map((sp) => ({
+            form: sp.form,
+            label: sp.label,
+            url: sp.url,
+          }));
     // Prefer Exam / Registration when ranking a primary URL among multi-start receipts.
     let primaryUrl = null;
     if (
@@ -842,21 +879,6 @@
     }
     const firstUrl =
       primaryUrl || (startPoints.find((s) => s && s.url) || {}).url || null;
-    let uniqueId = receipt.uniqueId || null;
-    if (
-      !uniqueId &&
-      typeof window !== "undefined" &&
-      window.TawalaDemo &&
-      typeof window.TawalaDemo.uniqueIdFromUrl === "function"
-    ) {
-      uniqueId = window.TawalaDemo.uniqueIdFromUrl(firstUrl);
-      if (!uniqueId) {
-        for (let i = 0; i < startPoints.length; i++) {
-          uniqueId = window.TawalaDemo.uniqueIdFromUrl(startPoints[i] && startPoints[i].url);
-          if (uniqueId) break;
-        }
-      }
-    }
     if (
       uniqueId &&
       window.TawalaDemo &&
@@ -1000,6 +1022,44 @@
   }
 
   /**
+   * Owner-chosen start share label (Task #10). Persists on overlay startPoints[].label.
+   * `form` stays the Designer form name so Push can merge labels back.
+   */
+  function updateStartShareLabel(projectId, formKey, label) {
+    const key = String(formKey || "").trim();
+    if (!projectId || !key) return { ok: false, error: "missing-key" };
+    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
+    const project =
+      Demo && typeof Demo.getMyTawala === "function"
+        ? Demo.getMyTawala(projectId)
+        : getOverlayEntry(projectId);
+    if (!project) return { ok: false, error: "no-project" };
+    const want = key.toLowerCase();
+    const nextLabel = String(label != null ? label : "").trim();
+    const startPoints = (Array.isArray(project.startPoints) ? project.startPoints : []).map((sp) => {
+      const form =
+        Demo && typeof Demo.startFormKey === "function"
+          ? Demo.startFormKey(sp)
+          : String((sp && (sp.form || sp.label)) || "");
+      if (form.toLowerCase() !== want) return sp;
+      const formName = form || key;
+      return {
+        ...sp,
+        form: formName,
+        label: nextLabel || formName,
+      };
+    });
+    const nowIso = timestampNow();
+    const ok = upsertMyTawalaProperties(projectId, {
+      startPoints,
+      updated: formatListDate(nowIso),
+      updatedAt: nowIso,
+    });
+    if (!ok) return { ok: false, error: "write-failed" };
+    return { ok: true, projectId, formKey: key, label: nextLabel || key, startPoints };
+  }
+
+  /**
    * Edit description on an existing Deploy version (legacy: versions immutable except description).
    * Does not change versionNumber, deployed flag, or “make current.” Persists to myTawalaOverlay.
    * @returns {{ ok: boolean, projectId?: string, versionNumber?: number, description?: string, error?: string }}
@@ -1135,16 +1195,29 @@
     const idx = versions.findIndex((v) => v && Number(v.versionNumber) === num);
     if (idx < 0) return { ok: false, error: "version-not-found" };
 
-    const startPoints = (
-      Array.isArray(deployResult && deployResult.startpoints)
-        ? deployResult.startpoints
-        : Array.isArray(deployResult && deployResult.startPoints)
-          ? deployResult.startPoints
-          : versions[idx].startPoints || prev.startPoints || []
-    ).map((sp) => ({
-      label: sp.form || sp.label || "Start",
-      url: sp.url || null,
-    }));
+    const incomingStarts = rawStartPointsFromReceipt(deployResult);
+    const uniqueId =
+      (deployResult && deployResult.uniqueId) ||
+      versions[idx].uniqueId ||
+      prev.uniqueId ||
+      null;
+    const startPoints =
+      incomingStarts.length &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.mergeStartPointsPreservingLabels === "function"
+        ? window.TawalaDemo.mergeStartPointsPreservingLabels(
+            incomingStarts.filter((s) => s.form),
+            versions[idx].startPoints || prev.startPoints,
+            uniqueId
+          )
+        : incomingStarts.length
+          ? incomingStarts.map((sp) => ({
+              form: sp.form,
+              label: sp.label,
+              url: sp.url,
+            }))
+          : versions[idx].startPoints || prev.startPoints || [];
     let primaryUrl = null;
     if (
       typeof window !== "undefined" &&
@@ -1155,11 +1228,6 @@
     }
     const firstUrl =
       primaryUrl || (startPoints.find((s) => s && s.url) || {}).url || null;
-    const uniqueId =
-      (deployResult && deployResult.uniqueId) ||
-      versions[idx].uniqueId ||
-      prev.uniqueId ||
-      null;
     const mode = (deployResult && deployResult.mode) || versions[idx].mode || prev.mode || null;
     const nowIso = timestampNow();
 
@@ -2484,11 +2552,15 @@
     const now = formatListDate(nowIso);
     /* Labels only — never inherit source uniqueId / :8080 URLs (empty Records until Push). */
     const startPoints = (Array.isArray(source.startPoints) ? source.startPoints : [])
-      .map((sp) => ({
-        label: (sp && (sp.label || sp.form)) || "Start",
-        url: null,
-      }))
-      .filter((sp) => sp.label);
+      .map((sp) => {
+        const form = (sp && (sp.form || sp.label)) || "Start";
+        return {
+          form,
+          label: (sp && (sp.label || sp.form)) || form,
+          url: null,
+        };
+      })
+      .filter((sp) => sp.form);
 
     const entry = {
       name: copyName,
@@ -2787,6 +2859,7 @@
     deleteMyTawalaProject,
     upsertMyTawalaFromDeploy,
     upsertMyTawalaProperties,
+    updateStartShareLabel,
     updateVersionDescription,
     versionHasRedeployableDefinition,
     attachVersionDefinition,

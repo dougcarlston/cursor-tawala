@@ -1,7 +1,8 @@
 /**
- * My Tawala data-lifecycle ops (owner Aug 1, 2026): BACKUP / RESTORE (paired definition + data
- * ZIP in Java; JSON bundle here) and EXPORT / IMPORT (Excel response data only). See
- * website-mock/README.md § Save/Deploy/Publish glossary for the product contract these follow.
+ * My Tawala data-lifecycle ops (owner Aug 1, 2026; Restore Redeploy Aug 25): BACKUP / RESTORE
+ * (paired live definition + data + properties; Java ZIP / mock JSON) and EXPORT / IMPORT
+ * (Excel response data only). Restore Redeploys the bundled definition onto :8080 (same
+ * uniqueId) via /api/deploy, then imports responses. See website-mock/README.md § Backup.
  *
  * Server plumbing: designer-web/server/projectResponses.mjs via TawalaDemo.exportResponses /
  * TawalaDemo.importResponses (designer-web/js/demo-urls.js) — same :3001 dev API as Purge.
@@ -213,6 +214,221 @@
     if (!payload || payload.formName == null) return "";
     const name = String(payload.formName).trim();
     return name;
+  }
+
+  const RESTORE_RUNTIME_HELP =
+    "Restore Redeploys the backed-up definition onto :8080 (same uniqueId), then restores responses. " +
+    "Needs designer-web API on :3001 and Tomcat on :8080.";
+
+  function cloneJson(value) {
+    return JSON.parse(JSON.stringify(value));
+  }
+
+  function definitionIsDeployable(def) {
+    return !!(def && typeof def === "object" && String(def.name || "").trim());
+  }
+
+  function liveVersionRow(project) {
+    const versions = Array.isArray(project && project.versions) ? project.versions : [];
+    const deployed = versions.find((v) => v && (v.deployed || v.current));
+    if (deployed) return deployed;
+    const currentNum = project && project.versionNumber != null ? Number(project.versionNumber) : null;
+    if (Number.isFinite(currentNum)) {
+      const hit = versions.find((v) => v && Number(v.versionNumber) === currentNum);
+      if (hit) return hit;
+    }
+    return null;
+  }
+
+  /** Stamp this My Tawala row's Tomcat identity so /api/deploy keeps the same uniqueId. */
+  function attachRowIdentity(definition, project, uniqueId) {
+    if (!definitionIsDeployable(definition)) return null;
+    const next = cloneJson(definition);
+    delete next._freshFromTemplate;
+    const identity = String(
+      (project && project.deployIdentityName) || next.deployIdentityName || ""
+    ).trim();
+    if (identity) next.deployIdentityName = identity;
+    if (uniqueId) next.deployUniqueId = uniqueId;
+    return next;
+  }
+
+  function stampThemePath(definition, themePath) {
+    const path = String(themePath || "").trim();
+    if (!path || !definitionIsDeployable(definition)) return definition;
+    const next = cloneJson(definition);
+    next.themePath = path;
+    if (Array.isArray(next.forms)) {
+      next.forms = next.forms.map((f) =>
+        f && typeof f === "object" ? Object.assign({}, f, { themePath: path }) : f
+      );
+    }
+    return next;
+  }
+
+  function trimmedTheme(value) {
+    if (value == null) return "";
+    return String(value).trim();
+  }
+
+  /**
+   * Theme the Details dropdown persists (`tawala.mock.myTawala` overlay only).
+   * Not catalog merge, not a buried definition.themePath.
+   */
+  function overlayChromeThemePath(projectId) {
+    if (
+      !projectId ||
+      typeof TawalaTransfer === "undefined" ||
+      typeof TawalaTransfer.getOverlayEntry !== "function"
+    ) {
+      return "";
+    }
+    const ov = TawalaTransfer.getOverlayEntry(projectId);
+    if (!ov || typeof ov !== "object") return "";
+    return trimmedTheme(ov.themePath) || trimmedTheme(ov.theme) || trimmedTheme(ov.themeId);
+  }
+
+  /** What the Theme dropdown is showing right now (overlay / catalog / Default). */
+  function displayedThemePath(project) {
+    if (
+      typeof TawalaProjectOps !== "undefined" &&
+      typeof TawalaProjectOps.resolveProjectThemePath === "function"
+    ) {
+      return trimmedTheme(TawalaProjectOps.resolveProjectThemePath(project)) || "default";
+    }
+    return trimmedTheme(project && project.themePath) || "default";
+  }
+
+  /**
+   * Restore Theme only from backup My Tawala properties.
+   * Empty/missing chrome theme → do not apply; never fall back to definition.themePath.
+   */
+  function themeFromBackupProperties(backupProps) {
+    if (!backupProps || typeof backupProps !== "object") {
+      return { apply: false, path: "" };
+    }
+    const path =
+      trimmedTheme(backupProps.themePath) ||
+      trimmedTheme(backupProps.theme) ||
+      trimmedTheme(backupProps.themeId);
+    if (path) return { apply: true, path };
+    return { apply: false, path: "" };
+  }
+
+  function encodeMockRelPath(relPath) {
+    return String(relPath || "")
+      .split("/")
+      .map((seg) => encodeURIComponent(seg))
+      .join("/");
+  }
+
+  /**
+   * Capture the currently live pushed definition (now), not the Versions pile.
+   * Prefers the current/deployed overlay snapshot, then :3001 snapshot API, then catalog JSON.
+   */
+  async function captureLiveDefinition(project, uniqueId) {
+    const live = liveVersionRow(project);
+    if (live && definitionIsDeployable(live.definition)) {
+      return {
+        definition: attachRowIdentity(live.definition, project, uniqueId),
+        definitionSource: "overlay-current-version",
+        definitionNote:
+          "Current live Push snapshot from this My Tawala row (the deployed version only — not the whole Versions pile).",
+      };
+    }
+
+    const snapId = String((live && live.snapshotId) || (project && project.snapshotId) || "").trim();
+    if (snapId && typeof TawalaDemo.fetchVersionSnapshot === "function") {
+      const snap = await TawalaDemo.fetchVersionSnapshot(snapId);
+      if (snap && snap.status !== "failure" && definitionIsDeployable(snap.project)) {
+        return {
+          definition: attachRowIdentity(snap.project, project, uniqueId),
+          definitionSource: "version-snapshot:" + snapId,
+          definitionNote: "Fetched current Push snapshot from designer-web :3001 /api/version-snapshots.",
+        };
+      }
+    }
+
+    if (project && definitionIsDeployable(project.definition)) {
+      return {
+        definition: attachRowIdentity(project.definition, project, uniqueId),
+        definitionSource: "overlay-definition",
+        definitionNote: "Definition cached on this My Tawala overlay row.",
+      };
+    }
+
+    const jsonFile = project && project.jsonFile ? String(project.jsonFile).replace(/^website-mock\//, "") : "";
+    if (jsonFile && typeof TawalaDemo.fetchCatalogProject === "function") {
+      const fetched = await TawalaDemo.fetchCatalogProject(jsonFile);
+      if (fetched && fetched.status === "success" && definitionIsDeployable(fetched.project)) {
+        return {
+          definition: attachRowIdentity(fetched.project, project, uniqueId),
+          definitionSource: jsonFile,
+          definitionNote:
+            "Fetched from " +
+            jsonFile +
+            " via :3001 (repo/catalog copy — may lag a Designer working copy that was never Pushed).",
+        };
+      }
+    }
+
+    if (/^projects\//.test(jsonFile)) {
+      try {
+        const res = await fetch(encodeMockRelPath(jsonFile), { cache: "no-store" });
+        if (res.ok) {
+          const def = await res.json();
+          if (definitionIsDeployable(def)) {
+            return {
+              definition: attachRowIdentity(def, project, uniqueId),
+              definitionSource: jsonFile,
+              definitionNote: "Fetched from " + jsonFile + " on :5500.",
+            };
+          }
+        }
+      } catch {
+        /* fall through */
+      }
+    }
+
+    return {
+      definition: null,
+      definitionSource: jsonFile || null,
+      definitionNote:
+        "No deployable live definition found (need a current Push snapshot, :3001 snapshot, or catalog JSON). Restore will refuse this file until Backup includes a definition.",
+    };
+  }
+
+  function startPointsFromDeployResult(deployResult) {
+    const raw =
+      (deployResult && Array.isArray(deployResult.startpoints) && deployResult.startpoints) ||
+      (deployResult && Array.isArray(deployResult.startPoints) && deployResult.startPoints) ||
+      [];
+    return raw
+      .map((sp) => ({
+        form: (sp && (sp.form || sp.label)) || "Start",
+        label: (sp && (sp.label || sp.form)) || "Start",
+        url: (sp && sp.url) || null,
+      }))
+      .filter((sp) => sp.form && sp.url);
+  }
+
+  async function probeDesignerApi() {
+    if (typeof TawalaDemo === "undefined" || typeof TawalaDemo.purgeApiBase !== "function") {
+      return false;
+    }
+    try {
+      /* /api/health has no mock CORS; OPTIONS /api/deploy does (same Push path Restore uses). */
+      const url = TawalaDemo.purgeApiBase().replace(/\/$/, "") + "/api/deploy";
+      const res = await fetch(url, { method: "OPTIONS", cache: "no-store" });
+      return res.ok || res.status === 204;
+    } catch {
+      return false;
+    }
+  }
+
+  function failRestore(displayName, msg) {
+    setStatus(`Restore failed for “${displayName}”: ${msg}`);
+    window.alert(`Couldn't restore “${displayName}”\n\n${msg}`);
   }
 
   // ---------------------------------------------------------------------
@@ -519,7 +735,8 @@
   }
 
   // ---------------------------------------------------------------------
-  // BACKUP — paired definition + data (+ properties/links); mock JSON bundle, not a Java ZIP.
+  // BACKUP — currently live pushed definition + current responses + My Tawala properties.
+  // Mock JSON bundle (not a Java .backup ZIP). Snapshot of *now*, not the Versions pile.
   // ---------------------------------------------------------------------
   async function handleBackupClick(projectId) {
     if (!requireDataApi()) return;
@@ -541,36 +758,18 @@
           ? { source: result.source, forms: result.forms, fieldsByForm: result.fieldsByForm, count: result.count }
           : {
               error: result.error || "export failed",
-              note: "Submission data capture failed — Backup still includes catalog properties. See status message.",
+              note: "Submission data capture failed — Backup still includes definition + properties when those are available.",
             };
     } else {
       submissions = {
-        note: "Not linked to a live deploy yet — Backup captured catalog properties only, no submission data.",
+        note: "Not linked to a live deploy yet — Backup captured properties (and definition if a snapshot exists), no submission data.",
       };
     }
 
-    let definition = null;
-    let definitionNote;
-    if (project.jsonFile) {
-      if (/^projects\//.test(project.jsonFile)) {
-        try {
-          const res = await fetch(project.jsonFile);
-          if (res.ok) {
-            definition = await res.json();
-            definitionNote = `Fetched from ${project.jsonFile} (repo backup copy — may lag the owner's live Designer working copy).`;
-          } else {
-            definitionNote = `Could not fetch ${project.jsonFile} (HTTP ${res.status}).`;
-          }
-        } catch (e) {
-          definitionNote = `Could not fetch ${project.jsonFile}: ${e.message}`;
-        }
-      } else {
-        definitionNote = `Definition JSON lives outside website-mock's served root (${project.jsonFile}) — not fetchable from :5500. See README § Backup/Restore gaps.`;
-      }
-    } else {
-      definitionNote =
-        "No definition JSON file on disk for this project (e.g. a Deploy-overlay project) — Backup captured catalog properties only.";
-    }
+    const captured = await captureLiveDefinition(project, uniqueId);
+    const definition = captured.definition;
+    const definitionNote = captured.definitionNote;
+    const definitionSource = captured.definitionSource;
 
     const properties = {
       name: project.name,
@@ -578,25 +777,28 @@
       shortDescription: project.shortDescription,
       longDescription: project.longDescription,
       iconLabel: project.iconLabel,
+      themePath: overlayChromeThemePath(projectId) || displayedThemePath(project),
       rating: project.rating,
       comments: project.comments,
       created: project.created,
       startPoints: project.startPoints,
       testDriveUrl: project.testDriveUrl,
       uniqueId: project.uniqueId || uniqueId || null,
+      deployIdentityName: project.deployIdentityName || (definition && definition.deployIdentityName) || null,
       mode: project.mode || null,
     };
 
     const bundle = {
-      tawalaBackupFormat: 1,
+      tawalaBackupFormat: 2,
       kind: "backup",
       projectId,
       displayName,
+      uniqueId: uniqueId || properties.uniqueId || null,
       createdAt: new Date().toISOString(),
       properties,
       definition,
       definitionNote,
-      definitionSource: project.jsonFile || null,
+      definitionSource: definitionSource || project.jsonFile || null,
       submissions,
     };
 
@@ -609,14 +811,19 @@
     } else if (submissions && submissions.note) {
       parts.push(submissions.note);
     }
-    parts.push(definition ? "Definition JSON included." : `No definition JSON included (${definitionNote})`);
+    if (definition) {
+      parts.push("Live definition included (Restore can Redeploy it onto :8080).");
+    } else {
+      parts.push(`No deployable definition included (${definitionNote}). Restore will refuse this file.`);
+    }
     const msg = parts.join(" ");
     setStatus(msg);
-    window.alert(msg + "\n\nMock backup format is a JSON bundle, not a real Java .backup ZIP — see README § Backup/Restore gaps.");
+    window.alert(msg + "\n\nMock backup format is a JSON bundle, not a real Java .backup ZIP — see README § Backup.");
   }
 
   // ---------------------------------------------------------------------
-  // RESTORE — re-applies the matching definition (mock: catalog properties), then data.
+  // RESTORE — time machine: Redeploy bundled definition onto :8080 (same uniqueId), then data.
+  // Fails closed if :3001 / :8080 is down — does not update overlay and claim success.
   // ---------------------------------------------------------------------
   async function handleRestoreClick(projectId) {
     if (!requireDataApi()) return;
@@ -624,6 +831,19 @@
     const displayName = displayNameFor(project, projectId);
     if (!project) {
       window.alert(`Can't restore — unknown My Tawala project: ${projectId || "(none)"}`);
+      return;
+    }
+
+    const uniqueId = resolveUniqueId(projectId);
+    if (!uniqueId) {
+      failRestore(
+        displayName,
+        `“${displayName}” isn’t linked to a live :8080 uniqueId yet. Edit in Designer, then Push → Show in My Tawala, then try Restore again.\n\n${RESTORE_RUNTIME_HELP}`
+      );
+      return;
+    }
+    if (typeof TawalaDemo.deployProjectDefinition !== "function") {
+      failRestore(displayName, "Push/Restore API helper missing. Refresh the page and try again.");
       return;
     }
 
@@ -638,61 +858,166 @@
     }
     const payload = picked.json;
     if (!payload || typeof payload !== "object" || !payload.tawalaBackupFormat) {
-      const msg = 'Selected file doesn\'t look like a Tawala Backup JSON (missing "tawalaBackupFormat").';
-      setStatus(`Restore failed for “${displayName}”: ${msg}`);
-      window.alert(`Couldn't restore “${displayName}”\n\n${msg}`);
+      failRestore(displayName, 'Selected file doesn\'t look like a Tawala Backup JSON (missing "tawalaBackupFormat").');
+      return;
+    }
+    if (!definitionIsDeployable(payload.definition)) {
+      failRestore(
+        displayName,
+        "This backup has no deployable project definition. " +
+          "Make a new Backup from a My Tawala project that has a live Push snapshot, then Restore that file.\n\n" +
+          "Chrome-only / properties-only snapshots cannot Redeploy onto :8080."
+      );
       return;
     }
 
     const nameNote =
       payload.displayName && payload.displayName !== displayName
-        ? `\n\nNote: this backup was made from “${payload.displayName}” — you're restoring it into “${displayName}”.`
+        ? `\n\nNote: this backup was made from “${payload.displayName}” — you're restoring it into “${displayName}” (same uniqueId ${uniqueId}).`
         : "";
     const c = TawalaProjectOps.CONFIRMS.restoreProject;
     if (!window.confirm(`${c.title} — “${displayName}”\n\n${c.body}${nameNote}`)) return;
 
-    setStatus(`Restoring “${displayName}”…`);
+    setStatus(`Restoring “${displayName}” — checking :3001 / :8080…`);
 
-    // 1) Properties ("definition" surface available to this mock) — see transfer.js
-    //    upsertMyTawalaProperties + README § Backup/Restore for what "definition" means here.
-    if (payload.properties && typeof TawalaTransfer !== "undefined" && typeof TawalaTransfer.upsertMyTawalaProperties === "function") {
-      const restoredAt = isoNow();
-      TawalaTransfer.upsertMyTawalaProperties(projectId, {
-        ...payload.properties,
-        updated: shortDate(restoredAt),
-        updatedAt: restoredAt,
-      });
+    const apiUp = await probeDesignerApi();
+    if (!apiUp) {
+      failRestore(
+        displayName,
+        "Designer API on :3001 is not reachable. Restore did not change this project.\n\n" +
+          "Start designer-web (`cd designer-web && npm run keep` / ensure-dev-api.sh), then try again.\n\n" +
+          RESTORE_RUNTIME_HELP
+      );
+      return;
+    }
+    if (typeof TawalaDemo.probeLocalJavaRuntime === "function") {
+      const tomcatUp = await TawalaDemo.probeLocalJavaRuntime();
+      if (!tomcatUp) {
+        failRestore(
+          displayName,
+          "Java runtime on http://localhost:8080 isn’t reachable. Restore did not change this project.\n\n" +
+            "Start Tomcat, then try Restore again.\n\n" +
+            RESTORE_RUNTIME_HELP
+        );
+        return;
+      }
     }
 
-    // 2) Submission data
+    const liveBefore = liveVersionRow(project);
+    const backupProps = payload.properties && typeof payload.properties === "object" ? payload.properties : {};
+    const backupTheme = themeFromBackupProperties(backupProps);
+    /* Overlay properties win. Empty backup Theme → keep the row; stamp that so :8080
+     * does not pick up a conflicting themePath buried in the bundled definition. */
+    const stampTheme = backupTheme.apply
+      ? backupTheme.path
+      : overlayChromeThemePath(projectId) || displayedThemePath(project);
+    let stamped = attachRowIdentity(payload.definition, project, uniqueId);
+    stamped = stampThemePath(stamped, stampTheme);
+    if (!stamped) {
+      failRestore(displayName, "Could not prepare the bundled definition for Redeploy.");
+      return;
+    }
+
+    setStatus(`Restoring “${displayName}” — Redeploying definition onto uniqueId ${uniqueId}…`);
+    const deploy = await TawalaDemo.deployProjectDefinition(stamped);
+    if (!deploy || deploy.status !== "success") {
+      const err = (deploy && deploy.error) || "unknown error";
+      failRestore(
+        displayName,
+        `Couldn’t Redeploy the backed-up definition onto :8080.\n\n${err}\n\n` +
+          "My Tawala properties and response data were not changed.\n\n" +
+          RESTORE_RUNTIME_HELP
+      );
+      return;
+    }
+    if (deploy.uniqueId && String(deploy.uniqueId) !== String(uniqueId)) {
+      failRestore(
+        displayName,
+        `Redeploy returned a different uniqueId (${deploy.uniqueId}) than this project (${uniqueId}). ` +
+          "Data was not imported and My Tawala properties were not changed, so this row still points at the original live copy.\n\n" +
+          RESTORE_RUNTIME_HELP
+      );
+      return;
+    }
+
+    setStatus(`Restoring “${displayName}” — importing response data…`);
+    let dataOk = false;
     let dataMsg = "no submission data in this backup.";
     if (payload.submissions && Array.isArray(payload.submissions.forms) && payload.submissions.source) {
-      const uniqueId = (payload.properties && payload.properties.uniqueId) || resolveUniqueId(projectId);
-      if (!uniqueId) {
-        dataMsg =
-          "backup includes submission data, but this project isn't linked to a live deploy — Deploy first, then Restore again to bring back the data.";
+      const result = await TawalaDemo.importResponses(uniqueId, payload.submissions.forms, {
+        source: payload.submissions.source,
+        mode: "replace",
+      });
+      if (result.status === "success") {
+        dataOk = true;
+        dataMsg = `restored ${result.inserted} submission row(s).`;
       } else {
-        const result = await TawalaDemo.importResponses(uniqueId, payload.submissions.forms, {
-          source: payload.submissions.source,
-          mode: "replace",
-        });
-        dataMsg =
-          result.status === "success"
-            ? `restored ${result.inserted} submission row(s).`
-            : `data restore failed: ${result.error || "unknown error"}.`;
+        dataMsg = `definition Redeployed, but data restore failed: ${result.error || "unknown error"}.`;
       }
     } else if (payload.submissions && payload.submissions.note) {
       dataMsg = payload.submissions.note;
+      dataOk = true;
+    } else {
+      dataOk = true;
     }
 
-    const defMsg = payload.definition
-      ? " Definition JSON was in the backup, but the mock does not push project definitions into a live Designer session (Designer :5173 and this mock :5500 don't share storage) — open it manually if you need the design itself back."
-      : "";
+    const restoredAt = isoNow();
+    let startPoints = startPointsFromDeployResult(deploy);
+    if (
+      typeof TawalaDemo !== "undefined" &&
+      typeof TawalaDemo.mergeStartPointsPreservingLabels === "function"
+    ) {
+      startPoints = TawalaDemo.mergeStartPointsPreservingLabels(
+        startPoints,
+        backupProps.startPoints || project.startPoints,
+        uniqueId
+      ).filter((sp) => sp && sp.url);
+    }
+    const overlayPatch = {};
+    if (backupProps.name != null) overlayPatch.name = backupProps.name;
+    else if (project.name != null) overlayPatch.name = project.name;
+    ["category", "shortDescription", "longDescription", "iconLabel", "rating", "comments"].forEach((key) => {
+      if (backupProps[key] !== undefined) overlayPatch[key] = backupProps[key];
+    });
+    if (backupTheme.apply) overlayPatch.themePath = backupTheme.path;
+    if (backupProps.created != null) overlayPatch.created = backupProps.created;
+    if (backupProps.mode != null) overlayPatch.mode = backupProps.mode;
+    overlayPatch.updated = shortDate(restoredAt);
+    overlayPatch.updatedAt = restoredAt;
+    if (startPoints.length) {
+      overlayPatch.startPoints = startPoints;
+      overlayPatch.testDriveUrl = startPoints[0].url || project.testDriveUrl || null;
+    }
+    if (typeof TawalaTransfer !== "undefined" && typeof TawalaTransfer.upsertMyTawalaProperties === "function") {
+      TawalaTransfer.upsertMyTawalaProperties(projectId, overlayPatch);
+    }
+    const live = liveBefore;
+    if (
+      live &&
+      live.versionNumber != null &&
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.attachVersionDefinition === "function"
+    ) {
+      TawalaTransfer.attachVersionDefinition(projectId, live.versionNumber, stamped, live.snapshotId || null);
+    }
+
+    const defMsg = ` Redeployed definition onto uniqueId ${uniqueId}` + (deploy.mode ? ` (${deploy.mode}).` : ".");
+    if (!dataOk) {
+      const msg = `Restore incomplete for “${displayName}” —${defMsg} ${dataMsg}`;
+      setStatus(msg);
+      window.alert(msg + "\n\nMy Tawala properties from the backup were applied. Fix :3001/Postgres, then Restore again (or Import the data).");
+      document.dispatchEvent(
+        new CustomEvent("tawala:project-restored", { detail: { projectId, payload, deploy, dataOk: false } })
+      );
+      return;
+    }
 
     const msg = `Restored “${displayName}” — ${dataMsg}${defMsg}`;
     setStatus(msg);
     window.alert(msg);
-    document.dispatchEvent(new CustomEvent("tawala:project-restored", { detail: { projectId, payload } }));
+    document.dispatchEvent(
+      new CustomEvent("tawala:project-restored", { detail: { projectId, payload, deploy, dataOk: true } })
+    );
   }
 
   window.TawalaDataOps = {

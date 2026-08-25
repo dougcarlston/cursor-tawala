@@ -687,6 +687,61 @@ window.TawalaDemo = {
     const m = String(url).match(/\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/);
     return m ? m[1] : null;
   },
+  /** Designer form name for a start point (stable key; not the owner share label). */
+  startFormKey(sp) {
+    if (!sp) return "";
+    return String(sp.form || sp.label || "").trim();
+  },
+  /** Owner-chosen share label, else the Designer form name. */
+  startShareLabel(sp) {
+    if (!sp) return "Start";
+    return String(sp.label || sp.form || "Start").trim() || "Start";
+  },
+  /**
+   * Pin `/p/{uniqueId}/…` on a live form URL (Task #10).
+   * Shape: `http://localhost:8080/p/{uniqueId}/{formToken}.FormName` (Java)
+   * or `/p/{uniqueId}/{formName}` (dev-session on :3001). Does not invent form tokens.
+   * URLs without a `/p/{id}` segment are left unchanged.
+   */
+  rewriteRuntimeUrlUniqueId(url, uniqueId) {
+    if (!url) return url || "";
+    if (!this.isValidUniqueId(uniqueId)) return String(url);
+    const s = String(url);
+    if (!/\/p\/[A-Za-z0-9]{1,20}(?=\/|$|\?|#)/.test(s)) return s;
+    return s.replace(/\/p\/[A-Za-z0-9]{1,20}(?=\/|$|\?|#)/, `/p/${uniqueId}`);
+  },
+  /** Live start URL for Use / Deploy copy — this overlay’s uniqueId, not display name. */
+  liveStartUrl(project, sp) {
+    const url = (sp && sp.url) || "";
+    if (!url) return "";
+    const uid = this.uniqueIdForProject(project);
+    return this.rewriteRuntimeUrlUniqueId(url, uid) || url;
+  },
+  /**
+   * Incoming Push/Deploy starts keep owner share labels from the overlay.
+   * Pins uniqueId on URLs. Does not invent Tomcat form tokens.
+   */
+  mergeStartPointsPreservingLabels(incoming, previous, uniqueId) {
+    const incomingList = Array.isArray(incoming) ? incoming : [];
+    const prevList = Array.isArray(previous) ? previous : [];
+    const prevByKey = {};
+    for (let i = 0; i < prevList.length; i++) {
+      const key = this.startFormKey(prevList[i]).toLowerCase();
+      if (key && !prevByKey[key]) prevByKey[key] = prevList[i];
+    }
+    const out = [];
+    for (let i = 0; i < incomingList.length; i++) {
+      const sp = incomingList[i];
+      const form = this.startFormKey(sp);
+      if (!form) continue;
+      const prev = prevByKey[form.toLowerCase()];
+      const label = String((prev && prev.label) || (sp && sp.label) || form).trim() || form;
+      const rawUrl = (sp && sp.url) || null;
+      const url = rawUrl ? this.rewriteRuntimeUrlUniqueId(rawUrl, uniqueId) || rawUrl : null;
+      out.push({ form, label, url });
+    }
+    return out;
+  },
   /**
    * Prefer explicit deploy uniqueId (overlay / receipt), then testDriveUrl,
    * then first start point with a URL.
@@ -1402,7 +1457,7 @@ window.TawalaDemo = {
   pickPrimaryStartPoint(startPoints) {
     const list = (startPoints || []).filter((s) => s && s.url);
     if (!list.length) return null;
-    const labelOf = (s) => String(s.label || s.form || "").trim();
+    const labelOf = (s) => this.startFormKey(s) || String(s.label || s.form || "").trim();
     // Exact / high-value public entry forms first.
     const prefer = [
       /^exam$/i,
@@ -1433,7 +1488,7 @@ window.TawalaDemo = {
   pickLibraryTestDriveStartPoint(startPoints) {
     const list = (startPoints || []).filter((s) => s && s.url);
     if (!list.length) return null;
-    const labelOf = (s) => String(s.label || s.form || "").trim();
+    const labelOf = (s) => this.startFormKey(s) || String(s.label || s.form || "").trim();
     const hasExam = list.some((s) => /^exam$/i.test(labelOf(s)));
     if (hasExam) {
       const setupPrefer = [/^administration$/i, /^setup$/i, /^admin$/i];
