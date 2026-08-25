@@ -732,6 +732,7 @@ function completeFormWithProcess(project, form, formName, session, baseUrl, uniq
         appendHtml,
         freshThenForm: true,
         freshBack: true,
+        virtualDocs: nav.virtualDocs,
       });
     }
     return renderSubmitAck(project, form, session, baseUrl, uniqueId, {

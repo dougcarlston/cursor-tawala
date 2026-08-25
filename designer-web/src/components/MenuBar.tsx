@@ -53,6 +53,7 @@ import {
   type ShellEditCommand,
 } from "@/lib/shellCommands";
 import { openEmailDeliveryDialog } from "@/lib/emailDelivery";
+import { canSeeOwnerOpsMenu } from "@/lib/ownerMenuAccess";
 import {
   PROCESS_PANEL_LABELS,
   PROCESS_STATEMENT_PALETTE,
@@ -70,6 +71,8 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
   const insertFormItem = useProjectStore((s) => s.insertFormItem);
   const insertProcessCommand = useProjectStore((s) => s.insertProcessCommand);
   const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
+  const credentials = useProjectStore((s) => s.credentials);
+  const showEmailDelivery = canSeeOwnerOpsMenu(credentials?.user);
   const editorTab = useProjectStore((s) => s.editorTab);
   const openWindows = useProjectStore((s) => s.openWindows);
   const activeWindowId = useProjectStore((s) => s.activeWindowId);
@@ -252,13 +255,15 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
         <button type="button" onClick={openProjectManagerLocal}>
           Project Manager…
         </button>
-        <button
-          type="button"
-          title="Server-owned SMTP status and test send (credentials stay on Tomcat)"
-          onClick={() => openEmailDeliveryDialog()}
-        >
-          Email Delivery…
-        </button>
+        {showEmailDelivery ? (
+          <button
+            type="button"
+            title="Owner ops: server-owned SMTP status and test send (credentials stay on Tomcat)"
+            onClick={() => openEmailDeliveryDialog()}
+          >
+            Email Delivery…
+          </button>
+        ) : null}
         <div className="menu-separator" />
         <button
           type="button"

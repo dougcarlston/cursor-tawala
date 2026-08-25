@@ -1,13 +1,19 @@
+import { useEffect, useRef } from "react";
 import { QualifiedFieldInput, FieldTextInput } from "@/components/FieldDropInputs";
 import type { ConditionCombinator, ConditionRow, IfBuilderState } from "@/lib/statementBuilders";
 import { rowsAreValid } from "@/lib/statementBuilders";
-import { conditionOpLabel, isUnaryConditionOp } from "@/lib/mcConditionOperators";
 import {
-  SKIP_OPERATORS,
-  SKIP_OPERATOR_LABELS,
-} from "@/lib/skipSummary";
+  conditionOpsForKind,
+  defaultOpForKind,
+  isUnaryConditionOp,
+  remapConditionOp,
+  type ConditionFieldKind,
+} from "@/lib/mcConditionOperators";
+import { lookupFormFieldMcItem } from "@/lib/projectModel";
+import type { TawalaProject } from "@/types/tawala";
 
 export interface IfStatementBuilderProps {
+  project: TawalaProject;
   knownVariables: ReadonlySet<string>;
   state: IfBuilderState;
   onStateChange: (next: IfBuilderState) => void;
@@ -19,11 +25,19 @@ export interface IfStatementBuilderProps {
   embedded?: boolean;
 }
 
+function fieldKindFromRef(project: TawalaProject, fieldRef: string): ConditionFieldKind {
+  const mc = lookupFormFieldMcItem(project, fieldRef);
+  if (!mc) return "hybrid";
+  return mc.onlyone === false ? "mcMany" : "mcOne";
+}
+
 /**
  * Shared If statement property panel — used by Skip Instructions and Process editor.
  * Legacy copy and layout from `SkipInstructionsDialog` / `DESIGNER_PROCESS_STATEMENTS_IF.md`.
+ * When the left field is an MCQ, operators switch to `mc*` (same as Function Where).
  */
 export function IfStatementBuilder({
+  project,
   knownVariables,
   state,
   onStateChange,
@@ -34,6 +48,27 @@ export function IfStatementBuilder({
 }: IfStatementBuilderProps) {
   const { combinator, rows, hasElse } = state;
   const canSubmit = rowsAreValid(rows, knownVariables);
+  const onChangeRef = useRef(onStateChange);
+  onChangeRef.current = onStateChange;
+  const stateRef = useRef(state);
+  stateRef.current = state;
+  const rowFingerprint = rows.map((r) => `${r.field}\0${r.op}`).join("|");
+
+  // Remap stale FIB ops (equals/contains) to mc* when the field is an MCQ — converted
+  // skips keep mcEquals, but a Hybrid dropdown pick of "equals" must not stick.
+  useEffect(() => {
+    const current = stateRef.current;
+    let changed = false;
+    const nextRows = current.rows.map((row) => {
+      if (!row.field.trim()) return row;
+      const kind = fieldKindFromRef(project, row.field);
+      const nextOp = remapConditionOp(row.op, kind);
+      if (nextOp === row.op) return row;
+      changed = true;
+      return { ...row, op: nextOp };
+    });
+    if (changed) onChangeRef.current({ ...current, rows: nextRows });
+  }, [project, rowFingerprint]);
 
   const setCombinator = (value: ConditionCombinator) => {
     onStateChange({ ...state, combinator: value });
@@ -46,9 +81,16 @@ export function IfStatementBuilder({
     });
   };
 
+  const onFieldChange = (index: number, field: string) => {
+    const prev = rows[index];
+    const kind = fieldKindFromRef(project, field);
+    const op = remapConditionOp(prev.op, kind);
+    updateRow(index, { field, op });
+  };
+
   const addRowAfter = (index: number) => {
     const next = [...rows];
-    next.splice(index + 1, 0, { field: "", op: "isBlank", value: "" });
+    next.splice(index + 1, 0, { field: "", op: defaultOpForKind("hybrid"), value: "" });
     onStateChange({ ...state, rows: next });
   };
 
@@ -82,59 +124,64 @@ export function IfStatementBuilder({
             <>the following condition is true, execute the first set of commands:</>
           )}
         </p>
-        {rows.map((row, i) => (
-          <div key={i} className="skip-if-row">
-            <QualifiedFieldInput
-              className="skip-if-field"
-              placeholder="Form:Field"
-              knownVariables={knownVariables}
-              value={row.field}
-              onValueChange={(v) => updateRow(i, { field: v })}
-            />
-            <select
-              value={row.op}
-              onChange={(e) => updateRow(i, { op: e.target.value })}
-              aria-label="Operator"
-              className="skip-if-operator"
-            >
-              {!SKIP_OPERATORS.includes(row.op) ? (
-                <option value={row.op}>{conditionOpLabel(row.op)}</option>
-              ) : null}
-              {SKIP_OPERATORS.map((op) => (
-                <option key={op} value={op}>
-                  {SKIP_OPERATOR_LABELS[op]}
-                </option>
-              ))}
-            </select>
-            {!isUnaryConditionOp(row.op) ? (
-              <FieldTextInput
-                className="skip-if-value"
-                placeholder="Value"
-                value={row.value}
-                onValueChange={(v) => updateRow(i, { value: v })}
+        {rows.map((row, i) => {
+          const kind = fieldKindFromRef(project, row.field);
+          const ops = conditionOpsForKind(kind);
+          const opIds = new Set(ops.map((o) => o.id));
+          return (
+            <div key={i} className="skip-if-row">
+              <QualifiedFieldInput
+                className="skip-if-field"
+                placeholder="Form:Field"
+                knownVariables={knownVariables}
+                value={row.field}
+                onValueChange={(v) => onFieldChange(i, v)}
               />
-            ) : (
-              <span className="skip-if-value-placeholder" aria-hidden />
-            )}
-            <button
-              type="button"
-              className="skip-if-row-btn"
-              title="Add condition row"
-              onClick={() => addRowAfter(i)}
-            >
-              +
-            </button>
-            <button
-              type="button"
-              className="skip-if-row-btn"
-              title="Remove condition row"
-              disabled={rows.length <= 1}
-              onClick={() => removeRow(i)}
-            >
-              −
-            </button>
-          </div>
-        ))}
+              <select
+                value={row.op}
+                onChange={(e) => updateRow(i, { op: e.target.value })}
+                aria-label="Operator"
+                className="skip-if-operator"
+              >
+                {!opIds.has(row.op) ? (
+                  <option value={row.op}>{row.op}</option>
+                ) : null}
+                {ops.map((op) => (
+                  <option key={op.id} value={op.id}>
+                    {op.label}
+                  </option>
+                ))}
+              </select>
+              {!isUnaryConditionOp(row.op) ? (
+                <FieldTextInput
+                  className="skip-if-value"
+                  placeholder={kind === "hybrid" ? "Value" : "Choice letter"}
+                  value={row.value}
+                  onValueChange={(v) => updateRow(i, { value: v })}
+                />
+              ) : (
+                <span className="skip-if-value-placeholder" aria-hidden />
+              )}
+              <button
+                type="button"
+                className="skip-if-row-btn"
+                title="Add condition row"
+                onClick={() => addRowAfter(i)}
+              >
+                +
+              </button>
+              <button
+                type="button"
+                className="skip-if-row-btn"
+                title="Remove condition row"
+                disabled={rows.length <= 1}
+                onClick={() => removeRow(i)}
+              >
+                −
+              </button>
+            </div>
+          );
+        })}
         <label className="skip-if-else">
           <input
             type="checkbox"

@@ -520,6 +520,7 @@ export function SkipInstructionsDialog({
           <div className="skip-dialog-main">
             {panel === "if" && (
               <IfStatementBuilder
+                project={project}
                 knownVariables={knownVariables}
                 state={ifBuilder}
                 onStateChange={setIfBuilder}

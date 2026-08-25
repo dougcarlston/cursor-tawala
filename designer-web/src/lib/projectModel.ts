@@ -105,29 +105,45 @@ export function parseFormFieldRef(raw: string): { form: string; field: string } 
   return { form, field };
 }
 
+function mcItemMatchesFieldLeaf(
+  item: Extract<FormItem, { type: "mc" }>,
+  fieldLeaf: string,
+): boolean {
+  const keys = [item.name, item.alternateLabel, item.label]
+    .map((k) => String(k ?? "").trim())
+    .filter(Boolean);
+  return keys.some(
+    (k) => k.localeCompare(fieldLeaf, undefined, { sensitivity: "accent" }) === 0,
+  );
+}
+
 /**
  * Resolve a Where / Fields ref to an MCQ item (`type: "mc"`).
- * Accepts `Form:MCQ4`, `Record:Form:MCQ4`, or `<<Form:MCQ4>>`.
+ * Accepts `Form:MCQ4`, `Record:Form:MCQ4`, `<<Form:MCQ4>>`, or bare `Q7` /
+ * field names (legacy Skip / convert — first matching form wins).
  */
 export function lookupFormFieldMcItem(
   project: TawalaProject,
   qualifiedRef: string,
 ): Extract<FormItem, { type: "mc" }> | null {
   const parsed = parseFormFieldRef(qualifiedRef);
-  if (!parsed) return null;
-  const form = project.forms.find((f) => f.name === parsed.form);
-  if (!form) return null;
-  for (const item of form.items) {
-    if (item.type !== "mc") continue;
-    const keys = [item.name, item.alternateLabel, item.label]
-      .map((k) => String(k ?? "").trim())
-      .filter(Boolean);
-    if (
-      keys.some(
-        (k) => k.localeCompare(parsed.field, undefined, { sensitivity: "accent" }) === 0,
-      )
-    ) {
-      return item;
+  if (parsed) {
+    const form = project.forms.find((f) => f.name === parsed.form);
+    if (!form) return null;
+    for (const item of form.items) {
+      if (item.type !== "mc") continue;
+      if (mcItemMatchesFieldLeaf(item, parsed.field)) return item;
+    }
+    return null;
+  }
+
+  let bare = String(qualifiedRef ?? "").trim();
+  if (bare.startsWith("<<") && bare.endsWith(">>")) bare = bare.slice(2, -2).trim();
+  if (!bare || bare.includes(":")) return null;
+  for (const form of project.forms) {
+    for (const item of form.items) {
+      if (item.type !== "mc") continue;
+      if (mcItemMatchesFieldLeaf(item, bare)) return item;
     }
   }
   return null;
@@ -146,10 +162,9 @@ function isPlainVariableName(value: unknown): value is string {
 /** Variable present in every project — the private-invitation token (legacy `_InviteeID`). */
 export const INVITEE_ID_VARIABLE = "_InviteeID";
 
-/** Statements whose target field defines a variable (Set / Append / arithmetic). */
+/** Statements whose target field defines a variable (Set / arithmetic). Document Append is not a field assignment. */
 const ASSIGNMENT_COMMANDS = new Set([
   "set",
-  "append",
   "addTo",
   "subtractFrom",
   "multiplyBy",
@@ -215,13 +230,23 @@ export function collectProjectVariables(project: TawalaProject): string[] {
   return [INVITEE_ID_VARIABLE, ...rest];
 }
 
-/** Merge project variables with any from an in-flight command tree (e.g. unsaved skip dialog). */
+/**
+ * Merge project variables with form answer field names (bare + `Form:Field`) and any
+ * in-flight command tree. Skip/Process If validation must accept converted bare `Q7`
+ * labels as well as Fields-palette `LivingWill:Q7` — not only Variables-folder names.
+ */
 export function collectKnownVariables(
   project: TawalaProject,
   extraCommands?: unknown,
 ): Set<string> {
   const vars = new Set(collectProjectVariables(project));
   if (extraCommands) collectVariablesFromNode(extraCommands, vars);
+  for (const form of project.forms) {
+    for (const leaf of formFieldNames(form)) {
+      vars.add(leaf.name);
+      vars.add(`${form.name}:${leaf.name}`);
+    }
+  }
   return vars;
 }
 

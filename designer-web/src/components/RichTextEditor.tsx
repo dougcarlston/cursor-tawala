@@ -45,6 +45,7 @@ import {
   embeddedImageFromEventTarget,
   selectEmbeddedImage,
 } from "@/lib/embeddedImageResize";
+import { extendFormTextSelectionToPoint } from "@/lib/formTextSelection";
 import {
   ensurePlacedBlockWrapWidth,
   extendDocumentSelectionToPoint,
@@ -961,6 +962,31 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               }
               return;
             }
+            // Form Text: custom drag-select so highlights cross embedded images
+            // (native contenteditable often stops at <img>).
+            if (formattingKind === "text" && el && e.button === 0) {
+              const target = e.target as HTMLElement;
+              if (target.closest(`.${EMBEDDED_IMAGE_HANDLES_CLASS}`)) return;
+              if (target.closest(".table-handles-overlay")) return;
+              documentPointerRef.current = {
+                x: e.clientX,
+                y: e.clientY,
+                dragged: false,
+                mode: "select",
+              };
+              el.focus();
+              const anchor = caretRangeAtPoint(e.clientX, e.clientY);
+              if (
+                anchor &&
+                (anchor.commonAncestorContainer === el ||
+                  el.contains(anchor.commonAncestorContainer))
+              ) {
+                selectAnchorRef.current = anchor.cloneRange();
+              } else {
+                selectAnchorRef.current = null;
+              }
+              return;
+            }
             savedRangeRef.current = null;
             savedBookmarkRef.current = null;
           }}
@@ -991,6 +1017,22 @@ export function RichTextEditor({ html, onChange, placeholder, formattingKind }: 
               }
               pointer.dragged = true;
               clearColorSampleHold();
+            }
+            if (formattingKind === "text") {
+              if (!el) return;
+              if (!selectAnchorRef.current) {
+                const sel = window.getSelection();
+                if (sel?.rangeCount) {
+                  selectAnchorRef.current = sel.getRangeAt(0).cloneRange();
+                }
+              }
+              const textAnchor = selectAnchorRef.current;
+              if (!textAnchor) return;
+              if (extendFormTextSelectionToPoint(el, textAnchor, e.clientX, e.clientY)) {
+                e.preventDefault();
+                rememberSelection();
+              }
+              return;
             }
             if (formattingKind !== "document") return;
             if (!el) return;

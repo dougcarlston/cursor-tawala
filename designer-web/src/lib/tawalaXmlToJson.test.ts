@@ -621,6 +621,72 @@ Last Name: <field name="LastName"/></text>
     ]);
   });
 
+  it("qualifies bare Skip If fields to Form:Field on convert", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="SkipQual" themePath="default" format="1.3">
+  <forms><form name="LivingWill" startPoint="true"><items>
+    <mc label="Q7" onlyone="true"><question>Physician?</question>
+      <choices><choice label="a" text="Yes"/><choice label="b" text="No"/></choices></mc>
+    <skipInstructions label="skip3">
+      <if><conditions><mcEquals field="Q7" value="b"/></conditions>
+        <trueSet><skip to="Q9"/></trueSet><falseSet/></if>
+    </skipInstructions>
+  </items></form></forms>
+  <processes/><documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "skip.tawala" });
+    const skip = (project.forms as Array<{ items: Array<Record<string, unknown>> }>)[0].items.find(
+      (i) => i.type === "skipInstructions",
+    ) as { commands?: Array<{ condition?: { field?: string } }> };
+    expect(skip.commands?.[0]?.condition?.field).toBe("LivingWill:Q7");
+  });
+
+  it("qualifies bare fields inside or-combined Skip If conditions", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="SkipOr" themePath="default" format="1.3">
+  <forms><form name="LivingWill" startPoint="true"><items>
+    <skipInstructions label="skip1">
+      <if><conditions>
+        <contains field="State"><string value="CA"/></contains>
+        <or/>
+        <contains field="State"><string value="Ca"/></contains>
+      </conditions>
+        <trueSet><skip to="T4"/></trueSet><falseSet/></if>
+    </skipInstructions>
+  </items></form></forms>
+  <processes/><documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "skip-or.tawala" });
+    const skip = (project.forms as Array<{ items: Array<Record<string, unknown>> }>)[0].items[0] as {
+      commands?: Array<{ condition?: { or?: Array<{ field?: string }> } }>;
+    };
+    const or = skip.commands?.[0]?.condition?.or;
+    expect(or).toHaveLength(2);
+    expect(or?.[0]?.field).toBe("LivingWill:State");
+    expect(or?.[1]?.field).toBe("LivingWill:State");
+    expect(skip.commands?.[0]?.condition).not.toHaveProperty("conditions");
+  });
+
+  it("qualifies bare Process If fields to Form:Field on convert", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="ProcQual" themePath="default" format="1.3">
+  <forms><form name="LivingWill" startPoint="true" process="Process 1"><items/></form></forms>
+  <processes>
+    <process name="Process 1">
+      <if><conditions>
+        <contains field="State"><string value="CA"/></contains>
+      </conditions>
+        <trueSet><show document="Living Will"/></trueSet>
+        <falseSet><show document="NoGo"/></falseSet></if>
+    </process>
+  </processes>
+  <documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "proc.tawala" });
+    const proc = (project.processes as Array<{ commands: Array<{ condition?: { field?: string } }> }>)[0];
+    expect(proc.commands[0].condition?.field).toBe("LivingWill:State");
+  });
+
   it("preserves static text Send body + inviteTo (no document attr)", () => {
     const xml = `<?xml version="1.0" encoding="utf-8" ?>
 <project name="SendTextBody" themePath="default" format="1.3">
@@ -649,6 +715,26 @@ Please help.</body>
     expect(cmd.body?.inviteTo).toBe("Petition");
     expect(cmd.body?.text).toMatch(/Dear Friend/);
     expect(cmd.body?.text).toMatch(/Please help/);
+  });
+  it("preserves Process Append document/appendage (not field/value)", () => {
+    const xml = `<?xml version="1.0" encoding="utf-8" ?>
+<project name="AppendDocs" themePath="default" format="1.3">
+  <forms><form name="Form 1" startPoint="true"><items/></form></forms>
+  <processes>
+    <process name="Process 1">
+      <append document="Living Will" appendage="LifeEndNo"/>
+      <append document="Header" appendage="Document 2"/>
+    </process>
+  </processes>
+  <documents/>
+</project>`;
+    const { project } = convertTawalaXmlToProject(xml, { sourceLabel: "append.tawala" });
+    const cmds = (project.processes as Array<{ commands: Array<Record<string, unknown>> }>)[0]
+      .commands;
+    expect(cmds).toEqual([
+      { cmd: "append", document: "Living Will", appendage: "LifeEndNo" },
+      { cmd: "append", document: "Header", appendage: "Document 2" },
+    ]);
   });
 });
 

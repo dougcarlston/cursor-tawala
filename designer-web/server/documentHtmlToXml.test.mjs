@@ -523,8 +523,41 @@ describe("documentHtmlToXml invitation / hyperlink", () => {
     const html = `<p><span class="invitation-token" data-invitation-config="${config}">Dashboard</span></p>`;
     const xml = documentHtmlToXml(html, escAttr, escText);
     expect(xml).toContain('private="true"');
-    expect(xml).toContain('<field name="Registration:RegID"/>');
+    expect(xml).toContain('<string field="Registration:RegID"/>');
     expect(xml).toContain("Dashboard</invitation>");
+  });
+
+  it("emits bare Recipient auth as string field when project defines Recipient (Dirtbowl Communicator)", () => {
+    const project = {
+      processes: [
+        {
+          name: "Post-SendEmail",
+          commands: [
+            {
+              cmd: "foreach",
+              do: [{ cmd: "set", field: "Recipient", value: "<<Email:DataBase:Email Address>>" }],
+            },
+          ],
+        },
+      ],
+      forms: [],
+    };
+    const config = JSON.stringify({
+      form: "GetResponse3",
+      project: "",
+      displayText: "<<Recipient>>",
+      isPrivate: true,
+      authToken: "Recipient",
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;");
+    const html = `<p><span class="invitation-token" data-invitation-config="${config}">&lt;&lt;Recipient&gt;&gt;</span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText, { project });
+    expect(xml).toContain('form="GetResponse3"');
+    expect(xml).toContain('<string field="Recipient"/>');
+    expect(xml).not.toContain('<string value="Recipient"/>');
   });
 
   it("emits private invitation with literal auth string (Sign-up fromSignupSheet)", () => {
@@ -720,6 +753,39 @@ describe("documentHtmlToXml Form Text confirmation table (Potluck T6)", () => {
     expect(xml).toContain('<field name="Form 1:FIB1:c"/>');
     expect(xml).not.toContain('<field name="FIB1:a"/>');
     expect(xml).not.toContain("Form 1:Form 1:FIB1:c");
+  });
+
+  it("keeps DirtBowl admin/fee vars bare when project form inventory is supplied", () => {
+    const project = {
+      forms: [
+        {
+          name: "Registration",
+          items: [
+            {
+              type: "fib",
+              label: "Q1",
+              blanks: [
+                { name: "a", alternateLabel: "FirstName" },
+                { name: "b", alternateLabel: "LastName" },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const html =
+      `<span class="field-token" data-field-name="AdminAdrss">&lt;&lt;AdminAdrss&gt;&gt;</span>` +
+      `<span class="field-token" data-field-name="FirstName">&lt;&lt;FirstName&gt;&gt;</span>` +
+      `<span class="field-token" data-field-name="SignupFeeForIndividual">&lt;&lt;SignupFeeForIndividual&gt;&gt;</span>`;
+    const xml = documentHtmlToXml(html, escAttr, escText, {
+      formName: "Registration",
+      project,
+    });
+    expect(xml).toContain('<field name="AdminAdrss"/>');
+    expect(xml).toContain('<field name="SignupFeeForIndividual"/>');
+    expect(xml).toContain('<field name="Registration:FirstName"/>');
+    expect(xml).not.toContain("Registration:AdminAdrss");
+    expect(xml).not.toContain("Registration:SignupFeeForIndividual");
   });
 });
 
@@ -964,5 +1030,27 @@ describe("documentHtmlToXml nested placed paragraphs + table order (Signup Sheet
       escText,
     );
     expect(thick).toContain('border="2"');
+  });
+
+  it("Form Text table cell widths: pt and import px (twips/15) both round-trip", () => {
+    const fromPt = documentHtmlToXml(
+      `<table class="user user-border-1"><tbody><tr>` +
+        `<td style="width: 108pt;">A</td>` +
+        `<td style="width: 72pt;">B</td>` +
+        `</tr></tbody></table>`,
+      escAttr,
+      escText,
+    );
+    expect(fromPt).toContain('width="2160"');
+    expect(fromPt).toContain('width="1440"');
+
+    // Import stores twips/15 as px — 2160 twips → 144px must not be read as 144pt.
+    const fromPx = documentHtmlToXml(
+      `<table class="user"><tbody><tr><td style="width: 144px;">A</td></tr></tbody></table>`,
+      escAttr,
+      escText,
+    );
+    expect(fromPx).toContain('width="2160"');
+    expect(fromPx).not.toContain('width="2880"');
   });
 });

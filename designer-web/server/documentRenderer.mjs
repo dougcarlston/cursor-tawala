@@ -88,6 +88,34 @@ function renderDocumentBody(doc, ctx, baseUrl, uniqueId) {
     .join("\n");
 }
 
+function mergeDocumentWithAppendages(project, docName, virtualDocs) {
+  const doc = project.documents?.find((d) => d.name === docName);
+  if (!doc) return null;
+  const appendages = virtualDocs?.[docName]?.appendages ?? [];
+  if (!appendages.length) return doc;
+
+  if (typeof doc.content === "string") {
+    let merged = doc.content;
+    for (const appendageName of appendages) {
+      const appendDoc = project.documents?.find((d) => d.name === appendageName);
+      if (appendDoc && typeof appendDoc.content === "string") merged += appendDoc.content;
+    }
+    return { ...doc, content: merged };
+  }
+
+  const blocks = Array.isArray(doc.content) ? [...doc.content] : [];
+  for (const appendageName of appendages) {
+    const appendDoc = project.documents?.find((d) => d.name === appendageName);
+    if (!appendDoc) continue;
+    if (typeof appendDoc.content === "string") {
+      blocks.push({ type: "text", text: appendDoc.content });
+    } else if (Array.isArray(appendDoc.content)) {
+      blocks.push(...appendDoc.content);
+    }
+  }
+  return { ...doc, content: blocks };
+}
+
 export function renderDocumentsPage(project, documentNames, session, baseUrl, uniqueId, opts = {}) {
   const { name: themeName, css: themeCss } = resolveTheme(project.themePath || "default");
   const fromForm = opts.fromForm ?? "";
@@ -105,7 +133,7 @@ export function renderDocumentsPage(project, documentNames, session, baseUrl, un
 
   const sections = [];
   for (const name of documentNames) {
-    const doc = project.documents?.find((d) => d.name === name);
+    const doc = mergeDocumentWithAppendages(project, name, opts.virtualDocs);
     if (!doc) {
       sections.push(
         `<section class="doc-section"><p><em>Document “${esc(name)}” not found in project.</em></p></section>`,

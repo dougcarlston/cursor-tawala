@@ -141,8 +141,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 2. Insert a function (`fx`) into Form Text → **single-click** the `<<…>>` chip to select it → **Del** or **Backspace** removes **only** the chip (Text row stays). **Double-click** opens Configure (legacy parity). Same when the row is idle (border click) but the chip is highlighted. Row/toolbar **×** with a highlighted chip also removes the chip, not the whole Text item.
 3. **Bold on Report / structured Text** (e.g. Multiple Question Survey “Age:” beside RESPONSE TOTALS): select the word → Formatting Palette **Bold**. Must stay bold after blur/save (not only while selected). Smoke (Jul 23): styleWithCSS spans and `<b>` both round-trip. **Deploy (Jul 24):** Tomcat `default.css` Yahoo reset zeroes `strong`/`em`; Java Bold emits `<strong>` — restore `b, strong { font-weight: bold }` after the reset or Age: looks normal on 8080 while Design/Preview stay bold.
 3. **Fields replace (Jul 23):** In a Text table cell with `<<attendeeName>>` (chip selected or not) → drop another field onto it → cell becomes the new `<<…>>` only — never `<<attende<<…>>eName>>`. Same for Heading / FIB prompt / MCQ question.
-
----
+4. **Form Text table Push (V1):** Insert table → set Border 1/none and column widths → Push. Live form keeps borders and relative widths. DirtBowl Registration **T4**: if Design HTML has a `<table>`, Push uses that table (not the old hardcoded info-box XML). Hard-refresh after `form-layout-core` CSS updates.
 
 ## Fill in the Blank — FIB (Q1)
 
@@ -372,6 +371,7 @@ Example (SportsDashboards template in test fixtures):
 | FIB underscore → blanks | Yes | Design idle keeps `_`; Preview/`fibPrompt` strips `_` into blank inputs. Smoke + `npm test`. |
 | FIB per-blank caption | Yes — First/Last above each box | **Done** — `blank.caption` on strip; Design idle + `fibToXml` caption paragraph + Preview stack; smoke #10 |
 | Insert → Date / Address | — (author builds by hand) | **Done** — Insert menu presets → ordinary FIBs; smoke #11 |
+| Form Text table Push | Partial (palette tables) | **Done (V1)** — pt/px widths; `#form table.user` borders; T4 Design table wins; smoke Text #4 |
 | Legacy import — sequential FIB blanks | Yes — each `_` run → own blank / field | **Gap (batch queue C1):** conversion often glues sequential blanks into one field and severs multi-blank alternate labels. See `DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**. Repro: Online Exam Builder. |
 | Legacy import — MCQ alternate labels | Yes — field name ≠ design Qn label | **Gap (batch queue C2):** alts lost; reverts to Q1, Q2, …. Same open-bugs section. |
 | FIB alternate label | Yes | `blank.name` / `alternateLabel` partial; multi-blank alts blocked by C1 |

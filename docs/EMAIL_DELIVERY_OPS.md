@@ -16,6 +16,10 @@ Owner local credentials live in gitignored **`.env.email.local`** at the repo ro
 
 Optional **Mailpit** profile for capture-only testing: `docker compose --profile mailpit up -d`.
 
+## Designer menu
+
+**Project → Email Delivery…** is an **owner ops** dialog (SMTP status + test send). It is hidden for the local demo login `dev` and for users without Push credentials. It appears when Push credentials use any other username, or when `VITE_OWNER_MENU_USERS` (comma-separated) is set and the logged-in user matches.
+
 ## Environment variables (Tomcat entrypoint)
 
 | Variable | Resend (`.env.email.local`) | Mailpit fallback | Purpose |

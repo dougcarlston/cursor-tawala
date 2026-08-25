@@ -307,15 +307,17 @@ export function typingFormatForInsert(editor: HTMLElement): TypingFormat {
   if (block.classList.contains("doc-placed-text") && !explicitPt && block.style.fontSize) {
     explicitPt = parseCssPt(block.style.fontSize);
   }
-  // No explicit size → prefer sticky / default. Computed editor CSS (e.g. Form Text
-  // 13px ≈ 10pt) must not invent a non-default chip size that diverges from labels.
+  // No explicit size → prefer sticky / default. Form Text often computes ~13px
+  // (≈9.75–10pt) while the palette default is 12pt — a 1.5pt window treated that
+  // as a real Size and painted random 10pt chips next to inherit-sized siblings.
   const stickyPt = Number.parseFloat(sticky.fontSize);
+  const nearSurfacePt = 2.5;
   let rounded: string;
   if (explicitPt > 0) {
     rounded = String(Math.max(1, Math.round(explicitPt)));
   } else if (
-    Math.abs(sizePt - DEFAULT_PALETTE_FONT_SIZE_PT) <= 1.5 ||
-    (Number.isFinite(stickyPt) && Math.abs(sizePt - stickyPt) <= 1.5)
+    Math.abs(sizePt - DEFAULT_PALETTE_FONT_SIZE_PT) <= nearSurfacePt ||
+    (Number.isFinite(stickyPt) && Math.abs(sizePt - stickyPt) <= nearSurfacePt)
   ) {
     rounded = sticky.fontSize;
   } else {

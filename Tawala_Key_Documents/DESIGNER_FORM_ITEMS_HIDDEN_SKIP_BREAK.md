@@ -228,6 +228,14 @@ flowchart TD
 5. Alternate: with Comment still selected, click **Set** in Statements → leaves Modify → insert at current gap; move gap into If if needed, then Add.
 6. **Comment focus:** Statements → **Comment** (or click an existing comment line) → caret is in the Comment text box ready to type (no extra click).
 
+## Smoke — Skip If Modify + MCQ (Aug 22)
+
+1. Open a converted form with Skip on an MCQ (e.g. Living Will: `If Q7 equals "b"` / Skip to Q9). Red **SKIP** badge is normal styling, not an error.
+2. **Edit** → click the If line → **Modify** is enabled (bare `Q7` is valid). Change value `b`→`a` → **Modify** → script shows the new value.
+3. Operator list for MCQ shows equals / does not equal / is blank / is not blank and persists as `mcEquals` (not plain `equals`).
+4. Preview/Submit so the If should fire → skip destination is reached.
+5. Fields → click-drop three field chips into Form Text at default Size → chips share one height (no random 10pt stamps).
+
 ---
 
-*Last updated: July 23, 2026 — Skip: nested If in use; Cut/Copy/Paste/Undo not TODOs.*
+*Last updated: August 22, 2026 — Skip If Modify for bare/MCQ fields; field-chip insert size.*

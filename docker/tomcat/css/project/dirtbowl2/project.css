@@ -103,12 +103,17 @@ div.text.text-item-error {
   margin: 0.5rem 0;
 }
 
-/* Registration info block (T4) — no row divider lines */
+/* Registration info block (T4) — padding/typography; borders follow table.user classes */
 #form .text.normal > table td {
-  border: none !important;
   padding: 2px 8px;
   vertical-align: top;
   font-size: 15px;
+}
+
+/* Only Invisible / border-none strips cell chrome — do not kill author Border 1/2 */
+#form .text.normal > table.user.user-border-none td,
+#form .text.normal > table.user.user-border-none th {
+  border: none !important;
 }
 
 #form .text.normal > table {

@@ -205,7 +205,8 @@ export function SendStatementBuilder({
         </div>
         <p className="send-delivery-note hint">
           On Push (:8080), the server&apos;s verified From is used for SMTP; this From address
-          becomes Reply-To. Configure via Project → Email Delivery…
+          becomes Reply-To. Outbound SMTP is configured on the Tomcat host (not in the project
+          file).
         </p>
       </div>
     </div>

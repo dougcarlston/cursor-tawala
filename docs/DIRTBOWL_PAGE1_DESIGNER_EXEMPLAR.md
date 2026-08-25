@@ -26,7 +26,7 @@
 | **Theme content width fit** | Fields must not spill into the page margin. **Product CSS:** `form-layout-core` + `--tawala-form-content-max` (themes set the variable; dirtbowl2 supplies sizes only). |
 | **Shared field-column right edge** | Name / School / Email / **Parent phones** share one right margin. **Product CSS** in `form-layout-core` (not dirtbowl2 geometry). |
 | **Inline hint formatting** | Parentheticals in the FIB question (`(mm/dd/yyyy)`, `(again)`) with B/I/size/color — **mostly already covered**. Do not spend V1 unless broken. |
-| **Form Text tables as layout (basic)** | T4-style info grids: column widths, padding, borders on/off that survive Design → Push. Deeper table suite → next version. |
+| **Form Text tables as layout (basic)** | **Done** — width pt/px parse; `#form table.user` borders; dirtbowl2 no longer strips all borders. **T4:** Design `<table>` content wins over hardcoded `registrationTextToXml` (stock tools). |
 | **Per-blank captions above fields** | Small **First** / **Last** (etc.) tight above each input, left-aligned to that blank. **Not** FIB Styles → Above (whole question above row). **Not** only italic text in the question line. High-frequency DirtBowl pattern; structured mode preferred over free WYSIWYG drag. **Designer:** `blank.caption` on property strip; Design idle + Deploy `fibToXml` + Preview stack; product CSS in `form-layout-core`. |
 | **Insert presets: Date + Address** | **Done** — Insert → Date / Address emit ordinary FIBs (`fibInsertPresets.ts`); Street caption on Address; DOB uses `mm/dd/yyyy` + `/`. |
 
@@ -46,6 +46,7 @@
 | **Column-level `displayCondition` editor** | Per-column show/hide on MQL/itemization. Runtime already honors preserved rules; Design edit deferred. Item-level **Display conditionally…** is done. |
 | **Form Cut / Copy / Paste** | Shell polish; parked earlier in Aug 20 catchup. |
 | **DirtBowl Page 2+ as further exemplar** | Same purpose lens after Page 1 → Designer list is stable. Not “finish the DirtBowl product skin.” |
+| **RANDOM function** (numeric / sample-from-list) | Owner Aug 21: e.g. teacher draws *n* questions from a large bank so each exam run shows a different set (anti-cheat). Insert/Process or Get+Where path TBD — not V1. |
 
 ---
 

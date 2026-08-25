@@ -345,6 +345,41 @@ div.tawalaDocument table.user.user-border-none td,
 div.tawalaDocument table.user.user-border-none th {
 	border: none;
 }
+
+/*
+ * Form Text authoring tables (Push) — same Border 1 / 2 / none contract as Document.
+ * Themes must not force border:none on all Form Text tables (see dirtbowl2).
+ */
+#form table.user,
+form .text table.user,
+form div.text table.user {
+	border-collapse: collapse;
+	max-width: 100%;
+}
+#form table.user td,
+#form table.user th,
+form .text table.user td,
+form .text table.user th,
+form div.text table.user td,
+form div.text table.user th {
+	border: 1px solid #000;
+	padding: 2px 6px;
+	vertical-align: top;
+}
+#form table.user.user-border-2 td,
+#form table.user.user-border-2 th,
+form .text table.user.user-border-2 td,
+form .text table.user.user-border-2 th {
+	border-width: 2px;
+}
+#form table.user.user-border-none,
+#form table.user.user-border-none td,
+#form table.user.user-border-none th,
+form .text table.user.user-border-none,
+form .text table.user.user-border-none td,
+form .text table.user.user-border-none th {
+	border: none;
+}
 /* Do not force borders on YUI/itemization component tables inside documents. */
 div.document table.component td,
 div.document table.component th,

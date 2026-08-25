@@ -4,14 +4,32 @@
  */
 
 import { conditionOperandXml } from "./conditionOperandXml.mjs";
+import { collectProjectVariableNames } from "./projectVariables.mjs";
 
 /** Empty paragraph used as a Deploy spacer (matches Form Text / response-totals habit). */
 const BLANK_PARAGRAPH_XML =
   `<paragraph indent="0" align="left"><tabPositions><tabStop position="2880"/></tabPositions></paragraph>`;
 
+/**
+ * CSS length → twips for `<cell width="…">`.
+ * Design stores `pt`; Open/.tawala import often emits `px` via twips/15 — treat px as that invert.
+ */
+function cssLengthToTwips(raw) {
+  const s = String(raw ?? "").trim();
+  if (!s) return 0;
+  const m = s.match(/^([0-9.]+)\s*(pt|px|in)?$/i);
+  if (!m) return 0;
+  const n = Number.parseFloat(m[1]);
+  if (!Number.isFinite(n)) return 0;
+  const unit = (m[2] || "pt").toLowerCase();
+  if (unit === "px") return Math.round(n * 15);
+  if (unit === "in") return Math.round(n * 1440);
+  return Math.round(n * 20);
+}
+
+/** @deprecated use cssLengthToTwips — kept name for call sites that pass bare pt numbers */
 function ptToTwips(pt) {
-  const n = Number.parseFloat(String(pt).replace(/pt$/i, ""));
-  return Number.isFinite(n) ? Math.round(n * 20) : 0;
+  return cssLengthToTwips(pt);
 }
 
 function parseStyleAttr(tagHtml) {
@@ -104,19 +122,58 @@ function stripTags(html) {
 
 /**
  * Legacy Form Text / Document fields use `Form:Field` (e.g. `Potluck Organizer:attendeeName`).
- * Design may store bare `<<attendeeName>>` from the Fields panel — qualify on Deploy.
+ * Design may store bare `<<attendeeName>>` from the Fields palette — qualify on Deploy.
+ * Project/admin vars (DirtBowl `AdminAdrss`, `League`, fee) must stay bare — they are
+ * Set by Process, not Registration FIB blanks. Always-qualifying emptied T4 cells.
  */
+function collectFormFieldNames(form) {
+  const names = new Set();
+  if (!form) return names;
+  for (const item of form.items ?? []) {
+    if (item.type === "fib") {
+      for (const b of item.blanks ?? []) {
+        const alt = String(b.alternateLabel ?? "").trim();
+        const nm = String(b.name ?? "").trim();
+        if (alt) names.add(alt);
+        if (nm) names.add(nm);
+        const label = String(item.label ?? "").trim();
+        if (label && nm) names.add(`${label}:${nm}`);
+      }
+    } else if (item.type === "mc") {
+      for (const key of [item.alternateLabel, item.label, item.name]) {
+        const s = String(key ?? "").trim();
+        if (s) names.add(s);
+      }
+    } else if (item.type === "field") {
+      for (const key of [item.fieldName, item.name]) {
+        const s = String(key ?? "").trim();
+        if (s) names.add(s);
+      }
+    }
+  }
+  return names;
+}
+
 /**
  * Qualify a Document/Form Text `<<field>>` for Deploy.
  * FIB blanks like `FIB1:a` already contain `:` but still need `Form:FIB1:a` —
  * only skip when already prefixed with this form or `Record:`.
+ * When `opts.formFieldNames` is provided, bare names not on the form stay unqualified.
  */
-function qualifyFieldRef(name, formName) {
+function qualifyFieldRef(name, formName, opts = {}) {
   const s = String(name ?? "").trim();
   const form = String(formName ?? "").trim();
   if (!s || !form) return s;
   if (/^Record:/i.test(s)) return s;
   if (s === form || s.startsWith(`${form}:`)) return s;
+
+  const known = opts.formFieldNames;
+  if (known instanceof Set) {
+    if (known.has(s)) return `${form}:${s}`;
+    // `FIB1:a` style already on the form's blank list
+    return s;
+  }
+  // No form inventory (Document / older callers): always qualify (Potluck).
   return `${form}:${s}`;
 }
 
@@ -152,7 +209,7 @@ function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
           }
           return "";
         }
-        const ref = qualifyFieldRef(inner, opts.formName);
+        const ref = qualifyFieldRef(inner, opts.formName, opts);
         return `<field name="${escAttr(ref)}"/>`;
       }
       return escText(part);
@@ -436,7 +493,7 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
           readAttrValue(open.attrs, "data-field-name") ||
           stripTags(inner).replace(/^<<|>>$/g, "");
         if (name) {
-          const ref = qualifyFieldRef(name, opts.formName);
+          const ref = qualifyFieldRef(name, opts.formName, opts);
           out += `<field name="${escAttr(ref)}"/>`;
         }
         continue;
@@ -472,7 +529,7 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
         // has no "font" child → "No class registered for font" and the link is dropped
         // (CYO Dashboard invitation grid). Outer colored parents strip inner fonts below;
         // when this token is alone, apply the default blue underline wrap here.
-        let inv = invitationTokenToXml(open.attrs, inner, escAttr, escText);
+        let inv = invitationTokenToXml(open.attrs, inner, escAttr, escText, opts);
         const invStyle = parseStyleAttr(open.attrs);
         const color = invStyle.color
           ? cssColorToLegacyHex(invStyle.color)
@@ -651,6 +708,27 @@ function parseFunctionConfigAttr(attrs) {
   return {};
 }
 
+/**
+ * Private-invitation auth token for `<authenticationTokenValue>`.
+ * Legacy uses `<string field="Recipient"/>` for field refs and `<string value="…"/>` for literals
+ * (e.g. Sign-up `fromSignupSheet`). Bare names from Insert Link / .tawala convert (no `<<>>`)
+ * resolve against project variables when `knownVariableNames` is provided.
+ */
+function authTokenExpressionToXml(raw, escAttr, knownVariableNames) {
+  let s = String(raw ?? "").trim();
+  if (!s) return `<string value=""/>`;
+  if (s.startsWith("<<") && s.endsWith(">>")) {
+    return conditionOperandXml(s, escAttr);
+  }
+  if (s.includes(":") && !/\s/.test(s)) {
+    return `<string field="${escAttr(s)}"/>`;
+  }
+  if (knownVariableNames instanceof Set && knownVariableNames.has(s)) {
+    return `<string field="${escAttr(s)}"/>`;
+  }
+  return `<string value="${escAttr(s)}"/>`;
+}
+
 /** `<<Form:Field>>` / `Form:Field` → field ref; else literal string value. */
 function expressionToXml(raw, escAttr) {
   let s = String(raw ?? "").trim();
@@ -720,7 +798,7 @@ function recoverNestedInvitationConfig(config, innerHtml) {
   return config;
 }
 
-function invitationTokenToXml(attrs, innerHtml, escAttr, escText) {
+function invitationTokenToXml(attrs, innerHtml, escAttr, escText, opts = {}) {
   let config = parseJsonConfigAttr(attrs, "data-invitation-config");
   config = recoverNestedInvitationConfig(config, innerHtml);
   const form = String(config.form ?? "").trim();
@@ -730,7 +808,11 @@ function invitationTokenToXml(attrs, innerHtml, escAttr, escText) {
   const isPrivate = config.isPrivate === true || config.isPrivate === "true";
   const projectAttr = ` project="${escAttr(project)}"`;
   if (isPrivate) {
-    const auth = expressionToXml(config.authToken, escAttr);
+    const auth = authTokenExpressionToXml(
+      config.authToken,
+      escAttr,
+      opts.knownVariableNames,
+    );
     return (
       `<invitation form="${escAttr(form)}"${projectAttr} private="true">` +
       `<authenticationTokenValue>${auth}</authenticationTokenValue>` +
@@ -1236,7 +1318,7 @@ function tableHtmlToXml(tableHtml, escAttr, escText, opts = {}) {
     while ((cellMatch = cellRe.exec(rowMatch[1]))) {
       const openTag = cellMatch[0].match(/^<t[dh]\b([^>]*)>/i)?.[1] ?? "";
       const widthPt = parseStyleAttr(`<x ${openTag}>`).width ?? "";
-      const width = ptToTwips(widthPt) || 2160;
+      const width = cssLengthToTwips(widthPt) || 2160;
       const align = parseTableCellAlign(openTag, cellMatch[1]);
       const inner = inlineHtmlToXml(cellMatch[1], escAttr, escText, opts);
       cells.push({ width, align, inner });
@@ -1518,15 +1600,29 @@ function collectBlocksInDeployOrder(html) {
 }
 
 /** Convert document editor HTML string to legacy xmlData body markup.
- * @param {{ formName?: string, keepEmptyParagraphs?: boolean }} [options] — when
+ * @param {{ formName?: string, keepEmptyParagraphs?: boolean, project?: object }} [options] — when
  *   `formName` is set (Form Text Deploy), bare `<<attendeeName>>` becomes
- *   `<field name="Form:attendeeName"/>` (legacy Potluck). `keepEmptyParagraphs`
- *   (Form Text) keeps bare `<p></p>` / `<p><br></p>` as Deploy spacer paragraphs.
+ *   `<field name="Form:attendeeName"/>` if that name is a field on the form
+ *   (legacy Potluck). Process/admin vars (`AdminAdrss`, `League`) stay bare when
+ *   `project` is provided. `keepEmptyParagraphs` (Form Text) keeps bare `<p></p>` /
+ *   `<p><br></p>` as Deploy spacer paragraphs.
  */
 export function documentHtmlToXml(html, escAttr, escText, options = {}) {
   const source = String(html ?? "").trim();
+  const formName = options.formName ?? "";
+  let formFieldNames = options.formFieldNames;
+  if (!(formFieldNames instanceof Set) && options.project && formName) {
+    const form = (options.project.forms ?? []).find(
+      (f) => String(f?.name ?? "") === String(formName),
+    );
+    formFieldNames = collectFormFieldNames(form);
+  }
   const opts = {
-    formName: options.formName ?? "",
+    formName,
+    formFieldNames,
+    knownVariableNames: options.project
+      ? collectProjectVariableNames(options.project)
+      : null,
     keepEmptyParagraphs: options.keepEmptyParagraphs === true,
     // Dual-chip: detect modern MQL on the full document, not per paragraph.
     hasModernMqlToken: /data-function-id\s*=\s*["']itemization-table["']/i.test(source),

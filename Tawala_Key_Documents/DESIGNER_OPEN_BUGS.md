@@ -27,9 +27,9 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
-### Parked Jul 30 / reconfirmed Aug 11 (Not blocking for Live Library) — **fix after return ~Aug 20**
+### Parked Jul 30 / reconfirmed Aug 11 (Not blocking for Live Library) — **CLOSED Aug 20–21**
 
-Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catchup `docs/CATCHUP_MEMO_RETURN_AUG20.md`.
+Also listed in catchup `docs/CATCHUP_MEMO_RETURN_AUG20.md` (historical). All five items below are fixed; do not reopen unless a regression is reported.
 
 **Owner policy:** will not deploy projects to **Library Live** that cannot be fixed until **blocking** Designer bugs are removed. Items below are **Not blocking** for Live Library (ugly / polish), except treat #5 as **Design authoring quality** for Online Exam Setup (still not Live-Library-blocking unless Setup is the only start users hit).
 
@@ -49,7 +49,8 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Symptom B:** Inserting an image breaks highlighting — selection will not include any paragraphs that include the image or text beyond it.
 - **Screenshots:** Design (separated) `Tawala_Key_Documents/assets/Bug_-_Text-paragraph-spacing-Design.png`; Deploy/runtime (packed) `…/Bug_-_Text-paragraph-spacing-Deploy.png` (source chat assets: `LossofParSpacing-…png`, `ParSpacing2-…png`).
 - **Note:** Not in the Aug 11 recreations; keep from Jul 30 stash.
-- **Fixed Aug 20 (Symptom A):** Form Text Deploy passes `keepEmptyParagraphs` into `documentHtmlToXml` so bare `<p></p>` / `<p><br></p>` (MQS instructional Double-Return) become spacer `<paragraph>`s. Document path still drops unmarked empties (Signup Sheet placed husks). Unit: `documentHtmlToXml.test.mjs`. **Symptom B (image selection) still open.**
+- **Fixed Aug 20 (Symptom A):** Form Text Deploy passes `keepEmptyParagraphs` into `documentHtmlToXml` so bare `<p></p>` / `<p><br></p>` (MQS instructional Double-Return) become spacer `<paragraph>`s. Document path still drops unmarked empties (Signup Sheet placed husks). Unit: `documentHtmlToXml.test.mjs`.
+- **Fixed Aug 21 (Symptom B):** Form Text drag-select extends across embedded images (`formTextSelection.ts` + `RichTextEditor` text mode). Unit: `formTextSelection.dom.test.ts`.
 
 #### 3) Form canvas badges — uneven widths (Not blocking) — **NEW / reconfirmed Aug 11**
 
@@ -74,7 +75,8 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Symptom B:** Formatting / content effects seem to **bleed between the two** TinyMCE instances (same phrases/sizes appearing in both after edits).
 - **Screenshot:** `Tawala_Key_Documents/assets/Bug_-_OnlineExam-Setup-expanded-Text-font-size-chaos-Aug11.png` (owner “Expanded text boxes”).
 - **Root cause (Aug 20):** Not Form Text / Design palette. Runtime TinyMCE (`mode: textareas`) + missing `/css/tinymce/custom_content.css` in the WAR (404) left iframe body at browser default while toolbar used relative HTML sizes 1–7. Multi-editor focus was weakly pinned.
-- **Fixed Aug 20:** Ship `custom_content.css` (13px body); TinyMCE `theme_advanced_font_sizes` in real **pt**; `theme_advanced_runtime_fontsize`; onActivate/onFocus pin `tinyMCE.activeEditor`. Smoke on `:8080` after hard-refresh (not Design Preview).
+- **Fixed Aug 20:** Ship `custom_content.css` (13px body); TinyMCE `theme_advanced_font_sizes` in real **pt**; `theme_advanced_runtime_fontsize`; pin `tinyMCE.activeEditor` on activate. Smoke on `:8080` after hard-refresh (not Design Preview).
+- **Regression Aug 23:** Aug 20 also called `ed.onFocus.add(...)`, but TinyMCE **3.x has no `onFocus` Dispatcher** (`onActivate`/`onDeactivate` only). That threw `Cannot read properties of undefined (reading 'add')` inside `new Editor()`, so multi-line FIBs stayed raw `<textarea>`s with visible HTML (Online Exam Setup Pre/Post instructions). **Fixed Aug 23:** drop `onFocus`; keep `onActivate` only in `web/scripts/project/default.js` (hot-patch Tomcat copy). Hard-refresh `:8080`.
 
 ### Legacy `.tawala` → JSON conversion (batch fix queue) — **Aug 2, 2026 morning**
 
@@ -169,17 +171,14 @@ Also listed in `.cursor/rules/tawala-designer-parked-post-website.mdc` and catch
 - **Fixed (session):** `ExecutionContext.getStorageAttribute()` now appends `userProjectId`; class hot-copied into Tomcat Jul 22 evening.
 - **Ops clean-up (Jul 22 evening):** Deleted contaminated Tomcat Deploy **`Simple Survey`** (`qyzju5cyuagbidj`) + its 7 submissions; see `CONTAMINATED_SIMPLE_SURVEY_JUL22.md`. Prefer **New Project** (not overwrite) between featured apps; Redeploy under a fresh name if lists look wrong.
 
-### New Project / distinct uniqueId must never inherit old submissions (Aug 20) — **OPEN**
+### New Project / distinct uniqueId must never inherit old submissions (Aug 20) — **FIXED Aug 21**
 
 - **Owner smoke Aug 20:** MAX / MIN **Passed**. New Project with a new FIB blank (`Form1:FIB1:a`) showed a **pre-filled value `24` on live `:8080` after Push** — not in Design, not in Preview. Remove Duplicates **Passed** the same day.
-- **Invariant to enforce:** Projects with **different uniqueIds** must never share or inherit each other’s submission values (including blank defaults painted from prior rows). A **New Project** first Push must land on a **fresh** uniqueId with **empty** response data for that id.
-- **Suspected causes (investigate when scheduled):**
-  1. Push / Redeploy-by-**name** reuses an existing `UserProject` and keeps old submissions (Jul 22 Redeploy-by-name pattern).
-  2. First Push fails to mint a new uniqueId when `_freshFromTemplate` / File→New should have forced one.
-  3. Less likely given “only on `:8080`”: blank **name** collision across projects under one reused id (not a true cross-uniqueId leak).
-- **Ops workaround until fixed:** `?reset=1` on the start URL; Purge responses for that uniqueId; or Push under a **unique project name** so Java cannot match an old row by name.
-- **Related:** Jul 22 Deploy data isolation notes above; Jul 16 “Session junk rows” mitigated-ops row; website-mock Make a Copy already clears `uniqueId` for forks — Library Save-to-MyTawala mock still shares Library uniqueId by design until production mint.
-- **Do not close** until New Project → Push → `:8080` blank fields are empty when no submissions exist for **that** uniqueId, and two live projects with distinct uniqueIds cannot paint each other’s field values.
+- **Root cause:** Java `ProjectsHibernateImpl.put` reuses `UserProject` when `(userId, name)` matches and **keeps submissions**. File→New used to Push under the template display name → Redeploy-by-name. Post-Push **purge** was a band-aid and could still leave painted blanks if identity was wrong.
+- **Fix (Aug 21):** First Push after File→New / template (`_freshFromTemplate`) **mints a non-colliding Tomcat name** (`displayName` + short hex) via `deployIdentity.mjs` / `/api/deploy`. Designer keeps the friendly display `name`; stores `deployIdentityName` for later Redeploys. Node Deploy still `forceNewId` on fresh. Purge-on-fresh removed as the primary isolation path.
+- **Invariant:** Projects with **different uniqueIds** must never share submission values. New Project first Push lands on a **fresh** uniqueId with empty response data.
+- **Smoke:** File→New (or template) → Push → confirm Deploy result `identityMinted` / new uniqueId; blanks empty on `:8080`; second File→New of the same template → different uniqueId; Redeploy of the first project keeps the same `deployIdentityName` / uniqueId.
+- **Related:** Jul 22 Redeploy-by-name notes; website-mock Make a Copy clears `uniqueId` for forks — Library Save-to-MyTawala mock still shares Library uniqueId until production mint.
 
 ### Online Exam Builder — Admin → Scores first-hit “session expired” (Aug 3)
 
@@ -251,6 +250,8 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 - **Field rename does not update Functions / function labels** — **Fixed Jul 19:** renaming a Hidden Field, FIB blank alt label, or MCQ field name cascades into Document/Form Text function chips (`data-function-config` + visible `<<NAME(…)>>`), field tokens, and Process command field refs (`fieldRenameCascade.ts` via `updateFormItem`).
 
 - **Function chips insert at random sizes / resize nearby text** — **Fixed Jul 19 (regression):** Form Text still used badge `10px` (Document already inherited). Insert also painted sticky size onto the parent line. Now Form Text chips inherit like Document; insert no longer resizes the paragraph; default insert leaves chip size unset so it matches surrounding text.
+
+- **Field chips click-dropped at random heights (Aug 22)** — **Fixed Aug 22.** Form Text computed ~13px (≈10pt) was outside the old 1.5pt “near default” window vs palette 12pt, so inserts stamped `font-size: 10pt` on some chips and left others inheriting — uneven chip boxes (Living Will T5). Widened to 2.5pt. **Smoke:** § Skip If Modify + MCQ step 5.
 
 - **Ghost / deleted Document text still visible** — **Jul 19 false alarm (owner):** the unexpected question phrasing on Deploy came from **Form Item** MCQ text (Response Totals injects the Form question), not from deleted Document prose. Separately, Design still got a small hardening Jul 19 (discard orphan glyphs after delete; prune stacked duplicate placed lines; missing `reflowPlacedLinesBelow` import) — keep as regression prevention, not as confirmation of that screenshot.
 
@@ -349,6 +350,12 @@ Legacy projects open via shared `tawalaXmlToJson` (CLI + Designer). Accepts `.js
 
 - **Skip re-edit stuck in Modify-only / cannot add inside If (Jul 20)** — **Fixed Jul 20.** After Close and **Edit** again, selecting a line entered edit mode but the dialog never passed `showAllInsertionGaps`, so the single legacy insert arrow hid and there were **no** clickable gaps — could only Modify existing lines (e.g. could not place a Set inside the If `then` without rebuilding). Now: all insert gaps stay available; clicking a gap clears selection (insert mode); choosing a different Statements palette tool also leaves Modify when it does not match the selected line. **Smoke:** `DESIGNER_FORM_ITEMS_HIDDEN_SKIP_BREAK.md` § Skip re-edit.
 
+- **Skip If Modify greyed on converted projects; skips “won’t execute” (Aug 22)** — **Fixed Aug 22.** (1) Converted If conditions use bare `Q7` + `mcEquals`; If validation only accepted Variables or `Form:Field`, so **Modify** stayed disabled and authors re-built with Fields drops → `LivingWill:Q7` + Hybrid **equals**. (2) Skip/Process If now uses MCQ `mc*` operators (like Function Where) and `collectKnownVariables` includes form answer names. (3) Preview `getFieldValue` resolves `Form:Field` to bare answers even when `formFields` is unset. Red italic **SKIP** badge remains intentional (not an error). **Smoke:** § Skip If Modify + MCQ.
+
+- **Skip If bare field refs fail at runtime (Aug 22)** — **Fixed Aug 22 (follow-up).** Legacy Skip XML uses bare `Q7` / FIB blank names (`State`); answers post as `Q7` and `Q2:State` into `session.formFields` only. `getFieldValue` now reads the current form’s answer bucket (including `Item:blank` suffix match) so bare and `LivingWill:Q7` both work without hand-qualifying. `.tawala` convert now prefixes Skip If fields to `Form:Field` automatically. Re-open Living Will from Master List `.tawala` or Staging reconvert for qualified JSON.
+
+- **Process If bare `State` → wrong Show Document (Living Will Aug 22)** — **Fixed Aug 22.** Process 1 final If (`State contains CA` → Living Will vs NoGo) failed when `session.fields.State` was `""` but `formFields.LivingWill["Q2:State"]` held the typed value — early `getFieldValue` returned the empty alias. Runtime now prefers non-empty `formFields` over blank `ctx.fields` for bare / `Form:Field` refs. Convert qualifies Process If fields to `Form:Field` like Skip.
+
 - **Skip dialog re-open does not restore insertion point.** Soft leftover; session now also stores `insertIndex` + selection. Re-smoke when convenient.
 
 - **Skip modal overlay quirks** (positioning / full-screen dim). Soft / polish; Close-only dismiss is intentional.
@@ -446,7 +453,7 @@ Any future Registration-only helper must be gated. Add a **non-DirtBowl** test (
 | 5 | **Print / Excel export links** | **Owner OK on Deploy.** Configure toggles persist; Preview emits Print / CSV export (`itemizationPreview.mjs`). |
 | 7 | **Java Deploy (8080) parity** | **Owner OK** for Signup Form+MQL path (Tomcat up, `dev`/`dev`). Also: Document MQL field tokens + no nested font/division; FIB multi-blank soft-rows; Design B/I/U→Deploy (`fibRichPromptToXml`). **Re-smoke:** Redeploy after `fcebcfa` to confirm latest FIB formatting on 8080. |
 | 8 | **Dev API on 3001 dies** | **Mitigated:** `designer-web/scripts/ensure-dev-api.sh` + README; check `/api/health` when Preview/Deploy fails. |
-| 9 | **Session junk / cross-project values** | **OPEN Aug 20 (raised):** New Project showed leftover blank value **only on `:8080` after Push**. Track: distinct uniqueIds must never inherit each other’s submissions; New Project first Push must mint empty data. Detail: § **New Project / distinct uniqueId must never inherit old submissions**. Ops: `?reset=1` / Purge / unique Push name until fixed. |
+| 9 | **Session junk / cross-project values** | **FIXED Aug 21:** File→New first Push mints non-colliding `deployIdentityName` (Tomcat new uniqueId). Detail: § **New Project / distinct uniqueId…**. |
 | — | **FIB Design formatting → Deploy** | **Fixed Jul 16:** freeform prompts mirror B/I/U / face / size / color into Java font XML (`fibToXml` + tests). |
 
 **Still open (leave MQL when these are done or explicitly deferred):**

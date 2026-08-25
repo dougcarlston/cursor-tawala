@@ -26,6 +26,7 @@ import {
   isSaveAsDialogOpen,
   openProjectFromDisk,
   runShellDelete,
+  setOpenedProjectStatus,
   setShellFileActions,
   subscribeSaveAsDialog,
   syncProjectNameFromFileName,
@@ -151,13 +152,7 @@ export default function App() {
       try {
         const result = importProjectFileText(String(reader.result), file.name);
         syncProjectNameFromFileName(file.name);
-        if (result.kind === "tawala") {
-          const warnPart =
-            result.warningCount > 0 ? ` (${result.warningCount} warnings)` : "";
-          useProjectStore.getState().setStatus(`Imported ${file.name}${warnPart}`);
-        } else {
-          useProjectStore.getState().setStatus(`Opened ${file.name}`);
-        }
+        setOpenedProjectStatus(file.name, result.kind, result.warningCount);
       } catch (err) {
         const msg = err instanceof Error ? err.message : "Could not open project file.";
         alert(msg);

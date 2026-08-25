@@ -400,6 +400,7 @@ function textContentToXml(content, style, project = null, formName = "") {
     if (/<[a-z][\s\S]*>/i.test(content)) {
       const xml = documentHtmlToXml(content, escAttr, escText, {
         formName,
+        project,
         keepEmptyParagraphs: true,
       });
       const styled = applyTextItemStyleToXml(xml, style, { sourceHtml: content });
@@ -984,6 +985,14 @@ function commandToXml(cmd, ctx = {}) {
     }
     case "send":
       return sendToXml(cmd, ctx);
+    case "append": {
+      const document = String(cmd.document ?? "").trim();
+      const appendage = String(cmd.appendage ?? "").trim();
+      if (!document || !appendage) {
+        return `<!-- incomplete append command -->`;
+      }
+      return `<append document="${escAttr(document)}" appendage="${escAttr(appendage)}"/>`;
+    }
     default:
       return `<!-- unsupported command ${xmlCommentText(cmd.cmd)} -->`;
   }
@@ -1130,7 +1139,7 @@ export function projectToXml(project) {
       const body =
         typeof d.content === "string"
           ? injectResponseTotalsQuestionTitles(
-              documentHtmlToXml(d.content, escAttr, escText),
+              documentHtmlToXml(d.content, escAttr, escText, { project }),
               project,
             )
           : richContentToXml(d.content);

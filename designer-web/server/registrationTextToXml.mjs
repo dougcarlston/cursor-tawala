@@ -17,9 +17,16 @@ const REGISTRATION_TEXT_XML = {
  * DirtBowl Registration text blocks for Java. Non-DirtBowl Registration forms
  * (e.g. CYO Dance Agreement) must keep Design HTML via textContentToXml.
  * @param {object|null} form — when provided, gates on DirtBowl Q1 blank names
+ *
+ * When Design content already has a `<table` (T4-style info grid, or author
+ * edits), return null so Push uses stock `textContentToXml` — stock tools over
+ * forever-hardcoded Registration XML (DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR).
  */
 export function registrationTextToXml(item, formName, form = null) {
   if (formName !== "Registration") return null;
   if (form && !isDirtBowlRegistrationForm(form)) return null;
+  const content = typeof item?.content === "string" ? item.content : "";
+  if (/<table\b/i.test(content)) return null;
   return REGISTRATION_TEXT_XML[item.label] ?? null;
 }
+

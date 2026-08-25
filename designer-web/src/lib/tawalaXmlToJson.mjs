@@ -1306,6 +1306,11 @@ function convertFib(itemNode) {
         if (a["@_height"] != null && Number(a["@_height"]) > 1) {
           blank.height = Number(a["@_height"]);
         }
+        if (a["@_richText"] != null) {
+          const rt = String(a["@_richText"]).toLowerCase();
+          if (rt === "false" || rt === "0") blank.richText = false;
+          else if (rt === "true" || rt === "1") blank.richText = true;
+        }
         blanks.push(blank);
         // Design canvas maps each `_+` run → one blank (fibBlanks.parseUnderscoreRuns).
         // Legacy often puts one <blank> per paragraph with no inter-text; joining
@@ -1518,12 +1523,61 @@ function convertSkipCommands(skipBody) {
   return commands;
 }
 
-function convertSkip(itemNode, skipIndex) {
+/** Legacy Skip If uses bare item/blank names; Design + runtime resolve Form:Field. */
+function qualifySkipConditionField(field, formName) {
+  let s = String(field ?? "").trim();
+  if (!s || s.includes(":")) return s;
+  if (s.startsWith("<<") && s.endsWith(">>")) return s;
+  return `${formName}:${s}`;
+}
+
+function qualifySkipConditionTree(cond, formName) {
+  if (!cond || typeof cond !== "object") return cond;
+  const mapList = (list) => list.map((c) => qualifySkipConditionTree(c, formName));
+  if (Array.isArray(cond.and)) {
+    return { and: mapList(cond.and) };
+  }
+  if (Array.isArray(cond.or)) {
+    return { or: mapList(cond.or) };
+  }
+  if (cond.op === "and" || cond.op === "or") {
+    const list = cond.conditions ?? [];
+    return { op: cond.op, conditions: mapList(list) };
+  }
+  if (cond.field == null) return cond;
+  return { ...cond, field: qualifySkipConditionField(cond.field, formName) };
+}
+
+function qualifySkipCommand(cmd, formName) {
+  if (!cmd || typeof cmd !== "object") return cmd;
+  if (cmd.cmd === "if") {
+    const next = {
+      ...cmd,
+      condition: qualifySkipConditionTree(cmd.condition, formName),
+      then: (cmd.then ?? []).map((c) => qualifySkipCommand(c, formName)),
+    };
+    if (cmd.else) next.else = cmd.else.map((c) => qualifySkipCommand(c, formName));
+    return next;
+  }
+  return cmd;
+}
+
+function qualifySkipCommands(commands, formName) {
+  return (commands ?? []).map((c) => qualifySkipCommand(c, formName));
+}
+
+/** Post-process If conditions use the same bare field names as Skip — qualify on convert. */
+function qualifyProcessCommands(commands, formName) {
+  if (!formName) return commands ?? [];
+  return qualifySkipCommands(commands, formName);
+}
+
+function convertSkip(itemNode, skipIndex, formName) {
   const body = itemNode.skipInstructions;
   return {
     type: "skipInstructions",
     label: `skip${skipIndex}`,
-    commands: convertSkipCommands(body),
+    commands: qualifySkipCommands(convertSkipCommands(body), formName),
   };
 }
 
@@ -1789,9 +1843,17 @@ function convertProcessCommands(nodes) {
         cmds.push({ cmd: "skip", to: attr(n, "to") ?? "" });
         break;
       case "append": {
-        const field = attr(n, "field");
-        const value = expressionToString(n.append ?? []);
-        cmds.push({ cmd: "append", field, value });
+        // Legacy Process Append is document→document only:
+        //   <append document="Header" appendage="Document 2"/>
+        // Design/script: Append {appendage} to {document}
+        // (Do not confuse with field/value — that produced "Append ? to ?".)
+        const document = attr(n, "document") ?? "";
+        const appendage = attr(n, "appendage") ?? "";
+        if (!document && !appendage) {
+          warn(`Append missing document/appendage attributes — skipped empty command`);
+          break;
+        }
+        cmds.push({ cmd: "append", document, appendage });
         break;
       }
       default:
@@ -1847,7 +1909,7 @@ function convertForm(formNode, imageById = {}) {
         break;
       case "skipInstructions":
         skipIndex += 1;
-        form.items.push(convertSkip(n, skipIndex));
+        form.items.push(convertSkip(n, skipIndex, name));
         break;
       default:
         if (t) warn(`Form ${name}: unsupported item <${t}> skipped`);
@@ -2109,10 +2171,21 @@ export function convertTawalaXmlToProject(xmlString, options = {}) {
     if (tagName(n) === "form") forms.push(convertForm(n, imageById));
   }
 
+  const processFormName = new Map();
+  for (const form of forms) {
+    if (form.process) processFormName.set(form.process, form.name);
+    if (form.preProcess) processFormName.set(form.preProcess, form.name);
+  }
+
   const procsWrap = findChild(projectBody, "processes") ?? [];
   const processes = [];
   for (const n of children(procsWrap)) {
-    if (tagName(n) === "process") processes.push(convertProcess(n));
+    if (tagName(n) === "process") {
+      const proc = convertProcess(n);
+      const formName = processFormName.get(proc.name);
+      if (formName) proc.commands = qualifyProcessCommands(proc.commands, formName);
+      processes.push(proc);
+    }
   }
 
   const docsWrap = findChild(projectBody, "documents") ?? [];

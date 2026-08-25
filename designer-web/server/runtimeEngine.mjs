@@ -14,42 +14,79 @@ function escHtml(s) {
     .replace(/"/g, "&quot;");
 }
 
+/**
+ * Read a value from one form's answer bucket. Matches direct keys and FIB
+ * `ItemLabel:blank` keys whose blank or alternate label equals `leaf`
+ * (legacy Skip If uses bare `State`; POST stores `Q2:State`).
+ */
+export function lookupFormFieldBucket(bucket, leaf) {
+  if (!bucket || leaf == null || leaf === "") return undefined;
+  const key = String(leaf);
+  if (Object.prototype.hasOwnProperty.call(bucket, key)) return bucket[key];
+  for (const [k, v] of Object.entries(bucket)) {
+    if (k === key || k.endsWith(`:${key}`)) return v;
+  }
+  return undefined;
+}
+
+/** True when a stored answer is missing or whitespace-only. */
+function isBlankStoredValue(value) {
+  return value === undefined || value === null || String(value).trim() === "";
+}
+
 export function getFieldValue(ctx, fieldRef) {
   if (!fieldRef) return "";
   const f = String(fieldRef);
-  // Bare names (project Variables like CoachName) and qualified form fields both live in
-  // ctx.fields / formFields — Variables are not a separate store.
-  if (ctx.fields[f] !== undefined) return ctx.fields[f];
-  if (ctx.formFields) {
-    const parts = f.split(":");
-    if (parts.length === 3) {
-      const [a, b, c] = parts;
-      const itemLabel = FIB_NAME_TO_ITEM[b] ?? b;
-      const itemBlank = `${itemLabel}:${c}`;
-      if (ctx.formFields[a]) {
-        if (ctx.formFields[a][itemBlank] !== undefined) return ctx.formFields[a][itemBlank];
-        if (ctx.formFields[a][`${b}:${c}`] !== undefined) return ctx.formFields[a][`${b}:${c}`];
-        if (!FIB_NAME_TO_ITEM[b] && ctx.formFields[a][c] !== undefined) return ctx.formFields[a][c];
-      }
-      if (ctx.fields[itemBlank] !== undefined) return ctx.fields[itemBlank];
-      if (ctx.fields[`${b}:${c}`] !== undefined) return ctx.fields[`${b}:${c}`];
-      if (!FIB_NAME_TO_ITEM[b] && ctx.fields[`${a}:${c}`] !== undefined) return ctx.fields[`${a}:${c}`];
-      const bound = ctx.recordBindings?.[a];
-      if (bound && bound[c] !== undefined) return bound[c];
-      const list = ctx.records?.[b];
-      if (Array.isArray(list) && list[0]) return list[0][c] ?? "";
+  const parts = f.split(":");
+  const formFields = ctx.formFields;
+
+  if (parts.length === 3) {
+    const [a, b, c] = parts;
+    const itemLabel = FIB_NAME_TO_ITEM[b] ?? b;
+    const itemBlank = `${itemLabel}:${c}`;
+    if (formFields?.[a]) {
+      if (formFields[a][itemBlank] !== undefined) return formFields[a][itemBlank];
+      if (formFields[a][`${b}:${c}`] !== undefined) return formFields[a][`${b}:${c}`];
+      if (!FIB_NAME_TO_ITEM[b] && formFields[a][c] !== undefined) return formFields[a][c];
     }
-    if (parts.length === 2) {
-      const [first, blank] = parts;
-      const itemBlank = `${first}:${blank}`;
-      if (ctx.fields[itemBlank] !== undefined) return ctx.fields[itemBlank];
-      const ff = ctx.formFields[ctx.formName ?? "Registration"];
-      if (ff?.[itemBlank] !== undefined) return ff[itemBlank];
-      if (/^Q\d+$/i.test(first)) return "";
-      if (ctx.formFields[first]?.[blank] !== undefined) return ctx.formFields[first][blank];
-      return ctx.fields[f] ?? ctx.fields[blank] ?? "";
-    }
+    if (ctx.fields[itemBlank] !== undefined) return ctx.fields[itemBlank];
+    if (ctx.fields[`${b}:${c}`] !== undefined) return ctx.fields[`${b}:${c}`];
+    if (!FIB_NAME_TO_ITEM[b] && ctx.fields[`${a}:${c}`] !== undefined) return ctx.fields[`${a}:${c}`];
+    const bound = ctx.recordBindings?.[a];
+    if (bound && bound[c] !== undefined) return bound[c];
+    const list = ctx.records?.[b];
+    if (Array.isArray(list) && list[0]) return list[0][c] ?? "";
+    return ctx.fields[c] ?? "";
   }
+
+  if (parts.length === 2) {
+    const [first, blank] = parts;
+    const itemBlank = `${first}:${blank}`;
+    const bucket = formFields?.[first];
+    const bucketHit = lookupFormFieldBucket(bucket, blank);
+    if (!isBlankStoredValue(bucketHit)) return bucketHit;
+    if (ctx.fields[itemBlank] !== undefined && !isBlankStoredValue(ctx.fields[itemBlank])) {
+      return ctx.fields[itemBlank];
+    }
+    const ff = formFields?.[ctx.formName ?? "Registration"];
+    if (ff?.[itemBlank] !== undefined && !isBlankStoredValue(ff[itemBlank])) return ff[itemBlank];
+    // FIB Item:blank when the left token is an item label (Q10:a), not a form name.
+    if (/^Q\d+$/i.test(first)) return ctx.fields[f] ?? "";
+    if (bucket && Object.prototype.hasOwnProperty.call(bucket, blank)) return bucket[blank];
+    if (bucketHit !== undefined) return bucketHit;
+    if (ctx.fields[blank] !== undefined) return ctx.fields[blank];
+    return "";
+  }
+
+  if (parts.length === 1) {
+    const formBucket = formFields?.[ctx.formName];
+    const fromForm = lookupFormFieldBucket(formBucket, f);
+    if (!isBlankStoredValue(fromForm)) return fromForm;
+    if (ctx.fields[f] !== undefined && ctx.fields[f] !== null) return ctx.fields[f];
+    if (fromForm !== undefined) return fromForm;
+    return "";
+  }
+
   return ctx.fields[f] ?? "";
 }
 
@@ -163,6 +200,14 @@ export function evalCondition(cond, ctx) {
   return compareValues(left, cond.op ?? "equals", right);
 }
 
+function ensureVirtualAppendList(ctx, documentName) {
+  ctx._virtualDocs = ctx._virtualDocs ?? {};
+  if (!ctx._virtualDocs[documentName]) {
+    ctx._virtualDocs[documentName] = { appendages: [] };
+  }
+  return ctx._virtualDocs[documentName].appendages;
+}
+
 export function runCommand(cmd, ctx) {
   switch (cmd.cmd) {
     case "comment":
@@ -219,9 +264,22 @@ export function runCommand(cmd, ctx) {
       return cmd.to;
     case "send":
       return null;
+    case "append": {
+      const document = String(cmd.document ?? "").trim();
+      const appendage = String(cmd.appendage ?? "").trim();
+      if (!document || !appendage) return null;
+      ensureVirtualAppendList(ctx, document).push(appendage);
+      return null;
+    }
     case "showDocument": {
       ctx._nav = ctx._nav ?? { showForm: null, documents: [] };
-      if (cmd.document) ctx._nav.documents.push(cmd.document);
+      if (cmd.document) {
+        ctx._nav.documents.push(cmd.document);
+        if (cmd.reset) {
+          const vd = ctx._virtualDocs?.[cmd.document];
+          if (vd) vd.appendages = [];
+        }
+      }
       return null;
     }
     case "show": {
@@ -255,11 +313,22 @@ export function runCommands(commands, ctx) {
   return null;
 }
 
+function snapshotVirtualDocs(ctx) {
+  if (!ctx._virtualDocs) return undefined;
+  const out = {};
+  for (const [name, vd] of Object.entries(ctx._virtualDocs)) {
+    out[name] = { appendages: [...(vd.appendages ?? [])] };
+  }
+  return out;
+}
+
 export function runProcessByName(project, processName, ctx) {
   const proc = project.processes?.find((p) => p.name === processName);
   if (!proc) return { type: "none" };
   ctx._nav = { showForm: null, documents: [], url: null };
+  ctx._virtualDocs = {};
   runCommands(proc.commands, ctx);
+  const virtualDocs = snapshotVirtualDocs(ctx);
   // Legacy ProcessCommandList accumulates Show Document HTML, then may Show Form.
   // Prefer documents when both are present — otherwise Form loops hide the Document.
   if (ctx._nav.documents.length) {
@@ -267,11 +336,12 @@ export function runProcessByName(project, processName, ctx) {
       type: "documents",
       documents: [...ctx._nav.documents],
       thenForm: ctx._nav.showForm || null,
+      virtualDocs,
     };
   }
-  if (ctx._nav.showForm) return { type: "form", form: ctx._nav.showForm };
-  if (ctx._nav.url) return { type: "url", url: ctx._nav.url };
-  return { type: "none" };
+  if (ctx._nav.showForm) return { type: "form", form: ctx._nav.showForm, virtualDocs };
+  if (ctx._nav.url) return { type: "url", url: ctx._nav.url, virtualDocs };
+  return { type: "none", virtualDocs };
 }
 
 // Legacy helper — kept for skipInstructions-only callers

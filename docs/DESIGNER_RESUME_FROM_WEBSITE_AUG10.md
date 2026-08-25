@@ -45,7 +45,7 @@ Roughly **Jul 28 – Aug 10** the owner prioritized **Libraries as the core of t
 | **Publish** | My Tawala → Library | Public catalog |
 | **Push** (Designer — rename pending) | Designer | What UI still calls **Deploy…** → Show in My Tawala |
 
-**Soft gate for viral access = save data**, not N uses (HOLD for end-page promo). Pre-live HOLDs still parked: real auth (#21), payments (#22), email metering (#20), private uniqueId on acquire (retire shared Library uniqueId).
+**Soft gate for viral access = save data**, not N uses (HOLD for end-page promo). Pre-live HOLDs still parked: real auth (#21), payments (#22), email metering (#20). **Website P0 (Aug 24):** private uniqueId on Copy to MyTawala — Task #26 in `website-mock/README.md` (retire shared Library uniqueId).
 
 ### Website surfaces that now exist
 

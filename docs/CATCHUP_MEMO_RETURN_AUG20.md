@@ -43,19 +43,14 @@ Do these in order; each is short.
 3. **Smoke MAX / MIN** — **Owner Passed Aug 20.** (Leftover blank value on `:8080` only — tracked separately, not a MAX/MIN failure.)
 4. **Smoke Remove Duplicates** — **Owner Passed Aug 20.**
 5. **Spot-check sequestered → released projects** that used item-level display conditions (Campaign Dashboards was one you looked at Aug 10). Open → Push → confirm braces/editor still feel right.
-6. **OPEN:** New Project / distinct uniqueIds must never inherit old submissions — `DESIGNER_OPEN_BUGS.md` § Aug 20.
+6. **Done Aug 21:** New Project / distinct uniqueIds — first Push mints non-colliding Tomcat name (`deployIdentity.mjs`). Smoke: File→New → Push → empty blanks + new uniqueId.
 7. **Optional:** Library `.tawala` reconvert quality pass (`DESIGNER_OPEN_TODOS` owner queue #16).
 
 ---
 
 ## Backlog that can wait until after the smokes
 
-- **Lost-stash bugs (owner Aug 11 — documented, not fixed):** Full write-up + screenshots in `DESIGNER_OPEN_BUGS.md` § “Parked Jul 30 / reconfirmed Aug 11”. Summary:
-  1. FIB Styles **Align right side** control almost invisible (already known Jul 30; reconfirmed).
-  2. Form canvas **Qn badges uneven widths** — want a straight right edge; SKIP may stick out.
-  3. Sign-up Template **Right justified** — labels bounce mid vs bottom of blanks.
-  4. Online Exam Builder **SetupVariables** — multi-line FIB TinyMCE: font size random + bleed between boxes (**Fixed Aug 20** — `custom_content.css` + pt sizes; smoke on `:8080`).
-  5. (Still parked from Jul 30) Form Text blank-line spacing on Push + image selection break.
+- **Lost-stash bugs (owner Aug 11 — closed Aug 20–21):** Write-up in `DESIGNER_OPEN_BUGS.md` § “Parked Jul 30 / reconfirmed Aug 11”. All fixed: FIB Styles Align-right; Qn badge column; Sign-up right-justify bottoms; Online Exam TinyMCE; Form Text blank-line Deploy + **image drag-select (Aug 21)**.
 - **Page Header image editor** — reinstall mothballed tool; allow horizontal stretch (`DESIGNER_PAGE_HEADER.md`, TODO #17).
 - Remaining template Deploy/Push smokes in `DESIGNER_TEMPLATE_MATRIX.md` — **Done Aug 20** (#4 Form+Process+Document Passed; Phase 2 complete).
 - Polish: form Cut/Copy/Paste; Get RecordList Fields branch; column-level `displayCondition` editor (item-level is done) — see **Deferred / next version** in `docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md`.

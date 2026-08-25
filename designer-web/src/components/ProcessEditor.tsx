@@ -603,6 +603,7 @@ export function ProcessEditor({ processName }: Props) {
               {processStatementPanel === "if" && (
                 <IfStatementBuilder
                   embedded
+                  project={project}
                   knownVariables={knownVariables}
                   state={ifBuilder}
                   onStateChange={setIfBuilder}
