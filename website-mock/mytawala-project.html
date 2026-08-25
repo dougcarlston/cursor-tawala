@@ -6,10 +6,10 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260824-uid1" />
-  <script src="js/demo-urls.js?v=20260810-guest2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260825-share1" />
+  <script src="js/demo-urls.js?v=20260825-share1"></script>
   <script src="js/transfer.js?v=20260824-uid1"></script>
-  <script src="js/project-ops.js?v=20260824-uid1"></script>
+  <script src="js/project-ops.js?v=20260825-share2"></script>
   <script src="js/data-ops.js?v=20260810-guest2"></script>
 </head>
 <body data-tawala-page="mytawala">
@@ -48,14 +48,73 @@
         : "") ||
       "";
 
+    function renderUnknown(queryId, resolved) {
+      const host = document.getElementById("pmDetailHost");
+      const safe = String(queryId || "").replace(/</g, "&lt;");
+      const discarded =
+        typeof window.TAWALA_MYTAWALA_DISCARDED_SEED_IDS !== "undefined" &&
+        window.TAWALA_MYTAWALA_DISCARDED_SEED_IDS.indexOf(queryId) !== -1;
+      let extra = "";
+      if (resolved && resolved.status === "ambiguous" && resolved.candidates && resolved.candidates.length) {
+        extra =
+          "<p>You have more than one My Tawala copy. Open one:</p><ul>" +
+          resolved.candidates
+            .map((c) => {
+              const name = TawalaDemo.displayName(c.name || c.id);
+              const href =
+                "mytawala-project.html?project=" + encodeURIComponent(c.id) + "&v=20260825-share1";
+              return (
+                "<li><a href=\"" +
+                href +
+                "\">" +
+                String(name).replace(/</g, "&lt;") +
+                "</a></li>"
+              );
+            })
+            .join("") +
+          "</ul>";
+      } else if (discarded || (resolved && resolved.libraryId)) {
+        const libName = (resolved && resolved.libraryName) || "this Library project";
+        extra =
+          "<p><b>“" +
+          safe +
+          "”</b> is the public Library catalog id, not a My Tawala row. " +
+          "Copy to MyTawala mints a <em>new</em> private id. Open your copy from " +
+          '<a href="mytawala.html">My Tawala</a> (double-click the row named ' +
+          String(libName).replace(/</g, "&lt;") +
+          "), or Copy to MyTawala from the Library if you do not have one yet.</p>";
+      }
+      host.innerHTML =
+        '<p class="pm-hint">Unknown My Tawala project' +
+        (queryId ? " (“" + safe + "”)" : "") +
+        ".</p>" +
+        extra +
+        '<p><a href="mytawala.html">← Back to My Tawala</a></p>';
+    }
+
     function renderProject(projectId, opts) {
       const project = projectId ? TawalaDemo.getMyTawala(projectId) : null;
       const host = document.getElementById("pmDetailHost");
       if (!project) {
-        host.innerHTML =
-          '<p class="pm-hint">Unknown project' +
-          (projectId ? " (“" + projectId.replace(/</g, "&lt;") + "”)" : "") +
-          '. Push from Web Designer and use <b>Show in My Tawala</b>, or <a href="mytawala.html">← Back to My Tawala</a>.</p>';
+        const resolved =
+          typeof TawalaDemo.resolveMyTawalaDetailsTarget === "function"
+            ? TawalaDemo.resolveMyTawalaDetailsTarget(projectId)
+            : { status: "missing" };
+        if ((resolved.status === "acquire" || resolved.status === "name") && resolved.id) {
+          try {
+            history.replaceState(
+              {},
+              "",
+          "mytawala-project.html?project=" + encodeURIComponent(resolved.id) +
+            (params.get("v") ? "&v=" + encodeURIComponent(params.get("v")) : "")
+            );
+          } catch {
+            /* ignore */
+          }
+          renderProject(resolved.id, opts);
+          return;
+        }
+        renderUnknown(projectId, resolved);
         return;
       }
       document.title = "Tawala - " + TawalaDemo.displayName(project.name);

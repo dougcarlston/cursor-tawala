@@ -506,6 +506,56 @@ window.TawalaDemo = {
     }
     return base;
   },
+  /**
+   * Details URLs often use a Library catalog id (e.g. online-exam-builder). My Tawala
+   * copies from Copy to MyTawala have a different overlay id. Resolve one row, or list
+   * candidates. Never invent a fake seed row.
+   */
+  resolveMyTawalaDetailsTarget(queryId) {
+    const id = String(queryId || "").trim();
+    if (!id) return { status: "missing", id: "", candidates: [] };
+    if (this.getMyTawala(id)) return { status: "exact", id, candidates: [] };
+    const entries = typeof this.myTawalaEntries === "function" ? this.myTawalaEntries() : [];
+    const fromLib = entries.filter(
+      (e) =>
+        e &&
+        (String(e.pulledFromLibraryId || "") === id ||
+          String(e.publishedToLibraryId || "") === id)
+    );
+    if (fromLib.length === 1) {
+      return { status: "acquire", id: fromLib[0].id, candidates: fromLib };
+    }
+    if (fromLib.length > 1) {
+      return { status: "ambiguous", id: "", candidates: fromLib };
+    }
+    const lib = this.getLibrary(id);
+    const wantName =
+      lib && typeof this.displayName === "function"
+        ? String(this.displayName(lib.name) || "").trim().toLowerCase()
+        : "";
+    if (wantName) {
+      const byName = entries.filter((e) => {
+        const n =
+          typeof this.displayName === "function"
+            ? String(this.displayName(e.name) || "").trim().toLowerCase()
+            : String(e.name || "").trim().toLowerCase();
+        return n === wantName;
+      });
+      if (byName.length === 1) {
+        return { status: "name", id: byName[0].id, candidates: byName };
+      }
+      if (byName.length > 1) {
+        return { status: "ambiguous", id: "", candidates: byName };
+      }
+    }
+    return {
+      status: "missing",
+      id: "",
+      candidates: [],
+      libraryId: lib ? id : "",
+      libraryName: lib && this.displayName ? this.displayName(lib.name) : "",
+    };
+  },
   /** Prefer Library, then My Tawala (detail pages that accept either id). */
   get(id) {
     return this.getLibrary(id) || this.getMyTawala(id) || null;

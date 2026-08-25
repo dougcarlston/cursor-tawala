@@ -183,7 +183,9 @@
    *
    * Aug 9, 2026 (Project Data banner): Use / Copy link / Export / Import / Purge live on
    * the Project Data line (selection-scoped). This bar keeps Rename / Make a Copy / Backup /
-   * Restore / Deploy (share) / Publish. Pull + Delete stay on the My Tawala listing selection bar.
+   * Restore / Deploy (share) / Publish. Pull stays on the listing. **Delete** is on the listing
+   * and on Details (Aug 25 #2) — Details Delete is a separate group from Purge, then returns
+   * to the listing so this page is never left empty.
    * Title double-click also opens Rename (no separate Rename control under the title).
    * Description under the title: double-click only (no hint / no button) → edit shortDescription.
    *
@@ -215,7 +217,7 @@
       id: "deploy",
       label: "DEPLOY",
       title:
-        "Go live for participants — copy a form/start link or embed it in a web page (not Publish; not Designer Push)",
+        "Copy a live form link or an embed snippet so other people can open this project",
       wired: "deploy-share",
     },
     {
@@ -223,6 +225,15 @@
       label: "PUBLISH",
       title: "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)",
       wired: "publish-mytawala",
+    },
+    {
+      id: "delete",
+      label: "DELETE",
+      title:
+        "Remove this copy from My Tawala. Does not clear responses (that is Purge) and does not hide it from the Library (that is De-activate). Public Library is unchanged.",
+      wired: "delete-mytawala",
+      confirmId: "delete",
+      destructive: true,
     },
   ];
 
@@ -372,12 +383,12 @@
   const PROJECT_SIDEBAR_OPS = [
     {
       label: "Include Project in Web Page",
-      title: "Open Deploy — copy an iframe embed for a start URL",
+      title: "Copy an iframe snippet to paste on another web page",
       wired: "deploy-share",
     },
     {
       label: "Invite Other People to This Project",
-      title: "Open Deploy — copy a form/start link to email participants",
+      title: "Copy a form link to send to other people",
       wired: "deploy-share",
     },
   ];
@@ -509,7 +520,8 @@
     },
     delete: {
       title: "Delete Project",
-      body: "Are you sure you want to delete this project from My Tawala?",
+      body:
+        "Remove this copy from My Tawala?\n\nThis does not clear response data (use Purge for that) and does not merely hide it from the public Library (that is De-activate).\n\nThe public Library entry, if any, stays. Live Tomcat XML stays until you Purge or retire it separately.",
       submit: "Delete",
     },
     erase: {
@@ -1474,9 +1486,14 @@
   }
 
   function renderProjectActionsBar(projectId) {
+    const main = PROJECT_ACTIONS.filter((op) => op.id !== "delete");
+    const danger = PROJECT_ACTIONS.filter((op) => op.id === "delete");
     return (
       '<div class="pm-actions-bar pm-detail-actions buttons" role="toolbar" aria-label="Project Actions">' +
-      PROJECT_ACTIONS.map((op) => actionButton(op, projectId)).join("") +
+      `<div class="pm-detail-actions-main">${main.map((op) => actionButton(op, projectId)).join("")}</div>` +
+      `<div class="pm-detail-actions-danger" aria-label="Remove this My Tawala copy">` +
+      danger.map((op) => actionButton(op, projectId)).join("") +
+      `</div>` +
       "</div>"
     );
   }
@@ -1599,7 +1616,7 @@
       if (opId === "delete" || el.dataset.wired === "delete-mytawala") {
         el.disabled = !id;
         el.title = id
-          ? `Delete “${selectedName}” from My Tawala`
+          ? `Remove “${selectedName}” from My Tawala (not Purge, not De-activate)`
           : "Select a project to delete";
       }
     });
@@ -2380,7 +2397,7 @@
     return (
       `<div class="pm-data-project-controls">` +
       vrule +
-      `<div class="pm-data-ctrl-group pm-data-banner-controls" role="toolbar" aria-label="Project Data actions">` +
+      `<div class="pm-data-ctrl-group pm-data-banner-controls" role="toolbar" aria-label="Start this project">` +
       `<a class="pm-data-ctrl pm-data-ctrl-use is-scope-disabled" href="#" ` +
       `data-op="use" data-wired="use-project" data-project="${pid}" ` +
       `title="${escapeHtml(useOffTitle)}" aria-disabled="true">Use</a>` +
@@ -2389,16 +2406,17 @@
       `title="${escapeHtml(copyOffTitle)}">Copy link</button>` +
       `</div>` +
       vrule +
-      `<div class="pm-data-ctrl-group">` +
+      `<div class="pm-data-ctrl-group" role="group" aria-label="Response data">` +
       `<button type="button" class="pm-data-ctrl" data-op="export" data-wired="export-mytawala" ` +
       `data-project="${pid}" data-data-scope="project" title="Export project response data">Export</button>` +
       `<button type="button" class="pm-data-ctrl" data-op="import" data-wired="import-mytawala" ` +
       `data-project="${pid}" data-data-scope="project" title="Import response data into this project">Import</button>` +
       `</div>` +
       vrule +
-      `<div class="pm-data-ctrl-group">` +
+      `<div class="pm-data-ctrl-group" role="group" aria-label="Clear responses">` +
       `<button type="button" class="pm-data-ctrl is-destructive" data-op="purge" data-wired="purge-local" ` +
-      `data-confirm="purge" data-project="${pid}" data-data-scope="project" title="Purge project data">Purge</button>` +
+      `data-confirm="purge" data-project="${pid}" data-data-scope="project" ` +
+      `title="Clear response data. The project stays on My Tawala (not Delete, not De-activate).">Purge</button>` +
       `</div>` +
       `</div>`
     );
@@ -2677,7 +2695,7 @@
           ? `Export response data for form “${sel.formName}” only`
           : op === "import"
             ? `Import into form “${sel.formName}” only (other forms’ Records stay intact)`
-            : `Purge response data for form “${sel.formName}” only`;
+            : `Purge response data for form “${sel.formName}” only (not Delete)`;
       /* Short visible cue — full form name stays in the title (toolbar width is tight). */
       if (op === "export" || op === "import" || op === "purge") {
         el.textContent = op === "export" ? "Export · form" : op === "import" ? "Import · form" : "Purge · form";
@@ -2690,7 +2708,7 @@
           ? "Export all project response data (forms list collapsed or project selected)"
           : op === "import"
             ? "Import whole-project response data (collapsed / project selected). Form-scoped export files still merge that form only — siblings stay intact. Expand and highlight a form to target it from the button."
-            : "Purge all project response data (forms list collapsed or project selected)";
+            : "Clear all response data. The project stays on My Tawala (not Delete, not De-activate).";
       if (op === "export" || op === "import" || op === "purge") {
         el.textContent = op === "export" ? "Export" : op === "import" ? "Import" : "Purge";
       }
@@ -2739,7 +2757,7 @@
         if (op === "deploy" || wired === "deploy-share") {
           setCtrlEnabled(el, true);
           el.title =
-            "Go live for participants — copy a form/start link or embed it in a web page (not Publish; not Designer Push)";
+            "Copy a live form link or an embed snippet so other people can open this project";
           if ("disabled" in el) el.disabled = false;
           return;
         }
@@ -2747,6 +2765,13 @@
           setCtrlEnabled(el, true);
           el.title =
             "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)";
+          if ("disabled" in el) el.disabled = false;
+          return;
+        }
+        if (op === "delete" || wired === "delete-mytawala") {
+          setCtrlEnabled(el, true);
+          el.title =
+            "Remove this copy from My Tawala. Does not clear responses (that is Purge) and does not hide it from the Library (that is De-activate). Public Library is unchanged.";
           if ("disabled" in el) el.disabled = false;
           return;
         }
@@ -5095,6 +5120,9 @@
    * Admin go-live + share help: copy a start URL / iframe embed. Not Publish, not Designer Push.
    * Empty Library acquires (no uniqueId / :8080 URLs) get an honest “need a live project first” message.
    * Seeded live projects (e.g. Online Exam Builder) share immediately.
+   *
+   * Aug 25 polish: Invite opens on the link field; Include opens on the embed field;
+   * Project Data start highlight preselects that start. uniqueId-in-URL stays HOLD.
    */
   function iframeEmbedSnippet(url, title) {
     const safeTitle = String(title || "Tawala form").replace(/"/g, "&quot;");
@@ -5104,7 +5132,36 @@
     );
   }
 
-  function openDeployShareDialog(projectId) {
+  function flashCopiedLabel(btn, idleLabel) {
+    if (!btn) return;
+    const idle = idleLabel || btn.textContent || "Copy";
+    btn.textContent = "Copied";
+    window.setTimeout(() => {
+      if (btn.isConnected) btn.textContent = idle;
+    }, 1600);
+  }
+
+  function preferredDeployStartIndex(project, starts) {
+    if (!starts || !starts.length) return 0;
+    const tree = document.getElementById("pmDataTree");
+    const sel = tree ? effectiveDataSelection(tree) : null;
+    if (!sel || sel.kind !== "start") return 0;
+    const byUrl = sel.url
+      ? starts.findIndex((s) => s && s.url === sel.url)
+      : -1;
+    if (byUrl >= 0) return byUrl;
+    const name = String(sel.formName || "").toLowerCase();
+    if (!name) return 0;
+    const byName = starts.findIndex((s) => {
+      const label = String((s && (s.label || s.form)) || "").toLowerCase();
+      return label === name;
+    });
+    return byName >= 0 ? byName : 0;
+  }
+
+  function openDeployShareDialog(projectId, opts) {
+    const optionsIn = opts || {};
+    const focusField = optionsIn.focus === "embed" ? "embed" : "link";
     if (typeof TawalaDemo === "undefined") {
       window.alert("Deploy isn't available — required scripts didn't load. Refresh and try again.");
       return;
@@ -5146,20 +5203,34 @@
         '<button type="button" class="pm-action is-active" id="deployShareClose">Close</button>' +
         "</div>";
     } else {
-      const options = starts
-        .map((sp, i) => {
-          const label = sp.label || sp.form || `Start ${i + 1}`;
-          return `<option value="${i}">${escapeHtml(label)}</option>`;
-        })
-        .join("");
+      const prefIdx = preferredDeployStartIndex(project, starts);
+      let startPickerHtml;
+      if (starts.length === 1) {
+        const only = starts[0];
+        const onlyLabel = escapeHtml(only.label || only.form || "Start");
+        startPickerHtml =
+          `<p class="tawala-modal-start-one">This project has one start: <b>${onlyLabel}</b></p>` +
+          `<input type="hidden" id="deployShareStartSelect" value="0" />`;
+      } else {
+        const optionHtml = starts
+          .map((sp, i) => {
+            const label = sp.label || sp.form || `Start ${i + 1}`;
+            const sel = i === prefIdx ? " selected" : "";
+            return `<option value="${i}"${sel}>${escapeHtml(label)}</option>`;
+          })
+          .join("");
+        startPickerHtml =
+          '<p class="pm-hint tawala-modal-hint-tight">If this project has more than one starting form, pick which one the link should open. ' +
+          "Online Exam, for example, has Exam for the person taking the test and Administration / Setup for you. " +
+          "If you already highlighted a start in Project Data, that one is selected.</p>" +
+          '<label class="tawala-modal-field" for="deployShareStartSelect">Start point' +
+          `<select id="deployShareStartSelect">${optionHtml}</select>` +
+          "</label>";
+      }
       bodyHtml =
         '<div class="tawala-modal-body">' +
-        '<p class="pm-hint tawala-modal-hint-tight">Pick a start point (multi-start apps like Online Exam often have Exam vs Admin/Setup). ' +
-        "Defaults to the first listed start.</p>" +
-        '<label class="tawala-modal-field" for="deployShareStartSelect">Start point' +
-        `<select id="deployShareStartSelect">${options}</select>` +
-        "</label>" +
-        '<label class="tawala-modal-field" for="deployShareLink">Form / start link (email to participants)' +
+        startPickerHtml +
+        '<label class="tawala-modal-field" for="deployShareLink">Form link (to send or paste)' +
         '<textarea id="deployShareLink" class="tawala-modal-code" rows="2" readonly></textarea>' +
         "</label>" +
         '<p class="tawala-modal-inline-actions">' +
@@ -5172,7 +5243,7 @@
         '<button type="button" class="pm-action is-active" id="deployShareCopyEmbed">Copy embed</button>' +
         "</p>" +
         '<p class="pm-hint tawala-modal-hint-tight">Paste the embed into your site HTML. ' +
-        "Participants open the same :8080 start URL as the copied link.</p>" +
+        "The embed opens the same live form as the link. It is not the Library Test Drive (that one is a shared demo).</p>" +
         "</div>" +
         '<div class="tawala-modal-actions">' +
         '<button type="button" class="pm-action" id="deployShareClose">Close</button>' +
@@ -5185,9 +5256,9 @@
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish tawala-modal--deploy-share" role="dialog" ' +
       'aria-modal="true" aria-labelledby="deployShareModalTitle">' +
-      '<h3 id="deployShareModalTitle">Deploy — share with participants</h3>' +
-      `<p class="pm-hint tawala-modal-lede">For administrators: go live for <b>others</b> on “${escapeHtml(displayName)}”. ` +
-      "Copy a form link or embed a start URL. This is not Publish (Library) and not Designer Push.</p>" +
+      '<h3 id="deployShareModalTitle">Share a live form</h3>' +
+      `<p class="pm-hint tawala-modal-lede">Copy a link so other people can open “${escapeHtml(displayName)}”, or copy the embed snippet to paste on another site. ` +
+      "This does not add the project to the Library (that is Publish).</p>" +
       bodyHtml +
       "</div>";
     document.body.appendChild(backdrop);
@@ -5207,42 +5278,61 @@
     const startSelect = backdrop.querySelector("#deployShareStartSelect");
     const linkArea = backdrop.querySelector("#deployShareLink");
     const embedArea = backdrop.querySelector("#deployShareEmbed");
+    const copyLinkBtn = backdrop.querySelector("#deployShareCopyLink");
+    const copyEmbedBtn = backdrop.querySelector("#deployShareCopyEmbed");
 
     function syncFields() {
-      const idx = Number(startSelect.value) || 0;
+      const idx = Number(startSelect && startSelect.value) || 0;
       const sp = starts[idx] || starts[0];
       const url = (sp && sp.url) || "";
       const label = (sp && (sp.label || sp.form)) || displayName;
-      linkArea.value = url;
-      embedArea.value = iframeEmbedSnippet(url, label);
+      if (linkArea) linkArea.value = url;
+      if (embedArea) embedArea.value = iframeEmbedSnippet(url, label);
     }
     syncFields();
-    startSelect.addEventListener("change", syncFields);
-    startSelect.focus();
+    if (startSelect && startSelect.tagName === "SELECT") {
+      startSelect.addEventListener("change", syncFields);
+    }
 
-    backdrop.querySelector("#deployShareCopyLink").addEventListener("click", () => {
-      void copyUrlToClipboard(linkArea.value).then(() => {
-        setStatus("Copied Deploy start link.");
+    if (copyLinkBtn) {
+      copyLinkBtn.addEventListener("click", () => {
+        void copyUrlToClipboard(linkArea.value).then(() => {
+          setStatus("Copied participant start link.");
+          flashCopiedLabel(copyLinkBtn, "Copy link");
+        });
       });
-    });
-    backdrop.querySelector("#deployShareCopyEmbed").addEventListener("click", async () => {
-      const text = embedArea.value;
-      if (!text) {
-        window.alert("No embed snippet yet — pick a start point with a :8080 URL.");
-        return;
-      }
-      try {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-          await navigator.clipboard.writeText(text);
-        } else {
-          window.prompt("Copy this iframe embed:", text);
+    }
+    if (copyEmbedBtn) {
+      copyEmbedBtn.addEventListener("click", async () => {
+        const text = embedArea.value;
+        if (!text) {
+          window.alert("No embed snippet yet — pick a start point with a :8080 URL.");
           return;
         }
-        setStatus("Copied iframe embed snippet.");
-      } catch {
-        window.prompt("Copy this iframe embed:", text);
-      }
-    });
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+            await navigator.clipboard.writeText(text);
+          } else {
+            window.prompt("Copy this iframe embed:", text);
+            return;
+          }
+          setStatus("Copied iframe embed snippet.");
+          flashCopiedLabel(copyEmbedBtn, "Copy embed");
+        } catch {
+          window.prompt("Copy this iframe embed:", text);
+        }
+      });
+    }
+
+    if (focusField === "embed" && embedArea) {
+      embedArea.focus();
+      embedArea.select();
+    } else if (linkArea) {
+      linkArea.focus();
+      linkArea.select();
+    } else if (startSelect && startSelect.tagName === "SELECT") {
+      startSelect.focus();
+    }
   }
 
   /**
@@ -5655,7 +5745,9 @@
     }
 
     if (wired === "deploy-share") {
-      openDeployShareDialog(projectId);
+      const op = String((btn && btn.dataset.op) || "").toLowerCase();
+      const focus = op.indexOf("include") !== -1 ? "embed" : "link";
+      openDeployShareDialog(projectId, { focus });
       return;
     }
 
