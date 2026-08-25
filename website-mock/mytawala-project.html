@@ -6,11 +6,11 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260825-share1" />
-  <script src="js/demo-urls.js?v=20260825-share1"></script>
-  <script src="js/transfer.js?v=20260824-uid1"></script>
-  <script src="js/project-ops.js?v=20260825-share2"></script>
-  <script src="js/data-ops.js?v=20260810-guest2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260825-notes19" />
+  <script src="js/demo-urls.js?v=20260825-notes19"></script>
+  <script src="js/transfer.js?v=20260825-notes19"></script>
+  <script src="js/project-ops.js?v=20260825-notes19"></script>
+  <script src="js/data-ops.js?v=20260825-notes19"></script>
 </head>
 <body data-tawala-page="mytawala">
   <div id="doc">
@@ -62,7 +62,7 @@
             .map((c) => {
               const name = TawalaDemo.displayName(c.name || c.id);
               const href =
-                "mytawala-project.html?project=" + encodeURIComponent(c.id) + "&v=20260825-share1";
+                "mytawala-project.html?project=" + encodeURIComponent(c.id) + "&v=20260825-layout14";
               return (
                 "<li><a href=\"" +
                 href +
@@ -158,8 +158,8 @@
       const status = document.getElementById("pmOpStatus");
       if (status) {
         status.textContent = justForked
-          ? "Made a copy — Records empty; Use grey until Push. Rename anytime."
-          : "Copied from Library — sort My Tawala by Created to find this row.";
+          ? "Made a copy — Records empty; Use grey until Edit in Designer → Push. Rename anytime."
+          : "Copied from Library — private :8080 clone; Use / Deploy / Publish from this page.";
       }
     }
 

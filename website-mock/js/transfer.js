@@ -40,9 +40,11 @@
  *     still marked " (stub)"). Replacing a **non-stub** Library entry (e.g. an outdated Main
  *     Menu template) does NOT set this — it just overwrites that id in libraryOverlay in place.
  *   tawala.mock.usageStats — { [myTawalaProjectId]: { timesUsed, lastUsedAt, lastUsed } }
- *     Mock **Times used** / **Last used** (Aug 9 Task #13): count a new respondent session when
- *     My Tawala **Use** successfully opens a start URL on :8080. Does **not** count Library
- *     Test Drive. Not live server telemetry — localStorage only until production sessions exist.
+ *     Mock **Times used** / **Last used** (Task #13): stamp after a My Tawala **Use**
+ *     that actually opens a start URL (listing icon or Project Data Use, after the
+ *     :8080 probe succeeds). Blocked / unreachable Use does not increment. Does **not**
+ *     count Library Test Drive (`bumpLibraryTimesUsed` / libraryOverlay.timesUsed).
+ *     Catalog ids refused. Not live server telemetry — localStorage only.
  *   Library **cloneCount** (catalog seed and/or libraryOverlay): times **Copy to MyTawala** /
  *     Get from Library acquired this public entry (≠ Records, ≠ Library Times used).
  *   Library **timesUsed** (catalog seed and/or libraryOverlay): mock popularity — how often
@@ -617,7 +619,7 @@
         ok: false,
         error:
           "Clone reused the public Library uniqueId — nothing was saved to My Tawala. " +
-          "The Library Test Drive is unchanged. Try again, or Push from Designer File → New.",
+          "The Library Test Drive is unchanged. Try again, or File → New in Designer and Push a private copy.",
       };
     }
     const startPoints = startPointsFromDeploy(deploy);
@@ -2309,6 +2311,7 @@
   /**
    * Bump Library timesUsed when Test Drive opens a start (mock hottest signal).
    * Thin overlay write — does not snapshot the full catalog row.
+   * Never writes tawala.mock.usageStats (My Tawala Use counters).
    */
   function bumpLibraryTimesUsed(libraryId) {
     if (!libraryId) return null;
@@ -2332,7 +2335,7 @@
 
   /**
    * Mock Times used / Last used for a My Tawala project (Task #13).
-   * Keyed by private My Tawala id — not uniqueId.
+   * Keyed by private My Tawala id — not uniqueId, not Library catalog id.
    */
   function getUsageStats(projectId) {
     if (!projectId) return { timesUsed: 0, lastUsedAt: null, lastUsed: null };
@@ -2349,12 +2352,40 @@
     };
   }
 
+  /** Unused → "—" (intentional empty, not 0-as-error). First Use shows 1, 2, … */
+  function formatUsageTimesUsed(statsOrCount) {
+    const raw =
+      statsOrCount && typeof statsOrCount === "object"
+        ? statsOrCount.timesUsed
+        : statsOrCount;
+    const n = Number(raw);
+    return Number.isFinite(n) && n > 0 ? String(Math.floor(n)) : "—";
+  }
+
+  /** Unused → "—". After Use, listing date `M/D/YY` (same as Created / Updated). */
+  function formatUsageLastUsed(statsOrValue) {
+    if (statsOrValue && typeof statsOrValue === "object") {
+      return statsOrValue.lastUsed || "—";
+    }
+    const s = statsOrValue == null ? "" : String(statsOrValue).trim();
+    return s && s !== "—" ? s : "—";
+  }
+
   /**
-   * Count one mock respondent session when My Tawala Use opens a start URL successfully.
-   * Do not call from Library Test Drive (Aug 9).
+   * Count one mock My Tawala Use after the live open proceeds (Task #13).
+   * Caller (`openUseRuntimeUrl`) stamps only after the :8080 probe succeeds.
+   * Call from My Tawala Use only — never Library Test Drive (`bumpLibraryTimesUsed`).
+   * Catalog / unknown ids return null (getMyTawala miss). localStorage only.
    */
   function recordRespondentSession(projectId) {
     if (!projectId) return null;
+    if (
+      typeof window.TawalaDemo !== "undefined" &&
+      typeof window.TawalaDemo.getMyTawala === "function" &&
+      !window.TawalaDemo.getMyTawala(projectId)
+    ) {
+      return null;
+    }
     const store = readJson(USAGE_KEY, {});
     const prev = store[projectId] && typeof store[projectId] === "object" ? store[projectId] : {};
     const prevCount = Number(prev.timesUsed);
@@ -2804,6 +2835,8 @@
     formatCurrentVersion,
     STARTING_VERSION_NUMBER,
     getUsageStats,
+    formatUsageTimesUsed,
+    formatUsageLastUsed,
     recordRespondentSession,
     suggestMakeCopyName,
     makeCopyOfMyTawalaProject,

@@ -6,11 +6,11 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260825-ops2" />
-  <script src="js/demo-urls.js?v=20260824-uid1"></script>
-  <script src="js/transfer.js?v=20260824-uid1"></script>
-  <script src="js/project-ops.js?v=20260825-ops2"></script>
-  <script src="js/data-ops.js?v=20260810-guest2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260825-notes19" />
+  <script src="js/demo-urls.js?v=20260825-notes19"></script>
+  <script src="js/transfer.js?v=20260825-notes19"></script>
+  <script src="js/project-ops.js?v=20260825-notes19"></script>
+  <script src="js/data-ops.js?v=20260825-notes19"></script>
 </head>
 <body data-tawala-page="mytawala">
   <div id="doc">
@@ -27,33 +27,17 @@
         <div class="block">
           <h3>Web Designer</h3>
           <p><a href="http://localhost:5173" target="_blank" rel="noopener">Open browser Designer</a> (localhost:5173)</p>
-          <p class="pm-hint"><a href="designer.html">Designer stub page</a> (legacy download copy)</p>
-        </div>
-        <div class="block">
-          <h3>Transfers</h3>
-          <p class="pm-hint">Symbiotic hops (Designer palette; grey = stub):</p>
-          <div class="pm-sidebar-ops pm-sidebar-stack" style="margin-top:6px;">
-            <button type="button" class="pm-action" disabled title="Replace with newer Library version" data-wired="false">Pull from Library</button>
-            <button type="button" class="pm-action" disabled title="Publish / move a My Tawala project into the public Library" data-wired="false">Publish to Library</button>
-            <a class="pm-action is-active" href="http://localhost:5173" target="_blank" rel="noopener" title="Open Web Designer to Push">Push from Designer</a>
-          </div>
-        </div>
-        <div class="block">
-          <h3>Memory / archive</h3>
-          <p><a href="project-ops-review.html">Archive labels / unimplemented features</a></p>
-          <p class="pm-hint">Full Project Manager catalog kept off this page for layout fidelity.</p>
         </div>
         <div class="block">
           <h3>Maintainer tools</h3>
           <p><a href="library-admin.html">Library admin tools</a></p>
-          <p class="pm-hint">Rename, overwrite, or retire public Library entries without an agent — mock-only client gate.</p>
         </div>
       </div>
 
       <div class="content">
         <div class="listing-identity" role="status">
           <span class="listing-where">Private</span>
-          <span class="listing-pile">Your projects — Push from Designer, Get from Library… (Copy to MyTawala), or Make a Copy. Select a linked row to Refresh; select any row to Make a Copy or Delete.</span>
+          <span class="listing-pile">Your private projects — Get from Library… (Copy to MyTawala), or Make a Copy. Select a linked row to Refresh; select any row to Make a Copy or Delete.</span>
           <span class="listing-switch">Looking for the public catalog? <a href="library.html">Library</a></span>
         </div>
         <div id="deployInboxHost" class="deploy-inbox" hidden></div>
@@ -81,18 +65,18 @@
               aria-label="My Projects — private My Tawala list"
             >
               <colgroup id="myProjectsCols">
-                <col class="col-name col-group-info" style="width: 28%" />
-                <col class="col-version col-group-info" style="width: 7%" />
-                <col class="col-created col-group-info" style="width: 11%" />
-                <col class="col-updated col-group-info" style="width: 11%" />
-                <col class="col-records col-group-info" style="width: 8%" />
-                <col class="col-times-used col-group-info" style="width: 9%" />
-                <col class="col-last-used col-group-info" style="width: 10%" />
-                <col class="col-op col-group-info" style="width: 7%" />
+                <col class="col-name col-group-info" />
+                <col class="col-version col-group-info" />
+                <col class="col-created col-group-info" />
+                <col class="col-updated col-group-info" />
+                <col class="col-records col-group-info" />
+                <col class="col-times-used col-group-info" />
+                <col class="col-last-used col-group-info" />
+                <col class="col-op col-group-info" />
               </colgroup>
               <thead>
                 <tr id="myProjectsHead">
-                  <th class="left sortable col-group-info" scope="col" data-sort="name" title="Sort by name">
+                  <th class="left sortable col-name col-group-info" scope="col" data-sort="name" title="Sort by name">
                     <span class="th-label">Name</span>
                   </th>
                   <th
@@ -120,7 +104,7 @@
                     class="col-times-used sortable col-group-info"
                     scope="col"
                     data-sort="timesUsed"
-                    title="Times used — mock My Tawala Use → :8080 sessions (not Library Test Drive; not live telemetry). Sort by count."
+                    title="Times used — mock My Tawala Use clicks (not Library Test Drive; not live telemetry). Unused = —. Sort by count."
                   >
                     <span class="th-label">Times used</span>
                   </th>
@@ -128,7 +112,7 @@
                     class="col-last-used sortable col-group-info"
                     scope="col"
                     data-sort="lastUsed"
-                    title="Last used — most recent My Tawala Use → :8080 in this browser. Sort by date."
+                    title="Last used — most recent My Tawala Use in this browser. Unused = —. Sort by date."
                   >
                     <span class="th-label">Last used</span>
                   </th>
@@ -358,14 +342,23 @@
           : "";
       const usage = usageForProject(p);
       const timesUsed =
-        Number(usage.timesUsed) > 0 ? String(Math.floor(Number(usage.timesUsed))) : "0";
-      const lastUsed = usage.lastUsed || "—";
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.formatUsageTimesUsed === "function"
+          ? TawalaTransfer.formatUsageTimesUsed(usage)
+          : Number(usage.timesUsed) > 0
+            ? String(Math.floor(Number(usage.timesUsed)))
+            : "—";
+      const lastUsed =
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.formatUsageLastUsed === "function"
+          ? TawalaTransfer.formatUsageLastUsed(usage)
+          : usage.lastUsed || "—";
       const timesTitle =
-        "Times used — mock count of My Tawala Use sessions that opened a start URL (not Test Drive; not live telemetry)" +
-        (timesUsed !== "0" ? `: ${timesUsed}` : "");
+        "Times used — mock count of My Tawala Use clicks that open a start URL (not Test Drive; not live telemetry)" +
+        (timesUsed !== "—" ? `: ${timesUsed}` : "");
       const lastTitle = usage.lastUsed
-        ? `Last used — ${usage.lastUsed} (most recent My Tawala Use → :8080)`
-        : "Last used — no My Tawala Use session recorded yet in this browser";
+        ? `Last used — ${usage.lastUsed} (most recent My Tawala Use)`
+        : "Last used — no My Tawala Use recorded yet in this browser";
       const versionTitle =
         version === "—"
           ? "Version — none yet (Push → Show in My Tawala, or Copy to MyTawala / Make a Copy starts at 1)"
@@ -373,7 +366,7 @@
       return `<tr data-project-id="${escapeHtml(p.id)}" role="row" tabindex="0" aria-selected="${
         selected ? "true" : "false"
       }"${selected ? ' class="is-selected"' : ""} title="Click to select · Double-click for Project Details">
-        <td class="info left col-group-info">
+        <td class="info left col-name col-group-info">
           <span class="title listing-project-name">${escapeHtml(title)}${fromLib}${offline}</span>
         </td>
         <td class="col-version col-group-info" title="${escapeHtml(versionTitle)}">${escapeHtml(version)}</td>
@@ -544,7 +537,7 @@
       host.innerHTML =
         '<div class="deploy-inbox-inner">' +
         "<h3>From Web Designer</h3>" +
-        '<p class="pm-hint">Recent Deploy receipts. Each also adds/updates a <b>My Projects</b> row (browser overlay on top of the catalog).</p>' +
+        '<p class="pm-hint">Recent Push receipts. Each also adds/updates a <b>My Projects</b> row (browser overlay on top of the catalog).</p>' +
         "<ul>" +
         inbox
           .map((e) => {
@@ -576,7 +569,7 @@
     renderDeployInbox();
     document.addEventListener("click", (ev) => {
       if (ev.target.id === "clearDeployInbox" && typeof TawalaTransfer !== "undefined") {
-        if (!window.confirm("Are you sure you want to clear the Deploy inbox?")) return;
+        if (!window.confirm("Are you sure you want to clear the Push inbox?")) return;
         TawalaTransfer.clearDeployInbox();
         renderDeployInbox();
       }
@@ -669,6 +662,10 @@
 
     document.addEventListener("tawala:project-active-changed", () => {
       refreshProjects();
+      renderRows();
+    });
+
+    document.addEventListener("tawala:usage-updated", () => {
       renderRows();
     });
   </script>

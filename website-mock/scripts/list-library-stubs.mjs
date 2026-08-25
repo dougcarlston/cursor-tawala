@@ -18,17 +18,18 @@
  *   node scripts/list-library-stubs.mjs --json      # id/name/category/jsonFile as JSON
  *
  * Retirement path (owner asks an agent to run this; see README.md
- * "Retiring Library stubs"): the correct long-term route is Designer →
- * Deploy → Publish once Publish is wired. Until then, an agent retiring a
- * stub by hand should, per id:
- *   1. Confirm the equivalent working copy (Designer project / Deploy) is
+ * "Library stubs"): the correct route is Designer → Push → My Tawala
+ * Details **PUBLISH**. Publish is wired (Aug 1, 2026). Catalog seed should
+ * stay at 0 stubs. If a stub overlay reappears locally, use library-admin
+ * Retire or `_diag-clear-library-stubs.html`. An agent retiring a leftover
+ * catalog row by hand should, per id:
+ *   1. Confirm the equivalent working copy (Designer project / Push) is
  *      ready, or the owner explicitly wants the stub gone without a
  *      replacement.
  *   2. Remove the entry from TAWALA_LIBRARY in js/demo-urls.js — and, if
  *      moving it to My Tawala instead of deleting outright, add an
- *      equivalent entry to TAWALA_MYTAWALA with the " (stub)" suffix and
- *      `stub: true` dropped (My Tawala is private; the public-facing stub
- *      marker no longer applies there).
+ *      equivalent entry to TAWALA_MYTAWALA (My Tawala is private; the
+ *      public-facing stub marker no longer applies there).
  *   3. Move the backing JSON from projects/library/<file> to
  *      projects/mytawala/<file> when moving to My Tawala (or delete it
  *      when just retiring the placeholder outright).
@@ -97,9 +98,9 @@ function main() {
     );
   });
   console.log(
-    "\nCorrect long-term route: Designer -> Deploy -> Publish (once Publish is wired).\n" +
-      'Until then, ask an agent: "retire stub <id>" or "move all stubs to My Tawala".\n' +
-      "See website-mock/README.md \u00a7 Retiring Library stubs."
+    "\nCorrect route: Designer -> Push -> My Tawala Details PUBLISH.\n" +
+      "Catalog seed should be 0 stubs. Ask an agent: \"retire stub <id>\" only if a row reappears.\n" +
+      "See website-mock/README.md \u00a7 Library stubs."
   );
 }
 

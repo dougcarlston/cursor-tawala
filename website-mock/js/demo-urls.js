@@ -7,7 +7,7 @@
  *
  * Public Library holds vetted liveReady try-outs only (Aug 10, 2026 cleanup). New Project
  * starters live under designer-web/public/samples/templates/ (catalog.ts). Sign-up Sheet and
- * Sign-up Sheet w Email are Designer New Project only until a good Deploy is re-Published.
+ * Sign-up Sheet w Email are Designer New Project only until a good Push is re-Published.
  * Empty/Blank, Form with Process, Form with Process & Document stay Designer-only.
  *
  * Library listing groups mirror Designer File → New Project categories
@@ -1486,6 +1486,7 @@ window.TawalaDemo = {
           typeof window.TawalaTransfer !== "undefined" &&
           typeof window.TawalaTransfer.bumpLibraryTimesUsed === "function"
         ) {
+          /* Library catalog Times used (popularity) — not My Tawala usageStats. */
           window.TawalaTransfer.bumpLibraryTimesUsed(libraryId);
         }
         void this.openTestDrive(href, { purge });

@@ -1895,11 +1895,37 @@ body[data-tawala-page="library"] .library-listing-frame {
 
 table.projectListing.mytawala-listing {
   width: 100%;
-  table-layout: fixed;
+  /* auto + leftover Name: metric/Use columns hug content (1% + nowrap).
+   * fixed + 28% Name left a gap before Version and wrapped titles early. */
+  table-layout: auto;
   border-collapse: collapse;
   margin: 0;
   font-size: 0.88em;
   line-height: 1.2;
+}
+
+/* Name takes leftover table width; wrap only when the title is longer than that. */
+table.projectListing.mytawala-listing col.col-name,
+table.projectListing.mytawala-listing thead th.col-name,
+table.projectListing.mytawala-listing thead th.left,
+table.projectListing.mytawala-listing tbody td.col-name,
+table.projectListing.mytawala-listing tbody td.info,
+table.projectListing.mytawala-listing tbody td.left {
+  width: auto;
+  min-width: 16em;
+}
+
+table.projectListing.mytawala-listing tbody td.col-name,
+table.projectListing.mytawala-listing tbody td.info,
+table.projectListing.mytawala-listing tbody td.left {
+  width: 100%;
+}
+
+table.projectListing.mytawala-listing col:not(.col-name),
+table.projectListing.mytawala-listing thead th:not(.col-name):not(.left),
+table.projectListing.mytawala-listing tbody td:not(.col-name):not(.info):not(.left) {
+  width: 1%;
+  white-space: nowrap;
 }
 
 table.projectListing.mytawala-listing th,
@@ -2010,6 +2036,10 @@ table.projectListing.mytawala-listing td.info {
 table.projectListing.mytawala-listing .listing-project-name {
   font-weight: 700;
   color: #004392;
+  /* Use the leftover Name cell — no inner max-width / ellipsis cap. */
+  display: inline;
+  max-width: none;
+  white-space: normal;
 }
 
 table.projectListing.mytawala-listing .col-date {
@@ -2223,9 +2253,13 @@ body[data-tawala-page="mytawala"] .pm-submenu .link-pending.selected {
   margin-top: 0;
 }
 
-/* No My Tawala sub-menu bar — content starts under primary chrome */
+/* No My Tawala sub-menu bar — content starts under primary chrome.
+ * Listing `.content` is capped at 58rem; Details must not inherit that or
+ * Project Data (sidebar + Records / Times used / Last used + controls)
+ * stays under the 48rem squeeze query and those stats never paint. */
 body[data-tawala-page="mytawala"] .pm-detail-content {
   padding-top: 8px;
+  max-width: none;
 }
 
 .pm-detail-header h2,
@@ -2694,19 +2728,20 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
    * Shared column recipe used identically by banner + every form row:
    * toggle/cue | name | Records | Times | Last | controls/spacer.
    *
-   * Space priority when tight (owner Aug 9):
-   *   1) Controls always fully visible (fixed track — never clip Purge).
-   *   2) Keep Records visible; Times used / Last used drop (not crush — heads
-   *      must stay readable/aligned with dashes while visible).
-   *   3) Form/project names use leftover 1fr (CSS ellipsis); ~6ch is only the
-   *      grid min when very tight — never a permanent JS/CSS display cap.
-   * Hard control width + subgrid — keeps banner heads on the same tracks as form dashes.
+   * Space priority when tight (owner Aug 9; Details packing Aug 25):
+   *   1) Controls hug their buttons (max-content — never clip Purge).
+   *   2) Keep Records visible; Times used / Last used drop only below 32rem
+   *      (not crush — heads stay readable/aligned with dashes while visible).
+   *   3) Form/project names use leftover 1fr; project title wraps only if that
+   *      track is still too short. ~12ch is only the grid min when very tight.
    */
-  /* Stat tracks sized to fit full uppercase heads (RECORDS / TIMES USED / LAST USED). */
-  --pm-data-records-w: 5.75em;
-  --pm-data-extra-stat-w: 5.75em; /* Times used / Last used — drop before Records */
-  --pm-data-ctrl-w: 26em; /* Use · Copy link | Export·form Import·form | Purge·form */
-  --pm-data-name-min: 6ch; /* last-resort floor when viewport is tight */
+  /* Stat + control tracks hug content so the name 1fr gets leftover width.
+   * A fixed 26em control column left a gap and starved long project titles
+   * once Times used / Last used stayed visible (details13). */
+  --pm-data-records-w: max-content;
+  --pm-data-extra-stat-w: max-content; /* Times used / Last used — drop below 32rem only */
+  --pm-data-ctrl-w: max-content; /* Use · Copy link | Export·form Import·form | Purge·form */
+  --pm-data-name-min: 6ch; /* last-resort floor when viewport is tight — leftover still goes here */
   --pm-data-gap: 6px;
   --pm-data-vrule: #6e5c45;
   --pm-data-pad-inline-start: 2px;
@@ -2735,11 +2770,16 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
 }
 
 /*
- * Squeeze: drop Times / Last when tight (do not shrink tracks below header
- * width — that jammed TIMES USED / LAST USED into overlapping glyphs).
- * Records stays; name keeps 1fr and ellipsizes only as leftover runs out.
+ * Squeeze: drop Times / Last only on very narrow stacked layouts.
+ * Do not shrink tracks below header width (that jammed TIMES USED / LAST USED
+ * into overlapping glyphs). Records stays; name keeps 1fr.
+ *
+ * 48rem was too high: Details Project Data (even after lifting the listing
+ * 58rem cap) is often ~36–42rem beside the options rail, so Times used /
+ * Last used were in the DOM but never visible. 32rem is below two-column
+ * Details; phones may still drop them.
  */
-@container pm-data (max-width: 48rem) {
+@container pm-data (max-width: 32rem) {
   .pm-data-grid {
     --pm-data-extra-stat-w: 0px;
   }
@@ -2750,6 +2790,55 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
     overflow: hidden;
     pointer-events: none;
   }
+}
+
+/* Details Project Data: always paint Times used / Last used on the project row.
+ * The squeeze query above used to match every two-column Details layout
+ * (listing 58rem cap + options rail). Higher specificity beats the query.
+ *
+ * Spell max-content on the template (not only via custom props) so leftover
+ * width goes to the title 1fr instead of stretching the button track. */
+.pm-detail-main .pm-data-grid {
+  --pm-data-extra-stat-w: max-content;
+  --pm-data-ctrl-w: max-content;
+  --pm-data-gap: 4px;
+  grid-template-columns:
+    20px minmax(var(--pm-data-name-min), 1fr)
+    max-content max-content max-content max-content;
+}
+
+.pm-detail-main .pm-data-stat-times,
+.pm-detail-main .pm-data-stat-last {
+  visibility: visible;
+  pointer-events: auto;
+  min-width: min-content;
+  max-width: none;
+  overflow: visible;
+}
+
+/* Title uses leftover 1fr after stats+buttons hug the right.
+ * One line when it fits; ellipsis only if the title is still longer than
+ * that leftover. Wrapping to two lines left a ragged hole beside line 2. */
+.pm-detail-main .pm-data-tree-project-name {
+  justify-self: stretch;
+  width: 100%;
+  max-width: none;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  word-spacing: normal; /* tawala-base html * { word-spacing: 0.05em } inflates long titles */
+}
+
+.pm-detail-main .pm-data-project-controls {
+  /* Hug the button cluster on the right; do not stretch a leftover hole. */
+  justify-self: end;
+  min-width: min-content;
+  width: max-content;
+  max-width: none;
+}
+
+.pm-detail-main .pm-data-ctrl-group {
+  min-width: min-content;
 }
 
 .pm-data-grid.is-scrollable {
@@ -3021,13 +3110,13 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
   justify-content: flex-end;
   gap: 6px;
   /*
-   * min-width:0 so button max-content cannot widen the fixed control track
-   * (that shifted banner heads off the form-row dashes). Track stays
-   * --pm-data-ctrl-w; buttons themselves are flex-shrink:0.
+   * Track is max-content: contribute the button cluster width so leftover
+   * goes to the project title. (min-width:0 collapsed that track and left
+   * a hole between Last used and Use, with the title ellipsizing.)
    */
-  min-width: 0;
-  width: 100%;
-  max-width: 100%;
+  min-width: min-content;
+  width: max-content;
+  max-width: none;
   overflow: visible;
   align-self: stretch;
   cursor: default;

@@ -175,6 +175,7 @@
     ) {
       return;
     }
+    /* Library catalog popularity only — never My Tawala tawala.mock.usageStats. */
     TawalaTransfer.bumpLibraryTimesUsed(projectId);
   }
 
@@ -223,7 +224,7 @@
     {
       id: "publish",
       label: "PUBLISH",
-      title: "Publish this project to the public Library (rename, then optionally replace a stub or outdated Library entry)",
+      title: "Publish this project to the public Library (rename; optionally replace an outdated Library entry)",
       wired: "publish-mytawala",
     },
     {
@@ -669,7 +670,7 @@
       where:
         "One unified form list (Aug 9): collapsed → starts (◀) → all forms; same tight row style. " +
         "Banner: Records / Times used / Last used heads + Use / Copy link | Export Import | Purge. " +
-        "Records = submissions; Times used / Last used = mock My Tawala Use→:8080 sessions (not Test Drive). " +
+        "Records = submissions; Times used / Last used = mock My Tawala Use that actually opens (not Test Drive; blocked Use does not count). Unused = —. " +
         "Project caret (▸) expands; start rows use a left-pointing cue (◀, not an expander). " +
         "Project-level Times used / Last used on a row under the banner; form rows show Records only. " +
         "Enablement: collapsed/project → E/I/Purge + Backup/Restore/Publish (Use/Copy off); " +
@@ -1178,9 +1179,9 @@
     return sp ? sp.url : null;
   }
 
-  /** Honest grey-Use tip when Save a copy left the row without :8080 start URLs. */
+  /** Honest grey-Use tip when a fork/copy has no :8080 start URLs yet. */
   const USE_NEEDS_DEPLOY_TITLE =
-    "Deploy this project before Use — no :8080 start URL yet (Make a Copy starts empty until Push)";
+    "No live :8080 start yet — Make a Copy starts empty until Edit in Designer → Push. Website Deploy is share/embed after a live start exists.";
 
   function projectHasUseRuntime(project) {
     return !!(projectUseUrl(project) || startPointsWithUrls(project).length);
@@ -1330,8 +1331,31 @@
     "  4. Click Purge — do not click Use\n\n" +
     "Copy link still copies the real :8080 start URL if you need it later.";
 
+  /**
+   * Stamp Times used / Last used after a My Tawala Use actually proceeds (Task #13).
+   * Call only after the :8080 probe succeeds and the live tab is opened.
+   * Mock localStorage. Not Library Test Drive. Catalog ids are refused in transfer.js.
+   */
+  function noteMyTawalaUseOpen(projectId) {
+    if (
+      !projectId ||
+      typeof TawalaTransfer === "undefined" ||
+      typeof TawalaTransfer.recordRespondentSession !== "function"
+    ) {
+      return null;
+    }
+    const stats = TawalaTransfer.recordRespondentSession(projectId);
+    if (!stats) return null;
+    setUsageStatsDisplay(document, stats, projectId);
+    document.dispatchEvent(
+      new CustomEvent("tawala:usage-updated", { detail: { projectId, stats } })
+    );
+    return stats;
+  }
+
   async function openUseRuntimeUrl(url, opts) {
     if (!url || url === "#") return;
+    const projectId = opts && opts.projectId ? String(opts.projectId) : "";
     setStatus("Checking Java runtime on :8080…");
     const up = await probeLocalJavaRuntime();
     if (!up) {
@@ -1339,19 +1363,10 @@
       window.alert(USE_OFFLINE_ALERT);
       return;
     }
-    const projectId = opts && opts.projectId ? String(opts.projectId) : "";
-    /* Mock Times used / Last used (Task #13): count a successful Use → :8080 open.
-     * Not Library Test Drive. Not live respondent telemetry. */
-    if (
-      projectId &&
-      typeof TawalaTransfer !== "undefined" &&
-      typeof TawalaTransfer.recordRespondentSession === "function"
-    ) {
-      const stats = TawalaTransfer.recordRespondentSession(projectId);
-      if (stats) setUsageStatsDisplay(document, stats);
-    }
     setStatus("Opening start form on :8080…");
     window.open(url, "_blank", "noopener");
+    /* Count only after probe success + open proceeds. Blocked / unreachable Use does not increment. */
+    noteMyTawalaUseOpen(projectId);
   }
 
   function startPointsWithUrls(project) {
@@ -1852,12 +1867,7 @@
       ).join("") +
       "</div>";
     if (!rows.length) {
-      return (
-        chips +
-        '<p class="pm-hint">No versions yet — <b>Copy to MyTawala</b> / <b>Make a Copy</b> start at version <b>1</b>; ' +
-        "open in Web Designer, Push (Deploy), optionally add a version note, then <b>Show in My Tawala</b> to mint the next. " +
-        "Listing shows the current Version number only; full history appears here.</p>"
-      );
+      return chips + '<p class="pm-hint deploy-hint-quiet">No versions yet.</p>';
     }
     const body = rows
       .map((v, idx) => {
@@ -1905,11 +1915,7 @@
       "<th scope=\"col\">Date</th>" +
       "<th scope=\"col\">Status</th>" +
       "</tr></thead>" +
-      `<tbody>${body}</tbody></table>` +
-      '<p class="pm-hint"><b>Push this version</b> switches the live :8080 definition to the selected row ' +
-      "(same uniqueId; does not mint a new version). Needs a saved snapshot from " +
-      "<b>Deploy → Show in My Tawala</b>. <b>Download</b> is still metadata-only. Delete version stays deferred. " +
-      "Listing remains one row per project. Response data may not match an older schema — you’ll be asked to confirm.</p>"
+      `<tbody>${body}</tbody></table>`
     );
   }
 
@@ -2391,7 +2397,7 @@
       : USE_NEEDS_DEPLOY_TITLE;
     const copyOffTitle = projectHasUseRuntime(project)
       ? "Select a start point to copy its link"
-      : "Deploy this project before Copy link — no :8080 start URL yet";
+      : "No :8080 start URL yet — Copy link needs a live start (Edit in Designer → Push for empty copies).";
     const vrule = `<span class="pm-data-vrule" aria-hidden="true"></span>`;
     /* Nested in last shared grid track so form-row stats align with banner heads. */
     return (
@@ -2432,7 +2438,6 @@
    * Full-height vrules: stats|controls, Copy|Export, Import|Purge.
    */
   function renderProjectDataTree(project) {
-    const deployed = typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project);
     const displayName = projectDisplayName(project);
     const formNames = collectFormNames(project);
     const entries = orderedFormEntries(project, formNames);
@@ -2460,26 +2465,23 @@
       typeof TawalaTransfer.getUsageStats === "function"
         ? TawalaTransfer.getUsageStats(project.id)
         : { timesUsed: 0, lastUsed: null };
-    const timesLabel = String(usage.timesUsed || 0);
-    const lastLabel = usage.lastUsed || "—";
+    const timesLabel =
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.formatUsageTimesUsed === "function"
+        ? TawalaTransfer.formatUsageTimesUsed(usage)
+        : usage.timesUsed > 0
+          ? String(usage.timesUsed)
+          : "—";
+    const lastLabel =
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.formatUsageLastUsed === "function"
+        ? TawalaTransfer.formatUsageLastUsed(usage)
+        : usage.lastUsed || "—";
     const timesTitle =
-      "Times used — mock count of My Tawala Use sessions that opened a start URL (not Test Drive; not live telemetry)";
+      "Times used — mock count of My Tawala Use clicks that open a start URL (not Test Drive; not live telemetry)";
     const lastTitle = usage.lastUsed
-      ? `Last used — ${usage.lastUsed} (most recent My Tawala Use → :8080)`
-      : "Last used — no My Tawala Use session recorded yet in this browser";
-
-    const hint = deployed
-      ? '<p class="pm-hint"><b>▸</b> expands starts, then all forms. ' +
-        "<b>Start ◀</b> → <b>Use</b> (run for yourself on <code>:8080</code>) + banner Copy link; " +
-        "<b>any form</b> → Export / Import / Purge; <b>project</b> (collapsed) → Backup / Restore. " +
-        "<b>Deploy</b> (Details bar) = go live + share/embed for others — not the same as Use. " +
-        "Use keeps data; Purge clears. Offline: select project/form → Purge (not Use). " +
-        "Online Exam Builder can seed demo Records when <code>:3001</code>/Postgres is down — <b>Reseed demo Records</b> after Purge.</p>"
-      : '<p class="pm-hint deploy-hint-quiet">No live start URL yet — Expand still lists labels. ' +
-        "<b>Use</b> (run for yourself) stays grey until Designer push → <b>Show in My Tawala</b> " +
-        "(UI still says Deploy) creates <code>:8080</code> starts. " +
-        "<b>Deploy</b> on Details shares for others after that — not Use. " +
-        "Export / Import / Purge need a live uniqueId too.</p>";
+      ? `Last used — ${usage.lastUsed} (most recent My Tawala Use)`
+      : "Last used — no My Tawala Use recorded yet in this browser";
 
     return (
       `<div class="pm-data-tree" id="pmDataTree" role="tree" ` +
@@ -2505,10 +2507,14 @@
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
       `<span class="pm-data-col-spacer" aria-hidden="true"></span>` +
       `<span class="pm-data-stat-val pm-data-stat-records" id="pmDataProjectRecords" title="Project-wide Records (Responses)">—</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-times" id="pmDataProjectTimesUsed" title="${escapeHtml(
+      `<span class="pm-data-stat-val pm-data-stat-times${
+        usage.timesUsed ? "" : " pm-data-stat-placeholder"
+      }" id="pmDataProjectTimesUsed" title="${escapeHtml(
         timesTitle
       )}">${escapeHtml(timesLabel)}</span>` +
-      `<span class="pm-data-stat-val pm-data-stat-last" id="pmDataProjectLastUsed" title="${escapeHtml(
+      `<span class="pm-data-stat-val pm-data-stat-last${
+        usage.lastUsed ? "" : " pm-data-stat-placeholder"
+      }" id="pmDataProjectLastUsed" title="${escapeHtml(
         lastTitle
       )}">${escapeHtml(lastLabel)}</span>` +
       `</div>` +
@@ -2525,7 +2531,6 @@
       `<button type="button" class="pm-demo-reseed" data-pm-reseed-demo="1" ` +
       `title="Restore seeded demo Records (project total 50) after Purge">Reseed demo Records</button>` +
       `</p>` +
-      hint +
       "</div>"
     );
   }
@@ -2832,7 +2837,7 @@
                 : "Select a start point (◀) to Use — or keep the project selected and click Purge for offline demo Records.";
           } else if (sel.kind === "start") {
             offTitle =
-              "Deploy this project before Use — this start point has no :8080 URL yet (Make a Copy starts empty until Push)";
+              "No :8080 URL on this start yet — Make a Copy starts empty until Edit in Designer → Push.";
           }
           setCtrlEnabled(el, false, offTitle);
           if (el.tagName === "A") {
@@ -2853,8 +2858,8 @@
         if (!hasRuntime) {
           offTitle =
             sel.kind === "start"
-              ? "Deploy this project before Copy link — this start point has no :8080 URL yet"
-              : "Deploy this project before Copy link — no :8080 start URL yet";
+              ? "No :8080 URL on this start yet — Copy link needs a live start (Edit in Designer → Push for empty copies)."
+              : "No :8080 start URL yet — Copy link needs a live start (Edit in Designer → Push for empty copies).";
         } else if (sel.kind === "form") {
           offTitle = "Copy link is only for start points (◀) — highlight a starting form";
         }
@@ -3142,10 +3147,11 @@
   }
 
   /**
-   * Project Data banner — Times used / Last used (Task #13 mock).
+   * Project Data banner + My Tawala listing — Times used / Last used (Task #13 mock).
    * Records stay separate (submissions). Copies downloaded (`cloneCount`) is Library-only.
+   * Unused shows "—" (not 0).
    */
-  function setUsageStatsDisplay(scope, stats) {
+  function setUsageStatsDisplay(scope, stats, projectId) {
     const root = scope && scope.querySelector ? scope : document;
     const timesEl =
       (root.querySelector && root.querySelector("#pmDataProjectTimesUsed")) ||
@@ -3155,19 +3161,51 @@
       document.getElementById("pmDataProjectLastUsed");
     const timesUsed = stats && Number(stats.timesUsed) > 0 ? Math.floor(Number(stats.timesUsed)) : 0;
     const lastUsed = (stats && stats.lastUsed) || null;
+    const timesLabel =
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.formatUsageTimesUsed === "function"
+        ? TawalaTransfer.formatUsageTimesUsed(stats)
+        : timesUsed > 0
+          ? String(timesUsed)
+          : "—";
+    const lastLabel =
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.formatUsageLastUsed === "function"
+        ? TawalaTransfer.formatUsageLastUsed(stats)
+        : lastUsed || "—";
+    const timesTitle =
+      "Times used — mock count of My Tawala Use clicks that open a start URL (not Test Drive; not live telemetry)" +
+      (timesUsed ? `: ${timesUsed}` : "");
+    const lastTitle = lastUsed
+      ? `Last used — ${lastUsed} (most recent My Tawala Use)`
+      : "Last used — no My Tawala Use recorded yet in this browser";
     if (timesEl) {
-      timesEl.textContent = String(timesUsed);
-      timesEl.title =
-        "Times used — mock count of My Tawala Use sessions that opened a start URL (not Test Drive; not live telemetry)" +
-        (timesUsed ? `: ${timesUsed}` : "");
-      timesEl.classList.remove("pm-data-stat-placeholder");
+      timesEl.textContent = timesLabel;
+      timesEl.title = timesTitle;
+      timesEl.classList.toggle("pm-data-stat-placeholder", !timesUsed);
     }
     if (lastEl) {
-      lastEl.textContent = lastUsed || "—";
-      lastEl.title = lastUsed
-        ? `Last used — ${lastUsed} (most recent My Tawala Use → :8080)`
-        : "Last used — no My Tawala Use session recorded yet in this browser";
+      lastEl.textContent = lastLabel;
+      lastEl.title = lastTitle;
       lastEl.classList.toggle("pm-data-stat-placeholder", !lastUsed);
+    }
+    const pid = projectId ? String(projectId) : "";
+    if (pid) {
+      const rows = document.querySelectorAll("#projectRows tr[data-project-id]");
+      for (let i = 0; i < rows.length; i++) {
+        if (rows[i].dataset.projectId !== pid) continue;
+        const timesCell = rows[i].querySelector(".col-times-used");
+        const lastCell = rows[i].querySelector(".col-last-used");
+        if (timesCell) {
+          timesCell.textContent = timesLabel;
+          timesCell.title = timesTitle;
+        }
+        if (lastCell) {
+          lastCell.textContent = lastLabel;
+          lastCell.title = lastTitle;
+        }
+        break;
+      }
     }
   }
 
@@ -3264,7 +3302,7 @@
       typeof TawalaTransfer !== "undefined" &&
       typeof TawalaTransfer.getUsageStats === "function"
     ) {
-      setUsageStatsDisplay(scope, TawalaTransfer.getUsageStats(projectId));
+      setUsageStatsDisplay(scope, TawalaTransfer.getUsageStats(projectId), projectId);
     }
 
     /* Preserve selection highlight after rebuild. */
@@ -3934,7 +3972,7 @@
 
     if (!project || !uniqueId) {
       setStatus(
-        `Theme set to ${themeLabelForPath(path)} (overlay only — Push from Designer → Show in My Tawala to apply on :8080).`
+        `Theme set to ${themeLabelForPath(path)} (overlay only — Edit in Designer → Push → Show in My Tawala to apply on :8080).`
       );
       return;
     }
@@ -3950,7 +3988,7 @@
     const resolved = await resolveDefinitionForEdit(project);
     if (!resolved.ok || !resolved.definition) {
       setStatus(
-        `Theme set to ${themeLabelForPath(path)} (overlay only — no definition snapshot to Push; use Designer Push first).`
+        `Theme set to ${themeLabelForPath(path)} (overlay only — no definition snapshot to Push; use Edit project in Designer, then Push).`
       );
       return;
     }
@@ -3962,7 +4000,7 @@
       setStatus(`Theme overlay saved; :8080 Push failed: ${err}`);
       window.alert(
         `Theme saved on My Tawala, but couldn’t apply CSS on :8080.\n\n${err}\n\n` +
-          "Is Designer API on :3001 and Tomcat on :8080? Try Push this version or Push from Designer."
+          "Is Designer API on :3001 and Tomcat on :8080? Try Push this version, or Edit project in Designer and Push."
       );
       return;
     }
@@ -4050,17 +4088,11 @@
       ? `<div class="pm-acquire-success" role="status">` +
         `<p><b>Copied to My Tawala</b> as “${escapeHtml(displayName)}”.` +
         (libSrcName ? ` Source: ${escapeHtml(libSrcName)}.` : "") +
-        `</p>` +
-        `<p class="pm-hint">Records start empty. <b>Use</b> stays unavailable until you Push from Designer ` +
-        `(hover the grey Use control for the tip). ` +
-        `<a href="mytawala.html">← Back to My Tawala</a> and sort by <b>Created</b> to see this row with today’s date.</p>` +
+        ` <a href="mytawala.html">← Back to My Tawala</a></p>` +
         `</div>`
       : justForked
         ? `<div class="pm-acquire-success" role="status">` +
-          `<p><b>Made a copy</b> as “${escapeHtml(displayName)}”. Original project unchanged.</p>` +
-          `<p class="pm-hint">Records start empty — this fork does <b>not</b> share the source’s live data. ` +
-          `<b>Use</b> stays grey until you Push from Designer → Show in My Tawala. ` +
-          `Rename anytime (button or double-click the title). ` +
+          `<p><b>Made a copy</b> as “${escapeHtml(displayName)}”. Original project unchanged. ` +
           `<a href="mytawala.html">← Back to My Tawala</a></p>` +
           `</div>`
         : "";
@@ -4072,8 +4104,6 @@
       `<div class="pm-sidebar-identity">` +
       renderIdentityRail(project) +
       `</div>` +
-      `<p class="pm-hint">Theme, Invite / Include (Deploy share), and Designer / Active controls stay in this rail. ` +
-      `<a href="project-ops-review.html">Archive labels</a></p>` +
       "</aside>" +
       `<div class="pm-detail-main">` +
       acquiredBanner +
@@ -4908,7 +4938,8 @@
       `<h3 id="makeCopyModalTitle">Make a Copy</h3>` +
       `<p class="pm-hint tawala-modal-lede">Fork “${escapeHtml(sourceName)}” into a <b>new</b> My Tawala project. ` +
       `The original stays as-is. This is <b>not</b> Rename (same project, new name) and <b>not</b> Library Copy to MyTawala. ` +
-      `Copies the definition only — <b>Records start empty</b>; <b>Use</b> stays grey until you Push from Designer ` +
+      `Copies the definition only — <b>Records start empty</b>; <b>Use</b> stays grey until you ` +
+      `<b>Edit project in Designer</b>, then Push → Show in My Tawala ` +
       `(does not share the source’s live :8080 data).</p>` +
       '<div class="tawala-modal-body">' +
       '<label class="tawala-modal-field" for="makeCopyNameInput">Name for the copy' +
@@ -5966,7 +5997,7 @@
             : null;
       if (!uniqueId) {
         const hint = project
-          ? `“${displayName}” isn’t linked to a live :8080 deploy yet. Push from Designer (or use a deployed project), then try Purge again.`
+          ? `“${displayName}” isn’t linked to a live :8080 uniqueId yet. Edit in Designer, then Push → Show in My Tawala (or open a live project), then try Purge again.`
           : `Unknown My Tawala project: ${projectId || "(none)"}`;
         setStatus(`PURGE for “${displayName}” — not linked to a live deploy.`);
         window.alert(`Couldn't purge “${displayName}”\n\n${hint}`);

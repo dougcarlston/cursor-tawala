@@ -231,8 +231,8 @@
     }
     const uniqueId = resolveUniqueId(projectId);
     if (!uniqueId) {
-      const msg = `“${displayName}” isn’t linked to a live deploy yet. Push from Designer, then try Export again.`;
-      setStatus(`Export unavailable for “${displayName}” — not deployed.`);
+      const msg = `“${displayName}” isn’t linked to a live :8080 uniqueId yet. Edit in Designer, then Push → Show in My Tawala, then try Export again.`;
+      setStatus(`Export unavailable for “${displayName}” — no live uniqueId.`);
       window.alert(`Couldn't export “${displayName}”\n\n${msg}`);
       return;
     }
@@ -301,8 +301,8 @@
     }
     const uniqueId = resolveUniqueId(projectId);
     if (!uniqueId) {
-      const msg = `“${displayName}” isn’t linked to a live deploy yet. Push from Designer, then try Import again.`;
-      setStatus(`Import unavailable for “${displayName}” — not deployed.`);
+      const msg = `“${displayName}” isn’t linked to a live :8080 uniqueId yet. Edit in Designer, then Push → Show in My Tawala, then try Import again.`;
+      setStatus(`Import unavailable for “${displayName}” — no live uniqueId.`);
       window.alert(`Couldn't import into “${displayName}”\n\n${msg}`);
       return;
     }
@@ -449,8 +449,8 @@
     }
     const uniqueId = resolveUniqueId(projectId);
     if (!uniqueId) {
-      const msg = `“${displayName}” isn’t linked to a live deploy yet. Push from Designer, then try Purge again.`;
-      setStatus(`Purge unavailable for “${displayName}” — not deployed.`);
+      const msg = `“${displayName}” isn’t linked to a live :8080 uniqueId yet. Edit in Designer, then Push → Show in My Tawala, then try Purge again.`;
+      setStatus(`Purge unavailable for “${displayName}” — no live uniqueId.`);
       window.alert(`Couldn't purge form “${name}”\n\n${msg}`);
       return;
     }

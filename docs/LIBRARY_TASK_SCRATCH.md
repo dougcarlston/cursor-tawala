@@ -33,8 +33,8 @@ Stop after 1–2 build items if jetlag wins. Decisions first; do not start Auth0
 
 8. **#2 Details ops rail** — **DONE Aug 25** (owner: looks good). Delete on Details (own group, then back to listing). Purge = data. De-activate = Library visibility. Listing Delete remains.
 9. **#10 Deploy / share** — PARTIAL Aug 25: Invite→link, Include→embed, preselect highlighted start; owner said share-panel language is clearer. uniqueId-in-URL still HOLD.
-10. **#13 Times used / Last used** — mock counters on My Tawala **Use** only.
-11. **#18 Stub cleanup** — Designer Push → Publish replacement → retire stub (needs a live definition, not chrome).
+10. **#13 Times used / Last used** — **DONE Aug 25.** Mock `tawala.mock.usageStats` after a My Tawala **Use** that actually opens (listing single-start or Details banner); blocked Use does not count. Unused = —. Library Test Drive does not bump the My Tawala copy. UniqueId-in-URL still HOLD. **Details visibility Aug 25:** banner heads were CSS-hidden below 48rem; Project Data row now shows Times used / Last used (`details13`). **Details packing Aug 25 (`stub18-pdata2`):** title uses leftover width on one line; Records / Times used / Last used hug the right-edge buttons.
+11. **#18 Stub cleanup** — **DONE Aug 25.** Catalog 0 stubs; Publish is the Library path; retired listing Push-from-Designer chrome. Make a Copy still needs Designer Push. **Aug 25 notes strip:** symbiotic notes stripped from listing Transfers + Details footers so chrome can be judged for space.
 12. **#14 Test Drive** — per-drive uniqueId + real leave/wipe. Waits for **Library Live**, not tomorrow’s mock.
 
 ## Parked (unless bigger picture unparks them)
