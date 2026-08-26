@@ -64,5 +64,28 @@ assert.doesNotMatch(
 );
 assert.match(ops, /await TawalaTransfer\.saveCopyFromLibrary/);
 assert.match(ops, /Task #26: never open catalog JSON for a Library acquire/);
+assert.match(ops, /ownerFacingVersionDescription/);
+assert.doesNotMatch(
+  transfer.slice(transfer.indexOf("function saveCopyFromLibrary")),
+  /Copied from Library \(\$\{/
+);
+assert.match(transfer, /function isAutoLibraryAcquireVersionNote/);
+assert.match(transfer, /function scrubAutoLibraryAcquireVersionNotes/);
+
+function isAutoLibraryAcquireVersionNote(text) {
+  const s = String(text == null ? "" : text).trim();
+  if (!s) return false;
+  return /^Copied from Library(?:\s*\([^)]*\))?\s*$/i.test(s);
+}
+function ownerFacingVersionDescription(text) {
+  const s = String(text == null ? "" : text).trim();
+  if (!s || isAutoLibraryAcquireVersionNote(s)) return "";
+  return s;
+}
+assert.equal(ownerFacingVersionDescription("Copied from Library"), "");
+assert.equal(ownerFacingVersionDescription("Copied from Library (Online Exam Builder)"), "");
+assert.equal(ownerFacingVersionDescription("Copied from Library (Get Together)"), "");
+assert.equal(ownerFacingVersionDescription("Ready for Friday quiz"), "Ready for Friday quiz");
+assert.equal(ownerFacingVersionDescription(""), "");
 
 console.log("acquireClone contract ok");

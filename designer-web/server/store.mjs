@@ -100,6 +100,77 @@ export function getProjectByUniqueId(uniqueId) {
   return null;
 }
 
+/** Occupancy index row for a uniqueId (Node Deploy), or null. */
+export function findDeployedIndexByUniqueId(uniqueId) {
+  const want = String(uniqueId || "").trim();
+  if (!want) return null;
+  ensureDir();
+  if (!fs.existsSync(DATA_DIR)) return null;
+  const skipDirs = new Set(["sessions"]);
+  for (const user of fs.readdirSync(DATA_DIR)) {
+    if (skipDirs.has(user)) continue;
+    const dir = path.join(DATA_DIR, user);
+    if (!fs.statSync(dir).isDirectory()) continue;
+    const metaPath = path.join(dir, "_index.json");
+    if (!fs.existsSync(metaPath)) continue;
+    const index = JSON.parse(fs.readFileSync(metaPath, "utf8"));
+    if (!Array.isArray(index)) continue;
+    const entry = index.find((e) => e && String(e.uniqueId) === want);
+    if (entry) return { userId: user, entry };
+  }
+  return null;
+}
+
+/**
+ * Free a Node Deploy *name* for occupancy without minting a new uniqueId.
+ * Renames the `_index.json` slot (and project.name in the package file). File stays `{uniqueId}.json`.
+ * @returns {{ uniqueId: string, previousName: string, name: string, alreadyVacated: boolean, userId: string } | null}
+ */
+export function vacateDeployedNameByUniqueId(uniqueId, vacatedName) {
+  const want = String(uniqueId || "").trim();
+  const next = String(vacatedName || "").trim();
+  if (!want || !next) return null;
+  ensureDir();
+  if (!fs.existsSync(DATA_DIR)) return null;
+  const skipDirs = new Set(["sessions"]);
+  for (const user of fs.readdirSync(DATA_DIR)) {
+    if (skipDirs.has(user)) continue;
+    const dir = path.join(DATA_DIR, user);
+    if (!fs.statSync(dir).isDirectory()) continue;
+    const metaPath = path.join(dir, "_index.json");
+    if (!fs.existsSync(metaPath)) continue;
+    const index = JSON.parse(fs.readFileSync(metaPath, "utf8"));
+    if (!Array.isArray(index)) continue;
+    const entry = index.find((e) => e && String(e.uniqueId) === want);
+    if (!entry) continue;
+    const previousName = String(entry.name || "").trim();
+    const alreadyVacated = previousName === next;
+    if (!alreadyVacated) {
+      entry.name = next;
+      entry.updatedAt = new Date().toISOString();
+      fs.writeFileSync(metaPath, JSON.stringify(index, null, 2));
+      const filePath = path.join(dir, `${want}.json`);
+      if (fs.existsSync(filePath)) {
+        const data = JSON.parse(fs.readFileSync(filePath, "utf8"));
+        if (data && typeof data === "object") {
+          if (data.project && typeof data.project === "object") {
+            data.project.name = next;
+          }
+          fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+        }
+      }
+    }
+    return {
+      uniqueId: want,
+      previousName,
+      name: next,
+      alreadyVacated,
+      userId: user,
+    };
+  }
+  return null;
+}
+
 /**
  * Designer Form Preview session/runtime id.
  * Previously only `preview-{userId}` — shared across every New Project, so answers

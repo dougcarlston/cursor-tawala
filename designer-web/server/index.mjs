@@ -21,6 +21,14 @@ import {
   occupancyHatchAllowed,
   queryDeploymentsRequestXml,
 } from "./deployOccupancy.mjs";
+import {
+  commandUnknownMessage,
+  isValidUniqueId as isRetireUniqueId,
+  parseRetireDeploymentXml,
+  retireDeploymentRequestXml,
+  vacatedTomcatName,
+  vacateNodeStoreName,
+} from "./retireDeployment.mjs";
 import { clearFormAnswers, getOrCreateSession, resetSession, saveSession } from "./sessionStore.mjs";
 import {
   buildQueryEmailStatusXml,
@@ -152,6 +160,38 @@ app.post("/client", async (req, res) => {
     if (type === "queryDeployments") {
       const projects = store.listProjects(user);
       res.type("text/xml").send(deploymentXml(user, projects, HOST));
+      return;
+    }
+
+    if (type === "retireDeployment") {
+      const parsedReq = request.deployment || {};
+      const uniqueId = String(
+        parsedReq["@_uniqueId"] || parsedReq.uniqueId || request["@_uniqueId"] || "",
+      ).trim();
+      if (JAVA_URL) {
+        const xml =
+          typeof req.body === "string" && /uniqueId=/.test(req.body)
+            ? req.body
+            : retireDeploymentRequestXml(user, password, uniqueId);
+        const javaResponse = await forwardToJava(xml);
+        res.type("text/xml").send(javaResponse);
+        return;
+      }
+      const vacated = vacateNodeStoreName(uniqueId);
+      if (!vacated) {
+        res.type("text/xml").send(
+          failureXml("retire.notFound", `No live project for uniqueId ${uniqueId}`),
+        );
+        return;
+      }
+      const esc = (s) =>
+        String(s ?? "")
+          .replace(/&/g, "&amp;")
+          .replace(/"/g, "&quot;")
+          .replace(/</g, "&lt;");
+      res.type("text/xml").send(
+        `<?xml version="1.0" encoding="UTF-8"?>\n\n<response status="success">\n  <retired uniqueId="${esc(vacated.uniqueId)}" previousName="${esc(vacated.previousName)}" name="${esc(vacated.name)}" alreadyVacated="${vacated.alreadyVacated ? "true" : "false"}"/>\n</response>\n`,
+      );
       return;
     }
 
@@ -358,6 +398,109 @@ app.post("/api/deploy", async (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ status: "failure", error: String(e.message ?? e) });
+  }
+});
+
+app.options("/api/retire-name", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/**
+ * Library admin Retire: free the Tomcat / Node Deploy *name* for occupancy.
+ * Lookup is uniqueId-only (do not retarget Online Exam catalog ids). uniqueId is kept.
+ */
+app.post("/api/retire-name", async (req, res) => {
+  allowMockCors(req, res);
+  const body = req.body ?? {};
+  const credentials = body.credentials;
+  const uniqueId = String(body.uniqueId || "").trim();
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password)) {
+    res.status(401).json({ status: "failure", error: "auth.failed" });
+    return;
+  }
+  if (!isRetireUniqueId(uniqueId)) {
+    res.status(400).json({
+      status: "failure",
+      error: "uniqueId required (1–20 alphanumeric)",
+    });
+    return;
+  }
+
+  try {
+    if (JAVA_URL) {
+      const xml = retireDeploymentRequestXml(credentials.user, credentials.password, uniqueId);
+      const text = await forwardToJava(xml);
+      const parsed = parseRetireDeploymentXml(text);
+      if (parsed.code === "command.unknown") {
+        res.status(501).json({
+          status: "failure",
+          uniqueId,
+          uniqueIdUnchanged: true,
+          code: "command.unknown",
+          error: commandUnknownMessage(),
+        });
+        return;
+      }
+      if (parsed.status !== "success") {
+        const status = parsed.code === "retire.notFound" ? 404 : 502;
+        res.status(status).json({
+          status: "failure",
+          uniqueId,
+          uniqueIdUnchanged: true,
+          code: parsed.code || "retire-failed",
+          error: parsed.error || "retireDeployment failed",
+        });
+        return;
+      }
+      /* Same uniqueId may also sit in the Node store from a prior dev-only Push. */
+      vacateNodeStoreName(uniqueId);
+      res.json({
+        status: "success",
+        mode: "java",
+        uniqueId: parsed.uniqueId || uniqueId,
+        previousName: parsed.previousName || null,
+        name: parsed.name || vacatedTomcatName(parsed.previousName, uniqueId),
+        alreadyVacated: !!parsed.alreadyVacated,
+        uniqueIdUnchanged: true,
+      });
+      return;
+    }
+
+    const vacated = vacateNodeStoreName(uniqueId);
+    if (!vacated) {
+      res.status(404).json({
+        status: "failure",
+        uniqueId,
+        uniqueIdUnchanged: true,
+        code: "retire.notFound",
+        error: `No live Node Deploy slot for uniqueId ${uniqueId}`,
+      });
+      return;
+    }
+    res.json({
+      status: "success",
+      mode: "dev",
+      uniqueId: vacated.uniqueId,
+      previousName: vacated.previousName,
+      name: vacated.name,
+      alreadyVacated: vacated.alreadyVacated,
+      uniqueIdUnchanged: true,
+    });
+  } catch (e) {
+    console.error("retire-name failed:", e);
+    res.status(503).json({
+      status: "failure",
+      uniqueId,
+      uniqueIdUnchanged: true,
+      code: "retire-unreachable",
+      error:
+        "Couldn't reach :8080 to free that live name. Retire aborted so occupancy is not lying. Confirm Tomcat is up, then retry.",
+    });
   }
 });
 

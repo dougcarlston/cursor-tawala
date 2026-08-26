@@ -2,7 +2,8 @@
  * My Tawala data-lifecycle ops (owner Aug 1, 2026; Restore Redeploy Aug 25): BACKUP / RESTORE
  * (paired live definition + data + properties; Java ZIP / mock JSON) and EXPORT / IMPORT
  * (Excel response data only). Restore Redeploys the bundled definition onto :8080 (same
- * uniqueId) via /api/deploy, then imports responses. See website-mock/README.md § Backup.
+ * uniqueId) via /api/deploy, then imports responses. A backup whose uniqueId does not
+ * match this My Tawala row is refused before Redeploy/import/overlay. See website-mock/README.md § Backup.
  *
  * Server plumbing: designer-web/server/projectResponses.mjs via TawalaDemo.exportResponses /
  * TawalaDemo.importResponses (designer-web/js/demo-urls.js) — same :3001 dev API as Purge.
@@ -219,6 +220,109 @@
   const RESTORE_RUNTIME_HELP =
     "Restore Redeploys the backed-up definition onto :8080 (same uniqueId), then restores responses. " +
     "Needs designer-web API on :3001 and Tomcat on :8080.";
+
+  /* Keep in sync with restoreIdentity.mjs */
+  const RESTORE_UNIQUE_ID_RE = /^[A-Za-z0-9]{1,20}$/;
+  const RESTORE_UNIQUE_FROM_URL_RE = /\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/;
+
+  function restoreUniqueIdFromUrl(url) {
+    if (!url) return null;
+    const m = String(url).match(RESTORE_UNIQUE_FROM_URL_RE);
+    return m ? m[1] : null;
+  }
+
+  function pushRestoreUniqueId(into, value) {
+    const s = value == null ? "" : String(value).trim();
+    if (RESTORE_UNIQUE_ID_RE.test(s) && !into.includes(s)) into.push(s);
+  }
+
+  function collectBackupUniqueIds(payload) {
+    const ids = [];
+    if (!payload || typeof payload !== "object") return ids;
+    pushRestoreUniqueId(ids, payload.uniqueId);
+    const props = payload.properties && typeof payload.properties === "object" ? payload.properties : {};
+    pushRestoreUniqueId(ids, props.uniqueId);
+    [props.testDriveUrl]
+      .concat((Array.isArray(props.startPoints) ? props.startPoints : []).map((sp) => sp && sp.url))
+      .forEach((u) => {
+        const id = restoreUniqueIdFromUrl(u);
+        if (id) pushRestoreUniqueId(ids, id);
+      });
+    const def = payload.definition && typeof payload.definition === "object" ? payload.definition : {};
+    pushRestoreUniqueId(ids, def.deployUniqueId);
+    pushRestoreUniqueId(ids, def.uniqueId);
+    return ids;
+  }
+
+  function backupProjectLabel(payload) {
+    if (!payload || typeof payload !== "object") return "another project";
+    const fromDisplay = String(payload.displayName || "").trim();
+    if (fromDisplay) return fromDisplay;
+    const props = payload.properties && typeof payload.properties === "object" ? payload.properties : {};
+    const fromProps = String(props.name || "").trim();
+    if (fromProps) return fromProps;
+    const def = payload.definition && typeof payload.definition === "object" ? payload.definition : {};
+    const fromDef = String(def.name || "").trim();
+    return fromDef || "another project";
+  }
+
+  const RESTORE_RECOVERY_HINT =
+    "To recover: open the .backup.json for the project you want (for example Exam Maker) and find uniqueId. " +
+    "On Project Details, match that id to uniqueId under Project options, or to the /p/{id}/ in a DEPLOY Form link. " +
+    "Ignore the title — both rows may look like Get Together if the wrong definition was Redeployed. " +
+    "Restore that backup only onto the matching row.";
+
+  function restoreMismatchMessage({ backupName, rowName, backupUniqueId, rowUniqueId }) {
+    const backup = String(backupName || "another project").trim() || "another project";
+    const row = String(rowName || "this project").trim() || "this project";
+    const backupId = backupUniqueId ? ` (uniqueId ${backupUniqueId})` : "";
+    const rowId = rowUniqueId ? ` (uniqueId ${rowUniqueId})` : "";
+    return (
+      `This backup belongs to “${backup}”${backupId}, not “${row}”${rowId}. Restore only works on the same project.\n\n` +
+      RESTORE_RECOVERY_HINT
+    );
+  }
+
+  function restoreMissingIdMessage() {
+    return (
+      "This backup has no uniqueId. Restore only works on the same project, and this file doesn’t identify which one. " +
+      "Do not guess by the name on the file — two Get Togethers would collide. Make a new Backup from this project, or pick a file that includes uniqueId."
+    );
+  }
+
+  function restoreConfirmNote({ backupName, backupUniqueId, rowName, rowUniqueId }) {
+    const backup = String(backupName || "backup").trim() || "backup";
+    const row = String(rowName || "this project").trim() || "this project";
+    return (
+      `This backup is “${backup}” (uniqueId ${backupUniqueId}).\n` +
+      `This My Tawala row is “${row}” (uniqueId ${rowUniqueId}).`
+    );
+  }
+
+  function matchRestoreToRow(payload, rowUniqueId, rowName) {
+    const backupName = backupProjectLabel(payload);
+    const rowLabel = String(rowName || "this project").trim() || "this project";
+    const rowId = rowUniqueId == null ? "" : String(rowUniqueId).trim();
+    const ids = collectBackupUniqueIds(payload);
+    if (!ids.length) {
+      return { ok: false, error: restoreMissingIdMessage(), backupName, backupUniqueId: null };
+    }
+    const foreign = ids.filter((id) => id !== rowId);
+    if (foreign.length) {
+      return {
+        ok: false,
+        error: restoreMismatchMessage({
+          backupName,
+          rowName: rowLabel,
+          backupUniqueId: ids[0],
+          rowUniqueId: rowId,
+        }),
+        backupName,
+        backupUniqueId: ids[0],
+      };
+    }
+    return { ok: true, backupUniqueId: ids[0], backupName };
+  }
 
   function cloneJson(value) {
     return JSON.parse(JSON.stringify(value));
@@ -871,12 +975,20 @@
       return;
     }
 
-    const nameNote =
-      payload.displayName && payload.displayName !== displayName
-        ? `\n\nNote: this backup was made from “${payload.displayName}” — you're restoring it into “${displayName}” (same uniqueId ${uniqueId}).`
-        : "";
+    const match = matchRestoreToRow(payload, uniqueId, displayName);
+    if (!match.ok) {
+      failRestore(displayName, match.error);
+      return;
+    }
+
+    const confirmNote = restoreConfirmNote({
+      backupName: match.backupName,
+      backupUniqueId: match.backupUniqueId,
+      rowName: displayName,
+      rowUniqueId: uniqueId,
+    });
     const c = TawalaProjectOps.CONFIRMS.restoreProject;
-    if (!window.confirm(`${c.title} — “${displayName}”\n\n${c.body}${nameNote}`)) return;
+    if (!window.confirm(`${c.title} — “${displayName}”\n\n${confirmNote}\n\n${c.body}`)) return;
 
     setStatus(`Restoring “${displayName}” — checking :3001 / :8080…`);
 
@@ -973,6 +1085,8 @@
         uniqueId
       ).filter((sp) => sp && sp.url);
     }
+    /* Never copy backup uniqueId onto this row. Restore is a time machine onto
+     * this row’s uniqueId — attachRowIdentity already stamps deployUniqueId. */
     const overlayPatch = {};
     if (backupProps.name != null) overlayPatch.name = backupProps.name;
     else if (project.name != null) overlayPatch.name = project.name;

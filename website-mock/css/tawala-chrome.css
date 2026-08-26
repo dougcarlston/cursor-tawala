@@ -2372,6 +2372,18 @@ body[data-tawala-page="mytawala"] .pm-detail-content {
   color: #7a7268;
 }
 
+.pm-identity-row.pm-identity-uniqueid dt {
+  font-weight: normal;
+  color: #7a7268;
+}
+
+.pm-identity-liveid {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.92em;
+  color: #5a5046;
+  word-break: break-all;
+}
+
 .pm-identity-status {
   display: flex;
   flex-wrap: wrap;

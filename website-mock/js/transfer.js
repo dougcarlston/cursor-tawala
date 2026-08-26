@@ -21,7 +21,8 @@
  *       designerName — original Designer project name at first Push / Show in My Tawala
  *         (provenance; Rename must not overwrite; Details sidebar Source: “from Designer: …”)
  *       versionNumber — monotonic int (latest Push / current). New acquires & forks start at 1.
- *       versionDescription — optional note (Push dialog, or acquire/fork seed text)
+ *       versionDescription — optional owner note (Push this version / version description).
+ *         Library acquire does not auto-stuff “Copied from Library (…)” — Source carries provenance.
  *       versions — [{ versionNumber, description, at, uniqueId, mode, startPoints, deployed,
  *         snapshotId?, definition?, hasDefinition? }]
  *       history is Details-only; listing shows the scalar current Version column (not piles)
@@ -654,7 +655,7 @@
       const saved = await Demo.saveVersionSnapshot({
         project: snapProject,
         uniqueId: deploy.uniqueId,
-        versionDescription: "Copied from Library",
+        versionDescription: "",
       });
       if (saved && saved.status === "success" && saved.snapshotId) {
         snapshotId = saved.snapshotId;
@@ -798,6 +799,7 @@
     scrubSharedForkRuntimes();
     const acquireScrub = scrubSharedAcquireRuntimes();
     ensureOverlayStartingVersions();
+    scrubAutoLibraryAcquireVersionNotes();
     return {
       ok: true,
       hydrated: [],
@@ -1022,8 +1024,9 @@
   }
 
   /**
-   * Owner-chosen start share label (Task #10). Persists on overlay startPoints[].label.
-   * `form` stays the Designer form name so Push can merge labels back.
+   * Owner-chosen start share nickname (Task #10). Persists on overlay startPoints[].label.
+   * `form` stays the Designer form name (Project Data tree). Do not persist the Deploy
+   * dialog default “Click here.” — unnamed / form-name / empty store as the form name.
    */
   function updateStartShareLabel(projectId, formKey, label) {
     const key = String(formKey || "").trim();
@@ -1043,10 +1046,18 @@
           : String((sp && (sp.form || sp.label)) || "");
       if (form.toLowerCase() !== want) return sp;
       const formName = form || key;
+      const custom =
+        Demo && typeof Demo.isCustomShareLabel === "function"
+          ? Demo.isCustomShareLabel(nextLabel, formName)
+          : !!(
+              nextLabel &&
+              nextLabel !== "Click here." &&
+              nextLabel.toLowerCase() !== formName.toLowerCase()
+            );
       return {
         ...sp,
         form: formName,
-        label: nextLabel || formName,
+        label: custom ? nextLabel : formName,
       };
     });
     const nowIso = timestampNow();
@@ -1056,7 +1067,14 @@
       updatedAt: nowIso,
     });
     if (!ok) return { ok: false, error: "write-failed" };
-    return { ok: true, projectId, formKey: key, label: nextLabel || key, startPoints };
+    const saved = (startPoints.find((sp) => {
+      const form =
+        Demo && typeof Demo.startFormKey === "function"
+          ? Demo.startFormKey(sp)
+          : String((sp && (sp.form || sp.label)) || "");
+      return form.toLowerCase() === want;
+    }) || {}).label;
+    return { ok: true, projectId, formKey: key, label: saved || key, startPoints };
   }
 
   /**
@@ -1305,6 +1323,56 @@
   }
 
   /**
+   * Auto acquire copy that only repeats Source (“Copied from Library” / “… (Name)”).
+   * Hide on Details Version; do not write on Copy to MyTawala / Get from Library.
+   */
+  function isAutoLibraryAcquireVersionNote(text) {
+    const s = String(text == null ? "" : text).trim();
+    if (!s) return false;
+    return /^Copied from Library(?:\s*\([^)]*\))?\s*$/i.test(s);
+  }
+
+  function ownerFacingVersionDescription(text) {
+    const s = String(text == null ? "" : text).trim();
+    if (!s || isAutoLibraryAcquireVersionNote(s)) return "";
+    return s;
+  }
+
+  /**
+   * Strip stored auto acquire blurbs on overlay load (existing Exam Maker / Get Together
+   * rows). Hide-on-render still covers the same pattern if this has not run yet.
+   */
+  function scrubAutoLibraryAcquireVersionNotes() {
+    const overlay = getMyTawalaOverlay();
+    let changed = false;
+    Object.keys(overlay).forEach((id) => {
+      const entry = overlay[id];
+      if (!entry || typeof entry !== "object") return;
+      let next = entry;
+      if (isAutoLibraryAcquireVersionNote(entry.versionDescription)) {
+        next = { ...next, versionDescription: "" };
+        changed = true;
+      }
+      if (Array.isArray(entry.versions) && entry.versions.length) {
+        let versionsChanged = false;
+        const versions = entry.versions.map((v) => {
+          if (!v || typeof v !== "object") return v;
+          if (!isAutoLibraryAcquireVersionNote(v.description)) return v;
+          versionsChanged = true;
+          return { ...v, description: "" };
+        });
+        if (versionsChanged) {
+          next = { ...next, versions };
+          changed = true;
+        }
+      }
+      if (next !== entry) overlay[id] = next;
+    });
+    if (changed) writeJson(PILE_KEY, overlay);
+    return { ok: true, changed };
+  }
+
+  /**
    * Attach versionNumber + versions[0] when a new private row has none.
    * Does not overwrite an existing versionNumber or non-empty versions[].
    */
@@ -1317,17 +1385,19 @@
     const num = hasNum
       ? Math.floor(Number(entry.versionNumber))
       : STARTING_VERSION_NUMBER;
-    const desc =
+    const isAcquire = entry.fromLibraryAcquire || entry.sourcePile === "library-acquire";
+    let desc =
       description ||
       entry.versionDescription ||
-      (entry.fromLibraryAcquire || entry.sourcePile === "library-acquire"
-        ? "Copied from Library"
+      (isAcquire
+        ? ""
         : entry.sourcePile === "mytawala-fork" || entry.forkedFromId
           ? "Copy of project"
           : "Initial version");
+    desc = ownerFacingVersionDescription(desc);
     const row = {
       versionNumber: num,
-      description: String(desc || "").trim(),
+      description: desc,
       at,
       uniqueId: entry.uniqueId || null,
       mode: entry.mode || null,
@@ -1339,7 +1409,7 @@
     };
     if (!hasNum) {
       entry.versionNumber = STARTING_VERSION_NUMBER;
-      if (!entry.versionDescription) entry.versionDescription = row.description;
+      if (!entry.versionDescription && desc) entry.versionDescription = desc;
     }
     if (!hasVersions) entry.versions = [row];
     return entry;
@@ -1431,6 +1501,7 @@
     scrubDiscardedMyTawalaSeeds();
     rehydrateAcquireLiveUrls();
     ensureOverlayStartingVersions();
+    scrubAutoLibraryAcquireVersionNotes();
     ensureOverlayDesignerNames();
     const overlay = getMyTawalaOverlay();
     const deleted = getMyTawalaDeleted();
@@ -2313,13 +2384,8 @@
       snapshotId: clone.snapshotId || null,
       mockSharedLibraryRuntime: false,
     };
-    const libLabel =
-      typeof window !== "undefined" &&
-      window.TawalaDemo &&
-      typeof window.TawalaDemo.displayName === "function"
-        ? window.TawalaDemo.displayName(source.name)
-        : String(source.name || libraryId);
-    seedStartingVersionOnEntry(entry, `Copied from Library (${libLabel})`);
+    /* Version 1 with no auto “Copied from Library” note — Source is the provenance line. */
+    seedStartingVersionOnEntry(entry);
 
     clearMyTawalaDeleted(id);
     const overlay = getMyTawalaOverlay();
@@ -2882,6 +2948,9 @@
     scrubDiscardedMyTawalaSeeds,
     scrubSharedForkRuntimes,
     scrubSharedAcquireRuntimes,
+    scrubAutoLibraryAcquireVersionNotes,
+    isAutoLibraryAcquireVersionNote,
+    ownerFacingVersionDescription,
     rehydrateAcquireLiveUrls,
     isDiscardedPublicLibraryEntry,
     getLibraryRetired,

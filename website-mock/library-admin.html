@@ -6,9 +6,9 @@
   <title>Tawala - Library Admin Tools</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260825-stub18" />
-  <script src="js/demo-urls.js?v=20260825-stub18"></script>
-  <script src="js/transfer.js?v=20260825-stub18"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-retire27" />
+  <script src="js/demo-urls.js?v=20260826-retire27"></script>
+  <script src="js/transfer.js?v=20260826-retire27"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -638,18 +638,57 @@
         const current = TawalaDemo.getLibrary(libId);
         const currentName = current ? TawalaDemo.displayName(current.name) : libId;
         const isStub = !!(current && current.stub);
+        const liveId =
+          current && typeof TawalaDemo.uniqueIdForProject === "function"
+            ? TawalaDemo.uniqueIdForProject(current)
+            : null;
         const msg =
           `Retire "${currentName}" from the public Library?\n\n` +
           (isStub
             ? "It stays safe in My Tawala, still marked (stub)."
-            : "It stays safe in My Tawala (not deleted) — pick this for an unvetted / out-of-date real entry (e.g. a Main Menu template that needs more work) so you can pull it into Designer and re-Publish later.");
+            : "It stays safe in My Tawala (not deleted) — pick this for an unvetted / out-of-date real entry (e.g. a Main Menu template that needs more work) so you can pull it into Designer and re-Publish later.") +
+          (liveId
+            ? `\n\nThis also frees the live :8080 display name for uniqueId ${liveId} (uniqueId stays; occupancy can reuse the name). Restore to Library does not put the Tomcat name back.`
+            : "\n\nThis row has no live uniqueId — listing hide only; :8080 occupancy is unchanged.");
         if (!window.confirm(msg)) return;
+        if (liveId) {
+          setAdminStatus(`Freeing :8080 name for ${liveId}…`);
+          const vacate = await TawalaDemo.vacateLiveTomcatName(liveId);
+          if (!vacate || vacate.status !== "success") {
+            window.alert(
+              "Couldn't retire — the :8080 name is still occupied.\n\n" +
+                ((vacate && vacate.error) || "Retire aborted so occupancy is not lying."),
+            );
+            setAdminStatus(
+              `Retire aborted — could not free :8080 name for ${liveId}. ` +
+                ((vacate && vacate.error) || ""),
+            );
+            return;
+          }
+          const result = TawalaTransfer.retireLibraryEntry(libId);
+          if (!result.ok) {
+            window.alert(
+              "Freed the :8080 name, but couldn't hide the Library row.\n\n" + result.error,
+            );
+            return;
+          }
+          const prev = vacate.previousName || currentName;
+          setAdminStatus(
+            `Retired "${result.name}" → My Tawala. Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
+              (vacate.alreadyVacated ? ", already vacated" : "") +
+              ").",
+          );
+          renderAdminBody();
+          return;
+        }
         const result = TawalaTransfer.retireLibraryEntry(libId);
         if (!result.ok) {
           window.alert("Couldn't retire\n\n" + result.error);
           return;
         }
-        setAdminStatus(`Retired "${result.name}" → My Tawala.`);
+        setAdminStatus(
+          `Retired "${result.name}" → My Tawala (listing only — no live uniqueId, :8080 occupancy unchanged).`,
+        );
         renderAdminBody();
         return;
       }

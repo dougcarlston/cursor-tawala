@@ -16,8 +16,11 @@ import com.tawala.World;
 import com.tawala.domain.User;
 import com.tawala.event.Event;
 import com.tawala.event.EventService;
+import com.tawala.hibernate.TawalaSessionFactory;
 import com.tawala.project.Form;
+import com.tawala.project.LinkToUserProject;
 import com.tawala.project.Project;
+import com.tawala.project.ProjectsHibernateImpl;
 import com.tawala.project.UserProject;
 import com.tawala.project.UserProject.EntryPointType;
 import com.tawala.email.EmailRuntimeConfig;
@@ -59,6 +62,8 @@ public class ClientApiController implements Controller {
 					"unknown userid or password");
 		} else if (apiRequest.getType().equals("queryDeployments")) {
 			response = queryDeployments(apiRequest);
+		} else if (apiRequest.getType().equals("retireDeployment")) {
+			response = retireDeployment(apiRequest, world, user);
 		} else if (apiRequest.getType().equals("queryDataSources")) {
 			response = queryDataSources(user);
 		} else if (apiRequest.getType().equals("uploadProject")) {
@@ -87,6 +92,98 @@ public class ClientApiController implements Controller {
 	private ApiResponse queryDeployments(ApiRequest apiRequest) {
 		String userId = apiRequest.getUserId();
 		return new DeploymentQueryResponse(userId, allProjectsFor(userId));
+	}
+
+	/**
+	 * Free a live Tomcat <em>name</em> for occupancy without minting a new
+	 * uniqueId. Lookup is by uniqueId only — never by display name — so retiring
+	 * Library Online Exam (u3hk…) does not touch the sibling that occupies the
+	 * bare title.
+	 */
+	private ApiResponse retireDeployment(ApiRequest apiRequest, World world,
+			User user) {
+		if (!apiRequest.getXml().hasChild("deployment")) {
+			return new ApiErrorResponse("retire.invalid",
+					"deployment/@uniqueId is required");
+		}
+		String uniqueId = apiRequest.getXml().child("deployment").attribute(
+				"uniqueId").stringValue();
+		if (uniqueId == null) {
+			uniqueId = "";
+		}
+		uniqueId = uniqueId.trim();
+		if (uniqueId.length() == 0 || uniqueId.length() > 20
+				|| !uniqueId.matches("[A-Za-z0-9]+")) {
+			return new ApiErrorResponse("retire.invalid",
+					"deployment/@uniqueId must be 1–20 alphanumeric");
+		}
+
+		LinkToUserProject link = world.domain().projects()
+				.getWithProjectRuntime(uniqueId);
+		if (link == null || link.getProject() == null) {
+			return new ApiErrorResponse("retire.notFound",
+					"No live project for uniqueId " + uniqueId);
+		}
+		UserProject project = link.getProject();
+		if (project.getUser() == null || !user.equals(project.getUser())) {
+			return new ApiErrorResponse("retire.forbidden",
+					"That uniqueId is not yours to retire.");
+		}
+
+		String previousName = project.getName();
+		String newName = vacatedTomcatName(previousName, uniqueId);
+		boolean alreadyVacated = previousName.equals(newName);
+		if (!alreadyVacated) {
+			world.domain().projects().changeProjectNameAndOwnership(
+					project.getId(), newName, project.getUser());
+			TawalaSessionFactory.MAIN
+					.evictCachedDataForQuery(ProjectsHibernateImpl.CACHED_QUERY_TEMPLATE_ID);
+		}
+		return new RetireDeploymentResponse(uniqueId, previousName, newName,
+				alreadyVacated);
+	}
+
+	static String vacatedTomcatName(String name, String uniqueId) {
+		String suffix = " (retired " + uniqueId + ")";
+		String base = name == null ? "" : name.trim();
+		if (base.endsWith(suffix) || base.indexOf(suffix) >= 0) {
+			return base;
+		}
+		int max = 100;
+		if (base.length() + suffix.length() > max) {
+			int keep = max - suffix.length();
+			base = keep <= 0 ? "" : base.substring(0, keep);
+		}
+		return base + suffix;
+	}
+
+	private static class RetireDeploymentResponse extends ApiResponse {
+		private final String uniqueId;
+		private final String previousName;
+		private final String name;
+		private final boolean alreadyVacated;
+
+		RetireDeploymentResponse(String uniqueId, String previousName,
+				String name, boolean alreadyVacated) {
+			this.uniqueId = uniqueId;
+			this.previousName = previousName;
+			this.name = name;
+			this.alreadyVacated = alreadyVacated;
+		}
+
+		protected void addContents(Element root, HttpServletRequest request) {
+			Element retired = root.addElement("retired");
+			retired.addAttribute("uniqueId", uniqueId);
+			retired.addAttribute("previousName", previousName == null ? ""
+					: previousName);
+			retired.addAttribute("name", name == null ? "" : name);
+			retired.addAttribute("alreadyVacated", alreadyVacated ? "true"
+					: "false");
+		}
+
+		protected String status() {
+			return "success";
+		}
 	}
 
 	private ApiResponse uploadProject(ApiRequest apiRequest, Request request,

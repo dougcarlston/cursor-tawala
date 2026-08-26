@@ -564,7 +564,7 @@
     restoreProject: {
       title: "Restore Project",
       body:
-        "Are you sure you want to restore this project from a backup? This Redeploys the backed-up definition onto :8080 (same uniqueId), then replaces My Tawala properties and response data. It does not mint a new Versions row (that is Push this version).",
+        "Are you sure you want to restore this project from a backup? This Redeploys the backed-up definition onto :8080 (same uniqueId), then replaces My Tawala properties and response data. It does not mint a new Versions row (that is Push this version). A backup from a different uniqueId is refused.",
       submit: "Restore",
     },
   };
@@ -1274,6 +1274,34 @@
   }
 
   /**
+   * Auto Copy-to-MyTawala version blurb that only repeats Source.
+   * Keep Source; do not show this under Version (existing overlay rows may still store it).
+   */
+  function isAutoLibraryAcquireVersionNote(text) {
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.isAutoLibraryAcquireVersionNote === "function"
+    ) {
+      return TawalaTransfer.isAutoLibraryAcquireVersionNote(text);
+    }
+    const s = String(text == null ? "" : text).trim();
+    if (!s) return false;
+    return /^Copied from Library(?:\s*\([^)]*\))?\s*$/i.test(s);
+  }
+
+  function ownerFacingVersionDescription(text) {
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.ownerFacingVersionDescription === "function"
+    ) {
+      return TawalaTransfer.ownerFacingVersionDescription(text);
+    }
+    const s = String(text == null ? "" : text).trim();
+    if (!s || isAutoLibraryAcquireVersionNote(s)) return "";
+    return s;
+  }
+
+  /**
    * Sidebar Source line wording helper — "from … in Library".
    * Main Details header no longer shows provenance (sidebar only).
    */
@@ -1798,7 +1826,7 @@
     if (!raw.length && project && (project.versionNumber != null || project.lastDeployAt)) {
       raw.push({
         versionNumber: project.versionNumber != null ? Number(project.versionNumber) : 1,
-        description: project.versionDescription || "",
+        description: ownerFacingVersionDescription(project.versionDescription),
         at: project.lastDeployAt || project.updatedAt || null,
         uniqueId: project.uniqueId || null,
         mode: project.mode || null,
@@ -1907,7 +1935,7 @@
         if (isDeployed) statusBits.push("Deployed");
         if (!hasSnap) statusBits.push("No snapshot");
         const status = statusBits.length ? statusBits.join(" · ") : "—";
-        const descRaw = String(v.description || "").trim();
+        const descRaw = ownerFacingVersionDescription(v.description);
         return (
           `<tr class="${isCurrent ? "pm-version-current" : ""}" data-version-number="${escapeHtml(String(num))}" ` +
           `data-has-snapshot="${hasSnap ? "1" : "0"}">` +
@@ -2323,7 +2351,7 @@
         map.set(key, {
           idx,
           url: sp.url ? String(sp.url) : "",
-          label: sp.label || sp.form || key,
+          label: key,
         });
       }
     });
@@ -2371,14 +2399,14 @@
   }
 
   /**
-   * Form-row label: full name in the DOM; CSS ellipsis shortens only when the
-   * name track is tight (minmax ~6ch last resort). title keeps the full string.
+   * Form-row label: Designer form name only (Customize, Questionnaire) — never the
+   * Deploy share nickname and never “Click here.” CSS ellipsis when the name track
+   * is tight; title keeps the full string.
    */
   function formRowHtml(name, startInfo, countsState, opts) {
     const isStart = !!startInfo;
     const selected = !!(opts && opts.selected);
-    const label = isStart && startInfo.label ? startInfo.label : name;
-    const full = String(label || "");
+    const full = String(name || "");
     const urlAttr =
       isStart && startInfo.url ? ` data-pm-url="${escapeHtml(startInfo.url)}"` : "";
     const idxAttr = isStart ? ` data-pm-start-idx="${startInfo.idx}"` : "";
@@ -3608,7 +3636,7 @@
 
   /**
    * Details identity / ops rail (Task List 5–7, 11–12): Published, author, version #,
-   * Active/De-activate, Theme / Appearance, Invite / Include (→ Deploy share), Edit in Designer.
+   * Active/De-activate, uniqueId, Theme / Appearance, Invite / Include (→ Deploy share), Edit in Designer.
    * Project shortDescription (blurb) is NOT here — only under the main-column title.
    */
   function renderSidebarProjectOps(projectId) {
@@ -3632,14 +3660,20 @@
     const pid = escapeHtml(project.id || "");
     const author = escapeHtml(projectAuthorLabel(project));
     const versionNum = project.versionNumber != null ? String(project.versionNumber) : "—";
-    /* Version rail = structural Deploy note only. Never fall back to shortDescription
-     * (marketing blurb) — that lives once under the main title (Task #7 / Aug 9). */
-    const versionDesc = project.versionDescription
-      ? String(project.versionDescription).trim()
-      : "";
+    /* Version rail = owner-typed Deploy note only. Never fall back to shortDescription
+     * (marketing blurb) — that lives once under the main title (Task #7 / Aug 9).
+     * Auto “Copied from Library (…)” is hidden — Source already carries provenance. */
+    const versionDesc = ownerFacingVersionDescription(project.versionDescription);
     const published = resolvePublishedLibraryLink(project);
     const inactive = project.inactive === true || project.libraryActive === false;
     const themePath = resolveProjectThemePath(project);
+    const liveUniqueId =
+      typeof window.TawalaDemo !== "undefined" &&
+      typeof window.TawalaDemo.uniqueIdForProject === "function"
+        ? window.TawalaDemo.uniqueIdForProject(project)
+        : project && project.uniqueId
+          ? String(project.uniqueId)
+          : "";
 
     let publishedHtml;
     if (published) {
@@ -3712,6 +3746,9 @@
       sourceHtml +
       `<div class="pm-identity-row"><dt>Published</dt><dd>${publishedHtml}</dd></div>` +
       `<div class="pm-identity-row"><dt>Status</dt><dd class="pm-identity-status">${statusHtml}</dd></div>` +
+      `<div class="pm-identity-row pm-identity-uniqueid"><dt>uniqueId</dt>` +
+      `<dd class="pm-identity-liveid" title="Same uniqueId as in a Backup file; also the /p/{id}/ in DEPLOY Form links">` +
+      `${liveUniqueId ? escapeHtml(liveUniqueId) : "—"}</dd></div>` +
       `<div class="pm-identity-row"><dt>Theme / Appearance</dt><dd>` +
       `<label class="pm-theme-label"><span class="visually-hidden">Theme</span>` +
       `<select class="pm-theme-select" data-wired="theme-select" data-project="${pid}" ` +
@@ -5183,8 +5220,9 @@
    * Seeded live projects (e.g. Online Exam Builder) share immediately.
    *
    * Live URLs pin overlay uniqueId (`/p/{uniqueId}/{formToken}.FormName`).
-   * Owner share labels persist on overlay startPoints[].label (form name stays in .form).
-   * Unnamed starts show “Click here.” in the field — not the Designer form name.
+   * Owner share nicknames persist on overlay startPoints[].label (form name stays in .form).
+   * Project Data tree always shows the Designer form name. Unnamed starts show “Click here.”
+   * in the Deploy field only — that default is not written over a real form name.
    */
   function iframeEmbedSnippet(url, title) {
     const safeTitle = String(title || "Tawala form").replace(/"/g, "&quot;");
@@ -5226,14 +5264,17 @@
     return byName >= 0 ? byName : 0;
   }
 
-  /** Shown in the Deploy share field until the owner types their own name. */
+  /** Shown in the Deploy share field until the owner types their own name. Not a tree title. */
   const DEFAULT_SHARE_LABEL = "Click here.";
 
   function startHasCustomShareLabel(sp) {
     const form = String((sp && sp.form) || "").trim();
     const label = String((sp && sp.label) || "").trim();
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.isCustomShareLabel === "function") {
+      return TawalaDemo.isCustomShareLabel(label, form);
+    }
     if (!label) return false;
-    if (label === DEFAULT_SHARE_LABEL) return true;
+    if (label === DEFAULT_SHARE_LABEL) return false;
     if (form && label.toLowerCase() === form.toLowerCase()) return false;
     return true;
   }
@@ -5424,46 +5465,38 @@
       if (opt) opt.textContent = label;
     }
 
-    function syncTreeStartLabel(formKey, label) {
-      const tree = document.getElementById("pmDataTree");
-      if (!tree || !formKey) return;
-      const rows = tree.querySelectorAll(".pm-data-tree-form.is-start");
-      for (let i = 0; i < rows.length; i++) {
-        if (String(rows[i].dataset.pmForm || "").toLowerCase() !== String(formKey).toLowerCase()) {
-          continue;
-        }
-        const lab = rows[i].querySelector(".pm-data-tree-label");
-        if (lab) {
-          lab.textContent = label;
-          lab.setAttribute("title", label);
-          lab.setAttribute("aria-label", label);
-        }
-      }
-    }
-
     function persistShareLabel() {
       const sp = currentStart();
       if (!sp) return;
-      const formKey = sp.form || sp.label || "";
-      const next = String((labelInput && labelInput.value) || "").trim() || DEFAULT_SHARE_LABEL;
+      const formKey = String(sp.form || "").trim();
+      if (!formKey || formKey === DEFAULT_SHARE_LABEL) return;
+      const typed = String((labelInput && labelInput.value) || "").trim();
+      const custom = startHasCustomShareLabel({ form: formKey, label: typed });
+      const stored = custom ? typed : formKey;
+      const alreadyCustom = startHasCustomShareLabel(sp);
+      if (!custom && !alreadyCustom) {
+        /* Dialog default “Click here.” / form name — do not persist over Customize. */
+        syncFields();
+        return;
+      }
+      if (custom && String(sp.label || "").trim() === stored) return;
       if (typeof TawalaTransfer === "undefined" || typeof TawalaTransfer.updateStartShareLabel !== "function") {
         return;
       }
-      const result = TawalaTransfer.updateStartShareLabel(projectId, formKey, next);
+      const result = TawalaTransfer.updateStartShareLabel(projectId, formKey, stored);
       if (!result || !result.ok) return;
       const idx = Number(startSelect && startSelect.value) || 0;
       if (starts[idx]) {
-        starts[idx].label = next;
+        starts[idx].label = stored;
         starts[idx].form = starts[idx].form || formKey;
       }
       refreshStartOptionText(idx, startPickerOptionLabel(starts[idx], idx));
       if (startOneEl) {
         startOneEl.innerHTML = oneStartLineHtml({
           form: formKey,
-          label: next,
+          label: stored,
         });
       }
-      syncTreeStartLabel(formKey, next);
       syncFields();
     }
 
@@ -5483,8 +5516,8 @@
       startSelect.addEventListener("change", syncFields);
     }
     if (labelInput) {
+      /* change = they edited and committed. Do not persist on blur of the default “Click here.” */
       labelInput.addEventListener("change", persistShareLabel);
-      labelInput.addEventListener("blur", persistShareLabel);
     }
 
     if (copyLinkBtn) {

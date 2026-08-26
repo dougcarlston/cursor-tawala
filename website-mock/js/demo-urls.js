@@ -687,15 +687,36 @@ window.TawalaDemo = {
     const m = String(url).match(/\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/);
     return m ? m[1] : null;
   },
+  /** Deploy-field default only — never a Project Data tree title, never persist over a form name. */
+  DEFAULT_SHARE_LABEL: "Click here.",
   /** Designer form name for a start point (stable key; not the owner share label). */
   startFormKey(sp) {
     if (!sp) return "";
-    return String(sp.form || sp.label || "").trim();
+    const form = String(sp.form || "").trim();
+    if (form && form !== this.DEFAULT_SHARE_LABEL) return form;
+    const lab = String(sp.label || "").trim();
+    if (lab && lab !== this.DEFAULT_SHARE_LABEL) return lab;
+    return form;
   },
-  /** Owner-chosen share label, else the Designer form name. */
+  /**
+   * True when overlay `label` is an owner-chosen share nickname (Deploy / Invite / Include).
+   * Empty, the Designer form name, and the dialog default “Click here.” are unnamed.
+   */
+  isCustomShareLabel(label, formName) {
+    const lab = String(label || "").trim();
+    const form = String(formName || "").trim();
+    if (!lab) return false;
+    if (lab === this.DEFAULT_SHARE_LABEL) return false;
+    if (form && lab.toLowerCase() === form.toLowerCase()) return false;
+    return true;
+  },
+  /** Owner-chosen share nickname, else the Designer form name (not “Click here.”). */
   startShareLabel(sp) {
     if (!sp) return "Start";
-    return String(sp.label || sp.form || "Start").trim() || "Start";
+    const form = this.startFormKey(sp);
+    const lab = String(sp.label || "").trim();
+    if (this.isCustomShareLabel(lab, form)) return lab;
+    return form || "Start";
   },
   /**
    * Pin `/p/{uniqueId}/…` on a live form URL (Task #10).
@@ -735,7 +756,13 @@ window.TawalaDemo = {
       const form = this.startFormKey(sp);
       if (!form) continue;
       const prev = prevByKey[form.toLowerCase()];
-      const label = String((prev && prev.label) || (sp && sp.label) || form).trim() || form;
+      const prevLab = prev && prev.label;
+      const incomingLab = sp && sp.label;
+      const label = this.isCustomShareLabel(prevLab, form)
+        ? String(prevLab).trim()
+        : this.isCustomShareLabel(incomingLab, form)
+          ? String(incomingLab).trim()
+          : form;
       const rawUrl = (sp && sp.url) || null;
       const url = rawUrl ? this.rewriteRuntimeUrlUniqueId(rawUrl, uniqueId) || rawUrl : null;
       out.push({ form, label, url });
@@ -796,6 +823,50 @@ window.TawalaDemo = {
    */
   purgeApiBase() {
     return (typeof window !== "undefined" && window.TAWALA_DEV_API) || "http://localhost:3001";
+  },
+
+  /**
+   * Task #27 slice 2: free the live Tomcat/Node Deploy *name* for this uniqueId.
+   * Does not mint a uniqueId. Lookup is uniqueId-only (Online Exam catalog id stays).
+   */
+  async vacateLiveTomcatName(uniqueId) {
+    if (!this.isValidUniqueId(uniqueId)) {
+      return { status: "failure", error: "uniqueId required (1–20 alphanumeric)" };
+    }
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/retire-name";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          uniqueId,
+          credentials: { user: "dev", password: "dev" },
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data.status === "failure") {
+        return {
+          status: "failure",
+          uniqueId,
+          code: data.code || (res.status === 501 ? "command.unknown" : "retire-failed"),
+          error:
+            data.error ||
+            (res.status === 501
+              ? "Tomcat has no retireDeployment yet — rebuild ROOT.war so Retire can free :8080 names."
+              : `HTTP ${res.status}`),
+        };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        uniqueId,
+        code: "retire-unreachable",
+        error:
+          "Couldn't reach designer-web :3001 to free that live name. " +
+          "Retire aborted so occupancy is not lying. Is the API up? (cd designer-web && npm run dev)",
+      };
+    }
   },
 
   _mockResponseCountsKey: "tawala.mock.responseCounts",
