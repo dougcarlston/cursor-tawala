@@ -68,15 +68,15 @@
  *   - Fail closed: abort (no library overlay write) if the source has no live form — no uniqueId
  *     and none resolvable from start URLs / testDriveUrl (same as Purge). Owner copy, no uniqueId
  *     in the alert: "This project has no live form yet. Edit in Designer, Push, then Publish."
- *   - Owner Aug 26, 2026: cannot Publish with data. If the live uniqueId has any saved responses
- *     (same count as Purge / Records), confirm then purge then write the Library overlay.
- *     Exact confirm: "Project will be purged of data upon publication. Proceed?"
- *     Cancel = no overlay write and no purge. Proceed = whole-uniqueId purge, then overlay.
- *     Empty templates skip the extra confirm. No checkbox to keep data on Publish.
+ *   - Owner Aug 26, 2026 (corrected): Library listing must not share the author’s My Tawala
+ *     uniqueId. Publish mints (or reuses) a **separate empty** live form for the Library copy.
+ *     Never purge the source uniqueId. Never copy submissions onto the Library uniqueId.
+ *     Overlay start URLs / uniqueId come from that clone. Fail closed if clone fails or
+ *     reuses the author’s uniqueId — no overlay write. My Tawala data is unchanged.
  *   - Owner Aug 26, 2026: refuse a duplicate Library product unless the current mock user is
  *     updating a listing they authored (`replaceLibraryId` = that id and `entry.author` matches).
  *     Identical = pulledFromLibraryId (or forkedFromId → that acquire), same jsonFile, or
- *     compact-equal Publish name. Duplicate refuse runs before the purge confirm. Overlay
+ *     compact-equal Publish name. Duplicate refuse runs before the Library clone. Overlay
  *     stamps `author: currentUser` when missing.
  *
  * Library admin path (owner Aug 1, 2026 — "for when you won't always be available"):
@@ -558,6 +558,32 @@
       ...rest,
       name,
       _freshFromTemplate: true,
+    };
+  }
+
+  /**
+   * Redeploy onto an existing Library Tomcat identity (author overwrite).
+   * Must not set `_freshFromTemplate` (that would mint a third uniqueId).
+   */
+  function projectBodyForLibraryRedeploy(definition, displayName, deployIdentityName) {
+    if (!definition || typeof definition !== "object") {
+      throw new Error("definition required");
+    }
+    const name = String(displayName || "").trim();
+    const identity = String(deployIdentityName || "").trim();
+    if (!name) throw new Error("display name required");
+    if (!identity) throw new Error("Library deploy identity required");
+    const {
+      _freshFromTemplate: _dropFresh,
+      deployIdentityName: _dropId,
+      deployUniqueId: _dropUid,
+      uniqueId: _dropUnique,
+      ...rest
+    } = definition;
+    return {
+      ...rest,
+      name,
+      deployIdentityName: identity,
     };
   }
 
@@ -1819,10 +1845,10 @@
   }
 
   /**
-   * Merge Publish overlay on top of catalog Library entries. Retired **stub** ids are dropped
-   * from the catalog side (they left the public Library); an overlay entry at that same id
-   * (e.g. a fresh Publish that happens to reuse the slug) still shows — retirement only hides
-   * the old catalog row, it never blocks a new Publish from using that id.
+   * Merge Publish overlay on top of catalog Library entries. Retired ids are dropped from
+   * both the catalog side and leftover overlay — admin Retire hides the public row even if
+   * a prior Publish overlay is still in localStorage. A later legitimate Publish must call
+   * clearLibraryRetired(libraryId) so that slug can list again.
    *
    * Aug 10, 2026: always scrub discarded stub snapshots first. Overlay-only rows that are
    * stubs / discarded seed ids never re-enter the listing (Save a copy used to snapshot them).
@@ -1841,6 +1867,7 @@
     Object.keys(overlay).forEach((id) => {
       const data = overlay[id];
       if (!data || typeof data !== "object") return;
+      if (retired[id]) return;
       if (isDiscardedPublicLibraryEntry(id, data)) return;
       const existing = byId.get(id);
       /* Overlay-only: keep real Publishes; drop stray snapshots of removed seed rows. */
@@ -1986,10 +2013,12 @@
   const PUBLISH_NO_LIVE_FORM_ERROR =
     "This project has no live form yet. Edit in Designer, Push, then Publish.";
   /* Keep in sync with website-mock/js/acquireClone.mjs */
-  const PUBLISH_STRIP_CONFIRM =
-    "Project will be purged of data upon publication. Proceed?";
-  const PUBLISH_STRIP_FAILED =
-    "Couldn't purge saved responses before Publish. Nothing was added to the Library. Try Purge, then Publish again.";
+  const PUBLISH_CLONE_FAILED =
+    "Couldn't make a separate Library copy of the live form. Your My Tawala project was not changed. Start Tomcat and the Designer API, then try again.";
+  const PUBLISH_CLONE_REUSED_ID =
+    "Library copy reused your private live form id — nothing was published. Your My Tawala project is unchanged. Try again.";
+  const PUBLISH_LIBRARY_PURGE_FAILED =
+    "Couldn't empty the Library copy. Your My Tawala project was not changed. Try Publish again.";
 
   function currentMockUser() {
     if (
@@ -2173,6 +2202,110 @@
   }
 
   /**
+   * Empty live form for a Library listing. Never copies submissions. Never purges the
+   * author's uniqueId. If the listing already has its own uniqueId (not the author's),
+   * redeploy onto that identity and purge *that* uniqueId. Otherwise mint a new clone.
+   * Do not call maybeCopyResponsesOntoClone — Library must stay empty.
+   */
+  async function emptyLibraryRuntimeForPublish({
+    sourceProject,
+    sourceProjectId,
+    publishName,
+    existingLibraryEntry,
+    sourceUniqueId,
+  } = {}) {
+    const resolved = await resolveDefinitionForMyTawalaClone(sourceProject, sourceProjectId);
+    if (!resolved || !resolved.ok) {
+      return {
+        ok: false,
+        error: (resolved && resolved.error) || PUBLISH_CLONE_FAILED,
+      };
+    }
+    const sourceUid = sourceUniqueId || liveUniqueIdForPublish(sourceProjectId, sourceProject);
+    const existingLive = existingLibraryEntry ? liveRuntimeFromLibrarySource(existingLibraryEntry) : {};
+    const existingUid = existingLive.uniqueId || null;
+    const existingIdentity = String(
+      (existingLibraryEntry && existingLibraryEntry.deployIdentityName) || ""
+    ).trim();
+    const canReuse =
+      !!(existingUid && existingIdentity && sourceUid && String(existingUid) !== String(sourceUid));
+    const themePath = (sourceProject && sourceProject.themePath) || "";
+    const previousStartPoints = (sourceProject && sourceProject.startPoints) || [];
+
+    if (canReuse) {
+      if (typeof window === "undefined" || !window.TawalaDemo) {
+        return { ok: false, error: PUBLISH_CLONE_FAILED };
+      }
+      const Demo = window.TawalaDemo;
+      if (typeof Demo.deployProjectDefinition !== "function") {
+        return { ok: false, error: PUBLISH_CLONE_FAILED };
+      }
+      let body;
+      try {
+        body = projectBodyForLibraryRedeploy(resolved.project, publishName, existingIdentity);
+      } catch (e) {
+        return { ok: false, error: ownerFacingCloneError(e && e.message, PUBLISH_CLONE_FAILED) };
+      }
+      if (themePath) body.themePath = themePath;
+      const deploy = await Demo.deployProjectDefinition(body);
+      if (!deploy || deploy.status !== "success" || !deploy.uniqueId) {
+        return {
+          ok: false,
+          error: ownerFacingCloneError(deploy && deploy.error, PUBLISH_CLONE_FAILED),
+        };
+      }
+      if (String(deploy.uniqueId) === String(sourceUid)) {
+        return { ok: false, error: PUBLISH_CLONE_REUSED_ID };
+      }
+      const libraryUid = deploy.uniqueId;
+      let purge = null;
+      if (typeof Demo.purgeResponses === "function") {
+        try {
+          purge = await Demo.purgeResponses(libraryUid);
+        } catch (e) {
+          return {
+            ok: false,
+            error: PUBLISH_LIBRARY_PURGE_FAILED,
+            purge: { status: "failure", error: String((e && e.message) || e) },
+          };
+        }
+        if (!purge || purge.status !== "success") {
+          return { ok: false, error: PUBLISH_LIBRARY_PURGE_FAILED, purge };
+        }
+      }
+      const startPoints = startPointsFromDeploy(deploy, previousStartPoints);
+      if (!startPoints.length) {
+        return { ok: false, error: PUBLISH_CLONE_FAILED };
+      }
+      let testDriveUrl = startPoints[0].url;
+      if (typeof Demo.primaryStartUrl === "function") {
+        testDriveUrl = Demo.primaryStartUrl(startPoints, null) || testDriveUrl;
+      }
+      return {
+        ok: true,
+        uniqueId: libraryUid,
+        deployIdentityName: existingIdentity,
+        startPoints,
+        testDriveUrl,
+        deployed: true,
+        reusedLibraryRuntime: true,
+        purge,
+      };
+    }
+
+    const clone = await cloneDefinitionToPrivateRuntime(resolved.project, publishName, {
+      sourceUniqueId: sourceUid,
+      previousStartPoints,
+      themePath,
+      tryAgainError: PUBLISH_CLONE_FAILED,
+      reusedIdError: PUBLISH_CLONE_REUSED_ID,
+      noStartsError: PUBLISH_CLONE_FAILED,
+    });
+    if (!clone || !clone.ok) return clone;
+    return { ...clone, reusedLibraryRuntime: false };
+  }
+
+  /**
    * Publish a My Tawala project into the public Library (mock — localStorage overlay only;
    * shipping into the repo catalog / demo-urls.js, and flipping `liveReady`, stays a separate
    * maintainer step — see README § Publish).
@@ -2181,11 +2314,10 @@
    * form (no uniqueId and none resolvable from start URLs / testDriveUrl — same as Purge).
    * Duplicate Library product (same acquire lineage / jsonFile / compact name): refuse unless
    * `replaceLibraryId` is that listing and the current mock user is its listed author. Runs
-   * before the purge confirm. Overlay stamps `author` from the current user when missing.
-   * Owner Aug 26: cannot Publish with data. If the uniqueId has saved responses (same count as
-   * Purge / Records), callers must confirm (`PUBLISH_STRIP_CONFIRM`) then pass `stripConfirmed`.
-   * Cancel = no overlay and no purge. Proceed = whole-uniqueId purge, then overlay write.
-   * Empty templates skip the extra confirm. There is no keep-data-on-Publish path.
+   * before the empty Library clone. Overlay stamps `author` from the current user when missing.
+   * Owner Aug 26 (corrected): mint or reuse a **separate empty** Library uniqueId. Never purge
+   * the author's My Tawala uniqueId. Never copy submissions onto the Library copy. Fail closed
+   * if clone fails or reuses the author's uniqueId.
    * Details dialog and library-admin both go through this function.
    *
    * `replaceLibraryId`, when set, names an existing Library entry (stub or not) to target:
@@ -2199,7 +2331,7 @@
    * Publish never keeps responses on the Library uniqueId. `keepResponses` on a new overlay is
    * always false (older overlays that opted out of Purge-on-Publish may still have it).
    */
-  async function publishToLibrary({ sourceProjectId, name, replaceLibraryId, category, stripConfirmed } = {}) {
+  async function publishToLibrary({ sourceProjectId, name, replaceLibraryId, category } = {}) {
     const sourceProject =
       sourceProjectId && typeof window !== "undefined" && window.TawalaDemo
         ? window.TawalaDemo.getMyTawala(sourceProjectId)
@@ -2209,8 +2341,8 @@
       return { ok: false, error: "Library name is required." };
     }
 
-    const uniqueId = liveUniqueIdForPublish(sourceProjectId, sourceProject);
-    if (!uniqueId) {
+    const sourceUniqueId = liveUniqueIdForPublish(sourceProjectId, sourceProject);
+    if (!sourceUniqueId) {
       return { ok: false, error: PUBLISH_NO_LIVE_FORM_ERROR };
     }
 
@@ -2228,41 +2360,6 @@
     });
     if (duplicateError) {
       return { ok: false, duplicateProduct: true, error: duplicateError };
-    }
-
-    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
-    let counted = null;
-    if (Demo && typeof Demo.countResponses === "function") {
-      try {
-        counted = await Demo.countResponses(uniqueId);
-      } catch (e) {
-        counted = { status: "failure", error: String((e && e.message) || e) };
-      }
-    }
-    const mustStrip = countShowsSavedResponses(counted);
-    if (mustStrip && stripConfirmed !== true) {
-      return { ok: false, needsStripConfirm: true, error: PUBLISH_STRIP_CONFIRM };
-    }
-
-    let stripped = false;
-    let purgeResult = null;
-    if (mustStrip) {
-      if (!Demo || typeof Demo.purgeAfterPublish !== "function") {
-        return { ok: false, error: PUBLISH_STRIP_FAILED };
-      }
-      try {
-        purgeResult = await Demo.purgeAfterPublish(sourceProjectId);
-      } catch (e) {
-        return {
-          ok: false,
-          error: PUBLISH_STRIP_FAILED,
-          purge: { status: "failure", error: String((e && e.message) || e) },
-        };
-      }
-      if (!purgeResult || purgeResult.status !== "success") {
-        return { ok: false, error: PUBLISH_STRIP_FAILED, purge: purgeResult };
-      }
-      stripped = true;
     }
 
     const targetId = replaceLibraryId || null;
@@ -2287,21 +2384,38 @@
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
 
-    const sourceStartPoints = (sourceProject && sourceProject.startPoints) || [];
-    // Library Test Drive: Administration/Setup first for Online Exam (not Exam).
-    let testDriveUrl = null;
+    const clone = await emptyLibraryRuntimeForPublish({
+      sourceProject,
+      sourceProjectId,
+      publishName,
+      existingLibraryEntry: visibleTarget || baseTarget,
+      sourceUniqueId,
+    });
+    if (!clone || !clone.ok) {
+      return {
+        ok: false,
+        error: (clone && clone.error) || PUBLISH_CLONE_FAILED,
+        purge: clone && clone.purge,
+      };
+    }
+    if (!clone.uniqueId || String(clone.uniqueId) === String(sourceUniqueId)) {
+      return { ok: false, error: PUBLISH_CLONE_REUSED_ID };
+    }
+
+    const libraryStartPoints = Array.isArray(clone.startPoints) ? clone.startPoints : [];
+    let testDriveUrl = clone.testDriveUrl || null;
     if (
       typeof window !== "undefined" &&
       window.TawalaDemo &&
       typeof window.TawalaDemo.libraryTestDriveUrl === "function"
     ) {
-      testDriveUrl = window.TawalaDemo.libraryTestDriveUrl({
-        startPoints: sourceStartPoints,
-        testDriveUrl: (sourceProject && sourceProject.testDriveUrl) || null,
-      });
-    } else {
-      testDriveUrl = (sourceProject && sourceProject.testDriveUrl) || null;
+      testDriveUrl =
+        window.TawalaDemo.libraryTestDriveUrl({
+          startPoints: libraryStartPoints,
+          testDriveUrl,
+        }) || testDriveUrl;
     }
+    const uniqueId = clone.uniqueId;
 
     /* Published Library version = My Tawala current version at Publish time (what's in the catalog). */
     let publishedVersion = STARTING_VERSION_NUMBER;
@@ -2335,15 +2449,18 @@
         `Published from My Tawala project "${
           (sourceProject && sourceProject.name) || sourceProjectId || "unknown"
         }" via the Publish dialog. Stored in this browser's localStorage until copied into demo-urls.js (see README § Publish).`,
+      stub: false, // do not inherit catalog stub:true if this slug was a retired stub
       sourcePile: "publish-overlay",
       publishedFromId: sourceProjectId || null,
+      publishedFromUniqueId: sourceUniqueId,
       publishedAt: nowIso,
       replacesLibraryId: targetId || null,
       author: authorKeep || currentUser,
-      deployed: !!(sourceProject && sourceProject.deployed),
-      startPoints: sourceStartPoints,
+      deployed: true,
+      startPoints: libraryStartPoints,
       testDriveUrl,
       uniqueId,
+      deployIdentityName: clone.deployIdentityName || undefined,
       keepResponses: false,
       themePath: (sourceProject && sourceProject.themePath) || undefined,
       jsonFile: (sourceProject && sourceProject.jsonFile) || (baseTarget && baseTarget.jsonFile) || null,
@@ -2415,6 +2532,10 @@
       retired = { stubId: targetId, myTawalaId: myId, name: baseTarget.name };
     }
 
+    /* A later Publish (or Publish-over-stub at this slug) may list again. Must run after
+     * markLibraryRetired(targetId) when replacing a stub whose id is this libraryId. */
+    clearLibraryRetired(libraryId);
+
     return {
       ok: true,
       libraryId,
@@ -2422,23 +2543,20 @@
       retired,
       replacedNonStub: !!(targetId && !targetIsActiveStub),
       replacedName: targetId && !targetIsActiveStub ? (baseTarget && baseTarget.name) || targetId : null,
-      stripped,
-      purge: purgeResult,
+      clonedEmpty: true,
+      libraryUniqueId: uniqueId,
+      sourceUniqueId,
+      reusedLibraryRuntime: !!clone.reusedLibraryRuntime,
+      purge: clone.purge || null,
     };
   }
 
   /**
-   * Run Publish: duplicate-product refuse first (no confirm); if the source has responses,
-   * confirm purge then purge then overlay. Cancel of the purge confirm returns
-   * `{ cancelledStrip: true }` — no overlay, no purge.
+   * Same as publishToLibrary (name kept so Details / admin callers do not break).
+   * No longer confirms a purge of the author’s uniqueId — Library gets a separate empty copy.
    */
   async function publishToLibraryAfterStripConfirm(opts) {
-    const first = await publishToLibrary(opts || {});
-    if (!first || !first.needsStripConfirm) return first;
-    if (typeof window === "undefined" || !window.confirm(PUBLISH_STRIP_CONFIRM)) {
-      return { ok: false, cancelledStrip: true, error: PUBLISH_STRIP_CONFIRM };
-    }
-    return publishToLibrary({ ...(opts || {}), stripConfirmed: true });
+    return publishToLibrary(opts || {});
   }
 
   /**
@@ -3270,7 +3388,27 @@
    */
   function retireLibraryEntry(libraryId) {
     if (!libraryId) return { ok: false, error: "libraryId required." };
-    if (isLibraryRetired(libraryId)) return { ok: false, error: "Already retired." };
+    if (isLibraryRetired(libraryId)) {
+      /* Idempotent hide: leftover Publish overlay used to reappear on the public list
+       * because withLibraryOverlay re-added overlay keys without checking retired[id].
+       * Still vacate overlay; do not duplicate the My Tawala safety copy. */
+      const leftover = getLibraryOverlayEntry(libraryId);
+      const myOverlay = getMyTawalaOverlay();
+      const safetyId = Object.prototype.hasOwnProperty.call(myOverlay, libraryId)
+        ? libraryId
+        : Object.prototype.hasOwnProperty.call(myOverlay, `${libraryId}-retired`)
+          ? `${libraryId}-retired`
+          : null;
+      const safety = safetyId ? myOverlay[safetyId] : null;
+      removeLibraryOverlay(libraryId);
+      return {
+        ok: true,
+        libraryId,
+        alreadyRetired: true,
+        myTawalaId: safetyId || undefined,
+        name: (leftover && leftover.name) || (safety && safety.name) || libraryId,
+      };
+    }
     const merged = libraryReplaceCandidates().find((c) => c.id === libraryId);
     if (!merged) return { ok: false, error: `Unknown Library id: ${libraryId}` };
 
@@ -3493,8 +3631,9 @@
     liveUniqueIdForPublish,
     countShowsSavedResponses,
     PUBLISH_NO_LIVE_FORM_ERROR,
-    PUBLISH_STRIP_CONFIRM,
-    PUBLISH_STRIP_FAILED,
+    PUBLISH_CLONE_FAILED,
+    PUBLISH_CLONE_REUSED_ID,
+    PUBLISH_LIBRARY_PURGE_FAILED,
     publishToLibrary,
     publishToLibraryAfterStripConfirm,
     setProjectLibraryActive,

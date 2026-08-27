@@ -6,7 +6,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
-import { formsFromExport, isDataDrivenProject, PUBLISH_STRIP_CONFIRM } from "./acquireClone.mjs";
+import { formsFromExport, isDataDrivenProject, PUBLISH_CLONE_FAILED } from "./acquireClone.mjs";
 
 const dir = dirname(fileURLToPath(import.meta.url));
 const demo = readFileSync(join(dir, "demo-urls.js"), "utf8");
@@ -26,9 +26,25 @@ assert.match(demo, /this\.purgeResponses\(uniqueId\)/);
 assert.doesNotMatch(demo, /async purgeRespondentResponses/);
 assert.doesNotMatch(demo, /formsToKeepAfterRespondentPurge/);
 assert.match(
-  demo.slice(demo.indexOf("async purgeAfterPublish")),
-  /this\.purgeResponses\(uniqueId\)/,
-  "purgeAfterPublish must whole-uniqueId purgeResponses (partial keep reverted)"
+  transfer.slice(transfer.indexOf("async function emptyLibraryRuntimeForPublish")),
+  /cloneDefinitionToPrivateRuntime/,
+  "Publish mints an empty Library uniqueId"
+);
+assert.doesNotMatch(
+  transfer.slice(
+    transfer.indexOf("async function emptyLibraryRuntimeForPublish"),
+    transfer.indexOf("async function publishToLibraryAfterStripConfirm")
+  ),
+  /purgeAfterPublish/,
+  "Publish must not purge the author's My Tawala uniqueId"
+);
+assert.doesNotMatch(
+  transfer.slice(
+    transfer.indexOf("async function emptyLibraryRuntimeForPublish"),
+    transfer.indexOf("async function publishToLibraryAfterStripConfirm")
+  ),
+  /maybeCopyResponsesOntoClone/,
+  "Publish must not copy author submissions onto the Library uniqueId"
 );
 assert.match(
   demo.slice(demo.indexOf("async copyResponsesToUniqueId")),
@@ -43,6 +59,11 @@ assert.match(demo, /This project is used from My Tawala — Copy to MyTawala/);
 
 assert.match(transfer, /keepResponses: false/);
 assert.match(transfer, /publishedKeepResponses: false/);
+assert.doesNotMatch(transfer, /Already retired\./);
+assert.match(transfer, /alreadyRetired: true/);
+assert.match(transfer.slice(transfer.indexOf("function withLibraryOverlay")), /if \(retired\[id\]\) return;/);
+assert.match(transfer.slice(transfer.indexOf("async function publishToLibrary")), /clearLibraryRetired\(libraryId\)/);
+assert.match(demo.slice(demo.indexOf("getLibrary(id)")), /isLibraryRetired\(id\)\) \{\s*return null;/);
 assert.doesNotMatch(transfer, /keepResponses: keepResponses === true/);
 assert.doesNotMatch(transfer, /publishedKeepResponses: keepResponses === true/);
 assert.match(transfer, /maybeCopyResponsesOntoClone/);
@@ -56,10 +77,9 @@ assert.doesNotMatch(admin, /adminPublishPurge/);
 assert.match(ops, /publishToLibraryAfterStripConfirm/);
 assert.match(admin, /publishToLibraryAfterStripConfirm/);
 assert.equal(
-  PUBLISH_STRIP_CONFIRM,
-  "Project will be purged of data upon publication. Proceed?"
+  PUBLISH_CLONE_FAILED,
+  "Couldn't make a separate Library copy of the live form. Your My Tawala project was not changed. Start Tomcat and the Designer API, then try again."
 );
-assert.match(transfer, /Project will be purged of data upon publication\. Proceed\?/);
 assert.match(ops, /cancelledStrip/);
 assert.match(admin, /cancelledStrip/);
 

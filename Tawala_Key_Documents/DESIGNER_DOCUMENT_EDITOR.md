@@ -313,6 +313,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 | Fields drag into document | Yes | Drag + double-click insert `<<name>>` field tokens |
 | Format toolbar row 2 | Per-document child toolbar | Shared Formatting Palette (Document + Form Text) |
 | Device output sizing (computer / tablet / phone + optional autoswitch) | **Did not exist** (2011) | **Not built** — parked Jul 24 until after the other two project branches. Spec: `DESIGNER_OPEN_TODOS.md` § Device output sizing. Distinct from Design margin-based reflow. |
+| Two Form/Web links on one Document line | Separate underlines; `or` between them is not a link | **Open Aug 26** — one continuous underline spans both links and the text between (`DESIGNER_OPEN_BUGS.md`) |
 
 ### Must-not-break smoke (Document canvas — July 2026)
 
@@ -407,6 +408,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 24. Click blank canvas to invent a text anchor → click away / elsewhere **without typing** → empty anchor is gone (intentional Double-Return blank between paragraphs still kept).
 25. Soft-refresh → leave/return Document → still **no** table-over-text overlay.
 26. Caret in a table → **Delete Table** → **Are you sure you want to delete this table?** → **Cancel** keeps table; **OK** removes it.
+27. **Two links on one line (open bug Aug 26):** `Link A` **or** `Link B` on the same placed Document line → each link underlines on its own; `or` is not underlined and is not a click target. Today Design and Push draw one continuous underscore across both. See `DESIGNER_OPEN_BUGS.md`.
 
 ---
 
@@ -423,4 +425,4 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 
 ---
 
-*Last updated: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7) + widen home-restore (13b2); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; table ✥ yield/restore (23b); empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b); cross-Return Backspace merge (22c); arrows across Returns + chips (22d).*
+*Last updated: August 26, 2026 — two Document links on one line merge underlines (`DESIGNER_OPEN_BUGS.md`). Prior: July 2026 — invent caret left inset (3d); click/drop hit-test edit vs invent (3e); selection-scoped Face/Size, 10/11 pt snap fix, B/I/U on field chips; Face/Size chip inherit readout; Return keeps face/size; Double-Return blank gap; paragraph Center/align (#6); resize reflow (#7) + widen home-restore (13b2); continue-after-break (#8); mid-text click caret; no nested tables; multi-cell format; table Borders 1/2/none; Tab cell nav; align only on highlighted cells; one top-left table move handle (no float toggles); Document free-space L/R text + collision-aware table placement; table ✥ yield/restore (23b); empty invent prune; Delete Table confirm; field-gap ZWSP Size shrink fix (7i); Face→Size with chips (7j / SS1–SS4 retest); left-of-table Arial/12 defaults apply (7k); delete beside table stays in placed line (22b); cross-Return Backspace merge (22c); arrows across Returns + chips (22d).*

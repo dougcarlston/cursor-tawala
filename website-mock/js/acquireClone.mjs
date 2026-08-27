@@ -146,9 +146,9 @@ export function snapshotProjectAfterClone(definition, { displayName, deployIdent
   };
 }
 
-/** Keep in sync with `transfer.js` PUBLISH_STRIP_CONFIRM. */
-export const PUBLISH_STRIP_CONFIRM =
-  "Project will be purged of data upon publication. Proceed?";
+/** Keep in sync with `transfer.js` PUBLISH_CLONE_FAILED. */
+export const PUBLISH_CLONE_FAILED =
+  "Couldn't make a separate Library copy of the live form. Your My Tawala project was not changed. Start Tomcat and the Designer API, then try again.";
 
 /** True when a :3001 count result means the source has submissions (Publish must strip first). */
 export function countShowsSavedResponses(countResult) {

@@ -5752,7 +5752,7 @@
       "</label>" +
       "</div>" +
       '<p class="pm-hint tawala-modal-hint-tight">Stubs retire to My Tawala marked <code>(stub)</code> (never hard-deleted). Non-stubs overlay in place. No public Library Delete.</p>' +
-      '<p class="pm-hint tawala-modal-hint-tight">If this project has saved responses, they are purged before it is added to the Library (you’ll be asked to confirm). Empty templates publish as-is. You cannot publish a copy of an existing Library product unless you are that listing’s author and are updating it.</p>' +
+      '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate live form with no saved responses. Your My Tawala project and its data are not changed. You cannot publish a copy of an existing Library product unless you are that listing’s author and are updating it.</p>' +
       '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
       "</div>" +
       '<div class="tawala-modal-actions">' +
@@ -5838,6 +5838,7 @@
       }
       const confirmMsg =
         `Publish “${nameVal}” to the public Library (category: ${categoryVal})?` +
+        `\n\nThe Library copy will not include saved responses. Your My Tawala project is unchanged.` +
         (target
           ? target.stub
             ? `\n\nThis retires the stub “${target.name}” — removed from Library, kept in My Tawala marked (stub).`
@@ -5874,12 +5875,8 @@
       } else if (result.replacedNonStub) {
         parts.push(`Replaced existing Library entry “${result.replacedName || replaceLibraryId}” in place.`);
       }
-      if (result.stripped) {
-        const n =
-          result.purge && result.purge.javaDb && result.purge.javaDb.deleted != null
-            ? result.purge.javaDb.deleted
-            : "?";
-        parts.push(`Purged saved responses before Publish (deleted ${n} submission row(s)).`);
+      if (result.clonedEmpty) {
+        parts.push("Library copy has no saved responses. Your My Tawala data is unchanged.");
       }
 
       const msg = parts.join(" ");

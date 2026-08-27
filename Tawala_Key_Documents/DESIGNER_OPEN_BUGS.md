@@ -27,6 +27,15 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
+### Document — two links on one line merge underlines (Not blocking) — **NEW Aug 26**
+
+- **Path:** Document canvas (repro: **Shared To-Do** → **Document - User Menu**). Two Insert → **Link…** (Form in project) on the **same placed line**, with plain text between them (`Sign up for a task` **or** `Mark a task complete`).
+- **Symptom:** One continuous underline runs under **both** links **and** the text/spaces in between (`or`). Seen in **Design** and after **Push** (`:8080`). Owner: may be cosmetic, but might also merge click targets so the two links are confused.
+- **Expected:** Each link has its own underline; the word `or` (and surrounding spaces) is not underlined and is not part of either link.
+- **Open question:** Confirm whether the live click hit-box is two `<a>`s or one spanning run. Visual merge alone is enough to file.
+- **Screenshots:** Design `Tawala_Key_Documents/assets/Bug_-_Document-two-links-merged-underline-Design-Aug26.png`; Push `…/Bug_-_Document-two-links-merged-underline-Push-Aug26.png`.
+- **Status:** Open — document only (Aug 26). Do not fix in a website-mock session. Related smoke: `DESIGNER_DOCUMENT_EDITOR.md` § must-not-break; `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Smoke — Link….
+
 ### Parked Jul 30 / reconfirmed Aug 11 (Not blocking for Live Library) — **CLOSED Aug 20–21**
 
 Also listed in catchup `docs/CATCHUP_MEMO_RETURN_AUG20.md` (historical). All five items below are fixed; do not reopen unless a regression is reported.

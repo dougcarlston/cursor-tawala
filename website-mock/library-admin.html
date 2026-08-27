@@ -6,9 +6,9 @@
   <title>Tawala - Library Admin Tools</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubdup1" />
-  <script src="js/demo-urls.js?v=20260826-pubdup1"></script>
-  <script src="js/transfer.js?v=20260826-pubdup1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubpriv1" />
+  <script src="js/demo-urls.js?v=20260826-pubpriv1"></script>
+  <script src="js/transfer.js?v=20260826-pubpriv1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -170,7 +170,7 @@
         '<label class="tawala-modal-field" for="adminPublishCategory">Library category (required)' +
         `<select id="adminPublishCategory">${categoryOptionsHtml(defaultCategoryFor(initialTarget, firstSource))}</select>` +
         "</label>" +
-        '<p class="pm-hint tawala-modal-hint-tight">If the source project has saved responses, they are purged before Publish (you’ll be asked to confirm). Empty templates publish as-is. There is no option to keep data on Publish. A copy of an existing Library product is refused unless you are that listing’s author and are updating it.</p>' +
+        '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate live form with no saved responses. Your My Tawala project and its data are not changed. A copy of an existing Library product is refused unless you are that listing’s author and are updating it.</p>' +
         '<p class="pm-hint" id="adminPublishError" role="alert" style="display:none;"></p>' +
         '<p><button type="button" class="pm-action is-active" id="adminPublishConfirm">Publish / overwrite</button></p>' +
         "</div></div>"
@@ -495,6 +495,7 @@
           : null;
         const confirmMsg =
           `Publish "${name}" to the public Library (category: ${category})?` +
+          `\n\nThe Library copy will not include saved responses. Your My Tawala project is unchanged.` +
           (target
             ? target.stub
               ? `\n\nThis retires the stub "${target.name}" — removed from Library, kept in My Tawala marked (stub).`
@@ -524,12 +525,8 @@
         const parts = [`Published "${name}".`];
         if (result.retired) parts.push(`Retired stub "${result.retired.name}" → My Tawala.`);
         if (result.replacedNonStub) parts.push(`Replaced "${result.replacedName}" in place.`);
-        if (result.stripped) {
-          const n =
-            result.purge && result.purge.javaDb && result.purge.javaDb.deleted != null
-              ? result.purge.javaDb.deleted
-              : "?";
-          parts.push(`Purged saved responses before Publish (deleted ${n} submission row(s)).`);
+        if (result.clonedEmpty) {
+          parts.push("Library copy has no saved responses. Your My Tawala data is unchanged.");
         }
 
         setAdminStatus(parts.join(" "));
@@ -672,9 +669,13 @@
           }
           const prev = vacate.previousName || currentName;
           setAdminStatus(
-            `Retired "${result.name}" → My Tawala. Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
-              (vacate.alreadyVacated ? ", already vacated" : "") +
-              ").",
+            result.alreadyRetired
+              ? `Already retired — leftover overlay removed for "${result.name}". Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
+                (vacate.alreadyVacated ? ", already vacated" : "") +
+                ")."
+              : `Retired "${result.name}" → My Tawala. Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
+                (vacate.alreadyVacated ? ", already vacated" : "") +
+                ").",
           );
           renderAdminBody();
           return;
@@ -685,7 +686,9 @@
           return;
         }
         setAdminStatus(
-          `Retired "${result.name}" → My Tawala (listing only — no live uniqueId, :8080 occupancy unchanged).`,
+          result.alreadyRetired
+            ? `Already retired — leftover overlay removed for "${result.name}" (listing hide; no second My Tawala copy).`
+            : `Retired "${result.name}" → My Tawala (listing only — no live uniqueId, :8080 occupancy unchanged).`,
         );
         renderAdminBody();
         return;

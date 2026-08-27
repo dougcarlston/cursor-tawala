@@ -18,7 +18,7 @@ import {
   isDataDrivenProject,
   formsFromExport,
   DATA_DRIVEN_NO_TEST_DRIVE_TITLE,
-  PUBLISH_STRIP_CONFIRM,
+  PUBLISH_CLONE_FAILED,
   countShowsSavedResponses,
   compactNameKey,
   findIdenticalLibraryListings,
@@ -190,33 +190,39 @@ assert.match(
 );
 
 assert.equal(
-  PUBLISH_STRIP_CONFIRM,
-  "Project will be purged of data upon publication. Proceed?"
+  PUBLISH_CLONE_FAILED,
+  "Couldn't make a separate Library copy of the live form. Your My Tawala project was not changed. Start Tomcat and the Designer API, then try again."
 );
-assert.match(transfer, /Project will be purged of data upon publication\. Proceed\?/);
-assert.doesNotMatch(transfer, /Project will be stripped of data upon publication\. Proceed\?/);
+assert.match(transfer, /Couldn't make a separate Library copy of the live form/);
+assert.doesNotMatch(transfer, /Project will be purged of data upon publication\. Proceed\?/);
 assert.equal(countShowsSavedResponses({ status: "success", count: 12 }), true);
 assert.equal(countShowsSavedResponses({ status: "success", count: 0 }), false);
 assert.equal(countShowsSavedResponses({ status: "failure", count: 9 }), false);
 
 const publishSrc = transfer.slice(
-  transfer.indexOf("async function publishToLibrary"),
+  transfer.indexOf("async function emptyLibraryRuntimeForPublish"),
   transfer.indexOf("async function publishToLibraryAfterStripConfirm")
 );
-assert.match(publishSrc, /needsStripConfirm:\s*true/);
-assert.match(publishSrc, /stripConfirmed !== true/);
-assert.match(publishSrc, /purgeAfterPublish/);
-const dupAt = publishSrc.indexOf("refusePublishDuplicate");
-const countAt = publishSrc.indexOf("countResponses");
-const upsertAt = publishSrc.indexOf("upsertLibraryOverlay");
-const needsAt = publishSrc.indexOf("needsStripConfirm");
-assert.ok(dupAt >= 0 && countAt > dupAt, "duplicate refuse must run before count/purge");
-assert.ok(countAt >= 0 && needsAt > countAt && upsertAt > needsAt);
+assert.match(publishSrc, /cloneDefinitionToPrivateRuntime/);
+assert.doesNotMatch(publishSrc, /maybeCopyResponsesOntoClone/);
+assert.doesNotMatch(publishSrc, /purgeAfterPublish/);
+assert.doesNotMatch(publishSrc, /needsStripConfirm/);
+const publishFnSrc = transfer.slice(
+  transfer.indexOf("async function publishToLibrary({"),
+  transfer.indexOf("async function publishToLibraryAfterStripConfirm")
+);
+const dupAt = publishFnSrc.indexOf("refusePublishDuplicate");
+const cloneCallAt = publishFnSrc.indexOf("await emptyLibraryRuntimeForPublish");
+const upsertAt = publishFnSrc.indexOf("upsertLibraryOverlay");
+assert.ok(dupAt >= 0 && cloneCallAt > dupAt, "duplicate refuse must run before Library clone");
+assert.ok(cloneCallAt >= 0 && upsertAt > cloneCallAt);
 assert.match(publishSrc, /duplicateProduct:\s*true/);
+assert.match(publishSrc, /clonedEmpty:\s*true/);
 assert.match(publishSrc, /author:\s*authorKeep \|\| currentUser/);
 assert.match(transfer, /async function publishToLibraryAfterStripConfirm/);
 assert.match(ops, /publishToLibraryAfterStripConfirm/);
 assert.match(ops, /result\.duplicateProduct/);
+assert.match(ops, /Library copy has no saved responses/);
 assert.doesNotMatch(ops, /publishPurgeCheckbox/);
 assert.doesNotMatch(ops, /keepResponses: !purgeOnPublish/);
 

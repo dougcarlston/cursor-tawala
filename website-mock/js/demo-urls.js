@@ -193,7 +193,7 @@ window.TAWALA_LIBRARY = {
     "comments": 0,
     "updated": "8/4/26",
     "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
-    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Questions live in submission rows (Question / SetupVariables), not the tawala JSON. Used from My Tawala after Copy to MyTawala — Library Test Drive is not offered. Administration/Setup to configure the exam; Exam for examinees; CustomizationPreview for branding.",
+    "longDescription": "Owner-vetted Polls and Surveys Live app. Public live id is u3hkqgwtrepjlur (the extensively checked 8-3-26 copy; Tomcat name is now Online Exam Builder). Questions live in submission rows (Question / SetupVariables), not the tawala JSON. Used from My Tawala after Copy to MyTawala — Library Test Drive is not offered. Administration/Setup to configure the exam; Exam for examinees; CustomizationPreview for branding.",
     "jsonFile": "projects/library/Online Exam Builder.json",
     "formNames": ["Question", "SetupVariables", "Exam", "Administration", "Setup", "CustomizationPreview", "Answer"],
     "themePath": "default",
@@ -585,22 +585,11 @@ window.TawalaDemo = {
   getLibrary(id) {
     if (!id) return null;
     const hasTransfer = typeof window !== "undefined" && window.TawalaTransfer;
-    // A retired stub is gone from the public Library — only a fresh Publish overlay at the
-    // same id (rare) should still resolve here; otherwise callers fall back to My Tawala.
+    // Retired ids stay off the public Library (listing + detail). Leftover overlay is
+    // skipped — do not resurrect a retired Publish (e.g. House Test). A later Publish
+    // calls clearLibraryRetired so this branch no longer matches.
     if (hasTransfer && typeof window.TawalaTransfer.isLibraryRetired === "function" && window.TawalaTransfer.isLibraryRetired(id)) {
-      const overlayOnly =
-        typeof window.TawalaTransfer.getLibraryOverlayEntry === "function"
-          ? window.TawalaTransfer.getLibraryOverlayEntry(id)
-          : null;
-      if (
-        overlayOnly &&
-        typeof window.TawalaTransfer.isDiscardedPublicLibraryEntry === "function" &&
-        window.TawalaTransfer.isDiscardedPublicLibraryEntry(id, overlayOnly)
-      ) {
-        return null;
-      }
-      /* Catalog keys are not on the row object — always stamp id (library-detail Save a copy). */
-      return overlayOnly ? { ...overlayOnly, id } : null;
+      return null;
     }
     const base = window.TAWALA_LIBRARY[id] || null;
     if (hasTransfer && typeof window.TawalaTransfer.getLibraryOverlayEntry === "function") {
@@ -1516,13 +1505,9 @@ window.TawalaDemo = {
     };
   },
   /**
-   * Purge :8080 submissions after Publish (owner Aug 1, 2026 — Publish to Library must
-   * never leave one account's prior test/demo responses visible to whoever uses the
-   * newly-published Library project next). Resolves the same uniqueId as My Tawala
-   * PURGE (`resolvePurgeUniqueId`) and uses whole-uniqueId `purgeResponses` (owner Aug 26:
-   * same-id selective keep of Question/SetupVariables scrambled Online Exam). Returns
-   * `{ status: "skipped" }` when the source project has no linked :8080 deploy yet —
-   * Publish still succeeds; callers must surface that responses were NOT cleared.
+   * Optionally purge :8080 submissions for a uniqueId (Test Drive / maintainer).
+   * Publish no longer calls this on the author’s My Tawala uniqueId — it mints a
+   * separate empty Library uniqueId instead.
    */
   async purgeAfterPublish(projectId) {
     const uniqueId = this.resolvePurgeUniqueId(projectId);

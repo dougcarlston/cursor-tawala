@@ -8,6 +8,8 @@ Use this file when starting or resuming a Cursor chat. Copy the **5-line opener*
 
 | Handoff | Use when |
 |---------|----------|
+| [`START_DESIGNER_CHAT.md`](START_DESIGNER_CHAT.md) | **Browser Designer** — run `./scripts/start-designer-chat.sh` |
+| [`START_LIBRARY_CHAT.md`](START_LIBRARY_CHAT.md) | **Library / website mock** — run `./scripts/start-library-chat.sh` |
 | [`CHAT_HANDOFF_FORMS.md`](CHAT_HANDOFF_FORMS.md) | Forms canvas WYSIWYG, FIB/MCQ, remaining form items, palette table/fx |
 | [`CHAT_HANDOFF_PROCESSES.md`](CHAT_HANDOFF_PROCESSES.md) | Process editor, statements palette, Form↔Process links, insertion arrow |
 | [`CHAT_HANDOFF_INTEGRATED.md`](CHAT_HANDOFF_INTEGRATED.md) | Documents editor, shared Formatting Palette, cross-Form/Process/Document shell |
@@ -220,9 +222,17 @@ Owner references:
 
 ## Chat 1 — Browser Designer (`designer-web/`)
 
-**Suggested title:** `Designer — architecture backlog & Phase 4`
+**Suggested title:** `Designer thread`
 
-**When this track resumes (after Website):** read `.cursor/rules/tawala-designer-parked-post-website.mdc` first — especially **MUST DO: conflate Invitation + Hyperlink** (Form link primary).
+**Handoff script (Aug 26, 2026):** From repo root:
+
+```bash
+./scripts/start-designer-chat.sh --start --copy
+```
+
+Checks Designer UI `:5173`, API `:3001`, Tomcat `:8080`; prints + optionally copies the Designer chat opener. Guide: [`docs/START_DESIGNER_CHAT.md`](START_DESIGNER_CHAT.md).
+
+**When this track resumes (Aug 26):** first task is Document two-links-on-one-line underline merge — `DESIGNER_OPEN_BUGS.md`. Link unification / Push rename / Theme-on-Push are **done**. Parked Document smoothness P0s next if there is time. Do not mix Library listing cosmetics.
 
 **Aug 2 morning — conversion inventory (no code fixes):** Owner is listing **`.tawala` → JSON** bugs before another large import trove; **batch-fix with tests later**. Queue: sequential FIB blanks elided (C1; multi-alt destroyed), MCQ alternate labels → Q1/Q2 (C2), function tables fail convert (C3, examples pending), Heading `<<field>>` Deploy fixed / convert residual watch (C4). Full table: `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**. Repros: Online Exam Builder, Priority Library Projects.
 
@@ -230,10 +240,10 @@ Owner references:
 
 ```
 Project: Tawala (~/Projects/Tawala)
-Track: Browser Designer — designer-web/ (Phase 4 return)
-Goal: Designer pass after website — FIRST: unify Insert Invitation+Hyperlink (Form link primary); then parked polish + backlog
-Read first: .cursor/rules/tawala-designer-parked-post-website.mdc (MUST DO Link conflation), Tawala_Key_Documents/DESIGNER_INSERT_MENU_AND_FUNCTIONS.md § Link/Invitation unified, docs/ROADMAP.md Phase 4
-Constraints: Do not mix 8080 CSS/docker or website-mock in this chat; preview/deploy local only (5173/3001/8080); Form-in-project links are primary — Hyperlink is external-URL secondary mode only
+Track: Browser Designer — designer-web/ — chat title: Designer thread
+Goal: FIRST: Document two links on one line merge underlines (Shared To-Do → Document - User Menu). Then parked Document smoothness P0s. Design canvas ≫ Push ≫ Preview.
+Read first: docs/START_DESIGNER_CHAT.md, Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md, DESIGNER_DOCUMENT_EDITOR.md, .cursor/rules/tawala-work-scopes.mdc
+Constraints: designer-web/ only; do not mix website-mock Library cosmetics; no commit unless I ask; Push checks on 5173/3001/8080 — never www.tawala.com
 ```
 
 ### Work to date
@@ -335,11 +345,39 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Library thread`
 
+**Handoff script (Aug 24, 2026):** From repo root:
+
+```bash
+./scripts/start-library-chat.sh --start --copy
+```
+
+Checks Tomcat `:8080`, website mock `:5500`, Designer API `:3001`; auto-fixes Tomcat↔Postgres Docker network split; prints + optionally copies the Library chat opener. Guide: [`docs/START_LIBRARY_CHAT.md`](START_LIBRARY_CHAT.md).
+
+### ⏱️ Session checkpoint — Aug 24, 2026 (Designer → Library flip)
+
+**Leaving Designer track** with Push/Deploy usable; Jul 30/Aug 11 polish bugs closed; post-website MUST DO items (Link, Push rename, Theme on Push) done.
+
+**Parked on Designer (do not pull into Library chat):** FIB multi-line formatter default-off + WAR rebuild (owner skipped Aug 24); Document caret epic B; `.tawala` convert batch C2/C3 until Library vetting inventories examples; post-website polish rule.
+
+**Docker note:** `docker compose up -d --no-deps tawala` can leave Tomcat on `tawala_default` while Postgres stays on `ai-tawala_default` → `/home` 500. Handoff script connects networks automatically.
+
+**Library next:** **P0 Task #26** private uniqueId on Copy to MyTawala is **wired Aug 24** (owner smoke). Then ops spine — EXPORT/IMPORT (smoked Aug 24), BACKUP/RESTORE, Delete/Purge; Task #14 honesty copy landed Aug 24 (real leave/wipe waits for Library Live); Task #10 Deploy/share polish. See `website-mock/README.md` § Task List + `docs/START_LIBRARY_CHAT.md` § punch list.
+
+### ⏱️ Session checkpoint — Aug 26, 2026 (Library → Designer flip)
+
+**Leaving Library track** with Publish keeping My Tawala (empty Library clone; no source purge), Retire hide leftover listings, Exam Builder Tomcat hatch cleaned to public `u3hkqgwtrepjlur`.
+
+**Owner (Aug 26):** public Library listing look-and-feel is weaker than My Tawala / Project Details — cosmetics **before** any public switch. Next Library talk after Designer: **go live but private**, then stranger gates (Test Drive #14, accounts, payments).
+
+**Designer tomorrow:** `./scripts/start-designer-chat.sh --start --copy` — first bug: two Document links merging underlines. Do not mix Library cosmetics into that chat.
+
 **Status (Aug 10, 2026):** Task List #9 (**Make a Copy**) wired in working tree (**uncommitted**). Review on **`http://localhost:5500`** — owner localStorage lives there; `127.0.0.1:5500` is a separate origin (banner redirects). Rename ≠ Make a Copy ≠ Library Save a copy.
 
 ### Clean start tomorrow (plain English)
 
 Do these in order. Wait for each step to finish before the next.
+
+0. **Handoff script (recommended):** `./scripts/start-library-chat.sh --start --copy` — health-check, fix Docker network split, copy chat opener. See `docs/START_LIBRARY_CHAT.md`.
 
 1. **Open Cursor** and this repo: `~/Projects/Tawala`.
 2. **Start Docker Desktop** — wait until the whale icon is steady (not animating).

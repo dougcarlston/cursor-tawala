@@ -4,3 +4,4 @@ node_modules/
 dist/
 .dev-server*.pid
 .dev-server*.log
+.vite-keep.out

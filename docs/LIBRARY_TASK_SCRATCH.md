@@ -5,7 +5,7 @@ Review: `http://localhost:5500` only. Origin already has uniqueId + Designer ses
 
 **Done Aug 24 (drop from daily view):** #26 clone-on-acquire · #27 occupancy slice 1 · Test Drive honesty copy · EXPORT/IMPORT smoke (field **names**).
 
-**Done Aug 26:** #27 slice 2 — Library Retire frees the `:8080` **name**. **Make a Copy** clone-on-copy (copies **all** data). Data-driven Library = no Test Drive. **Copy to MyTawala** = empty clone (no catalog submissions). **Publish** with Records > 0: confirm *Project will be purged of data upon publication. Proceed?* then purge, then overlay. Duplicate Library product refused unless listed author is updating that overlay (`pubdup1`). Review `library.html?v=20260826-pubdup1`.
+**Done Aug 26:** #27 slice 2 — Library Retire frees the `:8080` **name**. **Make a Copy** clone-on-copy (copies **all** data). Data-driven Library = no Test Drive. **Copy to MyTawala** = empty clone (no catalog submissions). **Publish** mints a separate empty Library uniqueId — does **not** purge the author’s My Tawala data (`pubpriv1`). Duplicate Library product refused unless listed author is updating that overlay (`pubdup1`). **Retire hide (`retire1`):** leftover Publish overlay no longer re-lists a retired id (House Test); Retire is idempotent (no “Already retired.”); later Publish `clearLibraryRetired`. Review `library.html?v=20260826-pubpriv1`.
 
 ---
 
@@ -21,8 +21,10 @@ Stop after 1–2 build items if jetlag wins. Decisions first; do not start Auth0
 
 ### B. Small leftover from uniqueId (same track, short)
 
-4. **Online Exam uniqueId audit** — AUDITED Aug 25. Catalog Test Drive `u3hkqgwtrepjlur` is Tomcat **Online Exam Builder-8-3-26**. Occupancy on bare **Online Exam Builder** hits sibling `455sem0swhcswu5`. **Owner Aug 25: leave catalog URLs as-is today.** Cleanup is parked (do not drop) — see below.
-5. **#27 slice 2** — **DONE Aug 26.** Retire of a live uniqueId vacates the Tomcat/Node **name** (`{name} (retired {uniqueId})`). Occupancy can reuse the name. uniqueId unchanged. Exam two-copy cleanup still parked.
+4. **Online Exam uniqueId audit** — **CLEANED Aug 26.** Catalog / public live id is `u3hkqgwtrepjlur`. Occupancy on bare **Online Exam Builder** now hits that same id (Tomcat name renamed off **Online Exam Builder-8-3-26**). Sibling `455sem0swhcswu5` retired.
+5. **#27 slice 2** — **DONE Aug 26.** Retire of a live uniqueId vacates the Tomcat/Node **name** (`{name} (retired {uniqueId})`). Occupancy can reuse the name. uniqueId unchanged.
+
+**Online Exam two-copy cleanup — DONE Aug 26 (owner: keep the 8-3-26 copy).** Public live id stays `u3hkqgwtrepjlur`. Sibling `455sem0swhcswu5` retired (name vacated). Tomcat name of `u3hk…` renamed to **Online Exam Builder** (was **Online Exam Builder-8-3-26**). Catalog URLs unchanged. Extra OEB clones retired: `-8-3-27`, `Builder1`, `Builder2`, **Japan Exam**, House Test Tomcat row.
 
 ### Yesterday leftover smoke (owner, 4 bullets — Restore / Deploy share)
 
@@ -50,7 +52,7 @@ Do not spend a session on these; they were signed off in product copy Aug 25:
 
 ## Parked (unless bigger picture unparks them)
 
-- **Online Exam Builder name/id cleanup (owner Aug 25 — not today, do not drop).** Two live Tomcat copies: Library Test Drive `u3hkqgwtrepjlur` (name **Online Exam Builder-8-3-26**) vs occupancy on the exact name **Online Exam Builder** (`455sem0swhcswu5`, different form tokens). Library listing title is the bare name; the URL is the dated copy. Later goal: one display name, one Tomcat name, one Test Drive uniqueId. Method: retire or hatch-Redeploy onto the chosen public id — **never File → New**. Occupancy refuse that mentions `455…` is protecting the extra copy, not the catalog. Do not retarget catalog to `455…` unless that row is deliberately chosen as public.
+- **Online Exam Builder name/id cleanup — DONE Aug 26.** Public copy is `u3hkqgwtrepjlur` (the checked 8-3-26 build). Tomcat name is now **Online Exam Builder**. Sibling `455sem0swhcswu5` is retired. Catalog URLs were already `u3hk…` and stay. Extra dated/test copies (`-8-3-27`, `Builder1`, `Builder2`) retired Aug 26.
 - **#16 Download latest** — prefer Pull into Designer.
 - **#20 Email metering** — billing.
 - **#22 Payments**.
