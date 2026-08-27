@@ -6,9 +6,9 @@
   <title>Tawala - Library Admin Tools</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-retire27" />
-  <script src="js/demo-urls.js?v=20260826-retire27"></script>
-  <script src="js/transfer.js?v=20260826-retire27"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubstrip1" />
+  <script src="js/demo-urls.js?v=20260826-pubstrip1"></script>
+  <script src="js/transfer.js?v=20260826-pubstrip1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -170,10 +170,7 @@
         '<label class="tawala-modal-field" for="adminPublishCategory">Library category (required)' +
         `<select id="adminPublishCategory">${categoryOptionsHtml(defaultCategoryFor(initialTarget, firstSource))}</select>` +
         "</label>" +
-        '<label class="tawala-modal-checkbox" for="adminPublishPurge">' +
-        '<input type="checkbox" id="adminPublishPurge" checked /> Purge responses when publishing' +
-        "</label>" +
-        '<p class="pm-hint">Clears the source project\u2019s :8080 submissions (same as My Tawala <b>Purge</b>) right after publishing, so nobody who opens the published Library project sees prior test/demo answers.</p>' +
+        '<p class="pm-hint tawala-modal-hint-tight">If the source project has saved responses, they are stripped before Publish (you’ll be asked to confirm). Empty templates publish as-is. There is no option to keep data on Publish.</p>' +
         '<p class="pm-hint" id="adminPublishError" role="alert" style="display:none;"></p>' +
         '<p><button type="button" class="pm-action is-active" id="adminPublishConfirm">Publish / overwrite</button></p>' +
         "</div></div>"
@@ -476,7 +473,6 @@
         const name = document.getElementById("adminPublishName").value.trim();
         const replaceLibraryId = document.getElementById("adminPublishTarget").value || null;
         const category = document.getElementById("adminPublishCategory").value.trim();
-        const purgeOnPublish = !!document.getElementById("adminPublishPurge").checked;
         const errEl = document.getElementById("adminPublishError");
         if (!sourceProjectId) {
           errEl.textContent = "Pick a My Tawala source project.";
@@ -503,12 +499,19 @@
             ? target.stub
               ? `\n\nThis retires the stub "${target.name}" — removed from Library, kept in My Tawala marked (stub).`
               : `\n\nThis replaces the existing Library entry "${target.name}" with this version (overlay only).`
-            : "") +
-          (purgeOnPublish
-            ? "\n\nThe source project's :8080 responses will be purged right after publishing."
-            : "\n\nResponses will NOT be purged (checkbox unchecked).");
+            : "");
         if (!window.confirm(confirmMsg)) return;
-        const result = TawalaTransfer.publishToLibrary({ sourceProjectId, name, replaceLibraryId, category });
+        const publishFn =
+          typeof TawalaTransfer.publishToLibraryAfterStripConfirm === "function"
+            ? TawalaTransfer.publishToLibraryAfterStripConfirm
+            : TawalaTransfer.publishToLibrary;
+        const result = await publishFn({
+          sourceProjectId,
+          name,
+          replaceLibraryId,
+          category,
+        });
+        if (result && result.cancelledStrip) return;
         if (!result.ok) {
           window.alert("Couldn't publish\n\n" + result.error);
           return;
@@ -517,21 +520,12 @@
         const parts = [`Published "${name}".`];
         if (result.retired) parts.push(`Retired stub "${result.retired.name}" → My Tawala.`);
         if (result.replacedNonStub) parts.push(`Replaced "${result.replacedName}" in place.`);
-
-        if (purgeOnPublish && typeof TawalaDemo.purgeAfterPublish === "function") {
-          setAdminStatus(parts.join(" ") + " Purging responses…");
-          const purgeResult = await TawalaDemo.purgeAfterPublish(sourceProjectId);
-          if (purgeResult.status === "success") {
-            const n =
-              purgeResult.javaDb && purgeResult.javaDb.deleted != null ? purgeResult.javaDb.deleted : "?";
-            parts.push(`Purged prior responses (deleted ${n} submission row(s)).`);
-          } else if (purgeResult.status === "skipped") {
-            parts.push(`⚠️ Responses were NOT purged — source project isn't linked to a live :8080 deploy yet.`);
-          } else {
-            parts.push(`⚠️ Responses were NOT purged — purge failed: ${purgeResult.error || "unknown error"}.`);
-          }
-        } else if (!purgeOnPublish) {
-          parts.push("Responses were not purged (checkbox unchecked).");
+        if (result.stripped) {
+          const n =
+            result.purge && result.purge.javaDb && result.purge.javaDb.deleted != null
+              ? result.purge.javaDb.deleted
+              : "?";
+          parts.push(`Stripped saved responses before Publish (deleted ${n} submission row(s)).`);
         }
 
         setAdminStatus(parts.join(" "));

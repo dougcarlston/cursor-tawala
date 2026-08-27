@@ -65,7 +65,7 @@ public class Blank implements Field, FormRenderable {
 		if (!config.hasAttribute("richText")) {
 			return false;
 		}
-		return config.attribute("richText").booleanValue(true);
+		return config.attribute("richText").booleanValue();
 	}
 	
 	

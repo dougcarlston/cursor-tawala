@@ -164,6 +164,25 @@ public class FormSubmissionTest extends HtmlTestCase {
 		assertEquals("ww", copy.getValue(new Reference("d")).toString());
 	}
 
+	public void testGetContentsDoesNotWriteXStreamCrEntity() {
+		Map<String, String[]> fields = new HashMap<String, String[]>();
+		fields.put("Pre", new String[] { "\r\nTry this test on Japan" });
+		FormSubmission submission = new FormSubmission(null, fields);
+		String xml = submission.getContents();
+		assertDoesntContain("&#x0D;", xml);
+		assertDoesntContain("&#x0d;", xml);
+		assertDoesntContain("&#13;", xml);
+		assertContains("Try this test on Japan", xml);
+	}
+
+	public void testSetValueStripsCarriageReturnBeforePersist() {
+		FormSubmission submission = new FormSubmission(true);
+		submission.setValue("Pre", "\r\nTry this test on Japan");
+		assertEquals("\nTry this test on Japan", submission.getValue("Pre")
+				.toString());
+		assertDoesntContain("&#x0D;", submission.getContents());
+	}
+
 	public void testRequiredFields() {
 		ProjectBuilder projectBuilder = new ProjectBuilder();
 		FormBuilder builder = projectBuilder.addForm("Main");

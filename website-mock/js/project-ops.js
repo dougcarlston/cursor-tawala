@@ -106,7 +106,61 @@
     return honestyText(key, fallback).replace(/\{name\}/g, name);
   }
 
-  /** Library acquire CTA — copies the project (not Library Test Drive answers) into private My Tawala. */
+  function projectKeepsResponses(project) {
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.projectKeepsResponses === "function") {
+      return TawalaDemo.projectKeepsResponses(project);
+    }
+    return !!(project && (project.keepResponses === true || project.publishedKeepResponses === true));
+  }
+
+  function projectIsDataDriven(project) {
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.isDataDrivenProject === "function") {
+      return TawalaDemo.isDataDrivenProject(project);
+    }
+    return false;
+  }
+
+  function dataDrivenNoTestDriveTitle() {
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.dataDrivenNoTestDriveTitle === "function") {
+      return TawalaDemo.dataDrivenNoTestDriveTitle();
+    }
+    return "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available.";
+  }
+
+  function responseCopyNeedsAlert(result) {
+    const copy = result && result.responseCopy;
+    if (!copy) return false;
+    if (copy.status === "success") return false;
+    if (copy.status === "skipped") return false;
+    return true;
+  }
+
+  function responseCopyAlertMessage(result) {
+    const copy = result && result.responseCopy;
+    if (!copy) return "";
+    const err = String((copy && copy.error) || "Designer API on :3001 did not copy response data.");
+    return (
+      "The live copy is in My Tawala, but response data did not copy.\n\n" +
+      err +
+      "\n\nUse Project Data Purge if you want a clean slate, or try Copy again when the Designer API is up."
+    );
+  }
+
+  function honestyForProject(project, key, keepKey, fallback, keepFallback) {
+    if (projectKeepsResponses(project)) {
+      return honestyText(keepKey, keepFallback || fallback);
+    }
+    return honestyText(key, fallback);
+  }
+
+  function honestyNamedForProject(project, key, keepKey, name, fallback, keepFallback) {
+    return honestyForProject(project, key, keepKey, fallback, keepFallback).replace(
+      /\{name\}/g,
+      name
+    );
+  }
+
+  /** Library acquire CTA — empty clone into private My Tawala (no catalog submissions). */
   const COPY_TO_MYTAWALA_LABEL = "Copy to MyTawala";
 
   /**
@@ -148,7 +202,7 @@
     {
       id: "save-my-tawala",
       label: COPY_TO_MYTAWALA_LABEL,
-      title: "Copy this Library project into My Tawala (not Test Drive answers) — requires login",
+      title: "Copy this Library project into My Tawala (empty private clone; does not copy other people’s responses) — requires login",
       wired: "save-copy-library",
       icon: "save",
       requiresLogin: true,
@@ -209,7 +263,7 @@
       id: "make-copy",
       label: "MAKE A COPY",
       title:
-        "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Copy to MyTawala.",
+        "Fork this project into a new My Tawala identity (new name and live form; original untouched). Not the same as Rename or Library Copy to MyTawala.",
       wired: "make-copy-mytawala",
     },
     { id: "backup", label: "BACKUP", title: "Back up this project (definition + data + properties)", wired: "backup-mytawala" },
@@ -497,7 +551,7 @@
   const RELATED_SAVE_CLONE = [
     {
       label: COPY_TO_MYTAWALA_LABEL,
-      source: "Library → My Tawala (acquire; project only, not Library Test Drive answers)",
+      source: "Library → My Tawala (acquire; empty private clone; does not copy catalog submissions)",
       wired: "save-copy-library",
     },
     {
@@ -939,8 +993,9 @@
     /* Prefer project.id; libraryEntries() always sets it. getLibrary() now stamps id too
      * (Aug 10 libsc1) — empty pid used to break library-detail Save a copy. */
     const pid = (project && project.id) || "";
-    const title =
-      "Copy this Library project into My Tawala — the project only, not Test Drive answers (rename on the way in)";
+    const title = projectIsDataDriven(project)
+      ? "Copy this project into My Tawala — used from My Tawala, not Library Test Drive"
+      : "Copy this Library project into My Tawala (empty private clone; does not copy other people’s responses)";
     if (variant === "text") {
       return (
         `<button type="button" class="pm-action is-active library-save-copy" ` +
@@ -963,18 +1018,37 @@
    */
   function renderLibraryTestDriveButton(project, variant) {
     const pid = (project && project.id) || "";
+    const noTdTitle = dataDrivenNoTestDriveTitle();
+    if (projectIsDataDriven(project)) {
+      if (variant === "text") {
+        return (
+          `<button type="button" class="pm-action" disabled title="${escapeHtml(noTdTitle)}">Test Drive</button>`
+        );
+      }
+      return (
+        `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+        `title="${escapeHtml(noTdTitle)}" aria-label="Test drive unavailable — used from My Tawala" ` +
+        `data-op="test-drive" data-wired="false">${listingIconHtml("testdrive")}</button>`
+      );
+    }
     const driveUrl = libraryDriveUrl(project);
     const deployed =
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
     const multi = isLibraryMultiStart(project);
     const title = multi
-      ? honestyText(
+      ? honestyForProject(
+          project,
           "tooltipMulti",
-          "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive."
+          "tooltipMultiKeep",
+          "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive.",
+          "Choose a start. Stored answers stay — Test Drive does not clear them."
         )
-      : honestyText(
+      : honestyForProject(
+          project,
           "tooltipSingle",
-          "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080."
+          "tooltipSingleKeep",
+          "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080.",
+          "No account. Opens this published app. Stored answers stay — Test Drive does not clear them."
         );
     if (variant === "text") {
       if (!deployed || !driveUrl) {
@@ -1028,18 +1102,37 @@
    */
   function renderLibraryCopyTestDriveButton(project, variant) {
     const pid = (project && project.id) || "";
+    const noTdTitle = dataDrivenNoTestDriveTitle();
+    if (projectIsDataDriven(project)) {
+      if (variant === "text") {
+        return (
+          `<button type="button" class="pm-action" disabled title="${escapeHtml(noTdTitle)}">Copy link</button>`
+        );
+      }
+      return (
+        `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
+        `title="${escapeHtml(noTdTitle)}" aria-label="Copy Test Drive link unavailable — used from My Tawala" ` +
+        `data-op="copy-testdrive-link" data-wired="false">${listingIconHtml("link")}</button>`
+      );
+    }
     const driveUrl = libraryDriveUrl(project);
     const deployed =
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
     const multi = isLibraryMultiStart(project);
     const title = multi
-      ? honestyText(
+      ? honestyForProject(
+          project,
           "copyTooltipMulti",
-          "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy."
+          "copyTooltipMultiKeep",
+          "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy.",
+          "Choose a start, then copy its URL. Same published app as Test Drive — answers are not cleared on start."
         )
-      : honestyText(
+      : honestyForProject(
+          project,
           "copyTooltipSingle",
-          "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy."
+          "copyTooltipSingleKeep",
+          "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy.",
+          "Copy the live URL (no account). Same published app as Test Drive — answers are not cleared on start."
         );
     if (variant === "text") {
       if (deployed && driveUrl) {
@@ -1189,7 +1282,7 @@
 
   /** Honest grey-Use tip when a fork/copy has no :8080 start URLs yet. */
   const USE_NEEDS_DEPLOY_TITLE =
-    "No live :8080 start yet — Make a Copy starts empty until Edit in Designer → Push. Website Deploy is share/embed after a live start exists.";
+    "No live :8080 start yet — Make a Copy and Copy to MyTawala Push a private live form when Tomcat and the Designer API are up. Website Deploy is share/embed after a live start exists.";
 
   function projectHasUseRuntime(project) {
     return !!(projectUseUrl(project) || startPointsWithUrls(project).length);
@@ -2455,7 +2548,7 @@
       : USE_NEEDS_DEPLOY_TITLE;
     const copyOffTitle = projectHasUseRuntime(project)
       ? "Select a start point to copy its link"
-      : "No :8080 start URL yet — Copy link needs a live start (Edit in Designer → Push for empty copies).";
+      : "No :8080 start URL yet — Copy link needs a live start (copy again with Tomcat up, or Edit in Designer → Push).";
     const vrule = `<span class="pm-data-vrule" aria-hidden="true"></span>`;
     /* Nested in last shared grid track so form-row stats align with banner heads. */
     return (
@@ -2813,7 +2906,7 @@
         if (op === "make-copy" || wired === "make-copy-mytawala") {
           setCtrlEnabled(el, true);
           el.title =
-            "Fork this project into a new My Tawala identity (new name; original untouched). Not the same as Rename or Library Copy to MyTawala.";
+            "Fork this project into a new My Tawala identity (new name and live form; original untouched). Not the same as Rename or Library Copy to MyTawala.";
           if ("disabled" in el) el.disabled = false;
           return;
         }
@@ -2895,7 +2988,7 @@
                 : "Select a start point (◀) to Use — or keep the project selected and click Purge for offline demo Records.";
           } else if (sel.kind === "start") {
             offTitle =
-              "No :8080 URL on this start yet — Make a Copy starts empty until Edit in Designer → Push.";
+              "No :8080 URL on this start yet — Make a Copy Pushes a private live form when Tomcat and the Designer API are up.";
           }
           setCtrlEnabled(el, false, offTitle);
           if (el.tagName === "A") {
@@ -2916,8 +3009,8 @@
         if (!hasRuntime) {
           offTitle =
             sel.kind === "start"
-              ? "No :8080 URL on this start yet — Copy link needs a live start (Edit in Designer → Push for empty copies)."
-              : "No :8080 start URL yet — Copy link needs a live start (Edit in Designer → Push for empty copies).";
+              ? "No :8080 URL on this start yet — Copy link needs a live start (copy again with Tomcat up, or Edit in Designer → Push)."
+              : "No :8080 start URL yet — Copy link needs a live start (copy again with Tomcat up, or Edit in Designer → Push).";
         } else if (sel.kind === "form") {
           offTitle = "Copy link is only for start points (◀) — highlight a starting form";
         }
@@ -2973,20 +3066,27 @@
   /**
    * Library viral share — copy the same :8080 URL Test Drive opens.
    * Alert includes #14 honesty (shared uniqueId; wipe-on-start not leave).
+   * keepResponses listings must not claim answers clear on start.
    * ≠ My Tawala Deploy Copy link.
    */
-  async function copyTestDriveLinkToClipboard(url) {
+  async function copyTestDriveLinkToClipboard(url, project) {
     if (!url) {
       window.alert("No Test Drive URL to copy yet — this project isn’t live on :8080.");
       return false;
     }
-    const copied = honestyText(
+    const copied = honestyForProject(
+      project,
       "copyAlert",
-      "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab."
+      "copyAlertKeep",
+      "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.",
+      "Link copied.\n\nThis is the shared Library URL for this published app. Answers are not cleared when someone starts Test Drive."
     );
-    const promptLabel = honestyText(
+    const promptLabel = honestyForProject(
+      project,
       "copyPromptLabel",
-      "Copy this Test Drive link (shared Library demo — not a private copy):"
+      "copyPromptLabelKeep",
+      "Copy this Test Drive link (shared Library demo — not a private copy):",
+      "Copy this Test Drive link (shared Library URL — stored answers stay):"
     );
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -3017,6 +3117,10 @@
       window.alert(`Can't open Test Drive — unknown Library project: ${projectId || "(none)"}`);
       return;
     }
+    if (projectIsDataDriven(project)) {
+      window.alert(dataDrivenNoTestDriveTitle());
+      return;
+    }
     const starts = libraryStartPointsWithUrls(project);
     if (!starts.length) {
       window.alert("No local test-drive URL yet — this project isn’t live on :8080.");
@@ -3026,7 +3130,7 @@
     if (starts.length < 2) {
       const url = starts[0].url;
       if (intent === "copy") {
-        void copyTestDriveLinkToClipboard(url);
+        void copyTestDriveLinkToClipboard(url, project);
       } else {
         noteLibraryTestDriveOpen(projectId);
         if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.openTestDrive === "function") {
@@ -3054,19 +3158,25 @@
           safeName,
           `“${safeName}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — not a private copy.`
         )
-      : honestyNamed(
+      : honestyNamedForProject(
+          project,
           "pickerOpenLede",
+          "pickerOpenLedeKeep",
           safeName,
-          `“${safeName}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). Use every start during this drive.`
+          `“${safeName}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). Use every start during this drive.`,
+          `“${safeName}” has more than one start form. Click a name to open it. Stored answers stay (Test Drive does not clear them).`
         );
     const linkTitle = isCopy
       ? honestyText(
           "pickerCopyLinkTitle",
           "Copy this start’s URL (shared Library demo, not a private copy)."
         )
-      : honestyText(
+      : honestyForProject(
+          project,
           "pickerOpenLinkTitle",
-          "Open this start. Clears demo answers on start, not when you close the tab."
+          "pickerOpenLinkTitleKeep",
+          "Open this start. Clears demo answers on start, not when you close the tab.",
+          "Open this start. Does not clear stored answers."
         );
     const pickerHint = honestyText(
       "pickerHint",
@@ -3123,7 +3233,7 @@
         }
         if (isCopy) {
           closeTestDrivePickModal();
-          void copyTestDriveLinkToClipboard(url);
+          void copyTestDriveLinkToClipboard(url, project);
           return;
         }
         closeTestDrivePickModal();
@@ -3142,6 +3252,10 @@
 
   async function copyLibraryTestDriveLink(projectId, explicitUrl) {
     const project = projectId ? resolveLibraryProject(projectId) : null;
+    if (project && projectIsDataDriven(project)) {
+      window.alert(dataDrivenNoTestDriveTitle());
+      return false;
+    }
     if (project && isLibraryMultiStart(project)) {
       openLibraryTestDrivePicker(projectId, { intent: "copy" });
       return false;
@@ -3150,7 +3264,7 @@
     if (!url && project) {
       url = libraryDriveUrl(project) || "";
     }
-    return copyTestDriveLinkToClipboard(url);
+    return copyTestDriveLinkToClipboard(url, project);
   }
 
   async function copyStartLinkFromTree(tree, startIdx) {
@@ -4741,7 +4855,7 @@
       '<div class="tawala-modal tawala-modal--publish tawala-modal--get-library" role="dialog" aria-modal="true" aria-labelledby="getLibModalTitle">' +
       `<h3 id="getLibModalTitle">Get from Library</h3>` +
       `<p class="pm-hint tawala-modal-lede">Pick a public Library project to <b>Copy to MyTawala</b>. ` +
-      `You’ll name it next. This copies the project — not Library Test Drive answers. It is not the same as browsing Library in the top nav.</p>` +
+      `You’ll name it next. This copies the project as an empty private clone (no saved responses). It is not the same as browsing Library in the top nav.</p>` +
       '<div class="tawala-modal-body">' +
       `<div class="get-lib-list" role="radiogroup" aria-label="Public Library projects">${rowsHtml}</div>` +
       '<p class="pm-hint" id="getLibModalError" role="alert" style="display:none;"></p>' +
@@ -4833,7 +4947,7 @@
       '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="saveCopyModalTitle">' +
       `<h3 id="saveCopyModalTitle">${COPY_TO_MYTAWALA_LABEL}</h3>` +
       `<p class="pm-hint tawala-modal-lede">Copy “${escapeHtml(sourceName)}” into your private My Tawala. ` +
-      `This copies the <b>project</b> — not Library Test Drive answers — onto a <b>private</b> live copy. ` +
+      `This copies the <b>project</b> onto a <b>private empty</b> live copy (it does not copy saved responses from the Library). ` +
       `<b>Choose a name</b> you’ll recognize later — the suggestion below is only a starting point (you can keep it or type your own). ` +
       `This creates a new project identity; renaming alone later does not.</p>` +
       '<div class="tawala-modal-body">' +
@@ -4937,6 +5051,9 @@
         return;
       }
       closeSaveCopyModal();
+      if (responseCopyNeedsAlert(result)) {
+        window.alert(responseCopyAlertMessage(result));
+      }
       setStatus(
         result.replacedId
           ? `Copied to My Tawala as “${nameVal}” (replaced the previous project with that name).`
@@ -5005,9 +5122,8 @@
       `<h3 id="makeCopyModalTitle">Make a Copy</h3>` +
       `<p class="pm-hint tawala-modal-lede">Fork “${escapeHtml(sourceName)}” into a <b>new</b> My Tawala project. ` +
       `The original stays as-is. This is <b>not</b> Rename (same project, new name) and <b>not</b> Library Copy to MyTawala. ` +
-      `Copies the definition only — <b>Records start empty</b>; <b>Use</b> stays grey until you ` +
-      `<b>Edit project in Designer</b>, then Push → Show in My Tawala ` +
-      `(does not share the source’s live :8080 data).</p>` +
+      `Pushes a <b>new</b> live form and copies <b>all response data</b>. Use Project Data <b>Purge</b> if you want a clean slate. ` +
+      `<b>Use / Deploy / Publish</b> work without opening Designer.</p>` +
       '<div class="tawala-modal-body">' +
       '<label class="tawala-modal-field" for="makeCopyNameInput">Name for the copy' +
       `<input type="text" id="makeCopyNameInput" value="${escapeHtml(defaultName)}" autocomplete="off" />` +
@@ -5062,7 +5178,7 @@
     backdrop.querySelector("#makeCopyModalCancel").addEventListener("click", closeMakeCopyModal);
     document.addEventListener("keydown", handleMakeCopyModalKeydown, true);
 
-    function confirmMakeCopy() {
+    async function confirmMakeCopy() {
       const nameVal = nameInput.value.trim();
       if (!nameVal) {
         showErr("Enter a name for the copy.");
@@ -5079,6 +5195,7 @@
         nameInput.focus();
         return;
       }
+      if (backdrop.dataset.copying === "1") return;
       const conflict =
         typeof TawalaTransfer.findMyTawalaByName === "function"
           ? TawalaTransfer.findMyTawalaByName(nameVal, sourceId)
@@ -5099,17 +5216,40 @@
           return;
         }
       }
-      const result = TawalaTransfer.makeCopyOfMyTawalaProject({
-        sourceId,
-        name: nameVal,
-        overwrite: !!conflict,
-      });
+      backdrop.dataset.copying = "1";
+      const confirmBtn = backdrop.querySelector("#makeCopyModalConfirm");
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.textContent = "Copying…";
+      }
+      showErr("Pushing a private live copy — this does not change the original.");
+      let result;
+      try {
+        result = await TawalaTransfer.makeCopyOfMyTawalaProject({
+          sourceId,
+          name: nameVal,
+          overwrite: !!conflict,
+        });
+      } catch (e) {
+        result = {
+          ok: false,
+          error: "Couldn't copy the live form. Start Tomcat and the Designer API, then try again.",
+        };
+      }
       if (!result || !result.ok) {
-        showErr((result && result.error) || "Unknown error");
+        delete backdrop.dataset.copying;
+        if (confirmBtn) {
+          confirmBtn.disabled = false;
+          confirmBtn.textContent = "Make a Copy";
+        }
+        showErr((result && result.error) || "Couldn't copy the live form. Try again.");
         nameInput.focus();
         return;
       }
       closeMakeCopyModal();
+      if (responseCopyNeedsAlert(result)) {
+        window.alert(responseCopyAlertMessage(result));
+      }
       setStatus(
         result.replacedId
           ? `Made a copy as “${nameVal}” (replaced the previous project with that name). Original “${sourceName}” unchanged.`
@@ -5120,7 +5260,7 @@
           detail: { sourceId, myTawalaId: result.id, name: nameVal, result },
         })
       );
-      /* Land on the new fork’s Details so Rename is obvious and Records show empty. */
+      /* Land on the new fork’s Details so Use is ready; Records include copied source data. */
       window.location.href =
         "mytawala-project.html?project=" +
         encodeURIComponent(result.id) +
@@ -5333,12 +5473,11 @@
         '<div class="tawala-modal-body">' +
         '<p class="pm-hint" role="status">' +
         (fromAcquire
-          ? "<b>This copy is not live yet.</b> <b>Make a Copy</b> starts empty until you <b>Push</b> from Designer. " +
-            "Library <b>Copy to MyTawala</b> should already have a private :8080 id — if Use is grey, the clone didn’t land; copy again with Tomcat and the Designer API up. " +
+          ? "<b>This copy is not live yet.</b> <b>Copy to MyTawala</b> and <b>Make a Copy</b> Push a private :8080 id — if Use is grey, the clone didn’t land; copy again with Tomcat and the Designer API up. " +
             "After that, Deploy here can copy links and embed snippets."
           : "<b>No live start URLs on this project yet.</b> Deploy share needs a :8080 uniqueId and start points. " +
             "From Designer, <b>Push</b> the project → <b>Show in My Tawala</b>, " +
-            "or open a seeded live project such as <b>Online Exam Builder</b>.") +
+            "or Make a Copy of a live project, or open a seeded live project such as <b>Online Exam Builder</b>.") +
         "</p>" +
         '<p class="pm-hint tawala-modal-hint-tight">Use is for trying the form yourself; Publish puts a copy in the public Library. ' +
         "Deploy (this dialog) is for administrators sharing with participants.</p>" +
@@ -5613,10 +5752,7 @@
       "</label>" +
       "</div>" +
       '<p class="pm-hint tawala-modal-hint-tight">Stubs retire to My Tawala marked <code>(stub)</code> (never hard-deleted). Non-stubs overlay in place. No public Library Delete.</p>' +
-      '<label class="tawala-modal-checkbox" for="publishPurgeCheckbox">' +
-      '<input type="checkbox" id="publishPurgeCheckbox" checked /> Purge responses when publishing' +
-      "</label>" +
-      '<p class="pm-hint tawala-modal-hint-tight">Clears this project\u2019s :8080 submissions after Publish (same as My Tawala <b>Purge</b>). Leave checked unless you have a reason not to.</p>' +
+      '<p class="pm-hint tawala-modal-hint-tight">If this project has saved responses, they are stripped before it is added to the Library (you’ll be asked to confirm). Empty templates publish as-is.</p>' +
       '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
       "</div>" +
       '<div class="tawala-modal-actions">' +
@@ -5630,6 +5766,25 @@
     const nameInput = backdrop.querySelector("#publishNameInput");
     const stubSelect = backdrop.querySelector("#publishStubSelect");
     const categorySelect = backdrop.querySelector("#publishCategorySelect");
+    const confirmBtn = backdrop.querySelector("#publishModalConfirm");
+    const liveId =
+      typeof TawalaTransfer.liveUniqueIdForPublish === "function"
+        ? TawalaTransfer.liveUniqueIdForPublish(projectId, project)
+        : null;
+    if (!liveId) {
+      const refuse =
+        TawalaTransfer.PUBLISH_NO_LIVE_FORM_ERROR ||
+        "This project has no live form yet. Edit in Designer, Push, then Publish.";
+      const errEl = backdrop.querySelector("#publishModalError");
+      if (errEl) {
+        errEl.textContent = refuse;
+        errEl.style.display = "";
+      }
+      if (confirmBtn) {
+        confirmBtn.disabled = true;
+        confirmBtn.title = refuse;
+      }
+    }
     stubSelect.value = initial.preselectId;
     nameInput.focus();
     nameInput.select();
@@ -5681,25 +5836,26 @@
         errEl.style.display = "";
         return;
       }
-      const purgeOnPublish = !!backdrop.querySelector("#publishPurgeCheckbox").checked;
       const confirmMsg =
         `Publish “${nameVal}” to the public Library (category: ${categoryVal})?` +
         (target
           ? target.stub
             ? `\n\nThis retires the stub “${target.name}” — removed from Library, kept in My Tawala marked (stub).`
             : `\n\nThis replaces the existing Library entry “${target.name}” with this version (overlay only, old entry not moved to My Tawala).`
-          : "") +
-        (purgeOnPublish
-          ? "\n\nThis project's :8080 responses will be purged right after publishing."
-          : "\n\nResponses will NOT be purged (checkbox unchecked).");
+          : "");
       if (!window.confirm(confirmMsg)) return;
 
-      const result = TawalaTransfer.publishToLibrary({
+      const publishFn =
+        typeof TawalaTransfer.publishToLibraryAfterStripConfirm === "function"
+          ? TawalaTransfer.publishToLibraryAfterStripConfirm
+          : TawalaTransfer.publishToLibrary;
+      const result = await publishFn({
         sourceProjectId: projectId,
         name: nameVal,
         replaceLibraryId: replaceLibraryId || null,
         category: categoryVal,
       });
+      if (result && result.cancelledStrip) return;
       closePublishModal();
       if (!result || !result.ok) {
         const msg = `Couldn't publish “${nameVal}”\n\n${(result && result.error) || "Unknown error"}`;
@@ -5713,26 +5869,12 @@
       } else if (result.replacedNonStub) {
         parts.push(`Replaced existing Library entry “${result.replacedName || replaceLibraryId}” in place.`);
       }
-
-      let purgeResult = null;
-      if (purgeOnPublish && typeof TawalaDemo.purgeAfterPublish === "function") {
-        setStatus(parts.join(" ") + " Purging responses…");
-        purgeResult = await TawalaDemo.purgeAfterPublish(projectId);
-        if (purgeResult.status === "success") {
-          const n =
-            purgeResult.javaDb && purgeResult.javaDb.deleted != null ? purgeResult.javaDb.deleted : "?";
-          parts.push(`Purged prior responses (deleted ${n} submission row(s)) — no one else will see them.`);
-        } else if (purgeResult.status === "skipped") {
-          parts.push(
-            `⚠️ Responses were NOT purged — “${nameVal}” isn’t linked to a live :8080 deploy yet.`
-          );
-        } else {
-          parts.push(
-            `⚠️ Responses were NOT purged — purge failed: ${purgeResult.error || "unknown error"}.`
-          );
-        }
-      } else if (!purgeOnPublish) {
-        parts.push("Responses were not purged (checkbox unchecked).");
+      if (result.stripped) {
+        const n =
+          result.purge && result.purge.javaDb && result.purge.javaDb.deleted != null
+            ? result.purge.javaDb.deleted
+            : "?";
+        parts.push(`Stripped saved responses before Publish (deleted ${n} submission row(s)).`);
       }
 
       const msg = parts.join(" ");
@@ -5740,7 +5882,7 @@
       window.alert(msg);
       document.dispatchEvent(
         new CustomEvent("tawala:project-published", {
-          detail: { sourceProjectId: projectId, result, purge: purgeResult },
+          detail: { sourceProjectId: projectId, result, purge: result.purge || null },
         })
       );
     });
@@ -5986,6 +6128,10 @@
       ev.preventDefault();
       if (!projectId) return;
       const project = resolveLibraryProject(projectId);
+      if (project && projectIsDataDriven(project)) {
+        window.alert(dataDrivenNoTestDriveTitle());
+        return;
+      }
       if (project && isLibraryMultiStart(project)) {
         openLibraryTestDrivePicker(projectId, { intent: "open" });
         return;
@@ -6009,6 +6155,11 @@
 
     if (wired === "copy-testdrive-link" || op === "copy-testdrive-link") {
       ev.preventDefault();
+      const project = projectId ? resolveLibraryProject(projectId) : null;
+      if (project && projectIsDataDriven(project)) {
+        window.alert(dataDrivenNoTestDriveTitle());
+        return;
+      }
       const explicit =
         (btn && btn.getAttribute && btn.getAttribute("data-testdrive-copy-url")) || "";
       void copyLibraryTestDriveLink(projectId, explicit);

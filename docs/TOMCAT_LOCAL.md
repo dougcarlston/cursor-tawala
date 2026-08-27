@@ -37,7 +37,20 @@ docker cp docker/tomcat/css/project/dirtbowl2/project.css \
   tawala-tomcat:/usr/local/tomcat/webapps/ROOT/css/project/dirtbowl2/project.css
 ```
 
-Then in the browser on the Registration page: **hard-refresh** — **Cmd+Shift+R** (Mac) so the old CSS is not cached.
+### Fast path — `default.js` (TinyMCE / Online Exam SetupVariables)
+
+Canonical file: `TawalaWebapp-build1700/web/scripts/project/default.js`. Copy into the hot-patch tree, then into the container:
+
+```bash
+cd ~/Projects/Tawala
+cp TawalaWebapp-build1700/web/scripts/project/default.js \
+  docker/tomcat/scripts/project/default.js
+
+docker cp docker/tomcat/scripts/project/default.js \
+  tawala-tomcat:/usr/local/tomcat/webapps/ROOT/scripts/project/default.js
+```
+
+Then in the browser: **hard-refresh** — **Cmd+Shift+R** (Mac) so the old CSS/JS is not cached. On Online Exam SetupVariables, Pre/Post boxes should no longer show a first line of `&#x0D;`. Java (`TextInput` / `FormSubmission`) needs a WAR rebuild or class copy + Tomcat restart to stop writing new CLOB rows with that entity.
 
 ### Full rebuild (slower; use after many CSS/image changes)
 

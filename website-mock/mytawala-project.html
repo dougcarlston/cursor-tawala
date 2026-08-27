@@ -6,11 +6,11 @@
   <title>Tawala - Project Details</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-srcver1" />
-  <script src="js/demo-urls.js?v=20260826-srcver1"></script>
-  <script src="js/transfer.js?v=20260826-srcver1"></script>
-  <script src="js/project-ops.js?v=20260826-srcver1"></script>
-  <script src="js/data-ops.js?v=20260826-srcver1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubstrip1" />
+  <script src="js/demo-urls.js?v=20260826-pubstrip1"></script>
+  <script src="js/transfer.js?v=20260826-pubstrip1"></script>
+  <script src="js/project-ops.js?v=20260826-pubstrip1"></script>
+  <script src="js/data-ops.js?v=20260826-pubstrip1"></script>
 </head>
 <body data-tawala-page="mytawala">
   <div id="doc">
@@ -62,7 +62,7 @@
             .map((c) => {
               const name = TawalaDemo.displayName(c.name || c.id);
               const href =
-                "mytawala-project.html?project=" + encodeURIComponent(c.id) + "&v=20260826-srcver1";
+                "mytawala-project.html?project=" + encodeURIComponent(c.id) + "&v=20260826-pubuid1";
               return (
                 "<li><a href=\"" +
                 href +
@@ -158,8 +158,8 @@
       const status = document.getElementById("pmOpStatus");
       if (status) {
         status.textContent = justForked
-          ? "Made a copy — Records empty; Use grey until Edit in Designer → Push. Rename anytime."
-          : "Copied from Library — private :8080 clone; Use / Deploy / Publish from this page.";
+          ? "Made a copy — private :8080 clone with all response data; Use / Deploy / Publish from this page. Purge if you want a clean slate."
+          : "Copied from Library — private empty clone; Use / Deploy / Publish from this page.";
       }
     }
 

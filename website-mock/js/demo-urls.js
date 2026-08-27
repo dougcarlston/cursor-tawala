@@ -193,8 +193,9 @@ window.TAWALA_LIBRARY = {
     "comments": 0,
     "updated": "8/4/26",
     "shortDescription": "Build and administer an online exam — questions, scoring, and examinee results.",
-    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Administration/Setup to configure the exam and questions; Exam for examinees; CustomizationPreview for branding. Library Test Drive opens Administration first.",
+    "longDescription": "Owner-vetted Polls and Surveys Live app (8-3-26 build). Questions live in submission rows (Question / SetupVariables), not the tawala JSON. Used from My Tawala after Copy to MyTawala — Library Test Drive is not offered. Administration/Setup to configure the exam; Exam for examinees; CustomizationPreview for branding.",
     "jsonFile": "projects/library/Online Exam Builder.json",
+    "formNames": ["Question", "SetupVariables", "Exam", "Administration", "Setup", "CustomizationPreview", "Answer"],
     "themePath": "default",
     "sourcePile": "library",
     "liveReady": true,
@@ -344,10 +345,30 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   homeNote:
     "Clears this shared Library demo when you start (not when you close the tab). Needs :8080.",
   listingPile:
-    "Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Copy to MyTawala when logged in",
+    "Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Copy to MyTawala when logged in · exam apps from My Tawala",
   listingHint:
-    "Test Drive clears this shared Library demo when you start — not when you close the tab. Copied links use the same demo uniqueId (not a private copy).",
+    "Test Drive clears this shared Library demo when you start — not when you close the tab. Online Exam Builder is used from My Tawala (Copy to MyTawala) — no Library Test Drive. Copied links use the same demo uniqueId (not a private copy).",
+  /* keepResponses listings (Publish Purge unchecked) — do not claim answers clear on start. */
+  tooltipSingleKeep:
+    "No account. Opens this published app. Stored answers stay — Test Drive does not clear them.",
+  tooltipMultiKeep:
+    "Choose a start. Stored answers stay — Test Drive does not clear them.",
+  copyTooltipSingleKeep:
+    "Copy the live URL (no account). Same published app as Test Drive — answers are not cleared on start.",
+  copyTooltipMultiKeep:
+    "Choose a start, then copy its URL. Same published app as Test Drive — answers are not cleared on start.",
+  copyAlertKeep:
+    "Link copied.\n\nThis is the shared Library URL for this published app. Answers are not cleared when someone starts Test Drive.",
+  copyPromptLabelKeep:
+    "Copy this Test Drive link (shared Library URL — stored answers stay):",
+  pickerOpenLedeKeep:
+    "“{name}” has more than one start form. Click a name to open it. Stored answers stay (Test Drive does not clear them).",
+  pickerOpenLinkTitleKeep: "Open this start. Does not clear stored answers.",
+  startLinkTitleKeep: "Opens :8080. This listing does not clear answers on start.",
 };
+
+window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE =
+  "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available.";
 
 /** Short-lived :8080 probe cache — shared by Library Test Drive and My Tawala Use. */
 let _runtimeProbeCache = { at: 0, ok: null };
@@ -355,6 +376,7 @@ const _RUNTIME_PROBE_TTL_MS = 4000;
 
 window.TawalaDemo = {
   TEST_DRIVE_HONESTY: window.TAWALA_TEST_DRIVE_HONESTY,
+  DATA_DRIVEN_NO_TEST_DRIVE_TITLE: window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE,
   /** Listing title — never show file extensions (.json / .tawala). On-disk format may still be JSON. */
   displayName(name) {
     return String(name || "")
@@ -784,6 +806,108 @@ window.TawalaDemo = {
       if (id) return id;
     }
     return null;
+  },
+  formNameOfExport(form) {
+    if (!form) return "";
+    return String(form.form || form.name || "").trim();
+  },
+  /**
+   * All named form payloads from an export — copy onto a new uniqueId.
+   * Do not filter by form name (Question / SetupVariables / Exam all go).
+   */
+  formsFromExport(forms) {
+    const list = Array.isArray(forms) ? forms : [];
+    return list.filter((f) => f && this.formNameOfExport(f));
+  },
+  /**
+   * Data-driven / derivative Library rows (Exam Builder, Mongolia-style published exams).
+   * Questions live in submissions — Library Test Drive is off; use from My Tawala.
+   */
+  isDataDrivenProject(project) {
+    if (!project || typeof project !== "object") return false;
+    const names = [];
+    const add = (n) => {
+      const s = String(n || "").trim().toLowerCase();
+      if (s) names.push(s);
+    };
+    (Array.isArray(project.formNames) ? project.formNames : []).forEach(add);
+    (Array.isArray(project.startPoints) ? project.startPoints : []).forEach((sp) => {
+      add(sp && (sp.form || sp.label));
+    });
+    if (names.indexOf("question") !== -1 && names.indexOf("setupvariables") !== -1) return true;
+    const id = String(project.id || "").trim().toLowerCase();
+    if (id === "online-exam-builder" || id.indexOf("online-exam") !== -1) return true;
+    const json = String(project.jsonFile || "").replace(/\\/g, "/").toLowerCase();
+    if (json.indexOf("online exam builder") !== -1) return true;
+    const pulled = String(project.pulledFromLibraryId || "").trim().toLowerCase();
+    if (pulled === "online-exam-builder") return true;
+    const name = String(project.name || "").toLowerCase();
+    if (/online\s*exam/.test(name) || /mongolia/.test(name)) return true;
+    const starts = (Array.isArray(project.startPoints) ? project.startPoints : []).map((s) =>
+      String((s && (s.form || s.label)) || "")
+        .trim()
+        .toLowerCase()
+    );
+    const hasExam = starts.some((s) => s === "exam");
+    const hasAdmin = starts.some((s) => s === "administration" || s === "setup" || s === "admin");
+    return !!(hasExam && hasAdmin);
+  },
+  libraryProjectForUniqueId(uniqueId) {
+    if (!this.isValidUniqueId(uniqueId)) return null;
+    const uid = String(uniqueId);
+    const libs = typeof this.libraryEntries === "function" ? this.libraryEntries() : [];
+    for (let i = 0; i < libs.length; i++) {
+      if (this.uniqueIdForProject(libs[i]) === uid) return libs[i];
+    }
+    return null;
+  },
+  uniqueIdIsLibraryDataDriven(uniqueId) {
+    const row = this.libraryProjectForUniqueId(uniqueId);
+    return !!(row && this.isDataDrivenProject(row));
+  },
+  dataDrivenNoTestDriveTitle() {
+    return (
+      this.DATA_DRIVEN_NO_TEST_DRIVE_TITLE ||
+      window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE ||
+      "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available."
+    );
+  },
+  _rowKeepResponsesFlag(p) {
+    return !!(p && (p.keepResponses === true || p.publishedKeepResponses === true));
+  },
+  /**
+   * True when this uniqueId was Published with Purge unchecked. Checks Library overlays
+   * (including inactive) and any My Tawala row stamped publishedKeepResponses.
+   */
+  uniqueIdKeepsResponses(uniqueId) {
+    if (!this.isValidUniqueId(uniqueId)) return false;
+    const uid = String(uniqueId);
+    const match = (p) => this.uniqueIdForProject(p) === uid && this._rowKeepResponsesFlag(p);
+    const libs = typeof this.libraryEntries === "function" ? this.libraryEntries() : [];
+    for (let i = 0; i < libs.length; i++) {
+      if (match(libs[i])) return true;
+    }
+    if (typeof window !== "undefined" && window.TawalaTransfer) {
+      if (typeof window.TawalaTransfer.getLibraryOverlay === "function") {
+        const overlay = window.TawalaTransfer.getLibraryOverlay() || {};
+        const ids = Object.keys(overlay);
+        for (let i = 0; i < ids.length; i++) {
+          const row = overlay[ids[i]];
+          if (match({ ...row, id: ids[i] })) return true;
+        }
+      }
+    }
+    const mine = typeof this.myTawalaEntries === "function" ? this.myTawalaEntries() : [];
+    for (let i = 0; i < mine.length; i++) {
+      if (match(mine[i])) return true;
+    }
+    return false;
+  },
+  projectKeepsResponses(project) {
+    if (!project) return false;
+    if (this._rowKeepResponsesFlag(project)) return true;
+    const id = this.uniqueIdForProject(project);
+    return id ? this.uniqueIdKeepsResponses(id) : false;
   },
   /**
    * Resolve :8080 uniqueId for My Tawala Purge.
@@ -1339,12 +1463,66 @@ window.TawalaDemo = {
     }
   },
   /**
-   * Purge :8080 submissions for a My Tawala project after Publish (owner Aug 1, 2026 — Publish
-   * to Library must never leave one account's prior test/demo responses visible to whoever
-   * uses the newly-published Library project next). Resolves the same uniqueId as My Tawala
-   * PURGE (`resolvePurgeUniqueId`) and reuses `purgeResponses`. Returns `{ status: "skipped" }`
-   * when the source project has no linked :8080 deploy yet — Publish still succeeds; callers
-   * must surface that responses were NOT cleared rather than staying silent about it.
+   * After a private clone (new uniqueId): copy **all** submissions from the source
+   * uniqueId onto the destination. No form-name filter — Exam / trial names copy too.
+   * Owner Purges for a clean slate. Refuses same-uniqueId (that was the scrambled
+   * partial-purge path). Fail-open: callers keep the live clone if this returns failure.
+   */
+  async copyResponsesToUniqueId(sourceUniqueId, destUniqueId) {
+    if (!this.isValidUniqueId(sourceUniqueId) || !this.isValidUniqueId(destUniqueId)) {
+      return { status: "failure", error: "source and destination uniqueId required" };
+    }
+    if (String(sourceUniqueId) === String(destUniqueId)) {
+      return {
+        status: "failure",
+        error: "refused: response copy must use a new uniqueId (not a same-id purge)",
+        sourceUniqueId,
+        uniqueId: destUniqueId,
+      };
+    }
+    const current = await this.exportResponses(sourceUniqueId);
+    if (current.status !== "success") {
+      return {
+        status: "failure",
+        uniqueId: destUniqueId,
+        sourceUniqueId,
+        error: (current && current.error) || "export failed — response data was not copied",
+      };
+    }
+    const forms = this.formsFromExport(current.forms);
+    const copied = forms.reduce((n, f) => n + ((f.rows && f.rows.length) || 0), 0);
+    if (!copied) {
+      return {
+        status: "skipped",
+        reason: "no-rows",
+        uniqueId: destUniqueId,
+        sourceUniqueId,
+        copied: 0,
+      };
+    }
+    const result = await this.importResponses(destUniqueId, forms, {
+      source: current.source,
+      mode: "replace",
+    });
+    if (result.status !== "success") {
+      return { ...result, uniqueId: destUniqueId, sourceUniqueId };
+    }
+    return {
+      ...result,
+      uniqueId: destUniqueId,
+      sourceUniqueId,
+      copied,
+      copiedForms: forms.map((f) => this.formNameOfExport(f)),
+    };
+  },
+  /**
+   * Purge :8080 submissions after Publish (owner Aug 1, 2026 — Publish to Library must
+   * never leave one account's prior test/demo responses visible to whoever uses the
+   * newly-published Library project next). Resolves the same uniqueId as My Tawala
+   * PURGE (`resolvePurgeUniqueId`) and uses whole-uniqueId `purgeResponses` (owner Aug 26:
+   * same-id selective keep of Question/SetupVariables scrambled Online Exam). Returns
+   * `{ status: "skipped" }` when the source project has no linked :8080 deploy yet —
+   * Publish still succeeds; callers must surface that responses were NOT cleared.
    */
   async purgeAfterPublish(projectId) {
     const uniqueId = this.resolvePurgeUniqueId(projectId);
@@ -1355,9 +1533,12 @@ window.TawalaDemo = {
     return { ...result, uniqueId };
   },
   /**
-   * Purge project response data then open the :8080 form (clean slate each Test Drive).
-   * Product contract (#14) is wipe-on-leave; this mock wipes on start because a static
-   * :5500 page cannot see the :8080 tab close. Honesty copy: TEST_DRIVE_HONESTY.
+   * Optionally purge then open the :8080 form. Product contract (#14) is wipe-on-leave; this
+   * mock wipes on start because a static :5500 page cannot see the :8080 tab close.
+   * Honesty copy: TEST_DRIVE_HONESTY (keepResponses listings must not claim a wipe).
+   * keepResponses uniqueIds (Publish Purge unchecked) skip purge entirely — no half-wipe.
+   * Data-driven Library rows (Exam Builder / Mongolia-style) refuse to open :8080 Test Drive.
+   * Other Test Drive purges use whole-uniqueId purgeResponses.
    * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
    * probes Tomcat before navigating (same offline gate as My Tawala Use), then
    * navigates after purge. Failed / timed-out purge never blocks opening when :8080 is up.
@@ -1367,7 +1548,7 @@ window.TawalaDemo = {
   async openTestDrive(url, opts) {
     const options = opts || {};
     const purgeFirst = options.purge !== false;
-    const purgeMs = typeof options.purgeTimeoutMs === "number" ? options.purgeTimeoutMs : 8000;
+    const purgeMs = typeof options.purgeTimeoutMs === "number" ? options.purgeTimeoutMs : 12000;
     const target = url || null;
     if (!target) return { opened: false, purge: null };
 
@@ -1383,6 +1564,17 @@ window.TawalaDemo = {
         }
       }
     };
+
+    const refuseDataDriven = (id) => {
+      closeBlankTab();
+      window.alert(this.dataDrivenNoTestDriveTitle());
+      return { opened: false, purge: { status: "skipped", reason: "data-driven", uniqueId: id || null } };
+    };
+
+    const driveId = this.uniqueIdFromUrl(target);
+    if (driveId && this.uniqueIdIsLibraryDataDriven(driveId)) {
+      return refuseDataDriven(driveId);
+    }
 
     // Same :8080 gate as Project Data Use — don’t dump the owner onto a dead host
     // or the legacy “We are very sorry” fail page (Tomcat up, World not initialized).
@@ -1416,7 +1608,9 @@ window.TawalaDemo = {
     try {
       if (purgeFirst) {
         const id = this.uniqueIdFromUrl(target);
-        if (id) {
+        if (id && this.uniqueIdKeepsResponses(id)) {
+          purge = { status: "skipped", reason: "keepResponses", uniqueId: id };
+        } else if (id) {
           const timedOut = new Promise((resolve) => {
             setTimeout(
               () => resolve({ status: "failure", uniqueId: id, error: `purge timed out after ${purgeMs}ms` }),
@@ -1606,6 +1800,13 @@ window.TawalaDemo = {
         const purgeAttr = el.getAttribute("data-testdrive-purge");
         const purge = purgeAttr !== "false" && purgeAttr !== "0";
         const libraryId = el.getAttribute("data-project") || "";
+        if (libraryId && typeof this.getLibrary === "function") {
+          const libRow = this.getLibrary(libraryId);
+          if (libRow && this.isDataDrivenProject(libRow)) {
+            window.alert(this.dataDrivenNoTestDriveTitle());
+            return;
+          }
+        }
         if (
           libraryId &&
           purge &&
@@ -1645,9 +1846,13 @@ window.TawalaDemo = {
     if (sp.url) {
       const safeUrl = String(sp.url).replace(/"/g, "&quot;");
       if (purge) {
-        const honestyTitle =
-          (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitle) ||
-          "Clears this Library demo when you start, then opens :8080. Closing the tab does not wipe.";
+        const uid = this.uniqueIdFromUrl(sp.url);
+        const keep = uid && typeof this.uniqueIdKeepsResponses === "function" && this.uniqueIdKeepsResponses(uid);
+        const honestyTitle = keep
+          ? (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitleKeep) ||
+            "Opens :8080. This listing does not clear answers on start."
+          : (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitle) ||
+            "Clears this Library demo when you start, then opens :8080. Closing the tab does not wipe.";
         return (
           '<a class="js-testdrive" href="' +
           sp.url +

@@ -40,6 +40,7 @@ import com.tawala.project.data.DataSource;
 import com.tawala.project.data.FieldSetter;
 import com.tawala.project.data.StoredField;
 import com.tawala.project.theme.UserUploadedFile;
+import com.tawala.util.LineEndings;
 import com.thoughtworks.xstream.XStream;
 
 @SequenceGenerator(name = "SEQ_GEN", sequenceName = "seq_submission_id")
@@ -206,7 +207,7 @@ public class FormSubmission {
 		String[] result = new String[values.size()];
 		int i = 0;
 		for (String value : values) {
-			result[i++] = value;
+			result[i++] = LineEndings.toUnixNewlines(value);
 		}
 		return result;
 	}
@@ -366,7 +367,10 @@ public class FormSubmission {
 
 		StringWriter writer = new StringWriter();
 		try {
-			writer.write(xstream.toXML(this.fieldContents));
+			// PrettyPrintWriter encodes raw \r as the six characters &#x0D;
+			// in CLOB XML. Persist Unix newlines so that entity is never
+			// written (existing rows still decoded on textarea render).
+			writer.write(xstream.toXML(xmlSafeFieldContents(this.fieldContents)));
 		} finally {
 			try {
 				writer.close();
@@ -377,6 +381,29 @@ public class FormSubmission {
 		}
 
 		return writer.toString();
+	}
+
+	private static Map<String, String[]> xmlSafeFieldContents(
+			Map<String, String[]> src) {
+		if (src == null) {
+			return new LinkedHashMap<String, String[]>();
+		}
+		Map<String, String[]> copy = new LinkedHashMap<String, String[]>();
+		for (Map.Entry<String, String[]> entry : src.entrySet()) {
+			copy.put(entry.getKey(), unixNewlines(entry.getValue()));
+		}
+		return copy;
+	}
+
+	private static String[] unixNewlines(String[] values) {
+		if (values == null) {
+			return new String[0];
+		}
+		String[] result = new String[values.length];
+		for (int i = 0; i < values.length; i++) {
+			result[i] = LineEndings.toUnixNewlines(values[i]);
+		}
+		return result;
 	}
 
 	@SuppressWarnings("unchecked")

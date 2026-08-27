@@ -17,17 +17,19 @@ COPY docker/tomcat/sports-dashboard.properties /tmp/patch/sports-dashboard.prope
 COPY docker/tomcat/mail.properties /tmp/patch/mail.properties
 COPY docker/tomcat/css /tmp/patch/css
 COPY docker/tomcat/images /tmp/patch/images
+COPY docker/tomcat/scripts /tmp/patch/scripts
 
 RUN mkdir -p /tmp/ROOT \
  && unzip -q /tmp/ROOT.war -d /tmp/ROOT \
  && rm -f /tmp/ROOT/WEB-INF/lib/postgresql-8.1*.jar \
  && cp /tmp/patch/*.properties /tmp/ROOT/WEB-INF/classes/ \
- && mkdir -p /tmp/ROOT/css/project /tmp/ROOT/css/tinymce /tmp/ROOT/images \
+ && mkdir -p /tmp/ROOT/css/project /tmp/ROOT/css/tinymce /tmp/ROOT/images /tmp/ROOT/scripts/project \
  && cp -r /tmp/patch/css/project /tmp/ROOT/css/ \
  && cp -r /tmp/patch/css/tinymce /tmp/ROOT/css/ \
  && cp -r /tmp/patch/images/silk /tmp/ROOT/images/ \
  && cp /tmp/patch/images/submit-progress.gif /tmp/ROOT/images/ \
  && cp /tmp/patch/images/checkbox_on.gif /tmp/patch/images/checkbox_off.gif /tmp/ROOT/images/ \
+ && cp /tmp/patch/scripts/project/default.js /tmp/ROOT/scripts/project/default.js \
  && cd /tmp/ROOT && jar cf /usr/local/tomcat/webapps/ROOT.war . \
  && rm -rf /tmp/ROOT /tmp/ROOT.war /tmp/patch
 

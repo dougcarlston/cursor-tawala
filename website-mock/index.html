@@ -6,8 +6,8 @@
   <title>Tawala - Home</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/homepage.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260824-lib1" />
-  <script src="js/demo-urls.js?v=20260824-lib1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-examtd1" />
+  <script src="js/demo-urls.js?v=20260826-examtd1"></script>
 </head>
 <body data-tawala-page="home">
   <div id="doc">
@@ -112,6 +112,7 @@
     const td = document.getElementById("homeTestDriveLinks");
     td.innerHTML = TawalaDemo.featured()
       .filter((p) => TawalaDemo.isDeployed(p))
+      .filter((p) => !(typeof TawalaDemo.isDataDrivenProject === "function" && TawalaDemo.isDataDrivenProject(p)))
       .map((p) => {
         const url =
           typeof TawalaDemo.libraryTestDriveUrl === "function"

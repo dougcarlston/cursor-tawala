@@ -5,9 +5,11 @@ import java.io.PrintWriter;
 import org.springframework.web.util.HtmlUtils;
 
 import com.tawala.project.Value;
+import com.tawala.util.LineEndings;
 
 public class TextInput extends AttributeSupport implements Html {
 	public static final String ID_PREFIX = "tawalaField_";
+
 	private final String id;
 	private final int length;
 	private final int height;
@@ -38,7 +40,7 @@ public class TextInput extends AttributeSupport implements Html {
 			out.print(" id=\"" + elementId + "\"");
 			out.print(" size=\"" + length + "\"");
 			if (value != Value.NULL)
-				out.print(" value=\"" + HtmlUtils.htmlEscape(value.toString())
+				out.print(" value=\"" + escapeFieldValue(value.toString())
 						+ "\"");
 			
 			renderAttributes(out);
@@ -60,10 +62,19 @@ public class TextInput extends AttributeSupport implements Html {
 			
 			out.print(">");
 			if (value != Value.NULL) {
-				out.print(HtmlUtils.htmlEscape(value.toString()));
+				out.print(escapeFieldValue(value.toString()));
 			}
 			out.print("</textarea>");
 		}
+	}
+
+	/**
+	 * Decode stored {@code &#x0D;} (XStream CLOB residue) to a newline, then
+	 * escape once. Do not htmlEscape first — that would turn {@code &} into
+	 * {@code &amp;} and show the entity as glyphs.
+	 */
+	static String escapeFieldValue(String raw) {
+		return HtmlUtils.htmlEscape(LineEndings.toUnixNewlines(raw));
 	}
 
 	public static String elementId(String escapedId) {

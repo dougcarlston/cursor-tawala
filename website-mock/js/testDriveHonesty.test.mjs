@@ -17,13 +17,21 @@ assert.match(demo, /same uniqueId for every visitor/);
 assert.match(demo, /Post-tab-close purge is not available in this static mock — do not fake it/);
 assert.match(demo, /Closing the tab does not wipe/);
 
-assert.match(ops, /honestyText\(\s*"copyAlert"/);
+assert.match(ops, /honestyForProject\(\s*project,\s*"copyAlert"/);
 assert.match(ops, /honestyText\(\s*"tooltipSingle"/);
-assert.match(ops, /honestyNamed\(\s*"pickerOpenLede"/);
+assert.match(ops, /honestyNamedForProject\(/);
+assert.match(ops, /honestyForProject\(\s*project,\s*"tooltipSingle"/);
+assert.match(demo, /tooltipSingleKeep:/);
+assert.match(demo, /copyAlertKeep:/);
+assert.match(demo, /Stored answers stay/);
 assert.doesNotMatch(
   ops,
   /window\.alert\("Link copied"\)/,
   "Copy-link alert must use honesty copy, not a bare “Link copied”"
 );
+
+assert.match(demo, /This project is used from My Tawala — Copy to MyTawala/);
+assert.match(ops, /projectIsDataDriven\(project\)/);
+assert.doesNotMatch(demo, /purgeRespondentResponses/);
 
 console.log("testDriveHonesty contract ok");

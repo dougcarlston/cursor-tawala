@@ -39,6 +39,21 @@ Project theme styles loaded per `themePath` in `.tawala` XML.
 
 TinyMCE iframe body CSS referenced by `web/scripts/project/default.js` (`content_css: /css/tinymce/custom_content.css`). Missing from build-1700 `ROOT.war`; without it, multi-line FIB editors (Online Exam SetupVariables Pre/Post instructions) use relative HTML font sizes on the browser default and look huge / chaotic. Also copied into `TawalaWebapp-build1700/web/css/tinymce/` for WAR rebuilds. Dockerfile patches this folder into the image.
 
+## `scripts/project/default.js`
+
+Hot-patch of the live form runtime script (TinyMCE init for multi-line FIBs). Canonical source is `TawalaWebapp-build1700/web/scripts/project/default.js`; copy it here after edits so Docker rebuilds pick it up without a new `ROOT.war`. Also `docker cp` into a running container (pages load this with `?x=` build-number cache-bust — **hard-refresh** anyway).
+
+```bash
+cd ~/Projects/Tawala
+cp TawalaWebapp-build1700/web/scripts/project/default.js \
+  docker/tomcat/scripts/project/default.js
+
+docker cp docker/tomcat/scripts/project/default.js \
+  tawala-tomcat:/usr/local/tomcat/webapps/ROOT/scripts/project/default.js
+```
+
+Then on `:8080` Online Exam **SetupVariables**: **Cmd+Shift+R**. Java (`TextInput` / `FormSubmission`) still needs a WAR rebuild or class copy + Tomcat restart; the JS patch alone hides leftover `&#x0D;` glyphs in already-stored Pre/Post instruction boxes.
+
 Rebuild after changes:
 
 ```bash

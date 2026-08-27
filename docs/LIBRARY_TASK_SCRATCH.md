@@ -5,7 +5,7 @@ Review: `http://localhost:5500` only. Origin already has uniqueId + Designer ses
 
 **Done Aug 24 (drop from daily view):** #26 clone-on-acquire · #27 occupancy slice 1 · Test Drive honesty copy · EXPORT/IMPORT smoke (field **names**).
 
-**Done Aug 26:** #27 slice 2 — Library Retire frees the `:8080` **name** (`/api/retire-name` + Tomcat `retireDeployment`; uniqueId kept). Review `library-admin.html?v=20260826-retire27&admin=1`. Do not hatch Online Exam’s two copies. **Details Version** no longer repeats Source: hide auto `Copied from Library (…)` (`?v=20260826-srcver1`).
+**Done Aug 26:** #27 slice 2 — Library Retire frees the `:8080` **name**. **Make a Copy** clone-on-copy (copies **all** data). Data-driven Library = no Test Drive. **Copy to MyTawala** = empty clone (no catalog submissions). **Publish** with Records > 0: confirm *Project will be stripped of data upon publication. Proceed?* then strip, then overlay (`pubstrip1`). Review `library.html?v=20260826-pubstrip1`.
 
 ---
 
@@ -45,7 +45,7 @@ Do not spend a session on these; they were signed off in product copy Aug 25:
 8. **#2 Details ops rail** — **DONE Aug 25** (owner: looks good). Delete on Details (own group, then back to listing). Purge = data. De-activate = Library visibility. Listing Delete remains.
 9. **#10 Deploy / share** — **DONE Aug 25 remainder:** uniqueId-in-URL + owner start labels. **share11:** dialog opens at top; Share label default **Click here.** (not form name); uniqueId lecture removed. **share13 Aug 26:** Project Data tree keeps Designer form names (Customize); do not persist Click here. over them. Review `?v=20260826-share13`.
 10. **#13 Times used / Last used** — **DONE Aug 25.** Mock `tawala.mock.usageStats` after a My Tawala **Use** that actually opens (listing single-start or Details banner); blocked Use does not count. Unused = —. Library Test Drive does not bump the My Tawala copy. **Details visibility Aug 25:** banner heads were CSS-hidden below 48rem; Project Data row now shows Times used / Last used (`details13`). **Details packing Aug 25 (`stub18-pdata2`):** title uses leftover width on one line; Records / Times used / Last used hug the right-edge buttons.
-11. **#18 Stub cleanup** — **DONE Aug 25.** Catalog 0 stubs; Publish is the Library path; retired listing Push-from-Designer chrome. Make a Copy still needs Designer Push. **Aug 25 notes strip:** symbiotic notes stripped from listing Transfers + Details footers so chrome can be judged for space.
+11. **#18 Stub cleanup** — **DONE Aug 25.** Catalog 0 stubs; Publish is the Library path; retired listing Push-from-Designer chrome. Make a Copy clone-on-copy Aug 26 (`makecopy1`). **Aug 25 notes strip:** symbiotic notes stripped from listing Transfers + Details footers so chrome can be judged for space.
 12. **#14 Test Drive** — per-drive uniqueId + real leave/wipe. Waits for **Library Live**, not tomorrow’s mock.
 
 ## Parked (unless bigger picture unparks them)

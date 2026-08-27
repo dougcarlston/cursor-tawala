@@ -28,7 +28,8 @@
  *       history is Details-only; listing shows the scalar current Version column (not piles)
  *       description is the only mutable field on an existing version (updateVersionDescription)
  *       Deploy-this-version needs snapshotId and/or definition (saved from Show in My Tawala)
- *       Save a copy / Make a Copy seed version 1 (no snapshot); next Push mints max+1
+ *       Save a copy / Make a Copy seed version 1; clone-on-copy saves a snapshot like #26;
+ *         next Push mints max+1
  *   tawala.mock.myTawalaDeleted — { [projectId]: true } account-private My Tawala removals
  *     (does not touch public Library / TAWALA_LIBRARY / liveReady). Also used to hide discarded
  *     fake seed archive ids (TAWALA_MYTAWALA_DISCARDED_SEED_IDS) that are not real Push /
@@ -52,7 +53,7 @@
  *     people opened Library **Test Drive** for this entry (hottest signal on the listing).
  *     Separate from My Tawala usageStats.
  *
- * Publish (My Tawala → Library, owner Aug 1, 2026):
+ * Publish (My Tawala → Library, owner Aug 1, 2026; live-form gate Aug 26, 2026):
  *   - Owner can rename the project on the way in (temporary until real versioning exists).
  *   - Matching an existing Library entry to replace ignores the " (stub)" suffix on both sides
  *     (findMatchingLibraryTargets / compactNameKey) — avoids e.g. a Deploy-named "Signup sheet"
@@ -64,6 +65,14 @@
  *   - Replacing a **non-stub** entry (liveReady or main-menu, e.g. an out-of-date template) just
  *     overlays that same Library id with the new content in place — no My Tawala copy is made,
  *     because it was never a placeholder stub.
+ *   - Fail closed: abort (no library overlay write) if the source has no live form — no uniqueId
+ *     and none resolvable from start URLs / testDriveUrl (same as Purge). Owner copy, no uniqueId
+ *     in the alert: "This project has no live form yet. Edit in Designer, Push, then Publish."
+ *   - Owner Aug 26, 2026: cannot Publish with data. If the live uniqueId has any saved responses
+ *     (same count as Purge / Records), confirm then strip then write the Library overlay.
+ *     Exact confirm: "Project will be stripped of data upon publication. Proceed?"
+ *     Cancel = no overlay write and no purge. Proceed = whole-uniqueId purge, then overlay.
+ *     Empty templates skip the extra confirm. No checkbox to keep data on Publish.
  *
  * Library admin path (owner Aug 1, 2026 — "for when you won't always be available"):
  *   tawala.mock.libraryAdmin — "1" enables admin-only actions on library-admin.html (rename any
@@ -582,7 +591,138 @@
   }
 
   /**
-   * Push the Library catalog JSON under a minted Tomcat name (new uniqueId, empty Records).
+   * Best-effort: copy **all** submissions onto the new uniqueId after clone.
+   * Used by Make a Copy (own uniqueId). Library acquire must **not** call this — catalog/author
+   * uniqueId is shared / other people's rows.
+   * Clone already succeeded — failures are returned on `responseCopy`, never roll back the clone.
+   */
+  async function maybeCopyResponsesOntoClone(clone, sourceUniqueId) {
+    if (!clone || !clone.ok || !clone.uniqueId || !sourceUniqueId) return clone;
+    if (String(clone.uniqueId) === String(sourceUniqueId)) return clone;
+    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
+    if (!Demo || typeof Demo.copyResponsesToUniqueId !== "function") {
+      return {
+        ...clone,
+        responseCopy: {
+          status: "failure",
+          error: "Couldn't copy response data — refresh so the latest scripts load.",
+        },
+      };
+    }
+    try {
+      const responseCopy = await Demo.copyResponsesToUniqueId(sourceUniqueId, clone.uniqueId);
+      return { ...clone, responseCopy };
+    } catch (e) {
+      return {
+        ...clone,
+        responseCopy: {
+          status: "failure",
+          error: String((e && e.message) || e) || "Couldn't copy response data.",
+        },
+      };
+    }
+  }
+
+  /** Keep in sync with website-mock/js/acquireClone.mjs */
+  const MAKE_COPY_NO_LIVE_FORM_ERROR =
+    "Can't copy until the original has a live form.";
+  const CLONE_TRY_AGAIN_ERROR =
+    "Couldn't copy the live form. Start Tomcat and the Designer API, then try again.";
+
+  function ownerFacingCloneError(raw, fallback) {
+    const s = String(raw == null ? "" : raw).trim();
+    if (!s) return fallback;
+    if (s.length > 280) return fallback;
+    if (/\n\s+at\s+/.test(s) || s.includes("\n    at ")) return fallback;
+    return s;
+  }
+
+  /**
+   * Push a Designer JSON under a minted Tomcat name (`_freshFromTemplate`).
+   * Never writes a My Tawala overlay — callers save the row only after ok+uniqueId.
+   * Make a Copy then copies responses via maybeCopyResponsesOntoClone (fail-open).
+   * Library acquire does not — empty clone only.
+   */
+  async function cloneDefinitionToPrivateRuntime(definition, copyName, opts) {
+    const options = opts || {};
+    const tryAgain = options.tryAgainError || CLONE_TRY_AGAIN_ERROR;
+    const sourceUniqueId = options.sourceUniqueId || null;
+    const previousStartPoints = options.previousStartPoints || [];
+    if (typeof window === "undefined" || !window.TawalaDemo) {
+      return { ok: false, error: tryAgain };
+    }
+    const Demo = window.TawalaDemo;
+    if (typeof Demo.deployProjectDefinition !== "function") {
+      return { ok: false, error: tryAgain };
+    }
+    let body;
+    try {
+      body = projectBodyForPrivateClone(definition, copyName);
+    } catch (e) {
+      return { ok: false, error: ownerFacingCloneError(e && e.message, tryAgain) };
+    }
+    const themePath = String(options.themePath || "").trim();
+    if (themePath) body.themePath = themePath;
+    const deploy = await Demo.deployProjectDefinition(body);
+    if (!deploy || deploy.status !== "success" || !deploy.uniqueId) {
+      return {
+        ok: false,
+        error: ownerFacingCloneError(deploy && deploy.error, tryAgain),
+      };
+    }
+    if (sourceUniqueId && String(deploy.uniqueId) === String(sourceUniqueId)) {
+      return {
+        ok: false,
+        error:
+          options.reusedIdError ||
+          "Clone reused the original live form id — nothing was saved. The original is unchanged. Try again.",
+      };
+    }
+    const startPoints = startPointsFromDeploy(deploy, previousStartPoints);
+    if (!startPoints.length) {
+      return {
+        ok: false,
+        error:
+          options.noStartsError ||
+          "Private Push succeeded but returned no start URLs. Try again.",
+      };
+    }
+    const deployIdentityName = deploy.deployIdentityName || copyName;
+    const snapProject = snapshotProjectAfterClone(definition, {
+      displayName: copyName,
+      deployIdentityName,
+      uniqueId: deploy.uniqueId,
+    });
+    let snapshotId = null;
+    if (typeof Demo.saveVersionSnapshot === "function") {
+      const saved = await Demo.saveVersionSnapshot({
+        project: snapProject,
+        uniqueId: deploy.uniqueId,
+        versionDescription: options.versionDescription || "",
+      });
+      if (saved && saved.status === "success" && saved.snapshotId) {
+        snapshotId = saved.snapshotId;
+      }
+    }
+    let testDriveUrl = startPoints[0].url;
+    if (typeof Demo.primaryStartUrl === "function") {
+      testDriveUrl = Demo.primaryStartUrl(startPoints, null) || testDriveUrl;
+    }
+    return {
+      ok: true,
+      uniqueId: deploy.uniqueId,
+      deployIdentityName,
+      startPoints,
+      testDriveUrl,
+      snapshotId,
+      deployed: true,
+    };
+  }
+
+  /**
+   * Push the Library catalog JSON under a minted Tomcat name (new uniqueId).
+   * Empty clone only — do not import submissions from the catalog/author uniqueId
+   * (shared / other people's rows). Make a Copy is the path that copies all data.
    */
   async function cloneLibraryProjectToPrivateRuntime(source, copyName) {
     const jsonFile = catalogPathForOpenApi(source && source.jsonFile);
@@ -608,73 +748,27 @@
     if (!fetched || fetched.status !== "success" || !fetched.project) {
       return {
         ok: false,
-        error:
-          (fetched && fetched.error) ||
-          "Couldn't read the Library project definition. Is designer-web API on :3001?",
-      };
-    }
-    let body;
-    try {
-      body = projectBodyForPrivateClone(fetched.project, copyName);
-    } catch (e) {
-      return { ok: false, error: String((e && e.message) || e) };
-    }
-    const deploy = await Demo.deployProjectDefinition(body);
-    if (!deploy || deploy.status !== "success" || !deploy.uniqueId) {
-      return {
-        ok: false,
-        error:
-          (deploy && deploy.error) ||
-          "Couldn't Push a private copy to :8080. Start Tomcat and the Designer API, then try again.",
+        error: ownerFacingCloneError(
+          fetched && fetched.error,
+          "Couldn't read the Library project definition. Is designer-web API on :3001?"
+        ),
       };
     }
     const libLive = liveRuntimeFromLibrarySource(source);
-    if (libLive.uniqueId && String(deploy.uniqueId) === String(libLive.uniqueId)) {
-      return {
-        ok: false,
-        error:
-          "Clone reused the public Library uniqueId — nothing was saved to My Tawala. " +
-          "The Library Test Drive is unchanged. Try again, or File → New in Designer and Push a private copy.",
-      };
-    }
-    const startPoints = startPointsFromDeploy(deploy, source.startPoints);
-    if (!startPoints.length) {
-      return {
-        ok: false,
-        error: "Private Push succeeded but returned no start URLs. Refresh and try Copy to MyTawala again.",
-      };
-    }
-    const deployIdentityName = deploy.deployIdentityName || copyName;
-    const snapProject = snapshotProjectAfterClone(fetched.project, {
-      displayName: copyName,
-      deployIdentityName,
-      uniqueId: deploy.uniqueId,
+    const clone = await cloneDefinitionToPrivateRuntime(fetched.project, copyName, {
+      sourceUniqueId: libLive.uniqueId,
+      previousStartPoints: source.startPoints,
+      themePath: source.themePath,
+      tryAgainError:
+        "Couldn't Push a private copy to :8080. Start Tomcat and the Designer API, then try again.",
+      reusedIdError:
+        "Clone reused the public Library uniqueId — nothing was saved to My Tawala. " +
+        "The Library Test Drive is unchanged. Try again, or File → New in Designer and Push a private copy.",
+      noStartsError:
+        "Private Push succeeded but returned no start URLs. Refresh and try Copy to MyTawala again.",
     });
-    let snapshotId = null;
-    if (typeof Demo.saveVersionSnapshot === "function") {
-      const saved = await Demo.saveVersionSnapshot({
-        project: snapProject,
-        uniqueId: deploy.uniqueId,
-        versionDescription: "",
-      });
-      if (saved && saved.status === "success" && saved.snapshotId) {
-        snapshotId = saved.snapshotId;
-      }
-    }
-    let testDriveUrl = startPoints[0].url;
-    if (typeof Demo.primaryStartUrl === "function") {
-      testDriveUrl = Demo.primaryStartUrl(startPoints, null) || testDriveUrl;
-    }
-    return {
-      ok: true,
-      uniqueId: deploy.uniqueId,
-      deployIdentityName,
-      startPoints,
-      testDriveUrl,
-      snapshotId,
-      deployed: true,
-      mockSharedLibraryRuntime: false,
-    };
+    if (!clone || !clone.ok) return clone;
+    return { ...clone, mockSharedLibraryRuntime: false };
   }
 
   function isLibraryAcquireEntry(entry) {
@@ -750,9 +844,38 @@
     return sps.some((s) => s && s.url);
   }
 
+  /** Keep in sync with website-mock/js/acquireClone.mjs `forkRuntimeShouldScrub`. */
+  function forkRuntimeShouldScrub(entry, sourceUniqueId) {
+    if (!entry || typeof entry !== "object") return false;
+    if (entry.mockSharedForkRuntime === true) return true;
+    if (
+      sourceUniqueId &&
+      entry.uniqueId &&
+      String(entry.uniqueId) === String(sourceUniqueId)
+    ) {
+      return true;
+    }
+    return false;
+  }
+
+  function sourceUniqueIdForFork(entry) {
+    const sourceId = entry && entry.forkedFromId;
+    if (!sourceId) return null;
+    const src =
+      getOverlayEntry(sourceId) ||
+      (typeof window !== "undefined" &&
+        window.TawalaDemo &&
+        typeof window.TawalaDemo.getMyTawala === "function" &&
+        window.TawalaDemo.getMyTawala(sourceId)) ||
+      null;
+    if (src && src.uniqueId) return src.uniqueId;
+    return liveUniqueIdForPublish(sourceId, src) || null;
+  }
+
   /**
    * Make a Copy once shared source uniqueId (`mockSharedForkRuntime`). Strip those so
-   * existing forks no longer show Library/picnic Records. Idempotent.
+   * existing forks no longer show Library/picnic Records. Private clones (own uniqueId,
+   * Task #9 clone-on-copy) are left alone. Idempotent.
    */
   function scrubSharedForkRuntimes() {
     const overlay = getMyTawalaOverlay();
@@ -762,12 +885,8 @@
       const entry = overlay[id];
       if (!entry || typeof entry !== "object") return;
       if (entry.sourcePile !== "mytawala-fork" && !entry.forkedFromId) return;
-      const needs =
-        entry.mockSharedForkRuntime === true ||
-        !!entry.uniqueId ||
-        !!entry.testDriveUrl ||
-        (Array.isArray(entry.startPoints) && entry.startPoints.some((s) => s && s.url));
-      if (!needs) return;
+      const srcUid = sourceUniqueIdForFork(entry);
+      if (!forkRuntimeShouldScrub(entry, srcUid)) return;
       const startPoints = (Array.isArray(entry.startPoints) ? entry.startPoints : [])
         .map((sp) => {
           const form = (sp && (sp.form || sp.label)) || "Start";
@@ -791,9 +910,10 @@
   }
 
   /**
-   * On My Tawala load: scrub Make a Copy forks that leaked a uniqueId, and scrub
+   * On My Tawala load: scrub Make a Copy forks that leaked the *source* uniqueId, and scrub
    * Copy to MyTawala rows that still share the public Library uniqueId (Task #26).
-   * Does **not** copy Library Test Drive URLs onto acquires.
+   * Private Make a Copy clones (own uniqueId) are not stripped. Does **not** copy Library
+   * Test Drive URLs onto acquires.
    */
   function rehydrateAcquireLiveUrls() {
     scrubSharedForkRuntimes();
@@ -1302,7 +1422,7 @@
   /**
    * Starting definition version for new private copies (Library Save a copy / Get from
    * Library / Make a Copy). Integer **1** — matches Push minting (monotonic ints, not
-   * semver “1.0”). Does not inherit the Library’s published revision; next Push → Show
+   * semver “1.0”). Clone-on-copy saves a snapshot like Copy to MyTawala; next Push → Show
    * in My Tawala mints max(versions)+1.
    */
   const STARTING_VERSION_NUMBER = 1;
@@ -1858,10 +1978,85 @@
       .filter((c) => c.matchKind);
   }
 
+  const PUBLISH_NO_LIVE_FORM_ERROR =
+    "This project has no live form yet. Edit in Designer, Push, then Publish.";
+  /* Keep in sync with website-mock/js/acquireClone.mjs */
+  const PUBLISH_STRIP_CONFIRM =
+    "Project will be stripped of data upon publication. Proceed?";
+  const PUBLISH_STRIP_FAILED =
+    "Couldn't strip saved responses before Publish. Nothing was added to the Library. Try Purge, then Publish again.";
+
+  /** True when a :3001 count result means the source has submissions (Publish must strip first). */
+  function countShowsSavedResponses(countResult) {
+    if (!countResult || countResult.status !== "success") return false;
+    const n = Number(countResult.count);
+    return Number.isFinite(n) && n > 0;
+  }
+
+  function uniqueIdFromLiveUrl(url) {
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdFromUrl === "function"
+    ) {
+      return window.TawalaDemo.uniqueIdFromUrl(url);
+    }
+    if (!url) return null;
+    const m = String(url).match(/\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/);
+    return m ? m[1] : null;
+  }
+
+  /**
+   * Live uniqueId for Publish — same resolution as My Tawala Purge (`resolvePurgeUniqueId`):
+   * overlay uniqueId, else `/p/{id}/` on testDriveUrl / startPoints, else deploy-inbox.
+   * A missing overlay field still counts as live when start URLs carry `/p/{id}/`.
+   */
+  function liveUniqueIdForPublish(sourceProjectId, sourceProject) {
+    if (
+      sourceProjectId &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.resolvePurgeUniqueId === "function"
+    ) {
+      const fromPurge = window.TawalaDemo.resolvePurgeUniqueId(sourceProjectId);
+      if (fromPurge) return fromPurge;
+    }
+    const p = sourceProject || null;
+    if (
+      p &&
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.uniqueIdForProject === "function"
+    ) {
+      const fromProject = window.TawalaDemo.uniqueIdForProject(p);
+      if (fromProject) return fromProject;
+    }
+    if (!p) return null;
+    if (typeof p.uniqueId === "string" && /^[A-Za-z0-9]{1,20}$/.test(p.uniqueId)) {
+      return p.uniqueId;
+    }
+    const fromTest = uniqueIdFromLiveUrl(p.testDriveUrl);
+    if (fromTest) return fromTest;
+    const sps = Array.isArray(p.startPoints) ? p.startPoints : [];
+    for (let i = 0; i < sps.length; i++) {
+      const id = uniqueIdFromLiveUrl(sps[i] && sps[i].url);
+      if (id) return id;
+    }
+    return null;
+  }
+
   /**
    * Publish a My Tawala project into the public Library (mock — localStorage overlay only;
    * shipping into the repo catalog / demo-urls.js, and flipping `liveReady`, stays a separate
    * maintainer step — see README § Publish).
+   *
+   * Fail closed (owner Aug 26, 2026): abort with no overlay write if the source has no live
+   * form (no uniqueId and none resolvable from start URLs / testDriveUrl — same as Purge).
+   * Owner Aug 26: cannot Publish with data. If the uniqueId has saved responses (same count as
+   * Purge / Records), callers must confirm (`PUBLISH_STRIP_CONFIRM`) then pass `stripConfirmed`.
+   * Cancel = no overlay and no purge. Proceed = whole-uniqueId purge, then overlay write.
+   * Empty templates skip the extra confirm. There is no keep-data-on-Publish path.
+   * Details dialog and library-admin both go through this function.
    *
    * `replaceLibraryId`, when set, names an existing Library entry (stub or not) to target:
    *   - stub (`stub: true`, not already retired) → retired: dropped from the Library listing,
@@ -1870,8 +2065,11 @@
    *   - non-stub (liveReady / main-menu / previously-published) → overlaid in place at the same
    *     id with the new content; no My Tawala copy is made (it was never a placeholder stub).
    * With no `replaceLibraryId`, Publish just adds a new Library overlay entry at a fresh slug.
+   *
+   * Publish never keeps responses on the Library uniqueId. `keepResponses` on a new overlay is
+   * always false (older overlays that opted out of Purge-on-Publish may still have it).
    */
-  function publishToLibrary({ sourceProjectId, name, replaceLibraryId, category } = {}) {
+  async function publishToLibrary({ sourceProjectId, name, replaceLibraryId, category, stripConfirmed } = {}) {
     const sourceProject =
       sourceProjectId && typeof window !== "undefined" && window.TawalaDemo
         ? window.TawalaDemo.getMyTawala(sourceProjectId)
@@ -1879,6 +2077,46 @@
     const publishName = String(name || (sourceProject && sourceProject.name) || "").trim();
     if (!publishName) {
       return { ok: false, error: "Library name is required." };
+    }
+
+    const uniqueId = liveUniqueIdForPublish(sourceProjectId, sourceProject);
+    if (!uniqueId) {
+      return { ok: false, error: PUBLISH_NO_LIVE_FORM_ERROR };
+    }
+
+    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
+    let counted = null;
+    if (Demo && typeof Demo.countResponses === "function") {
+      try {
+        counted = await Demo.countResponses(uniqueId);
+      } catch (e) {
+        counted = { status: "failure", error: String((e && e.message) || e) };
+      }
+    }
+    const mustStrip = countShowsSavedResponses(counted);
+    if (mustStrip && stripConfirmed !== true) {
+      return { ok: false, needsStripConfirm: true, error: PUBLISH_STRIP_CONFIRM };
+    }
+
+    let stripped = false;
+    let purgeResult = null;
+    if (mustStrip) {
+      if (!Demo || typeof Demo.purgeAfterPublish !== "function") {
+        return { ok: false, error: PUBLISH_STRIP_FAILED };
+      }
+      try {
+        purgeResult = await Demo.purgeAfterPublish(sourceProjectId);
+      } catch (e) {
+        return {
+          ok: false,
+          error: PUBLISH_STRIP_FAILED,
+          purge: { status: "failure", error: String((e && e.message) || e) },
+        };
+      }
+      if (!purgeResult || purgeResult.status !== "success") {
+        return { ok: false, error: PUBLISH_STRIP_FAILED, purge: purgeResult };
+      }
+      stripped = true;
     }
 
     const targetId = replaceLibraryId || null;
@@ -1896,16 +2134,6 @@
     const now = formatListDate(nowIso);
 
     const sourceStartPoints = (sourceProject && sourceProject.startPoints) || [];
-    // Prefer one uniqueId for all start points (Admin writes + Exam reads same project).
-    let uniqueId = (sourceProject && sourceProject.uniqueId) || null;
-    if (
-      !uniqueId &&
-      typeof window !== "undefined" &&
-      window.TawalaDemo &&
-      typeof window.TawalaDemo.uniqueIdForProject === "function"
-    ) {
-      uniqueId = window.TawalaDemo.uniqueIdForProject(sourceProject);
-    }
     // Library Test Drive: Administration/Setup first for Online Exam (not Exam).
     let testDriveUrl = null;
     if (
@@ -1961,8 +2189,14 @@
       startPoints: sourceStartPoints,
       testDriveUrl,
       uniqueId,
+      keepResponses: false,
       themePath: (sourceProject && sourceProject.themePath) || undefined,
       jsonFile: (sourceProject && sourceProject.jsonFile) || (baseTarget && baseTarget.jsonFile) || null,
+      formNames: Array.isArray(sourceProject && sourceProject.formNames)
+        ? sourceProject.formNames.slice()
+        : Array.isArray(baseTarget && baseTarget.formNames)
+          ? baseTarget.formNames.slice()
+          : undefined,
       versionNumber: publishedVersion,
       versionDescription: publishedVersionDesc || undefined,
     };
@@ -1979,6 +2213,7 @@
         publishedToLibraryId: libraryId,
         publishedToLibraryName: publishName,
         publishedToLibraryVersion: publishedVersion,
+        publishedKeepResponses: false,
         publishedAt: nowIso,
         updated: now,
         updatedAt: nowIso,
@@ -2032,7 +2267,22 @@
       retired,
       replacedNonStub: !!(targetId && !targetIsActiveStub),
       replacedName: targetId && !targetIsActiveStub ? (baseTarget && baseTarget.name) || targetId : null,
+      stripped,
+      purge: purgeResult,
     };
+  }
+
+  /**
+   * Run Publish: if the source has responses, confirm strip then purge then overlay.
+   * Cancel of the strip confirm returns `{ cancelledStrip: true }` — no overlay, no purge.
+   */
+  async function publishToLibraryAfterStripConfirm(opts) {
+    const first = await publishToLibrary(opts || {});
+    if (!first || !first.needsStripConfirm) return first;
+    if (typeof window === "undefined" || !window.confirm(PUBLISH_STRIP_CONFIRM)) {
+      return { ok: false, cancelledStrip: true, error: PUBLISH_STRIP_CONFIRM };
+    }
+    return publishToLibrary({ ...(opts || {}), stripConfirmed: true });
   }
 
   /**
@@ -2292,7 +2542,9 @@
 
   /**
    * Save a copy / Copy to MyTawala (Library → My Tawala acquire, Aug 9 Task #8).
-   * Task #26: clones the catalog JSON onto a **new** Tomcat uniqueId (empty Records).
+   * Task #26: clones the catalog JSON onto a **new** Tomcat uniqueId (empty clone).
+   * Does **not** import submissions from the catalog/author uniqueId (shared / other
+   * people's rows). Make a Copy (own fork) is the path that copies all data.
    * Does not copy the public Library Test Drive uniqueId. Edit in Designer opens the
    * saved snapshot (deployIdentityName), not the catalog template name.
    *
@@ -2411,6 +2663,7 @@
       uniqueId: clone.uniqueId,
       deployIdentityName: clone.deployIdentityName,
       replacedId: conflict ? conflict.id : null,
+      responseCopy: clone.responseCopy || null,
       entry: { id, ...entry },
     };
   }
@@ -2548,21 +2801,134 @@
   }
 
   /**
-   * Make a Copy — fork an existing My Tawala project (Aug 9 Task #9).
+   * Make a Copy — fork an existing My Tawala project (Aug 9 Task #9; clone-on-copy Aug 26).
    * Mints a *new* overlay id + display name. Original row is untouched.
-   * Copies definition metadata (jsonFile, descriptions, formNames, start *labels*).
+   * Pushes a **new** Tomcat uniqueId (never share the source’s live id). Then copies
+   * **all** source submissions onto that uniqueId (fail-open if :3001 export/import fails).
+   * Overlay uniqueId is written only after a successful clone — fail closed if :3001/:8080
+   * cannot clone (no uniqueId-null leftover row). Owner Purges for a clean slate.
    *
-   * Empty response data by default (owner Aug 10): do **not** copy source uniqueId /
-   * live :8080 start URLs. Sharing those made forks reuse Tomcat submissions (e.g.
-   * Broderbund picnic data on a 4th-of-July copy). uniqueId:null, deployed:false,
-   * start points label-only → Records empty / "—"; Use grey until Push → Show in My Tawala.
+   * Definition sources: clone snapshot, catalog jsonFile, cached definition, or live uniqueId.
+   * If none exist, refuse: can't copy until the original has a live form.
    *
    * Version history is **not** copied — fork starts at version **1** (fresh private line).
    *
    * Name collision (owner Aug 10): warn + confirm overwrite — never silent.
    * Cannot reuse the source project's own display name (that would destroy the original).
    */
-  function makeCopyOfMyTawalaProject({ sourceId, name, overwrite } = {}) {
+  function orderedVersionRowsForClone(source) {
+    const versions = Array.isArray(source && source.versions) ? source.versions.slice() : [];
+    const ordered = [];
+    const current = versions.find((v) => v && (v.deployed || v.current));
+    if (current) ordered.push(current);
+    for (let i = versions.length - 1; i >= 0; i--) {
+      const v = versions[i];
+      if (v && v !== current) ordered.push(v);
+    }
+    return ordered;
+  }
+
+  function hasMyTawalaCloneDefinitionSource(source) {
+    if (!source || typeof source !== "object") return false;
+    if (source.snapshotId) return true;
+    if (source.jsonFile) return true;
+    if (source.uniqueId) return true;
+    if (source.definition && typeof source.definition === "object" && source.definition.name) {
+      return true;
+    }
+    const versions = Array.isArray(source.versions) ? source.versions : [];
+    if (
+      versions.some(
+        (v) =>
+          v &&
+          (v.snapshotId || (v.definition && typeof v.definition === "object" && v.definition.name))
+      )
+    ) {
+      return true;
+    }
+    if (source.testDriveUrl) return true;
+    const sps = Array.isArray(source.startPoints) ? source.startPoints : [];
+    return sps.some((s) => s && s.url);
+  }
+
+  async function resolveDefinitionForMyTawalaClone(source, sourceId) {
+    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
+    const versions = orderedVersionRowsForClone(source);
+    for (let i = 0; i < versions.length; i++) {
+      const v = versions[i];
+      if (v && v.definition && typeof v.definition === "object" && v.definition.name) {
+        return { ok: true, project: v.definition, from: "snapshot-cache" };
+      }
+    }
+    const snapIds = [];
+    const seen = {};
+    function pushSnap(id) {
+      const s = String(id || "").trim();
+      if (!s || seen[s]) return;
+      seen[s] = true;
+      snapIds.push(s);
+    }
+    for (let i = 0; i < versions.length; i++) {
+      if (versions[i] && versions[i].snapshotId) pushSnap(versions[i].snapshotId);
+    }
+    if (source && source.snapshotId) pushSnap(source.snapshotId);
+    if (Demo && typeof Demo.fetchVersionSnapshot === "function") {
+      for (let i = 0; i < snapIds.length; i++) {
+        try {
+          const snap = await Demo.fetchVersionSnapshot(snapIds[i]);
+          if (snap && snap.status !== "failure" && snap.project && snap.project.name) {
+            return { ok: true, project: snap.project, from: "snapshot" };
+          }
+        } catch {
+          /* try jsonFile / refuse below */
+        }
+      }
+    }
+    if (source && source.definition && typeof source.definition === "object" && source.definition.name) {
+      return { ok: true, project: source.definition, from: "overlay" };
+    }
+    const jsonFile = catalogPathForOpenApi(source && source.jsonFile);
+    if (jsonFile && Demo && typeof Demo.fetchCatalogProject === "function") {
+      try {
+        const fetched = await Demo.fetchCatalogProject(jsonFile);
+        if (fetched && fetched.status === "success" && fetched.project && fetched.project.name) {
+          return { ok: true, project: fetched.project, from: "jsonFile" };
+        }
+      } catch {
+        /* refuse below */
+      }
+    }
+    if (!hasMyTawalaCloneDefinitionSource(source) && !liveUniqueIdForPublish(sourceId, source)) {
+      return { ok: false, error: MAKE_COPY_NO_LIVE_FORM_ERROR };
+    }
+    return { ok: false, error: CLONE_TRY_AGAIN_ERROR };
+  }
+
+  async function cloneMyTawalaProjectToPrivateRuntime(source, copyName, sourceId) {
+    const resolved = await resolveDefinitionForMyTawalaClone(source, sourceId);
+    if (!resolved || !resolved.ok) {
+      return {
+        ok: false,
+        error: (resolved && resolved.error) || MAKE_COPY_NO_LIVE_FORM_ERROR,
+      };
+    }
+    const sourceUid =
+      (source && source.uniqueId) || liveUniqueIdForPublish(sourceId, source) || null;
+    const clone = await cloneDefinitionToPrivateRuntime(resolved.project, copyName, {
+      sourceUniqueId: sourceUid,
+      previousStartPoints: source && source.startPoints,
+      themePath: source && source.themePath,
+      versionDescription: "",
+      tryAgainError: CLONE_TRY_AGAIN_ERROR,
+      reusedIdError:
+        "Clone reused the original live form id — nothing was saved. The original is unchanged. Try again.",
+      noStartsError: "Private Push succeeded but returned no start URLs. Try Make a Copy again.",
+    });
+    if (!clone || !clone.ok) return clone;
+    return maybeCopyResponsesOntoClone(clone, sourceUid);
+  }
+
+  async function makeCopyOfMyTawalaProject({ sourceId, name, overwrite } = {}) {
     if (!sourceId) {
       return { ok: false, error: "Source project id is required." };
     }
@@ -2594,39 +2960,37 @@
       };
     }
     const conflict = findMyTawalaByName(copyName, sourceId);
-    if (conflict) {
-      if (!overwrite) {
-        const conflictName =
-          typeof window !== "undefined" &&
-          window.TawalaDemo &&
-          typeof window.TawalaDemo.displayName === "function"
-            ? window.TawalaDemo.displayName(conflict.name)
-            : String(conflict.name || conflict.id);
-        return {
-          ok: false,
-          needsOverwrite: true,
-          conflictId: conflict.id,
-          conflictName,
-          error: `You already have a project named “${copyName}”. Confirm to replace it.`,
-        };
-      }
+    if (conflict && !overwrite) {
+      const conflictName =
+        typeof window !== "undefined" &&
+        window.TawalaDemo &&
+        typeof window.TawalaDemo.displayName === "function"
+          ? window.TawalaDemo.displayName(conflict.name)
+          : String(conflict.name || conflict.id);
+      return {
+        ok: false,
+        needsOverwrite: true,
+        conflictId: conflict.id,
+        conflictName,
+        error: `You already have a project named “${copyName}”. Confirm to replace it.`,
+      };
+    }
+
+    const clone = await cloneMyTawalaProjectToPrivateRuntime(source, copyName, sourceId);
+    if (!clone || !clone.ok) {
+      return {
+        ok: false,
+        error: (clone && clone.error) || CLONE_TRY_AGAIN_ERROR,
+      };
+    }
+
+    if (conflict && overwrite) {
       deleteMyTawalaProject(conflict.id);
     }
 
     const id = uniqueMyTawalaSlug(slugifyProjectId(copyName));
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
-    /* Labels only — never inherit source uniqueId / :8080 URLs (empty Records until Push). */
-    const startPoints = (Array.isArray(source.startPoints) ? source.startPoints : [])
-      .map((sp) => {
-        const form = (sp && (sp.form || sp.label)) || "Start";
-        return {
-          form,
-          label: (sp && (sp.label || sp.form)) || form,
-          url: null,
-        };
-      })
-      .filter((sp) => sp.form);
 
     const entry = {
       name: copyName,
@@ -2639,6 +3003,7 @@
       createdAt: nowIso,
       updated: now,
       updatedAt: nowIso,
+      lastDeployAt: nowIso,
       shortDescription: source.shortDescription || "",
       longDescription: source.longDescription || "",
       jsonFile: source.jsonFile || null,
@@ -2651,12 +3016,14 @@
       /* Keep Library link so Refresh still works when forking an acquire. */
       pulledFromLibraryId: source.pulledFromLibraryId || undefined,
       pulledFromLibraryName: source.pulledFromLibraryName || undefined,
-      /* Private empty runtime — do not share source/Library uniqueId or picnic data. */
-      uniqueId: null,
-      deployed: false,
-      testDriveUrl: null,
-      startPoints,
+      uniqueId: clone.uniqueId,
+      deployed: true,
+      testDriveUrl: clone.testDriveUrl,
+      startPoints: clone.startPoints,
+      deployIdentityName: clone.deployIdentityName,
+      snapshotId: clone.snapshotId || null,
       mockSharedForkRuntime: false,
+      mockSharedLibraryRuntime: false,
     };
     /* Fresh version line at 1 — do not copy source versions[] / versionNumber. */
     seedStartingVersionOnEntry(entry, `Copy of ${sourceDisplay}`);
@@ -2673,7 +3040,10 @@
       id,
       sourceId,
       sourceName: sourceDisplay,
+      uniqueId: clone.uniqueId,
+      deployIdentityName: clone.deployIdentityName,
       replacedId: conflict ? conflict.id : null,
+      responseCopy: clone.responseCopy || null,
       entry: { id, ...entry },
     };
   }
@@ -2960,7 +3330,13 @@
     withLibraryOverlay,
     libraryReplaceCandidates,
     findMatchingLibraryTargets,
+    liveUniqueIdForPublish,
+    countShowsSavedResponses,
+    PUBLISH_NO_LIVE_FORM_ERROR,
+    PUBLISH_STRIP_CONFIRM,
+    PUBLISH_STRIP_FAILED,
     publishToLibrary,
+    publishToLibraryAfterStripConfirm,
     setProjectLibraryActive,
     findPullCandidates,
     pullFromLibrary,
