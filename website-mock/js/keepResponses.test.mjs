@@ -57,9 +57,9 @@ assert.match(ops, /publishToLibraryAfterStripConfirm/);
 assert.match(admin, /publishToLibraryAfterStripConfirm/);
 assert.equal(
   PUBLISH_STRIP_CONFIRM,
-  "Project will be stripped of data upon publication. Proceed?"
+  "Project will be purged of data upon publication. Proceed?"
 );
-assert.match(transfer, /Project will be stripped of data upon publication\. Proceed\?/);
+assert.match(transfer, /Project will be purged of data upon publication\. Proceed\?/);
 assert.match(ops, /cancelledStrip/);
 assert.match(admin, /cancelledStrip/);
 

@@ -6,9 +6,9 @@
   <title>Tawala - Library Admin Tools</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubstrip1" />
-  <script src="js/demo-urls.js?v=20260826-pubstrip1"></script>
-  <script src="js/transfer.js?v=20260826-pubstrip1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubdup1" />
+  <script src="js/demo-urls.js?v=20260826-pubdup1"></script>
+  <script src="js/transfer.js?v=20260826-pubdup1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -170,7 +170,7 @@
         '<label class="tawala-modal-field" for="adminPublishCategory">Library category (required)' +
         `<select id="adminPublishCategory">${categoryOptionsHtml(defaultCategoryFor(initialTarget, firstSource))}</select>` +
         "</label>" +
-        '<p class="pm-hint tawala-modal-hint-tight">If the source project has saved responses, they are stripped before Publish (you’ll be asked to confirm). Empty templates publish as-is. There is no option to keep data on Publish.</p>' +
+        '<p class="pm-hint tawala-modal-hint-tight">If the source project has saved responses, they are purged before Publish (you’ll be asked to confirm). Empty templates publish as-is. There is no option to keep data on Publish. A copy of an existing Library product is refused unless you are that listing’s author and are updating it.</p>' +
         '<p class="pm-hint" id="adminPublishError" role="alert" style="display:none;"></p>' +
         '<p><button type="button" class="pm-action is-active" id="adminPublishConfirm">Publish / overwrite</button></p>' +
         "</div></div>"
@@ -513,6 +513,10 @@
         });
         if (result && result.cancelledStrip) return;
         if (!result.ok) {
+          if (result.duplicateProduct && errEl) {
+            errEl.textContent = result.error || "This project is already in the Library.";
+            errEl.style.display = "";
+          }
           window.alert("Couldn't publish\n\n" + result.error);
           return;
         }
@@ -525,7 +529,7 @@
             result.purge && result.purge.javaDb && result.purge.javaDb.deleted != null
               ? result.purge.javaDb.deleted
               : "?";
-          parts.push(`Stripped saved responses before Publish (deleted ${n} submission row(s)).`);
+          parts.push(`Purged saved responses before Publish (deleted ${n} submission row(s)).`);
         }
 
         setAdminStatus(parts.join(" "));

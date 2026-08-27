@@ -103,7 +103,8 @@ curl -s http://localhost:3001/api/health</pre>
           <ul>
             <li>Rename on the way in (strips any <code>" (stub)"</code> suffix by default).</li>
             <li>Optional replace target: stub → retires to My Tawala (kept marked stub); non-stub → in-place overlay.</li>
-            <li>If the source has saved responses: confirm <i>Project will be stripped of data upon publication. Proceed?</i> then whole-uniqueId strip, then Library overlay. Cancel = no overlay and no purge. Empty templates skip the extra confirm. There is no checkbox to keep data on Publish.</li>
+            <li>Duplicate Library product is refused unless you are the listed author updating that overlay (before any purge).</li>
+            <li>If the source has saved responses: confirm <i>Project will be purged of data upon publication. Proceed?</i> then whole-uniqueId purge, then Library overlay. Cancel = no overlay and no purge. Empty templates skip the extra confirm. There is no checkbox to keep data on Publish.</li>
             <li>Mock storage only (<code>localStorage</code>). Shipping into
               <code>js/demo-urls.js</code> + <code>liveReady: true</code> is a separate maintainer step.</li>
           </ul>

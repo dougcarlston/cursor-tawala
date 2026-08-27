@@ -20,6 +20,12 @@ import {
   DATA_DRIVEN_NO_TEST_DRIVE_TITLE,
   PUBLISH_STRIP_CONFIRM,
   countShowsSavedResponses,
+  compactNameKey,
+  findIdenticalLibraryListings,
+  refusePublishDuplicate,
+  publishDuplicateRefuseMessage,
+  currentMockUser,
+  isListedLibraryAuthor,
 } from "./acquireClone.mjs";
 
 const dir = dirname(fileURLToPath(import.meta.url));
@@ -185,9 +191,10 @@ assert.match(
 
 assert.equal(
   PUBLISH_STRIP_CONFIRM,
-  "Project will be stripped of data upon publication. Proceed?"
+  "Project will be purged of data upon publication. Proceed?"
 );
-assert.match(transfer, /Project will be stripped of data upon publication\. Proceed\?/);
+assert.match(transfer, /Project will be purged of data upon publication\. Proceed\?/);
+assert.doesNotMatch(transfer, /Project will be stripped of data upon publication\. Proceed\?/);
 assert.equal(countShowsSavedResponses({ status: "success", count: 12 }), true);
 assert.equal(countShowsSavedResponses({ status: "success", count: 0 }), false);
 assert.equal(countShowsSavedResponses({ status: "failure", count: 9 }), false);
@@ -199,13 +206,151 @@ const publishSrc = transfer.slice(
 assert.match(publishSrc, /needsStripConfirm:\s*true/);
 assert.match(publishSrc, /stripConfirmed !== true/);
 assert.match(publishSrc, /purgeAfterPublish/);
+const dupAt = publishSrc.indexOf("refusePublishDuplicate");
 const countAt = publishSrc.indexOf("countResponses");
 const upsertAt = publishSrc.indexOf("upsertLibraryOverlay");
 const needsAt = publishSrc.indexOf("needsStripConfirm");
+assert.ok(dupAt >= 0 && countAt > dupAt, "duplicate refuse must run before count/purge");
 assert.ok(countAt >= 0 && needsAt > countAt && upsertAt > needsAt);
+assert.match(publishSrc, /duplicateProduct:\s*true/);
+assert.match(publishSrc, /author:\s*authorKeep \|\| currentUser/);
 assert.match(transfer, /async function publishToLibraryAfterStripConfirm/);
 assert.match(ops, /publishToLibraryAfterStripConfirm/);
+assert.match(ops, /result\.duplicateProduct/);
 assert.doesNotMatch(ops, /publishPurgeCheckbox/);
 assert.doesNotMatch(ops, /keepResponses: !purgeOnPublish/);
+
+const OEB_JSON = "projects/library/Online Exam Builder.json";
+const catalog = [
+  {
+    id: "online-exam-builder",
+    name: "Online Exam Builder",
+    jsonFile: OEB_JSON,
+  },
+  {
+    id: "get-together",
+    name: "Get Together Template",
+    jsonFile: "designer-web/public/samples/templates/get-together.json",
+  },
+];
+const oebRefuse = publishDuplicateRefuseMessage("Online Exam Builder");
+assert.equal(
+  oebRefuse,
+  "This is the same as “Online Exam Builder” already in the Library. You can only publish an update if you are that listing’s author."
+);
+assert.equal(compactNameKey("Copy of Online Exam Builder"), "copyofonlineexambuilder");
+assert.notEqual(compactNameKey("Copy of Online Exam Builder"), compactNameKey("Online Exam Builder"));
+assert.equal(isListedLibraryAuthor({ author: "dev" }, "dev"), true);
+assert.equal(isListedLibraryAuthor({ name: "Online Exam Builder" }, "dev"), false);
+assert.equal(currentMockUser({}), "dev");
+assert.equal(currentMockUser({ chromeUser: "alice" }), "alice");
+
+const copyOfCatalog = findIdenticalLibraryListings({
+  sourceProject: {
+    name: "Copy of Online Exam Builder",
+    pulledFromLibraryId: "online-exam-builder",
+    jsonFile: OEB_JSON,
+  },
+  publishName: "House Test",
+  libraryEntries: catalog,
+});
+assert.equal(copyOfCatalog.length, 1);
+assert.equal(copyOfCatalog[0].id, "online-exam-builder");
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: copyOfCatalog,
+    replaceLibraryId: null,
+    currentUser: "dev",
+  }),
+  oebRefuse
+);
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: copyOfCatalog,
+    replaceLibraryId: "online-exam-builder",
+    currentUser: "dev",
+  }),
+  oebRefuse,
+  "catalog seed has no listed author — cannot overwrite OEB"
+);
+
+const forkLookup = (id) =>
+  id === "acquire-oeb" ? { pulledFromLibraryId: "online-exam-builder", jsonFile: OEB_JSON } : null;
+const forkHits = findIdenticalLibraryListings({
+  sourceProject: { name: "Copy of Copy of Online Exam Builder", forkedFromId: "acquire-oeb" },
+  publishName: "House Test",
+  libraryEntries: catalog,
+  lookupMyTawala: forkLookup,
+});
+assert.equal(forkHits[0].id, "online-exam-builder");
+
+const overlayCatalog = [
+  ...catalog,
+  {
+    id: "my-exam-overlay",
+    name: "My Exam",
+    jsonFile: OEB_JSON,
+    author: "dev",
+  },
+];
+const authorHits = findIdenticalLibraryListings({
+  sourceProject: {
+    name: "My Exam",
+    pulledFromLibraryId: "online-exam-builder",
+    jsonFile: OEB_JSON,
+  },
+  publishName: "My Exam",
+  libraryEntries: overlayCatalog,
+});
+assert.ok(authorHits.some((h) => h.id === "online-exam-builder"));
+assert.ok(authorHits.some((h) => h.id === "my-exam-overlay"));
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: authorHits,
+    replaceLibraryId: "my-exam-overlay",
+    currentUser: "dev",
+  }),
+  null,
+  "listed author may update their overlay"
+);
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: authorHits,
+    replaceLibraryId: "my-exam-overlay",
+    currentUser: "alice",
+  }),
+  publishDuplicateRefuseMessage("My Exam")
+);
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: authorHits,
+    replaceLibraryId: null,
+    currentUser: "dev",
+  }),
+  oebRefuse
+);
+
+const originalHits = findIdenticalLibraryListings({
+  sourceProject: { name: "Q3 Staff Quiz" },
+  publishName: "Q3 Staff Quiz",
+  libraryEntries: catalog,
+});
+assert.equal(originalHits.length, 0, "File→New-like row with no lineage/jsonFile twin can add");
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: originalHits,
+    replaceLibraryId: null,
+    currentUser: "dev",
+  }),
+  null
+);
+
+const nameTwin = findIdenticalLibraryListings({
+  sourceProject: { name: "Online Exam Builder" },
+  publishName: "Online Exam Builder",
+  libraryEntries: catalog,
+});
+assert.equal(nameTwin[0].id, "online-exam-builder");
+assert.equal(nameTwin[0].matchReason, "name");
 
 console.log("acquireClone contract ok");

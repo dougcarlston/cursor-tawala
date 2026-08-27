@@ -5752,7 +5752,7 @@
       "</label>" +
       "</div>" +
       '<p class="pm-hint tawala-modal-hint-tight">Stubs retire to My Tawala marked <code>(stub)</code> (never hard-deleted). Non-stubs overlay in place. No public Library Delete.</p>' +
-      '<p class="pm-hint tawala-modal-hint-tight">If this project has saved responses, they are stripped before it is added to the Library (you’ll be asked to confirm). Empty templates publish as-is.</p>' +
+      '<p class="pm-hint tawala-modal-hint-tight">If this project has saved responses, they are purged before it is added to the Library (you’ll be asked to confirm). Empty templates publish as-is. You cannot publish a copy of an existing Library product unless you are that listing’s author and are updating it.</p>' +
       '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
       "</div>" +
       '<div class="tawala-modal-actions">' +
@@ -5856,6 +5856,11 @@
         category: categoryVal,
       });
       if (result && result.cancelledStrip) return;
+      if (result && result.duplicateProduct) {
+        errEl.textContent = result.error || "This project is already in the Library.";
+        errEl.style.display = "";
+        return;
+      }
       closePublishModal();
       if (!result || !result.ok) {
         const msg = `Couldn't publish “${nameVal}”\n\n${(result && result.error) || "Unknown error"}`;
@@ -5874,7 +5879,7 @@
           result.purge && result.purge.javaDb && result.purge.javaDb.deleted != null
             ? result.purge.javaDb.deleted
             : "?";
-        parts.push(`Stripped saved responses before Publish (deleted ${n} submission row(s)).`);
+        parts.push(`Purged saved responses before Publish (deleted ${n} submission row(s)).`);
       }
 
       const msg = parts.join(" ");

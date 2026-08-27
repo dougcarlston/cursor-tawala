@@ -5,7 +5,7 @@ Review: `http://localhost:5500` only. Origin already has uniqueId + Designer ses
 
 **Done Aug 24 (drop from daily view):** #26 clone-on-acquire · #27 occupancy slice 1 · Test Drive honesty copy · EXPORT/IMPORT smoke (field **names**).
 
-**Done Aug 26:** #27 slice 2 — Library Retire frees the `:8080` **name**. **Make a Copy** clone-on-copy (copies **all** data). Data-driven Library = no Test Drive. **Copy to MyTawala** = empty clone (no catalog submissions). **Publish** with Records > 0: confirm *Project will be stripped of data upon publication. Proceed?* then strip, then overlay (`pubstrip1`). Review `library.html?v=20260826-pubstrip1`.
+**Done Aug 26:** #27 slice 2 — Library Retire frees the `:8080` **name**. **Make a Copy** clone-on-copy (copies **all** data). Data-driven Library = no Test Drive. **Copy to MyTawala** = empty clone (no catalog submissions). **Publish** with Records > 0: confirm *Project will be purged of data upon publication. Proceed?* then purge, then overlay. Duplicate Library product refused unless listed author is updating that overlay (`pubdup1`). Review `library.html?v=20260826-pubdup1`.
 
 ---
 

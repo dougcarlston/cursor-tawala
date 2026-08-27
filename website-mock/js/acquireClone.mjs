@@ -148,11 +148,136 @@ export function snapshotProjectAfterClone(definition, { displayName, deployIdent
 
 /** Keep in sync with `transfer.js` PUBLISH_STRIP_CONFIRM. */
 export const PUBLISH_STRIP_CONFIRM =
-  "Project will be stripped of data upon publication. Proceed?";
+  "Project will be purged of data upon publication. Proceed?";
 
 /** True when a :3001 count result means the source has submissions (Publish must strip first). */
 export function countShowsSavedResponses(countResult) {
   if (!countResult || countResult.status !== "success") return false;
   const n = Number(countResult.count);
   return Number.isFinite(n) && n > 0;
+}
+
+/** Keep in sync with `transfer.js` stripStubSuffix / compactNameKey. */
+export function stripStubSuffix(name) {
+  return String(name || "").replace(/\s*\(stub\)\s*$/i, "").trim();
+}
+
+export function compactNameKey(name) {
+  return stripStubSuffix(name).toLowerCase().replace(/[^a-z0-9]+/g, "");
+}
+
+export function normalizeJsonFileKey(jsonFile) {
+  let rel = String(jsonFile || "").trim().replace(/\\/g, "/");
+  if (!rel) return "";
+  if (rel.startsWith("website-mock/")) rel = rel.slice("website-mock/".length);
+  return rel.toLowerCase();
+}
+
+/**
+ * Mock account for Publish author checks. Same fallbacks as Details
+ * `projectAuthorLabel` without a row-level `author` (chrome → body → "dev").
+ */
+export function currentMockUser({ chromeUser, bodyUser } = {}) {
+  const fromChrome = String(chromeUser || "").trim();
+  if (fromChrome) return fromChrome;
+  const fromBody = String(bodyUser || "").trim();
+  if (fromBody) return fromBody;
+  return "dev";
+}
+
+export function isListedLibraryAuthor(entry, currentUser) {
+  const author = String((entry && entry.author) || "").trim();
+  if (!author) return false;
+  return author.toLowerCase() === String(currentUser || "").trim().toLowerCase();
+}
+
+/** Owner refuse copy — keep in sync with `transfer.js`. */
+export function publishDuplicateRefuseMessage(libraryName) {
+  const name = String(libraryName || "that project").trim() || "that project";
+  return (
+    "This is the same as “" +
+    name +
+    "” already in the Library. You can only publish an update if you are that listing’s author."
+  );
+}
+
+/**
+ * pulledFromLibraryId on this row, else walk forkedFromId → that acquire.
+ */
+export function pulledLibraryIdFromProject(project, lookupMyTawala) {
+  let cur = project;
+  const seen = new Set();
+  for (let i = 0; i < 20 && cur && typeof cur === "object"; i++) {
+    const pulled = String(cur.pulledFromLibraryId || "").trim();
+    if (pulled) return pulled;
+    const forkId = String(cur.forkedFromId || "").trim();
+    if (!forkId || seen.has(forkId)) break;
+    seen.add(forkId);
+    cur = typeof lookupMyTawala === "function" ? lookupMyTawala(forkId) : null;
+  }
+  return "";
+}
+
+/**
+ * Visible Library rows that are the same product: acquire lineage, same
+ * template jsonFile, or compact-equal Publish name. Empty jsonFile is not a twin.
+ */
+export function findIdenticalLibraryListings({
+  sourceProject,
+  publishName,
+  libraryEntries,
+  lookupMyTawala,
+} = {}) {
+  const entries = Array.isArray(libraryEntries) ? libraryEntries : [];
+  const byId = new Map();
+  entries.forEach((e) => {
+    if (e && e.id != null && String(e.id).trim()) byId.set(String(e.id), e);
+  });
+  const hits = new Map();
+  function add(entry, reason) {
+    if (!entry || entry.id == null) return;
+    const id = String(entry.id);
+    if (!id || hits.has(id)) return;
+    hits.set(id, { ...entry, id, matchReason: reason });
+  }
+
+  const pulledId = pulledLibraryIdFromProject(sourceProject, lookupMyTawala);
+  if (pulledId && byId.has(pulledId)) add(byId.get(pulledId), "pulledFromLibraryId");
+
+  const jsonKey = normalizeJsonFileKey(sourceProject && sourceProject.jsonFile);
+  if (jsonKey) {
+    entries.forEach((e) => {
+      if (normalizeJsonFileKey(e && e.jsonFile) === jsonKey) add(e, "jsonFile");
+    });
+  }
+
+  const nameKey = compactNameKey(publishName || (sourceProject && sourceProject.name) || "");
+  if (nameKey) {
+    entries.forEach((e) => {
+      if (compactNameKey(e && e.name) === nameKey) add(e, "name");
+    });
+  }
+
+  return Array.from(hits.values());
+}
+
+/**
+ * Null when Publish may proceed (no twin, or replace target is that twin and
+ * the current mock user is its listed author). Otherwise the refuse string.
+ */
+export function refusePublishDuplicate({
+  identicalListings,
+  replaceLibraryId,
+  currentUser,
+} = {}) {
+  const list = Array.isArray(identicalListings) ? identicalListings : [];
+  if (!list.length) return null;
+  const replaceId = String(replaceLibraryId || "").trim();
+  const target = replaceId ? list.find((e) => String(e.id) === replaceId) : null;
+  if (target && isListedLibraryAuthor(target, currentUser)) return null;
+  const cited =
+    (target && !isListedLibraryAuthor(target, currentUser) && target) ||
+    list.find((e) => !isListedLibraryAuthor(e, currentUser)) ||
+    list[0];
+  return publishDuplicateRefuseMessage((cited && (cited.name || cited.id)) || "that project");
 }

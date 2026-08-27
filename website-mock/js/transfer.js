@@ -69,10 +69,15 @@
  *     and none resolvable from start URLs / testDriveUrl (same as Purge). Owner copy, no uniqueId
  *     in the alert: "This project has no live form yet. Edit in Designer, Push, then Publish."
  *   - Owner Aug 26, 2026: cannot Publish with data. If the live uniqueId has any saved responses
- *     (same count as Purge / Records), confirm then strip then write the Library overlay.
- *     Exact confirm: "Project will be stripped of data upon publication. Proceed?"
+ *     (same count as Purge / Records), confirm then purge then write the Library overlay.
+ *     Exact confirm: "Project will be purged of data upon publication. Proceed?"
  *     Cancel = no overlay write and no purge. Proceed = whole-uniqueId purge, then overlay.
  *     Empty templates skip the extra confirm. No checkbox to keep data on Publish.
+ *   - Owner Aug 26, 2026: refuse a duplicate Library product unless the current mock user is
+ *     updating a listing they authored (`replaceLibraryId` = that id and `entry.author` matches).
+ *     Identical = pulledFromLibraryId (or forkedFromId → that acquire), same jsonFile, or
+ *     compact-equal Publish name. Duplicate refuse runs before the purge confirm. Overlay
+ *     stamps `author: currentUser` when missing.
  *
  * Library admin path (owner Aug 1, 2026 — "for when you won't always be available"):
  *   tawala.mock.libraryAdmin — "1" enables admin-only actions on library-admin.html (rename any
@@ -1982,9 +1987,131 @@
     "This project has no live form yet. Edit in Designer, Push, then Publish.";
   /* Keep in sync with website-mock/js/acquireClone.mjs */
   const PUBLISH_STRIP_CONFIRM =
-    "Project will be stripped of data upon publication. Proceed?";
+    "Project will be purged of data upon publication. Proceed?";
   const PUBLISH_STRIP_FAILED =
-    "Couldn't strip saved responses before Publish. Nothing was added to the Library. Try Purge, then Publish again.";
+    "Couldn't purge saved responses before Publish. Nothing was added to the Library. Try Purge, then Publish again.";
+
+  function currentMockUser() {
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaChrome &&
+      typeof window.TawalaChrome.currentUser === "function"
+    ) {
+      const u = window.TawalaChrome.currentUser();
+      if (u) return String(u).trim();
+    }
+    if (typeof document !== "undefined" && document.body) {
+      const u = document.body.getAttribute("data-tawala-user");
+      if (u && String(u).trim()) return String(u).trim();
+    }
+    return "dev";
+  }
+
+  function isListedLibraryAuthor(entry, currentUser) {
+    const author = String((entry && entry.author) || "").trim();
+    if (!author) return false;
+    return author.toLowerCase() === String(currentUser || "").trim().toLowerCase();
+  }
+
+  function publishDuplicateRefuseMessage(libraryName) {
+    const name = String(libraryName || "that project").trim() || "that project";
+    return (
+      "This is the same as “" +
+      name +
+      "” already in the Library. You can only publish an update if you are that listing’s author."
+    );
+  }
+
+  function lookupMyTawalaRow(projectId) {
+    if (!projectId) return null;
+    const fromOverlay = getOverlayEntry(projectId);
+    if (fromOverlay) return fromOverlay;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaDemo &&
+      typeof window.TawalaDemo.getMyTawala === "function"
+    ) {
+      return window.TawalaDemo.getMyTawala(projectId) || null;
+    }
+    return null;
+  }
+
+  function pulledLibraryIdFromProject(project, lookupMyTawala) {
+    let cur = project;
+    const seen = new Set();
+    for (let i = 0; i < 20 && cur && typeof cur === "object"; i++) {
+      const pulled = String(cur.pulledFromLibraryId || "").trim();
+      if (pulled) return pulled;
+      const forkId = String(cur.forkedFromId || "").trim();
+      if (!forkId || seen.has(forkId)) break;
+      seen.add(forkId);
+      cur = typeof lookupMyTawala === "function" ? lookupMyTawala(forkId) : null;
+    }
+    return "";
+  }
+
+  function normalizeJsonFileKey(jsonFile) {
+    let rel = String(jsonFile || "").trim().replace(/\\/g, "/");
+    if (!rel) return "";
+    if (rel.startsWith("website-mock/")) rel = rel.slice("website-mock/".length);
+    return rel.toLowerCase();
+  }
+
+  /**
+   * Visible Library rows that are the same product (acquire lineage, same template
+   * file, or compact-equal Publish name). Keep in sync with acquireClone.mjs.
+   */
+  function findIdenticalLibraryListings({
+    sourceProject,
+    publishName,
+    libraryEntries,
+    lookupMyTawala,
+  } = {}) {
+    const entries = Array.isArray(libraryEntries) ? libraryEntries : [];
+    const byId = new Map();
+    entries.forEach((e) => {
+      if (e && e.id != null && String(e.id).trim()) byId.set(String(e.id), e);
+    });
+    const hits = new Map();
+    function add(entry, reason) {
+      if (!entry || entry.id == null) return;
+      const id = String(entry.id);
+      if (!id || hits.has(id)) return;
+      hits.set(id, { ...entry, id, matchReason: reason });
+    }
+
+    const pulledId = pulledLibraryIdFromProject(sourceProject, lookupMyTawala);
+    if (pulledId && byId.has(pulledId)) add(byId.get(pulledId), "pulledFromLibraryId");
+
+    const jsonKey = normalizeJsonFileKey(sourceProject && sourceProject.jsonFile);
+    if (jsonKey) {
+      entries.forEach((e) => {
+        if (normalizeJsonFileKey(e && e.jsonFile) === jsonKey) add(e, "jsonFile");
+      });
+    }
+
+    const nameKey = compactNameKey(publishName || (sourceProject && sourceProject.name) || "");
+    if (nameKey) {
+      entries.forEach((e) => {
+        if (compactNameKey(e && e.name) === nameKey) add(e, "name");
+      });
+    }
+
+    return Array.from(hits.values());
+  }
+
+  function refusePublishDuplicate({ identicalListings, replaceLibraryId, currentUser } = {}) {
+    const list = Array.isArray(identicalListings) ? identicalListings : [];
+    if (!list.length) return null;
+    const replaceId = String(replaceLibraryId || "").trim();
+    const target = replaceId ? list.find((e) => String(e.id) === replaceId) : null;
+    if (target && isListedLibraryAuthor(target, currentUser)) return null;
+    const cited =
+      (target && !isListedLibraryAuthor(target, currentUser) && target) ||
+      list.find((e) => !isListedLibraryAuthor(e, currentUser)) ||
+      list[0];
+    return publishDuplicateRefuseMessage((cited && (cited.name || cited.id)) || "that project");
+  }
 
   /** True when a :3001 count result means the source has submissions (Publish must strip first). */
   function countShowsSavedResponses(countResult) {
@@ -2052,6 +2179,9 @@
    *
    * Fail closed (owner Aug 26, 2026): abort with no overlay write if the source has no live
    * form (no uniqueId and none resolvable from start URLs / testDriveUrl — same as Purge).
+   * Duplicate Library product (same acquire lineage / jsonFile / compact name): refuse unless
+   * `replaceLibraryId` is that listing and the current mock user is its listed author. Runs
+   * before the purge confirm. Overlay stamps `author` from the current user when missing.
    * Owner Aug 26: cannot Publish with data. If the uniqueId has saved responses (same count as
    * Purge / Records), callers must confirm (`PUBLISH_STRIP_CONFIRM`) then pass `stripConfirmed`.
    * Cancel = no overlay and no purge. Proceed = whole-uniqueId purge, then overlay write.
@@ -2082,6 +2212,22 @@
     const uniqueId = liveUniqueIdForPublish(sourceProjectId, sourceProject);
     if (!uniqueId) {
       return { ok: false, error: PUBLISH_NO_LIVE_FORM_ERROR };
+    }
+
+    const currentUser = currentMockUser();
+    const identicalListings = findIdenticalLibraryListings({
+      sourceProject,
+      publishName,
+      libraryEntries: libraryReplaceCandidates(),
+      lookupMyTawala: lookupMyTawalaRow,
+    });
+    const duplicateError = refusePublishDuplicate({
+      identicalListings,
+      replaceLibraryId,
+      currentUser,
+    });
+    if (duplicateError) {
+      return { ok: false, duplicateProduct: true, error: duplicateError };
     }
 
     const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
@@ -2120,8 +2266,16 @@
     }
 
     const targetId = replaceLibraryId || null;
-    const baseTarget = targetId && window.TAWALA_LIBRARY ? window.TAWALA_LIBRARY[targetId] : null;
+    const visibleTarget = targetId
+      ? libraryReplaceCandidates().find((c) => c.id === targetId)
+      : null;
+    const catalogTarget =
+      targetId && window.TAWALA_LIBRARY && window.TAWALA_LIBRARY[targetId]
+        ? { id: targetId, ...window.TAWALA_LIBRARY[targetId] }
+        : null;
+    const baseTarget = (visibleTarget && { ...visibleTarget }) || catalogTarget;
     const targetIsActiveStub = !!(baseTarget && baseTarget.stub === true && !isLibraryRetired(targetId));
+    const authorKeep = String((visibleTarget && visibleTarget.author) || "").trim();
     /*
      * Collision guard (owner Aug 1, 2026): picking "None" must never silently overwrite an
      * unrelated Library row just because the new name happens to slugify to the same id (e.g.
@@ -2185,6 +2339,7 @@
       publishedFromId: sourceProjectId || null,
       publishedAt: nowIso,
       replacesLibraryId: targetId || null,
+      author: authorKeep || currentUser,
       deployed: !!(sourceProject && sourceProject.deployed),
       startPoints: sourceStartPoints,
       testDriveUrl,
@@ -2273,8 +2428,9 @@
   }
 
   /**
-   * Run Publish: if the source has responses, confirm strip then purge then overlay.
-   * Cancel of the strip confirm returns `{ cancelledStrip: true }` — no overlay, no purge.
+   * Run Publish: duplicate-product refuse first (no confirm); if the source has responses,
+   * confirm purge then purge then overlay. Cancel of the purge confirm returns
+   * `{ cancelledStrip: true }` — no overlay, no purge.
    */
   async function publishToLibraryAfterStripConfirm(opts) {
     const first = await publishToLibrary(opts || {});
@@ -3330,6 +3486,10 @@
     withLibraryOverlay,
     libraryReplaceCandidates,
     findMatchingLibraryTargets,
+    findIdenticalLibraryListings,
+    refusePublishDuplicate,
+    publishDuplicateRefuseMessage,
+    currentMockUser,
     liveUniqueIdForPublish,
     countShowsSavedResponses,
     PUBLISH_NO_LIVE_FORM_ERROR,
