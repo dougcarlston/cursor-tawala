@@ -35,7 +35,27 @@ function livingWillStub(): TawalaProject {
 }
 
 describe("collectKnownVariables / If field validation", () => {
-  it("includes bare and Form:Field answer names so converted Skip If can Modify", () => {
+  it("includes variables introduced by If condition statements", () => {
+    const project: TawalaProject = {
+      ...livingWillStub(),
+      processes: [
+        {
+          name: "Process 1",
+          commands: [
+            {
+              cmd: "if",
+              condition: { field: "JustStarting", op: "isBlank", value: "" },
+              then: [],
+            },
+          ],
+        },
+      ],
+    };
+    const vars = collectKnownVariables(project);
+    expect(vars.has("JustStarting")).toBe(true);
+  });
+
+  it("accepts form fields, known variables, and newly typed variable names", () => {
     const project = livingWillStub();
     const vars = collectKnownVariables(project);
     expect(vars.has("Q7")).toBe(true);
@@ -43,7 +63,9 @@ describe("collectKnownVariables / If field validation", () => {
     expect(vars.has("FirstName")).toBe(true);
     expect(isValidIfConditionField("Q7", vars)).toBe(true);
     expect(isValidIfConditionField("LivingWill:Q7", vars)).toBe(true);
+    expect(isValidIfConditionField("JustStarting", vars)).toBe(true);
     expect(rowsAreValid([{ field: "Q7", op: "mcEquals", value: "b" }], vars)).toBe(true);
+    expect(rowsAreValid([{ field: "JustStarting", op: "isBlank", value: "" }], vars)).toBe(true);
   });
 });
 

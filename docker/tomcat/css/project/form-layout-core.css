@@ -47,6 +47,8 @@ form table.fib td.label {
 	max-width: var(--tawala-fib-label-width, 9.5em) !important;
 	white-space: nowrap !important;
 	padding-right: 0.5em;
+	vertical-align: bottom !important;
+	padding-bottom: 0.75em !important;
 }
 
 form table.fib td.label.left {
@@ -87,6 +89,19 @@ form table.fib:not(.justified) td.blank input[type="text"] {
  * Java HTML: td.label + td > table.remainder (not td.remainder).
  */
 
+form table.fib.justified > tbody > tr > td.blank,
+form table.fib.justified > tr > td.blank {
+	width: 100% !important;
+	padding-right: 0 !important;
+	vertical-align: bottom !important;
+}
+
+form table.fib.justified > tbody > tr > td:has(> table.remainder),
+form table.fib.justified > tr > td:has(> table.remainder) {
+	padding-right: 0 !important;
+	vertical-align: bottom !important;
+}
+
 form table.fib.justified > tbody > tr > td.blank input.text,
 form table.fib.justified > tr > td.blank input.text,
 form table.fib.justified > tbody > tr > td.blank input[type="text"],
@@ -95,6 +110,14 @@ form table.fib.justified > tr > td.blank input[type="text"] {
 	max-width: 100%;
 	min-width: 4ch;
 	box-sizing: border-box !important;
+}
+
+form table.fib.justified > tbody > tr > td.blank .fib-blank-stack,
+form table.fib.justified > tr > td.blank .fib-blank-stack {
+	width: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: flex-end !important;
 }
 
 form table.fib.justified table.remainder {
@@ -110,35 +133,62 @@ form table.fib.justified table.remainder tr {
 	align-items: flex-end !important;
 	width: 100% !important;
 	box-sizing: border-box !important;
+	gap: 0.35em !important;
 }
 
 form table.fib.justified table.remainder td {
 	display: block !important;
 	vertical-align: bottom !important;
-	padding: 0 0.35em 0 0 !important;
+	padding: 0 !important;
 	border: none !important;
 	min-width: 0;
 }
 
-/* Equal flex on blanks — min-width prevents the 2nd blank collapsing to a sliver. */
+/* Default flex distribution on multi-blank rows */
 form table.fib.justified table.remainder td.blank,
-form table.fib.justified table.remainder td.right:has(input) {
+form table.fib.justified table.remainder td.right:has(input),
+form table.fib.justified table.remainder td.right:has(.fib-blank-stack) {
 	flex: 1 1 0 !important;
-	min-width: 8ch !important;
+	min-width: 0 !important;
 }
 
-form table.fib.justified table.remainder td.right:not(:has(input)),
+/* Inline text labels inside multi-blank rows (e.g. Email:, (again)) */
+form table.fib.justified table.remainder td.right:not(:has(input)):not(:has(.fib-blank-stack)),
 form table.fib.justified table.remainder td.left {
 	flex: 0 0 auto !important;
 	width: auto !important;
 	white-space: nowrap !important;
+	padding-bottom: 5px !important;
+	margin-bottom: 0 !important;
+	align-self: flex-end !important;
+}
+
+/* Proportional flex for 3-blank City, State, Zip rows */
+form table.fib.justified table.remainder tr:has(input[name="Zip"]):has(input[name="State"]) td:has(input[name="City"]) {
+	flex: 3 1 0 !important;
+}
+form table.fib.justified table.remainder tr:has(input[name="Zip"]):has(input[name="State"]) td:has(input[name="State"]) {
+	flex: 1 1 0 !important;
+	min-width: 5ch !important;
+}
+form table.fib.justified table.remainder tr:has(input[name="Zip"]):has(input[name="State"]) td:has(input[name="Zip"]) {
+	flex: 1.5 1 0 !important;
+	min-width: 8ch !important;
+}
+
+form table.fib.justified table.remainder .fib-blank-stack {
+	width: 100% !important;
+	display: flex !important;
+	flex-direction: column !important;
+	justify-content: flex-end !important;
+	min-width: 0 !important;
 }
 
 form table.fib.justified table.remainder input.text,
 form table.fib.justified table.remainder input[type="text"] {
 	width: 100% !important;
 	max-width: 100% !important;
-	min-width: 8ch !important;
+	min-width: 0 !important;
 	box-sizing: border-box !important;
 }
 
@@ -225,6 +275,12 @@ form .fib-blank-caption {
 	font-weight: normal !important;
 	line-height: 1.2 !important;
 	margin: 0 0 0.1em 0 !important;
+}
+
+form .fib-blank-caption .qinfo {
+	color: #c00 !important;
+	font-style: normal !important;
+	font-weight: bold !important;
 }
 
 form .fib-blank-stack input.text,
@@ -697,6 +753,15 @@ form table.TAWALA-tabbed-paragraph td input + b,
 form table.TAWALA-tabbed-paragraph td input + strong,
 form table.TAWALA-tabbed-paragraph td input + i {
 	margin-left: 0.15rem;
+}
+
+/* Ensure empty / star-only captions reserve the same line height and align */
+form .fib-blank-caption {
+	min-height: 1.2em !important;
+}
+
+form table.fib.justified table.remainder td.blank:not(:has(.fib-blank-stack)) input {
+	margin-top: 1.2em !important;
 }
 
 

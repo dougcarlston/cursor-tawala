@@ -183,7 +183,7 @@ export function fibIdleHtmlWithCaptions(
   embedSlice: (plain: string) => string,
 ): string | null {
   const runs = parseUnderscoreRuns(plainText);
-  if (runs.length === 0 || !blanks.some((b) => b.caption?.trim())) {
+  if (runs.length === 0 || !blanks.some((b) => b.caption?.trim() || b.required)) {
     return null;
   }
   let out = "";
@@ -193,10 +193,12 @@ export function fibIdleHtmlWithCaptions(
     out += embedSlice(plainText.slice(last, run.start));
     const unders = plainText.slice(run.start, run.end);
     const cap = blanks[i]?.caption?.trim();
-    if (cap) {
+    const reqStar = blanks[i]?.required ? `<span class="qinfo"> *</span>` : "";
+    if (cap || reqStar) {
+      const capText = cap ? escapeIdleText(cap) : "";
       out +=
         `<span class="fib-blank-unit">` +
-        `<span class="fib-blank-caption">${escapeIdleText(cap)}</span>` +
+        `<span class="fib-blank-caption">${capText}${reqStar}</span>` +
         `<span class="fib-blank-underscores">${unders}</span>` +
         `</span>`;
     } else {

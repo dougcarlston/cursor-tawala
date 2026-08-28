@@ -47,14 +47,15 @@ Maps **File → New Project** templates to repo `.tawala` files and deploy smoke
 
 | Priority | Template | Status | Minimal pass criteria |
 |----------|----------|--------|---------------------|
-| 1 | **Simple Survey Template** | **Passed** | Survey → Report tally on 8080 |
+| 1 | **Simple Survey Template** | **Passed** (owner Aug 28 refresh) | Removed Survey → Report loop on submission; Survey submit now shows "Thank you" Document page; Report tally viewable directly via link. |
 | 2 | **Signup Sheet Template** | **Passed** (Jul 16 refresh) | Submit → table rows; Form MQL path; FIB Deploy formatting |
 | 3 | **Form with process** | **Passed** | Empty Form 1 + Process 1 (Designer demo) |
 | 4 | **Form with process connecting a document** | **Passed** (owner Aug 20) | Submit → **Document 1** HTML visible (nearly blank; no Submit — easy to confuse with empty Form 1) |
-| 5 | **Sign-up Sheet w Email** | **Passed** (Jul 28) | FIB submit + table; NewSignup body uses `Form 1:*` refs; Gate A mail wiring closed Jul 28; Designer Form-branch insert qualifies |
-| 6 | **Get Together** | **Passed w/ caveats** | Correlation data OK; silk icons + table CSS patched |
-| 7 | **Multiple Question Survey** | **Passed** (owner Jul 2026) | Multi **choice-tally** + **itemization** on Report — see reference section below |
-| 8 | **Potluck** | **New Project JSON updated Jul 24** | Browser Designer **File → New Project → Potluck** uses owner-supplied `00-WebDesigner-MainMenu_Potluck.json` (installed as `designer-web/public/samples/templates/potluck.json`). Legacy `node scripts/deploy-tawala-template.mjs "Potluck"` also **Owner Passed Jul 20**. |
+| 5 | **Sign-up Sheet w Email** | **Passed** (owner Aug 28 refresh) | Modernized with `dirtbowl2` theme, 2-line Address preset, right-aligned FIB captions, asterisk in caption tier, valid Document tokens, approved functional submission & notification flow. |
+| 6 | **Simple Get Together** | **Passed** (owner Aug 28 refresh) | Replaced `greentea` with `greenline` theme (clear title readability), correlation table date overlap reporting verified, updated in New Project templates. |
+| 7 | **Simple Multiple Question Survey** | **Passed** (owner Aug 28 refresh) | Multi **choice-tally** + **itemization** on Report — see reference section below |
+| 8 | **Simple Potluck** | **Passed** (owner Aug 28 refresh) | Added skip logic for non-attendees (`MCQ1 == 'b'` skips to end of form), modernized `(adults)` / `(kids)` as FIB captions above blanks, updated in New Project templates. |
+| 9 | **Online Exam Builder** | **Passed** (owner Aug 28 refresh) | Complete question lifecycle passed: decoupled `QuestionId` (immutable join key) from `SequenceNumber` (presentation order); question add/edit/delete re-sequencing verified with 100% correct answer attribution and scoring. |
 | — | **DirtBowl (legacy `.tawala`)** | **Owner Passed Jul 20** | Full project (dozens of Forms/Processes/Documents) via `designer-web/public/samples/legacy/DirtBowl.tawala` — worked flawlessly. Corrupted JSON copies are not a smoke target. |
 
 **#9 function smoke ladder (Jul 24):** Multi Survey (#7) and peers above that are **Passed** already exercise the main emitters (choice-tally, itemization, correlation, sum). **#4** Form + Process + Document **Passed Aug 20** (owner: Document 1 result is nearly blank — distinguished mainly by no Submit button). Phase 2 template Deploy smokes are complete. **#5 Sign-up Sheet w Email** passed Jul 28 (Gate A + Designer field qualification).
@@ -199,8 +200,10 @@ Prior caveats before patch:
 
 - Same FIB + **itemization-table** as Sign-up Sheet template.
 - **Process 1:** Send email with **NewSignup** document (stock To is placeholder `<Insert your email address here>` — replace with a real address before Send smoke).
-- **NewSignup** body uses **`Form 1:FirstName` / `Form 1:Email` / `Form 1:Tel` / `Form 1:Address`** (not bare `<<Email>>`). Bare names are process variables only — see `DESIGNER_FIELD_QUALIFICATION_HANDOFF.md`.
-- Theme: `redrays`.
+- **NewSignup** body uses **`Form 1:First` / `Form 1:Last` / `Form 1:Email` / `Form 1:Tel` / `Form 1:Street` / `Form 1:City` / `Form 1:State` / `Form 1:Zip`** (not bare `<<Email>>`). Bare names are process variables only — see `DESIGNER_FIELD_QUALIFICATION_HANDOFF.md`.
+- Theme: `dirtbowl2`.
+
+**Owner confirmed (Aug 28, 2026):** Modernized template with `dirtbowl2` theme, 2-line Address preset, right-aligned FIB captions, asterisks in caption tier, valid Document tokens, and confirmed live submit + notification flow. Replaced starter in `designer-web/public/samples/templates/signup-sheet-w-email.json`.
 
 **Deploy (July 2026):** `node scripts/deploy-tawala-template.mjs "Sign-up Sheet with E-mail"`  
 *(label resolves to `Signup Sheet Template w Email.tawala`)*

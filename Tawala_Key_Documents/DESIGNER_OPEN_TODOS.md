@@ -267,7 +267,7 @@ Small product gaps found while smoke-testing Priority Library apps. **Do not imp
 
 | Item | Notes | Status |
 |------|-------|--------|
-| **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) but **no path to Administration**. **Owner Aug 27: ASAP** — edit Online Exam project in Designer (e.g. menu option / link on Setup), Push, republish Library copy. Admin remains a separate startpoint until linked. | **ASAP — Designer project** |
+| **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) and option (e) **Return to Admin Dashboard**. Fully connected and verified on live deploy. | **Passed (owner Aug 28)** |
 
 ---
 

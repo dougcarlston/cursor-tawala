@@ -1,7 +1,7 @@
 {
-  "name": "Get Together Template",
+  "name": "Simple Get Together",
   "format": "2.0",
-  "themePath": "greentea",
+  "themePath": "greenline",
   "forms": [
     {
       "name": "Survey",
@@ -91,7 +91,7 @@
           ]
         }
       ],
-      "themePath": "greentea",
+      "themePath": "greenline",
       "process": "Process 1"
     },
     {
@@ -105,7 +105,7 @@
           "content": "Current Responses:<div data-doc-blank=\"1\" style=\"color: rgb(0, 0, 0); min-height: 13.7pt;\"><br></div><div data-doc-blank=\"1\" style=\"color: rgb(0, 0, 0); min-height: 13.7pt;\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"question-correlation-table\" data-function-instance=\"5\" data-function-config=\"{&quot;question-field-name&quot;:&quot;Survey:MCQ1&quot;,&quot;display-field-name&quot;:&quot;Survey:WholeName&quot;,&quot;preferred-choice-field-name&quot;:&quot;Survey:MCQ2&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Survey:WholeName&quot;,&quot;op&quot;:&quot;isNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"QUESTION CORRELATION TABLE\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;QUESTION CORRELATION TABLE(Survey:MCQ1, Survey:WholeName, Survey:MCQ2, Survey:WholeName is not blank)&gt;&gt;</span><br></div>"
         }
       ],
-      "themePath": "greentea",
+      "themePath": "greenline",
       "process": "Process 2"
     }
   ],

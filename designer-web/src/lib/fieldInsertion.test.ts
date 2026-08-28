@@ -96,15 +96,15 @@ describe("setFieldDragData / readFieldDragNameForTarget", () => {
 });
 
 describe("fieldAcceptedByTarget", () => {
-  it("enforces formFieldsOnly and knownVariables for If targets", () => {
+  it("accepts form fields, variables, and record-qualified names for If targets", () => {
     expect(fieldAcceptedByTarget("Form 1:Email", { formFieldsOnly: true })).toBe(true);
     expect(fieldAcceptedByTarget("FullName", { formFieldsOnly: true })).toBe(false);
     expect(
       fieldAcceptedByTarget("FullName", { knownVariables: new Set(["FullName"]) }),
     ).toBe(true);
-    expect(fieldAcceptedByTarget("Unknown", { knownVariables: new Set(["FullName"]) })).toBe(
-      false,
-    );
+    expect(
+      fieldAcceptedByTarget("UnknownVar", { knownVariables: new Set(["FullName"]) }),
+    ).toBe(true);
     expect(
       fieldAcceptedByTarget("Rec:Form:Field", { knownVariables: new Set(["FullName"]) }),
     ).toBe(true);

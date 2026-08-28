@@ -471,15 +471,14 @@ export function isFormFieldReference(name: string): boolean {
   return name.trim().includes(":");
 }
 
-/** If condition field: form field or existing project variable — not a new variable name. */
+/** If condition field: any non-empty variable or form field reference. */
 export function isValidIfConditionField(
   name: string,
-  knownVariables: ReadonlySet<string>,
+  _knownVariables?: ReadonlySet<string>,
 ): boolean {
   const trimmed = name.trim();
   if (!trimmed) return false;
-  if (isFormFieldReference(trimmed)) return true;
-  return knownVariables.has(trimmed);
+  return true;
 }
 
 /**

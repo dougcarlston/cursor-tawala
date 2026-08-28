@@ -1,5 +1,5 @@
 {
-  "name": "Potluck",
+  "name": "Simple Potluck",
   "format": "2.0",
   "themePath": "default",
   "forms": [
@@ -21,7 +21,7 @@
         },
         {
           "type": "fib",
-          "label": "Q1",
+          "label": "FIB1",
           "style": "topLabels",
           "prompt": "Name___________________________________",
           "blanks": [
@@ -34,7 +34,7 @@
         },
         {
           "type": "mc",
-          "label": "Q2",
+          "label": "MCQ1",
           "onlyone": true,
           "required": false,
           "style": "horizontal",
@@ -53,20 +53,58 @@
           ]
         },
         {
+          "type": "skipInstructions",
+          "label": "SKIP",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Potluck Organizer:MCQ1",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
           "type": "fib",
-          "label": "Q3",
+          "label": "FIB2",
           "style": "freeform",
-          "prompt": "How many of you will be coming?______ (Adults) ______ (Kids)",
+          "prompt": "How many of you will be coming?______&nbsp; ______&nbsp;",
           "blanks": [
             {
-              "name": "numAdults",
+              "name": "a",
               "length": 6,
-              "alternateLabel": "numAdults"
+              "required": false,
+              "alternateLabel": "numAdults",
+              "caption": "(adults)",
+              "height": 1,
+              "validation": {
+                "type": "integer",
+                "errorMessage": "This number is not valid.",
+                "lowerLimit": "0",
+                "upperLimit": "10"
+              }
             },
             {
-              "name": "numKids",
+              "name": "b",
               "length": 6,
-              "alternateLabel": "numKids"
+              "required": false,
+              "alternateLabel": "numKids",
+              "caption": "(kids)",
+              "height": 1,
+              "validation": {
+                "type": "integer",
+                "errorMessage": "This number is not valid.",
+                "lowerLimit": "0",
+                "upperLimit": "10"
+              }
             }
           ]
         },
@@ -94,26 +132,6 @@
           "label": "T4",
           "style": "instructional",
           "content": "Click the submit button to enter your information."
-        },
-        {
-          "type": "skipInstructions",
-          "label": "skip1",
-          "commands": [
-            {
-              "cmd": "if",
-              "condition": {
-                "field": "Potluck Organizer:Q2",
-                "op": "mcEquals",
-                "value": "b"
-              },
-              "then": [
-                {
-                  "cmd": "skip",
-                  "to": "__EndOfForm__"
-                }
-              ]
-            }
-          ]
         },
         {
           "type": "text",
@@ -196,7 +214,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "Potluck Organizer:Q2",
+            "field": "Potluck Organizer:MCQ1",
             "op": "mcEquals",
             "value": "a"
           },
@@ -267,7 +285,7 @@
     },
     {
       "name": "Details",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"41.8pt\" style=\"position: absolute; left: 43.5pt; top: 41.8pt; margin: 0px; min-width: 2em; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Who is coming:</p><p class=\"doc-placed-text\" data-doc-home-top=\"60.6pt\" style=\"position: absolute; left: 43.5pt; top: 60.6pt; margin: 0px; min-width: 2em; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:attendeeName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Adults&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:numAdults&gt;&gt;&quot;},{&quot;header&quot;:&quot;Kids&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:numKids&gt;&gt;&quot;},{&quot;header&quot;:&quot;Dish&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:contribution&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Record:Potluck Organizer:Q2&quot;,&quot;op&quot;:&quot;mcEquals&quot;,&quot;value&quot;:&quot;a&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ..., Potluck Organizer:Q2 equals \"a\")&gt;&gt;</span>​</p><p class=\"doc-placed-text\" data-doc-home-top=\"79.4pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 43.5pt; top: 79.4pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); min-height: 16.8pt; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"98.2pt\" style=\"position: absolute; left: 43.5pt; top: 98.2pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Totals:</p><table class=\"user user-border-1\" data-doc-home-top=\"116.6pt\" style=\"position: absolute; width: 216pt; border-collapse: collapse; left: 46.5pt; top: 116.6pt; margin: 0px;\"><tbody><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">&nbsp;<span style=\"background-color: rgb(255, 255, 255);\">Adults</span></td><td style=\"width: 108pt;\" class=\"\">&nbsp;Kids</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">&nbsp;<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"2\" data-function-config=\"{&quot;field&quot;:&quot;Record:Potluck Organizer:numAdults&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SUM(Potluck Organizer:numAdults)&gt;&gt;</span>​</td><td style=\"width: 108pt;\" class=\"table-cell-selected\">&nbsp;<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"3\" data-function-config=\"{&quot;field&quot;:&quot;Record:Potluck Organizer:numKids&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SUM(Potluck Organizer:numKids)&gt;&gt;</span>​</td></tr></tbody></table><p class=\"doc-placed-text\" data-doc-home-top=\"179.6pt\" style=\"position: absolute; left: 43.5pt; top: 179.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Who can't come:</p><p class=\"doc-placed-text\" data-doc-home-top=\"198.4pt\" style=\"position: absolute; left: 43.5pt; top: 198.4pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"4\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:1,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:attendeeName&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Record:Potluck Organizer:Q2&quot;,&quot;op&quot;:&quot;mcEquals&quot;,&quot;value&quot;:&quot;b&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, 1, &lt;&lt;Potluck Organizer:attendeeName&gt;&gt;, Potluck Organizer:Q2 equals \"b\")&gt;&gt;</span><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"119.6pt\" style=\"position: absolute; left: 8.3pt; top: 119.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 36.2pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; min-height: 16.8pt;\" data-doc-wrap=\"1\" data-doc-blank=\"1\"><br></p>"
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"41.8pt\" style=\"position: absolute; left: 43.5pt; top: 41.8pt; margin: 0px; min-width: 2em; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Who is coming:</p><p class=\"doc-placed-text\" data-doc-home-top=\"60.6pt\" style=\"position: absolute; left: 43.5pt; top: 60.6pt; margin: 0px; min-width: 2em; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:attendeeName&gt;&gt;&quot;},{&quot;header&quot;:&quot;Adults&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:numAdults&gt;&gt;&quot;},{&quot;header&quot;:&quot;Kids&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:numKids&gt;&gt;&quot;},{&quot;header&quot;:&quot;Dish&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:contribution&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Record:Potluck Organizer:MCQ1&quot;,&quot;op&quot;:&quot;mcEquals&quot;,&quot;value&quot;:&quot;a&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ..., Potluck Organizer:MCQ1 equals \"a\")&gt;&gt;</span>​</p><p class=\"doc-placed-text\" data-doc-home-top=\"79.4pt\" data-doc-blank=\"1\" style=\"position: absolute; left: 43.5pt; top: 79.4pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); min-height: 16.8pt; width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"98.2pt\" style=\"position: absolute; left: 43.5pt; top: 98.2pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 1pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Totals:</p><table class=\"user user-border-1\" data-doc-home-top=\"116.6pt\" style=\"position: absolute; width: 216pt; border-collapse: collapse; left: 46.5pt; top: 116.6pt; margin: 0px;\"><tbody><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">&nbsp;<span style=\"background-color: rgb(255, 255, 255);\">Adults</span></td><td style=\"width: 108pt;\" class=\"\">&nbsp;Kids</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">&nbsp;<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"2\" data-function-config=\"{&quot;field&quot;:&quot;Record:Potluck Organizer:numAdults&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SUM(Potluck Organizer:numAdults)&gt;&gt;</span>​</td><td style=\"width: 108pt;\" class=\"table-cell-selected\">&nbsp;<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"sum\" data-function-instance=\"3\" data-function-config=\"{&quot;field&quot;:&quot;Record:Potluck Organizer:numKids&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SUM\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SUM(Potluck Organizer:numKids)&gt;&gt;</span>​</td></tr></tbody></table><p class=\"doc-placed-text\" data-doc-home-top=\"179.6pt\" style=\"position: absolute; left: 43.5pt; top: 179.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">Who can't come:</p><p class=\"doc-placed-text\" data-doc-home-top=\"198.4pt\" style=\"position: absolute; left: 43.5pt; top: 198.4pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 640.5pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; text-align: left;\" data-doc-wrap=\"1\" data-doc-indent=\"1\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"4\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:1,&quot;column&quot;:[{&quot;header&quot;:&quot;Name&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Potluck Organizer:attendeeName&gt;&gt;&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Record:Potluck Organizer:MCQ1&quot;,&quot;op&quot;:&quot;mcEquals&quot;,&quot;value&quot;:&quot;b&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, 1, &lt;&lt;Potluck Organizer:attendeeName&gt;&gt;, Potluck Organizer:MCQ1 equals \"b\")&gt;&gt;</span><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"119.6pt\" style=\"position: absolute; left: 8.3pt; top: 119.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 36.2pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; min-height: 16.8pt;\" data-doc-wrap=\"1\" data-doc-blank=\"1\"><br></p>"
     }
   ],
   "images": [

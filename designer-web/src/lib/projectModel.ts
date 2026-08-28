@@ -183,13 +183,29 @@ function collectVariableReferences(value: string, out: Set<string>): void {
   }
 }
 
+/** Scan a condition object (or combinator tree) for variable names on condition fields. */
+function collectVariablesFromCondition(cond: unknown, out: Set<string>): void {
+  if (!cond || typeof cond !== "object") return;
+  const c = cond as Record<string, unknown>;
+  if (typeof c.field === "string" && isPlainVariableName(c.field)) {
+    out.add(c.field.trim());
+  }
+  if (Array.isArray(c.conditions)) {
+    for (const child of c.conditions) collectVariablesFromCondition(child, out);
+  }
+  if (Array.isArray(c.and)) {
+    for (const child of c.and) collectVariablesFromCondition(child, out);
+  }
+  if (Array.isArray(c.or)) {
+    for (const child of c.or) collectVariablesFromCondition(child, out);
+  }
+}
+
 /**
  * Recursively scan a process / skip-instruction command tree for variables, mirroring legacy
  * `Process.Variables` → `Project.AllVariables`. Captures assignment targets (Set / Append /
- * arithmetic) plus plain `<<variable>>` references used anywhere — including Get, ForEach,
- * Delete, and If conditions / Where clauses (owner Q2: `ForEach Where [Record:Name] Equals
- * [variable]`). Record and record-set names (which are colon-qualified when referenced) are
- * excluded by `isPlainVariableName`, matching the Variables-node scope.
+ * arithmetic), If condition fields, plus plain `<<variable>>` references used anywhere —
+ * including Get, ForEach, Delete, and Where clauses.
  */
 function collectVariablesFromNode(node: unknown, out: Set<string>): void {
   if (Array.isArray(node)) {
@@ -201,6 +217,9 @@ function collectVariablesFromNode(node: unknown, out: Set<string>): void {
   if (typeof record.cmd === "string" && ASSIGNMENT_COMMANDS.has(record.cmd)) {
     const target = record.field ?? record.variable;
     if (isPlainVariableName(target)) out.add(target.trim());
+  }
+  if (record.cmd === "if" && record.condition) {
+    collectVariablesFromCondition(record.condition, out);
   }
   for (const value of Object.values(record)) {
     if (typeof value === "string") collectVariableReferences(value, out);

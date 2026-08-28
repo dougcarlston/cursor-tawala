@@ -2062,6 +2062,13 @@ textarea {
   color: #444;
 }
 
+.fib-rendered .fib-blank-caption .qinfo,
+.fib-blank-caption .qinfo {
+  color: #c00;
+  font-style: normal;
+  font-weight: bold;
+}
+
 .fib-rendered .fib-blank-underscores {
   font: inherit;
   line-height: 1.2;

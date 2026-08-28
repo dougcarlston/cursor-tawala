@@ -173,18 +173,26 @@ public class Blank implements Field, FormRenderable {
 					TextInput.elementId(getHtmlId()), validators));
 		}
 
-		if (isRequired()) {
-			Block star = new Block("span", false, new HtmlString(" *"));
-			star.setAttribute("class", "qinfo");
-			fieldBody.add(star);
-		}
-
 		if (caption != null && caption.trim().length() > 0) {
 			Span stack = new Span("class", "fib-blank-stack");
 			Span cap = new Span("class", "fib-blank-caption");
 			Italics italic = new Italics();
 			italic.add(new HtmlString(caption.trim()));
 			cap.add(italic);
+			if (isRequired()) {
+				Block star = new Block("span", false, new HtmlString(" *"));
+				star.setAttribute("class", "qinfo");
+				cap.add(star);
+			}
+			stack.add(cap);
+			stack.add(fieldBody);
+			htmlItems.add(stack);
+		} else if (isRequired()) {
+			Span stack = new Span("class", "fib-blank-stack");
+			Span cap = new Span("class", "fib-blank-caption");
+			Block star = new Block("span", false, new HtmlString("*"));
+			star.setAttribute("class", "qinfo");
+			cap.add(star);
 			stack.add(cap);
 			stack.add(fieldBody);
 			htmlItems.add(stack);

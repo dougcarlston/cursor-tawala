@@ -27,26 +27,27 @@ export function createDateFibPreset(label: string): FibItem {
 }
 
 /**
- * One soft-row Address with per-blank captions (Street / City / Zip) — same
- * above-hint pattern as Name First/Last. No inline City:/Zip: text.
+ * Two-line Address preset:
+ * Line 1: Street Address: ______________________________
+ * Line 2: City, State, Zip: __________________  _____  __________ (with captions)
+ * Uses two paragraphs so each line gets its own left-aligned label and blanks fit standard columns.
  */
 export function createAddressFibPreset(label: string): FibItem {
   return {
     type: "fib",
     label,
-    style: "freeform",
-    prompt: "Address: ____________________ ________ _____",
+    prompt: "Street: ______________________________<br>City, State, Zip: ____________________ _____ ________",
     blanks: [
       {
         name: "a",
-        length: 20,
+        length: 30,
         height: 1,
         alternateLabel: "Street",
-        caption: "Street",
+        caption: "Street Address",
       },
       {
         name: "b",
-        length: 8,
+        length: 20,
         height: 1,
         alternateLabel: "City",
         caption: "City",
@@ -54,6 +55,13 @@ export function createAddressFibPreset(label: string): FibItem {
       {
         name: "c",
         length: 5,
+        height: 1,
+        alternateLabel: "State",
+        caption: "State",
+      },
+      {
+        name: "d",
+        length: 8,
         height: 1,
         alternateLabel: "Zip",
         caption: "Zip",

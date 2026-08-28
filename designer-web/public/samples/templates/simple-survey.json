@@ -1,5 +1,5 @@
 {
-  "name": "Simple Survey Template",
+  "name": "Simple Survey",
   "format": "2.0",
   "themePath": "mvsc",
   "forms": [
@@ -76,7 +76,7 @@
       "commands": [
         {
           "cmd": "show",
-          "form": "Report"
+          "document": "Thank you"
         }
       ]
     },
@@ -90,7 +90,12 @@
       ]
     }
   ],
-  "documents": [],
+  "documents": [
+    {
+      "name": "Thank you",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"43.9pt\" style=\"position: absolute; left: 56.3pt; top: 43.9pt; margin: 0px; min-width: 2em; width: 395.2pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal; min-height: 16.8pt;\" data-doc-wrap=\"1\" data-doc-blank=\"1\"><br></p><p class=\"doc-placed-text\" data-doc-home-top=\"62.7pt\" style=\"position: absolute; left: 56.3pt; top: 62.7pt; margin: 0px; min-width: 2em; width: 395.2pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\">Thank you for taking our survey.</p>"
+    }
+  ],
   "images": [
     {
       "id": "image1",

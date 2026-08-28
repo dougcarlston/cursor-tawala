@@ -62,7 +62,7 @@ export const PROJECT_TEMPLATES: TemplateEntry[] = [
   },
   {
     id: "get-together",
-    label: "Get Together",
+    label: "Simple Get Together",
     category: "Meetings and Gatherings",
     description: "Select the best date for a meeting.",
     samplePath: "get-together.json",
@@ -70,7 +70,7 @@ export const PROJECT_TEMPLATES: TemplateEntry[] = [
   },
   {
     id: "potluck",
-    label: "Potluck",
+    label: "Simple Potluck",
     category: "Meetings and Gatherings",
     description: "Arrange a potluck.",
     samplePath: "potluck.json",
@@ -86,7 +86,7 @@ export const PROJECT_TEMPLATES: TemplateEntry[] = [
   },
   {
     id: "multiple-question-survey",
-    label: "Multiple Question Survey",
+    label: "Simple Multiple Question Survey",
     category: "Polls and Surveys",
     description: "A survey you can modify to meet your needs.",
     samplePath: "multiple-question-survey.json",
