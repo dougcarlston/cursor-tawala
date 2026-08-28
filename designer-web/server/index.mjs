@@ -259,7 +259,7 @@ async function lookupOccupantForDeploy(user, password, tomcatName) {
     }
     return findOccupantInDeploymentsXml(text, tomcatName);
   }
-  return findOccupantInNodeIndex(store.listProjects(user), tomcatName);
+  return findOccupantInNodeIndex(store.listProjects(user), tomcatName, user);
 }
 
 /** JSON deploy from web Designer (also My Tawala Deploy-this-version via CORS). */
@@ -307,6 +307,7 @@ app.post("/api/deploy", async (req, res) => {
         tomcatName: deployIdentityName,
         incomingProject: project,
         occupant,
+        user: credentials.user,
         hatch: occupancyHatchAllowed(req.body),
         lookupFailed,
       });

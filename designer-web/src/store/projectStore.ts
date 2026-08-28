@@ -264,6 +264,7 @@ interface ProjectState {
     fromPath: string,
     destParentPath: string,
     destIndex: number,
+    processName?: string,
   ) => void;
   createLinkedProcessForForm: (formName: string, role: "Pre" | "Post") => void;
   linkProcessToForm: (processName: string, formName: string, role: "Pre" | "Post") => void;
@@ -1020,10 +1021,12 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       statusMessage: `Moved statement ${direction}`,
     });
   },
-  moveProcessCommandBefore: (fromPath, destParentPath, destIndex) => {
+  moveProcessCommandBefore: (fromPath, destParentPath, destIndex, processName) => {
     const { project, selection } = get();
-    if (selection.kind !== "process" || !selection.name) return;
-    const proc = project.processes?.find((p) => p.name === selection.name);
+    const targetName =
+      processName ?? (selection.kind === "process" ? selection.name : undefined);
+    if (!targetName) return;
+    const proc = project.processes?.find((p) => p.name === targetName);
     if (!proc) return;
     const moved = moveProcessCommandBefore(
       proc.commands ?? [],
@@ -1033,7 +1036,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     );
     if (!moved) return;
     const processes = (project.processes ?? []).map((p) =>
-      p.name === selection.name ? { ...p, commands: moved.commands } : p,
+      p.name === targetName ? { ...p, commands: moved.commands } : p,
     );
     const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
     set({
@@ -1172,7 +1175,13 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const { project } = get();
     const names = project.forms.map((f) => f.name);
     const name = nextLabel("Form", names, " ");
-    const forms = [...project.forms, { name, items: [] }];
+    const isFirstForm = project.forms.length === 0 || !project.forms.some((f) => f.startPoint);
+    const newForm: TawalaForm = {
+      name,
+      items: [],
+      ...(isFirstForm ? { startPoint: true } : {}),
+    };
+    const forms = [...project.forms, newForm];
     set({
       project: { ...project, forms },
       dirty: true,
@@ -1827,12 +1836,20 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const { _freshFromTemplate: _f, ...clean } = project as TawalaProject & {
         _freshFromTemplate?: boolean;
       };
+      const user = String(credentials.user ?? "").trim();
       const nextProject = {
         ...clean,
         ...(result.deployIdentityName
           ? { deployIdentityName: result.deployIdentityName }
           : {}),
         ...(result.uniqueId ? { deployUniqueId: result.uniqueId } : {}),
+        ...(user
+          ? {
+              author: clean.author || user,
+              authorId: clean.authorId || user,
+              userId: clean.userId || user,
+            }
+          : {}),
       } as TawalaProject;
       const idBit = result.uniqueId ? ` · uniqueId ${result.uniqueId}` : "";
       set({

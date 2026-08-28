@@ -233,7 +233,7 @@ function replaceResponseTotalsTokens(html, opts) {
 
 /** Function display names that must not be treated as field refs. */
 const FUNCTION_DISPLAY_NAME_RE =
-  /^(MULTIPLE QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|CHOICE\s+TALLY|RESPONSE\s+TOTALS|QUESTION\s+CORRELATION|SIMPLE\s+LIST|FORM\s+RECORD\s+COUNT)\b/i;
+  /^(MULTIPLE QUESTION LIST|QUESTION LIST|ITEMIZATION|DISPLAY\s+IMAGE|DISPLAY\s+MULTIPLE|DISPLAY\s+MCQ\s+LABEL|CHOICE\s+TALLY|RESPONSE\s+TOTALS|QUESTION\s+CORRELATION|SIMPLE\s+LIST|SINGLE\s+QUESTION\s+LIST|FORM\s+RECORD\s+COUNT|RECORD\s+COUNT)\b/i;
 
 const RICH_TEXT_HTML_TAG_RE = /<\/?[a-z][\s\S]*>/i;
 
@@ -256,6 +256,13 @@ export function enhanceRichTextHtml(content, getField, opts = {}) {
   html = replaceItemizationTokens(html, opts);
   html = replaceChoiceTallyTokens(html, opts);
   html = replaceResponseTotalsTokens(html, opts);
+
+  // Strip unspanned / orphan function call expressions (with nested <<...>>) before field replacement
+  // so their nested <<fields>> are not broken into fragments or converted to `<>`.
+  const bareFnRe =
+    /(?:&lt;&lt;|<<)\s*(?:(?:MULTIPLE\s+)?QUESTION\s+LIST|(?:SINGLE\s+)?(?:QUESTION\s+LIST|SIMPLE\s+LIST)|(?:FORM\s+)?RECORD\s+COUNT|SUM|MAX|MIN|CHOICE\s+TALLY|RESPONSE\s+TOTALS|QUESTION\s+CORRELATION|POPULAR\s+CHOICE)\s*\((?:[^()]*|\([^()]*\))*\)\s*(?:&gt;&gt;|>>)/gi;
+  html = html.replace(bareFnRe, "");
+
   const replaceTemplate = (_match, ref) => {
     const key = String(ref).trim();
     if (FUNCTION_DISPLAY_NAME_RE.test(key)) return "";

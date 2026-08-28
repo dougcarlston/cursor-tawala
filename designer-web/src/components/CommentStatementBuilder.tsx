@@ -6,6 +6,7 @@ export interface CommentStatementBuilderProps {
   onStateChange: (next: CommentBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   embedded?: boolean;
 }
 
@@ -18,6 +19,7 @@ export function CommentStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   embedded = false,
 }: CommentStatementBuilderProps) {
   const canSubmit = commentBuilderIsValid(state);
@@ -45,6 +47,11 @@ export function CommentStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

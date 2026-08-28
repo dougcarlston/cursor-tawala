@@ -7,6 +7,7 @@ export interface ForEachStatementBuilderProps {
   onStateChange: (next: ForEachBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   recordNames: readonly string[];
   recordLists: readonly string[];
   embedded?: boolean;
@@ -21,6 +22,7 @@ export function ForEachStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   recordNames,
   recordLists,
   embedded = false,
@@ -73,6 +75,11 @@ export function ForEachStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

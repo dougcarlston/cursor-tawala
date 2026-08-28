@@ -14,6 +14,7 @@ export interface GetStatementBuilderProps {
   onStateChange: (next: GetBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   formNames: readonly string[];
   knownVariables: ReadonlySet<string>;
   embedded?: boolean;
@@ -30,6 +31,7 @@ export function GetStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   formNames,
   knownVariables,
   embedded = false,
@@ -178,6 +180,11 @@ export function GetStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

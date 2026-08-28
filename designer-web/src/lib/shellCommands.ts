@@ -9,6 +9,17 @@ import {
   convertTawalaXmlToProject,
   isTawalaProjectFileName,
 } from "@/lib/tawalaXmlToJson.mjs";
+import {
+  getProcessCommandAtPath,
+  deleteProcessCommandAtPath,
+} from "@/lib/processScript";
+import { insertCommandAtPoint } from "@/lib/processInsert";
+import {
+  getProcessClipboard,
+  setProcessClipboard,
+  hasProcessClipboard,
+} from "@/lib/processClipboard";
+import type { TawalaProcessCommand } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 
 export type ShellEditCommand = "cut" | "copy" | "paste" | "undo" | "redo";
@@ -650,6 +661,55 @@ export function runShellDelete(): void {
  */
 export function runShellEditCommand(command: ShellEditCommand): boolean {
   if (!shellEditContextActive()) return false;
+  const {
+    openWindows,
+    activeWindowId,
+    selection,
+    selectedProcessCommandPath,
+    processInsertPath,
+    processInsertIndex,
+    project,
+  } = useProjectStore.getState();
+  const active = openWindows.find((w) => w.id === activeWindowId);
+  if (active?.kind === "process" && selection.kind === "process" && selection.name) {
+    const proc = project.processes?.find((p) => p.name === selection.name);
+    const commands = proc?.commands ?? [];
+    if (command === "copy" && selectedProcessCommandPath) {
+      const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+      if (cmd) {
+        setProcessClipboard(cmd);
+        useProjectStore.getState().setStatus("Copied statement");
+        return true;
+      }
+    }
+    if (command === "cut" && selectedProcessCommandPath) {
+      const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+      if (cmd) {
+        setProcessClipboard(cmd);
+        const next = deleteProcessCommandAtPath(commands, selectedProcessCommandPath);
+        useProjectStore.getState().updateProcessCommands(selection.name, next);
+        useProjectStore.getState().setSelectedProcessCommandPath(null);
+        useProjectStore.getState().setStatus("Cut statement");
+        return true;
+      }
+    }
+    if (command === "paste" && hasProcessClipboard()) {
+      const cmd = getProcessClipboard();
+      if (cmd) {
+        const result = insertCommandAtPoint(
+          commands,
+          processInsertPath,
+          processInsertIndex,
+          cmd as TawalaProcessCommand,
+        );
+        useProjectStore.getState().updateProcessCommands(selection.name, result.commands);
+        useProjectStore.getState().setProcessInsertPoint(result.insertPath, result.insertIndex);
+        useProjectStore.getState().setStatus("Pasted statement");
+        return true;
+      }
+    }
+  }
+
   const handle = getActivePaletteEditor();
   if (handle) {
     handle.el.focus();

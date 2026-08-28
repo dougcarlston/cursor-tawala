@@ -23,6 +23,7 @@ export interface RemoveDuplicatesStatementBuilderProps {
   onStateChange: (next: RemoveDuplicatesBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   formNames: readonly string[];
   knownVariables: ReadonlySet<string>;
   embedded?: boolean;
@@ -37,6 +38,7 @@ export function RemoveDuplicatesStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   formNames,
   knownVariables,
   embedded = false,
@@ -207,6 +209,11 @@ export function RemoveDuplicatesStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

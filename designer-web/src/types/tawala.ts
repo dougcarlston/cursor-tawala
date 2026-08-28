@@ -267,6 +267,10 @@ export interface TawalaProject {
    * Persisted so File→Open can show identity without Pushing again.
    */
   deployUniqueId?: string;
+  /** Author / user identity who owns or acquired this project. */
+  author?: string;
+  authorId?: string;
+  userId?: string;
 }
 
 export type EditorTab = "design" | "preview";

@@ -23,9 +23,33 @@ export const FUNCTION_CONFIG_ATTR = "data-function-config";
 
 let nextFunctionInstanceId = 1;
 
-const FUNCTION_CATALOG_BY_NAME = new Map(
-  FUNCTION_CATALOG.map((f) => [f.name.toUpperCase(), f.id]),
-);
+const FUNCTION_ALIASES: Record<string, string> = {
+  "QUESTION LIST": "itemization-table",
+  "MULTIPLE QUESTION LIST": "itemization-table",
+  "ITEMIZATION": "itemization-table",
+  "ITEMIZATION TABLE": "itemization-table",
+  "SINGLE QUESTION LIST": "simple-list",
+  "SIMPLE LIST": "simple-list",
+  "DISPLAY MCQ LABEL": "display-mcq-label",
+  "DISPLAY MULTIPLE CHOICE LABEL": "display-mcq-label",
+  "CHOICE TALLY": "choice-tally-table",
+  "CHOICE TALLY TABLE": "choice-tally-table",
+  "RESPONSE TOTALS": "response-totals-table",
+  "RESPONSE TOTALS TABLE": "response-totals-table",
+  "QUESTION CORRELATION": "question-correlation-table",
+  "QUESTION CORRELATION TABLE": "question-correlation-table",
+  "POPULAR CHOICE": "popular-choice-display",
+  "POPULAR CHOICE DISPLAY": "popular-choice-display",
+  "POPULAR CHOICE COUNT": "popular-choice-count",
+  "POPULAR CHOICE CORRELATION": "popular-choice-correlation-table",
+  "FORM RECORD COUNT": "record-count",
+  "RECORD COUNT": "record-count",
+};
+
+const FUNCTION_CATALOG_BY_NAME = new Map<string, string>([
+  ...FUNCTION_CATALOG.map((f) => [f.name.toUpperCase(), f.id] as [string, string]),
+  ...Object.entries(FUNCTION_ALIASES),
+]);
 
 export function allocateFunctionInstanceId(): number {
   return nextFunctionInstanceId++;

@@ -18,6 +18,7 @@ export interface DeleteStatementBuilderProps {
   onStateChange: (next: DeleteBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   formNames: readonly string[];
   knownVariables: ReadonlySet<string>;
   embedded?: boolean;
@@ -32,6 +33,7 @@ export function DeleteStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   formNames,
   knownVariables,
   embedded = false,
@@ -172,6 +174,11 @@ export function DeleteStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

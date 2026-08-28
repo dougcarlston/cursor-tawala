@@ -86,10 +86,18 @@ export function DeployDialog() {
       setBusy(false);
     }
 
+    const currentAuthor =
+      (project as Record<string, unknown>)?.author ||
+      (project as Record<string, unknown>)?.authorId ||
+      (project as Record<string, unknown>)?.userId ||
+      undefined;
+
     const receipt = {
       id,
       name,
       uniqueId: lastDeploy.uniqueId ?? null,
+      deployUniqueId: lastDeploy.uniqueId ?? null,
+      deployIdentityName: lastDeploy.deployIdentityName ?? undefined,
       startpoints: (lastDeploy.startpoints ?? []).map((sp) => ({
         form: sp.form,
         url: sp.url,
@@ -99,6 +107,7 @@ export function DeployDialog() {
       versionDescription: note,
       snapshotId,
       themePath: String(project?.themePath || "default").trim() || "default",
+      ...(currentAuthor ? { author: String(currentAuthor) } : {}),
     };
     // Project Details deep link + receipt → mock upserts My Tawala pile overlay
     // (mints monotonic versionNumber; history on Details Versions only).

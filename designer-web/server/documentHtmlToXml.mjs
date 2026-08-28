@@ -185,15 +185,122 @@ function qualifyFieldRef(name, formName, opts = {}) {
 function looksLikeFunctionDisplayToken(inner) {
   const s = String(inner ?? "").trim();
   if (!s) return false;
-  // `<<MULTIPLE QUESTION LIST(false, false, ...)>>` / `<<SUM(Amount)>>` / `<<RECORD COUNT>>`
+  // `<<MULTIPLE QUESTION LIST(false, false, ...)>>` / `<<QUESTION LIST(...)>>` / `<<SUM(Amount)>>` / `<<RECORD COUNT>>`
+  if (/^(?:MULTIPLE\s+)?QUESTION\s+LIST\b/i.test(s)) return true;
+  if (/^(?:SINGLE\s+)?(?:QUESTION\s+LIST|SIMPLE\s+LIST)\b/i.test(s)) return true;
   if (/^[A-Z][A-Z0-9 ]*(?:\(|$)/.test(s)) return true;
   return false;
 }
 
-function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
-  const s = String(plain ?? "");
-  if (!s) return "";
-  return s
+function parseOrphanFunctionToXml(match, escAttr, escText, opts = {}) {
+  const mqlMatch = /(?:<<\s*)?(?:MULTIPLE\s+)?QUESTION\s+LIST\s*\(([\s\S]*?)\)(?:\s*>>)?/i.exec(match);
+  if (mqlMatch) {
+    const argsStr = mqlMatch[1];
+    const args = [];
+    let cur = "";
+    let inAngle = 0;
+    let inQuote = false;
+    for (let i = 0; i < argsStr.length; i++) {
+      const ch = argsStr[i];
+      if (ch === "\"" || ch === "'") inQuote = !inQuote;
+      else if (!inQuote && ch === "<" && argsStr[i + 1] === "<") {
+        inAngle++;
+        i++;
+        cur += "<<";
+        continue;
+      } else if (!inQuote && ch === ">" && argsStr[i + 1] === ">") {
+        inAngle = Math.max(0, inAngle - 1);
+        i++;
+        cur += ">>";
+        continue;
+      } else if (ch === "," && inAngle === 0 && !inQuote) {
+        args.push(cur.trim());
+        cur = "";
+        continue;
+      }
+      cur += ch;
+    }
+    if (cur.trim()) args.push(cur.trim());
+
+    let showPrint = "false";
+    let showExport = "false";
+    let argIdx = 0;
+    if (args[argIdx] === "true" || args[argIdx] === "false") {
+      showPrint = args[argIdx++];
+    }
+    if (args[argIdx] === "true" || args[argIdx] === "false") {
+      showExport = args[argIdx++];
+    }
+    let numCols = 0;
+    if (/^\d+$/.test(args[argIdx])) {
+      numCols = parseInt(args[argIdx++], 10);
+    }
+    const fieldArgs = [];
+    const conditionArgs = [];
+    for (; argIdx < args.length; argIdx++) {
+      const a = args[argIdx];
+      if (/\b(?:equals|contains|does not equal|is blank|is not blank)\b/i.test(a)) {
+        conditionArgs.push(a);
+      } else {
+        fieldArgs.push(a);
+      }
+    }
+    let inferredForm = opts.formName ?? "";
+    const cols = fieldArgs.map((f) => {
+      let clean = f.replace(/^<<|>>$/g, "").trim();
+      let header = clean;
+      if (clean.includes(":")) {
+        const parts = clean.split(":");
+        if (!inferredForm && parts.length > 1) inferredForm = parts[0].trim();
+        header = parts[parts.length - 1].trim();
+      }
+      let ref = clean;
+      if (!/^Record:/i.test(ref) && ref.includes(":")) {
+        ref = `Record:${ref}`;
+      }
+      return { header, field: ref };
+    });
+    if (cols.length > 0) {
+      const n = numCols || cols.length;
+      const colXml = cols
+        .slice(0, n)
+        .map(
+          (c) =>
+            `<column><header><string value="${escText(c.header)}"/></header><contents><field name="${escAttr(c.field)}"/></contents></column>`,
+        )
+        .join("");
+      const condXml = inferredForm
+        ? `<conditions><form name="${escAttr(inferredForm)}"/></conditions>`
+        : "<conditions/>";
+      return `<font><itemization-table version="2"><show-print-control>${showPrint}</show-print-control><show-export-control>${showExport}</show-export-control><number-of-columns>${n}</number-of-columns>${colXml}${condXml}</itemization-table></font>`;
+    }
+    console.warn(
+      "[documentHtmlToXml] Orphaned MULTIPLE/QUESTION LIST label skipped (would Deploy as junk field <>). Prefer a function-token with data-function-id=itemization-table.",
+    );
+    return "";
+  }
+
+  const simpleListMatch = /(?:<<\s*)?(?:SINGLE\s+)?(?:QUESTION\s+LIST|SIMPLE\s+LIST)\s*\(([\s\S]*?)\)(?:\s*>>)?/i.exec(match);
+  if (simpleListMatch) {
+    let rawField = simpleListMatch[1].replace(/^<<|>>$/g, "").trim();
+    if (!rawField) return "";
+    if (!/^Record:/i.test(rawField) && rawField.includes(":")) {
+      rawField = `Record:${rawField}`;
+    }
+    return `<font><simple-list version="2"><simple-list-field>${escText(rawField)}</simple-list-field><conditions/></simple-list></font>`;
+  }
+
+  const recordCountMatch = /(?:<<\s*)?(?:FORM\s+)?RECORD\s+COUNT\s*\(([\s\S]*?)\)(?:\s*>>)?/i.exec(match);
+  if (recordCountMatch) {
+    const form = recordCountMatch[1].replace(/^<<|>>$/g, "").trim();
+    return `<font><record-count version="3"><form-name>${escText(form)}</form-name><conditions/></record-count></font>`;
+  }
+
+  return "";
+}
+
+function processStandardFieldTokens(str, escAttr, escText, opts = {}) {
+  return str
     .split(/(<<[^<>]+>>)/g)
     .map((part) => {
       const m = /^<<\s*([^<>]+?)\s*>>$/.exec(part);
@@ -202,7 +309,7 @@ function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
         // Orphaned chip labels (span lost / attrs not recognized) must not become
         // `<field name="Form:MULTIPLE QUESTION LIST(...)"/>` → runtime `<>`.
         if (looksLikeFunctionDisplayToken(inner)) {
-          if (/MULTIPLE\s+QUESTION\s+LIST/i.test(inner)) {
+          if (/(?:MULTIPLE\s+)?QUESTION\s+LIST/i.test(inner)) {
             console.warn(
               "[documentHtmlToXml] Orphaned MULTIPLE QUESTION LIST label skipped (would Deploy as junk field <>). Prefer a function-token with data-function-id=itemization-table.",
             );
@@ -215,6 +322,36 @@ function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
       return escText(part);
     })
     .join("");
+}
+
+function textWithFieldTokensToXml(plain, escAttr, escText, opts = {}) {
+  const s = String(plain ?? "");
+  if (!s) return "";
+
+  // Extract and handle whole function call expressions (which may contain nested <<...>>)
+  // so they are not broken into fragments by <<[^<>]+>>.
+  const fnRegex = /(?:<<\s*)?(?:(?:MULTIPLE\s+)?QUESTION\s+LIST|(?:SINGLE\s+)?(?:QUESTION\s+LIST|SIMPLE\s+LIST)|(?:FORM\s+)?RECORD\s+COUNT|SUM|MAX|MIN|CHOICE\s+TALLY|RESPONSE\s+TOTALS|QUESTION\s+CORRELATION|POPULAR\s+CHOICE)\s*\((?:[^()]*|\([^()]*\))*\)(?:\s*>>)?/gi;
+
+  let out = "";
+  let lastIdx = 0;
+  let match;
+
+  while ((match = fnRegex.exec(s)) !== null) {
+    const before = s.slice(lastIdx, match.index);
+    if (before) {
+      out += processStandardFieldTokens(before, escAttr, escText, opts);
+    }
+    const fnXml = parseOrphanFunctionToXml(match[0], escAttr, escText, opts);
+    out += fnXml;
+    lastIdx = fnRegex.lastIndex;
+  }
+
+  const remaining = s.slice(lastIdx);
+  if (remaining) {
+    out += processStandardFieldTokens(remaining, escAttr, escText, opts);
+  }
+
+  return out;
 }
 
 function extractTagInner(html, tagName) {

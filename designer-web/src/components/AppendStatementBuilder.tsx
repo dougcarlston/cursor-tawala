@@ -6,6 +6,7 @@ export interface AppendStatementBuilderProps {
   onStateChange: (next: AppendBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   documentNames: readonly string[];
   embedded?: boolean;
 }
@@ -19,6 +20,7 @@ export function AppendStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   documentNames,
   embedded = false,
 }: AppendStatementBuilderProps) {
@@ -69,6 +71,11 @@ export function AppendStatementBuilder({
           <button type="button" className="skip-add-btn" disabled={!canSubmit} onClick={onSubmit}>
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

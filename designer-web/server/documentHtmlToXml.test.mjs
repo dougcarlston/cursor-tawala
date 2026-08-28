@@ -415,7 +415,31 @@ describe("documentHtmlToXml record-count Where conditions", () => {
       { formName: "Form 1" },
     );
     expect(xml).not.toMatch(/field name="[^"]*MULTIPLE QUESTION/);
-    expect(xml).not.toContain("<itemization-table");
+  });
+
+  it("converts unspanned QUESTION LIST / MULTIPLE QUESTION LIST with field refs into itemization-table without <>", () => {
+    const xml1 = documentHtmlToXml(
+      `<p>QUESTION LIST(false, false, 2, &lt;&lt;Form 1:FIB1:a&gt;&gt;, &lt;&lt;Form 1:FIB2:a&gt;&gt;)</p>`,
+      escAttr,
+      escText,
+      { formName: "Form 1" },
+    );
+    expect(xml1).toContain("<itemization-table");
+    expect(xml1).toContain('name="Record:Form 1:FIB1:a"');
+    expect(xml1).toContain('name="Record:Form 1:FIB2:a"');
+    expect(xml1).not.toMatch(/&lt;&lt;QUESTION/);
+    expect(xml1).not.toMatch(/&lt;&gt;/);
+
+    const xml2 = documentHtmlToXml(
+      `<p>&lt;&lt;MULTIPLE QUESTION LIST(false, false, 2, &lt;&lt;Form 1:FIB1:a&gt;&gt;, &lt;&lt;Form 1:FIB2:a&gt;&gt;)&gt;&gt;</p>`,
+      escAttr,
+      escText,
+      { formName: "Form 1" },
+    );
+    expect(xml2).toContain("<itemization-table");
+    expect(xml2).toContain('name="Record:Form 1:FIB1:a"');
+    expect(xml2).toContain('name="Record:Form 1:FIB2:a"');
+    expect(xml2).not.toMatch(/&lt;&lt;MULTIPLE/);
   });
 });
 

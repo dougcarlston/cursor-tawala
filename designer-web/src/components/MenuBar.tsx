@@ -255,15 +255,6 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
         <button type="button" onClick={openProjectManagerLocal}>
           Project Manager…
         </button>
-        {showEmailDelivery ? (
-          <button
-            type="button"
-            title="Owner ops: server-owned SMTP status and test send (credentials stay on Tomcat)"
-            onClick={() => openEmailDeliveryDialog()}
-          >
-            Email Delivery…
-          </button>
-        ) : null}
         <div className="menu-separator" />
         <button
           type="button"

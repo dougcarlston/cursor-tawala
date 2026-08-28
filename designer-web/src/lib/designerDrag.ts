@@ -136,5 +136,10 @@ export function hasProcessStatementReorderDrag(dataTransfer: DataTransfer | null
 export function readProcessStatementReorderDrag(dataTransfer: DataTransfer | null): string | null {
   if (!dataTransfer) return null;
   const path = dataTransfer.getData(PROCESS_STATEMENT_REORDER_MIME);
-  return path || null;
+  if (path) return path;
+  const plain = dataTransfer.getData("text/plain");
+  if (plain && plain.startsWith("reorder:")) {
+    return plain.slice("reorder:".length);
+  }
+  return null;
 }

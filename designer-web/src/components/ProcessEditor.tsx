@@ -30,8 +30,10 @@ import {
   deleteProcessCommandAtPath,
   getProcessCommandAtPath,
   moveProcessCommandAtPath,
+  moveProcessCommandBefore as moveProcessCommandBeforeHelper,
   replaceProcessCommandAtPath,
 } from "@/lib/processScript";
+import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
 import {
   EMPTY_APPEND_BUILDER,
   EMPTY_COMMENT_BUILDER,
@@ -88,6 +90,11 @@ import {
 } from "@/lib/statementBuilders";
 import { buildConditionFromRows } from "@/lib/skipSummary";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
+import {
+  getProcessClipboard,
+  setProcessClipboard,
+  hasProcessClipboard,
+} from "@/lib/processClipboard";
 import { useProjectStore } from "@/store/projectStore";
 import { TawalaProcessCommand } from "@/types/tawala";
 
@@ -402,14 +409,84 @@ export function ProcessEditor({ processName }: Props) {
     setActiveFieldTarget(null);
   };
 
+  const handleCut = () => {
+    if (!selectedProcessCommandPath) return;
+    const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+    if (!cmd) return;
+    setProcessClipboard(cmd);
+    deleteCommandAtPath(selectedProcessCommandPath);
+  };
+
+  const handleCopy = () => {
+    if (!selectedProcessCommandPath) return;
+    const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+    if (!cmd) return;
+    setProcessClipboard(cmd);
+  };
+
+  const handlePaste = () => {
+    const cmd = getProcessClipboard();
+    if (!cmd) return;
+    insertAtArrow(cmd as TawalaProcessCommand);
+  };
+
+  const handleDelete = () => {
+    if (!selectedProcessCommandPath) return;
+    deleteCommandAtPath(selectedProcessCommandPath);
+  };
+
   useEffect(() => {
     if (!isActiveProcess) return;
     const onKeyDown = (e: KeyboardEvent) => {
+      const target = e.target;
+      const inInput =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        target instanceof HTMLSelectElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+
       if (e.key === "Escape" && processStatementPanel !== "none") {
         e.preventDefault();
         dismissStatementPanel();
         return;
       }
+
+      if (inInput) return;
+
+      const modKey = (e.metaKey || e.ctrlKey) && !e.altKey;
+      const key = e.key.toLowerCase();
+      const code = e.code;
+      const isX = (key === "x" || code === "KeyX") && !e.shiftKey;
+      const isC = (key === "c" || code === "KeyC") && !e.shiftKey;
+      const isV = (key === "v" || code === "KeyV") && !e.shiftKey;
+
+      if (modKey) {
+        if (isX && selectedProcessCommandPath != null) {
+          e.preventDefault();
+          handleCut();
+          return;
+        }
+        if (isC && selectedProcessCommandPath != null) {
+          e.preventDefault();
+          handleCopy();
+          return;
+        }
+        if (isV && hasProcessClipboard()) {
+          e.preventDefault();
+          handlePaste();
+          return;
+        }
+      }
+
+      if (
+        (e.key === "Delete" || e.key === "Backspace") &&
+        selectedProcessCommandPath != null
+      ) {
+        e.preventDefault();
+        handleDelete();
+        return;
+      }
+
       if (!e.altKey || selectedProcessCommandPath == null) return;
       if (e.key === "ArrowUp") {
         e.preventDefault();
@@ -426,6 +503,9 @@ export function ProcessEditor({ processName }: Props) {
     moveSelectedProcessCommand,
     selectedProcessCommandPath,
     processStatementPanel,
+    commands,
+    processInsertPath,
+    processInsertIndex,
   ]);
 
   if (!proc) {
@@ -580,6 +660,24 @@ export function ProcessEditor({ processName }: Props) {
     setSelectedProcessCommandPath(moved.newPath);
   };
 
+  const moveCommandBefore = (
+    fromPath: string,
+    destParentPath: string,
+    destIndex: number,
+  ) => {
+    const moved = moveProcessCommandBeforeHelper(
+      commands,
+      fromPath,
+      destParentPath,
+      destIndex,
+    );
+    if (!moved) return;
+    setCommands(moved.commands);
+    const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
+    setSelectedProcessCommandPath(moved.newPath);
+    setProcessInsertPoint(parentPath, childIndex + 1);
+  };
+
   const canMoveCommand = (path: string, direction: "up" | "down") =>
     canMoveProcessCommandAtPath(commands, path, direction);
 
@@ -609,6 +707,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setIfBuilder}
                   submitLabel={isModifyIf ? "Modify" : "Add"}
                   onSubmit={submitIf}
+                  onCancel={dismissStatementPanel}
                 />
               )}
               {processStatementPanel === "set" && (
@@ -618,6 +717,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setSetBuilder}
                   submitLabel={isModifySet ? "Modify" : "Add"}
                   onSubmit={submitSet}
+                  onCancel={dismissStatementPanel}
                   knownVariables={knownVariables}
                 />
               )}
@@ -628,6 +728,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setShowBuilder}
                   submitLabel={isModifyShow ? "Modify" : "Add"}
                   onSubmit={submitShow}
+                  onCancel={dismissStatementPanel}
                   documentNames={documentNames}
                   formNames={formNames}
                   knownVariables={knownVariables}
@@ -659,6 +760,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setAppendBuilder}
                   submitLabel={isModifyAppend ? "Modify" : "Add"}
                   onSubmit={submitAppend}
+                  onCancel={dismissStatementPanel}
                   documentNames={documentNames}
                 />
               )}
@@ -669,6 +771,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setGetBuilder}
                   submitLabel={isModifyGet ? "Modify" : "Add"}
                   onSubmit={submitGet}
+                  onCancel={dismissStatementPanel}
                   formNames={formNames}
                   knownVariables={knownVariables}
                 />
@@ -680,6 +783,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setForEachBuilder}
                   submitLabel={isModifyForEach ? "Modify" : "Add"}
                   onSubmit={submitForEach}
+                  onCancel={dismissStatementPanel}
                   recordNames={processRecordNames}
                   recordLists={processRecordLists}
                 />
@@ -691,6 +795,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setDeleteBuilder}
                   submitLabel={isModifyDelete ? "Modify" : "Add"}
                   onSubmit={submitDelete}
+                  onCancel={dismissStatementPanel}
                   formNames={formNames}
                   knownVariables={knownVariables}
                 />
@@ -702,6 +807,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setRemoveDuplicatesBuilder}
                   submitLabel={isModifyRemoveDuplicates ? "Modify" : "Add"}
                   onSubmit={submitRemoveDuplicates}
+                  onCancel={dismissStatementPanel}
                   formNames={formNames}
                   knownVariables={knownVariables}
                 />
@@ -713,6 +819,7 @@ export function ProcessEditor({ processName }: Props) {
                   onStateChange={setCommentBuilder}
                   submitLabel={isModifyComment ? "Modify" : "Add"}
                   onSubmit={submitComment}
+                  onCancel={dismissStatementPanel}
                 />
               )}
             </div>
@@ -759,7 +866,7 @@ export function ProcessEditor({ processName }: Props) {
             if (fromPath) {
               e.preventDefault();
               e.stopPropagation();
-              moveProcessCommandBefore(fromPath, hit.path, hit.index);
+              moveCommandBefore(fromPath, hit.path, hit.index);
               return;
             }
 

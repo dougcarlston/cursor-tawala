@@ -26,6 +26,11 @@ import {
   writeSkipDialogSession,
 } from "@/lib/skipDialogSession";
 import {
+  getProcessClipboard,
+  setProcessClipboard,
+  hasProcessClipboard,
+} from "@/lib/processClipboard";
+import {
   EMPTY_CONDITION_ROW,
   EMPTY_IF_BUILDER,
   EMPTY_SET_BUILDER,
@@ -121,6 +126,17 @@ export function SkipInstructionsDialog({
       restored?.commands ??
       structuredClone(Array.isArray(initialCommands) ? initialCommands : []),
   );
+  const [history, setHistory] = useState<SkipCommand[][]>(() => [
+    restored?.commands ??
+      structuredClone(Array.isArray(initialCommands) ? initialCommands : []),
+  ]);
+  const [historyIndex, setHistoryIndex] = useState(0);
+
+  const applyCommands = (next: SkipCommand[]) => {
+    setCommands(next);
+    setHistory((prev) => [...prev.slice(0, historyIndex + 1), next]);
+    setHistoryIndex((prev) => prev + 1);
+  };
   const [insertPath, setInsertPath] = useState(restored?.insertPath ?? "root");
   const [insertIndex, setInsertIndex] = useState(restored?.insertIndex ?? 0);
   const [selectedCommandPath, setSelectedCommandPath] = useState<string | null>(
@@ -250,7 +266,7 @@ export function SkipInstructionsDialog({
 
   const insertAtArrow = (cmd: SkipCommand) => {
     const result = insertCommandAtPoint(commands, insertPath, insertIndex, cmd);
-    setCommands(result.commands);
+    applyCommands(result.commands);
     setInsertPath(result.insertPath);
     setInsertIndex(result.insertIndex);
     setSelectedCommandPath(null);
@@ -277,7 +293,7 @@ export function SkipInstructionsDialog({
             ? { else: (existing.else as SkipCommand[] | undefined) ?? [] }
             : {}),
         };
-        setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, updated));
+        applyCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, updated));
         return;
       }
     }
@@ -293,7 +309,7 @@ export function SkipInstructionsDialog({
   const submitSkipTo = () => {
     const cmd: SkipCommand = { cmd: "skip", to: skipToDest };
     if (isModifySkipTo && selectedCommandPath) {
-      setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
+      applyCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
       return;
     }
     insertAtArrow(cmd);
@@ -310,7 +326,7 @@ export function SkipInstructionsDialog({
       cmd.arithmeticAsText = true;
     }
     if (isModifySet && selectedCommandPath) {
-      setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
+      applyCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
       return;
     }
     insertAtArrow(cmd);
@@ -320,7 +336,7 @@ export function SkipInstructionsDialog({
     if (!canAddComment) return;
     const cmd: SkipCommand = { cmd: "comment", text: commentText.trim() };
     if (isModifyComment && selectedCommandPath) {
-      setCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
+      applyCommands(replaceProcessCommandAtPath(commands, selectedCommandPath, cmd));
       return;
     }
     insertAtArrow(cmd);
@@ -328,7 +344,7 @@ export function SkipInstructionsDialog({
 
   const deleteCommandAtPath = (path: string) => {
     const next = deleteProcessCommandAtPath(commands, path);
-    setCommands(next);
+    applyCommands(next);
     if (selectedCommandPath === path) {
       setSelectedCommandPath(null);
     }
@@ -337,7 +353,7 @@ export function SkipInstructionsDialog({
   const moveCommandAtPath = (path: string, direction: "up" | "down") => {
     const moved = moveProcessCommandAtPath(commands, path, direction);
     if (!moved) return;
-    setCommands(moved.commands);
+    applyCommands(moved.commands);
     setSelectedCommandPath(moved.newPath);
   };
 
@@ -429,28 +445,139 @@ export function SkipInstructionsDialog({
     }
   };
 
+  const handleCut = () => {
+    if (!selectedCommandPath) return;
+    const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
+    if (!cmd) return;
+    setProcessClipboard(cmd);
+    deleteCommandAtPath(selectedCommandPath);
+  };
+
+  const handleCopy = () => {
+    if (!selectedCommandPath) return;
+    const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
+    if (!cmd) return;
+    setProcessClipboard(cmd);
+  };
+
+  const handlePaste = () => {
+    const cmd = getProcessClipboard();
+    if (!cmd) return;
+    insertAtArrow(cmd as SkipCommand);
+  };
+
+  const handleDelete = () => {
+    if (!selectedCommandPath) return;
+    deleteCommandAtPath(selectedCommandPath);
+  };
+
+  const canUndo = historyIndex > 0;
+  const canRedo = historyIndex < history.length - 1;
+
+  const handleUndo = () => {
+    if (!canUndo) return;
+    const nextIdx = historyIndex - 1;
+    setHistoryIndex(nextIdx);
+    setCommands(history[nextIdx]);
+    setSelectedCommandPath(null);
+  };
+
+  const handleRedo = () => {
+    if (!canRedo) return;
+    const nextIdx = historyIndex + 1;
+    setHistoryIndex(nextIdx);
+    setCommands(history[nextIdx]);
+    setSelectedCommandPath(null);
+  };
+
   // Escape: leave Modify → close builder → discard dialog (do not save draft).
+  // Also handle Cut/Copy/Paste/Undo/Redo/Delete keyboard shortcuts.
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
-      if (e.key !== "Escape") return;
-      if (selectedCommandPath) {
+      const target = e.target;
+      const inInput =
+        target instanceof HTMLInputElement ||
+        target instanceof HTMLTextAreaElement ||
+        (target instanceof HTMLElement && target.isContentEditable);
+
+      if (e.key === "Escape") {
+        if (selectedCommandPath) {
+          e.preventDefault();
+          cancelEditSelection();
+          return;
+        }
+        if (panel !== "none") {
+          e.preventDefault();
+          closeBuilderPanel();
+          return;
+        }
         e.preventDefault();
-        cancelEditSelection();
+        discard();
         return;
       }
-      if (panel !== "none") {
+
+      if (inInput) return;
+
+      const modKey = (e.metaKey || e.ctrlKey) && !e.altKey;
+      const key = e.key.toLowerCase();
+      const code = e.code;
+      const isZ = key === "z" || code === "KeyZ";
+      const isY = (key === "y" || code === "KeyY") && !e.shiftKey;
+      const isX = (key === "x" || code === "KeyX") && !e.shiftKey;
+      const isC = (key === "c" || code === "KeyC") && !e.shiftKey;
+      const isV = (key === "v" || code === "KeyV") && !e.shiftKey;
+
+      if (modKey) {
+        if (isZ) {
+          e.preventDefault();
+          if (e.shiftKey) {
+            handleRedo();
+          } else {
+            handleUndo();
+          }
+          return;
+        }
+        if (isY) {
+          e.preventDefault();
+          handleRedo();
+          return;
+        }
+        if (isX && selectedCommandPath != null) {
+          e.preventDefault();
+          handleCut();
+          return;
+        }
+        if (isC && selectedCommandPath != null) {
+          e.preventDefault();
+          handleCopy();
+          return;
+        }
+        if (isV && hasProcessClipboard()) {
+          e.preventDefault();
+          handlePaste();
+          return;
+        }
+      }
+
+      if (
+        (e.key === "Delete" || e.key === "Backspace") &&
+        selectedCommandPath != null
+      ) {
         e.preventDefault();
-        closeBuilderPanel();
+        handleDelete();
         return;
       }
-      e.preventDefault();
-      discard();
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [selectedCommandPath, panel, sessionKey]);
-
-  const toolbarDeleteEnabled = selectedCommandPath != null;
+  }, [
+    selectedCommandPath,
+    panel,
+    sessionKey,
+    commands,
+    historyIndex,
+    history,
+  ]);
 
   // Portal to document.body so the dialog is not clipped by MDI overflow / PE stacking
   // (Process IF is embedded in ProcessEditor, so it never hit this).
@@ -480,19 +607,27 @@ export function SkipInstructionsDialog({
     >
       <div className="skip-dialog-toolbar explorer-toolbar" role="toolbar" aria-label="Edit commands">
           {SKIP_TOOLBAR.map(({ id, label, icon }) => {
-            const isDelete = id === "delete";
-            const enabled = isDelete && toolbarDeleteEnabled;
+            const enabled =
+              id === "delete" ? selectedCommandPath != null :
+              id === "cut" ? selectedCommandPath != null :
+              id === "copy" ? selectedCommandPath != null :
+              id === "paste" ? hasProcessClipboard() :
+              id === "undo" ? canUndo :
+              id === "redo" ? canRedo : false;
             return (
               <span key={id} className="win-tip" data-tip={label}>
                 <button
                   type="button"
                   disabled={!enabled}
-                  title={enabled ? label : `${label} (not yet)`}
+                  title={enabled ? label : `${label} (unavailable)`}
                   aria-label={label}
                   onClick={() => {
-                    if (isDelete && selectedCommandPath) {
-                      deleteCommandAtPath(selectedCommandPath);
-                    }
+                    if (id === "delete") handleDelete();
+                    else if (id === "cut") handleCut();
+                    else if (id === "copy") handleCopy();
+                    else if (id === "paste") handlePaste();
+                    else if (id === "undo") handleUndo();
+                    else if (id === "redo") handleRedo();
                   }}
                 >
                   {icon}

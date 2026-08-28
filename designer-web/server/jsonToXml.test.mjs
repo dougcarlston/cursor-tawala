@@ -362,7 +362,7 @@ describe("projectToXml heading type", () => {
     expect(xml).toContain('<heading label="H1" type="Sub">Details</heading>');
   });
 
-  it("emits type=Main for mixed Main/Sub runs (legacy single-type limit)", () => {
+  it("emits separate Main and Sub headings for mixed runs", () => {
     const xml = projectToXml({
       name: "H",
       forms: [
@@ -379,7 +379,8 @@ describe("projectToXml heading type", () => {
         },
       ],
     });
-    expect(xml).toContain('<heading label="H1" type="Main">Title sub</heading>');
+    expect(xml).toContain('<heading label="H1" type="Main">Title </heading>');
+    expect(xml).toContain('<heading label="H1.2" type="Sub">sub</heading>');
   });
 
   it("resolves a Process-set <<Variable>> token in a Heading title (owner bug Aug 1, 2026 — Online Exam Builder Administration form)", () => {

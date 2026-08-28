@@ -28,6 +28,11 @@ export function claimedDeployIdentityName(project) {
   return String(project.deployIdentityName || "").trim();
 }
 
+export function claimedAuthorId(project) {
+  if (!project || typeof project !== "object") return "";
+  return String(project.authorId || project.author || project.userId || "").trim();
+}
+
 /**
  * Hatch is off unless the API process has TAWALA_OCCUPANCY_HATCH set and the
  * request repeats that token. Designer Push never sends these fields.
@@ -57,18 +62,20 @@ export function findOccupantInDeploymentsXml(xml, tomcatName) {
   return null;
 }
 
-export function findOccupantInNodeIndex(entries, tomcatName) {
+export function findOccupantInNodeIndex(entries, tomcatName, user = null) {
   const want = String(tomcatName || "").trim().toLowerCase();
   if (!want || !Array.isArray(entries)) return null;
   const hit = entries.find((e) => e && String(e.name || "").trim().toLowerCase() === want);
   if (!hit) return null;
+  const author = hit.author || hit.authorId || hit.userId || hit.user || user || null;
   return {
     name: String(hit.name || "").trim(),
     uniqueId: hit.uniqueId ? String(hit.uniqueId) : null,
+    ...(author ? { author, user: author } : {}),
   };
 }
 
-export function incomingOwnsOccupant(incomingProject, occupant) {
+export function incomingOwnsOccupant(incomingProject, occupant, options = {}) {
   if (!occupant) return false;
   const uid = claimedUniqueId(incomingProject);
   if (uid && occupant.uniqueId && uid === String(occupant.uniqueId)) return true;
@@ -78,6 +85,22 @@ export function incomingOwnsOccupant(incomingProject, occupant) {
     occupant.name &&
     identity === occupant.name &&
     isMintedDeployName(identity)
+  ) {
+    return true;
+  }
+  const user = String(options?.user || options?.currentUser || "").trim();
+  const occupantAuthor = String(
+    occupant?.authorId || occupant?.author || occupant?.userId || occupant?.user || ""
+  ).trim();
+  const incomingAuthor = claimedAuthorId(incomingProject);
+
+  if (user && occupantAuthor && user.toLowerCase() === occupantAuthor.toLowerCase()) {
+    return true;
+  }
+  if (
+    incomingAuthor &&
+    occupantAuthor &&
+    incomingAuthor.toLowerCase() === occupantAuthor.toLowerCase()
   ) {
     return true;
   }
@@ -114,6 +137,7 @@ export function decideNameOccupancy({
   tomcatName,
   incomingProject,
   occupant,
+  user,
   hatch = false,
   lookupFailed = false,
 } = {}) {
@@ -130,7 +154,7 @@ export function decideNameOccupancy({
   if (hatch) {
     return { allow: true, code: "hatch" };
   }
-  if (incomingOwnsOccupant(incomingProject, occupant)) {
+  if (incomingOwnsOccupant(incomingProject, occupant, { user })) {
     return { allow: true, code: "owns-occupant" };
   }
   return {

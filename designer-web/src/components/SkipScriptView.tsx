@@ -1,4 +1,7 @@
-import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
+import {
+  isDirectChildCommandPath,
+  parentPathAndChildIndex,
+} from "@/lib/skipInsertPath";
 import {
   blockSpanForHeader,
   findInsertionLineIndex,
@@ -302,7 +305,14 @@ function renderLineAt(ctx: RenderCtx, i: number): { nodes: ReactNode[]; nextInde
     const empty = isEmptyBlock(ctx.lines, i);
 
     nodes.push(
-      <div key={`open-${i}`} className={`skip-script-line skip-block-open${headerClass}`}>
+      <div
+        key={`open-${i}`}
+        className={`skip-script-line skip-block-open${headerClass}`}
+        role="button"
+        tabIndex={-1}
+        title="Click to set insertion point inside this block"
+        onClick={() => ctx.selectPoint(zone, 0)}
+      >
         <span className="skip-script-pad">{pad}</span>
         <span className="skip-block-paren" aria-hidden>
           (
@@ -351,8 +361,18 @@ function renderLineAt(ctx: RenderCtx, i: number): { nodes: ReactNode[]; nextInde
     const zone = line.closeZone;
     const active = ctx.insertPath === zone && !ctx.indexedMode;
     const showCloseInterior = !isNonemptyBlockClose(ctx.lines, i);
+    const childCount = ctx.lines.filter(
+      (l) => l.path && isDirectChildCommandPath(l.path, zone),
+    ).length;
     nodes.push(
-      <div key={`close-${i}`} className="skip-script-line skip-block-close">
+      <div
+        key={`close-${i}`}
+        className="skip-script-line skip-block-close"
+        role="button"
+        tabIndex={-1}
+        title="Click to set insertion point at the end of this block"
+        onClick={() => ctx.selectPoint(zone, childCount)}
+      >
         <span className="skip-script-pad">{pad}</span>
         {showCloseInterior ? (
           <SkipBlockInterior

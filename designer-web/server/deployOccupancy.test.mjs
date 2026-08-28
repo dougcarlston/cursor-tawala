@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import {
+  claimedAuthorId,
   decideNameOccupancy,
   findOccupantInDeploymentsXml,
   findOccupantInNodeIndex,
@@ -29,6 +30,16 @@ describe("isMintedDeployName", () => {
   it("does not match Library catalog titles", () => {
     expect(isMintedDeployName("Simple Survey Template")).toBe(false);
     expect(isMintedDeployName("Online Exam Builder")).toBe(false);
+  });
+});
+
+describe("claimedAuthorId", () => {
+  it("extracts authorId, author, or userId", () => {
+    expect(claimedAuthorId({ authorId: "alice" })).toBe("alice");
+    expect(claimedAuthorId({ author: "bob" })).toBe("bob");
+    expect(claimedAuthorId({ userId: "charlie" })).toBe("charlie");
+    expect(claimedAuthorId({})).toBe("");
+    expect(claimedAuthorId(null)).toBe("");
   });
 });
 
@@ -81,6 +92,27 @@ describe("incomingOwnsOccupant", () => {
         occupant,
       ),
     ).toBe(true);
+  });
+
+  it("allows matching author between incoming project and occupant", () => {
+    const owned = { name: "My Math Quiz", uniqueId: "mathquiz123", author: "alice" };
+    expect(
+      incomingOwnsOccupant({ name: "My Math Quiz", author: "alice" }, owned),
+    ).toBe(true);
+  });
+
+  it("allows matching authenticated user when occupant has author", () => {
+    const owned = { name: "My Math Quiz", uniqueId: "mathquiz123", author: "alice" };
+    expect(
+      incomingOwnsOccupant({ name: "My Math Quiz" }, owned, { user: "alice" }),
+    ).toBe(true);
+  });
+
+  it("refuses different author", () => {
+    const owned = { name: "My Math Quiz", uniqueId: "mathquiz123", author: "alice" };
+    expect(
+      incomingOwnsOccupant({ name: "My Math Quiz", author: "bob" }, owned, { user: "bob" }),
+    ).toBe(false);
   });
 
   it("refuses catalog JSON (display name only)", () => {
@@ -159,6 +191,30 @@ describe("decideNameOccupancy", () => {
     });
     expect(d.allow).toBe(true);
     expect(d.code).toBe("owns-occupant");
+  });
+
+  it("allows authenticated author update of own deployment", () => {
+    const owned = { name: "Weekly Status Poll", uniqueId: "poll998877", author: "alice" };
+    const d = decideNameOccupancy({
+      tomcatName: "Weekly Status Poll",
+      incomingProject: { name: "Weekly Status Poll" },
+      occupant: owned,
+      user: "alice",
+    });
+    expect(d.allow).toBe(true);
+    expect(d.code).toBe("owns-occupant");
+  });
+
+  it("refuses another user updating occupied deployment", () => {
+    const owned = { name: "Weekly Status Poll", uniqueId: "poll998877", author: "alice" };
+    const d = decideNameOccupancy({
+      tomcatName: "Weekly Status Poll",
+      incomingProject: { name: "Weekly Status Poll" },
+      occupant: owned,
+      user: "bob",
+    });
+    expect(d.allow).toBe(false);
+    expect(d.code).toBe("name-occupied");
   });
 
   it("allows hatch Redeploy of Library", () => {

@@ -26,6 +26,7 @@ export interface ShowStatementBuilderProps {
   onStateChange: (next: ShowBuilderState) => void;
   submitLabel: string;
   onSubmit: () => void;
+  onCancel?: () => void;
   documentNames: readonly string[];
   formNames: readonly string[];
   knownVariables: ReadonlySet<string>;
@@ -41,6 +42,7 @@ export function ShowStatementBuilder({
   onStateChange,
   submitLabel,
   onSubmit,
+  onCancel,
   documentNames,
   formNames,
   knownVariables,
@@ -290,6 +292,11 @@ export function ShowStatementBuilder({
           >
             {submitLabel}
           </button>
+          {onCancel ? (
+            <button type="button" className="skip-cancel-btn" onClick={onCancel}>
+              Cancel
+            </button>
+          ) : null}
         </div>
       </div>
     </div>

@@ -249,21 +249,30 @@ describe("projectDeployStatusSuffix", () => {
   });
 });
 
-describe("in-app Save As dialog request", () => {
-  afterEach(() => {
-    if (isSaveAsDialogOpen()) cancelSaveAsDialog();
-  });
+describe("deployUniqueId and author stamping on save/export", () => {
+  it("exportJson preserves deployUniqueId, deployIdentityName, and author", () => {
+    useProjectStore.setState({
+      project: {
+        name: "My Owned Project",
+        forms: [],
+        processes: [],
+        documents: [],
+        deployUniqueId: "unique123abc",
+        deployIdentityName: "My Owned Project 54ef790c",
+        author: "alice",
+        authorId: "alice",
+        userId: "alice",
+        _freshFromTemplate: true,
+      },
+    });
 
-  it("saveProjectAs opens the dialog without writing", () => {
-    expect(isSaveAsDialogOpen()).toBe(false);
-    saveProjectAs();
-    expect(isSaveAsDialogOpen()).toBe(true);
-  });
-
-  it("cancelSaveAsDialog closes the prompt", () => {
-    saveProjectAs();
-    expect(isSaveAsDialogOpen()).toBe(true);
-    cancelSaveAsDialog();
-    expect(isSaveAsDialogOpen()).toBe(false);
+    const exported = JSON.parse(useProjectStore.getState().exportJson());
+    expect(exported.deployUniqueId).toBe("unique123abc");
+    expect(exported.deployIdentityName).toBe("My Owned Project 54ef790c");
+    expect(exported.author).toBe("alice");
+    expect(exported.authorId).toBe("alice");
+    expect(exported.userId).toBe("alice");
+    // _freshFromTemplate should be stripped on export
+    expect(exported._freshFromTemplate).toBeUndefined();
   });
 });

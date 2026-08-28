@@ -46,6 +46,17 @@ describe("enhanceRichTextHtml itemization", () => {
     expect(out).not.toMatch(/\)>>/);
   });
 
+  it("does not leave scrap or render <> for bare QUESTION LIST <<>>", () => {
+    const html = `Before <<QUESTION LIST(false, false, 2, <<Form 1:FIB1:a>>, <<Form 1:FIB2:a>>)>> after`;
+    const out = enhanceRichTextHtml(html, () => "", {
+      records: {},
+      formName: "Form 1",
+    });
+    expect(out).not.toContain("QUESTION LIST");
+    expect(out).not.toContain("<>");
+    expect(out).not.toMatch(/\)>>/);
+  });
+
   it("returns empty for ITEMIZATION/MULTIPLE QUESTION LIST template keys", () => {
     const out = enhanceRichTextHtml("<<ITEMIZATION>>", () => "SHOULD_NOT_APPEAR");
     expect(out).toBe("");

@@ -203,12 +203,13 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **G7–G9** RANDOM; Join/blocks/composites; device output sizing | **Next version** |
 | **G10 #1** Curated theme shortlist (8–12 good themes; hide/retire weak CSS) | **Before we go live** — site/My Tawala Theme dropdown + CSS only; no Designer canvas |
 | **G10 #2** Theme-maker outside Designer | **Integral when public** — ongoing site work (colors/fonts/width → CSS + register theme); authors never open Designer |
-| **E1** Push vs durable uniqueId (Push-to-MyTawala only) | **ASAP** — product policy agreed Aug 27 |
+| **E1** Push vs durable uniqueId (Push-to-MyTawala & author identity) | **ASAP** — (1) Authenticated author-update model: if current user owns the project name in My Tawala, Push updates live uniqueId / version under their ownership; (2) Desktop Save stores receipt `deployUniqueId` so local edits re-push cleanly; (3) Library copies get stamped with acquiring user ID on first Push |
 | **E2** Java WAR (`richText` default-off, etc.) | **Before we go live** |
 | **E3** Online Exam Setup ↔ Administration navigation | **ASAP** — three tracks: (1) **Designer project** — add Setup→Administration exit on Setup form; (2) **Java WAR** — Admin→Scores PRG fix in source, deploy with E2 rebuild; (3) **Recovery → Setup** — document or Java `originalLink` (see bugs doc) |
-| **E4** Send recipient-list / bulk To smoke | **ASAP** — owner smoke (2–3 signups + Mailpit) |
+| **E4** Send recipient-list / bulk To smoke | **PASSED (owner smoke Aug 28)** — 2–3 signups + Mailpit verified |
 | **E5** Template Deploy smokes (`DESIGNER_TEMPLATE_MATRIX.md`) | **Immediate** — owner reads matrix; confirm remaining rows |
 | **E6** DirtBowl Preview vs Deploy data/seed | **Document only** — architectural; no unify fix |
+| **AUTH** Real Author / User Authentication | **Before we go live** — replace hardcoded `dev`/`dev` with real login / user identity across Designer Push and My Tawala |
 
 ## Architectural / DirtBowl (not Designer UI bugs)
 

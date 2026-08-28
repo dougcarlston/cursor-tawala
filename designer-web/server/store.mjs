@@ -57,11 +57,19 @@ export function saveProject(userId, project, { forceNewId = false } = {}) {
     entry = null;
   }
   if (!entry) {
-    entry = { name: project.name, uniqueId: randomId(), updatedAt: new Date().toISOString() };
+    entry = {
+      name: project.name,
+      uniqueId: randomId(),
+      updatedAt: new Date().toISOString(),
+      author: userId,
+      user: userId,
+    };
     index.push(entry);
   } else {
     entry.updatedId = entry.uniqueId;
     entry.updatedAt = new Date().toISOString();
+    entry.author = entry.author || userId;
+    entry.user = entry.user || userId;
   }
 
   // Never persist Designer-only flags into the .deployed package.
