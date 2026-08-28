@@ -161,7 +161,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 | **Alternate Label** | Internal field name for **Fields** panel and **Processes** (e.g. `Surveyee` while user sees **Name:**) |
 | **Caption** | Small label **tight above this blank** (e.g. **First** / **Last**), left-aligned to the box. Not Styles→Above; not Alternate Label. |
 | **Height** | Line count for blank input area (`1` = single line; higher = multi-line for long answers) |
-| **Formatting toolbar on live form** | When **Height > 1**: checkbox on the blank strip. **Off** (default) = plain `<textarea>` on `:8080` after Push. **On** = Java TinyMCE mini-formatter (`mceRichText`). Omitting `richText` on a multi-line blank also means off. Design canvas never shows TinyMCE on FIBs. |
+| **Formatting toolbar on live form** | When **Height > 1**: checkbox on the blank strip. **Off** (default) = plain `<textarea>` on `:8080` after Push. **On** = Java TinyMCE mini-formatter (`mceRichText`). Omitting `richText` on a multi-line blank also means off. Design canvas never shows TinyMCE on FIBs. **Preview (deferred Aug 27):** Preview stays non-interactive and today still paints a short text input for multi-line blanks. Future consideration: static image of the multi-line box, and a second static (box + toolbar chrome) when this checkbox is on — height/line count does not change toolbar shape, so one image per mode is enough. Do **not** load TinyMCE in Preview. Track: `DESIGNER_OPEN_TODOS.md` Form items. |
 | **Required** | Checkbox — response required |
 | **Validation** | Dropdown (see below) |
 | **Edit...** | Opens validation editor when a validation type is selected (greyed when `-- No Validation --`) |

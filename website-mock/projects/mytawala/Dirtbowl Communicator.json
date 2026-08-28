@@ -2468,13 +2468,15 @@
                 },
                 {
                   "cmd": "append",
-                  "value": ""
+                  "document": "Letter",
+                  "appendage": "Questionnaire"
                 }
               ]
             },
             {
               "cmd": "append",
-              "value": ""
+              "document": "Letter",
+              "appendage": "LetterClose"
             },
             {
               "cmd": "send",

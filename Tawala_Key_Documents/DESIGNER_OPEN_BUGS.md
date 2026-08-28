@@ -27,14 +27,10 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
-### Document — two links on one line merge underlines (Not blocking) — **NEW Aug 26**
+### Document — two links on one line merge underlines — **CLOSED Aug 27 (owner)**
 
-- **Path:** Document canvas (repro: **Shared To-Do** → **Document - User Menu**). Two Insert → **Link…** (Form in project) on the **same placed line**, with plain text between them (`Sign up for a task` **or** `Mark a task complete`).
-- **Symptom:** One continuous underline runs under **both** links **and** the text/spaces in between (`or`). Seen in **Design** and after **Push** (`:8080`). Owner: may be cosmetic, but might also merge click targets so the two links are confused.
-- **Expected:** Each link has its own underline; the word `or` (and surrounding spaces) is not underlined and is not part of either link.
-- **Open question:** Confirm whether the live click hit-box is two `<a>`s or one spanning run. Visual merge alone is enough to file.
-- **Screenshots:** Design `Tawala_Key_Documents/assets/Bug_-_Document-two-links-merged-underline-Design-Aug26.png`; Push `…/Bug_-_Document-two-links-merged-underline-Push-Aug26.png`.
-- **Status:** Open — document only (Aug 26). Do not fix in a website-mock session. Related smoke: `DESIGNER_DOCUMENT_EDITOR.md` § must-not-break; `DESIGNER_INSERT_MENU_AND_FUNCTIONS.md` § Smoke — Link….
+- **Was:** Shared To-Do Document — two Insert → Link… on one line looked like one continuous underline (Design + Push). Filed Aug 26.
+- **Owner Aug 27:** Legacy-only — **could not reproduce in a new project**. Dropped from active deferred list; do not schedule a fix. Screenshots retained under `Tawala_Key_Documents/assets/Bug_-_Document-two-links-merged-underline-*.png` for archaeology only.
 
 ### Parked Jul 30 / reconfirmed Aug 11 (Not blocking for Live Library) — **CLOSED Aug 20–21**
 
@@ -284,9 +280,11 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 - **Del/× on selected function chip deletes whole Text row** — **Fixed Jul 20:** highlighting a `<<…>>` function (or field) chip and pressing Del/Backspace, or clicking the row/toolbar **×**, used to remove the entire Text item. Now removes only the selected chip(s); whole-row delete still applies when no chip is highlighted.
 
-- **Design-mode FIB blanks are editable** — should be placeholders / length lines only while editing? **UX bug; deferred.** (Idle Design correctly keeps literal `_` — Batch 2 hold-list Jul 18; boxes only in Preview/Deploy.)
+- **Design-mode FIB blanks are editable** — **No action (owner Aug 27).** Typing into a Design blank can split the item into two FIBs with text in the middle — sometimes intended, otherwise a quick learn. Not scheduled.
 
-- **Design-mode checkboxes and radios change state** on the canvas. **UX bug; deferred.**
+- **Design-mode checkboxes and radios change state** on the canvas. **Owner Aug 27:** agree they should be layout-only (inert). Polish when convenient; not scheduled for V1.
+
+- **Configure Function — column-level displayCondition** — **Version 2 (owner Aug 27).** Prefer a popup control: hide columns that contain no data; show again the first time data appears in that field. Full Where-style editor not required for V1.
 
 ### Hierarchical convert / preserved-warning cues (Aug 6, 2026) — **implemented (partial)**
 
@@ -296,7 +294,7 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 1. **Project Explorer** — **Forms** / **Documents** folders and Form/Document nodes show an orange **`!`** when anything inside still has an **uneditable** gap. **Aug 20:** Forms with gaps list drill-down rows (`T2 (preserved)`) under the form — click opens that item. Item-level Form Item conditions are editable and no longer flag Explorer.
 2. **Form / Document canvas** — **`{Qn}` braces** on the badge when `item.displayCondition` is set (product state, not a warning). Orange left-edge gap stripe **and amber T-badge** for rows that still embed **column** conditions. **Function chip** turns amber when columns carry `displayCondition`.
-3. **Configure Function dialog** — column-level **`cond` badge** next to “Column N” when that column has `displayCondition` (round-trip preserves the marker; edit UI still deferred).
+3. **Configure Function dialog** — column-level **`cond` badge** next to “Column N” when that column has `displayCondition` (round-trip preserves the marker). **Edit UI → Version 2 (owner Aug 27):** prefer hide-empty-columns / show-when-data-appears control in function popups, not a full Where editor for V1.
 4. **Status bar** — count of **uneditable** preserved gap markers (column conditions). Item-level conditions are not counted as gaps.
 
 **Still not visually flagged** (honest remainder): Send/email path limits, dropped `<styles>`, multi-source-form itemization primary-only, Dynamic MCQ nested record-selector `where`, skipped `<file>` uploaders, empty `<show/>`, and other convert messages that leave no durable column-`displayCondition`-like marker (or leave data that Design already edits via Where rows).
@@ -469,8 +467,8 @@ Any future Registration-only helper must be gated. Add a **non-DirtBowl** test (
 
 | # | Item | Notes |
 |---|------|--------|
-| 6 | **`baseball` theme CSS** | Stub / fallback still weak vs full theme; optional — not blocking Signup default theme. |
 | — | **Process caret + row highlight** | **Fixed Jul 16 (v2); hardened Jul 24** — edit mode hides insert-gap ▶; no text caret on selected row (see Active / Process). |
+| — | **`baseball` theme CSS** | **Dropped Aug 27 (owner)** — unimportant; do not schedule. |
 
 **Then:** MQL/SignupSheet core is done enough to leave — continue owner review **#9** other untested functions that already emit Document XML (skip four deferred stubs: Categorizer / Roster / Link / PayPal).
 

@@ -20,16 +20,16 @@ alwaysApply: true
 
 ## Parked until site is up
 
-1. **Document smoothness P0s** — Face/Size multi-chip, invent-with-tables, chip drag, table reflow
-2. **Native `confirm()`** — still browser-native in places; polish later
-3. **Font Color picker** — left intentional as-is; do **not** “fix” without an owner ask
-4. **Skip/Process stubs** — Cut/Copy/Paste/Undo/Redo; Process If/Set still lack Cancel (Send has Cancel)
+1. **Document smoothness P0s** — Face/Size multi-chip, invent-with-tables, chip drag, table reflow. **After live, before public (owner Aug 27).**
+2. **Native `confirm()`** — still browser-native in places; **before public use** — nicer dialogs + chrome conform (owner Aug 27). See also gated **F2**.
+3. **Font Color picker** — left intentional as-is; **Version 2 or never** (owner Aug 27).
+4. **Skip/Process stubs** — Cut/Copy/Paste/Undo/Redo; Process If/Set still lack Cancel (Send has Cancel). **ASAP (owner Aug 27).**
 
 ## Also deferred (site-dependent)
 
-- **MainMenu → Project stubs:** Project Manager and Email Delivery — wait for site; not done
-- **Sample JSON replacement** (Jul 28 conversions) — owner reviewing offline; not blocking
-- **Page Header / banner graphics** — parked; Deploy has sophisticated image processing — do not interfere until understood
+- **MainMenu → Project:** **Project Manager** is live (My Tawala / website — owner Aug 27). **Email Delivery…** — hide menu stub; delivery path stays as-is. **Library-side** email record-keeping / billing counters per registered user (My Tawala group email volume); Test Drive sends negligible. See Task List **#20** HOLD in `website-mock/README.md`; `docs/EMAIL_DELIVERY_OPS.md`.
+- **Sample JSON replacement** (Jul 28 conversions) — **ASAP (owner Aug 27):** re-check New Project samples; owner believes unhappy ones already replaced.
+- **Page Header / banner graphics** — **Later (owner Aug 27):** full source image kept regardless of banner crop; re-edit always possible. Optional: min/max import size for quality standards.
 
 ## Owner-reported Jul 30 / Aug 11 — park (Not blocking for Live Library)
 

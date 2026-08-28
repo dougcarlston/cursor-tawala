@@ -68,7 +68,7 @@ After Open of `.tawala`, status shows `Imported … (N warnings)`; quiet-Save ha
 
 - **Document HTML → XML export** — **13 of 17** function types emit real XML (`documentHtmlToXml.mjs`). **4 Deferred stubs** (categorizer / roster / link / paypal) emit comments only and are hidden from Insert → Function (Jul 24). Tables/placed text improved; remaining gaps are stub product, not missing emitters for the shipped set. (Sources: Document palette & typewriter; Document WYSIWYG & palette)
 - **fx / Insert Function** — picker + Configure for all catalog entries; Insert hides the four parked stubs. Full configure UI for stubs not required this build. (Source: Document palette & typewriter; smoke item 14)
-- **Field-token drag polish** — optional leftover; not confirmed broken. (Source: Document palette & typewriter)
+- **Field-token drag polish** — optional leftover; not confirmed broken. **Joint review Aug 28** with C6–C9, C12–C13. (Source: Document palette & typewriter)
 - **Default Font / Default Size greyed rules** — legacy Reset greyed rules obsolete; Reset control **removed** July 10.
 - **Indent / Outdent** — **verified July 10:** Document placed lines shift by 36 pt steps from the left margin (width still to right margin); Form paragraphs use `margin-left`.
 
@@ -117,12 +117,13 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 
 - **Move Up / Move Down** for form items and process statements — **Done Jul 12** (↑/↓ + Alt+arrows + select-then-drag reorder; compact lists, caret only while dragging). **Document blocks — owner smoke Jul 15: pass.**
 - **Form Item conditional display (right-click badge → where-clause)** — **Done Aug 10.** Spec: `DESIGNER_FORM_ITEMS_CONDITIONAL_DISPLAY.md`. Badge context menu → **Display conditionally…** dialog; `{Qn}` braces when set; Push re-emits `<displayConditions>` (incl. and/or). Column-level / Configure Function `displayCondition` still cue-only. **~7 projects sequestered for this gap — released Aug 10** (owner).
-- **FIB hint-text styling** (smaller italic secondary font for parentheticals). **Deferred** → `docs/DESIGNER_BACKLOG_FORMS_FIBS.md`. (Source: Designer Sign-up DirtBowl)
+- **FIB hint-text styling** (smaller italic secondary font for parentheticals). **Superseded Aug 27 (owner):** use per-blank **Caption** instead. Backlog note kept in `docs/DESIGNER_BACKLOG_FORMS_FIBS.md` as historical only.
+- **Preview: static stand-in for multi-line / mini-editor FIB** (owner Aug 27). **After live, before public** — one Preview sweep (static multi-line box ± toolbar image). No live TinyMCE. Spec: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § FIB blank properties.
 - **Heading Main/Sub** — **Jul 24:** Design Type applies to the **selection** (or pends at caret). Mixed Main+Sub lines in one box export as multiple `<heading>` / Preview `h1.heading` + `h2.subheading` with stack gap. See `DESIGNER_FORM_ITEMS_HEADING.md`. (Source: Designer MDI and Heading)
-- **FIB fine-grained Fields drop map** (question vs blank vs capture label). **Deferred** / unfinished. (Sources: Designer MDI and Heading; Forms canvas & Skip)
-- **Per-item Properties popups** not migrated — permanent Properties panel still used for non-canvas-inline items. **Deferred.** (Source: Designer MDI and Heading)
+- **FIB fine-grained Fields drop map** (question vs blank vs capture label). **After live, before public (owner Aug 27):** one more attempt to improve Fields drop targeting; exact UX TBD.
+- **Per-item Properties popups** not migrated — **No (owner Aug 27).** Properties live in item windows or context popups (Skip pattern). No permanent Properties column for irrelevant fields.
 - **Properties: Individual Items stay fully expanded** when not selected (should compress to a single line). UX polish — **superseded July 10:** right-column Properties panel removed; Fields owns the column. Per-item Properties popups remain a separate deferred item.
-- **File Uploader** — **Deferred / out of scope for this build (owner Jul 27).** Hidden on Forms→Items palette (no greyed stub; owner Jul 17). Very complex; unused on owner Mac except SportsDashboards communicator forms. Never wired in 2011 reference build or browser Designer. Spec only: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § File Uploader. Use **Insert → Image → From your PC…** / **From the Web…** for images.
+- **File Uploader** — **Version 2 (owner Aug 27).** Not V1. Product shape: Designer built-in of Library Form Import + field assignment review (MailMerge-like). Hidden on Forms→Items palette. Spec only: `DESIGNER_FORM_ITEMS_TEXT_FIB_MCQ.md` § File Uploader. V1: Insert → Image for images.
 - **Items palette icons** — **Done Jul 24** (legacy-style PNG tiles in `designer-web/public/icons/form-item-*.png`). (Was: Unicode/CSS placeholders.)
 - **MCQ dynamic choice source** (“from stored data” + Configure Function). **Done Jul 23** — Choice source / Edit → `ConfigureFunctionDialog` (`dynamic-mcq`); Deploy `mcToXml`. Preview expands rows from session records (condition filter still Preview-only soft). (Source: Forms canvas & Skip)
 - **Rich text HTML → legacy XML export** for Form items — **MCQ question Done Jul 24**; **Heading Main/Sub split Done Jul 24**. Text/FIB already on the rich path. (Source: Forms canvas & Skip)
@@ -138,26 +139,81 @@ Skip Instructions is **wired** (canvas Edit dialog: If / SkipTo / Set / Comment;
 
 ## Process editor
 
-- **Edit → Connect / Disconnect Pre/Post-Process** menu actions missing — yellow banner + connection dialog work; menu parity does not. **Deferred.** (Sources: Designer MDI and Heading; Process editor If/Set)
+- **Edit → Connect / Disconnect Pre/Post-Process** menu actions missing — yellow banner + connection dialog work; menu parity does not. **Joint review Aug 28** with C6–C9, C12–C13. (Sources: Designer MDI and Heading; Process editor If/Set)
 - **Send does nothing at runtime** — **Superseded Jul 20.** Browser Designer → Deploy **Send** works on :8080 (owner: self-send OK). Preview still does not send mail. Recipient-list / bulk To not yet owner-smoked. Ops: `docs/EMAIL_DELIVERY_OPS.md`. (Was: `runtimeEngine.mjs` no-op — Java path is the real delivery.)
-- **Get `where` filter not applied in browser preview.** Designer Where UI works; runtime filter not wired. **Deferred.** (Source: Process statement panels)
-- **Append / Show document merge not in browser preview.** Designer panels work; runtime merge not in this track. **Deferred.** (Source: Process statement panels)
-- **Fields palette: no Record List / RecordSet branch after Get** (legacy when Get selected). ForEach record branches landed; Get RecordSet left as polish. **Deferred.** (Source: Process statement panels)
+- **Get `where` filter not applied in browser preview.** Designer Where UI works; runtime filter not wired. **Joint review Aug 28** with C6–C9, C12–C13. (Source: Process statement panels)
+- **Append / Show document merge not in browser preview.** Designer panels work; runtime merge not in this track. **Joint review Aug 28** with C6–C9, C12–C13. (Source: Process statement panels)
+- **Fields palette: no Record List / RecordSet branch after Get** (legacy when Get selected). ForEach record branches landed; Get RecordSet left as polish. **Joint review Aug 28** with C6–C9, C12–C13. (Source: Process statement panels)
 
 ## Shell / MDI / chrome
 
 - **Project → Page Header… image editor** — **Done Aug 20.** In-dialog pan/zoom/stretch (no aspect lock); OK bakes crop at source resolution for sharp Push. Spec: `DESIGNER_PAGE_HEADER.md`.
 - **Help → About Tawala Designer** — **Done Jul 24** (`AboutDialog` + Help menu). Two separate © lines (Tawala Systems 2005–2009; Douglas G. Carlston 2026); Beta Version; third-party acknowledgments; no OS/.NET/File Versions. Spec: `DESIGNER_MENU_SPEC.md` § Help. Owner review queue **#13**.
-- **MDI Pass 2** — no Windows menu; Design/Preview and selected item still global across form windows; no layout persistence; no maximize/tile/snap. **Deferred.** (Sources: Designer MDI and Heading; Document WYSIWYG & palette)
+- **MDI Pass 2** — no Windows menu; Design/Preview and selected item still global across form windows; no layout persistence; no maximize/tile/snap. **Joint review Aug 28** with C6–C9, C12–C13. (Sources: Designer MDI and Heading; Document WYSIWYG & palette)
 - **Long nowrap function chips push MDI chrome off-reach** — see open bug (Jul 20); workarounds Cascade / hide panels. Related to panel docking + title-bar clamp.
-- **Panel docking** — Items/Statements cannot be resized or moved independently of Project Explorer. **Deferred.** (Source: Designer MDI and Heading)
-- **Main icon toolbar (“frequently used”)** — legacy `mainToolStrip` below the menu bar, above Project Explorer, left of the Formatting Palette. **Done Jul 12** (`MainIconToolbar` + `shellCommands.ts`; shared with File/Edit/Project menus). Spec: `DESIGNER_MENU_SPEC.md`. Remaining: full home-page control audit (Owner review queue #2).
-- **Processes palette, Project Explorer chrome, canvas item windows** not restyled to legacy look-and-feel. **Deferred** (Items palette only was Choice A). (Source: Designer Forms foundation)
+- **Panel docking** — Items/Statements cannot be resized or moved independently of Project Explorer. **Never (owner Aug 27)** — no problem observed.
+- **Main icon toolbar (“frequently used”)** — legacy `mainToolStrip` below the menu bar, above Project Explorer, left of the Formatting Palette. **Done Jul 12** (`MainIconToolbar` + `shellCommands.ts`; shared with File/Edit/Project menus). Spec: `DESIGNER_MENU_SPEC.md`. Remaining: full home-page control audit (Owner review queue **#2** — joint review Aug 28 with C6–C9, C12–C13).
+- **Processes palette, Project Explorer chrome, canvas item windows** not restyled to legacy look-and-feel. **Version 2 (owner Aug 27)** — after public review feedback. (Items palette was Choice A.)
+- **Field-token drag polish** (optional leftover). **Joint review Aug 28** with C6–C9, C12–C13.
+
+---
+
+## Pre-public owner triage (Aug 27, 2026)
+
+Owner review of deferred inventory before public. **Sections A–G complete** (E recorded Aug 27 evening).
+
+| ID | Disposition |
+|----|-------------|
+| **A1** Document two-links underline | **Dropped** — legacy only; not repro in new project |
+| **A2–A4** Document caret B / Font-Size chips / long chips MDI | **Version 2** — minor nuisances. Include only if a Designer-side overall review happens for other reasons |
+| **A5** Design FIB blanks editable | **No action** — typing in a blank can split into 2 FIBs with text between; sometimes intended, else a quick learn |
+| **A6** Design MCQ radios/checkboxes toggle | **Agree layout-only** — should stay inert on Design; polish when convenient, not scheduled |
+| **A7** Column-level `displayCondition` edit UI | **Version 2** — prefer popup control: hide columns with no data; show again when data first appears (not full Where editor now) |
+| **A8–A9** Convert C2 (MCQ alts) / C3 (function tables) | **Before next legacy majors (>100KB)** — only for the short list of projects destined for public Library |
+| **A10** Variables-as-text residual | **Same process/timing as A8–A9** (Library legacy batch) |
+| **A11** baseball theme | **Deleted** |
+| **B1** Document smoothness P0s | **After live, before public** |
+| **B2** Native `confirm()` + chrome polish | **Before public use** — nicer dialogs; conform chrome (see also **F2** Library/site L&F) |
+| **B3** Font Color picker | **Version 2 or never** — leave as-is unless owner reopens |
+| **B4** Skip/Process Cut/Copy/Paste/Undo; If/Set Cancel | **ASAP** — owner should have caught earlier |
+| **B5** Project Manager + Email Delivery menu | **Project Manager** = real (My Tawala / site). **Email Delivery** menu item: **hide stub** — leave delivery as-is; **Library-side** email metering tracks cost per registered user (My Tawala group senders). Test Drive email volume negligible |
+| **B6** Sample JSON replacement | **ASAP** — owner re-check; believes unhappy samples already replaced |
+| **B7** Page Header / banner image pipeline | **Later** — full image retained regardless of crop; re-edit always possible. Optional future: min/max import size standards |
+| **C1** FIB hint styling | **Never — done** (captions) |
+| **C2** Preview static mini-editor + sweep | **After live, before public** — one Preview sweep |
+| **C3** Fields drop map (FIB targeting) | **After live, before public** — one more stab; UX TBD |
+| **C4** Per-item Properties popups / permanent panel | **No** — item windows + context popups only (Skip pattern) |
+| **C5** File Uploader | **Version 2** (MailMerge-like import) |
+| **C6–C9** Connect menu; Preview Get/Append; RecordSet Fields; MDI Pass 2 | **Joint review Aug 28** with C12–C13 |
+| **C10** Panel docking | **Never** — no problem |
+| **C11** Legacy L&F Processes/Explorer/canvas | **Version 2** — after public review feedback |
+| **C12–C13** Home audit remainder (#2); field-token drag polish | **Joint review Aug 28** with C6–C9 |
+| **D1–D2** Categorizer; Export Team Roster | **Hold** — Version 2 or never |
+| **D3** LINK TO PROJECT DETAILS (Insert → Function) | **Never** — no link to My Tawala Project Details from inside a live project (especially for non-subscriber use). **Insert → Link…** (Form/URL) remains the product path |
+| **D4** PayPal / generic payment | **After live, before public** — major effort |
+| **F1** 3-browser smoke | **After live, before public use** — confirmed Aug 27 |
+| **F2** Conform Look and Feel (legacy shell) | **Library / site chrome before we go live** (not Designer canvas first) — confirmed Aug 27 |
+| **F3** Main menus/tabs — no duplicates; identical behavior | **Before live** — confirmed Aug 27 |
+| **G1** Responsive theme CSS (`@media` / fluid width; one layout reflows) | **Next version** — **important** (not G8 multi-layout authoring) |
+| **G2** Returns + spacing as composition | **Review** — may already be close; V1 OK, can slip until after public + commentary |
+| **G3** Tables organizing FIB/field grids | **After live** — authors already try this; smoke/experiment then |
+| **G4** Centered Form Text vs theme column | **Next version** |
+| **G5** Form Cut/Copy/Paste shell polish | **Version 2** — owner prefers sooner if cheap; **can ship without** |
+| **G6** DirtBowl Page 2+ exemplar | **Not “more one-off formatting.”** First: Page 1 fully replicable with stock tools; then Page 2 as a **test of that premise** |
+| **G7–G9** RANDOM; Join/blocks/composites; device output sizing | **Next version** |
+| **G10 #1** Curated theme shortlist (8–12 good themes; hide/retire weak CSS) | **Before we go live** — site/My Tawala Theme dropdown + CSS only; no Designer canvas |
+| **G10 #2** Theme-maker outside Designer | **Integral when public** — ongoing site work (colors/fonts/width → CSS + register theme); authors never open Designer |
+| **E1** Push vs durable uniqueId (Push-to-MyTawala only) | **ASAP** — product policy agreed Aug 27 |
+| **E2** Java WAR (`richText` default-off, etc.) | **Before we go live** |
+| **E3** Online Exam Setup ↔ Administration navigation | **ASAP** — three tracks: (1) **Designer project** — add Setup→Administration exit on Setup form; (2) **Java WAR** — Admin→Scores PRG fix in source, deploy with E2 rebuild; (3) **Recovery → Setup** — document or Java `originalLink` (see bugs doc) |
+| **E4** Send recipient-list / bulk To smoke | **ASAP** — owner smoke (2–3 signups + Mailpit) |
+| **E5** Template Deploy smokes (`DESIGNER_TEMPLATE_MATRIX.md`) | **Immediate** — owner reads matrix; confirm remaining rows |
+| **E6** DirtBowl Preview vs Deploy data/seed | **Document only** — architectural; no unify fix |
 
 ## Architectural / DirtBowl (not Designer UI bugs)
 
 - **DirtBowl Registration Page 1 → Designer exemplar triage (Aug 20)** — Owner walkthrough: use Page 1 as a **ceiling sample** of formatting authors want from stock Designer (not a theme pack to copy). Triage buckets: Version 1 / next version / not immediate. Full write-up: [`docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md`](../docs/DIRTBOWL_PAGE1_DESIGNER_EXEMPLAR.md). V1 spine: theme width fit → shared field-column (incl. phones) → per-blank captions → Date/Address Insert presets → basic Form Text table Push fidelity.
-- **DirtBowl Preview vs Deploy data/seed mismatch** (local Preview defaults vs Java persisted admin/division data). **Deferred** as architectural distinction. (Source: Designer Sign-up DirtBowl)
+- **DirtBowl Preview vs Deploy data/seed mismatch** (local Preview defaults vs Java persisted admin/division data). **Owner Aug 27:** architectural — Preview (`:5173`/`:3001`) uses in-memory session defaults; Deploy (`:8080`) uses Postgres + optional division seed. Do not unify; document on Preview tab if needed. Detail: `docs/COMPARING_RUNTIMES.md` § data/seed mismatch.
 
 ---
 
@@ -210,7 +266,7 @@ Small product gaps found while smoke-testing Priority Library apps. **Do not imp
 
 | Item | Notes | Status |
 |------|-------|--------|
-| **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) but **no path to Administration**. Owner: *should be added — when we're done.* Admin is a separate startpoint today; recovery links also surface Setup when that was the session's first entry URL. | **Parked Aug 3** |
+| **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) but **no path to Administration**. **Owner Aug 27: ASAP** — edit Online Exam project in Designer (e.g. menu option / link on Setup), Push, republish Library copy. Admin remains a separate startpoint until linked. | **ASAP — Designer project** |
 
 ---
 

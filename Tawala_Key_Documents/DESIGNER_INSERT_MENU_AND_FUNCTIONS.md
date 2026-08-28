@@ -780,10 +780,10 @@ Ship this Designer build **without** wiring the four HTML→XML stubs below. Cat
 
 | id | Legacy name | Park reason |
 |----|-------------|-------------|
-| `categorizer` | CATEGORIZER | No current sample need; export stub |
-| `export-team-roster` | EXPORT TEAM ROSTER | SportsDashboards-oriented; export stub |
-| `link-to-project-details` | LINK TO PROJECT DETAILS | Hosted My Tawala; little local 8080 value |
-| `paypal-single-item-button` | PAYPAL BUTTON | Payment needed later as **generic** API — not PayPal-only |
+| `categorizer` | CATEGORIZER | **Hold — Version 2 or never (owner Aug 27)** |
+| `export-team-roster` | EXPORT TEAM ROSTER | **Hold — Version 2 or never (owner Aug 27)** |
+| `link-to-project-details` | LINK TO PROJECT DETAILS | **Never (owner Aug 27)** — no link to My Tawala Project Details from inside a live project (non-subscriber use). Insert → **Link…** is the product path |
+| `paypal-single-item-button` | PAYPAL BUTTON | **After live, before public (owner Aug 27)** — major effort; generic payment API, not PayPal-only |
 
 | # | Function | id | XML emit | Owner smoke / notes |
 |---|----------|-----|----------|---------------------|

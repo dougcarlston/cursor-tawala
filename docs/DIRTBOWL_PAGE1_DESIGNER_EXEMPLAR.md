@@ -45,7 +45,7 @@
 | **Get Record List Fields branch** | Named list branch in Fields after Get (multi-list mental model). `Record:` imputation / ForEach branches already cover the common case. |
 | **Column-level `displayCondition` editor** | Per-column show/hide on MQL/itemization. Runtime already honors preserved rules; Design edit deferred. Item-level **Display conditionally…** is done. |
 | **Form Cut / Copy / Paste** | Shell polish; parked earlier in Aug 20 catchup. |
-| **DirtBowl Page 2+ as further exemplar** | Same purpose lens after Page 1 → Designer list is stable. Not “finish the DirtBowl product skin.” |
+| **DirtBowl Page 2+ as further exemplar** | **Owner Aug 27:** Not more one-off formatting. First prove Page 1 is fully replicable with **stock Designer tools**; then open Page 2 only to **test that premise**. Same purpose lens — not “finish the DirtBowl product skin.” |
 | **RANDOM function** (numeric / sample-from-list) | Owner Aug 21: e.g. teacher draws *n* questions from a large bank so each exam run shows a different set (anti-cheat). Insert/Process or Get+Where path TBD — not V1. |
 
 ---
