@@ -39,7 +39,7 @@
           <h3>Next level</h3>
           <p><a href="signup.html">Create your own Tawala apps</a> — free account.</p>
         </div>
-        <div class="block">
+        <div class="block" id="sidebarMaintainerToolsBlock" style="display:none !important;">
           <h3>Maintainer tools</h3>
           <p><a href="library-admin.html">Library admin tools</a></p>
         </div>
@@ -372,8 +372,6 @@
       return false;
     }
 
-    TawalaChrome.mount();
-    TawalaProjectOps.bind(document);
     (function wireMyTawalaLinks() {
       const href =
         typeof TawalaChrome.myTawalaHref === "function"
@@ -384,6 +382,8 @@
         if (a) a.setAttribute("href", href);
       });
     })();
+    TawalaChrome.mount();
+    TawalaProjectOps.bind(document);
     /* Auto-strip discarded stub snapshots from localStorage before first paint. */
     if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.scrubDiscardedLibraryStubs) {
       TawalaTransfer.scrubDiscardedLibraryStubs();

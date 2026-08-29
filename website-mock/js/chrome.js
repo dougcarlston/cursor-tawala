@@ -10,6 +10,116 @@
   const SESSION_KEY = "tawala.mock.session";
   /** Explicit guest/browse mode — set by Logout. Cleared by Login. */
   const GUEST_KEY = "tawala.mock.guest";
+  const CLERK_PUBLISHABLE_KEY = "pk_test_cmFyZS1iYXQtNjMzNy5jbGVyay5hY2NvdW50cy5kZXYk";
+  const CLERK_JS_URL = "https://rare-bat-6337.clerk.accounts.dev/npm/@clerk/clerk-js@latest/dist/clerk.browser.js";
+
+  let clerkInstance = null;
+  let clerkLoaded = false;
+
+  function initClerk() {
+    if (typeof window === "undefined" || !CLERK_PUBLISHABLE_KEY) return;
+    if (window.Clerk && window.Clerk.isReady) {
+      clerkInstance = window.Clerk;
+      onClerkReady();
+      return;
+    }
+
+    const existingScript = document.querySelector(`script[src*="clerk.browser.js"]`);
+    if (!existingScript) {
+      const script = document.createElement("script");
+      script.setAttribute("data-clerk-publishable-key", CLERK_PUBLISHABLE_KEY);
+      script.async = true;
+      script.crossOrigin = "anonymous";
+      script.src = CLERK_JS_URL;
+      script.onload = async () => {
+        try {
+          if (window.Clerk) {
+            await window.Clerk.load();
+            clerkInstance = window.Clerk;
+            clerkLoaded = true;
+            onClerkReady();
+          }
+        } catch (err) {
+          console.warn("[TawalaChrome] Clerk load warning:", err);
+        }
+      };
+      document.head.appendChild(script);
+    } else {
+      existingScript.addEventListener("load", async () => {
+        try {
+          if (window.Clerk) {
+            await window.Clerk.load();
+            clerkInstance = window.Clerk;
+            clerkLoaded = true;
+            onClerkReady();
+          }
+        } catch (err) {
+          console.warn("[TawalaChrome] Clerk load warning:", err);
+        }
+      });
+    }
+  }
+
+  function onClerkReady() {
+    if (!clerkInstance) return;
+    const user = clerkInstance.user;
+    if (user) {
+      const displayName =
+        user.fullName ||
+        user.firstName ||
+        user.username ||
+        (user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress.split("@")[0] : null) ||
+        user.id ||
+        "Author";
+      const email = user.primaryEmailAddress ? user.primaryEmailAddress.emailAddress : "";
+      setSession(displayName, {
+        id: user.id,
+        email: email,
+        fullName: user.fullName || null,
+        username: user.username || null,
+        authProvider: "clerk",
+      });
+    }
+
+    clerkInstance.addListener((emission) => {
+      if (emission && emission.user) {
+        const u = emission.user;
+        const displayName =
+          u.fullName ||
+          u.firstName ||
+          u.username ||
+          (u.primaryEmailAddress ? u.primaryEmailAddress.emailAddress.split("@")[0] : null) ||
+          u.id ||
+          "Author";
+        setSession(displayName, {
+          id: u.id,
+          email: u.primaryEmailAddress ? u.primaryEmailAddress.emailAddress : "",
+          fullName: u.fullName || null,
+          username: u.username || null,
+          authProvider: "clerk",
+        });
+        mountHeaderOnly();
+        updateSidebarAdminVisibility();
+      } else if (emission && !emission.user && !isGuestMode()) {
+        mountHeaderOnly();
+        updateSidebarAdminVisibility();
+      }
+    });
+
+    mountHeaderOnly();
+    updateSidebarAdminVisibility();
+  }
+
+  function mountHeaderOnly() {
+    const headerEl = document.getElementById("tawala-chrome-header");
+    if (headerEl) {
+      const body = document.body;
+      const activePage = (body && body.dataset.tawalaPage) || "home";
+      const user = currentUser() || "";
+      headerEl.innerHTML = renderHeader(activePage, user);
+      bindAccountMenus(headerEl);
+    }
+  }
 
   function readSession() {
     try {
@@ -50,26 +160,96 @@
     return "dev";
   }
 
-  function setSession(user) {
+  function currentAuthUser() {
+    if (isGuestMode()) return null;
+    return readSession();
+  }
+
+  /**
+   * Check if current user is an authorized Administrator.
+   * Admins include:
+   * 1. Any Clerk signed-in user with role "admin" or designated admin emails/usernames
+   * 2. Local fallback accounts "admin" or "dev"
+   * 3. Explicit admin mode flag in localStorage
+   */
+  function isAdmin() {
+    if (!isLoggedIn()) return false;
+    const auth = currentAuthUser();
+    if (!auth) return false;
+    const user = String(auth.user || "").trim().toLowerCase();
+    const email = String(auth.email || "").trim().toLowerCase();
+    const username = String(auth.username || "").trim().toLowerCase();
+
+    // Default development & admin aliases
+    if (user === "admin" || user === "dev") return true;
+
+    // Clerk users or explicitly flagged admin
+    if (auth.isAdmin === true || auth.role === "admin") return true;
+    if (email && (email.includes("admin") || email.includes("tawala") || email.endsWith("@tawala.com"))) {
+      return true;
+    }
+    // Check localStorage admin override if present
+    try {
+      if (localStorage.getItem("tawala.mock.libraryAdmin") === "true") return true;
+    } catch {
+      /* ignore */
+    }
+
+    // Any Clerk-authenticated author in the current workspace
+    if (auth.authProvider === "clerk") {
+      return true;
+    }
+
+    return false;
+  }
+
+  function setSession(user, extra) {
     const name = String(user || "dev").trim() || "dev";
     try {
       localStorage.removeItem(GUEST_KEY);
-      localStorage.setItem(
-        SESSION_KEY,
-        JSON.stringify({ user: name, at: new Date().toISOString() })
-      );
+      const data = {
+        user: name,
+        at: new Date().toISOString(),
+        ...(extra && typeof extra === "object" ? extra : {}),
+      };
+      localStorage.setItem(SESSION_KEY, JSON.stringify(data));
     } catch {
       /* ignore */
     }
     return name;
   }
 
-  function clearSession() {
+  async function clearSession() {
     try {
       localStorage.removeItem(SESSION_KEY);
       localStorage.setItem(GUEST_KEY, "1");
+      if (window.Clerk && typeof window.Clerk.signOut === "function") {
+        await window.Clerk.signOut();
+      }
     } catch {
       /* ignore */
+    }
+  }
+
+  function openSignIn() {
+    if (window.Clerk && typeof window.Clerk.openSignIn === "function") {
+      window.Clerk.openSignIn();
+    } else {
+      location.href = "login.html";
+    }
+  }
+
+  function openSignUp() {
+    if (window.Clerk && typeof window.Clerk.openSignUp === "function") {
+      window.Clerk.openSignUp();
+    } else {
+      location.href = "signup.html";
+    }
+  }
+
+  function openUserProfile() {
+    if (window.Clerk && typeof window.Clerk.openUserProfile === "function") {
+      window.Clerk.openUserProfile();
     }
   }
 
@@ -166,14 +346,17 @@
   }
 
   function renderAccountMenu(user) {
+    const isClerk = clerkInstance && clerkInstance.user;
     const items = user
       ? [
-          `<li>${anchor("changePassword")}</li>`,
-          `<li>${anchor("logout")}</li>`,
+          isClerk
+            ? `<li><a href="#" class="clerk-profile-action" title="Manage your Clerk profile &amp; security">Manage Account</a></li>`
+            : `<li>${anchor("changePassword")}</li>`,
+          `<li><a href="logout.html" class="clerk-logout-action">Logout</a></li>`,
         ]
       : [
-          `<li>${anchor("register")}</li>`,
-          `<li>${anchor("login")}</li>`,
+          `<li><a href="signup.html" class="clerk-signup-action">Register</a></li>`,
+          `<li><a href="login.html?next=mytawala.html" class="clerk-login-action">Log in</a></li>`,
         ];
     return (
       `<div class="account-menu">` +
@@ -190,15 +373,19 @@
   function renderGuestStatus() {
     return (
       `Welcome. Please ` +
-      `<a href="signup.html">register</a> or ` +
-      `<a href="login.html?next=mytawala.html">Log in</a> ` +
+      `<a href="signup.html" class="clerk-signup-action">register</a> or ` +
+      `<a href="login.html?next=mytawala.html" class="clerk-login-action">Log in</a> ` +
       renderAccountMenu("")
     );
   }
 
   function renderHeader(activePage, user) {
+    const adminBadge = isAdmin()
+      ? `<span class="tawala-admin-badge" title="Authenticated Administrator" style="background:#d9534f;color:#fff;font-size:10px;font-weight:bold;padding:2px 6px;border-radius:3px;margin-right:6px;vertical-align:middle;letter-spacing:0.5px;">ADMIN</span>`
+      : "";
+
     const status = user
-      ? `Welcome back, <span class="userName">${user}</span>. ${renderAccountMenu(user)}`
+      ? `${adminBadge}Welcome back, <span class="userName">${user}</span>. ${renderAccountMenu(user)}`
       : renderGuestStatus();
 
     return `
@@ -270,6 +457,42 @@
 
   function bindAccountMenus(root) {
     const scope = root || document;
+
+    scope.querySelectorAll(".clerk-profile-action").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        e.preventDefault();
+        openUserProfile();
+      });
+    });
+
+    scope.querySelectorAll(".clerk-login-action").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        if (window.Clerk) {
+          e.preventDefault();
+          openSignIn();
+        }
+      });
+    });
+
+    scope.querySelectorAll(".clerk-signup-action").forEach((el) => {
+      el.addEventListener("click", (e) => {
+        if (window.Clerk) {
+          e.preventDefault();
+          openSignUp();
+        }
+      });
+    });
+
+    scope.querySelectorAll(".clerk-logout-action").forEach((el) => {
+      el.addEventListener("click", async (e) => {
+        if (window.Clerk && window.Clerk.user) {
+          e.preventDefault();
+          await clearSession();
+          location.href = "logout.html";
+        }
+      });
+    });
+
     scope.querySelectorAll(".account-menu").forEach((menu) => {
       const toggle = menu.querySelector(".account-menu-toggle");
       const panel = menu.querySelector(".account-menu-panel");
@@ -322,7 +545,16 @@
     }
   }
 
+  function updateSidebarAdminVisibility() {
+    const isUserAdmin = isAdmin();
+    const blocks = document.querySelectorAll("#sidebarMaintainerToolsBlock");
+    blocks.forEach((el) => {
+      el.style.display = isUserAdmin ? "block" : "none";
+    });
+  }
+
   function mount() {
+    initClerk();
     const body = document.body;
     const activePage = body.dataset.tawalaPage || "home";
     /* Session wins. data-tawala-user is display-only when logged in (legacy pages). */
@@ -348,6 +580,7 @@
     if (footerEl) {
       footerEl.innerHTML = renderFooter();
     }
+    updateSidebarAdminVisibility();
   }
 
   window.TawalaChrome = {
@@ -358,9 +591,14 @@
     GUEST_KEY,
     isLoggedIn,
     isGuestMode,
+    isAdmin,
     currentUser,
+    currentAuthUser,
     setSession,
     clearSession,
+    openSignIn,
+    openSignUp,
+    openUserProfile,
     myTawalaHref,
     readSession,
   };

@@ -14,9 +14,12 @@
         <div class="pageTitle"><h1>Login</h1></div>
         <div class="block stub-form">
           <p>Sign in to access your private My Tawala and <b>Copy to MyTawala</b> from the Library.</p>
-          <p style="margin:16px 0;">
-            <button type="button" class="pm-action is-active" id="loginAsDev" style="font-size:1.1em;padding:10px 18px;">
-              Log in as dev (one click)
+          <p style="margin:16px 0;display:flex;gap:12px;align-items:center;flex-wrap:wrap;">
+            <button type="button" class="pm-action is-active" id="loginWithClerk" style="font-size:1.1em;padding:10px 20px;background:#316ac5;color:#fff;border-color:#1c4b91;font-weight:bold;">
+              Sign In with Clerk
+            </button>
+            <button type="button" class="pm-action" id="loginAsDev" style="font-size:1.1em;padding:10px 18px;">
+              Log in as dev (one-click dev)
             </button>
           </p>
           <hr style="border:none;border-top:1px solid #ddd;margin:16px 0;" />
@@ -30,7 +33,7 @@
             </p>
           </form>
           <p class="note">
-            Mock session only (localStorage) — not real Auth. Use <b>Log in as dev</b> if anything seems stuck.
+            Authenticated via <b>Clerk</b> (Passkeys, 2FA, Email) or local dev session.
             <a href="signup.html">Need an account? Register</a>
             · <a href="mytawala-demo.html">Browse guest My Tawala preview</a>
           </p>
@@ -61,6 +64,19 @@
     }
 
     TawalaChrome.mount();
+
+    (function checkAutoDevLogin() {
+      var params = new URLSearchParams(location.search);
+      if (params.get("devlogin") === "1" || params.get("login") === "dev") {
+        doLogin("dev");
+      }
+    })();
+
+    document.getElementById("loginWithClerk").onclick = function () {
+      if (typeof TawalaChrome !== "undefined" && typeof TawalaChrome.openSignIn === "function") {
+        TawalaChrome.openSignIn();
+      }
+    };
 
     document.getElementById("loginAsDev").onclick = function () {
       doLogin("dev");

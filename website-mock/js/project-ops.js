@@ -448,36 +448,18 @@
     },
   ];
 
-  /** Legacy Format → Project Themes (labels/paths from Designer theme-config; mock dropdown only). */
+  /** Curated Theme Shortlist (G10 #1) — vetted for contrast, FIB layout, and presentation. */
   const PROJECT_THEMES = [
-    { label: "Baseball", path: "baseball" },
-    { label: "Basic Blue", path: "basicblue" },
-    { label: "Basic Green", path: "basicgreen" },
-    { label: "Basic Pink", path: "basicpink" },
-    { label: "Basic Yellow", path: "basicyellow" },
-    { label: "Big Q", path: "style2" },
-    { label: "Blue Lined Paper", path: "blueline" },
-    { label: "Chocolate", path: "chocolate" },
-    { label: "Dark", path: "dark" },
-    { label: "Default", path: "default" },
-    { label: "Dirtbowl", path: "dirtbowl" },
     { label: "Dirtbowl - Variable Width", path: "dirtbowl2" },
-    { label: "Full Moon", path: "fullmoon" },
     { label: "Green Lined Paper", path: "greenline" },
-    { label: "Green Tea", path: "greentea" },
-    { label: "Light Green", path: "litegreen" },
-    { label: "Lime", path: "lime" },
+    { label: "Blue Lined Paper", path: "blueline" },
     { label: "MVSC", path: "mvsc" },
-    { label: "Orange Swirl", path: "orangeswirl" },
-    { label: "Plain", path: "plain" },
-    { label: "Purple Haze", path: "purplehaze" },
-    { label: "Red", path: "red" },
+    { label: "Big Q (Style 2)", path: "style2" },
+    { label: "Green Tea", path: "greentea" },
+    { label: "Chocolate", path: "chocolate" },
     { label: "Red Rays", path: "redrays" },
     { label: "Salzburg", path: "salzburg" },
-    { label: "Soup's On", path: "soup" },
-    { label: "Tennis", path: "tennis" },
-    { label: "Tin Car Bell", path: "tincarbell" },
-    { label: "Yellow", path: "yellow" },
+    { label: "Default", path: "default" },
   ];
 
   /** Project Data section (detail.jsp form table + filters) */
@@ -841,9 +823,19 @@
   }
 
   function renderSubmenuItems(items, active) {
+    const isUserAdmin = typeof TawalaChrome !== "undefined" && typeof TawalaChrome.isAdmin === "function"
+      ? TawalaChrome.isAdmin()
+      : true;
+
     return (
       "<ul>" +
       items
+        .filter((item) => {
+          if ((item.wired === "edit-categories" || item.id === "edit-categories") && !isUserAdmin) {
+            return false;
+          }
+          return true;
+        })
         .map((item) => {
           const sel = item.label === active ? " selected" : "";
           if (!item.wired) {
@@ -879,6 +871,10 @@
   }
 
   function renderLibraryChromeStubs() {
+    const isUserAdmin = typeof TawalaChrome !== "undefined" && typeof TawalaChrome.isAdmin === "function"
+      ? TawalaChrome.isAdmin()
+      : true;
+
     const treeBtns = LIBRARY_CATEGORY_STUBS.map((op) => {
       const active = isOpActive(op);
       const disabled = active ? "" : " disabled";
@@ -889,15 +885,21 @@
         `${escapeHtml(op.label)}</button>`
       );
     }).join(" ");
-    const adminBtns = LIBRARY_ADMIN_STUBS.map((op) => actionButton(op, "")).join("");
+
+    const adminBtns = isUserAdmin
+      ? LIBRARY_ADMIN_STUBS.map((op) => actionButton(op, "")).join("")
+      : "";
+
     return (
       '<div class="library-chrome-stubs">' +
       '<div class="library-tree-controls" role="group" aria-label="Category tree">' +
       treeBtns +
       "</div>" +
-      '<div class="pm-actions-bar library-admin-stubs" role="toolbar" aria-label="Library admin">' +
-      adminBtns +
-      "</div>" +
+      (adminBtns
+        ? '<div class="pm-actions-bar library-admin-stubs" role="toolbar" aria-label="Library admin">' +
+          adminBtns +
+          "</div>"
+        : "") +
       "</div>"
     );
   }

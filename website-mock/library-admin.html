@@ -66,26 +66,31 @@
       history.replaceState(null, "", location.pathname + (qs ? "?" + qs : ""));
     })();
 
+    function isUserAuthorizedAdmin() {
+      if (typeof TawalaChrome !== "undefined" && typeof TawalaChrome.isAdmin === "function") {
+        return TawalaChrome.isAdmin();
+      }
+      return TawalaTransfer.isLibraryAdmin();
+    }
+
     function renderGate() {
       const host = document.getElementById("adminGateHost");
       const bodyHost = document.getElementById("adminBodyHost");
-      const on = TawalaTransfer.isLibraryAdmin();
-      bodyHost.hidden = !on;
-      if (!on) {
+      const isAuthAdmin = isUserAuthorizedAdmin();
+      bodyHost.hidden = !isAuthAdmin;
+
+      if (!isAuthAdmin) {
         host.innerHTML =
           '<div class="deploy-inbox"><div class="deploy-inbox-inner">' +
-          "<h3>Admin mode is off</h3>" +
-          '<p class="pm-hint">Mock-only client gate — no real auth. Turn it on for this browser to rename, ' +
-          "overwrite, or retire Library entries. Anyone can flip it in a static mock; treat it like a " +
-          "maintainer bookmark, not real access control.</p>" +
-          '<p><button type="button" class="pm-action is-active" id="enableAdminBtn">Enable Library admin mode on this browser</button></p>' +
-          '<p class="pm-hint">Or click <a href="library-admin.html?admin=1">library-admin.html?admin=1</a> to enable it directly ' +
-          "(same effect as the button — sets a localStorage flag and cleans the URL).</p>" +
+          "<h3>Administrator Access Required</h3>" +
+          '<p class="pm-hint">You must be signed in with an authorized Administrator account to manage Library entries, rename items, or reassign categories.</p>' +
+          '<p style="margin-top:14px;"><a href="login.html?next=library-admin.html" class="pm-action is-active" style="display:inline-block;padding:8px 16px;text-decoration:none;">Log in with Admin Account</a></p>' +
           "</div></div>";
       } else {
+        const user = (typeof TawalaChrome !== "undefined" && TawalaChrome.currentUser()) || "Admin";
         host.innerHTML =
-          '<p class="pm-hint">Library admin mode is <b>ON</b> for this browser — ' +
-          '<button type="button" class="pm-action" id="disableAdminBtn">Turn off</button></p>';
+          '<p class="pm-hint">Library admin tools active for <b>' + escapeHtml(user) + '</b> (Administrator).' +
+          '</p>';
         renderAdminBody();
       }
     }

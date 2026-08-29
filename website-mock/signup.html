@@ -17,26 +17,27 @@
             Please register for your <b>FREE</b> account.
           </p>
           <p>
-            Registration creates your own private space in My Tawala, where you can deploy and manage projects.
+            Registration creates your own private space in My Tawala, where you can deploy, push, and manage projects.
           </p>
-          <form onsubmit="alert('Mock site — registration is unavailable here.'); return false;">
-            <label for="newUserId">Choose a User ID</label>
-            <input type="text" id="newUserId" name="newUserId" />
-            <label for="email">Email</label>
-            <input type="text" id="email" name="email" />
-            <label for="newPassword">Password</label>
-            <input type="password" id="newPassword" name="newPassword" />
-            <p style="margin-top:12px;">
-              <input type="submit" value="Create account" />
-            </p>
-          </form>
-          <p class="note">Stub page — from legacy <code>registration/register.jsp</code>. Already have an account? <a href="login.html">Login</a>.</p>
+          <p style="margin:20px 0;">
+            <button type="button" class="pm-action is-active" id="signupWithClerk" style="font-size:1.1em;padding:12px 24px;background:#316ac5;color:#fff;border-color:#1c4b91;font-weight:bold;">
+              Sign Up with Clerk (Free Account)
+            </button>
+          </p>
+          <p class="note">Secure registration via <b>Clerk</b>. Already have an account? <a href="login.html">Login here</a>.</p>
         </div>
       </div>
     </div>
     <div id="tawala-chrome-footer"></div>
   </div>
   <script src="js/chrome.js?v=20260809-chrome1"></script>
-  <script>TawalaChrome.mount();</script>
+  <script>
+    TawalaChrome.mount();
+    document.getElementById("signupWithClerk").onclick = function () {
+      if (typeof TawalaChrome !== "undefined" && typeof TawalaChrome.openSignUp === "function") {
+        TawalaChrome.openSignUp();
+      }
+    };
+  </script>
 </body>
 </html>
