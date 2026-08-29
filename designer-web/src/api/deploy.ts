@@ -40,14 +40,27 @@ export function saveCredentials(credentials: DeployCredentials) {
   localStorage.setItem(CREDS_KEY, JSON.stringify(credentials));
 }
 
+import { getGlobalAuthUser } from "@/lib/clerkAuth";
+
 export async function deployProject(
   project: unknown,
   credentials: DeployCredentials,
 ): Promise<DeployResult> {
+  const authUser = getGlobalAuthUser();
+  const effectiveCredentials = authUser
+    ? {
+        user: authUser.primaryEmail || authUser.username || authUser.id,
+        password: credentials.password || "clerk-auth",
+        authProvider: "clerk",
+        authorId: authUser.id,
+        authorDisplayName: authUser.fullName || authUser.username || authUser.primaryEmail,
+      }
+    : credentials;
+
   const res = await fetch("/api/deploy", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ credentials, project }),
+    body: JSON.stringify({ credentials: effectiveCredentials, project }),
   });
   const data = await res.json();
   if (!res.ok) {

@@ -684,6 +684,7 @@ textarea {
 
 .menu-bar {
   display: flex;
+  align-items: center;
   gap: 0;
   background: var(--menu-bg);
   border-bottom: 1px solid var(--border);
@@ -692,6 +693,53 @@ textarea {
   position: relative;
   z-index: 400;
 }
+
+.menu-bar-spacer {
+  flex: 1 1 auto;
+}
+
+.designer-auth-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px;
+}
+
+.designer-auth-greeting {
+  font-size: 11px;
+  color: #333;
+  font-weight: 600;
+}
+
+.designer-auth-btn {
+  font-size: 11px;
+  padding: 2px 8px;
+  border: 1px solid var(--border-dark);
+  background: #fdfdfd;
+  cursor: pointer;
+  border-radius: 2px;
+}
+
+.designer-auth-btn:hover {
+  background: #e6effa;
+  border-color: #316ac5;
+}
+
+.designer-auth-btn.sign-up {
+  background: #316ac5;
+  color: white;
+  border-color: #1e4f8c;
+}
+
+.designer-auth-btn.sign-up:hover {
+  background: #25549d;
+}
+
+.designer-user-avatar {
+  width: 20px;
+  height: 20px;
+}
+
 
 .menu-item {
   position: relative;

@@ -35,6 +35,7 @@ import { insertCommandAtPoint } from "@/lib/processInsert";
 import { parentPathAndChildIndex, ROOT_INSERT_PATH } from "@/lib/skipInsertPath";
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
+import { getGlobalAuthUser } from "@/lib/clerkAuth";
 import type { ProcessStatementPanel } from "@/processStatements";
 import { processPanelKeyForCommand, processPanelKeyForLabel } from "@/processStatements";
 import {
@@ -1836,7 +1837,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const { _freshFromTemplate: _f, ...clean } = project as TawalaProject & {
         _freshFromTemplate?: boolean;
       };
-      const user = String(credentials.user ?? "").trim();
+      const authUser = getGlobalAuthUser();
+      const user = authUser?.primaryEmail || authUser?.username || authUser?.id || String(credentials.user ?? "").trim();
+      const authorDisplayName = authUser?.fullName || user;
       const nextProject = {
         ...clean,
         ...(result.deployIdentityName
@@ -1845,8 +1848,8 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         ...(result.uniqueId ? { deployUniqueId: result.uniqueId } : {}),
         ...(user
           ? {
-              author: clean.author || user,
-              authorId: clean.authorId || user,
+              author: clean.author || authorDisplayName,
+              authorId: clean.authorId || (authUser?.id ?? user),
               userId: clean.userId || user,
             }
           : {}),

@@ -1,4 +1,5 @@
 import { Fragment, useState, useEffect, useRef, ReactNode, useSyncExternalStore, type MouseEvent as ReactMouseEvent } from "react";
+import { UserAccountButton } from "./UserAccountButton";
 import { useProjectStore } from "@/store/projectStore";
 import { FORM_ITEM_PALETTE } from "@/types/tawala";
 import {
@@ -398,6 +399,8 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
           Website mock (My Tawala)…
         </button>
       </MenuDrop>
+      <div className="menu-bar-spacer" />
+      <UserAccountButton />
     </nav>
   );
 }

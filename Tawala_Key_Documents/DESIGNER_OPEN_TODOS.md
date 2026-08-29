@@ -268,6 +268,7 @@ Small product gaps found while smoke-testing Priority Library apps. **Do not imp
 | Item | Notes | Status |
 |------|-------|--------|
 | **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) and option (e) **Return to Admin Dashboard**. Fully connected and verified on live deploy. | **Passed (owner Aug 28)** |
+| **Real Author / User Authentication (Clerk)** | Real user authentication via Clerk (Passkeys, 2FA, password, email) integrated into Designer top bar & MenuBar; authenticated author identity mapped into Push & Project metadata. | **Implemented & Verified (Aug 28)** |
 
 ---
 

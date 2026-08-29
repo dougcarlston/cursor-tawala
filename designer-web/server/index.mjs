@@ -93,7 +93,8 @@ const xmlParser = new XMLParser({
   attributeNamePrefix: "@_",
 });
 
-function checkAuth(user, password) {
+function checkAuth(user, password, authProvider) {
+  if (authProvider === "clerk") return true;
   if (process.env.TAWALA_DEV_AUTH === "any") return true;
   return DEV_USERS[user] === password;
 }
@@ -270,7 +271,7 @@ app.post("/api/deploy", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed" });
     return;
   }
@@ -420,7 +421,7 @@ app.post("/api/retire-name", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed" });
     return;
   }
@@ -702,7 +703,7 @@ app.post("/api/purge-responses", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed" });
     return;
   }
@@ -740,7 +741,7 @@ app.post("/api/export-responses", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed" });
     return;
   }
@@ -776,7 +777,7 @@ app.post("/api/import-responses", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed" });
     return;
   }
@@ -892,7 +893,7 @@ app.post("/api/email/status", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required", mode: "offline" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed", mode: "offline" });
     return;
   }
@@ -962,7 +963,7 @@ app.post("/api/email/test", async (req, res) => {
     res.status(400).json({ status: "failure", error: "credentials required", mode: "offline" });
     return;
   }
-  if (!checkAuth(credentials.user, credentials.password)) {
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
     res.status(401).json({ status: "failure", error: "auth.failed", mode: "offline" });
     return;
   }
