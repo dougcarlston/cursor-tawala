@@ -1459,15 +1459,62 @@ textarea {
   color: var(--muted);
 }
 
-/* Insert caret — legacy Insert.png, left of items.
-   Drag: full opacity. Idle: shows where Insert menu / palette will place the next item. */
-.form-canvas-insert-caret {
-  position: absolute;
-  left: 6px;
-  height: 0;
-  z-index: 5;
-  pointer-events: none;
+/* Form Canvas Insertion Line / Gap */
+.form-insertion-line {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+  height: 8px;
+  margin: -4px 0;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  z-index: 10;
 }
+
+.form-insertion-line:hover {
+  background: rgba(49, 106, 197, 0.08);
+}
+
+.form-insertion-arrow {
+  color: #1a4a9c;
+  font-size: 10px;
+  line-height: 1;
+  width: 16px;
+  padding-left: 2px;
+  flex-shrink: 0;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+}
+
+.form-insertion-rule {
+  flex: 1;
+  height: 0;
+  border-top: 1px dashed transparent;
+  transition: border-color 0.1s ease;
+}
+
+.form-insertion-line:hover .form-insertion-arrow {
+  opacity: 0.85;
+}
+
+.form-insertion-line:hover .form-insertion-rule {
+  border-top: 1px dashed #7aa7e0;
+}
+
+.form-insertion-line.active .form-insertion-arrow {
+  opacity: 1;
+  color: #0040c0;
+  font-weight: bold;
+}
+
+.form-insertion-line.active .form-insertion-rule {
+  border-top: 2px solid #0040c0;
+}
+
 
 .form-canvas-insert-caret-idle {
   opacity: 0.55;
@@ -8714,3 +8761,32 @@ body.fields-palette-dragging.skip-instructions-open .designer-right-splitter {
   font-style: italic;
   color: #c00;
 }
+
+/* Custom Designer Confirm Dialog */
+.designer-confirm-dialog {
+  min-width: 360px;
+  max-width: 440px;
+}
+
+.designer-confirm-body {
+  padding: 16px 18px 20px;
+  background: var(--panel);
+}
+
+.designer-confirm-message {
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #222;
+}
+
+.designer-dialog-button.destructive {
+  background: #c00;
+  color: white;
+  border-color: #900;
+}
+
+.designer-dialog-button.destructive:hover {
+  background: #a00;
+}
+

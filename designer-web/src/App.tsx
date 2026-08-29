@@ -15,6 +15,7 @@ import { FunctionPickerHost } from "./components/FunctionPickerHost";
 import { LinkInsertHost } from "./components/LinkInsertHost";
 import { ConditionalDisplayHost } from "./components/ConditionalDisplayHost";
 import { ProjectChromeHost } from "./components/ProjectChromeHost";
+import { ConfirmDialogHost } from "./components/ConfirmDialogHost";
 import { NewProjectDialog } from "./components/NewProjectDialog";
 import { AboutDialog } from "./components/AboutDialog";
 import { SaveAsDialog } from "./components/SaveAsDialog";
@@ -304,6 +305,7 @@ export default function App() {
       <LinkInsertHost />
       <ConditionalDisplayHost />
       <ProjectChromeHost />
+      <ConfirmDialogHost />
     </div>
   );
 }

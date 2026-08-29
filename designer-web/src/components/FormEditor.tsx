@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from "react";
 import { useProjectStore } from "@/store/projectStore";
 import { syncPreviewProject } from "@/api/preview";
 import { FormItem } from "@/types/tawala";
@@ -353,12 +353,12 @@ export function FormEditor({ formName }: Props) {
             }}
             onDragEnd={clearDragUi}
           >
-            {showCaret ? (
+            {dragActive && showCaret ? (
               <div
-                className={`form-canvas-insert-caret${dragActive ? " form-canvas-insert-caret-drag" : " form-canvas-insert-caret-idle"}`}
+                className="form-canvas-insert-caret form-canvas-insert-caret-drag"
                 style={{ top: caretTop ?? undefined }}
                 aria-hidden
-                title="Next Insert lands here (select a row = before it; click empty canvas = end)"
+                title="Next Insert lands here"
               >
                 <img
                   className="form-canvas-insert-caret-marker"
@@ -379,27 +379,58 @@ export function FormEditor({ formName }: Props) {
               </p>
             ) : (
               <>
-                {form.items.map((item, i) => (
-                  <div
-                    key={`${item.label}-${i}`}
-                    className={`form-item-slot${selectedItemIndex === i ? " selected-slot" : ""}${reorderFromIndex === i ? " dragging" : ""}`}
-                    data-form-item-index={i}
-                    draggable={false}
-                    onDragStart={(e) => {
-                      // Drag is initiated on the selected badge (child has draggable=true);
-                      // this bubbles here so we can attach reorder MIME and UI state.
-                      if (selectedItemIndex !== i || !isFormItemReorderHandle(e.target)) {
-                        e.preventDefault();
-                        return;
-                      }
-                      setReorderFromIndex(i);
-                      setFormItemReorderDrag(e.dataTransfer, i);
-                    }}
-                    onDragEnd={clearDragUi}
-                  >
-                    {renderFormItem(item, i)}
-                  </div>
-                ))}
+                {form.items.map((item, i) => {
+                  const isInsertActive =
+                    insertBeforeIndex === i && selectedItemIndex === null;
+                  return (
+                    <Fragment key={`${item.label}-${i}`}>
+                      <button
+                        type="button"
+                        className={`form-insertion-line${isInsertActive ? " active" : ""}`}
+                        title="Click to set insertion point before this item"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedItemIndex(null);
+                          setInsertBeforeIndex(i);
+                        }}
+                      >
+                        <span className="form-insertion-arrow">▶</span>
+                        <span className="form-insertion-rule" />
+                      </button>
+                      <div
+                        className={`form-item-slot${selectedItemIndex === i ? " selected-slot" : ""}${reorderFromIndex === i ? " dragging" : ""}`}
+                        data-form-item-index={i}
+                        draggable={false}
+                        onDragStart={(e) => {
+                          // Drag is initiated on the selected badge (child has draggable=true);
+                          // this bubbles here so we can attach reorder MIME and UI state.
+                          if (selectedItemIndex !== i || !isFormItemReorderHandle(e.target)) {
+                            e.preventDefault();
+                            return;
+                          }
+                          setReorderFromIndex(i);
+                          setFormItemReorderDrag(e.dataTransfer, i);
+                        }}
+                        onDragEnd={clearDragUi}
+                      >
+                        {renderFormItem(item, i)}
+                      </div>
+                    </Fragment>
+                  );
+                })}
+                <button
+                  type="button"
+                  className={`form-insertion-line${insertBeforeIndex === form.items.length && selectedItemIndex === null ? " active" : ""}`}
+                  title="Click to set insertion point at the end of the form"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setSelectedItemIndex(null);
+                    setInsertBeforeIndex(form.items.length);
+                  }}
+                >
+                  <span className="form-insertion-arrow">▶</span>
+                  <span className="form-insertion-rule" />
+                </button>
                 {/* Visual closure under the last item — hairline stays on the slot;
                     this sentinel + canvas bottom pad mark the insert/click-outside zone. */}
                 <div className="form-canvas-end" data-form-canvas-end aria-hidden />

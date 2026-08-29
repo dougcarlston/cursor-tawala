@@ -2,14 +2,14 @@
  * Delete Table must confirm (same spirit as Form/Process/Document delete).
  * Cancel keeps the table; OK removes it.
  */
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { setActivePaletteEditor, clearActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import { paletteDeleteTable } from "@/lib/paletteCommands";
+import { getActiveConfirm } from "@/lib/confirmDialog";
 
 describe("paletteDeleteTable confirm", () => {
   afterEach(() => {
     clearActivePaletteEditor();
-    vi.restoreAllMocks();
   });
 
   function setupTableEditor(): { editor: HTMLElement; table: HTMLTableElement } {
@@ -36,25 +36,32 @@ describe("paletteDeleteTable confirm", () => {
     return { editor, table };
   }
 
-  it("Cancel leaves the table in place", () => {
+  it("Cancel leaves the table in place", async () => {
     const { editor, table } = setupTableEditor();
-    vi.spyOn(window, "confirm").mockReturnValue(false);
-
     paletteDeleteTable();
 
-    expect(window.confirm).toHaveBeenCalledWith("Are you sure you want to delete this table?");
+    const active = getActiveConfirm();
+    expect(active).not.toBeNull();
+    expect(active?.options.message).toBe("Are you sure you want to delete this table?");
+    active?.resolve(false);
+    await Promise.resolve();
+
     expect(editor.contains(table)).toBe(true);
     editor.remove();
   });
 
-  it("OK removes the table", () => {
+  it("OK removes the table", async () => {
     const { editor, table } = setupTableEditor();
-    vi.spyOn(window, "confirm").mockReturnValue(true);
-
     paletteDeleteTable();
 
-    expect(window.confirm).toHaveBeenCalledWith("Are you sure you want to delete this table?");
+    const active = getActiveConfirm();
+    expect(active).not.toBeNull();
+    expect(active?.options.message).toBe("Are you sure you want to delete this table?");
+    active?.resolve(true);
+    await Promise.resolve();
+
     expect(editor.contains(table)).toBe(false);
     editor.remove();
   });
 });
+

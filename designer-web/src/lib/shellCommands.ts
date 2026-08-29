@@ -21,6 +21,7 @@ import {
 } from "@/lib/processClipboard";
 import type { TawalaProcessCommand } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
+import { showDesignerConfirm } from "@/lib/confirmDialog";
 
 export type ShellEditCommand = "cut" | "copy" | "paste" | "undo" | "redo";
 
@@ -601,12 +602,19 @@ export function confirmAndDeleteFormItem(formName: string, index: number): boole
                   ? "Skip Instructions"
                   : "item";
   const label = "label" in item && item.label ? String(item.label) : String(index + 1);
-  const ok = globalThis.confirm(`Are you sure you want to delete ${kind} "${label}"?`);
-  if (!ok) {
-    useProjectStore.getState().setStatus("Delete cancelled");
-    return false;
-  }
-  useProjectStore.getState().deleteFormItem(formName, index);
+  showDesignerConfirm({
+    title: "Delete Form Item",
+    message: `Are you sure you want to delete ${kind} "${label}"?`,
+    okText: "Delete",
+    cancelText: "Cancel",
+    destructive: true,
+  }).then((ok) => {
+    if (!ok) {
+      useProjectStore.getState().setStatus("Delete cancelled");
+      return;
+    }
+    useProjectStore.getState().deleteFormItem(formName, index);
+  });
   return true;
 }
 
@@ -627,14 +635,20 @@ export function confirmAndDeleteProjectEntity(): boolean {
   if (!canDeleteProjectEntity() || !selection.name) return false;
   const typeLabel =
     selection.kind === "form" ? "Form" : selection.kind === "process" ? "Process" : "Document";
-  const ok = globalThis.confirm(
-    `Are you sure you want to delete ${typeLabel} "${selection.name}"?`,
-  );
-  if (!ok) {
-    useProjectStore.getState().setStatus("Delete cancelled");
-    return false;
-  }
-  return useProjectStore.getState().deleteSelectedEntity();
+  showDesignerConfirm({
+    title: `Delete ${typeLabel}`,
+    message: `Are you sure you want to delete ${typeLabel} "${selection.name}"?`,
+    okText: "Delete",
+    cancelText: "Cancel",
+    destructive: true,
+  }).then((ok) => {
+    if (!ok) {
+      useProjectStore.getState().setStatus("Delete cancelled");
+      return;
+    }
+    useProjectStore.getState().deleteSelectedEntity();
+  });
+  return true;
 }
 
 /**

@@ -50,6 +50,7 @@ import {
   reflowPlacedLinesBelow,
   stripLeadingWhitespaceForLeftAlign,
 } from "./documentCanvas";
+import { showDesignerConfirm } from "./confirmDialog";
 import {
   blockContainer,
   defaultTypingFormat,
@@ -2518,12 +2519,19 @@ export function paletteDeleteTable(): void {
     const cell = getSelectedCell(handle.el);
     const table = cell?.closest("table");
     if (table && handle.el.contains(table)) {
-      const ok = window.confirm("Are you sure you want to delete this table?");
-      if (!ok) return;
-      table.remove();
-      if (handle.el.querySelector(`.${PLACED_TEXT_CLASS}`)) {
-        reflowAllPlacedLines(handle.el);
-      }
+      showDesignerConfirm({
+        title: "Delete Table",
+        message: "Are you sure you want to delete this table?",
+        okText: "Delete",
+        cancelText: "Cancel",
+        destructive: true,
+      }).then((ok) => {
+        if (!ok) return;
+        table.remove();
+        if (handle.el.querySelector(`.${PLACED_TEXT_CLASS}`)) {
+          reflowAllPlacedLines(handle.el);
+        }
+      });
       return;
     }
     document.execCommand("deleteTable");

@@ -71,6 +71,30 @@ export function GetStatementBuilder({
     onStateChange({ ...state, whereCombinator: value });
   };
 
+  const handleRecordListChange = (newListName: string) => {
+    const prevName = state.recordList.trim();
+    const nextName = newListName.trim();
+    // If the list name changed and we had Where rows referencing the old list name as a prefix,
+    // sync the prefix to the new list name.
+    let nextWhereRows = state.whereRows;
+    if (prevName && nextName && prevName !== nextName) {
+      nextWhereRows = state.whereRows.map((r) => {
+        if (r.field && r.field.startsWith(`${prevName}:`)) {
+          return {
+            ...r,
+            field: `${nextName}:${r.field.slice(prevName.length + 1)}`,
+          };
+        }
+        return r;
+      });
+    }
+    onStateChange({
+      ...state,
+      recordList: newListName,
+      whereRows: nextWhereRows,
+    });
+  };
+
   return (
     <div
       className={`skip-statement-panel skip-get-builder${embedded ? " process-embedded" : ""}`}
@@ -87,7 +111,7 @@ export function GetStatementBuilder({
             className="get-record-list-input"
             placeholder="Record List 1"
             value={state.recordList}
-            onChange={(e) => onStateChange({ ...state, recordList: e.target.value })}
+            onChange={(e) => handleRecordListChange(e.target.value)}
             aria-label="Record list name"
           />
           <span className="get-from-label">from</span>

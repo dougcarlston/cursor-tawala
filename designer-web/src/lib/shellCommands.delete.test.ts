@@ -1,14 +1,15 @@
 /**
  * Guards Explorer entity Delete enable rules (Form / Process / Document).
- * Confirm dialog is stubbed via window.confirm for form items + entities.
+ * Confirm dialog is driven via showDesignerConfirm / confirmDialog for form items + entities.
  */
-import { describe, expect, it, beforeEach, vi, afterEach } from "vitest";
+import { describe, expect, it, beforeEach } from "vitest";
 import {
   canDeleteProjectEntity,
   canDeleteSelection,
   confirmAndDeleteFormItem,
   confirmAndDeleteSelectedFormItem,
 } from "@/lib/shellCommands";
+import { getActiveConfirm } from "@/lib/confirmDialog";
 import { useProjectStore } from "@/store/projectStore";
 
 describe("canDeleteSelection / canDeleteProjectEntity", () => {
@@ -49,46 +50,47 @@ describe("canDeleteSelection / canDeleteProjectEntity", () => {
 });
 
 describe("confirmAndDeleteFormItem", () => {
-  const confirmMock = vi.fn();
-
   beforeEach(() => {
     useProjectStore.getState().newProject({ empty: true });
     useProjectStore.getState().addForm();
     useProjectStore.getState().insertFormItem("text");
-    confirmMock.mockReset();
-    vi.stubGlobal("confirm", confirmMock);
   });
 
-  afterEach(() => {
-    vi.unstubAllGlobals();
-  });
-
-  it("cancels without deleting when confirm is false", () => {
-    confirmMock.mockReturnValue(false);
+  it("cancels without deleting when confirm is rejected", async () => {
     const formName = useProjectStore.getState().project.forms[0]!.name;
     const before = useProjectStore.getState().project.forms[0]!.items.length;
-    expect(confirmAndDeleteFormItem(formName, 0)).toBe(false);
+    confirmAndDeleteFormItem(formName, 0);
+    const active = getActiveConfirm();
+    expect(active).not.toBeNull();
+    active?.resolve(false);
+    await Promise.resolve();
     expect(useProjectStore.getState().project.forms[0]!.items.length).toBe(before);
-    expect(confirmMock).toHaveBeenCalled();
   });
 
-  it("deletes when confirm is true", () => {
-    confirmMock.mockReturnValue(true);
+  it("deletes when confirm is accepted", async () => {
     const formName = useProjectStore.getState().project.forms[0]!.name;
     const before = useProjectStore.getState().project.forms[0]!.items.length;
-    expect(confirmAndDeleteFormItem(formName, 0)).toBe(true);
+    confirmAndDeleteFormItem(formName, 0);
+    const active = getActiveConfirm();
+    expect(active).not.toBeNull();
+    active?.resolve(true);
+    await Promise.resolve();
     expect(useProjectStore.getState().project.forms[0]!.items.length).toBe(before - 1);
   });
 
-  it("confirmAndDeleteSelectedFormItem uses selected row", () => {
-    confirmMock.mockReturnValue(true);
+  it("confirmAndDeleteSelectedFormItem uses selected row", async () => {
     const formName = useProjectStore.getState().project.forms[0]!.name;
     useProjectStore.setState({
       selection: { kind: "form", name: formName },
       selectedItemIndex: 0,
     });
     const before = useProjectStore.getState().project.forms[0]!.items.length;
-    expect(confirmAndDeleteSelectedFormItem()).toBe(true);
+    confirmAndDeleteSelectedFormItem();
+    const active = getActiveConfirm();
+    expect(active).not.toBeNull();
+    active?.resolve(true);
+    await Promise.resolve();
     expect(useProjectStore.getState().project.forms[0]!.items.length).toBe(before - 1);
   });
 });
+
