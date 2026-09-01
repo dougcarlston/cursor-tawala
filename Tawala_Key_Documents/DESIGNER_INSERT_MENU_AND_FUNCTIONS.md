@@ -22,8 +22,8 @@ Related: `DESIGNER_MENU_SPEC.md`, `DESIGNER_DOCUMENT_EDITOR.md`, `DESIGNER_UI_RE
 | 6 | Page Break | Active | Always |
 | 7 | Skip Instructions | Active | Always |
 | | *(separator)* | | |
-| 7a | **Date** | Active | Always (Design tab) — Insert → Date emits ordinary FIB `mm/dd/yyyy` with `/` separators |
-| 7b | **Address** | Active | Always — Insert → Address emits ordinary FIB Street / City: / Zip: (Street caption) |
+| 7a | ~~**Date**~~ | **Hidden (Sep 2026)** | Preset code remains (`fibInsertPresets.ts`); menu entry removed until leftAlign / Preview / Push layout parity |
+| 7b | ~~**Address**~~ | **Hidden (Sep 2026)** | Same — re-enable with Date when presets match form column geometry |
 | | *(separator)* | | |
 | 8 | Image… | Greyed | Cursor in a **rich-text** area (owner: “text window”; source: `CanInsertImage`) |
 | 9 | **Link…** | Greyed | Cursor in **Text** item body — unified Form / Web / private InviteeID (Aug 10) |
@@ -143,7 +143,7 @@ Screenshot: [`assets/Insert_Invitation.png`](assets/Insert_Invitation.png)
 
 | Control | Purpose |
 |---------|---------|
-| **Url:** | Destination URL |
+| **Url:** | Destination URL — authors may omit `https://` / `www.`; browser Designer adds `https://` (or `http://` for `localhost` / IP) on OK |
 | **Display text:** | Optional |
 | Italic note | `(optional; if you leave this blank the full URL or filename will be shown)` |
 | **Open in new browser window.** | Checkbox |
@@ -155,7 +155,7 @@ Screenshot: [`assets/Insert_Invitation.png`](assets/Insert_Invitation.png)
 
 Screenshot: [`assets/Insert_Hyperlink.png`](assets/Insert_Hyperlink.png)
 
-**Deploy:** `<link>…</link>` (`target="_blank"` when new-window set). Runtime: live `<a href=…>`.
+**Deploy:** `<link>…</link>` (`target="_blank"` when new-window set). Runtime: live `<a href=…>`. Push normalizes bare domains (`example.com` → `https://…`) in `documentHtmlToXml.mjs` as well as on dialog OK.
 
 **Until unified UI ships:** both menu items may remain wired as today; **docs and future work treat Form link as primary and Hyperlink as secondary mode**, not equals.
 

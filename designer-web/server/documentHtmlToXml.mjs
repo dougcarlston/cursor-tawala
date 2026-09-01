@@ -4,6 +4,7 @@
  */
 
 import { conditionOperandXml } from "./conditionOperandXml.mjs";
+import { normalizeHyperlinkUrl } from "./hyperlinkUrl.mjs";
 import { collectProjectVariableNames } from "./projectVariables.mjs";
 
 /** Empty paragraph used as a Deploy spacer (matches Form Text / response-totals habit). */
@@ -962,7 +963,7 @@ function invitationTokenToXml(attrs, innerHtml, escAttr, escText, opts = {}) {
 
 function hyperlinkTokenToXml(attrs, escAttr, escText) {
   const config = parseJsonConfigAttr(attrs, "data-hyperlink-config");
-  const url = String(config.url ?? "").trim();
+  const url = normalizeHyperlinkUrl(String(config.url ?? ""));
   const display = String(config.displayText ?? "").trim() || url || "(Link appears here)";
   const newWindow = config.openNewWindow === true || config.openNewWindow === "true";
   const conditional = config.conditional === true || config.conditional === "true";

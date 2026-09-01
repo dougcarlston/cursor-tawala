@@ -339,6 +339,8 @@ Owner could not fully test overnight (hooks-order / “too many hooks” error);
 
 **Past notes (superseded by policy above):** Document Undo “does not work”; field/Label/Moves not on the stack — expected under this contract, not open fix items.
 
+**Version 2 — Undo last deleted item (owner Sep 2026):** Schedule a **one-step** structural undo for accidental **Delete** within the **active** MDI window — e.g. author thought they were removing one element inside Skip Instructions but deleted the whole Skip command, or deleted an entire Form canvas row (Text / FIB / MCQ) when they meant only an inline chip. **V1 contract above stays** for rich-text CE undo on Form/Document. **Process (Sep 2026):** command-tree Undo/Redo now matches Skip (`processCommandHistory.ts`) — Add/Modify/Delete/reorder/drag each push a snapshot; Edit → Undo / ⌘Z steps back (e.g. Set `x + 10` → `x + 1`). **V2 shape (draft) for Form delete:** one-step restore of last deleted canvas item; Explorer entity delete stays non-undoable. Distinct from **B4** remainder (If/Set Cancel). Spec: `DESIGNER_OPEN_TODOS.md` **B8**.
+
 - **Paste required a one-time browser permission prompt** — expected, not a bug: toolbar/menu Paste reads the system clipboard via `navigator.clipboard` (`clipboard-read`), which browsers gate; Cut/Copy write the current selection and are allowed silently. After **Allow**, Paste and ⌘V work without re-prompting. (Fixed Jul 18: Paste now uses the Clipboard API since `execCommand("paste")` is blocked from button clicks.)
 
 ### Full build / TypeScript (`npm run build`) — **green Jul 21**

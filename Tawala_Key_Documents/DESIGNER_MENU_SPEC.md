@@ -376,7 +376,7 @@ C# source: `FieldsPalette.cs` (`getSortedVariables`, form field leaves); `Projec
 |----------|--------|
 | Menu order | **File → Edit → …** (Edit is second, conventional) |
 | File omit | Print Preview, Print, Exit (desktop-era; use browser print / close tab) |
-| File shortcuts | New **Ctrl/⌘N**, Open **Ctrl/⌘O**, Save **Ctrl/⌘S**, Save As **Shift+Ctrl/⌘S** |
+| File shortcuts | New **Ctrl/⌘N**, Open **Ctrl/⌘O**, Save **Ctrl/⌘S**, Save As **Shift+Ctrl/⌘S**. **Chrome on Mac:** ⌘N is browser-reserved (New Window); File → New uses **Ctrl+N** and menu/toolbar show that hint. Safari/Firefox: ⌘N works. |
 | Edit slim | Cut / Copy / Paste / Delete / Undo / Redo only (+ standard shortcuts; Redo Mac **⇧⌘Z**) |
 | Edit omit | Rename; Connect/Disconnect Pre/Post (use Process banner) |
 | Form toggles | **Starting Point**, **Pre-populate With Last Entry**, and **Block Back** on **Project Explorer** toolbar (form selected). Right-column Properties panel was removed July 2026 (Fields only). |
@@ -670,6 +670,8 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 
 **Paste (browser — Jul 18):** Toolbar / Edit → Paste cannot use `document.execCommand("paste")` (browsers block it from menu/button clicks). Shell paste restores the active Formatting Palette editor caret and inserts via the Clipboard API (`navigator.clipboard`). Prefer clicking in Form Text / Document first so a palette editor is registered. Native **⌘V / Ctrl+V** in the editor still works as a fallback. If the browser denies clipboard read, status explains to use the keyboard shortcut.
 
+**Undo / Delete (browser — Sep 2026):** V1 Undo is **contenteditable-only** (`execCommand`); **Delete** of a Form item, Skip command, or Process statement is **not** undoable today. **Version 2:** one-step **Undo last delete** within the active window (accidental whole Skip / form row delete). Explorer entity delete stays confirm-only, non-undoable. See `DESIGNER_OPEN_BUGS.md` § Edit / Undo; `DESIGNER_OPEN_TODOS.md` **B8**.
+
 **Save / dirty (browser — July 2026):**
 - **File → Save**, floppy toolbar, and **⌘S / Ctrl+S** are **always enabled** (never greyed on clean/dirty). Dirty only drives status `· modified`, File menu “Save · modified”, and a red-tint floppy highlight.
 - Grey accelerator text alone is **not** a disabled Save — do not confuse `.menu-accel` with `:disabled`.
@@ -688,6 +690,19 @@ Toolbar state refreshes on **application idle** (`DesignerView.application_Idle`
 3. **⌘S / Ctrl+S** (with caret in contenteditable) or File → Save or floppy → one picker/download named from the project (e.g. `Untitled.json` or `MyProject.json`); `· modified` clears. A second Save should **not** re-open the picker (Chromium with a stored handle).
 4. **File → Save As…** (or **⇧⌘S** / **Shift+Ctrl+S**) → **in-app Save As** dialog with default file name from the project (not always `Untitled`). Confirm → Chromium native picker (new quiet-Save target) **or** Safari download to `~/Downloads` under that name. Status on Safari: `Saved to Downloads: ….json …`. Ordinary Save / ⌘S must still rewrite quietly afterward on Chromium. **Project Explorer root** must show the new name (not stay **Untitled**).
 5. Edit again → **Cmd+R** *or* hard refresh (`Cmd+Shift+R`) → browser **leave warning** appears (both navigate; “soft” does not skip it). Save → `· modified` clears → Cmd+R is quiet again.
+
+**Smoke (F3 menu / toolbar / chrome parity — Owner Passed Sep 1, 2026):**
+
+| Slice | Pass criteria |
+|-------|----------------|
+| **File ↔ toolbar ↔ shortcuts** | New / Open / Save / Save As / Push same dialog rules; Chrome Mac **Ctrl+N** for New (⌘N browser-reserved) |
+| **Edit ↔ toolbar** | Cut / Copy / Paste / Delete / Undo / Redo on Form Text, FIB, MCQ; Process statement clipboard; Document text cut-paste uses in-app buffer |
+| **Insert ↔ palette** | **Shared commands only** — Form top-7 ↔ Items palette; Process statements ↔ Statements palette; same grey/enable in each context. Insert-only entries (Image/Link/Function/Document Field) checked on Insert rules alone |
+| **View** | Five ✓ toggles hide/show chrome; persist after refresh |
+| **Project duplicates** | Push / Project Manager / Themes ✓ / Page Header / Styles grey rules match across paths |
+| **Form Preview** | Preview tab greys Edit + formatting palette; Design restores authoring |
+| **Windows** | Cascade, Tile H/V, Close All, window list ✓ on active |
+| **Badge context menu (G5)** | Cut/Copy/Paste **stubs** (V2); Delete + Display conditionally… live. Badge Delete = row red **×** (form item), not MDI window close |
 
 ---
 

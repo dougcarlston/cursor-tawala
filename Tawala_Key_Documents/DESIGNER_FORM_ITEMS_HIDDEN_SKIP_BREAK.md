@@ -205,7 +205,7 @@ flowchart TD
 |---------|--------|----------------|
 | Hidden field item | Yes | Not implemented |
 | Page break | Yes | Not implemented |
-| Skip instructions editor | Full If/SkipTo/Set/Comment (incl. nested If) | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow; **Jul 20:** re-edit keeps insert gaps; **Jul 23:** Comment autofocus; nested If in owner use — not a deferred gap. Cut/Copy/Paste/Undo toolbar icons = legacy chrome only (not TODOs). |
+| Skip instructions editor | Full If/SkipTo/Set/Comment (incl. nested If) | **Wired** (Jul 2026); Jul 19: select/Modify/delete/insert-at-arrow; **Jul 20:** re-edit keeps insert gaps; **Jul 23:** Comment autofocus; nested If in owner use — not a deferred gap. Cut/Copy/Paste/Undo toolbar icons = legacy chrome only (not TODOs). **Undo last delete → Version 2 (Sep 2026):** one-step restore when author accidentally deletes an entire Skip command (see `DESIGNER_OPEN_TODOS.md` **B8**). |
 | Skip summary on canvas | Yes | Yes (`May skip to` / `Skips to End of Form`) |
 | Form post-process Set → hidden field | Yes | Partial / JSON only |
 

@@ -32,6 +32,11 @@ import {
   getProcessCommandAtPath,
 } from "@/lib/processScript";
 import { insertCommandAtPoint } from "@/lib/processInsert";
+import {
+  recordProcessCommandChange,
+  redoProcessCommands as popRedoProcessCommands,
+  undoProcessCommands as popUndoProcessCommands,
+} from "@/lib/processCommandHistory";
 import { parentPathAndChildIndex, ROOT_INSERT_PATH } from "@/lib/skipInsertPath";
 import { DeployCredentials, DeployResult, loadCredentials, saveCredentials } from "@/api/deploy";
 import { deployProject as apiDeploy } from "@/api/deploy";
@@ -211,6 +216,8 @@ interface ProjectState {
   selectedProcessCommandPath: string | null;
   /** Active statement property panel in the process window (`if`, `set`, …). */
   processStatementPanel: ProcessStatementPanel;
+  /** Bumps on Process command undo/redo so builders drop stale Modify drafts. */
+  processBuilderSyncToken: number;
   credentials: DeployCredentials | null;
   lastDeploy: DeployResult | null;
   showLogin: boolean;
@@ -313,7 +320,13 @@ interface ProjectState {
     command: TawalaProcessCommand,
     options?: { path?: string; index?: number },
   ) => void;
-  updateProcessCommands: (processName: string, commands: TawalaProcessCommand[]) => void;
+  updateProcessCommands: (
+    processName: string,
+    commands: TawalaProcessCommand[],
+    options?: { record?: boolean },
+  ) => void;
+  undoProcessCommands: () => boolean;
+  redoProcessCommands: () => boolean;
   updateDocumentContent: (documentName: string, content: string | RichContentBlock[]) => void;
   /**
    * Register a From-your-PC image (or reuse identical bytes). Returns the `imageN` id
@@ -343,6 +356,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   processUiByName: {},
   selectedProcessCommandPath: null,
   processStatementPanel: "none",
+  processBuilderSyncToken: 0,
   credentials: loadCredentials(),
   lastDeploy: null,
   showLogin: false,
@@ -1009,13 +1023,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       direction,
     );
     if (!moved) return;
-    const processes = (project.processes ?? []).map((p) =>
-      p.name === selection.name ? { ...p, commands: moved.commands } : p,
-    );
+    get().updateProcessCommands(selection.name, moved.commands);
     const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
     set({
-      project: { ...project, processes },
-      dirty: true,
       selectedProcessCommandPath: moved.newPath,
       processInsertPath: parentPath,
       processInsertIndex: childIndex + 1,
@@ -1036,13 +1046,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       destIndex,
     );
     if (!moved) return;
-    const processes = (project.processes ?? []).map((p) =>
-      p.name === targetName ? { ...p, commands: moved.commands } : p,
-    );
+    get().updateProcessCommands(targetName, moved.commands);
     const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
     set({
-      project: { ...project, processes },
-      dirty: true,
       selectedProcessCommandPath: moved.newPath,
       processInsertPath: parentPath,
       processInsertIndex: childIndex + 1,
@@ -1711,24 +1717,63 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     const path = options?.path ?? processInsertPath;
     const index = options?.index ?? processInsertIndex;
     const inserted = insertCommandAtPoint(proc.commands ?? [], path, index, command);
-    const nextProcesses = processes.map((p) =>
-      p.name === selection.name ? { ...p, commands: inserted.commands } : p,
-    );
+    get().updateProcessCommands(selection.name, inserted.commands);
     set({
-      project: { ...project, processes: nextProcesses },
-      dirty: true,
       processInsertPath: inserted.insertPath,
       processInsertIndex: inserted.insertIndex,
       statusMessage: `Inserted ${command.cmd} statement`,
     });
   },
 
-  updateProcessCommands: (processName, commands) => {
+  updateProcessCommands: (processName, commands, options) => {
     const { project } = get();
+    if (options?.record !== false) {
+      const proc = project.processes?.find((p) => p.name === processName);
+      const before = proc?.commands ?? [];
+      recordProcessCommandChange(processName, before, commands);
+    }
     const processes = (project.processes ?? []).map((p) =>
       p.name === processName ? { ...p, commands } : p,
     );
     set({ project: { ...project, processes }, dirty: true, statusMessage: "Process updated" });
+  },
+
+  undoProcessCommands: () => {
+    const { selection, selectedProcessCommandPath } = get();
+    if (selection.kind !== "process" || !selection.name) return false;
+    const restored = popUndoProcessCommands();
+    if (!restored) return false;
+    get().updateProcessCommands(selection.name, restored, { record: false });
+    const keepPath =
+      selectedProcessCommandPath != null &&
+      getProcessCommandAtPath(restored, selectedProcessCommandPath) != null
+        ? selectedProcessCommandPath
+        : null;
+    set({
+      selectedProcessCommandPath: keepPath,
+      processBuilderSyncToken: get().processBuilderSyncToken + 1,
+      statusMessage: "Undo",
+    });
+    return true;
+  },
+
+  redoProcessCommands: () => {
+    const { selection, selectedProcessCommandPath } = get();
+    if (selection.kind !== "process" || !selection.name) return false;
+    const restored = popRedoProcessCommands();
+    if (!restored) return false;
+    get().updateProcessCommands(selection.name, restored, { record: false });
+    const keepPath =
+      selectedProcessCommandPath != null &&
+      getProcessCommandAtPath(restored, selectedProcessCommandPath) != null
+        ? selectedProcessCommandPath
+        : null;
+    set({
+      selectedProcessCommandPath: keepPath,
+      processBuilderSyncToken: get().processBuilderSyncToken + 1,
+      statusMessage: "Redo",
+    });
+    return true;
   },
 
   updateDocumentContent: (documentName, content) => {
@@ -1818,13 +1863,15 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
 
   deploy: async () => {
     const { project, credentials } = get();
-    if (!credentials) {
+    const authUser = getGlobalAuthUser();
+    const effectiveCredentials = credentials || (authUser ? { user: authUser.primaryEmail || authUser.id, password: "clerk-auth" } : null);
+    if (!effectiveCredentials) {
       set({ showLogin: true, statusMessage: "Enter Push credentials (dev/dev)" });
       return;
     }
     set({ statusMessage: "Pushing…" });
     try {
-      const result = await apiDeploy(project, credentials);
+      const result = await apiDeploy(project, effectiveCredentials);
       if (result.status === "failure") {
         set({
           lastDeploy: { ...result, project: project.name },
@@ -1837,9 +1884,9 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       const { _freshFromTemplate: _f, ...clean } = project as TawalaProject & {
         _freshFromTemplate?: boolean;
       };
-      const authUser = getGlobalAuthUser();
-      const user = authUser?.primaryEmail || authUser?.username || authUser?.id || String(credentials.user ?? "").trim();
-      const authorDisplayName = authUser?.fullName || user;
+      const authUserAfter = getGlobalAuthUser();
+      const user = authUserAfter?.primaryEmail || authUserAfter?.username || authUserAfter?.id || String(effectiveCredentials.user ?? "").trim();
+      const authorDisplayName = authUserAfter?.fullName || user;
       const nextProject = {
         ...clean,
         ...(result.deployIdentityName
@@ -1849,7 +1896,7 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
         ...(user
           ? {
               author: clean.author || authorDisplayName,
-              authorId: clean.authorId || (authUser?.id ?? user),
+              authorId: clean.authorId || (authUserAfter?.id ?? user),
               userId: clean.userId || user,
             }
           : {}),

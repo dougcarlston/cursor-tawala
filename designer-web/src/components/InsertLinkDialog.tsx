@@ -10,6 +10,7 @@ import {
   parseFunctionConditions,
   type FunctionConditionsState,
 } from "@/lib/functionConditions";
+import { normalizeHyperlinkUrl } from "@/lib/hyperlinkUrl";
 import type { HyperlinkDraft, InvitationDraft } from "@/lib/linkInsert";
 
 export type LinkDialogMode = "form" | "url";
@@ -97,7 +98,7 @@ export function InsertLinkDialog({
     onSave({
       kind: "hyperlink",
       draft: {
-        url: url.trim(),
+        url: normalizeHyperlinkUrl(url),
         displayText: urlDisplayText,
         openNewWindow,
         conditional,
@@ -262,6 +263,10 @@ export function InsertLinkDialog({
             </div>
             <p className="insert-hyperlink-optional hint">
               (optional; if you leave this blank the full URL or filename will be shown)
+            </p>
+            <p className="insert-hyperlink-optional hint">
+              You can omit <code>https://</code> or <code>www.</code> — it will be added when you
+              click OK.
             </p>
 
             <label className="insert-link-checkbox">

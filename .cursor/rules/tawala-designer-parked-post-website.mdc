@@ -30,6 +30,7 @@ alwaysApply: true
 - **MainMenu → Project:** **Project Manager** is live (My Tawala / website — owner Aug 27). **Email Delivery…** — hide menu stub; delivery path stays as-is. **Library-side** email record-keeping / billing counters per registered user (My Tawala group email volume); Test Drive sends negligible. See Task List **#20** HOLD in `website-mock/README.md`; `docs/EMAIL_DELIVERY_OPS.md`.
 - **Sample JSON replacement** (Jul 28 conversions) — **ASAP (owner Aug 27):** re-check New Project samples; owner believes unhappy ones already replaced.
 - **Page Header / banner graphics** — **Later (owner Aug 27):** full source image kept regardless of banner crop; re-edit always possible. Optional: min/max import size for quality standards.
+- **Undo last deleted item** — **Version 2 (owner Sep 2026):** one-step Undo for accidental Delete of a Form canvas item, Skip command, or Process statement within the active window (not Explorer entity delete). See `DESIGNER_OPEN_BUGS.md` § Edit / Undo; `DESIGNER_OPEN_TODOS.md` **B8**.
 
 ## Owner-reported Jul 30 / Aug 11 — park (Not blocking for Live Library)
 

@@ -109,7 +109,7 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
 
   useEffect(() => {
     if (!editing) {
-      clearFormattingFocus("fib");
+      clearFormattingFocus("fib", editorRef.current);
       setActiveBlank(-1);
       return;
     }
@@ -164,13 +164,18 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     applyHintOrCaret();
     // Re-apply once after focus — some browsers expand the selection to the whole
     // contenteditable (hint + underscores) on the initial focus tick.
-    requestAnimationFrame(applyHintOrCaret);
+    requestAnimationFrame(() => {
+      applyHintOrCaret();
+      if (editorRef.current !== el) return;
+      registerAsPaletteEditor();
+      setFormattingFocus({ kind: "fib", cursorInTable: false });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
   useEffect(
     () => () => {
-      clearFormattingFocus("fib");
+      clearFormattingFocus("fib", editorRef.current);
       clearActivePaletteEditor(editorRef.current ?? undefined);
     },
     [],
@@ -197,14 +202,17 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     const sel = window.getSelection();
     if (!el || !sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
-    if (el.contains(range.commonAncestorContainer)) savedRangeRef.current = range.cloneRange();
+    const root = range.commonAncestorContainer;
+    if (root === el || el.contains(root)) savedRangeRef.current = range.cloneRange();
   };
 
   const restoreSelection = () => {
     const el = editorRef.current;
     const sel = window.getSelection();
     const saved = savedRangeRef.current;
-    if (!el || !sel || !saved || !el.contains(saved.commonAncestorContainer)) return;
+    if (!el || !sel || !saved) return;
+    const root = saved.commonAncestorContainer;
+    if (!(root === el || el.contains(root))) return;
     sel.removeAllRanges();
     sel.addRange(saved);
   };
@@ -269,9 +277,10 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
     if (next?.closest(".fib-property-strip")) return;
     if (next?.closest(".fib-validation-dialog")) return;
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
-    clearFormattingFocus("fib");
-    // Keep the expanded property strip while selected so reorder drag stays over the row.
+    // Keep Formatting Palette live while selected (same as Text) — clearing here greys
+    // B/I/U after insert when focus returns to the Items palette button.
     if (selected) return;
+    clearFormattingFocus("fib", editorRef.current);
     setEditing(false);
     setActiveBlank(-1);
   };
@@ -467,7 +476,11 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
               onMouseUp={() => {
                 rememberSelection();
                 const el = editorRef.current;
-                if (el) syncActiveBlank(el);
+                if (el) {
+                  registerAsPaletteEditor();
+                  setFormattingFocus({ kind: "fib", cursorInTable: false });
+                  syncActiveBlank(el);
+                }
               }}
               onFocus={() => {
                 setActiveFieldTarget(insertFieldToken, {}, editorRef.current);

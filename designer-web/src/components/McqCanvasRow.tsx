@@ -140,7 +140,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
 
   useEffect(() => {
     if (!editing) {
-      clearFormattingFocus("mcq");
+      clearFormattingFocus("mcq", editorRef.current);
       return;
     }
     const el = editorRef.current;
@@ -164,12 +164,17 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
+    requestAnimationFrame(() => {
+      if (editorRef.current !== el) return;
+      registerAsPaletteEditor();
+      setFormattingFocus({ kind: "mcq", cursorInTable: false });
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
   useEffect(
     () => () => {
-      clearFormattingFocus("mcq");
+      clearFormattingFocus("mcq", editorRef.current);
       clearActivePaletteEditor(editorRef.current ?? undefined);
     },
     [],
@@ -207,14 +212,17 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     const sel = window.getSelection();
     if (!el || !sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
-    if (el.contains(range.commonAncestorContainer)) savedRangeRef.current = range.cloneRange();
+    const root = range.commonAncestorContainer;
+    if (root === el || el.contains(root)) savedRangeRef.current = range.cloneRange();
   };
 
   const restoreSelection = () => {
     const el = editorRef.current;
     const sel = window.getSelection();
     const saved = savedRangeRef.current;
-    if (!el || !sel || !saved || !el.contains(saved.commonAncestorContainer)) return;
+    if (!el || !sel || !saved) return;
+    const root = saved.commonAncestorContainer;
+    if (!(root === el || el.contains(root))) return;
     sel.removeAllRanges();
     sel.addRange(saved);
   };
@@ -247,7 +255,9 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
 
   const syncPaletteFocus = () => {
     const el = editorRef.current;
-    if (!el || document.activeElement !== el) return;
+    if (!el) return;
+    // Do not require document.activeElement === el: after insert the editor may already
+    // be focused while focus-kind was cleared by a sibling race; mouseup must re-arm.
     setFormattingFocus({ kind: "mcq", cursorInTable: false });
   };
 
@@ -263,9 +273,9 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
     if (next?.closest(".formatting-palette")) return;
     if (next?.closest(".fib-property-strip")) return;
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
-    clearFormattingFocus("mcq");
-    // Keep the expanded property strip while selected so reorder drag stays over the row.
+    // Keep Formatting Palette live while selected (same as Text / FIB).
     if (selected) return;
+    clearFormattingFocus("mcq", editorRef.current);
     pruneEmptyChoices();
     setEditing(false);
   };
@@ -382,6 +392,7 @@ export function McqCanvasRow({ item, index, formName, selected }: Props) {
               }}
               onMouseUp={() => {
                 rememberSelection();
+                registerAsPaletteEditor();
                 syncPaletteFocus();
               }}
               onFocus={() => {

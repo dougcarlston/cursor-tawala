@@ -210,7 +210,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
   // (which flows back into `content`) never re-writes the DOM and clobbers the caret.
   useEffect(() => {
     if (!editing) {
-      clearFormattingFocus("heading");
+      clearFormattingFocus("heading", editorRef.current);
       return;
     }
     const el = editorRef.current;
@@ -253,7 +253,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editing]);
 
-  useEffect(() => () => clearFormattingFocus("heading"), []);
+  useEffect(() => () => clearFormattingFocus("heading", editorRef.current), []);
 
   useEffect(() => {
     if (!editingLabel) return;
@@ -385,7 +385,7 @@ export function HeadingCanvasRow({ item, index, formName, selected }: Props) {
     // Keep editing while focus moves within the row (dropdown, label input, editor).
     if (e.currentTarget.contains(e.relatedTarget as Node | null)) return;
     if (retainEditorFocusOnBlur(e.relatedTarget)) return;
-    clearFormattingFocus("heading");
+    clearFormattingFocus("heading", editorRef.current);
     // Keep expanded while selected so form-item reorder drag does not collapse mid-drag.
     if (selected) return;
     setEditing(false);

@@ -7,6 +7,9 @@ import {
   eventIsNewProjectChord,
   eventIsOpenProjectChord,
   eventIsSaveChord,
+  newProjectAcceleratorHint,
+  newProjectAcceleratorLabel,
+  newProjectUsesControlOnMac,
   importProjectFileText,
   isOpenableProjectFileName,
   isProjectJsonFileName,
@@ -61,6 +64,25 @@ describe("New / Open file chords", () => {
     expect(eventIsNewProjectChord({ ...base, code: "KeyN", key: "n" })).toBe(true);
     expect(eventIsOpenProjectChord({ ...base, code: "KeyO", key: "o" })).toBe(true);
     expect(eventIsNewProjectChord({ ...base, shiftKey: true, code: "KeyN", key: "n" })).toBe(false);
+    const mac = { ctrlKey: false, metaKey: true, altKey: false, shiftKey: false };
+    expect(eventIsNewProjectChord({ ...mac, code: "KeyN", key: "n" })).toBe(true);
+  });
+
+  it("newProjectAcceleratorLabel uses Ctrl+N on Chrome macOS", () => {
+    const ua = navigator.userAgent;
+    Object.defineProperty(navigator, "userAgent", {
+      configurable: true,
+      value:
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    });
+    Object.defineProperty(navigator, "platform", {
+      configurable: true,
+      value: "MacIntel",
+    });
+    expect(newProjectUsesControlOnMac()).toBe(true);
+    expect(newProjectAcceleratorLabel()).toBe("Ctrl+N");
+    expect(newProjectAcceleratorHint()).toContain("Ctrl+N");
+    Object.defineProperty(navigator, "userAgent", { configurable: true, value: ua });
   });
 });
 

@@ -153,7 +153,9 @@ app.post("/client", async (req, res) => {
     const user = credNode["@_user"] ?? credNode.user;
     const password = credNode["@_password"] ?? credNode.password;
 
-    if (!checkAuth(user, password)) {
+    const authProvider = credNode["@_authProvider"] ?? credNode.authProvider;
+
+    if (!checkAuth(user, password, authProvider)) {
       res.type("text/xml").send(authFailedXml());
       return;
     }
@@ -207,7 +209,11 @@ app.post("/client", async (req, res) => {
       }
 
       if (JAVA_URL) {
-        const xml = typeof req.body === "string" ? req.body : buildUploadRequest({ user, password }, project);
+        const javaCreds = {
+          user: process.env.TAWALA_JAVA_USER || "dev",
+          password: process.env.TAWALA_JAVA_PASSWORD || "dev",
+        };
+        const xml = typeof req.body === "string" ? req.body : buildUploadRequest(javaCreds, project);
         const javaResponse = await forwardToJava(xml);
         res.type("text/xml").send(javaResponse);
         return;
@@ -252,7 +258,9 @@ app.options("/api/deploy", (req, res) => {
 
 async function lookupOccupantForDeploy(user, password, tomcatName) {
   if (JAVA_URL) {
-    const xml = queryDeploymentsRequestXml(user, password);
+    const javaUser = process.env.TAWALA_JAVA_USER || "dev";
+    const javaPass = process.env.TAWALA_JAVA_PASSWORD || "dev";
+    const xml = queryDeploymentsRequestXml(javaUser, javaPass);
     const text = await forwardToJava(xml);
     const failure = parseDeployFailure(text);
     if (failure || !/status="success"/i.test(text)) {
@@ -325,7 +333,13 @@ app.post("/api/deploy", async (req, res) => {
       }
 
       if (JAVA_URL) {
-        const xml = buildUploadRequest(credentials, projectForDeploy);
+        // Java/Tomcat authentication uses the local dev account (e.g. dev/dev),
+        // while Clerk identifies the author identity stamped onto the project.
+        const javaCreds = {
+          user: process.env.TAWALA_JAVA_USER || "dev",
+          password: process.env.TAWALA_JAVA_PASSWORD || "dev",
+        };
+        const xml = buildUploadRequest(javaCreds, projectForDeploy);
         const javaResponse = await forwardToJava(xml);
         const allForProject = parseStartpointsForProject(javaResponse, projectForDeploy.name);
         const startpoints = filterStartpointsForMarkedForms(projectForDeploy, allForProject);
@@ -980,7 +994,11 @@ app.post("/api/email/test", async (req, res) => {
     return;
   }
   try {
-    const javaResponse = await forwardToJava(buildSendTestEmailXml(credentials, to.trim()));
+    const javaCreds = {
+      user: process.env.TAWALA_JAVA_USER || "dev",
+      password: process.env.TAWALA_JAVA_PASSWORD || "dev",
+    };
+    const javaResponse = await forwardToJava(buildSendTestEmailXml(javaCreds, to.trim()));
     const parsed = parseEmailStatusXml(javaResponse, "java");
     if (javaResponse.includes('status="failure"') || parsed.error) {
       res.status(502).json({

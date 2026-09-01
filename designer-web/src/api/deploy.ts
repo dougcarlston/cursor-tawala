@@ -70,9 +70,13 @@ export async function deployProject(
 }
 
 export async function queryDeployments(credentials: DeployCredentials): Promise<StartPoint[]> {
+  const authUser = getGlobalAuthUser();
+  const user = authUser?.primaryEmail || authUser?.username || authUser?.id || credentials.user;
+  const password = credentials.password || "clerk-auth";
+  const authProviderAttr = authUser ? ` authProvider="clerk"` : "";
   const xml = `<?xml version="1.0" encoding="utf-8"?>
 <request type="queryDeployments" protocol="1.0">
-  <credentials user="${escapeXml(credentials.user)}" password="${escapeXml(credentials.password)}"/>
+  <credentials user="${escapeXml(user)}" password="${escapeXml(password)}"${authProviderAttr}/>
 </request>`;
   const res = await fetch("/client", {
     method: "POST",

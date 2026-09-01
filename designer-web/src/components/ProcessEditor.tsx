@@ -12,6 +12,7 @@ import { SetStatementBuilder } from "@/components/SetStatementBuilder";
 import { ShowStatementBuilder } from "@/components/ShowStatementBuilder";
 import { SkipScriptView } from "@/components/SkipScriptView";
 import { insertCommandAtPoint } from "@/lib/processInsert";
+import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
 import {
   hasProcessStatementDrag,
   hasProcessStatementReorderDrag,
@@ -90,6 +91,10 @@ import {
 } from "@/lib/statementBuilders";
 import { buildConditionFromRows } from "@/lib/skipSummary";
 import { setActiveFieldTarget } from "@/lib/fieldInsertion";
+import {
+  beginProcessCommandHistory,
+  endProcessCommandHistory,
+} from "@/lib/processCommandHistory";
 import {
   getProcessClipboard,
   setProcessClipboard,
@@ -176,6 +181,7 @@ export function ProcessEditor({ processName }: Props) {
   const processInsertIndex = useProjectStore((s) => s.processInsertIndex);
   const selectedProcessCommandPath = useProjectStore((s) => s.selectedProcessCommandPath);
   const processStatementPanel = useProjectStore((s) => s.processStatementPanel);
+  const processBuilderSyncToken = useProjectStore((s) => s.processBuilderSyncToken);
   const setProcessInsertPoint = useProjectStore((s) => s.setProcessInsertPoint);
   const setSelectedProcessCommandPath = useProjectStore((s) => s.setSelectedProcessCommandPath);
   const moveSelectedProcessCommand = useProjectStore((s) => s.moveSelectedProcessCommand);
@@ -184,6 +190,8 @@ export function ProcessEditor({ processName }: Props) {
   const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
   const setProcessStatementPanel = useProjectStore((s) => s.setProcessStatementPanel);
   const updateProcessCommands = useProjectStore((s) => s.updateProcessCommands);
+  const undoProcessCommands = useProjectStore((s) => s.undoProcessCommands);
+  const redoProcessCommands = useProjectStore((s) => s.redoProcessCommands);
   const proc = project.processes?.find((p) => p.name === processName);
   const [ifBuilder, setIfBuilder] = useState<IfBuilderState>(EMPTY_IF_BUILDER);
   const [setBuilder, setSetBuilder] = useState<SetBuilderState>(EMPTY_SET_BUILDER);
@@ -201,6 +209,49 @@ export function ProcessEditor({ processName }: Props) {
   const [dragInsertIndex, setDragInsertIndex] = useState<number | null>(null);
   const [dragCaretTop, setDragCaretTop] = useState<number | null>(null);
   const scriptRef = useRef<HTMLDivElement>(null);
+  const prevBuilderSyncRef = useRef(processBuilderSyncToken);
+
+  const applyBuilderFromCommand = (
+    cmd: TawalaProcessCommand,
+    panel: typeof processStatementPanel,
+  ) => {
+    if (panel === "if" && cmd.cmd === "if") {
+      setIfBuilder(ifBuilderFromCommand(cmd));
+    } else if (panel === "set" && cmd.cmd === "set") {
+      setSetBuilder(setBuilderFromCommand(cmd));
+    } else if (panel === "show" && isShowCommandType(cmd)) {
+      setShowBuilder(showBuilderFromCommand(cmd));
+    } else if (panel === "send" && cmd.cmd === "send") {
+      setSendBuilder(sendBuilderFromCommand(cmd));
+    } else if (panel === "append" && cmd.cmd === "append") {
+      setAppendBuilder(appendBuilderFromCommand(cmd));
+    } else if (panel === "get" && cmd.cmd === "get") {
+      setGetBuilder(getBuilderFromCommand(cmd));
+    } else if (panel === "foreach" && cmd.cmd === "foreach") {
+      setForEachBuilder(foreachBuilderFromCommand(cmd));
+    } else if (panel === "delete" && cmd.cmd === "delete") {
+      setDeleteBuilder(deleteBuilderFromCommand(cmd));
+    } else if (panel === "remove-duplicates" && cmd.cmd === "remove-duplicates") {
+      setRemoveDuplicatesBuilder(removeDuplicatesBuilderFromCommand(cmd));
+    } else if (panel === "comment" && cmd.cmd === "comment") {
+      setCommentBuilder(commentBuilderFromCommand(cmd));
+    }
+  };
+
+  const resetAddModeBuilder = (panel: typeof processStatementPanel) => {
+    if (panel === "if") setIfBuilder(EMPTY_IF_BUILDER);
+    else if (panel === "set") setSetBuilder(EMPTY_SET_BUILDER);
+    else if (panel === "show") setShowBuilder(EMPTY_SHOW_BUILDER);
+    else if (panel === "send") setSendBuilder(EMPTY_SEND_BUILDER);
+    else if (panel === "append") setAppendBuilder(EMPTY_APPEND_BUILDER);
+    else if (panel === "get") {
+      setGetBuilder({ ...EMPTY_GET_BUILDER, recordList: nextRecordListName(commands) });
+    } else if (panel === "foreach") setForEachBuilder(EMPTY_FOREACH_BUILDER);
+    else if (panel === "delete") setDeleteBuilder(EMPTY_DELETE_BUILDER);
+    else if (panel === "remove-duplicates") {
+      setRemoveDuplicatesBuilder(EMPTY_REMOVE_DUPLICATES_BUILDER);
+    } else if (panel === "comment") setCommentBuilder(EMPTY_COMMENT_BUILDER);
+  };
 
   const commands = proc?.commands ?? [];
   const knownVariables = useMemo(
@@ -298,6 +349,14 @@ export function ProcessEditor({ processName }: Props) {
     isActiveProcess && commands.length === 0 && processStatementPanel === "none";
 
   useEffect(() => {
+    const initial =
+      useProjectStore.getState().project.processes?.find((p) => p.name === processName)
+        ?.commands ?? [];
+    beginProcessCommandHistory(processName, initial);
+    return () => endProcessCommandHistory(processName);
+  }, [processName]);
+
+  useEffect(() => {
     if (!isActiveProcess) return;
     if (
       processStatementPanel === "if" ||
@@ -320,39 +379,32 @@ export function ProcessEditor({ processName }: Props) {
     return () => setActiveFieldTarget(null);
   }, [isActiveProcess]);
 
-  // Load builder state synchronously when script selection changes (before Modify click).
+  // Load builder from the committed script (Modify, undo/redo, re-select line).
   useLayoutEffect(() => {
-    if (!isActiveProcess || !selectedProcessCommandPath) return;
-    const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
-    if (!cmd) return;
-    if (processStatementPanel === "if" && cmd.cmd === "if") {
-      setIfBuilder(ifBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "set" && cmd.cmd === "set") {
-      setSetBuilder(setBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "show" && isShowCommandType(cmd)) {
-      setShowBuilder(showBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "send" && cmd.cmd === "send") {
-      setSendBuilder(sendBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "append" && cmd.cmd === "append") {
-      setAppendBuilder(appendBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "get" && cmd.cmd === "get") {
-      setGetBuilder(getBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "foreach" && cmd.cmd === "foreach") {
-      setForEachBuilder(foreachBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "delete" && cmd.cmd === "delete") {
-      setDeleteBuilder(deleteBuilderFromCommand(cmd));
-    } else if (
-      processStatementPanel === "remove-duplicates" &&
-      cmd.cmd === "remove-duplicates"
-    ) {
-      setRemoveDuplicatesBuilder(removeDuplicatesBuilderFromCommand(cmd));
-    } else if (processStatementPanel === "comment" && cmd.cmd === "comment") {
-      setCommentBuilder(commentBuilderFromCommand(cmd));
+    if (!isActiveProcess) return;
+
+    if (selectedProcessCommandPath) {
+      const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+      if (!cmd) return;
+      applyBuilderFromCommand(cmd, processStatementPanel);
+      return;
     }
-  }, [selectedProcessCommandPath, commands, isActiveProcess, processStatementPanel]);
+
+    if (processBuilderSyncToken === 0) return;
+    resetAddModeBuilder(processStatementPanel);
+  }, [
+    selectedProcessCommandPath,
+    commands,
+    isActiveProcess,
+    processStatementPanel,
+    processBuilderSyncToken,
+  ]);
 
   useEffect(() => {
     if (!isActiveProcess) return;
+    const syncBumped = prevBuilderSyncRef.current !== processBuilderSyncToken;
+    prevBuilderSyncRef.current = processBuilderSyncToken;
+    if (syncBumped) return;
     if (processStatementPanel === "if" && !selectedProcessCommandPath) {
       setIfBuilder((prev) => (ifBuilderHasDraft(prev) ? prev : EMPTY_IF_BUILDER));
     }
@@ -401,7 +453,13 @@ export function ProcessEditor({ processName }: Props) {
     if (processStatementPanel === "none") {
       setShowBuilder(EMPTY_SHOW_BUILDER);
     }
-  }, [processStatementPanel, selectedProcessCommandPath, isActiveProcess, commands]);
+  }, [
+    processStatementPanel,
+    selectedProcessCommandPath,
+    isActiveProcess,
+    commands,
+    processBuilderSyncToken,
+  ]);
 
   const dismissStatementPanel = () => {
     setProcessStatementPanel("none");
@@ -411,10 +469,14 @@ export function ProcessEditor({ processName }: Props) {
 
   const handleCut = () => {
     if (!selectedProcessCommandPath) return;
-    const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+    const cutPath = selectedProcessCommandPath;
+    const cmd = getProcessCommandAtPath(commands, cutPath);
     if (!cmd) return;
+    const { parentPath, childIndex } = parentPathAndChildIndex(cutPath);
     setProcessClipboard(cmd);
-    deleteCommandAtPath(selectedProcessCommandPath);
+    const next = deleteProcessCommandAtPath(commands, cutPath);
+    setCommands(next);
+    setProcessInsertPoint(parentPath, childIndex);
   };
 
   const handleCopy = () => {
@@ -460,7 +522,22 @@ export function ProcessEditor({ processName }: Props) {
       const isC = (key === "c" || code === "KeyC") && !e.shiftKey;
       const isV = (key === "v" || code === "KeyV") && !e.shiftKey;
 
+      const isZ = (key === "z" || code === "KeyZ") && !e.shiftKey;
+      const isY = (key === "y" || code === "KeyY") && !e.shiftKey;
+      const isShiftZ =
+        (key === "z" || code === "KeyZ") && e.shiftKey;
+
       if (modKey) {
+        if (isZ) {
+          e.preventDefault();
+          undoProcessCommands();
+          return;
+        }
+        if (isY || isShiftZ) {
+          e.preventDefault();
+          redoProcessCommands();
+          return;
+        }
         if (isX && selectedProcessCommandPath != null) {
           e.preventDefault();
           handleCut();
@@ -506,6 +583,8 @@ export function ProcessEditor({ processName }: Props) {
     commands,
     processInsertPath,
     processInsertIndex,
+    undoProcessCommands,
+    redoProcessCommands,
   ]);
 
   if (!proc) {
@@ -531,7 +610,10 @@ export function ProcessEditor({ processName }: Props) {
             ? { else: (existing.else as TawalaProcessCommand[] | undefined) ?? [] }
             : {}),
         };
-        setCommands(replaceProcessCommandAtPath(commands, modifyPath, updated));
+        const next = replaceProcessCommandAtPath(commands, modifyPath, updated);
+        setCommands(next);
+        const committed = getProcessCommandAtPath(next, modifyPath);
+        if (committed?.cmd === "if") setIfBuilder(ifBuilderFromCommand(committed));
         return;
       }
     }

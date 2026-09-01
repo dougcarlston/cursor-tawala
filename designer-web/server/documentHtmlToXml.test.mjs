@@ -715,6 +715,25 @@ describe("documentHtmlToXml invitation / hyperlink", () => {
     expect(xml).not.toContain('<string value=""/>');
   });
 
+  it("normalizes bare-domain hyperlink URLs on Push", () => {
+    const config = JSON.stringify({
+      url: "dirtbowl.com/about",
+      displayText: "About",
+      openNewWindow: false,
+      conditional: false,
+      conditions: [],
+    })
+      .replace(/&/g, "&amp;")
+      .replace(/"/g, "&quot;");
+    const xml = documentHtmlToXml(
+      `<p><span class="hyperlink-token" data-hyperlink-config="${config}">About</span></p>`,
+      escAttr,
+      escText,
+    );
+    expect(xml).toContain('<string value="https://dirtbowl.com/about"/>');
+    expect(xml).not.toContain('value="dirtbowl.com/about"');
+  });
+
   it("keeps mailto / https URLs as strings, not field refs", () => {
     const config = JSON.stringify({
       url: "mailto:a@b.com",

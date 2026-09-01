@@ -4,6 +4,30 @@ Static rough draft of the legacy Tawala site (home, Library, project detail, My 
 
 **Site CSS (July 2026):** Legacy styles copied into `css/legacy/` from owner archives (`tawala-base.css`, `pages/homepage.css`, `pages/library.css`). Template images under `images/`. Mock-only chrome (banner, pending links, test-drive boxes) in `css/tawala-chrome.css`. Stub pages still use the older all-in-one `css/tawala-mock.css`.
 
+## F2 look-and-feel pass (owner Sep 2026 — active)
+
+**Scope:** `website-mock/` site chrome only — **not** `designer-web/` Design canvas (C11 stays Version 2). Functional ops (Save/Delete/Purge/Push) stay as-is; this pass is **visual parity** with legacy Beta / My Tawala quality bar.
+
+**Owner Aug 26:** public **Library listing** look-and-feel is weaker than **My Tawala** and **Project Details** — prioritize before any public switch.
+
+**Reference:** side-by-side `legacy-reference/` vs live pages; comparison canvas `legacy-vs-mock-pages.canvas.tsx`. Do **not** treat reconstructed Library still as pixel truth.
+
+### F2 checklist (work in order)
+
+| # | Page / area | Goal | Status |
+|---|-------------|------|--------|
+| 1 | **Library listing** (`library.html`) | Match My Tawala listing polish: frame, column rhythm, action buttons, category groups, nav hint | **Next** |
+| 2 | **Library detail** (`library-detail.html`) | Same chrome tokens as listing; acquire CTAs consistent | Open |
+| 3 | **Home** (`index.html`) | Optional — owner Jul 31: non-critical vs ops | Open |
+| 4 | **Shared nav / banner** | Home · Library · My Tawala · Designer consistency | Open |
+| 5 | **Stub pages** | Migrate remaining pages off `tawala-mock.css` to legacy stack where touched | Open |
+
+**Out of scope for F2:** Auth (#21), payments (#22), ratings (#17), badge G5, Designer confirm dialogs (B2), MDI Pass 2.
+
+**Smoke host:** always `http://localhost:5500` (not `127.0.0.1` — separate localStorage).
+
+---
+
 ## View locally
 
 **Clean start tomorrow (Docker + Tomcat + :5500 + what to click):** see `docs/CHAT_HANDOFF.md` → **Chat 3 — Website mock** → **Clean start tomorrow**. Chat title: **Library thread**.

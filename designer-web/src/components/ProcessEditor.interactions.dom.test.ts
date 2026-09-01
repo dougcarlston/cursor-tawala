@@ -2,7 +2,7 @@
  * ProcessEditor drag-reorder into ForEach/If containers and Copy/Paste shortcuts.
  * @vitest-environment happy-dom
  */
-import { describe, expect, it, beforeEach } from "vitest";
+import { describe, expect, it, beforeEach, afterEach } from "vitest";
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { ProcessEditor } from "@/components/ProcessEditor";
@@ -11,6 +11,7 @@ import { buildProcessScriptLines, moveProcessCommandBefore } from "@/lib/process
 import { getProcessClipboard, setProcessClipboard } from "@/lib/processClipboard";
 import { readProcessStatementReorderDrag, setProcessStatementReorderDrag } from "@/lib/designerDrag";
 import { runShellEditCommand } from "@/lib/shellCommands";
+import { resetProcessCommandHistoryForTests } from "@/lib/processCommandHistory";
 import { useProjectStore } from "@/store/projectStore";
 import type { TawalaProcessCommand } from "@/types/tawala";
 
@@ -384,5 +385,200 @@ describe("ProcessEditor Copy & Paste keyboard shortcuts and insertion", () => {
       document: "Document 1",
       to: "RecipEmail",
     });
+  });
+
+  it("cut then paste restores the statement at the same index (not one line lower)", () => {
+    useProjectStore.getState().setSelectedProcessCommandPath("root/1");
+
+    act(() => {
+      runShellEditCommand("cut");
+    });
+
+    let proc = useProjectStore
+      .getState()
+      .project.processes?.find((p) => p.name === "Process 1");
+    expect(proc?.commands).toHaveLength(1);
+    expect(useProjectStore.getState().processInsertPath).toBe("root");
+    expect(useProjectStore.getState().processInsertIndex).toBe(1);
+
+    act(() => {
+      runShellEditCommand("paste");
+    });
+
+    proc = useProjectStore
+      .getState()
+      .project.processes?.find((p) => p.name === "Process 1");
+    expect(proc?.commands).toHaveLength(2);
+    expect(proc?.commands[1]).toEqual({
+      cmd: "send",
+      document: "Document 1",
+      to: "RecipEmail",
+    });
+  });
+});
+
+describe("ProcessEditor command undo", () => {
+  afterEach(() => {
+    resetProcessCommandHistoryForTests();
+  });
+
+  beforeEach(() => {
+    useProjectStore.setState({
+      project: {
+        name: "TestProject",
+        forms: [],
+        processes: [
+          {
+            name: "Process 1",
+            commands: [{ cmd: "set", field: "x", value: "x + 1" }],
+          },
+        ],
+        documents: [],
+      },
+      selection: { kind: "process", name: "Process 1" },
+      openWindows: [
+        { id: "proc-1", kind: "process", name: "Process 1", z: 1, x: 0, y: 0, w: 600, h: 400 },
+      ],
+      activeWindowId: "proc-1",
+      selectedProcessCommandPath: null,
+      processInsertPath: "root",
+      processInsertIndex: 0,
+      processStatementPanel: "none",
+    });
+  });
+
+  it("undoes a committed Set Modify via Cmd/Ctrl+Z", () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    act(() => {
+      root.render(createElement(ProcessEditor, { processName: "Process 1" }));
+    });
+
+    act(() => {
+      useProjectStore.getState().updateProcessCommands("Process 1", [
+        { cmd: "set", field: "x", value: "x + 10" },
+      ]);
+    });
+
+    act(() => {
+      window.dispatchEvent(
+        new KeyboardEvent("keydown", {
+          key: "z",
+          code: "KeyZ",
+          ctrlKey: true,
+          bubbles: true,
+        }),
+      );
+    });
+
+    const proc = useProjectStore
+      .getState()
+      .project.processes?.find((p) => p.name === "Process 1");
+    expect(proc?.commands[0]).toEqual({ cmd: "set", field: "x", value: "x + 1" });
+
+    act(() => {
+      root.unmount();
+    });
+    host.remove();
+  });
+
+  it("undoes via Edit menu runShellEditCommand on Process window", () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    act(() => {
+      root.render(createElement(ProcessEditor, { processName: "Process 1" }));
+    });
+
+    act(() => {
+      useProjectStore.getState().updateProcessCommands("Process 1", [
+        { cmd: "set", field: "x", value: "x + 10" },
+      ]);
+    });
+
+    act(() => {
+      expect(runShellEditCommand("undo")).toBe(true);
+    });
+
+    const proc = useProjectStore
+      .getState()
+      .project.processes?.find((p) => p.name === "Process 1");
+    expect(proc?.commands[0]).toEqual({ cmd: "set", field: "x", value: "x + 1" });
+
+    act(() => {
+      root.unmount();
+    });
+    host.remove();
+  });
+
+  it("undoes If operator change (does not equal → equals) in script", () => {
+    const host = document.createElement("div");
+    document.body.appendChild(host);
+    const root = createRoot(host);
+
+    act(() => {
+      useProjectStore.setState({
+        project: {
+          name: "TestProject",
+          forms: [{ name: "Form 1", items: [] }],
+          processes: [
+            {
+              name: "Process 1",
+              commands: [
+                {
+                  cmd: "if",
+                  condition: { field: "Form 1:Q1", op: "doesNotEqual", value: "No" },
+                  then: [],
+                },
+              ],
+            },
+          ],
+          documents: [],
+        },
+      });
+      root.render(createElement(ProcessEditor, { processName: "Process 1" }));
+    });
+
+    act(() => {
+      useProjectStore.setState({
+        selectedProcessCommandPath: "root/0",
+        processStatementPanel: "if",
+      });
+    });
+
+    act(() => {
+      useProjectStore.getState().updateProcessCommands("Process 1", [
+        {
+          cmd: "if",
+          condition: { field: "Form 1:Q1", op: "equals", value: "No" },
+          then: [],
+        },
+      ]);
+    });
+
+    act(() => {
+      expect(runShellEditCommand("undo")).toBe(true);
+    });
+
+    const proc = useProjectStore
+      .getState()
+      .project.processes?.find((p) => p.name === "Process 1");
+    expect(proc?.commands[0]?.condition).toEqual({
+      field: "Form 1:Q1",
+      op: "doesNotEqual",
+      value: "No",
+    });
+    expect(host.textContent).toContain("does not equal");
+    const opSelect = host.querySelector(".skip-if-operator") as HTMLSelectElement | null;
+    expect(opSelect?.value).toBe("doesNotEqual");
+    expect(useProjectStore.getState().selectedProcessCommandPath).toBe("root/0");
+
+    act(() => {
+      root.unmount();
+    });
+    host.remove();
   });
 });

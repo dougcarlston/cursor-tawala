@@ -1373,17 +1373,44 @@ function withEditor(fn: (handle: PaletteEditorHandle) => void, styleWithCss = tr
   // Always restore after focus: dropdowns/color picker leave a collapsed caret on focus,
   // which would otherwise skip restore and drop a text highlight.
   handle.restoreSelection();
+  // Snapshot the highlight before the command. Face/Size/B/I/U (and first format on
+  // flat hint text) often collapse the live range; Align happens to keep it because it
+  // wraps a DIV first. Re-apply the bookmark when the selection is gone afterward.
+  const before = currentRangeInEditor(handle.el);
+  const highlightBookmark =
+    before && !before.collapsed ? bookmarkTextOffsets(handle.el, before) : null;
   try {
     document.execCommand("styleWithCSS", false, String(styleWithCss));
   } catch {
     /* not supported — ignore */
   }
   fn(handle);
+  if (highlightBookmark) {
+    const after = currentRangeInEditor(handle.el);
+    if (!after || after.collapsed) {
+      restoreSelectionFromBookmark(handle.el, highlightBookmark);
+    }
+  }
   handle.commit();
   // Keep the post-command range for the next palette click (dropdowns steal focus).
   handle.saveSelection();
   refreshPaletteFocus(handle);
   emitPaletteActiveState();
+  // Face/Size <select> often reclaims focus after onChange, which hides or clears the
+  // contenteditable highlight. Re-focus on the next task so the selection stays visible
+  // and saved for the next palette click (Align buttons already keep focus via preventDefault).
+  if (highlightBookmark) {
+    const el = handle.el;
+    const snap = highlightBookmark;
+    queueMicrotask(() => {
+      if (getActivePaletteEditor()?.el !== el) return;
+      el.focus();
+      if (!restoreSelectionFromBookmark(el, snap)) {
+        getActivePaletteEditor()?.restoreSelection();
+      }
+      getActivePaletteEditor()?.saveSelection();
+    });
+  }
 }
 
 function parentElement(node: Node | null): HTMLElement | null {
@@ -1734,26 +1761,34 @@ const FORM_INDENT_INLINE = new Set([
  * soft line in a DIV so margin-left indent does not need execCommand("indent").
  */
 function ensureFormIndentBlock(editor: HTMLElement, start: Node): HTMLElement | null {
-  let node: Node | null = start.nodeType === Node.TEXT_NODE ? start.parentNode : start;
+  // Walk to the editor's direct child that contains `start`. Bare hint text is often a
+  // Text node with no P/DIV yet — wrapping that soft line lets Indent/Align stick.
+  let node: Node | null = start;
+  if (node === editor) {
+    // selectNodeContents / caret on the root: use the first content child.
+    node = editor.firstChild;
+    if (!node) return null;
+  }
   while (node && node.parentNode && node.parentNode !== editor) {
     node = node.parentNode;
   }
-  if (!(node instanceof HTMLElement) || node === editor) return null;
+  if (!node || node === editor) return null;
 
-  if (
-    node.tagName === "P" ||
-    node.tagName === "DIV" ||
-    node.tagName === "LI" ||
-    node.tagName === "BLOCKQUOTE"
-  ) {
-    return node;
+  if (node instanceof HTMLElement) {
+    if (
+      node.tagName === "P" ||
+      node.tagName === "DIV" ||
+      node.tagName === "LI" ||
+      node.tagName === "BLOCKQUOTE"
+    ) {
+      return node;
+    }
+    if (!FORM_INDENT_INLINE.has(node.tagName) && node.tagName !== "BR") {
+      return node;
+    }
   }
 
-  if (!FORM_INDENT_INLINE.has(node.tagName) && node.tagName !== "BR") {
-    return node;
-  }
-
-  // Collect this soft line (siblings until BR / block boundary) into a DIV.
+  // Text node or inline element: collect this soft line into a DIV.
   const parent = editor;
   const lineNodes: Node[] = [];
   let cur: Node | null = node;
@@ -1776,7 +1811,7 @@ function ensureFormIndentBlock(editor: HTMLElement, start: Node): HTMLElement | 
   if (!lineNodes.length) return null;
 
   const wrap = document.createElement("div");
-  parent.insertBefore(wrap, lineNodes[0]);
+  parent.insertBefore(wrap, lineNodes[0]!);
   for (const n of lineNodes) wrap.appendChild(n);
   return wrap;
 }

@@ -447,10 +447,13 @@ export function SkipInstructionsDialog({
 
   const handleCut = () => {
     if (!selectedCommandPath) return;
-    const cmd = getProcessCommandAtPath(commands, selectedCommandPath);
+    const cutPath = selectedCommandPath;
+    const cmd = getProcessCommandAtPath(commands, cutPath);
     if (!cmd) return;
+    const { parentPath, childIndex } = parentPathAndChildIndex(cutPath);
     setProcessClipboard(cmd);
-    deleteCommandAtPath(selectedCommandPath);
+    deleteCommandAtPath(cutPath);
+    setInsertPoint(parentPath, childIndex);
   };
 
   const handleCopy = () => {

@@ -151,9 +151,15 @@ export function setFormattingFocus(patch: Partial<FormattingFocusState> & { kind
   emit();
 }
 
-/** Clear focus when an editor blurs; optional `expectedKind` avoids races on focus hand-off. */
-export function clearFormattingFocus(expectedKind?: FormattingFocusKind) {
+/**
+ * Clear focus when an editor blurs or leaves edit.
+ * Optional `expectedKind` avoids races on focus hand-off between kinds.
+ * Optional `el` skips the clear when another editor already owns the active handle
+ * (inserting Text B must not be greyed by Text A's deferred `editing → false` clear).
+ */
+export function clearFormattingFocus(expectedKind?: FormattingFocusKind, el?: HTMLElement | null) {
   if (expectedKind && focusState.kind !== expectedKind) return;
+  if (el && activeEditor?.el && activeEditor.el !== el) return;
   focusState = { ...DEFAULT_STATE };
   emit();
 }

@@ -175,7 +175,8 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **B1** Document smoothness P0s | **After live, before public** |
 | **B2** Native `confirm()` + chrome polish | **Before public use** — nicer dialogs; conform chrome (see also **F2** Library/site L&F) |
 | **B3** Font Color picker | **Version 2 or never** — leave as-is unless owner reopens |
-| **B4** Skip/Process Cut/Copy/Paste/Undo; If/Set Cancel | **ASAP** — owner should have caught earlier |
+| **B4** Skip/Process Cut/Copy/Paste/Undo; If/Set Cancel | **Done (Sep 2026)** — Process command-tree Undo/Redo (Skip parity) + properties sync; If/Set Cancel vetted; Skip dialog had Cancel/undo already. Explorer Form Cut/Copy/Paste = **G5** V2 |
+| **B8** Undo last deleted item (Form row / Skip command / Process statement) | **Version 2** — one-step restore within active window only; accidental whole-item delete (e.g. entire Skip when author meant one inner element). V1 Undo stays CE-only per § Edit / Undo policy |
 | **B5** Project Manager + Email Delivery menu | **Project Manager** = real (My Tawala / site). **Email Delivery** menu item: **hide stub** — leave delivery as-is; **Library-side** email metering tracks cost per registered user (My Tawala group senders). Test Drive email volume negligible |
 | **B6** Sample JSON replacement | **ASAP** — owner re-check; believes unhappy samples already replaced |
 | **B7** Page Header / banner image pipeline | **Later** — full image retained regardless of crop; re-edit always possible. Optional future: min/max import size standards |
@@ -187,18 +188,18 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **C6–C9** Connect menu; Preview Get/Append; RecordSet Fields; MDI Pass 2 | **Joint review Aug 28** with C12–C13 |
 | **C10** Panel docking | **Never** — no problem |
 | **C11** Legacy L&F Processes/Explorer/canvas | **Version 2** — after public review feedback |
-| **C12–C13** Home audit remainder (#2); field-token drag polish | **Joint review Aug 28** with C6–C9 |
+| **C12–C13** Home audit remainder (#2); field-token drag polish | **F3 done Sep 2026** — home audit closed; field-token drag polish remains opportunistic |
 | **D1–D2** Categorizer; Export Team Roster | **Hold** — Version 2 or never |
 | **D3** LINK TO PROJECT DETAILS (Insert → Function) | **Never** — no link to My Tawala Project Details from inside a live project (especially for non-subscriber use). **Insert → Link…** (Form/URL) remains the product path |
 | **D4** PayPal / generic payment | **After live, before public** — major effort |
 | **F1** 3-browser smoke | **After live, before public use** — confirmed Aug 27 |
-| **F2** Conform Look and Feel (legacy shell) | **Library / site chrome before we go live** (not Designer canvas first) — confirmed Aug 27 |
-| **F3** Main menus/tabs — no duplicates; identical behavior | **Before live** — confirmed Aug 27 |
+| **F2** Conform Look and Feel (legacy shell) | **In progress (Sep 2026)** — **Library / site chrome before go-live** (not Designer canvas). Owner Aug 26: public **Library listing** weaker than My Tawala / Project Details — first slice. Owner smoke Sep 1: F3 closed; starting F2 pass. See `website-mock/README.md` § **F2 look-and-feel pass** |
+| **F3** Main menus/tabs — no duplicates; identical behavior | **Done (Sep 2026)** — owner smoke passed Sep 1: File↔toolbar↔shortcuts (Chrome **Ctrl+N** for New); Edit↔toolbar Form/Process/Document; Insert shared commands ↔ Items/Statements palette enable rules; View ✓ toggles + refresh; Project duplicates (Push, Themes, …); Form **Preview** greys authoring chrome; Windows Cascade/Tile/list/Close All; Process/Document cut-paste fixes. **G5** badge Cut/Copy/Paste still V2 stubs — Delete + Display conditionally… OK |
 | **G1** Responsive theme CSS (`@media` / fluid width; one layout reflows) | **Next version** — **important** (not G8 multi-layout authoring) |
 | **G2** Returns + spacing as composition | **Review** — may already be close; V1 OK, can slip until after public + commentary |
 | **G3** Tables organizing FIB/field grids | **After live** — authors already try this; smoke/experiment then |
 | **G4** Centered Form Text vs theme column | **Next version** |
-| **G5** Form Cut/Copy/Paste shell polish | **Version 2** — owner prefers sooner if cheap; **can ship without** |
+| **G5** Form Cut/Copy/Paste shell polish | **Version 2** — badge context menu Cut/Copy/Paste still disabled stubs (`FormItemBadgeContextMenu`); Delete + Display conditionally… wired (Delete = row red ×, not window close). Main Edit menu text/Process clipboard **done** Sep 2026 |
 | **G6** DirtBowl Page 2+ exemplar | **Not “more one-off formatting.”** First: Page 1 fully replicable with stock tools; then Page 2 as a **test of that premise** |
 | **G7–G9** RANDOM; Join/blocks/composites; device output sizing | **Next version** |
 | **G10 #1** Curated theme shortlist (8–12 good themes; hide/retire weak CSS) | **Before we go live** — site/My Tawala Theme dropdown + CSS only; no Designer canvas |
@@ -225,7 +226,7 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 | # | Task | Notes / sequencing |
 |---|------|-------------------|
 | 1 | **Wire Main icon toolbar** (“frequently used” strip) | **Done Jul 12** — `MainIconToolbar` shares handlers with File/Edit via `shellCommands.ts`. |
-| 2 | **Home-page control audit — menus, tabs, and toolbars** | **Jul 17:** File/Edit/Insert/View/Project/Windows/Help. **View toggles wired.** Format removed (palette); Tables skipped; Project Tabs/Styles wired; **Page Header wired Jul 24**; Themes = local CSS. **Help → About** split out to queue **#13** (legal). |
+| 2 | **Home-page control audit — menus, tabs, and toolbars** | **Done Sep 2026 (F3)** — owner smoke Sep 1: File/Edit/Push duplicates; Insert ↔ palette enable rules (shared commands only); View checkmarks; Project menu; Preview grey-out; Windows menu; Process/Document cut-paste. Badge Cut/Copy/Paste = **G5** V2. **Jul 17 baseline:** View toggles wired; Page Header; Themes = local CSS. **Help → About** = queue **#13** (legal). |
 | 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. **Do not start during #9 smoke.** |
 | 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | **Done Jul 23** — Design Configure + Deploy XML. Owner smoke SignupSheets-class apps still useful. |
 | — | **Design-canvas Style paint** | **Owner Jul 18:** **Text** Instructional/Error shown on Forms → Text (already implemented). **FIB/MCQ layout paint = won't do** — interferes with editing; Preview immediate. See `DESIGNER_FORM_FORMAT_TOOLBAR.md`. |
@@ -280,7 +281,7 @@ Owner (July 12, 2026): park these until the browser Designer is considered **bas
 
 1. **Big smoke test on three different browsers** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on three browsers; capture browser-specific defects. *(Also listed in Owner review queue #3.)*
 2. **Conform Look and Feel** of the Designer shell and its windows to the legacy Designer application **without breaking** underlying behavior already shipped (layout, chrome, typography/colors — visual parity pass only after functional freeze). *(Also listed in Owner review queue #3.)*
-3. **Main Page menus and tabs — no duplicates; identical behavior** — audit every main menu and tab for duplicate entries; on selection, each must operate exactly the same as its counterpart (no divergent handlers or stale duplicates). **Owner Jul 12:** schedule **after** Main icon toolbar is wired (Owner review queue #1–2); toolbar duplicates File/Edit and is part of the same audit. **Jul 17:** View menu stubs restored (all five); **wire View chrome toggles after menu review completes** (Owner review queue #2). Also parks Page Header/Themes, File↔toolbar parity. **Help → About is not parked here** — see Owner review queue **#13** (legal).
+3. **Main Page menus and tabs — no duplicates; identical behavior** — **Done Sep 2026 (F3).** Owner smoke Sep 1 passed all slices (see F3 row in triage table). Remaining menu gap: **G5** badge whole-item Cut/Copy/Paste (Version 2).
 
 ---
 

@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect, useRef, ReactNode, useSyncExternalStore, type MouseEvent as ReactMouseEvent } from "react";
+import { useSyncExternalStore, useState, useEffect, useRef, Fragment, ReactNode, type MouseEvent as ReactMouseEvent } from "react";
 import { UserAccountButton } from "./UserAccountButton";
 import { useProjectStore } from "@/store/projectStore";
 import { FORM_ITEM_PALETTE } from "@/types/tawala";
@@ -29,7 +29,10 @@ import {
   subscribeFieldsPaletteSelection,
 } from "@/lib/fieldsPaletteSelection";
 import { insertFieldIntoActiveTarget, isInsideActiveMdiWindow } from "@/lib/fieldInsertion";
-import { insertFieldTokenAtSelection } from "@/lib/fieldTokens";
+import {
+  getProcessCommandHistorySnapshot,
+  subscribeProcessCommandHistory,
+} from "@/lib/processCommandHistory";
 import { PROJECT_THEMES } from "@/lib/projectThemes";
 import {
   canDeleteSelection,
@@ -38,6 +41,7 @@ import {
   cutAcceleratorLabel,
   deleteAcceleratorLabel,
   newProjectAcceleratorLabel,
+  newProjectAcceleratorHint,
   openProjectAcceleratorLabel,
   openProjectManagerLocal,
   openWebsiteMockLibrary,
@@ -50,6 +54,8 @@ import {
   saveProjectAs,
   saveProjectToDownload,
   shellEditContextActive,
+  shellRedoEnabled,
+  shellUndoEnabled,
   undoAcceleratorLabel,
   type ShellEditCommand,
 } from "@/lib/shellCommands";
@@ -115,9 +121,17 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
   const stylesKind = stylesKindForFormItem(selectedFormItem);
 
   const editActive = shellEditContextActive();
+  useSyncExternalStore(
+    subscribeProcessCommandHistory,
+    getProcessCommandHistorySnapshot,
+    getProcessCommandHistorySnapshot,
+  );
+  const undoActive = shellUndoEnabled();
+  const redoActive = shellRedoEnabled();
   const canDeploy = canDeployProject();
   const canDelete = canDeleteSelection();
   const newAccel = newProjectAcceleratorLabel();
+  const newAccelHint = newProjectAcceleratorHint();
   const openAccel = openProjectAcceleratorLabel();
   const saveAccel = saveAcceleratorLabel();
   const saveAsAccel = saveAsAcceleratorLabel();
@@ -139,7 +153,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
   return (
     <nav className="menu-bar">
       <MenuDrop label="File">
-        <button type="button" onClick={onNewProject}>
+        <button type="button" onClick={onNewProject} title={newAccelHint}>
           New Project…
           <span className="menu-accel">{newAccel}</span>
         </button>
@@ -197,11 +211,11 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
           <span className="menu-accel">{deleteAccel}</span>
         </button>
         <div className="menu-separator" />
-        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("undo")}>
+        <button type="button" disabled={!undoActive} onMouseDown={keepEditorFocus} onClick={edit("undo")}>
           Undo
           <span className="menu-accel">{undoAccel}</span>
         </button>
-        <button type="button" disabled={!editActive} onMouseDown={keepEditorFocus} onClick={edit("redo")}>
+        <button type="button" disabled={!redoActive} onMouseDown={keepEditorFocus} onClick={edit("redo")}>
           Redo
           <span className="menu-accel">{redoAccel}</span>
         </button>
@@ -563,21 +577,6 @@ function InsertMenuBody({
           {label}
         </button>
       ))}
-      <div className="menu-separator" />
-      <button
-        type="button"
-        disabled={!canFormItems}
-        onClick={() => onInsertFormItem("fib", { fibPreset: "date" })}
-      >
-        Date
-      </button>
-      <button
-        type="button"
-        disabled={!canFormItems}
-        onClick={() => onInsertFormItem("fib", { fibPreset: "address" })}
-      >
-        Address
-      </button>
       <div className="menu-separator" />
       <MenuSubmenu label="Image…" disabled={!canRichImage}>
         <button

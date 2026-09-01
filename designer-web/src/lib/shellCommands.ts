@@ -6,6 +6,10 @@
 import { getActivePaletteEditor } from "@/lib/formattingPaletteContext";
 import { tryDeleteSelectedFormInlineTokens } from "@/lib/inlineTokenDelete";
 import {
+  canProcessCommandRedo,
+  canProcessCommandUndo,
+} from "@/lib/processCommandHistory";
+import {
   convertTawalaXmlToProject,
   isTawalaProjectFileName,
 } from "@/lib/tawalaXmlToJson.mjs";
@@ -14,11 +18,18 @@ import {
   deleteProcessCommandAtPath,
 } from "@/lib/processScript";
 import { insertCommandAtPoint } from "@/lib/processInsert";
+import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
 import {
   getProcessClipboard,
   setProcessClipboard,
   hasProcessClipboard,
 } from "@/lib/processClipboard";
+import {
+  setTextClipboard,
+  getTextClipboard,
+  shellTextClipboardPendingForPaste,
+  consumeShellTextClipboardPending,
+} from "@/lib/textClipboard";
 import type { TawalaProcessCommand } from "@/types/tawala";
 import { useProjectStore } from "@/store/projectStore";
 import { showDesignerConfirm } from "@/lib/confirmDialog";
@@ -546,6 +557,29 @@ export function shellEditContextActive(): boolean {
   return true;
 }
 
+function activeProcessSelection(): { kind: "process"; name: string } | null {
+  const { openWindows, activeWindowId, selection } = useProjectStore.getState();
+  const active = openWindows.find((w) => w.id === activeWindowId);
+  if (active?.kind !== "process" || selection.kind !== "process" || !selection.name) {
+    return null;
+  }
+  return { kind: "process", name: selection.name };
+}
+
+/** Undo enabled: Process command history or best-effort rich-text undo. */
+export function shellUndoEnabled(): boolean {
+  if (!shellEditContextActive()) return false;
+  if (activeProcessSelection()) return canProcessCommandUndo();
+  return true;
+}
+
+/** Redo enabled: Process command history or best-effort rich-text redo. */
+export function shellRedoEnabled(): boolean {
+  if (!shellEditContextActive()) return false;
+  if (activeProcessSelection()) return canProcessCommandRedo();
+  return true;
+}
+
 export function canDeployProject(): boolean {
   return useProjectStore.getState().project.forms.length > 0;
 }
@@ -697,12 +731,14 @@ export function runShellEditCommand(command: ShellEditCommand): boolean {
       }
     }
     if (command === "cut" && selectedProcessCommandPath) {
-      const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
+      const cutPath = selectedProcessCommandPath;
+      const cmd = getProcessCommandAtPath(commands, cutPath);
       if (cmd) {
+        const { parentPath, childIndex } = parentPathAndChildIndex(cutPath);
         setProcessClipboard(cmd);
-        const next = deleteProcessCommandAtPath(commands, selectedProcessCommandPath);
+        const next = deleteProcessCommandAtPath(commands, cutPath);
         useProjectStore.getState().updateProcessCommands(selection.name, next);
-        useProjectStore.getState().setSelectedProcessCommandPath(null);
+        useProjectStore.getState().setProcessInsertPoint(parentPath, childIndex);
         useProjectStore.getState().setStatus("Cut statement");
         return true;
       }
@@ -722,6 +758,12 @@ export function runShellEditCommand(command: ShellEditCommand): boolean {
         return true;
       }
     }
+    if (command === "undo") {
+      if (useProjectStore.getState().undoProcessCommands()) return true;
+    }
+    if (command === "redo") {
+      if (useProjectStore.getState().redoProcessCommands()) return true;
+    }
   }
 
   const handle = getActivePaletteEditor();
@@ -733,9 +775,28 @@ export function runShellEditCommand(command: ShellEditCommand): boolean {
     void pasteIntoActiveEditor();
     return true;
   }
+  if (command === "copy" || command === "cut") {
+    const captured = captureEditorSelection();
+    if (captured) {
+      setTextClipboard(captured);
+      void writeSystemTextClipboard(captured);
+      if (command === "cut") {
+        deleteEditorSelection();
+        handle?.commit();
+        handle?.saveSelection();
+      }
+      try {
+        document.execCommand(command);
+      } catch {
+        /* happy-dom / sandbox may not support execCommand */
+      }
+      useProjectStore.getState().setStatus(command === "copy" ? "Copied text" : "Cut text");
+      return true;
+    }
+  }
   try {
     const ok = document.execCommand(command);
-    if (ok && handle) {
+    if (handle) {
       handle.commit();
       handle.saveSelection();
     }
@@ -768,8 +829,10 @@ export async function pasteIntoActiveEditor(): Promise<boolean> {
   }
 
   const afterInsert = () => {
+    consumeShellTextClipboardPending();
     handle?.commit();
     handle?.saveSelection();
+    useProjectStore.getState().setStatus("Pasted text");
   };
 
   const refocus = () => {
@@ -777,6 +840,58 @@ export async function pasteIntoActiveEditor(): Promise<boolean> {
     handle.el.focus();
     handle.restoreSelection();
   };
+
+  const insertCaptured = (entry: { text: string; html?: string }): boolean => {
+    refocus();
+    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+      const start = target.selectionStart ?? target.value.length;
+      const end = target.selectionEnd ?? start;
+      target.setRangeText(entry.text, start, end, "end");
+      target.dispatchEvent(new Event("input", { bubbles: true }));
+      afterInsert();
+      return true;
+    }
+    if (target.isContentEditable) {
+      if (
+        (entry.html && insertHtmlAtSelection(entry.html)) ||
+        insertTextAtSelection(entry.text) ||
+        document.execCommand("insertText", false, entry.text)
+      ) {
+        afterInsert();
+        return true;
+      }
+    }
+    return false;
+  };
+
+  // Menu/toolbar Paste after shell Copy/Cut — in-app buffer is authoritative (system may be stale).
+  if (shellTextClipboardPendingForPaste()) {
+    const inApp = getTextClipboard();
+    if (inApp && insertCaptured(inApp)) return true;
+  }
+
+  // Try text/plain first or HTML
+  try {
+    const text = await navigator.clipboard.readText();
+    if (text) {
+      refocus();
+      if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
+        const start = target.selectionStart ?? target.value.length;
+        const end = target.selectionEnd ?? start;
+        target.setRangeText(text, start, end, "end");
+        target.dispatchEvent(new Event("input", { bubbles: true }));
+        return true;
+      }
+      if (target.isContentEditable) {
+        if (insertTextAtSelection(text) || document.execCommand("insertText", false, text)) {
+          afterInsert();
+          return true;
+        }
+      }
+    }
+  } catch {
+    /* clipboard readText denied or unavailable */
+  }
 
   try {
     const html = await readClipboardHtml();
@@ -787,26 +902,18 @@ export async function pasteIntoActiveEditor(): Promise<boolean> {
         return true;
       }
     }
-
-    const text = await navigator.clipboard.readText();
-    refocus();
-    if (target instanceof HTMLInputElement || target instanceof HTMLTextAreaElement) {
-      const start = target.selectionStart ?? target.value.length;
-      const end = target.selectionEnd ?? start;
-      target.setRangeText(text, start, end, "end");
-      target.dispatchEvent(new Event("input", { bubbles: true }));
-      return true;
-    }
-    if (insertTextAtSelection(text) || document.execCommand("insertText", false, text)) {
-      afterInsert();
-      return true;
-    }
   } catch {
-    /* permission denied or clipboard unavailable */
+    /* readClipboardHtml denied */
   }
 
-  // Last resort — usually still blocked from a button click.
+  const inApp = getTextClipboard();
+  if (inApp?.text || inApp?.html) {
+    if (insertCaptured(inApp)) return true;
+  }
+
+  // Last resort: native execCommand paste
   try {
+    refocus();
     if (document.execCommand("paste")) {
       afterInsert();
       return true;
@@ -817,8 +924,45 @@ export async function pasteIntoActiveEditor(): Promise<boolean> {
 
   useProjectStore
     .getState()
-    .setStatus("Paste blocked by the browser — click in the text and press ⌘V / Ctrl+V");
+    .setStatus("Paste: press ⌘V / Ctrl+V to paste into text");
   return false;
+}
+
+function captureEditorSelection(): { text: string; html?: string } | null {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return null;
+  const text = sel.toString();
+  if (!text) return null;
+  const range = sel.getRangeAt(0);
+  const fragment = range.cloneContents();
+  const wrapper = document.createElement("div");
+  wrapper.appendChild(fragment);
+  const html = wrapper.innerHTML;
+  return html ? { text, html } : { text };
+}
+
+function deleteEditorSelection(): void {
+  const sel = window.getSelection();
+  if (!sel || sel.rangeCount === 0 || sel.isCollapsed) return;
+  sel.getRangeAt(0).deleteContents();
+}
+
+async function writeSystemTextClipboard(entry: { text: string; html?: string }): Promise<void> {
+  if (typeof navigator === "undefined" || !navigator.clipboard?.writeText) return;
+  try {
+    if (entry.html && typeof ClipboardItem !== "undefined" && navigator.clipboard.write) {
+      await navigator.clipboard.write([
+        new ClipboardItem({
+          "text/plain": new Blob([entry.text], { type: "text/plain" }),
+          "text/html": new Blob([entry.html], { type: "text/html" }),
+        }),
+      ]);
+      return;
+    }
+    await navigator.clipboard.writeText(entry.text);
+  } catch {
+    /* permission denied or unsupported */
+  }
 }
 
 async function readClipboardHtml(): Promise<string | null> {
@@ -844,10 +988,11 @@ function insertTextAtSelection(text: string): boolean {
   range.deleteContents();
   const node = document.createTextNode(text);
   range.insertNode(node);
-  range.setStartAfter(node);
-  range.collapse(true);
+  const nextRange = document.createRange();
+  nextRange.setStartAfter(node);
+  nextRange.collapse(true);
   sel.removeAllRanges();
-  sel.addRange(range);
+  sel.addRange(nextRange);
   return true;
 }
 
@@ -862,10 +1007,11 @@ function insertHtmlAtSelection(html: string): boolean {
   const last = frag.lastChild;
   range.insertNode(frag);
   if (last) {
-    range.setStartAfter(last);
-    range.collapse(true);
+    const nextRange = document.createRange();
+    nextRange.setStartAfter(last);
+    nextRange.collapse(true);
     sel.removeAllRanges();
-    sel.addRange(range);
+    sel.addRange(nextRange);
   }
   return true;
 }
@@ -949,9 +1095,21 @@ export function saveAsAcceleratorLabel(): string {
   return isApplePlatform() ? "⇧⌘S" : "Shift+Ctrl+S";
 }
 
-/** File → New Project (Ctrl+N / ⌘N). */
+/** True when File → New should advertise Ctrl+N (Chrome macOS). */
+export function newProjectUsesControlOnMac(): boolean {
+  return isApplePlatform() && isChromeBrowser();
+}
+
+/** File → New Project (Ctrl+N / ⌘N). Chrome on Mac: use Ctrl+N — ⌘N is browser-reserved. */
 export function newProjectAcceleratorLabel(): string {
+  if (newProjectUsesControlOnMac()) return "Ctrl+N";
   return modKeyLabel() + "N";
+}
+
+/** Tooltip when Chrome blocks ⌘N on Mac. */
+export function newProjectAcceleratorHint(): string | undefined {
+  if (!newProjectUsesControlOnMac()) return undefined;
+  return "In Chrome on Mac, use Ctrl+N (⌘N opens a new browser window).";
 }
 
 /** File → Open Project (Ctrl+O / ⌘O). */
@@ -980,7 +1138,17 @@ export function redoAcceleratorLabel(): string {
 }
 
 function isApplePlatform(): boolean {
-  return typeof navigator !== "undefined" && /Mac|iPhone|iPad|iPod/i.test(navigator.platform);
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  if (/Mac|iPhone|iPad|iPod/i.test(navigator.platform)) return true;
+  return /Mac OS X/i.test(ua) && !/Windows|Android/i.test(ua);
+}
+
+/** Chromium on macOS reserves ⌘N (New Window) — keydown often never reaches the page. */
+function isChromeBrowser(): boolean {
+  if (typeof navigator === "undefined") return false;
+  const ua = navigator.userAgent;
+  return /Chrome|CriOS/i.test(ua) && !/Edg|OPR|Brave/i.test(ua);
 }
 
 function modKeyLabel(): string {
@@ -1101,6 +1269,7 @@ export function installDesignerShellGuards(): void {
 
   const keydown = (e: KeyboardEvent) => {
     // File → New / Open (before Save so Shift+S still wins for Save As).
+    // Chrome macOS reserves ⌘N (New Window) — the event never reaches the page; Ctrl+N works.
     if (eventIsNewProjectChord(e)) {
       const marked = e as KeyboardEvent & { __tawalaFileChordHandled?: boolean };
       if (marked.__tawalaFileChordHandled) return;

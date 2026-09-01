@@ -1,12 +1,20 @@
-import type { MouseEvent as ReactMouseEvent, ReactNode } from "react";
+import { useSyncExternalStore, type MouseEvent as ReactMouseEvent, type ReactNode } from "react";
+import {
+  getProcessCommandHistorySnapshot,
+  subscribeProcessCommandHistory,
+} from "@/lib/processCommandHistory";
 import { useProjectStore } from "@/store/projectStore";
 import {
   canDeleteSelection,
   canDeployProject,
+  newProjectAcceleratorHint,
+  newProjectAcceleratorLabel,
   openProjectManagerLocal,
   runShellEditCommand,
   saveProjectToDownload,
   shellEditContextActive,
+  shellRedoEnabled,
+  shellUndoEnabled,
   type ShellEditCommand,
 } from "@/lib/shellCommands";
 
@@ -46,6 +54,13 @@ export function MainIconToolbar({
   useProjectStore((s) => s.openWindows.length);
 
   const editActive = shellEditContextActive();
+  useSyncExternalStore(
+    subscribeProcessCommandHistory,
+    getProcessCommandHistorySnapshot,
+    getProcessCommandHistorySnapshot,
+  );
+  const undoActive = shellUndoEnabled();
+  const redoActive = shellRedoEnabled();
   const canDeploy = canDeployProject();
   const canDelete = canDeleteSelection();
   const dirty = useProjectStore((s) => s.dirty);
@@ -66,7 +81,16 @@ export function MainIconToolbar({
       aria-label="Standard toolbar"
       style={{ width, flex: `0 0 ${width}px` }}
     >
-      <ToolIcon tip="New Project" onClick={onNewProject}>
+      <ToolIcon
+        tip={[
+          "New Project",
+          newProjectAcceleratorLabel(),
+          newProjectAcceleratorHint(),
+        ]
+          .filter(Boolean)
+          .join(" — ")}
+        onClick={onNewProject}
+      >
         <NewProjectIcon />
       </ToolIcon>
       <ToolIcon tip="Open Project" onClick={onOpen}>
@@ -100,10 +124,10 @@ export function MainIconToolbar({
         <DeleteIcon />
       </ToolIcon>
       <span className="main-icon-toolbar-sep" aria-hidden />
-      <ToolIcon tip="Undo" onClick={edit("undo")} disabled={!editActive} onMouseDown={keepEditorFocus}>
+      <ToolIcon tip="Undo" onClick={edit("undo")} disabled={!undoActive} onMouseDown={keepEditorFocus}>
         <UndoIcon />
       </ToolIcon>
-      <ToolIcon tip="Redo" onClick={edit("redo")} disabled={!editActive} onMouseDown={keepEditorFocus}>
+      <ToolIcon tip="Redo" onClick={edit("redo")} disabled={!redoActive} onMouseDown={keepEditorFocus}>
         <RedoIcon />
       </ToolIcon>
       <span className="main-icon-toolbar-sep" aria-hidden />

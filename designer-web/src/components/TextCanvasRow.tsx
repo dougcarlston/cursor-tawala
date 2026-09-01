@@ -149,7 +149,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   // (which flows back into `content`) never re-writes the DOM and clobbers the caret.
   useEffect(() => {
     if (!editing) {
-      clearFormattingFocus("text");
+      clearFormattingFocus("text", editorRef.current);
       return;
     }
     const el = editorRef.current;
@@ -176,6 +176,17 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     sel.removeAllRanges();
     sel.addRange(range);
     savedRangeRef.current = range.cloneRange();
+    // Sibling rows may clearFormattingFocus("text") one tick later when they leave edit;
+    // re-assert so insert leaves the palette live without requiring an extra click/key.
+    requestAnimationFrame(() => {
+      if (editorRef.current !== el) return;
+      registerAsPaletteEditor();
+      setFormattingFocus({
+        kind: "text",
+        cursorInTable: selectionCursorInTable(el),
+        hasResettableFormatting: selectionHasResettableFormatting(el),
+      });
+    });
     return () => {
       // Drop this row's handle when leaving edit (contenteditable unmounts). Do not
       // clearActivePaletteEditor() with no args — that can wipe the next Text row.
@@ -202,7 +213,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
 
   useEffect(
     () => () => {
-      clearFormattingFocus("text");
+      clearFormattingFocus("text", editorRef.current);
       clearActivePaletteEditor(editorRef.current ?? undefined);
     },
     [],
@@ -221,14 +232,17 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     const sel = window.getSelection();
     if (!el || !sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
-    if (el.contains(range.commonAncestorContainer)) savedRangeRef.current = range.cloneRange();
+    const root = range.commonAncestorContainer;
+    if (root === el || el.contains(root)) savedRangeRef.current = range.cloneRange();
   };
 
   const restoreSelection = () => {
     const el = editorRef.current;
     const sel = window.getSelection();
     const saved = savedRangeRef.current;
-    if (!el || !sel || !saved || !el.contains(saved.commonAncestorContainer)) return;
+    if (!el || !sel || !saved) return;
+    const root = saved.commonAncestorContainer;
+    if (!(root === el || el.contains(root))) return;
     sel.removeAllRanges();
     sel.addRange(saved);
   };
@@ -252,7 +266,8 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
 
   const syncPaletteFocus = () => {
     const el = editorRef.current;
-    if (!el || document.activeElement !== el) return;
+    if (!el) return;
+    // Allow re-arm when focus-kind was cleared while the editor stayed focused (insert race).
     setFormattingFocus({
       kind: "text",
       cursorInTable: selectionCursorInTable(el),
@@ -291,7 +306,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     // greys them out while the Text body is still editing (common after clicking Explorer,
     // Items, or an image chrome in projects like MCQ.json).
     if (selected) return;
-    clearFormattingFocus("text");
+    clearFormattingFocus("text", editorRef.current);
     setEditing(false);
   };
 
@@ -471,6 +486,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                   handleTableCellPointerUp(el);
                   // Click-away → continue: sticky Face/Size follows the caret run.
                   setTypingFormat(el, typingFormatForInsert(el));
+                  registerAsPaletteEditor();
                 }
                 rememberSelection();
                 syncPaletteFocus();
