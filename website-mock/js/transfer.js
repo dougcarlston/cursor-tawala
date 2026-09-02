@@ -2815,6 +2815,108 @@
   }
 
   /**
+   * Acquire a projects/{library|mytawala}/*.json archive into My Tawala when the project
+   * is no longer in the public Library catalog (retired stubs, owner disk archives).
+   * Same private clone path as Copy to MyTawala (_freshFromTemplate) — display name unchanged.
+   */
+  async function acquireArchiveJsonToMyTawala({ jsonFile, name, overwrite, category } = {}) {
+    const rel = catalogPathForOpenApi(jsonFile);
+    if (!rel) {
+      return { ok: false, error: "jsonFile path required (projects/library/… or projects/mytawala/…)." };
+    }
+    if (!/^projects\/(library|mytawala)\//i.test(rel)) {
+      return { ok: false, error: "Only projects/library/ or projects/mytawala/ JSON archives are allowed." };
+    }
+    const copyName = String(name || "").trim();
+    if (!copyName) {
+      return { ok: false, error: "Name is required." };
+    }
+    const conflict = findMyTawalaByName(copyName);
+    if (conflict && !overwrite) {
+      const conflictName =
+        typeof window !== "undefined" &&
+        window.TawalaDemo &&
+        typeof window.TawalaDemo.displayName === "function"
+          ? window.TawalaDemo.displayName(conflict.name)
+          : String(conflict.name || conflict.id);
+      return {
+        ok: false,
+        needsOverwrite: true,
+        conflictId: conflict.id,
+        conflictName,
+        error: `You already have a project named “${copyName}”. Confirm to replace it.`,
+      };
+    }
+
+    const source = {
+      name: copyName,
+      jsonFile: rel,
+      category: category || "Uncategorized",
+      shortDescription: `Recovered from archive ${rel}.`,
+    };
+    const clone = await cloneLibraryProjectToPrivateRuntime(source, copyName);
+    if (!clone || !clone.ok) {
+      return {
+        ok: false,
+        error: (clone && clone.error) || "Couldn't create a private live copy from the archive JSON.",
+      };
+    }
+
+    if (conflict && overwrite) {
+      deleteMyTawalaProject(conflict.id);
+    }
+
+    const id = uniqueMyTawalaSlug(slugifyProjectId(copyName));
+    const nowIso = timestampNow();
+    const now = formatListDate(nowIso);
+
+    const entry = {
+      name: copyName,
+      category: source.category || "Uncategorized",
+      featured: false,
+      iconLabel: iconLabelFromName(copyName),
+      rating: 0,
+      comments: 0,
+      created: now,
+      createdAt: nowIso,
+      updated: now,
+      updatedAt: nowIso,
+      lastDeployAt: nowIso,
+      shortDescription: source.shortDescription || "",
+      longDescription: `Recovered from on-disk archive “${rel}” (not a public Library listing).`,
+      jsonFile: rel,
+      sourcePile: "archive-acquire",
+      fromArchiveJson: rel,
+      acquiredFromArchiveAt: nowIso,
+      uniqueId: clone.uniqueId,
+      deployed: true,
+      testDriveUrl: clone.testDriveUrl,
+      startPoints: clone.startPoints,
+      deployIdentityName: clone.deployIdentityName,
+      snapshotId: clone.snapshotId || null,
+      mockSharedLibraryRuntime: false,
+    };
+    seedStartingVersionOnEntry(entry);
+
+    clearMyTawalaDeleted(id);
+    const overlay = getMyTawalaOverlay();
+    overlay[id] = entry;
+    if (!writeJson(PILE_KEY, overlay)) {
+      return { ok: false, error: "Could not write My Tawala overlay (localStorage)." };
+    }
+
+    return {
+      ok: true,
+      id,
+      jsonFile: rel,
+      name: copyName,
+      uniqueId: clone.uniqueId,
+      deployIdentityName: clone.deployIdentityName,
+      testDriveUrl: clone.testDriveUrl,
+    };
+  }
+
+  /**
    * Save a copy / Copy to MyTawala (Library → My Tawala acquire, Aug 9 Task #8).
    * Task #26: clones the catalog JSON onto a **new** Tomcat uniqueId (empty clone).
    * Does **not** import submissions from the catalog/author uniqueId (shared / other
@@ -3646,6 +3748,7 @@
     suggestUniqueMyTawalaName,
     renameMyTawalaProject,
     saveCopyFromLibrary,
+    acquireArchiveJsonToMyTawala,
     formatCloneCount,
     formatLibraryTimesUsed,
     bumpLibraryTimesUsed,

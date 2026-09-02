@@ -45,8 +45,11 @@ export const MAKE_COPY_NO_LIVE_FORM_ERROR =
 export const CLONE_TRY_AGAIN_ERROR =
   "Couldn't copy the live form. Start Tomcat and the Designer API, then try again.";
 
-export const DATA_DRIVEN_NO_TEST_DRIVE_TITLE =
-  "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available.";
+export const DATA_DRIVEN_TEST_DRIVE_TITLE =
+  "No account. Try the teacher setup flow — nothing you enter is saved. Copy to MyTawala (free) to use it for real.";
+
+/** @deprecated */
+export const DATA_DRIVEN_NO_TEST_DRIVE_TITLE = DATA_DRIVEN_TEST_DRIVE_TITLE;
 
 /**
  * All named form payloads from an export — copy onto a new uniqueId.

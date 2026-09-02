@@ -275,14 +275,14 @@ body[data-tawala-page="mytawala"] .listing-identity {
 }
 
 body[data-tawala-page="library"] .listing-identity {
-  border-left: 5px solid var(--lib-red);
-  background: linear-gradient(90deg, #f7ebe4 0%, #faf6f1 55%, #f0f0f0 100%);
-  border-color: var(--lib-warm-border);
+  border-left: 4px solid var(--lib-red, #c24322);
+  background: #f0f0f0;
+  border-color: var(--tw-border);
 }
 
 body[data-tawala-page="library"] .listing-identity .listing-where {
-  color: var(--lib-red-ink);
-  letter-spacing: 0.06em;
+  color: var(--tw-text);
+  letter-spacing: 0.03em;
 }
 
 /* My Tawala / Project Details: no redundant pageTitle (nav “My Tawala” is enough) */
@@ -291,8 +291,8 @@ body[data-tawala-page="library"] .pageTitle:not(.library-detail-crumb) h1::after
   content: " · Public catalog";
   font-weight: normal;
   font-size: 0.55em;
-  color: var(--lib-red-ink);
-  opacity: 0.75;
+  color: var(--tw-muted);
+  opacity: 0.9;
   letter-spacing: 0.02em;
   vertical-align: middle;
 }
@@ -469,18 +469,18 @@ body[data-tawala-page="home"] #featuredList .webapp .title a:hover {
   line-height: 1.35;
 }
 
-/* Library */
+/* Library — subdued shell aligned with My Tawala; red accent only on identity strip + links */
 body[data-tawala-page="library"] .sidebar-left .block {
-  background: var(--lib-paper);
-  border-color: var(--lib-warm-border);
+  background: var(--tw-panel);
+  border-color: var(--tw-border);
 }
 
 body[data-tawala-page="library"] .sidebar-left .block h3 {
-  color: var(--lib-red);
-  border-bottom-color: var(--lib-warm-border);
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 1.05em;
-  letter-spacing: 0.01em;
+  color: var(--tw-text);
+  border-bottom-color: var(--tw-border);
+  font-family: arial, helvetica, sans-serif;
+  font-size: 1em;
+  letter-spacing: 0;
 }
 
 .pageTitle h1 {
@@ -495,12 +495,12 @@ body[data-tawala-page="library"] .sidebar-left .block h3 {
 }
 
 body[data-tawala-page="library"] .pageTitle:not(.library-detail-crumb) h1 {
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 1.85em;
-  color: var(--lib-red);
-  border-bottom: 3px solid var(--lib-red);
-  padding-bottom: 6px;
-  letter-spacing: 0.01em;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 1.45em;
+  color: var(--tw-text);
+  border-bottom: 2px solid var(--tw-accent);
+  padding-bottom: 4px;
+  letter-spacing: 0;
 }
 
 /* Detail: quiet crumb — project name is the hero */
@@ -538,21 +538,21 @@ body[data-tawala-page="library"] .pageTitle.library-detail-crumb h1 a:hover {
   gap: 8px 16px;
   margin-bottom: 10px;
   padding: 8px 10px;
-  background: linear-gradient(180deg, #f7ebe4 0%, #f3e4db 100%);
-  border: 1px solid var(--lib-warm-border, #e0c4b4);
+  background: linear-gradient(180deg, #f5f5f5 0%, #ececec 100%);
+  border: 1px solid var(--tw-border);
 }
 
 #library #search h3 {
   margin: 0;
-  font-size: 1.05em;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  color: var(--lib-red-ink, #8a2f1f);
+  font-size: 1em;
+  font-family: arial, helvetica, sans-serif;
+  color: var(--tw-text);
 }
 
 #library #search .searchInput input.text {
   width: min(280px, 100%);
   padding: 5px 8px;
-  border: 1px solid #c9a994;
+  border: 1px solid var(--tw-border);
   background: #fff;
 }
 
@@ -560,14 +560,51 @@ body[data-tawala-page="library"] .pageTitle.library-detail-crumb h1 a:hover {
   padding: 5px 14px;
   cursor: pointer;
   font-weight: bold;
-  color: #fff;
-  border: 1px solid #8a2418;
+  color: var(--tw-text);
+  border: 1px solid var(--tw-border-dark);
   border-radius: 3px;
-  background: linear-gradient(180deg, #d45a3c 0%, #c24322 52%, #a31c1c 100%);
+  background: linear-gradient(180deg, #fafafa 0%, #e8e8e8 100%);
 }
 
 #library #search .searchInput input.button:hover {
-  background: linear-gradient(180deg, #de6a4c 0%, #d04d2c 52%, #b3221c 100%);
+  background: linear-gradient(180deg, #fff 0%, #ececec 100%);
+  border-color: var(--tw-accent);
+}
+
+body[data-tawala-page="library"] .sidebar-left .block.category-tree {
+  overflow: hidden;
+}
+
+body[data-tawala-page="library"] .category-tree .library-chrome-stubs,
+body[data-tawala-page="library"] .category-tree #categoryNav {
+  max-width: 100%;
+}
+
+body[data-tawala-page="library"] .category-tree .library-tree-controls {
+  gap: 3px;
+  padding: 4px 4px;
+}
+
+body[data-tawala-page="library"] .category-tree .library-tree-controls .pm-icon-action {
+  font-size: 9px;
+  padding: 3px 5px;
+  line-height: 1.2;
+}
+
+body[data-tawala-page="library"] .category-tree .library-admin-stubs {
+  flex-direction: column;
+  align-items: stretch;
+  margin-top: 4px;
+}
+
+body[data-tawala-page="library"] .category-tree .library-admin-stubs .pm-action {
+  width: 100%;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+body[data-tawala-page="library"] .category-tree #categoryNav > li:first-child a {
+  font-weight: bold;
 }
 
 .category-tree ul {
@@ -762,9 +799,9 @@ table.projectListing td.clone-count {
 
 /* Collapsible Library groups — one shared CSS grid for header + every project row */
 .library-listing-frame {
-  /* Name flexes; Version / Updated compact; Actions take remaining width (control + metric inline) */
-  --library-cols: minmax(10rem, 1.2fr) 3.75em 6.5em minmax(22rem, 1.6fr);
-  --library-action-gap: 14px;
+  /* Name + one-line blurb flex; Version/Updated compact; stacked action icons on the right */
+  --library-cols: minmax(0, 1fr) 3.1em 4.75em minmax(9.5rem, max-content);
+  --library-action-gap: 8px;
   --library-action-slots: repeat(2, minmax(0, 1fr));
   margin-top: 0;
   width: 100%;
@@ -782,19 +819,19 @@ table.projectListing td.clone-count {
 }
 
 .library-colhead-bar {
-  background: linear-gradient(180deg, #f3e8e0 0%, #ead9ce 100%);
-  border-bottom: 1px solid var(--lib-band-edge, #c9a994);
+  background: linear-gradient(180deg, #f5f5f5 0%, #e8e8e8 100%);
+  border-bottom: 1px solid var(--tw-border);
   min-height: 2.4em;
   font-size: 0.88em;
 }
 
 .library-colhead-bar .lib-col {
-  border-right: 1px solid #dcc8ba;
+  border-right: 1px solid #d8d8d8;
   padding: 6px 8px 2px 6px;
   vertical-align: bottom;
   font-size: 0.82em;
   font-weight: 700;
-  color: var(--lib-red-ink, #5c2a1e);
+  color: var(--tw-text);
   white-space: nowrap;
   line-height: 1.15;
   align-self: end;
@@ -816,6 +853,29 @@ table.projectListing td.clone-count {
 
 .library-colhead-bar .lib-col-version {
   text-align: center;
+  align-self: end;
+}
+
+.library-colhead-bar .lib-col-updated {
+  text-align: right;
+  align-self: end;
+  padding-right: 10px;
+}
+
+.library-colhead-bar .library-colhead-compact {
+  display: block;
+  font-size: 0.72em;
+  font-weight: 700;
+  line-height: 1.1;
+  color: var(--tw-muted);
+}
+
+.library-colhead-bar .lib-col-version .library-colhead-compact {
+  text-align: center;
+}
+
+.library-colhead-bar .lib-col-updated .library-colhead-compact {
+  text-align: right;
 }
 
 .library-colhead-bar .lib-col-actions {
@@ -823,22 +883,8 @@ table.projectListing td.clone-count {
   padding: 4px 8px 3px;
   letter-spacing: 0.01em;
   cursor: default;
-  align-self: stretch;
+  align-self: end;
   white-space: nowrap;
-}
-
-.library-actions-head {
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  gap: 2px;
-  width: 100%;
-}
-
-.library-actions-head .th-label {
-  display: block;
-  text-align: center;
-  padding-left: 0;
 }
 
 .library-action-subheads,
@@ -847,20 +893,19 @@ table.projectListing td.clone-count {
   grid-template-columns: var(--library-action-slots);
   column-gap: var(--library-action-gap);
   width: 100%;
-  align-items: center;
+  align-items: start;
   justify-items: center;
 }
 
 .library-action-subhead {
   display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.35em;
-  font-size: 1em;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0;
+  font-size: 0.72em;
   font-weight: 700;
-  line-height: 1.15;
+  line-height: 1.1;
   text-align: center;
   color: var(--tw-muted);
   white-space: nowrap;
@@ -871,45 +916,71 @@ table.projectListing td.clone-count {
   flex: 0 0 auto;
 }
 
+.library-action-subhead-split {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  line-height: 1.05;
+  white-space: normal;
+}
+
 .library-action-metric-head {
-  display: inline;
-  font-size: 0.92em;
+  display: block;
+  font-size: 0.88em;
   font-weight: 600;
-  color: var(--tw-muted, #6b5a52);
-  line-height: 1.1;
+  color: var(--tw-muted, #666);
+  line-height: 1.05;
+  margin-top: 1px;
 }
 
 .library-action-metric-head::before {
-  content: "·";
-  margin-right: 0.35em;
-  font-weight: 700;
-  opacity: 0.7;
+  content: none;
 }
 
 .library-action-slot {
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   flex-wrap: nowrap;
   align-items: center;
-  justify-content: center;
-  gap: 0.45em;
+  justify-content: flex-start;
+  gap: 1px;
   min-width: 0;
+  width: 100%;
+}
+
+.library-action-slot .pm-op-icon-btn,
+.library-action-slot .pm-icon-action {
+  flex: 0 0 20px;
+  height: 20px;
+}
+
+/* Reserve metric line height on every slot so icons stay on one horizontal row */
+.library-action-slot::after {
+  content: "";
+  display: block;
+  min-height: 0.85em;
+  width: 100%;
+}
+
+.library-action-slot:has(.library-action-metric)::after {
+  content: none;
 }
 
 .library-action-metric {
   display: inline-block;
-  font-size: 0.85em;
+  font-size: 0.72em;
   font-weight: 600;
-  color: var(--lib-red-ink, #5c2a1e);
-  line-height: 1.1;
+  color: var(--tw-muted);
+  line-height: 1.05;
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
 
 .library-project-row.is-highlight {
-  outline: 2px solid var(--lib-red, #c24322);
+  outline: 2px solid var(--tw-accent);
   outline-offset: -2px;
-  background: #fff8f4;
+  background: #eef4fc;
 }
 
 /* Guest My Tawala taste — static snapshots (not a live fake catalog) */
@@ -1051,7 +1122,7 @@ details.library-category:last-child {
   border-bottom: none;
 }
 
-/* Category headers — warm catalog bands (not Designer-blue tree chrome) */
+/* Category headers — same subdued bands as My Tawala listing (collapsible for future nested IA) */
 details.library-category > summary.library-category-heading {
   list-style: none;
   display: flex;
@@ -1060,11 +1131,11 @@ details.library-category > summary.library-category-heading {
   padding: 5px 8px 4px 6px;
   cursor: pointer;
   user-select: none;
-  background: linear-gradient(180deg, #f7ebe4 0%, #f0ddd3 100%);
-  border-bottom: 1px solid var(--lib-band-edge, #d4a890);
+  background: linear-gradient(180deg, #f5f5f5 0%, #ececec 100%);
+  border-bottom: 1px solid var(--tw-border);
   font-weight: 700;
   font-size: 11px;
-  color: var(--lib-red-ink, #8a2f1f);
+  color: var(--tw-text);
   line-height: 1.3;
   width: 100%;
   box-sizing: border-box;
@@ -1100,7 +1171,7 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   flex: 1 1 auto;
   font-size: 11px;
   font-weight: 700;
-  color: var(--lib-red-ink, #8a2f1f);
+  color: var(--tw-text);
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -1109,9 +1180,9 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   font-family: Arial, Helvetica, sans-serif;
   font-weight: bold;
   font-size: 10px;
-  color: var(--lib-red-ink, #8a2f1f);
-  background: rgba(255, 255, 255, 0.55);
-  border: 1px solid var(--lib-band-edge, #d4a890);
+  color: var(--tw-muted);
+  background: #fff;
+  border: 1px solid var(--tw-border);
   border-radius: 2px;
   padding: 0 5px;
   line-height: 1.5;
@@ -1122,18 +1193,18 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   background: #fff;
 }
 
-/* Library rows — name + blurb under name (Aug 9 #8); same grid as header */
+/* Library rows — name + one-line blurb; actions stacked on the right */
 .library-project-row {
   font-size: 0.88em;
-  line-height: 1.3;
-  cursor: pointer;
-  min-height: 1.75em;
-  align-items: start;
-  border-bottom: 1px solid #f0e6df;
+  line-height: 1.25;
+  cursor: default;
+  min-height: 1.65em;
+  align-items: center;
+  border-bottom: 1px solid #e8e8e8;
 }
 
 .library-project-row:hover {
-  background: var(--lib-blush, #faf0ea);
+  background: #f5f8fc;
 }
 
 .library-project-row .lib-col {
@@ -1148,55 +1219,91 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
 
 .library-name-block {
   display: flex;
-  flex-wrap: wrap;
-  align-items: baseline;
-  gap: 0 0.4em;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 1px;
   min-width: 0;
+  width: 100%;
 }
 
-.library-project-row .lib-col-name .title,
-.library-project-row .lib-col-name .title a,
-.library-project-row .lib-col-name .rating-stars,
-.library-project-row .lib-col-name .library-live-ready {
+.library-name-title {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.45em;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.library-name-title .title {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1 1 auto;
+}
+
+.library-demo-badge {
+  flex-shrink: 0;
+  display: inline-block;
+  font-size: 0.68em;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  padding: 1px 6px;
+  border: 1px solid #d4b878;
+  border-radius: 2px;
+  background: #faf3e4;
+  color: #6a4e16;
+  vertical-align: baseline;
+  white-space: nowrap;
+}
+
+.library-name-secondary {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
+  gap: 0.45em;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.library-name-secondary .rating-stars {
   vertical-align: middle;
+  flex-shrink: 0;
 }
 
 .library-project-row .lib-col-name .title,
 .library-project-row .lib-col-name .title a {
-  color: #1a1210;
+  color: var(--tw-text);
   text-decoration: none;
   font-weight: 700;
-  font-size: 1.06em;
-  line-height: 1.3;
-  letter-spacing: 0.01em;
+  font-size: 1em;
+  line-height: 1.25;
+  letter-spacing: 0;
 }
 
 .library-project-row .lib-col-name .title a:hover {
   text-decoration: underline;
-  color: var(--lib-red, #c24322);
-}
-
-.library-project-row.library-row-live .lib-col-name .title,
-.library-project-row.library-row-live .lib-col-name .title a {
-  color: inherit;
+  color: var(--tw-accent);
 }
 
 .library-row-blurb {
-  display: block;
-  width: 100%;
-  flex-basis: 100%;
-  margin: 3px 0 0;
-  color: #5a4a42;
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--tw-muted);
   font-size: 0.92em;
-  line-height: 1.4;
-  white-space: normal;
-  max-width: 42em;
+  font-weight: normal;
+  line-height: 1.25;
 }
 
 /* Reputation placeholders — quiet until the later ratings push */
 body[data-tawala-page="library"] .rating-stars {
   opacity: 0.58;
-  margin-left: 0.3em;
+  margin-left: 0;
   transform: scale(0.9);
   transform-origin: left center;
 }
@@ -1209,26 +1316,8 @@ body[data-tawala-page="library"] .rating-stars .star.on {
   color: #c4a04a;
 }
 
-/* Library detail — hero + blurb + acquire CTAs */
-.library-detail-blurb {
-  margin: 6px 0 12px;
-  color: #4a3a34;
-  font-size: 1.05em;
-  line-height: 1.45;
-  max-width: 40em;
-}
-
-.library-acquire-ctas {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin: 0 0 4px;
-}
-
-.library-acquire-ctas .pm-action {
-  margin: 0;
-  font-size: 12px;
-  padding: 7px 16px;
+.library-project-row.library-cols {
+  align-items: start;
 }
 
 .library-project-row .lib-col-used,
@@ -1248,22 +1337,25 @@ body[data-tawala-page="library"] .rating-stars .star.on {
 
 .library-project-row .lib-col-version {
   text-align: center;
-  color: #5a3a2e;
+  color: var(--tw-muted);
   font-variant-numeric: tabular-nums;
   font-weight: 600;
-  font-size: 0.95em;
+  font-size: 0.92em;
 }
 
 .library-project-row .lib-col-updated {
+  text-align: right;
+  padding-right: 10px;
   font-size: 0.78em;
   color: var(--tw-muted);
   white-space: nowrap;
   line-height: 1.3;
+  font-variant-numeric: tabular-nums;
 }
 
 .library-project-row .lib-col-actions {
   text-align: center;
-  padding: 0 6px;
+  padding: 6px 6px 0;
   white-space: nowrap;
 }
 
@@ -1298,26 +1390,67 @@ button.pm-op-icon-btn.library-row-action {
   box-sizing: border-box;
 }
 
-/* Beat Designer-blue .pm-op-icon-btn.is-active — Library warm red chrome.
- * Same soft look for all Actions (including single-start Test Drive links). */
-body[data-tawala-page="library"] .pm-op-icon-btn.is-active.library-row-action:not(:disabled),
-body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action {
-  color: #6b2418;
-  border-color: #c4896e;
-  background-color: #f6ebe4;
-  background-image: linear-gradient(180deg, #fff8f4 0%, #f0ddd3 48%, #e8cfc2 100%);
+/* Library listing — CSS tooltips (native title is unreliable on 20px icons and disabled buttons). */
+body[data-tawala-page="library"] .library-project-row .lib-col-actions,
+body[data-tawala-page="library"] .library-action-slot,
+body[data-tawala-page="library"] .library-colhead-bar .lib-col-actions {
+  overflow: visible;
 }
 
-body[data-tawala-page="library"] .pm-op-icon-btn.is-active.library-row-action:not(:disabled):hover,
-body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action:hover {
-  text-decoration: none;
-  border-color: var(--lib-red, #c24322);
-  color: var(--lib-red-deep, #a31c1c);
-  background-image: linear-gradient(180deg, #fffaf7 0%, #f5e4da 48%, #ecc9b8 100%);
+body[data-tawala-page="library"] [data-tooltip] {
+  position: relative;
 }
+
+body[data-tawala-page="library"] [data-tooltip]::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  z-index: 40;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: min(22rem, 72vw);
+  padding: 6px 8px;
+  font-size: 12px;
+  font-weight: normal;
+  line-height: 1.35;
+  white-space: normal;
+  text-align: left;
+  color: #fff;
+  background: rgba(28, 32, 40, 0.94);
+  border-radius: 3px;
+  pointer-events: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.1s ease 0.05s, visibility 0.1s ease 0.05s;
+}
+
+body[data-tawala-page="library"] .library-row-actions [data-tooltip]::after,
+body[data-tawala-page="library"] .library-action-metric[data-tooltip]::after {
+  bottom: calc(100% + 5px);
+}
+
+body[data-tawala-page="library"] .library-action-subhead[data-tooltip]::after {
+  top: calc(100% + 4px);
+}
+
+body[data-tawala-page="library"] [data-tooltip]:hover::after,
+body[data-tawala-page="library"] [data-tooltip]:focus-visible::after {
+  opacity: 1;
+  visibility: visible;
+}
+
+body[data-tawala-page="library"] .library-row-actions .pm-op-icon-btn.is-scope-disabled,
+body[data-tawala-page="library"] .library-row-actions .pm-icon-action.is-scope-disabled {
+  opacity: 1;
+  color: var(--tw-muted);
+  cursor: default;
+  pointer-events: auto;
+}
+
+/* F2 Sep 2026 — Library actions use shared pm-op / pm-action tokens (same family as My Tawala). */
 
 #projectDetails h1 {
-  color: var(--lib-red, #c24322);
+  color: var(--tw-text);
   margin-top: 0;
 }
 
@@ -1330,24 +1463,24 @@ body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action:h
   margin: 0;
 }
 
-/* Library detail hero — name + blurb + CTAs as one composition */
+/* Library detail hero (when used) — subdued panel; red accent strip only */
 .library-detail-hero {
   padding: 14px 16px 16px;
   margin: 4px 0 18px;
-  background: linear-gradient(165deg, #fffdfb 0%, #fdf8f5 42%, #f7ebe4 100%);
-  border: 1px solid var(--lib-warm-border, #e0c4b4);
-  border-left: 5px solid var(--lib-red, #c24322);
-  box-shadow: 0 1px 0 rgba(194, 67, 34, 0.06);
+  background: var(--tw-panel);
+  border: 1px solid var(--tw-border);
+  border-left: 4px solid var(--lib-red, #c24322);
+  box-shadow: none;
 }
 
 .library-detail-hero h1 {
   margin: 0 0 2px;
-  font-family: Georgia, "Times New Roman", Times, serif;
-  font-size: 1.9em;
+  font-family: arial, helvetica, sans-serif;
+  font-size: 1.45em;
   font-weight: bold;
-  color: var(--lib-red, #c24322);
-  line-height: 1.2;
-  letter-spacing: 0.01em;
+  color: var(--tw-text);
+  line-height: 1.25;
+  letter-spacing: 0;
 }
 
 .library-detail-hero .library-live-ready {
@@ -1359,42 +1492,25 @@ body[data-tawala-page="library"] a.pm-op-icon-btn.is-active.library-row-action:h
   margin-top: 4px;
 }
 
-/* Library CTAs — red primary Test Drive; warm secondary Save a copy (≠ My Tawala blue) */
-body[data-tawala-page="library"] .library-acquire-ctas a.pm-action.is-active.js-testdrive,
-body[data-tawala-page="library"] .library-acquire-ctas a.pm-action.is-active[data-testdrive-url] {
-  color: #fff;
-  border-color: #8a2418;
-  background-color: #c24322;
-  background-image: linear-gradient(180deg, #d45a3c 0%, #c24322 48%, #a31c1c 100%);
-  box-shadow:
-    inset 0 1px 0 rgba(255, 255, 255, 0.28),
-    0 1px 0 rgba(0, 0, 0, 0.08);
+.library-detail-blurb {
+  margin: 6px 0 12px;
+  color: var(--tw-muted);
+  font-size: 1em;
+  line-height: 1.4;
+  max-width: 40em;
 }
 
-body[data-tawala-page="library"] .library-acquire-ctas a.pm-action.is-active.js-testdrive:hover,
-body[data-tawala-page="library"] .library-acquire-ctas a.pm-action.is-active[data-testdrive-url]:hover {
-  background-image: linear-gradient(180deg, #de6a4c 0%, #d04d2c 48%, #b3221c 100%);
-  border-color: #6b1a12;
-  color: #fff;
+.library-acquire-ctas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0 0 4px;
 }
 
-body[data-tawala-page="library"] .library-acquire-ctas .library-save-copy,
-body[data-tawala-page="library"] .library-acquire-ctas .library-copy-testdrive,
-body[data-tawala-page="library"] .pm-sidebar-ops .library-save-copy,
-body[data-tawala-page="library"] .pm-sidebar-ops .library-copy-testdrive {
-  color: #6b2418;
-  border-color: #c4896e;
-  background-color: #f6ebe4;
-  background-image: linear-gradient(180deg, #fff8f4 0%, #f0ddd3 48%, #e8cfc2 100%);
-}
-
-body[data-tawala-page="library"] .library-acquire-ctas .library-save-copy:hover,
-body[data-tawala-page="library"] .library-acquire-ctas .library-copy-testdrive:hover,
-body[data-tawala-page="library"] .pm-sidebar-ops .library-save-copy:hover,
-body[data-tawala-page="library"] .pm-sidebar-ops .library-copy-testdrive:hover {
-  border-color: var(--lib-red, #c24322);
-  color: var(--lib-red-deep, #a31c1c);
-  background-image: linear-gradient(180deg, #fffaf7 0%, #f5e4da 48%, #ecc9b8 100%);
+.library-acquire-ctas .pm-action {
+  margin: 0;
+  font-size: 12px;
+  padding: 7px 14px;
 }
 
 /* Sidebar catalog meta */
@@ -1410,7 +1526,7 @@ body[data-tawala-page="library"] .pm-sidebar-ops .library-copy-testdrive:hover {
   font-weight: bold;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--lib-red-ink, #8a2f1f);
+  color: var(--tw-muted);
 }
 
 .library-meta-dl dt:first-child {
@@ -1884,13 +2000,18 @@ body[data-tawala-page="library"] .library-listing-frame {
 .library-listing-frame {
   margin: 0;
   margin-left: -4px;
-  border: 1px solid var(--lib-band-edge, #c9a994);
+  border: 1px solid var(--tw-border);
   background: var(--tw-panel);
   overflow-x: auto; /* last resort on tiny screens */
   max-width: min(58rem, 100%);
   width: 100%;
   box-sizing: border-box;
-  box-shadow: 0 1px 2px rgba(138, 47, 31, 0.05);
+  box-shadow: none;
+}
+
+.library-listing-nav-hint {
+  margin: 0;
+  padding: 2px 6px 4px;
 }
 
 table.projectListing.mytawala-listing {

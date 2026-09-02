@@ -30,8 +30,15 @@ assert.doesNotMatch(
   "Copy-link alert must use honesty copy, not a bare “Link copied”"
 );
 
-assert.match(demo, /This project is used from My Tawala — Copy to MyTawala/);
+assert.match(demo, /tooltipSingleExam:/);
+assert.match(demo, /nothing you enter is saved/);
+assert.match(demo, /rowDemoBadge:/);
+assert.match(ops, /function renderLibraryDemoBadge/);
 assert.match(ops, /projectIsDataDriven\(project\)/);
+assert.doesNotMatch(
+  ops.slice(ops.indexOf("function renderLibraryTestDriveButton"), ops.indexOf("function renderLibraryCopyTestDriveButton")),
+  /if \(projectIsDataDriven\(project\)\)/
+);
 assert.doesNotMatch(demo, /purgeRespondentResponses/);
 
 console.log("testDriveHonesty contract ok");

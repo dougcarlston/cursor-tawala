@@ -127,6 +127,20 @@
     return "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available.";
   }
 
+  /** Visible on Library listing rows for exam / data-driven teacher apps (owner Sep 1, 2026). */
+  function renderLibraryDemoBadge(project) {
+    if (!projectIsDataDriven(project)) return "";
+    const label = honestyText("rowDemoBadge", "Demo - your exam not saved.");
+    const title = honestyText(
+      "rowDemoBadgeTitle",
+      "Shared teacher try-out — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams for real."
+    );
+    return (
+      `<span class="library-demo-badge" title="${escapeHtml(title)}">` +
+      `${escapeHtml(label)}</span>`
+    );
+  }
+
   function responseCopyNeedsAlert(result) {
     const copy = result && result.responseCopy;
     if (!copy) return false;
@@ -147,6 +161,10 @@
   }
 
   function honestyForProject(project, key, keepKey, fallback, keepFallback) {
+    if (projectIsDataDriven(project)) {
+      const examKey = `${key}Exam`;
+      return honestyText(examKey, fallback);
+    }
     if (projectKeepsResponses(project)) {
       return honestyText(keepKey, keepFallback || fallback);
     }
@@ -154,6 +172,10 @@
   }
 
   function honestyNamedForProject(project, key, keepKey, name, fallback, keepFallback) {
+    if (projectIsDataDriven(project)) {
+      const examKey = `${key}Exam`;
+      return honestyText(examKey, fallback).replace(/\{name\}/g, name);
+    }
     return honestyForProject(project, key, keepKey, fallback, keepFallback).replace(
       /\{name\}/g,
       name
@@ -448,18 +470,25 @@
     },
   ];
 
-  /** Curated Theme Shortlist (G10 #1) — vetted for contrast, FIB layout, and presentation. */
+  /** Curated Theme Shortlist (G10 #1, owner Sep 2026) — My Tawala Theme dropdown only.
+   * Paths unchanged (`themePath` on deploy); labels are color/accent-first. Not in this list:
+   * retired weak themes (Green Tea, dark washes, etc.). Basic Green dropped (overlaps Light Green).
+   * Future: track theme changes from published defaults to learn what authors reject. */
   const PROJECT_THEMES = [
-    { label: "Dirtbowl - Variable Width", path: "dirtbowl2" },
-    { label: "Green Lined Paper", path: "greenline" },
+    { label: "Basic Blue", path: "basicblue" },
+    { label: "Basic Pink", path: "basicpink" },
+    { label: "Big Q", path: "style2" },
     { label: "Blue Lined Paper", path: "blueline" },
-    { label: "MVSC", path: "mvsc" },
-    { label: "Big Q (Style 2)", path: "style2" },
-    { label: "Green Tea", path: "greentea" },
-    { label: "Chocolate", path: "chocolate" },
-    { label: "Red Rays", path: "redrays" },
-    { label: "Salzburg", path: "salzburg" },
-    { label: "Default", path: "default" },
+    { label: "Blue-Green Frame", path: "lime" },
+    { label: "Dirtbowl — Wide", path: "dirtbowl2" },
+    { label: "Green Lined Paper", path: "greenline" },
+    { label: "Green Serif", path: "tennis" },
+    { label: "Intense Yellow", path: "yellow" },
+    { label: "Light Green", path: "litegreen" },
+    { label: "Pale Yellow", path: "basicyellow" },
+    { label: "Plain", path: "plain" },
+    { label: "Red & Green Accents", path: "tincarbell" },
+    { label: "Warm Brown", path: "soup" },
   ];
 
   /** Project Data section (detail.jsp form table + filters) */
@@ -752,6 +781,12 @@
       .replace(/"/g, "&quot;");
   }
 
+  /** Native title tooltips are unreliable on 22px Library icons; data-tooltip drives CSS tips. */
+  function libraryTooltipAttrs(title) {
+    const t = escapeHtml(title);
+    return `title="${t}" data-tooltip="${t}"`;
+  }
+
   function isOpActive(op) {
     return (
       op.wired === true ||
@@ -904,9 +939,20 @@
     );
   }
 
+  function libraryListingActionSubheadLabel(op) {
+    if (op.id === "save-my-tawala") {
+      return (
+        `<span class="library-action-subhead-label library-action-subhead-split" aria-label="${escapeHtml(op.label)}">` +
+        `<span>Copy to</span><span>MyTawala</span>` +
+        `</span>`
+      );
+    }
+    return `<span class="library-action-subhead-label">${escapeHtml(op.label)}</span>`;
+  }
+
   /**
-   * Library “Actions” header — group label plus sub-labels aligned over icon slots.
-   * Labels: Test drive | Copy link | Copy to MyTawala (logged-in only).
+   * Library action column headers — sub-labels aligned over icon slots (no “Actions” group label).
+   * Labels: Test drive | Copy link | Copy to / MyTawala (logged-in only).
    */
   function renderLibraryListingActionHeaders() {
     const actions = visibleLibraryListingActions();
@@ -920,8 +966,8 @@
           extra = `<span class="library-action-metric-head">Copies</span>`;
         }
         return (
-          `<span class="library-action-subhead" title="${escapeHtml(op.title)}">` +
-          `<span class="library-action-subhead-label">${escapeHtml(op.label)}</span>` +
+          `<span class="library-action-subhead" ${libraryTooltipAttrs(op.title)}>` +
+          libraryListingActionSubheadLabel(op) +
           extra +
           `</span>`
         );
@@ -930,12 +976,9 @@
     return (
       `<div class="lib-col lib-col-actions" role="columnheader" ` +
       `style="--library-action-slots: repeat(${slots}, minmax(0, 1fr))">` +
-      `<div class="library-actions-head">` +
-      `<span class="th-label">Actions</span>` +
       `<span class="library-action-subheads" role="group" aria-label="Action columns">` +
       subs +
       `</span>` +
-      `</div>` +
       `</div>`
     );
   }
@@ -996,7 +1039,7 @@
      * (Aug 10 libsc1) — empty pid used to break library-detail Save a copy. */
     const pid = (project && project.id) || "";
     const title = projectIsDataDriven(project)
-      ? "Copy this project into My Tawala — used from My Tawala, not Library Test Drive"
+      ? "Copy to MyTawala (free account) — private copy with your own live exam; the shared Test Drive demo does not save your work"
       : "Copy this Library project into My Tawala (empty private clone; does not copy other people’s responses)";
     if (variant === "text") {
       return (
@@ -1008,7 +1051,7 @@
     }
     return (
       `<button type="button" class="pm-icon-action pm-op-icon-btn is-active library-row-action" ` +
-      `title="${escapeHtml(title)}" aria-label="${escapeHtml(COPY_TO_MYTAWALA_LABEL)}" ` +
+      `${libraryTooltipAttrs(title)} aria-label="${escapeHtml(COPY_TO_MYTAWALA_LABEL)}" ` +
       `data-op="save-my-tawala" data-wired="save-copy-library" ` +
       `data-project="${escapeHtml(pid)}">${listingIconHtml("save")}</button>`
     );
@@ -1020,19 +1063,6 @@
    */
   function renderLibraryTestDriveButton(project, variant) {
     const pid = (project && project.id) || "";
-    const noTdTitle = dataDrivenNoTestDriveTitle();
-    if (projectIsDataDriven(project)) {
-      if (variant === "text") {
-        return (
-          `<button type="button" class="pm-action" disabled title="${escapeHtml(noTdTitle)}">Test Drive</button>`
-        );
-      }
-      return (
-        `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-        `title="${escapeHtml(noTdTitle)}" aria-label="Test drive unavailable — used from My Tawala" ` +
-        `data-op="test-drive" data-wired="false">${listingIconHtml("testdrive")}</button>`
-      );
-    }
     const driveUrl = libraryDriveUrl(project);
     const deployed =
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
@@ -1076,15 +1106,16 @@
     /* Listing icon */
     if (!deployed || !driveUrl) {
       return (
-        `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-        `title="No local test-drive yet" aria-label="Test drive unavailable" ` +
-        `data-op="test-drive" data-wired="false">${listingIconHtml("testdrive")}</button>`
+        `<button type="button" class="pm-icon-action pm-op-icon-btn is-scope-disabled" ` +
+        `${libraryTooltipAttrs("No local test-drive yet")} aria-label="Test drive unavailable" ` +
+        `aria-disabled="true" data-op="test-drive" data-wired="false">` +
+        `${listingIconHtml("testdrive")}</button>`
       );
     }
     if (multi) {
       return (
         `<button type="button" class="pm-icon-action pm-op-icon-btn is-active library-row-action library-testdrive-pick" ` +
-        `title="${escapeHtml(title)}" aria-label="Test Drive — choose start" ` +
+        `${libraryTooltipAttrs(title)} aria-label="Test Drive — choose start" ` +
         `data-op="test-drive" data-wired="test-drive" data-testdrive-intent="open" ` +
         `data-project="${escapeHtml(pid)}">${listingIconHtml("testdrive")}</button>`
       );
@@ -1093,7 +1124,7 @@
       `<a class="pm-icon-action pm-op-icon-btn is-active library-row-action js-testdrive" ` +
       `href="${escapeHtml(driveUrl)}" data-testdrive-url="${escapeHtml(driveUrl)}" ` +
       `target="_blank" rel="noopener" data-project="${escapeHtml(pid)}" ` +
-      `title="${escapeHtml(title)}" aria-label="Test drive this project" ` +
+      `${libraryTooltipAttrs(title)} aria-label="Test drive this project" ` +
       `data-op="test-drive" data-wired="true">${listingIconHtml("testdrive")}</a>`
     );
   }
@@ -1104,19 +1135,6 @@
    */
   function renderLibraryCopyTestDriveButton(project, variant) {
     const pid = (project && project.id) || "";
-    const noTdTitle = dataDrivenNoTestDriveTitle();
-    if (projectIsDataDriven(project)) {
-      if (variant === "text") {
-        return (
-          `<button type="button" class="pm-action" disabled title="${escapeHtml(noTdTitle)}">Copy link</button>`
-        );
-      }
-      return (
-        `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-        `title="${escapeHtml(noTdTitle)}" aria-label="Copy Test Drive link unavailable — used from My Tawala" ` +
-        `data-op="copy-testdrive-link" data-wired="false">${listingIconHtml("link")}</button>`
-      );
-    }
     const driveUrl = libraryDriveUrl(project);
     const deployed =
       (typeof TawalaDemo !== "undefined" && TawalaDemo.isDeployed(project)) || !!driveUrl;
@@ -1155,7 +1173,7 @@
     if (deployed && driveUrl) {
       return (
         `<button type="button" class="pm-icon-action pm-op-icon-btn is-active library-row-action library-copy-testdrive" ` +
-        `title="${escapeHtml(title)}" aria-label="Copy Test Drive link" ` +
+        `${libraryTooltipAttrs(title)} aria-label="Copy Test Drive link" ` +
         `data-op="copy-testdrive-link" data-wired="copy-testdrive-link" ` +
         `data-project="${escapeHtml(pid)}"` +
         (multi ? "" : ` data-testdrive-copy-url="${escapeHtml(driveUrl)}"`) +
@@ -1163,8 +1181,9 @@
       );
     }
     return (
-      `<button type="button" class="pm-icon-action pm-op-icon-btn library-row-action" disabled ` +
-      `title="No local test-drive URL to copy yet" aria-label="Copy Test Drive link unavailable" ` +
+      `<button type="button" class="pm-icon-action pm-op-icon-btn library-row-action is-scope-disabled" ` +
+      `${libraryTooltipAttrs("No local test-drive URL to copy yet")} ` +
+      `aria-label="Copy Test Drive link unavailable" aria-disabled="true" ` +
       `data-op="copy-testdrive-link" data-wired="false">${listingIconHtml("link")}</button>`
     );
   }
@@ -1197,18 +1216,21 @@
           ctrl = renderLibrarySaveCopyButton(project, "icon");
         } else {
           ctrl =
-            `<button type="button" class="pm-icon-action pm-op-icon-btn" disabled ` +
-            `title="${escapeHtml(op.title)}" aria-label="${escapeHtml(op.label)}" ` +
-            `data-op="${escapeHtml(op.id)}" data-wired="false">${listingIconHtml(op.icon)}</button>`;
+            `<button type="button" class="pm-icon-action pm-op-icon-btn is-scope-disabled" ` +
+            `${libraryTooltipAttrs(op.title)} aria-label="${escapeHtml(op.label)}" ` +
+            `aria-disabled="true" data-op="${escapeHtml(op.id)}" data-wired="false">` +
+            `${listingIconHtml(op.icon)}</button>`;
         }
         let metric = "";
         if (op.metric === "timesUsed") {
           metric =
-            `<span class="library-action-metric" title="Times used — Library Test Drive opens">` +
+            `<span class="library-action-metric" ` +
+            `${libraryTooltipAttrs("Times used — Library Test Drive opens")}>` +
             `${escapeHtml(String(timesUsed))}</span>`;
         } else if (op.metric === "cloneCount") {
           metric =
-            `<span class="library-action-metric" title="Copies downloaded — Copy to MyTawala / Get from Library">` +
+            `<span class="library-action-metric" ` +
+            `${libraryTooltipAttrs("Copies downloaded — Copy to MyTawala / Get from Library")}>` +
             `${escapeHtml(String(cloneCount))}</span>`;
         }
         return `<span class="library-action-slot">${ctrl}${metric}</span>`;
@@ -3119,10 +3141,6 @@
       window.alert(`Can't open Test Drive — unknown Library project: ${projectId || "(none)"}`);
       return;
     }
-    if (projectIsDataDriven(project)) {
-      window.alert(dataDrivenNoTestDriveTitle());
-      return;
-    }
     const starts = libraryStartPointsWithUrls(project);
     if (!starts.length) {
       window.alert("No local test-drive URL yet — this project isn’t live on :8080.");
@@ -3254,10 +3272,6 @@
 
   async function copyLibraryTestDriveLink(projectId, explicitUrl) {
     const project = projectId ? resolveLibraryProject(projectId) : null;
-    if (project && projectIsDataDriven(project)) {
-      window.alert(dataDrivenNoTestDriveTitle());
-      return false;
-    }
     if (project && isLibraryMultiStart(project)) {
       openLibraryTestDrivePicker(projectId, { intent: "copy" });
       return false;
@@ -6132,10 +6146,6 @@
       ev.preventDefault();
       if (!projectId) return;
       const project = resolveLibraryProject(projectId);
-      if (project && projectIsDataDriven(project)) {
-        window.alert(dataDrivenNoTestDriveTitle());
-        return;
-      }
       if (project && isLibraryMultiStart(project)) {
         openLibraryTestDrivePicker(projectId, { intent: "open" });
         return;
@@ -6160,10 +6170,6 @@
     if (wired === "copy-testdrive-link" || op === "copy-testdrive-link") {
       ev.preventDefault();
       const project = projectId ? resolveLibraryProject(projectId) : null;
-      if (project && projectIsDataDriven(project)) {
-        window.alert(dataDrivenNoTestDriveTitle());
-        return;
-      }
       const explicit =
         (btn && btn.getAttribute && btn.getAttribute("data-testdrive-copy-url")) || "";
       void copyLibraryTestDriveLink(projectId, explicit);
@@ -6570,6 +6576,7 @@
     renderLibrarySaveCopyButton,
     renderLibraryTestDriveButton,
     renderLibraryCopyTestDriveButton,
+    renderLibraryDemoBadge,
     bind,
   };
 })();

@@ -18,6 +18,7 @@ import {
   isDataDrivenProject,
   formsFromExport,
   DATA_DRIVEN_NO_TEST_DRIVE_TITLE,
+  DATA_DRIVEN_TEST_DRIVE_TITLE,
   PUBLISH_CLONE_FAILED,
   countShowsSavedResponses,
   compactNameKey,
@@ -153,7 +154,8 @@ assert.equal(
   }),
   true
 );
-assert.equal(DATA_DRIVEN_NO_TEST_DRIVE_TITLE.includes("My Tawala"), true);
+assert.equal(DATA_DRIVEN_TEST_DRIVE_TITLE.includes("nothing you enter is saved"), true);
+assert.equal(DATA_DRIVEN_NO_TEST_DRIVE_TITLE, DATA_DRIVEN_TEST_DRIVE_TITLE);
 assert.equal(formsFromExport([{ form: "Exam", rows: [{}] }]).length, 1);
 assert.deepEqual(
   formsFromExport([

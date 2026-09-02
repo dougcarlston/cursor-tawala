@@ -28,7 +28,7 @@
 | **Inline hint formatting** | Parentheticals in the FIB question (`(mm/dd/yyyy)`, `(again)`) with B/I/size/color — **mostly already covered**. Do not spend V1 unless broken. |
 | **Form Text tables as layout (basic)** | **Done** — width pt/px parse; `#form table.user` borders; dirtbowl2 no longer strips all borders. **T4:** Design `<table>` content wins over hardcoded `registrationTextToXml` (stock tools). |
 | **Per-blank captions above fields** | Small **First** / **Last** (etc.) tight above each input, left-aligned to that blank. **Not** FIB Styles → Above (whole question above row). **Not** only italic text in the question line. High-frequency DirtBowl pattern; structured mode preferred over free WYSIWYG drag. **Designer:** `blank.caption` on property strip; Design idle + Deploy `fibToXml` + Preview stack; product CSS in `form-layout-core`. |
-| **Insert presets: Date + Address** | **Done** — Insert → Date / Address emit ordinary FIBs (`fibInsertPresets.ts`); Street caption on Address; DOB uses `mm/dd/yyyy` + `/`. |
+| **Insert presets: Date + Address** | **Parked (Sep 2026)** — `fibInsertPresets.ts` + Sign-up template; **Insert menu hidden** until Design/Preview/Push share label-column geometry. Re-enable together. |
 
 **V1 spine (if cutting hard):** width fit → shared column (incl. phones) → per-blank captions → Date/Address presets → basic Form Text table Push fidelity.
 

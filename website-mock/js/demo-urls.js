@@ -76,7 +76,7 @@ window.TAWALA_LIBRARY = {
     "rating": 4,
     "comments": 15,
     "updated": "8/28/26",
-    "shortDescription": "Potluck invitation — headcount, dish contributions, skip logic, and a shared report.",
+    "shortDescription": "Headcount, regrets, who brings what",
     "longDescription": "Invite guests to a potluck, collect RSVPs and what each person will bring. Includes skip logic for non-attendees and captions for Adults/Kids. Uses Potluck Organizer (start), Report, documents, and processes for thanks and delete.",
     "jsonFile": "designer-web/public/samples/templates/potluck.json",
     "themePath": "default",
@@ -106,7 +106,7 @@ window.TAWALA_LIBRARY = {
     "rating": 4,
     "comments": 11,
     "updated": "8/28/26",
-    "shortDescription": "Find the best date for an event — availability plus top preference with Green Line theme.",
+    "shortDescription": "Basic scheduling, with table of responses, top choice",
     "longDescription": "Two MCQs: which dates work (multi-select) and top preference (single). Green Line theme for high-contrast title readability. Report includes a question-correlation table to see the best overlap.",
     "jsonFile": "designer-web/public/samples/templates/get-together.json",
     "themePath": "greenline",
@@ -136,7 +136,7 @@ window.TAWALA_LIBRARY = {
     "rating": 0,
     "comments": 0,
     "updated": "7/30/26",
-    "shortDescription": "Fun quiz — horses vs penguins. Score tracking with Process math.",
+    "shortDescription": "Fun quiz from two young animal lovers - who's right?",
     "longDescription": "Owner-vetted Entertainment try-out. One form, one process (score/wrong math), six answer documents. Theme style2. Start point: Form 1.",
     "jsonFile": "projects/library/Horses and Penguins Test.json",
     "themePath": "style2",
@@ -345,9 +345,32 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   homeNote:
     "Clears this shared Library demo when you start (not when you close the tab). Needs :8080.",
   listingPile:
-    "Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Copy to MyTawala when logged in · exam apps from My Tawala",
+    "Browse templates · Test drive (shared demo — not saved) · Copy link · Copy to MyTawala when logged in",
   listingHint:
-    "Test Drive clears this shared Library demo when you start — not when you close the tab. Online Exam Builder is used from My Tawala (Copy to MyTawala) — no Library Test Drive. Copied links use the same demo uniqueId (not a private copy).",
+    "Test Drive opens a shared demo. Simple templates clear when someone starts a new drive. Exam apps (Online Exam Builder): try Administration / Setup — nothing you enter is saved; Copy to MyTawala (free account) to keep and run exams for real.",
+  /* Exam / data-driven Library rows — try-before-register (owner Sep 1, 2026). */
+  tooltipSingleExam:
+    "No account. Try the teacher flow on :8080 — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams.",
+  tooltipMultiExam:
+    "Choose a start — try Administration or Setup first. No account; nothing you enter is saved. Copy to MyTawala (free) to use it for real.",
+  copyTooltipSingleExam:
+    "Copy the shared teacher demo URL (no account). Nothing is saved — Copy to MyTawala (free) for a private copy.",
+  copyTooltipMultiExam:
+    "Choose a start, then copy its demo URL. Shared try-out — nothing saved. Copy to MyTawala (free) for real use.",
+  copyAlertExam:
+    "Link copied.\n\nShared teacher demo — nothing you enter is saved to an account.\n\nCopy to MyTawala (free) to keep your exam and run it for real.",
+  copyPromptLabelExam: "Copy this shared demo link (not saved — Copy to MyTawala for a private copy):",
+  pickerOpenLedeExam:
+    "“{name}” has more than one start. Teachers: try Administration or Setup first. No account — nothing you enter is saved.",
+  pickerCopyLedeExam:
+    "“{name}” has more than one start. Copy a demo link — shared try-out, nothing saved. Copy to MyTawala (free) for real use.",
+  pickerOpenLinkTitleExam: "Open this start. Shared demo — your entries are not saved.",
+  pickerCopyLinkTitleExam: "Copy this start’s demo URL (not saved — Copy to MyTawala for real use).",
+  startLinkTitleExam:
+    "Opens the shared teacher demo on :8080. Nothing you enter is saved — Copy to MyTawala (free) to keep exams.",
+  rowDemoBadge: "Demo - your exam not saved.",
+  rowDemoBadgeTitle:
+    "Shared teacher try-out on :8080 — nothing you enter is saved. Copy to MyTawala (free account) to keep and run exams for real.",
   /* keepResponses listings (Publish Purge unchecked) — do not claim answers clear on start. */
   tooltipSingleKeep:
     "No account. Opens this published app. Stored answers stay — Test Drive does not clear them.",
@@ -367,8 +390,11 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   startLinkTitleKeep: "Opens :8080. This listing does not clear answers on start.",
 };
 
-window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE =
-  "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available.";
+window.TAWALA_DATA_DRIVEN_TEST_DRIVE_TITLE =
+  "No account. Try the teacher setup flow — nothing you enter is saved. Copy to MyTawala (free) to use it for real.";
+
+/** @deprecated Use TAWALA_DATA_DRIVEN_TEST_DRIVE_TITLE — kept for older cached scripts. */
+window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE = window.TAWALA_DATA_DRIVEN_TEST_DRIVE_TITLE;
 
 /** Short-lived :8080 probe cache — shared by Library Test Drive and My Tawala Use. */
 let _runtimeProbeCache = { at: 0, ok: null };
@@ -376,6 +402,7 @@ const _RUNTIME_PROBE_TTL_MS = 4000;
 
 window.TawalaDemo = {
   TEST_DRIVE_HONESTY: window.TAWALA_TEST_DRIVE_HONESTY,
+  DATA_DRIVEN_TEST_DRIVE_TITLE: window.TAWALA_DATA_DRIVEN_TEST_DRIVE_TITLE,
   DATA_DRIVEN_NO_TEST_DRIVE_TITLE: window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE,
   /** Listing title — never show file extensions (.json / .tawala). On-disk format may still be JSON. */
   displayName(name) {
@@ -810,7 +837,8 @@ window.TawalaDemo = {
   },
   /**
    * Data-driven / derivative Library rows (Exam Builder, Mongolia-style published exams).
-   * Questions live in submissions — Library Test Drive is off; use from My Tawala.
+   * Library Test Drive is allowed with honest “nothing saved” copy (owner Sep 1, 2026).
+   * Full operate path remains Copy to MyTawala → My Tawala Use.
    */
   isDataDrivenProject(project) {
     if (!project || typeof project !== "object") return false;
@@ -854,12 +882,16 @@ window.TawalaDemo = {
     const row = this.libraryProjectForUniqueId(uniqueId);
     return !!(row && this.isDataDrivenProject(row));
   },
-  dataDrivenNoTestDriveTitle() {
+  dataDrivenTestDriveTitle() {
     return (
-      this.DATA_DRIVEN_NO_TEST_DRIVE_TITLE ||
-      window.TAWALA_DATA_DRIVEN_NO_TEST_DRIVE_TITLE ||
-      "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available."
+      this.DATA_DRIVEN_TEST_DRIVE_TITLE ||
+      window.TAWALA_DATA_DRIVEN_TEST_DRIVE_TITLE ||
+      "No account. Try the teacher setup flow — nothing you enter is saved. Copy to MyTawala (free) to use it for real."
     );
+  },
+  /** @deprecated */
+  dataDrivenNoTestDriveTitle() {
+    return this.dataDrivenTestDriveTitle();
   },
   _rowKeepResponsesFlag(p) {
     return !!(p && (p.keepResponses === true || p.publishedKeepResponses === true));
@@ -1522,7 +1554,8 @@ window.TawalaDemo = {
    * mock wipes on start because a static :5500 page cannot see the :8080 tab close.
    * Honesty copy: TEST_DRIVE_HONESTY (keepResponses listings must not claim a wipe).
    * keepResponses uniqueIds (Publish Purge unchecked) skip purge entirely — no half-wipe.
-   * Data-driven Library rows (Exam Builder / Mongolia-style) refuse to open :8080 Test Drive.
+   * Data-driven Library rows (Exam Builder) use exam honesty copy; purge-on-start still applies
+   * to the shared demo uniqueId (visitor work is not saved — see TEST_DRIVE_HONESTY *Exam keys).
    * Other Test Drive purges use whole-uniqueId purgeResponses.
    * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
    * probes Tomcat before navigating (same offline gate as My Tawala Use), then
@@ -1549,17 +1582,6 @@ window.TawalaDemo = {
         }
       }
     };
-
-    const refuseDataDriven = (id) => {
-      closeBlankTab();
-      window.alert(this.dataDrivenNoTestDriveTitle());
-      return { opened: false, purge: { status: "skipped", reason: "data-driven", uniqueId: id || null } };
-    };
-
-    const driveId = this.uniqueIdFromUrl(target);
-    if (driveId && this.uniqueIdIsLibraryDataDriven(driveId)) {
-      return refuseDataDriven(driveId);
-    }
 
     // Same :8080 gate as Project Data Use — don’t dump the owner onto a dead host
     // or the legacy “We are very sorry” fail page (Tomcat up, World not initialized).
@@ -1785,13 +1807,6 @@ window.TawalaDemo = {
         const purgeAttr = el.getAttribute("data-testdrive-purge");
         const purge = purgeAttr !== "false" && purgeAttr !== "0";
         const libraryId = el.getAttribute("data-project") || "";
-        if (libraryId && typeof this.getLibrary === "function") {
-          const libRow = this.getLibrary(libraryId);
-          if (libRow && this.isDataDrivenProject(libRow)) {
-            window.alert(this.dataDrivenNoTestDriveTitle());
-            return;
-          }
-        }
         if (
           libraryId &&
           purge &&

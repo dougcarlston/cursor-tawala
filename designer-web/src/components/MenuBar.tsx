@@ -33,7 +33,7 @@ import {
   getProcessCommandHistorySnapshot,
   subscribeProcessCommandHistory,
 } from "@/lib/processCommandHistory";
-import { PROJECT_THEMES } from "@/lib/projectThemes";
+import { PROJECT_THEMES, projectThemesForMenu } from "@/lib/projectThemes";
 import {
   canDeleteSelection,
   canDeployProject,
@@ -279,7 +279,7 @@ export function MenuBar({ onNewProject, onOpen, onDeploy, onDelete, onAbout }: P
           Page Header…
         </button>
         <MenuSubmenu label="Project Themes">
-          {PROJECT_THEMES.map((theme) => {
+          {projectThemesForMenu(project.themePath).map((theme) => {
             const current = (project.themePath || "default").trim() || "default";
             const checked = current === theme.path;
             return (

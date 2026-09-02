@@ -160,7 +160,20 @@ Skip Instructions is **wired** (canvas Edit dialog: If / SkipTo / Set / Comment;
 
 ## Pre-public owner triage (Aug 27, 2026)
 
-Owner review of deferred inventory before public. **Sections A–G complete** (E recorded Aug 27 evening).
+Owner review of deferred inventory before public. **Sections A–G complete** (E recorded Aug 27 evening; **E7** added Sep 2026).
+
+### E track quick reference (exam & sophisticated apps)
+
+| ID | Item | Status |
+|----|------|--------|
+| **E1** | Push vs durable uniqueId / author identity | ASAP |
+| **E2** | Java WAR (`richText` default-off, etc.) | Before live |
+| **E3** | OEB Setup ↔ Administration navigation | ASAP |
+| **E4** | Send recipient-list / bulk To smoke | **Passed** Aug 28 |
+| **E5** | Template Deploy smokes (`DESIGNER_TEMPLATE_MATRIX.md`) | Immediate |
+| **E6** | DirtBowl Preview vs Deploy data/seed | Document only |
+| **E7** | OEB **Take practice exam** (Admin menu only) | **Parked** — after E3; owner practicing Survey link first. Implementation recipe: § **E7 — Take practice exam** below. |
+| — | **Single Question Poll** — Customize → Administration in-session link | **In progress** (owner Sep 2026) — same “don’t restart Test Drive” lesson; see deferred smoke follow-ups |
 
 | ID | Disposition |
 |----|-------------|
@@ -193,7 +206,7 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **D3** LINK TO PROJECT DETAILS (Insert → Function) | **Never** — no link to My Tawala Project Details from inside a live project (especially for non-subscriber use). **Insert → Link…** (Form/URL) remains the product path |
 | **D4** PayPal / generic payment | **After live, before public** — major effort |
 | **F1** 3-browser smoke | **After live, before public use** — confirmed Aug 27 |
-| **F2** Conform Look and Feel (legacy shell) | **In progress (Sep 2026)** — **Library / site chrome before go-live** (not Designer canvas). Owner Aug 26: public **Library listing** weaker than My Tawala / Project Details — first slice. Owner smoke Sep 1: F3 closed; starting F2 pass. See `website-mock/README.md` § **F2 look-and-feel pass** |
+| **F2** Conform Look and Feel (legacy shell) | **Done (Sep 2026, Library slice)** — owner Sep 1 sign-off: Library listing rows, action columns, exam demo badge, Test Drive honesty, owner blurbs. Home / shared nav / stub CSS migration deferred. See `website-mock/README.md` § **F2 look-and-feel pass** |
 | **F3** Main menus/tabs — no duplicates; identical behavior | **Done (Sep 2026)** — owner smoke passed Sep 1: File↔toolbar↔shortcuts (Chrome **Ctrl+N** for New); Edit↔toolbar Form/Process/Document; Insert shared commands ↔ Items/Statements palette enable rules; View ✓ toggles + refresh; Project duplicates (Push, Themes, …); Form **Preview** greys authoring chrome; Windows Cascade/Tile/list/Close All; Process/Document cut-paste fixes. **G5** badge Cut/Copy/Paste still V2 stubs — Delete + Display conditionally… OK |
 | **G1** Responsive theme CSS (`@media` / fluid width; one layout reflows) | **Next version** — **important** (not G8 multi-layout authoring) |
 | **G2** Returns + spacing as composition | **Review** — may already be close; V1 OK, can slip until after public + commentary |
@@ -202,7 +215,7 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **G5** Form Cut/Copy/Paste shell polish | **Version 2** — badge context menu Cut/Copy/Paste still disabled stubs (`FormItemBadgeContextMenu`); Delete + Display conditionally… wired (Delete = row red ×, not window close). Main Edit menu text/Process clipboard **done** Sep 2026 |
 | **G6** DirtBowl Page 2+ exemplar | **Not “more one-off formatting.”** First: Page 1 fully replicable with stock tools; then Page 2 as a **test of that premise** |
 | **G7–G9** RANDOM; Join/blocks/composites; device output sizing | **Next version** |
-| **G10 #1** Curated theme shortlist (8–12 good themes; hide/retire weak CSS) | **Before we go live** — site/My Tawala Theme dropdown + CSS only; no Designer canvas |
+| **G10 #1** Curated theme shortlist (8–12 good themes; hide/retire weak CSS) | **Done (Sep 2026, owner list)** — 14 themes in **My Tawala** and **Designer Project → Themes**; color/accent-first labels; Basic Green omitted. Legacy `themePath` on open projects shows one **(legacy)** row at top of Designer menu. Track theme overrides post-publish when live. |
 | **G10 #2** Theme-maker outside Designer | **Integral when public** — ongoing site work (colors/fonts/width → CSS + register theme); authors never open Designer |
 | **E1** Push vs durable uniqueId (Push-to-MyTawala & author identity) | **ASAP** — (1) Authenticated author-update model: if current user owns the project name in My Tawala, Push updates live uniqueId / version under their ownership; (2) Desktop Save stores receipt `deployUniqueId` so local edits re-push cleanly; (3) Library copies get stamped with acquiring user ID on first Push |
 | **E2** Java WAR (`richText` default-off, etc.) | **Before we go live** |
@@ -210,6 +223,7 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **E4** Send recipient-list / bulk To smoke | **PASSED (owner smoke Aug 28)** — 2–3 signups + Mailpit verified |
 | **E5** Template Deploy smokes (`DESIGNER_TEMPLATE_MATRIX.md`) | **Immediate** — owner reads matrix; confirm remaining rows |
 | **E6** DirtBowl Preview vs Deploy data/seed | **Document only** — architectural; no unify fix |
+| **E7** Online Exam **Take practice exam** (Admin only) | **After E3** — see § **E7 — Take practice exam** below and E track quick reference. **Parked (Sep 2026):** owner practicing Survey Customize→Admin link first; agent can implement on request. |
 | **AUTH** Real Author / User Authentication | **Before we go live** — replace hardcoded `dev`/`dev` with real login / user identity across Designer Push and My Tawala |
 
 ## Architectural / DirtBowl (not Designer UI bugs)
@@ -269,7 +283,79 @@ Small product gaps found while smoke-testing Priority Library apps. **Do not imp
 | Item | Notes | Status |
 |------|-------|--------|
 | **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) and option (e) **Return to Admin Dashboard**. Fully connected and verified on live deploy. | **Passed (owner Aug 28)** |
+| **Single Question Poll — Customize → Administration (in-session)** | **Sophisticated** `Single Question Poll or Survey` (My Tawala / future Library — not catalog **Simple Survey**). Test Drive purge-on-restart wipes **Customize** if the teacher opens **Administration** as a separate start. Owner adding an **internal link** on **Customize** (Insert → Link to Administration). **Also (owner Sep 1 eve):** **Administration** form is empty (skip-only stub); **`Post-Administration`** has zero commands — wire form UI + show **Results** / **Results with Names** documents (simpler than OEB Admin menu). | **In progress (owner Sep 2026)** |
 | **Real Author / User Authentication (Clerk)** | Real user authentication via Clerk (Passkeys, 2FA, password, email) integrated into Designer top bar & MenuBar; authenticated author identity mapped into Push & Project metadata. | **Implemented & Verified (Aug 28)** |
+
+---
+
+## E7 — Take practice exam (implementation recipe)
+
+**Goal:** From **Administration**, teacher chooses **Take practice exam** → runs the real **Exam** / **Answer** flow → attempt is **discarded** → return to **Administration**. Works on **Library Test Drive** and **My Tawala** (same catalog `uniqueId` after Push). **Not** exposed on the public **Exam** start URL students use.
+
+**Project file:** `website-mock/projects/library/Online Exam Builder.json` (mirror under `projects/mytawala/` if kept in sync). Edit in browser Designer or legacy C# Designer, then **Push** to Library catalog `u3hkqgwtrepjlur`.
+
+### 1. Project variable
+
+Add a session/project variable (e.g. **`PracticeExam`**) — values `yes` / `no` (or blank). Cleared after each practice run.
+
+### 2. Administration menu (MCQ **MenuOption**)
+
+Add choice **`i`** — label **Take practice exam** (after **h** Edit a question).
+
+### 3. Post-Administration branch (menu **i**)
+
+In **`Post-Administration`**, new `if MenuOption mcEquals "i"`:
+
+1. `set PracticeExam = yes` (keep **`AdministrationMode = yes`** — already set at top of Post-Administration).
+2. `show` form **`Exam`**.
+
+Same session only — do not open Exam via a second Test Drive / start-point URL.
+
+`Exam` already runs **`SetupExam`** on submit (sets `Exam:id`, `Exam:status = in progress`, opens **Answer**).
+
+### 4. Finish path — delete practice attempt
+
+Hook at end of exam completion — best place: **`Post-Scoring`** (after score docs, before clearing `Exam:id`), or the process that ends with `show Scoring` (**`Post-Questions`** tail — verify in Process tree).
+
+When **`PracticeExam` equals `yes`**:
+
+1. **Skip** student completion email (`send` in completion path).
+2. **Skip** or replace end documents with a short practice-only line, e.g. *“Practice complete — this attempt was not saved.”* (optional; can go straight to Admin).
+3. **Delete** practice rows (pattern in **Post-Delete Question**):
+   - `delete` form **`Answer`** `where` **`Record:Answer:SessionId`** `equals` **`<<Exam:id>>`**
+   - `delete` form **`Exam`** `where` **`Record:Exam:id`** `equals` **`<<Exam:id>>`**
+   - Run deletes **before** `Post-Scoring` clears `Exam:id` (save to **`PracticeSessionId`** first if needed).
+4. `set PracticeExam = no`
+5. `show` form **`Administration`**
+
+### 5. Abandoned practice
+
+On return to **`Post-Administration`** (any menu), or at start of menu **i** before a new practice:
+
+- Delete **Exam** `in progress` + matching **Answer** rows for that session when **`PracticeExam`** was `yes`.
+- `set PracticeExam = no`
+
+(Optional: in **`SetupExam`**, when `PracticeExam=yes`, set hidden **`Exam:practice`** = `yes` so cleanup only touches practice rows.)
+
+### 6. Guard — student Exam URL
+
+In **`SetupExam`**: only set practice flags when **`AdministrationMode`** is `yes`. Direct **Exam** start from the student link → normal scored attempt.
+
+### 7. Deploy & smoke
+
+1. Push to Library catalog (or My Tawala copy).
+2. Library Test Drive → Administration → Setup questions if needed → **Take practice exam** → complete → Administration returns; **Scores** has no practice name.
+3. Start practice → abandon mid-**Answer** → Admin menu → no stray **in progress** row.
+4. **Exam** start URL directly (not Admin) → attempt still in Scores.
+5. **Delete all answers** (f) still wipes all — regression.
+
+### 8. Out of scope
+
+- Website-mock / Test Drive picker changes.
+- Partial uniqueId purge (Aug 26 revert) — use selective `delete` with `where` only.
+- Tagging practice in Scores instead of delete — v2.
+
+**Owner parallel (Survey):** **Customize** → Insert → Link → **Administration** — same in-session rule.
 
 ---
 

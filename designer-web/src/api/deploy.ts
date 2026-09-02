@@ -18,6 +18,9 @@ export interface DeployResult {
   uniqueId?: string;
   startpoints?: StartPoint[];
   error?: string;
+  code?: string;
+  occupantName?: string | null;
+  occupantUniqueId?: string | null;
   raw?: string;
   /** True when this Push came from File→New / template. */
   freshFromTemplate?: boolean;
@@ -64,7 +67,13 @@ export async function deployProject(
   });
   const data = await res.json();
   if (!res.ok) {
-    return { status: "failure", error: data.error ?? res.statusText };
+    return {
+      status: "failure",
+      error: data.error ?? res.statusText,
+      code: data.code,
+      occupantName: data.occupantName ?? null,
+      occupantUniqueId: data.occupantUniqueId ?? null,
+    };
   }
   return data as DeployResult;
 }

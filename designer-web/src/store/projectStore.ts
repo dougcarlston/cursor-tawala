@@ -1869,9 +1869,26 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       set({ showLogin: true, statusMessage: "Enter Push credentials (dev/dev)" });
       return;
     }
+    const mintedSuffixRe = /\s[0-9a-f]{8}$/i;
+    const hasLiveIdentity = Boolean(
+      String((project as TawalaProject & { deployUniqueId?: string }).deployUniqueId || "").trim() ||
+        mintedSuffixRe.test(String(project.deployIdentityName || "").trim()),
+    );
     set({ statusMessage: "Pushing…" });
     try {
-      const result = await apiDeploy(project, effectiveCredentials);
+      let result = await apiDeploy(project, effectiveCredentials);
+      if (
+        result.status === "failure" &&
+        result.code === "name-occupied" &&
+        !hasLiveIdentity &&
+        !(project as TawalaProject & { _freshFromTemplate?: boolean })._freshFromTemplate
+      ) {
+        set({ statusMessage: "Name occupied — minting a private live id…" });
+        result = await apiDeploy(
+          { ...project, _freshFromTemplate: true } as TawalaProject & { _freshFromTemplate?: boolean },
+          effectiveCredentials,
+        );
+      }
       if (result.status === "failure") {
         set({
           lastDeploy: { ...result, project: project.name },

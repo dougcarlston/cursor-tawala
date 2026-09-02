@@ -4,11 +4,11 @@ Static rough draft of the legacy Tawala site (home, Library, project detail, My 
 
 **Site CSS (July 2026):** Legacy styles copied into `css/legacy/` from owner archives (`tawala-base.css`, `pages/homepage.css`, `pages/library.css`). Template images under `images/`. Mock-only chrome (banner, pending links, test-drive boxes) in `css/tawala-chrome.css`. Stub pages still use the older all-in-one `css/tawala-mock.css`.
 
-## F2 look-and-feel pass (owner Sep 2026 — active)
+## F2 look-and-feel pass (owner Sep 2026 — **DONE Sep 1, Library slice**)
 
 **Scope:** `website-mock/` site chrome only — **not** `designer-web/` Design canvas (C11 stays Version 2). Functional ops (Save/Delete/Purge/Push) stay as-is; this pass is **visual parity** with legacy Beta / My Tawala quality bar.
 
-**Owner Aug 26:** public **Library listing** look-and-feel is weaker than **My Tawala** and **Project Details** — prioritize before any public switch.
+**Owner Aug 26:** public **Library listing** look-and-feel is weaker than **My Tawala** and **Project Details** — prioritize before any public switch. **Owner Sep 1:** Library listing signed off; F2 closed for now (Home / shared nav / stub CSS migration deferred).
 
 **Reference:** side-by-side `legacy-reference/` vs live pages; comparison canvas `legacy-vs-mock-pages.canvas.tsx`. Do **not** treat reconstructed Library still as pixel truth.
 
@@ -16,15 +16,17 @@ Static rough draft of the legacy Tawala site (home, Library, project detail, My 
 
 | # | Page / area | Goal | Status |
 |---|-------------|------|--------|
-| 1 | **Library listing** (`library.html`) | Match My Tawala listing polish: frame, column rhythm, action buttons, category groups, nav hint | **Next** |
-| 2 | **Library detail** (`library-detail.html`) | Same chrome tokens as listing; acquire CTAs consistent | Open |
-| 3 | **Home** (`index.html`) | Optional — owner Jul 31: non-critical vs ops | Open |
-| 4 | **Shared nav / banner** | Home · Library · My Tawala · Designer consistency | Open |
-| 5 | **Stub pages** | Migrate remaining pages off `tawala-mock.css` to legacy stack where touched | Open |
+| 1 | **Library listing** (`library.html`) | Two-line rows (title / stars+blurb); no Live badge; compact Version/Updated + action headers; exam **Demo — your exam not saved.** badge; Test Drive + Copy link for data-driven exams; owner blurbs | **DONE (Sep 1)** — owner sign-off |
+| 2 | **Library detail** (`library-detail.html`) | Retired → listing; acquire CTA tokens subdued for any re-use | **Done** (redirect) |
+| 3 | **Home** (`index.html`) | Optional — owner Jul 31: non-critical vs ops | **Deferred** |
+| 4 | **Shared nav / banner** | Home · Library · My Tawala · Designer consistency | **Deferred** |
+| 5 | **Stub pages** | Migrate remaining pages off `tawala-mock.css` to legacy stack where touched | **Deferred** |
 
 **Out of scope for F2:** Auth (#21), payments (#22), ratings (#17), badge G5, Designer confirm dialogs (B2), MDI Pass 2.
 
 **Smoke host:** always `http://localhost:5500` (not `127.0.0.1` — separate localStorage).
+
+**Review (Sep 1, signed off):** `http://localhost:5500/library.html?v=20260901-desc1`
 
 ---
 
@@ -132,6 +134,8 @@ See `projects/README.md` for refresh commands and MANIFEST files.
 
 **If Library still shows WebLibrary stubs (AlexTimon, DirtBowl, …) after seed cleanup:** root cause is almost always `tawala.mock.libraryOverlay` — **Save a copy** (and admin Rename) used to snapshot the full catalog row into localStorage, so stubs survived after they were removed from `TAWALA_LIBRARY`. Fix is in `transfer.js` (denylist scrub on every Library load + no more full-row snapshot on Save a copy).
 
+**Archive recovery (AlexTimon etc. — not in Library, no old uniqueId):** JSON may still live under `projects/library/*.json`. Copy to MyTawala from the listing will not work (no catalog row). Use **`http://localhost:5500/_diag-acquire-archive.html?json=projects/library/AlexTimon.json&name=AlexTimon`** (needs `:3001` + `:8080`) — mints a **new** private uniqueId without renaming the display title. Or open **`http://localhost:5173/?mockJson=projects/library/AlexTimon.json`** and **Push → Show in My Tawala** (Designer now auto-mints on name-occupied when the file has no `deployUniqueId`). Optional: free a ghost Tomcat name with `POST :3001/api/retire-name` + the **old** occupant uniqueId from the Push error — only if you need the bare Tomcat title back, not for a normal acquire.
+
 - **Hard-refresh Library (must show 6 liveReady only, no stubs):**  
   `http://localhost:5500/library.html?v=20260810-stubs-gone2`
 - **Nuclear overlay clear (if stubs still appear):**  
@@ -140,7 +144,7 @@ See `projects/README.md` for refresh commands and MANIFEST files.
 
 ### Library Actions / Use framing (owner Aug 1, 2026)
 
-**Product split (implemented in mock):** Library = discovery / acquire; My Tawala = operate. Library Actions are **Test drive** (with **Times used** metric) | **Copy link** (with **Copies downloaded** metric) | **Copy to MyTawala** (logged-in only; hidden for guests; empty private clone on a new uniqueId — does **not** copy Library/author submissions) — **no Use** on Library. **Data-driven exams** (Online Exam Builder / Mongolia-style): Test Drive and Copy link **disabled** — used from My Tawala after Copy to MyTawala. Public **Library Project Details** pages are **retired** (Aug 10) — listing is enough; multi-start uses the hot-link picker. **Copy link** copies the same live `:8080` URL Test Drive opens (viral share; no account). **Use** lives on **My Tawala** (listing icon + Project Details **USE**): **single start point** → opens that `:8080` URL; **multiple start points** (e.g. Online Exam Setup + Exam) → navigates to **Project Details** so the user chooses an entry point (does **not** jump straight to Exam). Grey when no deploy URL. Does **not** purge-on-start (unlike Library Test drive). This is **not** legacy CloneAndCustomize / web customize — that path stays deferred (Sophisticated in-project customize vs retire).
+**Product split (implemented in mock):** Library = discovery / acquire; My Tawala = operate. Library Actions are **Test drive** (with **Times used** metric) | **Copy link** (with **Copies downloaded** metric) | **Copy to MyTawala** (logged-in only; hidden for guests; empty private clone on a new uniqueId — does **not** copy Library/author submissions) — **no Use** on Library. **Data-driven exams** (Online Exam Builder / Mongolia-style): **Test drive + Copy link enabled** with honest “shared demo — nothing you enter is saved” copy (owner Sep 1, 2026); teachers can try Administration / Setup before registering; **Copy to MyTawala** (free account) is the path to keep and run exams for real. Public **Library Project Details** pages are **retired** (Aug 10) — listing is enough; multi-start uses the hot-link picker. **Copy link** copies the same live `:8080` URL Test Drive opens (viral share; no account). **Use** lives on **My Tawala** (listing icon + Project Details **USE**): **single start point** → opens that `:8080` URL; **multiple start points** (e.g. Online Exam Setup + Exam) → navigates to **Project Details** so the user chooses an entry point (does **not** jump straight to Exam). Grey when no deploy URL. Does **not** purge-on-start (unlike Library Test drive). This is **not** legacy CloneAndCustomize / web customize — that path stays deferred (Sophisticated in-project customize vs retire).
 
 **Guest taste (Aug 10):** Top-nav **MY TAWALA** while in **guest mode** (after Logout) opens `mytawala-demo.html` — canned sample portfolio; row → inert Details. Mock defaults to **logged in as `dev`** (same as before) so you are not locked out of real My Tawala. **Logout** sets guest mode; **Login** / `_unlock-mytawala.html` clears it. Library **Copy to MyTawala** is hidden only in guest mode. Not Auth Task #21.
 

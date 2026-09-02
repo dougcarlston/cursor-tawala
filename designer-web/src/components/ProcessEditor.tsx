@@ -34,7 +34,6 @@ import {
   moveProcessCommandBefore as moveProcessCommandBeforeHelper,
   replaceProcessCommandAtPath,
 } from "@/lib/processScript";
-import { parentPathAndChildIndex } from "@/lib/skipInsertPath";
 import {
   EMPTY_APPEND_BUILDER,
   EMPTY_COMMENT_BUILDER,

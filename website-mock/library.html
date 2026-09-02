@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubpriv1" />
-  <script src="js/demo-urls.js?v=20260826-pubpriv1"></script>
-  <script src="js/transfer.js?v=20260826-pubpriv1"></script>
-  <script src="js/project-ops.js?v=20260826-pubpriv1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260901-libtips1" />
+  <script src="js/demo-urls.js?v=20260901-desc2"></script>
+  <script src="js/transfer.js?v=20260901-exambadge2"></script>
+  <script src="js/project-ops.js?v=20260901-libtips1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -30,9 +30,6 @@
         <div class="block category-tree">
           <h3>Categories</h3>
           <div id="libraryChromeHost"></div>
-          <p class="pm-hint" style="margin:6px 0 8px;">
-            <a href="library.html" title="Show projects in all categories">Show All Categories</a>
-          </p>
           <ul id="categoryNav"></ul>
         </div>
         <div class="block">
@@ -49,12 +46,9 @@
         <div class="pageTitle"><h1>Tawala Libraries</h1></div>
         <div class="listing-identity" role="status">
           <span class="listing-where">Public Library</span>
-          <span class="listing-pile">Browse templates · Test Drive (clears on start) · Copy link (shared demo) · Copy to MyTawala when logged in</span>
+          <span class="listing-pile">Browse templates · Test Drive (clears on start) · Copy link · Copy to MyTawala when logged in</span>
           <span class="listing-switch">Private projects? <a href="mytawala-demo.html" id="listingMyTawalaLink">My Tawala</a></span>
         </div>
-        <p class="pm-hint" id="libraryTestDriveHonesty" style="margin:8px 0 0;">
-          Test Drive clears this shared Library demo when you start — not when you close the tab. Copied links use the same demo uniqueId (not a private copy).
-        </p>
         <div id="librarySubmenuHost"></div>
         <div id="libraryCategoryEditor" class="library-category-editor" hidden></div>
 
@@ -70,12 +64,15 @@
           </div>
 
           <div class="library-listing-frame" id="libraryListingFrame">
+            <p class="mytawala-listing-nav-hint library-listing-nav-hint" id="libraryListingNavHint">
+              Each row shows the project name on the first line, then stars and a one-line description; use the icons on the right to Test drive, Copy link, or Copy to MyTawala.
+            </p>
             <div class="library-colhead-bar library-cols" role="row" aria-label="Column headers" id="libraryColHead">
               <div class="lib-col lib-col-name" role="columnheader" title="Name"><span class="th-label">Name</span></div>
-              <div class="lib-col lib-col-version" role="columnheader" title="Published version in the public Library"><span class="th-label">Version</span></div>
-              <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label">Updated</span></div>
-              <!-- Actions + Test drive (Times used) | Copy link (Copies) | Copy to MyTawala filled by project-ops.js -->
-              <div class="lib-col lib-col-actions" role="columnheader"><span class="th-label">Actions</span></div>
+              <div class="lib-col lib-col-version" role="columnheader" title="Published version in the public Library"><span class="th-label library-colhead-compact">Version</span></div>
+              <div class="lib-col lib-col-updated" role="columnheader" title="Updated"><span class="th-label library-colhead-compact">Updated</span></div>
+              <!-- Test drive (Times used) | Copy link (Copies) | Copy to MyTawala filled by project-ops.js -->
+              <div class="lib-col lib-col-actions" role="columnheader"></div>
             </div>
             <div id="libraryGroups" class="library-groups" aria-label="Public Library catalog by category"></div>
           </div>
@@ -113,7 +110,7 @@
     function renderCategoryNav() {
       const cats = TawalaDemo.libraryCategories();
       document.getElementById("categoryNav").innerHTML =
-        '<li><a href="library.html">All projects</a></li>' +
+        '<li><a href="library.html" title="Show projects in all categories">Show all categories</a></li>' +
         cats
           .map((c) => {
             const hint =
@@ -128,14 +125,6 @@
           .join("");
     }
 
-    function liveCueHtml(p) {
-      /* Guard: older cached demo-urls.js without liveReadyHtml must not empty the catalog. */
-      if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.liveReadyHtml === "function") {
-        return TawalaDemo.liveReadyHtml(p) || "";
-      }
-      return "";
-    }
-
     function projectRowHtml(p) {
       const title = TawalaDemo.displayName(p.name);
       const versionLabel =
@@ -145,12 +134,16 @@
           : p.versionNumber != null && Number.isFinite(Number(p.versionNumber))
             ? String(Math.floor(Number(p.versionNumber)))
             : "—";
-      /* Name + Version + Updated; Actions = Test drive (+ Times used) | Copy link (+ Copies) | Copy to MyTawala (logged-in). */
-      const liveCue = liveCueHtml(p);
+      /* Line 1: title. Line 2: stars + one-line blurb. Icons = Test drive | Copy link | Copy to MyTawala. */
       const blurb = String(p.shortDescription || "").trim();
       const blurbHtml = blurb
         ? `<span class="description library-row-blurb">${escapeHtml(blurb)}</span>`
         : "";
+      const demoBadge =
+        typeof TawalaProjectOps !== "undefined" &&
+        TawalaProjectOps.renderLibraryDemoBadge
+          ? TawalaProjectOps.renderLibraryDemoBadge(p)
+          : "";
       const actionCell =
         typeof TawalaProjectOps !== "undefined" &&
         TawalaProjectOps.renderLibraryListingControlCells
@@ -162,14 +155,15 @@
           ? " is-highlight"
           : "";
       return (
-        `<div class="library-project-row library-cols${liveCue ? " library-row-live" : ""}${highlight}" ` +
+        `<div class="library-project-row library-cols${highlight}" ` +
         `data-project-id="${escapeHtml(p.id)}" role="row">` +
         `<div class="lib-col lib-col-name info">` +
         `<div class="library-name-block">` +
-        `<span class="title">${escapeHtml(title)}</span>` +
-        `${liveCue}` +
+        `<div class="library-name-title"><span class="title">${escapeHtml(title)}</span>${demoBadge}</div>` +
+        `<div class="library-name-secondary">` +
         `${TawalaDemo.starsHtml(p.rating)}` +
         `${blurbHtml}` +
+        `</div>` +
         `</div>` +
         `</div>` +
         `<div class="lib-col lib-col-version" title="Published version in the public Library">${escapeHtml(

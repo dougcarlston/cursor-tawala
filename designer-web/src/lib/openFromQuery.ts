@@ -27,12 +27,37 @@ function stripOpenQueryParams(): void {
   }
 }
 
-async function loadProjectObject(project: unknown, label: string): Promise<void> {
+function archiveNeedsFreshPush(project: unknown): boolean {
+  if (!project || typeof project !== "object") return false;
+  const p = project as {
+    deployUniqueId?: string;
+    deployIdentityName?: string;
+    uniqueId?: string;
+  };
+  return (
+    !String(p.deployUniqueId || p.uniqueId || "").trim() &&
+    !String(p.deployIdentityName || "").trim()
+  );
+}
+
+async function loadProjectObject(
+  project: unknown,
+  label: string,
+  opts?: { freshFromArchive?: boolean },
+): Promise<void> {
   if (!project || typeof project !== "object" || !("name" in project)) {
     throw new Error(`Invalid project from ${label}`);
   }
   clearProjectFileHandle();
   useProjectStore.getState().importJson(JSON.stringify(project));
+  if (opts?.freshFromArchive) {
+    const current = useProjectStore.getState().project;
+    useProjectStore.setState({
+      project: { ...current, _freshFromTemplate: true },
+      statusMessage: `Opened ${String((project as { name: string }).name)} — first Push will mint a private live id`,
+    });
+    return;
+  }
   useProjectStore.getState().setStatus(`Opened ${String((project as { name: string }).name)} from My Tawala`);
 }
 
@@ -91,7 +116,10 @@ export async function tryOpenProjectFromQuery(): Promise<boolean> {
       if (!res.ok || !data.project) {
         throw new Error(data.error || `HTTP ${res.status}`);
       }
-      await loadProjectObject(data.project, "mockJson");
+      const isLibraryArchive = /^projects\/library\//i.test(mockJson);
+      await loadProjectObject(data.project, "mockJson", {
+        freshFromArchive: isLibraryArchive && archiveNeedsFreshPush(data.project),
+      });
       stripOpenQueryParams();
     } catch (err) {
       const msg = err instanceof Error ? err.message : String(err);

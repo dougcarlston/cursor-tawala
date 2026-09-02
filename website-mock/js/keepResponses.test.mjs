@@ -55,7 +55,8 @@ assert.doesNotMatch(
   /Question \/ SetupVariables/
 );
 assert.match(demo, /uniqueIdIsLibraryDataDriven/);
-assert.match(demo, /This project is used from My Tawala — Copy to MyTawala/);
+assert.match(demo, /tooltipSingleExam:/);
+assert.match(demo, /nothing you enter is saved/);
 
 assert.match(transfer, /keepResponses: false/);
 assert.match(transfer, /publishedKeepResponses: false/);
