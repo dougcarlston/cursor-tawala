@@ -35,6 +35,12 @@ assert.match(demo, /nothing you enter is saved/);
 assert.match(demo, /rowDemoBadge:/);
 assert.match(ops, /function renderLibraryDemoBadge/);
 assert.match(ops, /projectIsDataDriven\(project\)/);
+assert.match(ops, /function isLibraryMultiStart/);
+assert.match(
+  ops,
+  /if \(projectIsDataDriven\(project\)\) return false;/,
+  "Data-driven exam apps must skip Library Test Drive start picker"
+);
 assert.doesNotMatch(
   ops.slice(ops.indexOf("function renderLibraryTestDriveButton"), ops.indexOf("function renderLibraryCopyTestDriveButton")),
   /if \(projectIsDataDriven\(project\)\)/

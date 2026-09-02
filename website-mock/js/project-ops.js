@@ -986,7 +986,8 @@
   /**
    * Library listing — one Actions grid cell with spaced icons (sub-labels in header).
    * Test drive + Copy link when deployed; Save a copy always on (rename → My Tawala).
-   * Multi-start (2+ :8080 URLs): Test Drive / Copy open a hot-link list of starts.
+   * Multi-start (2+ :8080 URLs): Test Drive / Copy open a hot-link list of starts
+   * (except data-driven exam apps — preferred Admin/Setup URL only, no picker).
    * Single-start: open / copy directly. Copy link = same :8080 URL Test Drive opens (viral share).
    */
   function libraryDriveUrl(project) {
@@ -1011,7 +1012,13 @@
     return ((project && project.startPoints) || []).filter((s) => s && s.url);
   }
 
+  /**
+   * True when Library Test Drive / Copy should show the start picker.
+   * Data-driven exam apps (OEB): skip picker — open/copy the preferred single
+   * start only (Administration / Setup via libraryTestDriveUrl). Owner Sep 2, 2026.
+   */
   function isLibraryMultiStart(project) {
+    if (projectIsDataDriven(project)) return false;
     return libraryStartPointsWithUrls(project).length >= 2;
   }
 

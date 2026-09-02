@@ -318,7 +318,7 @@
           "style": "vertical",
           "displayAs": "radio",
           "choiceSource": "manual",
-          "question": "​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Question:Question\" title=\"Question:Question\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Question:Question&gt;&gt;</span><br>",
+          "question": "\u200b<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Question:Question\" title=\"Question:Question\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Question:Question&gt;&gt;</span><br>",
           "choices": [
             {
               "label": "a",
@@ -492,6 +492,11 @@
           "type": "field",
           "label": "",
           "name": "incorrectAnswers"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "practice"
         }
       ],
       "themePath": "default",
@@ -659,6 +664,10 @@
             {
               "label": "h",
               "text": "Edit a question"
+            },
+            {
+              "label": "i",
+              "text": "Take practice exam"
             }
           ],
           "name": "MenuOption"
@@ -870,7 +879,13 @@
           "type": "text",
           "label": "T1",
           "style": "normal",
-          "content": "​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"simple-list\" data-function-instance=\"1\" data-function-config=\"{&quot;simple-list-field&quot;:&quot;Exam:name&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Exam:name&quot;,&quot;op&quot;:&quot;isNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SINGLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SINGLE QUESTION LIST(Exam:name, Exam:name is not blank)&gt;&gt;</span><br>"
+          "content": "\u200b<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"simple-list\" data-function-instance=\"1\" data-function-config=\"{&quot;simple-list-field&quot;:&quot;Exam:name&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Exam:name&quot;,&quot;op&quot;:&quot;isNotBlank&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"SINGLE QUESTION LIST\" draggable=\"true\" style=\"color: rgb(0, 0, 0); vertical-align: baseline;\">&lt;&lt;SINGLE QUESTION LIST(Exam:name, Exam:name is not blank)&gt;&gt;</span><br>"
+        },
+        {
+          "type": "text",
+          "label": "T0",
+          "style": "instructional",
+          "content": "Enter an examinee name exactly as it appears in Scores (list above). Leave the name blank and click Submit to return to Administration."
         },
         {
           "type": "fib",
@@ -1546,6 +1561,52 @@
           "arithmeticAsText": false
         },
         {
+          "cmd": "comment",
+          "text": "- E7 practice stamp (Admin Take practice exam only)"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "and": [
+              {
+                "field": "PracticeExam",
+                "op": "equals",
+                "value": "yes"
+              },
+              {
+                "field": "AdministrationMode",
+                "op": "equals",
+                "value": "yes"
+              }
+            ]
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Exam:practice",
+              "value": "yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Exam:practice",
+              "value": "no",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "PracticeExam",
+              "value": "no",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
           "cmd": "set",
           "field": "Score",
           "value": "0",
@@ -1567,7 +1628,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "- Load question for exam step QNumber. Admin # is QuestionId — try that first; fall back to SequenceNumber (exam order)."
+          "text": "- Load question for exam step QNumber by SequenceNumber (list #). Keep LastQuestionId for Answer join."
         },
         {
           "cmd": "get",
@@ -1576,7 +1637,7 @@
             "Question"
           ],
           "where": {
-            "field": "Record:Question:SequenceNumber",
+            "field": "QuestionRecords:Question:SequenceNumber",
             "op": "equals",
             "value": "<<QNumber>>"
           }
@@ -1885,8 +1946,17 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "EmailConfirm",
-            "op": "isNotBlank"
+            "and": [
+              {
+                "field": "EmailConfirm",
+                "op": "isNotBlank"
+              },
+              {
+                "field": "PracticeExam",
+                "op": "doesNotEqual",
+                "value": "yes"
+              }
+            ]
           },
           "then": [
             {
@@ -1920,6 +1990,54 @@
           "cmd": "set",
           "field": "AdministrationMode",
           "value": "yes",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "- E7 scrub abandoned / leftover practice Exam rows before menu actions"
+        },
+        {
+          "cmd": "get",
+          "recordList": "PracticeExamRecords",
+          "sourceForms": [
+            "Exam"
+          ],
+          "where": {
+            "field": "PracticeExamRecords:Exam:practice",
+            "op": "equals",
+            "value": "yes"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "PracticeExamRecord",
+          "recordList": "PracticeExamRecords",
+          "do": [
+            {
+              "cmd": "delete",
+              "form": "Answer",
+              "where": {
+                "field": "Record:Answer:SessionId",
+                "op": "equals",
+                "value": "<<PracticeExamRecord:Exam:id>>"
+              }
+            },
+            {
+              "cmd": "delete",
+              "form": "Exam",
+              "where": {
+                "field": "Record:Exam:id",
+                "op": "equals",
+                "value": "<<PracticeExamRecord:Exam:id>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "PracticeExam",
+          "value": "no",
           "concat": false,
           "arithmeticAsText": false
         },
@@ -2227,6 +2345,31 @@
           ]
         },
         {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MenuOption",
+            "op": "mcEquals",
+            "value": "i"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "- E7 Take practice exam (discard on finish)"
+            },
+            {
+              "cmd": "set",
+              "field": "PracticeExam",
+              "value": "yes",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Exam"
+            }
+          ]
+        },
+        {
           "cmd": "show",
           "form": "Administration"
         }
@@ -2399,56 +2542,115 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "ShowCorrectAnswers",
+            "field": "PracticeExam",
             "op": "equals",
-            "value": "Yes"
+            "value": "yes"
           },
           "then": [
             {
               "cmd": "comment",
-              "text": "- show them"
+              "text": "- E7 practice complete: discard this attempt"
             },
             {
-              "cmd": "showDocument",
-              "document": "End of Exam With Explanation",
-              "reset": false
+              "cmd": "set",
+              "field": "PracticeSessionId",
+              "value": "<<Exam:id>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "delete",
+              "form": "Answer",
+              "where": {
+                "field": "Record:Answer:SessionId",
+                "op": "equals",
+                "value": "<<PracticeSessionId>>"
+              }
+            },
+            {
+              "cmd": "delete",
+              "form": "Exam",
+              "where": {
+                "field": "Record:Exam:id",
+                "op": "equals",
+                "value": "<<PracticeSessionId>>"
+              }
+            },
+            {
+              "cmd": "set",
+              "field": "PracticeExam",
+              "value": "no",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Exam:id",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
             }
           ],
           "else": [
             {
               "cmd": "if",
               "condition": {
-                "field": "ShowScore",
+                "field": "ShowCorrectAnswers",
                 "op": "equals",
-                "value": "yes"
+                "value": "Yes"
               },
               "then": [
                 {
+                  "cmd": "comment",
+                  "text": "- show them"
+                },
+                {
                   "cmd": "showDocument",
-                  "document": "End Of Exam With The Score",
+                  "document": "End of Exam With Explanation",
                   "reset": false
                 }
               ],
               "else": [
                 {
-                  "cmd": "showDocument",
-                  "document": "Exam End",
-                  "reset": false
+                  "cmd": "if",
+                  "condition": {
+                    "field": "ShowScore",
+                    "op": "equals",
+                    "value": "yes"
+                  },
+                  "then": [
+                    {
+                      "cmd": "showDocument",
+                      "document": "End Of Exam With The Score",
+                      "reset": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "showDocument",
+                      "document": "Exam End",
+                      "reset": false
+                    }
+                  ]
                 }
               ]
+            },
+            {
+              "cmd": "comment",
+              "text": "This will prevent Refresh button from affecting the statistics of the project"
+            },
+            {
+              "cmd": "set",
+              "field": "Exam:id",
+              "value": " ",
+              "concat": false,
+              "arithmeticAsText": false
             }
           ]
-        },
-        {
-          "cmd": "comment",
-          "text": "This will prevent Refresh button from affecting the statistics of the project"
-        },
-        {
-          "cmd": "set",
-          "field": "Exam:id",
-          "value": " ",
-          "concat": false,
-          "arithmeticAsText": false
         }
       ]
     },
@@ -2466,7 +2668,7 @@
             "Question"
           ],
           "where": {
-            "field": "Record:Question:SequenceNumber",
+            "field": "QuestionList:Question:SequenceNumber",
             "op": "equals",
             "value": "<<Delete Question:questionNumber>>"
           }
@@ -2772,6 +2974,10 @@
               "cmd": "showDocument",
               "document": "NameNotFound",
               "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "ShowExamineeDetail"
             }
           ],
           "else": [
@@ -2779,12 +2985,12 @@
               "cmd": "showDocument",
               "document": "DisplayIndividualResult",
               "reset": true
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
             }
           ]
-        },
-        {
-          "cmd": "show",
-          "form": "ShowExamineeDetail"
         }
       ]
     }
@@ -2800,7 +3006,7 @@
     },
     {
       "name": "QuestionPreview",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p></p><p><span style=\"font-family:Arial;font-size:11pt\"><b>Here are all the questions you entered so far:</b></span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\">​<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;#&quot;,&quot;contents&quot;:&quot;&lt;&lt;Record:Question:SequenceNumber&gt;&gt;&quot;},{&quot;header&quot;:&quot;Question&quot;,&quot;contents&quot;:&quot;Record:Question:Question&quot;},{&quot;header&quot;:&quot;Choices&quot;,&quot;contents&quot;:&quot;Record:Question:DisplayChoices&quot;},{&quot;header&quot;:&quot;Answer&quot;,&quot;contents&quot;:&quot;Record:Question:Answer&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Question&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span>​</span></p><p></p></p>"
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p></p><p><span style=\"font-family:Arial;font-size:11pt\"><b>Here are all the questions you entered so far:</b></span></p><p></p><p><span style=\"font-family:Arial;font-size:10pt;color:#000000\">\u200b<span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"itemization-table\" data-function-instance=\"1\" data-function-config=\"{&quot;show-print-control&quot;:&quot;false&quot;,&quot;show-export-control&quot;:&quot;false&quot;,&quot;numberOfColumns&quot;:4,&quot;column&quot;:[{&quot;header&quot;:&quot;#&quot;,&quot;contents&quot;:&quot;Record:Question:SequenceNumber&quot;},{&quot;header&quot;:&quot;Question&quot;,&quot;contents&quot;:&quot;Record:Question:Question&quot;},{&quot;header&quot;:&quot;Choices&quot;,&quot;contents&quot;:&quot;Record:Question:DisplayChoices&quot;},{&quot;header&quot;:&quot;Answer&quot;,&quot;contents&quot;:&quot;Record:Question:Answer&quot;}],&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;,&quot;form-name&quot;:&quot;Question&quot;}\" title=\"MULTIPLE QUESTION LIST\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;MULTIPLE QUESTION LIST(false, false, ...)&gt;&gt;</span>\u200b</span></p><p></p></p>"
     },
     {
       "name": "Session Expired Notification",
@@ -2846,8 +3052,7 @@
   "_originalFormat": "1.8",
   "_designerBuild": "176",
   "_convertedFrom": "../Tawala Projects/Master List Tawala/Online Exam Builder.tawala",
-  "deployIdentityName": "Online Exam Builder e3c56ca6",
-  "deployUniqueId": "un7qtlf0tcc0rqq",
+  "deployUniqueId": "u3hkqgwtrepjlur",
   "author": "dev",
   "authorId": "dev",
   "userId": "dev"

@@ -172,8 +172,8 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **E4** | Send recipient-list / bulk To smoke | **Passed** Aug 28 |
 | **E5** | Template Deploy smokes (`DESIGNER_TEMPLATE_MATRIX.md`) | Immediate |
 | **E6** | DirtBowl Preview vs Deploy data/seed | Document only |
-| **E7** | OEB **Take practice exam** (Admin menu only) | **Parked** — after E3; owner practicing Survey link first. Implementation recipe: § **E7 — Take practice exam** below. |
-| — | **Single Question Poll** — Customize → Administration in-session link | **In progress** (owner Sep 2026) — same “don’t restart Test Drive” lesson; see deferred smoke follow-ups |
+| **E7** | OEB **Take practice exam** (Admin menu only) | **Done (Sep 2, 2026)** — catalog JSON + Library Push to `u3hkqgwtrepjlur`; Test Drive opens Administration only (no start picker). |
+| — | **Single Question Poll** — Customize → Administration in-session link | **Done (owner Sep 2, 2026)** — smoked in My Tawala; Library Publish when owner is ready |
 
 | ID | Disposition |
 |----|-------------|
@@ -223,7 +223,7 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **E4** Send recipient-list / bulk To smoke | **PASSED (owner smoke Aug 28)** — 2–3 signups + Mailpit verified |
 | **E5** Template Deploy smokes (`DESIGNER_TEMPLATE_MATRIX.md`) | **Immediate** — owner reads matrix; confirm remaining rows |
 | **E6** DirtBowl Preview vs Deploy data/seed | **Document only** — architectural; no unify fix |
-| **E7** Online Exam **Take practice exam** (Admin only) | **After E3** — see § **E7 — Take practice exam** below and E track quick reference. **Parked (Sep 2026):** owner practicing Survey Customize→Admin link first; agent can implement on request. |
+| **E7** Online Exam **Take practice exam** (Admin only) | **Done (Sep 2, 2026)** — Library + mytawala JSON; Push to catalog `u3hkqgwtrepjlur`; Library Test Drive → Administration only (no multi-start picker). See § **E7**. |
 | **AUTH** Real Author / User Authentication | **Before we go live** — replace hardcoded `dev`/`dev` with real login / user identity across Designer Push and My Tawala |
 
 ## Architectural / DirtBowl (not Designer UI bugs)
@@ -283,79 +283,39 @@ Small product gaps found while smoke-testing Priority Library apps. **Do not imp
 | Item | Notes | Status |
 |------|-------|--------|
 | **Setup → Administration exit** | Online Exam **Setup** form (“Your exam is now set up!”) has revise options (a–d) and option (e) **Return to Admin Dashboard**. Fully connected and verified on live deploy. | **Passed (owner Aug 28)** |
-| **Single Question Poll — Customize → Administration (in-session)** | **Sophisticated** `Single Question Poll or Survey` (My Tawala / future Library — not catalog **Simple Survey**). Test Drive purge-on-restart wipes **Customize** if the teacher opens **Administration** as a separate start. Owner adding an **internal link** on **Customize** (Insert → Link to Administration). **Also (owner Sep 1 eve):** **Administration** form is empty (skip-only stub); **`Post-Administration`** has zero commands — wire form UI + show **Results** / **Results with Names** documents (simpler than OEB Admin menu). | **In progress (owner Sep 2026)** |
+| **Single Question Poll — Customize → Administration (in-session)** | **Sophisticated** `Single Question Poll or Survey` (My Tawala / future Library — not catalog **Simple Survey**). Owner rebuilt Admin + Customize→Admin in-session link; smoked Sep 2. Keep exercising in My Tawala before Library Publish. | **Done (owner Sep 2, 2026)** |
 | **Real Author / User Authentication (Clerk)** | Real user authentication via Clerk (Passkeys, 2FA, password, email) integrated into Designer top bar & MenuBar; authenticated author identity mapped into Push & Project metadata. | **Implemented & Verified (Aug 28)** |
 
 ---
 
 ## E7 — Take practice exam (implementation recipe)
 
-**Goal:** From **Administration**, teacher chooses **Take practice exam** → runs the real **Exam** / **Answer** flow → attempt is **discarded** → return to **Administration**. Works on **Library Test Drive** and **My Tawala** (same catalog `uniqueId` after Push). **Not** exposed on the public **Exam** start URL students use.
+**Status (Sep 2, 2026):** Wired in catalog JSON; **Pushed** to Library `:8080` uniqueId `u3hkqgwtrepjlur`. Library Test Drive opens **Administration** only (data-driven apps skip the multi-start picker). Owner re-smoke Test Drive + practice exam on Library when convenient.
 
-**Project file:** `website-mock/projects/library/Online Exam Builder.json` (mirror under `projects/mytawala/` if kept in sync). Edit in browser Designer or legacy C# Designer, then **Push** to Library catalog `u3hkqgwtrepjlur`.
+**Goal:** From **Administration**, teacher chooses **Take practice exam** → runs the real **Exam** / **Answer** flow → attempt is **discarded** → return to **Administration**. Works on **Library Test Drive** and **My Tawala**. **Not** on the public **Exam** start URL students use.
 
-### 1. Project variable
+### What was added
 
-Add a session/project variable (e.g. **`PracticeExam`**) — values `yes` / `no` (or blank). Cleared after each practice run.
+1. **Administration** menu **`i` — Take practice exam**
+2. Session flag **`PracticeExam`**; Exam hidden field **`practice`**
+3. **`SetupExam`** stamps `Exam:practice=yes` only when `PracticeExam` + `AdministrationMode` are yes (student Exam URL clears practice)
+4. **`Post-Administration`** scrubs leftover `practice=yes` Exam/Answer rows, then menu **i** sets flag and `show Exam`
+5. Completion email skipped when `PracticeExam=yes`
+6. **`Post-Scoring`**: if practicing → delete that session’s Answer + Exam → `show Administration` (no score docs)
 
-### 2. Administration menu (MCQ **MenuOption**)
+### Smoke (after Push)
 
-Add choice **`i`** — label **Take practice exam** (after **h** Edit a question).
+1. Library Test Drive → Administration → Setup questions if needed → **Take practice exam** → complete → back at Administration; **Scores** has no practice name
+2. Start practice → abandon mid-Answer → Admin menu → no stray **in progress** practice row
+3. **Exam** start URL directly → normal attempt still in Scores
+4. **Delete all answers** (f) still wipes all
+5. **Delete a question** by list `#` (SequenceNumber) — must remove that row (Sep 2 fix: Get where must use `QuestionList:Question:SequenceNumber`, not `Record:…`)
 
-### 3. Post-Administration branch (menu **i**)
+### Out of scope
 
-In **`Post-Administration`**, new `if MenuOption mcEquals "i"`:
-
-1. `set PracticeExam = yes` (keep **`AdministrationMode = yes`** — already set at top of Post-Administration).
-2. `show` form **`Exam`**.
-
-Same session only — do not open Exam via a second Test Drive / start-point URL.
-
-`Exam` already runs **`SetupExam`** on submit (sets `Exam:id`, `Exam:status = in progress`, opens **Answer**).
-
-### 4. Finish path — delete practice attempt
-
-Hook at end of exam completion — best place: **`Post-Scoring`** (after score docs, before clearing `Exam:id`), or the process that ends with `show Scoring` (**`Post-Questions`** tail — verify in Process tree).
-
-When **`PracticeExam` equals `yes`**:
-
-1. **Skip** student completion email (`send` in completion path).
-2. **Skip** or replace end documents with a short practice-only line, e.g. *“Practice complete — this attempt was not saved.”* (optional; can go straight to Admin).
-3. **Delete** practice rows (pattern in **Post-Delete Question**):
-   - `delete` form **`Answer`** `where` **`Record:Answer:SessionId`** `equals` **`<<Exam:id>>`**
-   - `delete` form **`Exam`** `where` **`Record:Exam:id`** `equals` **`<<Exam:id>>`**
-   - Run deletes **before** `Post-Scoring` clears `Exam:id` (save to **`PracticeSessionId`** first if needed).
-4. `set PracticeExam = no`
-5. `show` form **`Administration`**
-
-### 5. Abandoned practice
-
-On return to **`Post-Administration`** (any menu), or at start of menu **i** before a new practice:
-
-- Delete **Exam** `in progress` + matching **Answer** rows for that session when **`PracticeExam`** was `yes`.
-- `set PracticeExam = no`
-
-(Optional: in **`SetupExam`**, when `PracticeExam=yes`, set hidden **`Exam:practice`** = `yes` so cleanup only touches practice rows.)
-
-### 6. Guard — student Exam URL
-
-In **`SetupExam`**: only set practice flags when **`AdministrationMode`** is `yes`. Direct **Exam** start from the student link → normal scored attempt.
-
-### 7. Deploy & smoke
-
-1. Push to Library catalog (or My Tawala copy).
-2. Library Test Drive → Administration → Setup questions if needed → **Take practice exam** → complete → Administration returns; **Scores** has no practice name.
-3. Start practice → abandon mid-**Answer** → Admin menu → no stray **in progress** row.
-4. **Exam** start URL directly (not Admin) → attempt still in Scores.
-5. **Delete all answers** (f) still wipes all — regression.
-
-### 8. Out of scope
-
-- Website-mock / Test Drive picker changes.
-- Partial uniqueId purge (Aug 26 revert) — use selective `delete` with `where` only.
-- Tagging practice in Scores instead of delete — v2.
-
-**Owner parallel (Survey):** **Customize** → Insert → Link → **Administration** — same in-session rule.
+- Website-mock / Test Drive picker changes
+- Partial uniqueId purge
+- Tagging practice in Scores instead of delete
 
 ---
 
