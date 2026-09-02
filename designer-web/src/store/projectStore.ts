@@ -178,6 +178,23 @@ function selectionWindowTarget(selection: Selection): { kind: WindowKind; name: 
   return { kind: "form", name: "" };
 }
 
+/**
+ * Process editing target: prefer the active MDI Process window, else Explorer
+ * process selection. Creating a Document (or other Explorer click) can change
+ * `selection` while the Process window stays active — insert gaps / IF panels
+ * must still target that window (owner Sep 2026).
+ */
+export function resolveActiveProcessName(state: {
+  openWindows: DesignerWindow[];
+  activeWindowId: string | null;
+  selection: Selection;
+}): string | null {
+  const active = state.openWindows.find((w) => w.id === state.activeWindowId);
+  if (active?.kind === "process" && active.name) return active.name;
+  if (state.selection.kind === "process" && state.selection.name) return state.selection.name;
+  return null;
+}
+
 function applyProcessWindowTransition(
   from: Selection,
   toKind: WindowKind,
@@ -957,28 +974,40 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
     });
   },
   setProcessInsertPath: (path) => {
-    const { selection } = get();
-    if (selection.kind !== "process" || !selection.name) return;
-    set({ processInsertPath: path, processInsertIndex: 0 });
+    const s = get();
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return;
+    set({
+      processInsertPath: path,
+      processInsertIndex: 0,
+      selection: { kind: "process", name: processName },
+    });
   },
   setProcessInsertPoint: (path, index) => {
-    const { selection } = get();
-    if (selection.kind !== "process" || !selection.name) return;
+    const s = get();
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return;
     // Insert mode: one blue arrow at the gap — clear statement edit selection (legacy).
     set({
       processInsertPath: path,
       processInsertIndex: Math.max(0, index),
       selectedProcessCommandPath: null,
+      selection: { kind: "process", name: processName },
     });
   },
   setSelectedProcessCommandPath: (path) => {
-    const { selection, processStatementPanel, project } = get();
-    if (selection.kind !== "process" || !selection.name) return;
+    const s = get();
+    const { processStatementPanel, project } = s;
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return;
     if (path == null) {
-      set({ selectedProcessCommandPath: null });
+      set({
+        selectedProcessCommandPath: null,
+        selection: { kind: "process", name: processName },
+      });
       return;
     }
-    const proc = project.processes?.find((p) => p.name === selection.name);
+    const proc = project.processes?.find((p) => p.name === processName);
     const cmd = proc ? getProcessCommandAtPath(proc.commands ?? [], path) : null;
     // Clicking a script line enters Modify for that statement — always open its panel
     // (including Show/Set nested inside If). Keeping If open applies only when the
@@ -992,30 +1021,35 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       // while a statement is selected (edit mode — arrow points at the statement).
       processInsertPath: parentPath,
       processInsertIndex: childIndex + 1,
+      selection: { kind: "process", name: processName },
     });
   },
   setProcessStatementPanel: (panel) => {
-    const { selection } = get();
-    if (selection.kind !== "process" || !selection.name) return;
-    set({ processStatementPanel: panel });
+    const processName = resolveActiveProcessName(get());
+    if (!processName) return;
+    set({ processStatementPanel: panel, selection: { kind: "process", name: processName } });
   },
   toggleProcessStatementPanel: (label) => {
-    const { selection, processStatementPanel } = get();
-    if (selection.kind !== "process" || !selection.name) return;
+    const s = get();
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return;
     const key = processPanelKeyForLabel(label);
     if (!key) return;
-    const nextPanel = processStatementPanel === key ? "none" : key;
+    const nextPanel = s.processStatementPanel === key ? "none" : key;
     set({
       processStatementPanel: nextPanel,
       selectedProcessCommandPath: null,
+      selection: { kind: "process", name: processName },
     });
     // Drop stale form/document targets so If/Set green boxes own double-click insert.
     setActiveFieldTarget(null);
   },
   moveSelectedProcessCommand: (direction) => {
-    const { project, selection, selectedProcessCommandPath } = get();
-    if (selection.kind !== "process" || !selection.name || !selectedProcessCommandPath) return;
-    const proc = project.processes?.find((p) => p.name === selection.name);
+    const s = get();
+    const { project, selectedProcessCommandPath } = s;
+    const processName = resolveActiveProcessName(s);
+    if (!processName || !selectedProcessCommandPath) return;
+    const proc = project.processes?.find((p) => p.name === processName);
     if (!proc) return;
     const moved = moveProcessCommandAtPath(
       proc.commands ?? [],
@@ -1023,21 +1057,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
       direction,
     );
     if (!moved) return;
-    get().updateProcessCommands(selection.name, moved.commands);
+    get().updateProcessCommands(processName, moved.commands);
     const { parentPath, childIndex } = parentPathAndChildIndex(moved.newPath);
     set({
       selectedProcessCommandPath: moved.newPath,
+      selection: { kind: "process", name: processName },
       processInsertPath: parentPath,
       processInsertIndex: childIndex + 1,
       statusMessage: `Moved statement ${direction}`,
     });
   },
   moveProcessCommandBefore: (fromPath, destParentPath, destIndex, processName) => {
-    const { project, selection } = get();
-    const targetName =
-      processName ?? (selection.kind === "process" ? selection.name : undefined);
+    const s = get();
+    const targetName = processName ?? resolveActiveProcessName(s);
     if (!targetName) return;
-    const proc = project.processes?.find((p) => p.name === targetName);
+    const proc = s.project.processes?.find((p) => p.name === targetName);
     if (!proc) return;
     const moved = moveProcessCommandBefore(
       proc.commands ?? [],
@@ -1709,18 +1743,21 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   // active window (see focusWindow/openWindow/closeWindow), so the palette always
   // appends the statement to the process the designer is looking at.
   insertProcessCommand: (command, options) => {
-    const { project, selection, processInsertPath, processInsertIndex } = get();
-    if (selection.kind !== "process" || !selection.name) return;
+    const s = get();
+    const { project, processInsertPath, processInsertIndex } = s;
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return;
     const processes = project.processes ?? [];
-    const proc = processes.find((p) => p.name === selection.name);
+    const proc = processes.find((p) => p.name === processName);
     if (!proc) return;
     const path = options?.path ?? processInsertPath;
     const index = options?.index ?? processInsertIndex;
     const inserted = insertCommandAtPoint(proc.commands ?? [], path, index, command);
-    get().updateProcessCommands(selection.name, inserted.commands);
+    get().updateProcessCommands(processName, inserted.commands);
     set({
       processInsertPath: inserted.insertPath,
       processInsertIndex: inserted.insertIndex,
+      selection: { kind: "process", name: processName },
       statusMessage: `Inserted ${command.cmd} statement`,
     });
   },
@@ -1739,38 +1776,42 @@ export const useProjectStore = create<ProjectState>((set, get) => ({
   },
 
   undoProcessCommands: () => {
-    const { selection, selectedProcessCommandPath } = get();
-    if (selection.kind !== "process" || !selection.name) return false;
+    const s = get();
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return false;
     const restored = popUndoProcessCommands();
     if (!restored) return false;
-    get().updateProcessCommands(selection.name, restored, { record: false });
+    get().updateProcessCommands(processName, restored, { record: false });
     const keepPath =
-      selectedProcessCommandPath != null &&
-      getProcessCommandAtPath(restored, selectedProcessCommandPath) != null
-        ? selectedProcessCommandPath
+      s.selectedProcessCommandPath != null &&
+      getProcessCommandAtPath(restored, s.selectedProcessCommandPath) != null
+        ? s.selectedProcessCommandPath
         : null;
     set({
       selectedProcessCommandPath: keepPath,
       processBuilderSyncToken: get().processBuilderSyncToken + 1,
+      selection: { kind: "process", name: processName },
       statusMessage: "Undo",
     });
     return true;
   },
 
   redoProcessCommands: () => {
-    const { selection, selectedProcessCommandPath } = get();
-    if (selection.kind !== "process" || !selection.name) return false;
+    const s = get();
+    const processName = resolveActiveProcessName(s);
+    if (!processName) return false;
     const restored = popRedoProcessCommands();
     if (!restored) return false;
-    get().updateProcessCommands(selection.name, restored, { record: false });
+    get().updateProcessCommands(processName, restored, { record: false });
     const keepPath =
-      selectedProcessCommandPath != null &&
-      getProcessCommandAtPath(restored, selectedProcessCommandPath) != null
-        ? selectedProcessCommandPath
+      s.selectedProcessCommandPath != null &&
+      getProcessCommandAtPath(restored, s.selectedProcessCommandPath) != null
+        ? s.selectedProcessCommandPath
         : null;
     set({
       selectedProcessCommandPath: keepPath,
       processBuilderSyncToken: get().processBuilderSyncToken + 1,
+      selection: { kind: "process", name: processName },
       statusMessage: "Redo",
     });
     return true;

@@ -17,7 +17,12 @@ export function ProcessStatementsPalette() {
   const toggleProcessStatementPanel = useProjectStore((s) => s.toggleProcessStatementPanel);
   const processStatementPanel = useProjectStore((s) => s.processStatementPanel);
   const selection = useProjectStore((s) => s.selection);
-  const processInactive = selection.kind !== "process" || !selection.name;
+  const openWindows = useProjectStore((s) => s.openWindows);
+  const activeWindowId = useProjectStore((s) => s.activeWindowId);
+  const activeWin = openWindows.find((w) => w.id === activeWindowId);
+  const processInactive =
+    !(activeWin?.kind === "process" && activeWin.name) &&
+    (selection.kind !== "process" || !selection.name);
 
   return (
     <>

@@ -128,7 +128,12 @@ export function CanvasWindow({ win, active }: Props) {
       className={`mdi-window${active ? " active" : ""}${paletteDropOver ? " mdi-window-drop-active" : ""}`}
       style={{ left: win.x, top: win.y, width: win.w, height: win.h, zIndex: win.z }}
       onPointerDown={() => {
-        if (!active) focusWindow(win.id);
+        // Always re-sync when Explorer selection drifted (e.g. New Document while
+        // Process stayed the active MDI window) — otherwise insert/IF stay dead
+        // until click-away then click-back (owner Sep 2026).
+        const sel = useProjectStore.getState().selection;
+        const matches = sel.kind === win.kind && sel.name === win.name;
+        if (!active || !matches) focusWindow(win.id);
       }}
       onDragOver={(e) => {
         if (hasExplorerEntityDrag(e.dataTransfer)) {

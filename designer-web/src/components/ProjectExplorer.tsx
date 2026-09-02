@@ -43,8 +43,8 @@ export function ProjectExplorer() {
   const renameDocument = useProjectStore((s) => s.renameDocument);
   const linkProcessToForm = useProjectStore((s) => s.linkProcessToForm);
 
-  // Inline rename state. Entered by F2, or by clicking an already-selected
-  // Form/Process/Document row (legacy BeginEdit). Long-press still works as a fallback.
+  // Inline rename: F2 or double-click on a Form/Process/Document name.
+  // Single-click always opens/focuses the MDI window (owner Sep 2026).
   const [editing, setEditing] = useState<EditingNode | null>(null);
 
   // Commit (or cancel) an inline rename. `next === null` cancels (Escape / empty).
@@ -467,11 +467,6 @@ function ToolbarButton({
   );
 }
 
-/** Long-press threshold (ms) for click-and-hold rename (fallback). */
-const RENAME_HOLD_MS = 500;
-/** Pointer movement (px) that cancels a pending long press (treats it as a drag). */
-const RENAME_MOVE_TOLERANCE = 4;
-
 function TreeNode({
   label,
   expanded,
@@ -511,51 +506,25 @@ function TreeNode({
   warningTitle?: string;
 }) {
   const renamable = !!onBeginRename;
-  const holdTimer = useRef<number | null>(null);
-  const pressOrigin = useRef<{ x: number; y: number } | null>(null);
-  /** True when this press started a drag — suppress click→rename. */
+  /** True when this press started a drag — suppress click→open. */
   const didDrag = useRef(false);
   const [dropHover, setDropHover] = useState(false);
   const canDrag = !!dragKind && !!dragName && !editing;
 
-  const clearHold = () => {
-    if (holdTimer.current !== null) {
-      window.clearTimeout(holdTimer.current);
-      holdTimer.current = null;
-    }
-    pressOrigin.current = null;
-  };
-
-  useEffect(() => clearHold, []);
-
-  // Click-and-hold on an already-selected renamable row starts inline edit (fallback).
   const handleMouseDown = (e: React.MouseEvent) => {
-    if (e.button !== 0 || !renamable || !selected || editing) return;
+    if (e.button !== 0 || editing) return;
     didDrag.current = false;
-    pressOrigin.current = { x: e.clientX, y: e.clientY };
-    holdTimer.current = window.setTimeout(() => {
-      onBeginRename?.();
-      clearHold();
-    }, RENAME_HOLD_MS);
-  };
-
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (holdTimer.current === null || !pressOrigin.current) return;
-    const dx = Math.abs(e.clientX - pressOrigin.current.x);
-    const dy = Math.abs(e.clientY - pressOrigin.current.y);
-    if (dx > RENAME_MOVE_TOLERANCE || dy > RENAME_MOVE_TOLERANCE) clearHold();
   };
 
   const handleClick = () => {
     if (editing) return;
-    // Spec: single-click when already highlighted → inline rename.
-    // Skip if this gesture was a canvas drag onto the MDI surface.
-    if (selected && renamable && !didDrag.current) {
-      clearHold();
-      onBeginRename?.();
+    // Single-click always opens / focuses the MDI window. Rename is double-click
+    // or F2 only — second click on a highlighted row used to enter rename and
+    // block canvas open (owner Sep 2026).
+    if (didDrag.current) {
+      didDrag.current = false;
       return;
     }
-    didDrag.current = false;
     onSelect();
   };
 
@@ -581,8 +550,10 @@ function TreeNode({
           return;
         }
         didDrag.current = true;
-        clearHold();
         setExplorerEntityDrag(e.dataTransfer, dragKind, dragName);
+      }}
+      onDragEnd={() => {
+        didDrag.current = false;
       }}
       onDragOver={(e) => {
         if (!processDropActive || !hasExplorerProcessDrag(e.dataTransfer)) return;
@@ -602,10 +573,15 @@ function TreeNode({
       }}
       onClick={handleClick}
       onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={clearHold}
-      onMouseLeave={clearHold}
       onDoubleClick={(e) => {
+        if (editing) return;
+        // Form/Process/Document name rows: double-click → rename.
+        if (renamable && onBeginRename && dragKind) {
+          e.stopPropagation();
+          onBeginRename();
+          return;
+        }
+        // Folder / expandable form: double-click toggles expand.
         if (!leaf) {
           e.stopPropagation();
           onToggle();

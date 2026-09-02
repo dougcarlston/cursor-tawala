@@ -558,12 +558,15 @@ export function shellEditContextActive(): boolean {
 }
 
 function activeProcessSelection(): { kind: "process"; name: string } | null {
-  const { openWindows, activeWindowId, selection } = useProjectStore.getState();
-  const active = openWindows.find((w) => w.id === activeWindowId);
-  if (active?.kind !== "process" || selection.kind !== "process" || !selection.name) {
-    return null;
+  const state = useProjectStore.getState();
+  const active = state.openWindows.find((w) => w.id === state.activeWindowId);
+  if (active?.kind === "process" && active.name) {
+    return { kind: "process", name: active.name };
   }
-  return { kind: "process", name: selection.name };
+  if (state.selection.kind === "process" && state.selection.name) {
+    return { kind: "process", name: state.selection.name };
+  }
+  return null;
 }
 
 /** Undo enabled: Process command history or best-effort rich-text undo. */
@@ -719,8 +722,9 @@ export function runShellEditCommand(command: ShellEditCommand): boolean {
     project,
   } = useProjectStore.getState();
   const active = openWindows.find((w) => w.id === activeWindowId);
-  if (active?.kind === "process" && selection.kind === "process" && selection.name) {
-    const proc = project.processes?.find((p) => p.name === selection.name);
+  const processSel = activeProcessSelection();
+  if (processSel) {
+    const proc = project.processes?.find((p) => p.name === processSel.name);
     const commands = proc?.commands ?? [];
     if (command === "copy" && selectedProcessCommandPath) {
       const cmd = getProcessCommandAtPath(commands, selectedProcessCommandPath);
@@ -737,7 +741,7 @@ export function runShellEditCommand(command: ShellEditCommand): boolean {
         const { parentPath, childIndex } = parentPathAndChildIndex(cutPath);
         setProcessClipboard(cmd);
         const next = deleteProcessCommandAtPath(commands, cutPath);
-        useProjectStore.getState().updateProcessCommands(selection.name, next);
+        useProjectStore.getState().updateProcessCommands(processSel.name, next);
         useProjectStore.getState().setProcessInsertPoint(parentPath, childIndex);
         useProjectStore.getState().setStatus("Cut statement");
         return true;
@@ -752,7 +756,7 @@ export function runShellEditCommand(command: ShellEditCommand): boolean {
           processInsertIndex,
           cmd as TawalaProcessCommand,
         );
-        useProjectStore.getState().updateProcessCommands(selection.name, result.commands);
+        useProjectStore.getState().updateProcessCommands(processSel.name, result.commands);
         useProjectStore.getState().setProcessInsertPoint(result.insertPath, result.insertIndex);
         useProjectStore.getState().setStatus("Pasted statement");
         return true;

@@ -54,7 +54,7 @@ Icons sit in a strip **directly above** the tree. Hover shows the written name. 
 
 **New nodes:** Default names (`Form 1`, `Process 2`, …) in the correct folder.
 
-**Rename:** Slow double-click on node name, or single-click if already highlighted → inline edit. Duplicate name reverts to default; empty name cancels.
+**Rename:** Double-click the Form / Process / Document name, or press **F2** with that node selected → inline edit. Single-click opens / focuses the MDI window (does **not** rename). Duplicate name reverts; empty name cancels. Escape cancels.
 
 ### Tree structure and icons
 

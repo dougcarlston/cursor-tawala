@@ -176,6 +176,8 @@ function ProcessConnectionBanner({
 export function ProcessEditor({ processName }: Props) {
   const project = useProjectStore((s) => s.project);
   const selection = useProjectStore((s) => s.selection);
+  const openWindows = useProjectStore((s) => s.openWindows);
+  const activeWindowId = useProjectStore((s) => s.activeWindowId);
   const processInsertPath = useProjectStore((s) => s.processInsertPath);
   const processInsertIndex = useProjectStore((s) => s.processInsertIndex);
   const selectedProcessCommandPath = useProjectStore((s) => s.selectedProcessCommandPath);
@@ -289,7 +291,12 @@ export function ProcessEditor({ processName }: Props) {
       ? getProcessCommandAtPath(commands, selectedProcessCommandPath)
       : null;
 
-  const isActiveProcess = selection.kind === "process" && selection.name === processName;
+  const activeWin = openWindows.find((w) => w.id === activeWindowId);
+  // Active MDI Process window owns insert/IF panels even if Explorer selection
+  // briefly moved (e.g. New Document while editing) — owner Sep 2026.
+  const isActiveProcess =
+    (activeWin?.kind === "process" && activeWin.name === processName) ||
+    (selection.kind === "process" && selection.name === processName);
   const isModifyIf =
     processStatementPanel === "if" &&
     selectedCommand?.cmd === "if" &&
