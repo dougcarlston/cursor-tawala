@@ -27,10 +27,14 @@ Skipped chats (not Designer track): Website library mock; 8080 templates/Docker/
 
 ## Active / deferred bugs
 
-### Document — two links on one line merge underlines — **CLOSED Aug 27 (owner)**
+### Document — two links on one line merge underlines — **REOPENED Sep 2 / Fixed Sep 2**
 
-- **Was:** Shared To-Do Document — two Insert → Link… on one line looked like one continuous underline (Design + Push). Filed Aug 26.
-- **Owner Aug 27:** Legacy-only — **could not reproduce in a new project**. Dropped from active deferred list; do not schedule a fix. Screenshots retained under `Tawala_Key_Documents/assets/Bug_-_Document-two-links-merged-underline-*.png` for archaeology only.
+- **Was:** Shared To-Do → Document — User Menu — two Insert → Link… on one line looked like one continuous underline under both links and the word `or` (Design + Push). Filed Aug 26.
+- **Owner Aug 27:** Closed as legacy-only (could not reproduce in a new project) — **no code fix**. Same Shared To-Do content still showed the merge.
+- **Owner Sep 2:** Repro again while smoking Shared To-Do (shots: `Bug_-_Document-two-links-merged-underline-Sep2-*.png`). Functionality OK; underline bridge confusing.
+- **Fixed Sep 2 (Design):** `.invitation-token` / `.hyperlink-token` use `display: inline-block` so each chip paints its own underline; neutralize wrapping `<u>` when it only contains the chip. Preview `.doc-invitation` same treatment.
+- **Fixed Sep 2 (Push):** `documentHtmlToXml` was wrapping an entire colored span in `<u>` whenever it contained an invitation — so Shared To-Do’s second span (` or ` + link) underlined the word `or` on `:8080`. Now only link-only spans get that wrap; tokens already carry their own `<u>`.
+- **Smoke:** Open Shared To-Do → User Menu (Design) and re-Push → live User Menu — “Sign up for a task” and “Mark a task complete” each underlined separately; `or` plain (no bar under it).
 
 ### Parked Jul 30 / reconfirmed Aug 11 (Not blocking for Live Library) — **CLOSED Aug 20–21**
 

@@ -313,7 +313,7 @@ Virtual documents (**Header**, etc.) follow the same editor when opened from the
 | Fields drag into document | Yes | Drag + double-click insert `<<name>>` field tokens |
 | Format toolbar row 2 | Per-document child toolbar | Shared Formatting Palette (Document + Form Text) |
 | Device output sizing (computer / tablet / phone + optional autoswitch) | **Did not exist** (2011) | **Not built** — parked Jul 24 until after the other two project branches. Spec: `DESIGNER_OPEN_TODOS.md` § Device output sizing. Distinct from Design margin-based reflow. |
-| Two Form/Web links on one Document line | Separate underlines; `or` between them is not a link | **Open Aug 26** — one continuous underline spans both links and the text between (`DESIGNER_OPEN_BUGS.md`) |
+| Two Form/Web links on one Document line | Separate underlines; `or` between them is not a link | **Fixed Sep 2** — chip `inline-block` + neutralize wrapping `<u>` (`DESIGNER_OPEN_BUGS.md`) |
 
 ### Must-not-break smoke (Document canvas — July 2026)
 

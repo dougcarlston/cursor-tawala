@@ -816,7 +816,7 @@ Ship this Designer build **without** wiring the four HTML→XML stubs below. Cat
 3. Form mode → **Make this a private invitation** + InviteeID field → Redeploy includes auth token.
 4. Double-click an existing Form or Web chip → dialog opens locked on that mode; OK updates in place.
 5. If step 1–2 show plain text only: restart API (`:3001`), then Redeploy.
-6. **Two links on one Document line (open bug Aug 26):** Document with `Link display` **or** `Other link` on the same placed line → each link must underline separately; `or` must not sit on the shared underscore. Today Design + Push merge the underline (and possibly the click target). See `DESIGNER_OPEN_BUGS.md` § Document — two links on one line.
+6. **Two links on one Document line (fixed Sep 2):** Document with `Link display` **or** `Other link` on the same placed line → each link underlines separately; `or` must not sit on a shared underscore. Design uses `inline-block` invitation/hyperlink chips. See `DESIGNER_OPEN_BUGS.md` § Document — two links on one line.
 
 ---
 

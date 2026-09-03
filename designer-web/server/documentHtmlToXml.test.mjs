@@ -601,6 +601,38 @@ describe("documentHtmlToXml invitation / hyperlink", () => {
     expect(xml).toContain("click here</invitation>");
   });
 
+  it("does not underline plain text between two invitations on one line (Shared To-Do User Menu)", () => {
+    // Design HTML: first link alone in a blue span; second span is " or " + link.
+    // Old Deploy wrapped the whole second span in <u>, so Push underlines "or".
+    const cfg = (form, display) =>
+      JSON.stringify({
+        form,
+        project: "",
+        displayText: display,
+        isPrivate: false,
+        authToken: "",
+      })
+        .replace(/&/g, "&amp;")
+        .replace(/"/g, "&quot;");
+    const html =
+      `<p><span style="color:#000080"><u>` +
+      `<span contenteditable="false" class="invitation-token" ` +
+      `data-invitation-config="${cfg("SignupForTask", "Sign up for a task")}" ` +
+      `style="color:#000080;text-decoration:underline">Sign up for a task</span></u></span>` +
+      `<span style="color:#000080">&nbsp; &nbsp; or&nbsp; &nbsp;<u>` +
+      `<span contenteditable="false" class="invitation-token" ` +
+      `data-invitation-config="${cfg("Mark Task Completed", "Mark a task complete")}" ` +
+      `style="color:#000080;text-decoration:underline">Mark a task complete</span></u></span></p>`;
+    const xml = documentHtmlToXml(html, escAttr, escText);
+    expect(xml).toContain('<invitation form="SignupForTask"');
+    expect(xml).toContain('<invitation form="Mark Task Completed"');
+    expect(xml).toMatch(/Sign up for a task<\/invitation>/);
+    expect(xml).toMatch(/Mark a task complete<\/invitation>/);
+    // "or" must not sit inside <u>…</u> with an invitation
+    expect(xml).not.toMatch(/<u>[^<]*\bor\b[^<]*<invitation/i);
+    expect(xml).not.toMatch(/<u>[\s\S]*\bor\b[\s\S]*<\/invitation>[\s\S]*<\/u>/i);
+  });
+
   it("hoists font outside b/u for Sign-up ViewFinalList HTML (Java Bold cannot contain font)", () => {
     // Converted Design HTML: bold+underline wrap the invitation chip (which already
     // carries color). Naive emit was <b><u><font>…invitation… — Java drops font

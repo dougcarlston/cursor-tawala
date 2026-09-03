@@ -7184,13 +7184,26 @@ button.font-color-picker-recent-slot:hover {
   font-weight: 400;
 }
 
-/* Design canvas Invitation / Hyperlink chips (legacy blue underline). */
+/* Design canvas Invitation / Hyperlink chips (legacy blue underline).
+ * inline-block keeps each chip’s underline on its own run so two Links on one
+ * line (e.g. Shared To-Do User Menu “…task or Mark…”) do not paint one bar
+ * under the plain text between them. Converted HTML often also wraps chips in
+ * <u>; neutralize that outer decoration so only the chip underlines. */
 .invitation-token,
 .hyperlink-token {
   color: #000080;
   text-decoration: underline;
   cursor: default;
   white-space: pre-wrap;
+  display: inline-block;
+  vertical-align: baseline;
+}
+
+.rich-surface u:has(> .invitation-token),
+.rich-surface u:has(> .hyperlink-token),
+.text-rich-editor u:has(> .invitation-token),
+.text-rich-editor u:has(> .hyperlink-token) {
+  text-decoration: none;
 }
 
 .configure-function-dialog .cfg-fn-fields select,

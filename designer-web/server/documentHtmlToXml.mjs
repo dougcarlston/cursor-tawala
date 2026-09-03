@@ -720,8 +720,18 @@ function inlineHtmlToXml(html, escAttr, escText, opts = {}) {
           if (next === unwrapped.trim()) break;
           unwrapped = next;
         }
-        const hasLinkMarkup = /<(?:invitation|link)\b/i.test(unwrapped);
-        const body = hasLinkMarkup ? `<u>${unwrapped}</u>` : unwrapped;
+        // Do NOT wrap the whole color-span in <u> when it mixes plain text with an
+        // invitation/link (Shared To-Do User Menu: "…task or Mark…"). That underlines
+        // the "or" on Push. Invitation/hyperlink tokens already emit their own <u>.
+        // Only add <u> when this span is link markup alone and not already underlined.
+        const trimmed = unwrapped.trim();
+        const linkOnly =
+          /^<(?:u\b[^>]*>\s*)?<(?:invitation|link)\b[\s\S]*<\/(?:invitation|link)>\s*(?:<\/u>)?$/i.test(
+            trimmed,
+          );
+        const alreadyU = /^<u\b/i.test(trimmed);
+        const body =
+          linkOnly && !alreadyU ? `<u>${unwrapped}</u>` : unwrapped;
         innerXml =
           `<font${face ? ` face="${escAttr(face)}"` : ""} size="${size}" color="${escAttr(color)}">` +
           `${body}</font>`;

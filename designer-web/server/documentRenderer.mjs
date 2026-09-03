@@ -185,8 +185,10 @@ export function renderDocumentsPage(project, documentNames, session, baseUrl, un
     .doc-section { margin: 1rem 0; position: relative; }
     .doc-following-form { margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid #ccc; }
     .doc-title { font-size: 1.1rem; color: #333; }
-    .doc-invitation { color: #000080; font-weight: bold; }
+    /* inline-block: separate underlines when two invitations share a line */
+    .doc-invitation { color: #000080; font-weight: bold; text-decoration: underline; display: inline-block; vertical-align: baseline; }
     .doc-underline { text-decoration: underline; }
+    .doc-underline:has(> .doc-invitation) { text-decoration: none; }
     .preview-display-image {
       display: inline-flex; align-items: center; justify-content: center;
       box-sizing: border-box; vertical-align: middle; margin: 4px 0; max-width: 100%;
