@@ -1,78 +1,104 @@
-# Where we are / where we’re going — Sep 3–4, 2026 (pre-travel)
+# Where we are / where we’re going — Sep 4, 2026 evening (pre-travel)
 
 **Owner travel:** Saturday → ~1 week (laptops; Wi‑Fi uncertain).  
-**Fri Sep 4:** backup + next steps; Context compaction.  
-**Branch:** `cursor/forms-canvas-wysiwyg` (tip includes Form Text blank fix + this handoff family — `9b47bb2`+).  
-**Staging (not in git):** `~/Projects/ Current Tawala Projects/Website Staging/`
+**Left mid-smoke Fri Sep 4 ~11:15** — may peek Saturday ~1h.  
+**Branch:** `cursor/forms-canvas-wysiwyg`  
+**Staging (NOT in git — backup separately):**  
+`~/Projects/ Current Tawala Projects/Website Staging/`
 
-Companions: `docs/STARTUP_APPS_STAGING_SEP2.md`; tray `Samples/README.md`.
+Companions: this file; tray READMEs under `2-Ready-for-MyTawala/` and `3-Ready-for-Public-Library/Samples/`.
 
 ---
 
-## Product policy (locked Sep 3)
+## Exact tray state (Fri Sep 4 close)
 
-| Term | Meaning |
+### Samples — `3-Ready-for-Public-Library/Samples/`
+
+| File | Status |
+|------|--------|
+| `Survey Sample.json` | Owner smoked ✓ |
+| `Multiple Question Survey Sample.json` | Owner smoked ✓ |
+| `Sign-up Sheet Sample.json` | Owner smoked ✓ (New Project copy) |
+| Horses and Penguins | Smoke passed; **file not copied into Samples tray yet** |
+| Get Together Sample / Potluck Sample | **Needed for Library** (not full-app TD) — not built yet |
+
+### Smoked real apps — `2-Ready-for-MyTawala/Smoked-Ready-to-Push/`
+
+Public names (drop Sophisticated). Library **Test Drive OK** for these three:
+
+| File | TD door | Notes |
+|------|---------|--------|
+| `Single Question Poll or Survey.json` | **AdminStart** | Go back to Customize fixed (`forceCustomizeEdit`) |
+| `Sign-up Sheet.json` | **Customize** | Option A: AfterSave → Try signup sheet / Stay (`Customize:AfterSave`) |
+| `Shared To-Do.json` | **Setup** | Option A: menu **c** → View list / try signup (`SignupForTask`) |
+
+### Still in prep — `2-Ready-for-MyTawala/`
+
+| File | Status |
+|------|--------|
+| `Sophisticated Get Together.json` | Option A AfterSave wired; **no Library TD** — Sample/movie instead. My Tawala only for full app. |
+| `Sophisticated Potluck.json` | Option A AfterSave wired; **no Library TD** — Sample/movie instead. |
+| `Sophisticated Automated List Builder.json` | **Push blocked** — see below. Twin public-named file was tried; may be gone from tray. |
+
+Also: older junk at `3-Ready` root (CYO, Dirtbowl Communicator, MVSC, etc.) — **not** this startup-app pass.
+
+---
+
+## Product rules locked this week
+
+| Rule | Meaning |
 |------|---------|
-| **Sample** | Looping Library demo. Never title Library apps **Simple**. |
-| **Real app** | Customize / Setup / Admin products. Drop **Sophisticated** on publish. |
-| **Builder** | OEB-class only (+ deferred Poll/Survey v.8). Not event tools with Customize. |
-| **Sign-up Sheet w Email** | New Project only — never Library. |
-| **Wildcat** | My Tawala only. |
+| Sample vs Real vs Builder | Sample = Library demo; Real = Customize/Setup/Admin (drop Sophisticated on publish); Builder = OEB-class only |
+| Test Drive wipe | Leaving a start **wipes** TD data. Multi-start is for **My Tawala Use**, not hopping doors in one TD. |
+| Library TD door | One **in-session** hub that can reach the product (Poll AdminStart; Sign-up/Shared To-Do Option A). |
+| **GT + Potluck** | **Not** Library Test Drive. Correlation/multi-attendee needs many replies. Library = **Sample or movie**. Full apps = My Tawala. |
+| Sign-up Sheet w Email | New Project only — never Library |
 
-**Starts / Test Drive:** Real apps keep **multiple starts**. Library Test Drive opens Customize / Setup / Administration / AdminStart. My Tawala Use / Details unchanged. Most `2-Ready` files still single-start from an earlier pass — **restore multi-start** (Sign-up may already be multi) + expand Test Drive aliases.
+### Option A pattern (Sign-up / Potluck / GT Customize·Setup)
+
+After-save MCQ with alternate name **`AfterSave`**. Condition must be `Form:AfterSave` (not `MCQ1`) — Sign-up first fail was wrong field ref. Choices: try guest path / stay editing. Thin Admin not used as TD destination.
 
 ---
 
-## Samples (`3-Ready-for-Public-Library/Samples/`)
+## Automated List Builder — Push blocked (Fri afternoon)
 
-| Status | File |
-|--------|------|
-| **Ready** | `Survey Sample.json` |
-| **Ready** | `Multiple Question Survey Sample.json` |
-| **Ready** | `Sign-up Sheet Sample.json` — **identical to New Project Sign-up Sheet** (one start, Form 1 loop). Not the Customize app. |
-| **Still** | Horses and Penguins; Potluck/GT Sample only if looped (+ GT theme); else drop |
+**Symptom:** Cannot Push under any display rename of “Automated List Builder”.
 
-## Real apps (`2-Ready-for-MyTawala/`) — agent work list
+**Cause:** Tomcat already has live name **`Automated List Builder`** uniqueId **`ceihmyxlssxn6yn`** (Library/public occupant). Staging JSON had `deployUniqueId` **`6jpbj1hn2yzghh9`** ≠ occupant → **409 `name-occupied`**. Renaming display name alone does not clear the path if deploy identity still resolves to that occupied name.
 
-| File | Publish as | Test Drive door |
-|------|------------|-----------------|
-| Sophisticated Sign-up Sheet | Sign-up Sheet | Customize (+ Questionnaire, Administration) |
-| Sophisticated Get Together | Get Together | Customize |
-| Sophisticated Potluck | Potluck | Setup |
-| Sophisticated Shared To-Do | Shared To-Do | Setup |
-| Sophisticated Automated List Builder | Automated List Builder | Setup |
-| Sophisticated Single Question Poll or Survey | Single Question Poll or Survey | AdminStart |
+**Workaround proven:** minted private identity Push succeeds, e.g.  
+`Automated List Builder Smoke 026523ea` → uniqueId **`vrjayw9lwun85i1`**  
+Setup: `http://localhost:8080/p/vrjayw9lwun85i1/r2s6sqe.Setup`
 
-**No Push/Publish** until Samples cross-check + multi-start / Test Drive preference done.
+**Resume:** Clear/replace `deployIdentityName` + `deployUniqueId` on the JSON so next Push mints a private name; or retire/hatch the public occupant. Then TD-smoke Setup door (may need Option A like Shared To-Do).
+
+---
 
 ## Designer (git) — parked
 
-- Form Text Instructional blank/Style fix — done  
-- **C14** FIB Above + `*` on label; **C15** Pre-populate / Block Back smoke; **F1** 3-browser — later batch  
-
-## Next (ordered)
-
-1. **Fri:** `git push` branch; zip/copy **Website Staging** (Samples + `2-Ready`).  
-2. Restore multi-start on `2-Ready` (except where already multi) + Test Drive preference aliases.  
-3. Finish optional Samples or drop. Cross-check.  
-4. Push public names → Library replace.  
-5. Later: C14/C15/F1; home tour for Sample vs Copy.
-
-## Gotchas
-
-- Hollow function chips if copy-paste strips `data-function-*`.  
-- Stale deploy stamps block rename-Push.  
-- Staging outside git — backup separately.  
-- Pre-populate ≠ Customize `edit`/`modify` Pre-process.
+- Form Text blank/Style — done  
+- **C14** FIB Above + `*`; **C15** Pre-populate / Block Back; **F1** 3-browser — later  
+- **Process script opening-quote wrap** (Sep 4 polish) — noted in `DESIGNER_OPEN_TODOS.md` + shot in assets  
 
 ---
 
-## New-chat opener (after compaction)
+## Next (when owner returns)
+
+1. **Backup Staging** (zip/copy) — not in git.  
+2. List Builder: mint private Push identity → TD smoke or park.  
+3. **GT / Potluck Samples** (or movie) for Library.  
+4. Copy Horses into Samples tray.  
+5. Cross-check Samples + Smoked TD trio → Push public names to Library/My Tawala as planned.  
+6. Later: Designer C14/C15/F1.
+
+---
+
+## New-chat opener
 
 ```text
-Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md
-Branch cursor/forms-canvas-wysiwyg. Staging: Website Staging Samples + 2-Ready.
-Sign-up Sheet Sample = New Project copy (ready). Real Sign-up = 2-Ready Sophisticated.
-Restore multi-start + Test Drive Admin/Customize preference; do not Push until cross-check.
+Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md (Sep 4 evening).
+Branch cursor/forms-canvas-wysiwyg. Staging outside git: Website Staging.
+Smoked-Ready-to-Push: Poll, Sign-up Sheet, Shared To-Do (TD OK).
+GT+Potluck = Sample/movie for Library (no TD). List Builder Push blocked: name Automated List Builder occupied by uniqueId ceihmyxlssxn6yn — mint private deployIdentity or retire occupant. Smoke URL that worked: /p/vrjayw9lwun85i1/…Setup
 No Designer C14 this pass.
 ```
