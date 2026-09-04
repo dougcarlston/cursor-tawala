@@ -1,11 +1,11 @@
-# Where we are / where we’re going — Sep 3, 2026 (pre-travel)
+# Where we are / where we’re going — Sep 3–4, 2026 (pre-travel)
 
-**Owner travel:** Saturday → ~1 week away (laptops along; Wi‑Fi uncertain).  
-**Tomorrow (Fri):** thorough backup + confirm next steps before leaving.  
-**Branch:** `cursor/forms-canvas-wysiwyg` (this handoff assumes that tip is committed).  
-**Staging trays (not in git):** `~/Projects/ Current Tawala Projects/Website Staging/`
+**Owner travel:** Saturday → ~1 week (laptops; Wi‑Fi uncertain).  
+**Fri Sep 4:** backup + next steps; Context compaction.  
+**Branch:** `cursor/forms-canvas-wysiwyg` (tip includes Form Text blank fix + this handoff family — `9b47bb2`+).  
+**Staging (not in git):** `~/Projects/ Current Tawala Projects/Website Staging/`
 
-Use this file after Context compaction or a new chat. Companion: `docs/STARTUP_APPS_STAGING_SEP2.md`, Samples README in the staging tray.
+Companions: `docs/STARTUP_APPS_STAGING_SEP2.md`; tray `Samples/README.md`.
 
 ---
 
@@ -13,104 +13,66 @@ Use this file after Context compaction or a new chat. Companion: `docs/STARTUP_A
 
 | Term | Meaning |
 |------|---------|
-| **Sample** | Looping Library demo (try it; responses accumulate in the shared Test Drive). Never call Library apps **Simple**. |
-| **Real app** | Customize / Setup / Admin products (Sign-up, Potluck, Get Together, Shared To-Do, List Builder, Single Question Poll). Drop **Sophisticated** on publish. |
-| **Builder** | Only apps that *construct* a bigger instrument — **Online Exam Builder**, deferred Poll/Survey v.8. **Not** Potluck / Get Together / Sign-up just because they have Customize. |
-| **Sign-up Sheet w Email** | New Project / Designer only — never Library. |
-| **Wildcat Week** | My Tawala only — not Library. |
+| **Sample** | Looping Library demo. Never title Library apps **Simple**. |
+| **Real app** | Customize / Setup / Admin products. Drop **Sophisticated** on publish. |
+| **Builder** | OEB-class only (+ deferred Poll/Survey v.8). Not event tools with Customize. |
+| **Sign-up Sheet w Email** | New Project only — never Library. |
+| **Wildcat** | My Tawala only. |
 
-**Library Test Drive vs starts (agreed Sep 3 — partially applied):**
-
-- Keep **multiple start points** on real apps (guest + admin URLs after Copy).
-- **Library Test Drive** always opens the setup door (Customize / Setup / Administration / AdminStart).
-- **My Tawala Use / Project Details** — leave as-is (multi-start → Details to pick).
-- **Publishers later:** alias list now; Form Properties “Library Test Drive start” mark later.
-
-**Note:** Five of six `2-Ready` apps still have only one `startPoint` from an earlier pass. **Sophisticated Sign-up Sheet** already has Customize + Questionnaire + Administration again (owner editing). **Next code step:** restore multi-start on the other five + expand `pickLibraryTestDriveStartPoint` aliases (not Exam-only).
+**Starts / Test Drive:** Real apps keep **multiple starts**. Library Test Drive opens Customize / Setup / Administration / AdminStart. My Tawala Use / Details unchanged. Most `2-Ready` files still single-start from an earlier pass — **restore multi-start** (Sign-up may already be multi) + expand Test Drive aliases.
 
 ---
 
-## Where we are
+## Samples (`3-Ready-for-Public-Library/Samples/`)
 
-### Samples tray (`3-Ready-for-Public-Library/Samples/`)
+| Status | File |
+|--------|------|
+| **Ready** | `Survey Sample.json` |
+| **Ready** | `Multiple Question Survey Sample.json` |
+| **Ready** | `Sign-up Sheet Sample.json` — **identical to New Project Sign-up Sheet** (one start, Form 1 loop). Not the Customize app. |
+| **Still** | Horses and Penguins; Potluck/GT Sample only if looped (+ GT theme); else drop |
 
-| Status | File / name |
-|--------|-------------|
-| **Ready** | `Survey Sample.json` (renamed off Simple; MCQ placeholder junk stripped; Submit wording; Report loop) |
-| **Ready** | `Multiple Question Survey Sample.json` (Yes→Report / No→Survey; Report→Survey; Group Results function chips restored after copy-paste hollowed them) |
-| **In progress** | Sign-up Sheet Sample — start from New Project → Activities → **Sign-up Sheet** (looping). Not the `2-Ready` Customize app. |
-| **Still to do** | Horses and Penguins (keep if OK); Potluck Sample / Get Together Sample only if looped (+ GT theme); else drop |
+## Real apps (`2-Ready-for-MyTawala/`) — agent work list
 
-### Real apps (`2-Ready-for-MyTawala/`)
+| File | Publish as | Test Drive door |
+|------|------------|-----------------|
+| Sophisticated Sign-up Sheet | Sign-up Sheet | Customize (+ Questionnaire, Administration) |
+| Sophisticated Get Together | Get Together | Customize |
+| Sophisticated Potluck | Potluck | Setup |
+| Sophisticated Shared To-Do | Shared To-Do | Setup |
+| Sophisticated Automated List Builder | Automated List Builder | Setup |
+| Sophisticated Single Question Poll or Survey | Single Question Poll or Survey | AdminStart |
 
-| File | Notes |
-|------|--------|
-| Sophisticated Sign-up Sheet | Owner editing; multi-start restored |
-| Sophisticated Get Together | Customize-only start until multi restored |
-| Sophisticated Potluck | Setup-only; kids/adults in one app |
-| Sophisticated Shared To-Do | Setup-only; internal name Shared To-Do |
-| Sophisticated Automated List Builder | Setup-only; remote Confirm/Opt-out needs public host |
-| Sophisticated Single Question Poll or Survey | AdminStart-only |
+**No Push/Publish** until Samples cross-check + multi-start / Test Drive preference done.
 
-**Do not Push / Publish** the piles until Samples + multi-start / Test Drive preference are settled and cross-checked.
+## Designer (git) — parked
 
-### Designer (in git)
+- Form Text Instructional blank/Style fix — done  
+- **C14** FIB Above + `*` on label; **C15** Pre-populate / Block Back smoke; **F1** 3-browser — later batch  
 
-| Item | Status |
-|------|--------|
-| Document two-link underlines (Design + Push) | Done earlier (`12d8c94`) |
-| Form Text Instructional blank gaps + typing into spacer “font change” | **Fixed** — `preserveFormTextFlowParagraphs`; Design CSS margins; tests |
-| **C14** FIB Above auto-split + required `*` on label | Parked — next Designer batch |
-| **C15** Pre-populate With Last Entry + Block Back Button | Logged — never smoked; next Designer batch |
-| **F1** 3-browser smoke | Re-surfaced — after live, before public |
+## Next (ordered)
 
-### Deferred / elsewhere
+1. **Fri:** `git push` branch; zip/copy **Website Staging** (Samples + `2-Ready`).  
+2. Restore multi-start on `2-Ready` (except where already multi) + Test Drive preference aliases.  
+3. Finish optional Samples or drop. Cross-check.  
+4. Push public names → Library replace.  
+5. Later: C14/C15/F1; home tour for Sample vs Copy.
 
-- `Defer-rewrite/`: Poll or Survey v.8 pair; Emailer With Signup  
-- `Builders-hold/`: Online Exam Builder (already on Library; Test Drive → Administration)  
-- Website: home step-through / movie for Sample vs Copy to MyTawala (Samples should stay short)
+## Gotchas
 
----
-
-## Where we’re going (ordered)
-
-### Friday (before travel) — backup + clarity
-
-1. Backup: git commit/push this branch; copy/zip **Website Staging** trays (Samples + `2-Ready` especially); note local Designer/Tomcat if needed.  
-2. Skim this file + Samples README — agree Friday stop line.  
-3. Optional if energy: finish Sign-up Sheet Sample into `Samples/`; restore multi-start on remaining `2-Ready` apps (no Push yet).
-
-### After return / with Wi‑Fi (Library pass)
-
-1. Finish remaining Samples (or drop Potluck/GT Sample if not loopable).  
-2. Restore multi-start on `2-Ready` + wire Library Test Drive preference aliases.  
-3. Cross-check Doug ↔ agent piles.  
-4. Push under **public** names → Publish / replace Live Library (retire thin “Simple” rows; no Simple in titles).  
-5. Optional: Sample instructional + home tour for Copy to MyTawala.
-
-### Later Designer batch (not Library)
-
-- **C14**, **C15** smoke, then gated **F1** when appropriate.
-
-### Explicitly not this week
-
-- Poll v.8 rewrite; Emailer; C14 while Samples unfinished; unifying Design canvas with Preview for Deploy.
+- Hollow function chips if copy-paste strips `data-function-*`.  
+- Stale deploy stamps block rename-Push.  
+- Staging outside git — backup separately.  
+- Pre-populate ≠ Customize `edit`/`modify` Pre-process.
 
 ---
 
-## Open gotchas
-
-- **Copy-paste of function chips** between projects can strip `data-function-*` and leave pretty dead text (`color(srgb…)` chrome). Re-Insert Function or copy whole Text item. Hit MQS Sample Report T2.  
-- **Stale `deployIdentityName` / `deployUniqueId`** blocks rename-Push — clear stamps or mint a private name.  
-- Staging tray paths live **outside** the Tawala git repo — backup Staging separately from `git push`.  
-- Designer API `:3001` — restart after server edits (`ensure-dev-api.sh` won’t reload an already-up process).
-
----
-
-## Suggested new-chat opener (after compaction / return)
+## New-chat opener (after compaction)
 
 ```text
 Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md
 Branch cursor/forms-canvas-wysiwyg. Staging: Website Staging Samples + 2-Ready.
-Do not Push until multi-start restored and Samples cross-checked. No Designer C14 this pass.
+Sign-up Sheet Sample = New Project copy (ready). Real Sign-up = 2-Ready Sophisticated.
+Restore multi-start + Test Drive Admin/Customize preference; do not Push until cross-check.
+No Designer C14 this pass.
 ```
