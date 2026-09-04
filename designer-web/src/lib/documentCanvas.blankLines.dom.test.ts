@@ -1,6 +1,7 @@
 /**
  * Double-Return blank lines between Document placed paragraphs must survive
  * prune-on-delete and packing when the second paragraph is edited.
+ * Form Text flow paragraphs clear blank marks once they gain content.
  */
 import { describe, expect, it } from "vitest";
 import {
@@ -10,7 +11,9 @@ import {
   markBlankPlacedBlock,
   PLACED_TEXT_CLASS,
   preserveBlankPlacedLines,
+  preserveFormTextFlowParagraphs,
   pruneEmptyPlacedTextBlocks,
+  sanitizeFormTextFlowHtml,
 } from "./documentCanvas";
 
 function placed(top: number, html: string): HTMLElement {
@@ -93,5 +96,46 @@ describe("Document Double-Return blank lines", () => {
     expect(blank.style.minHeight).toMatch(/pt$/);
 
     editor.remove();
+  });
+});
+
+describe("Form Text flow blank paragraphs", () => {
+  it("clears data-doc-blank and scaffold black when a spacer gains text", () => {
+    const editor = document.createElement("div");
+    document.body.appendChild(editor);
+    const a = document.createElement("p");
+    a.innerHTML = `<span style="font-family: Tahoma;">First</span>`;
+    const blank = document.createElement("p");
+    blank.setAttribute(DOC_BLANK_ATTR, "1");
+    blank.style.color = "rgb(0, 0, 0)";
+    blank.style.minHeight = "13.7pt";
+    blank.innerHTML = "<br>";
+    const typed = document.createElement("p");
+    typed.setAttribute(DOC_BLANK_ATTR, "1");
+    typed.style.color = "rgb(0, 0, 0)";
+    typed.style.minHeight = "13.7pt";
+    typed.innerHTML =
+      `<span style="background-color: transparent; font-family: Tahoma;">Once typed</span>`;
+    editor.append(a, blank, typed);
+
+    preserveFormTextFlowParagraphs(editor);
+
+    expect(blank.getAttribute(DOC_BLANK_ATTR)).toBe("1");
+    expect(blank.querySelector("br")).toBeTruthy();
+    expect(typed.getAttribute(DOC_BLANK_ATTR)).toBeNull();
+    expect(typed.style.color).toBe("");
+    expect(typed.style.minHeight).toBe("");
+    expect(typed.textContent).toContain("Once typed");
+
+    editor.remove();
+  });
+
+  it("puts br into bare empty p so Double-Return gaps do not collapse", () => {
+    const html = sanitizeFormTextFlowHtml(
+      `<p><span style="font-family: Tahoma;">A</span></p><p></p><p><span style="font-family: Tahoma;">B</span></p>`,
+    );
+    expect(html).toContain("<p><br></p>");
+    expect(html).toContain(">A</span>");
+    expect(html).toContain(">B</span>");
   });
 });

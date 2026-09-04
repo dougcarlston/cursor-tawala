@@ -45,13 +45,14 @@ Icons sit in a strip **directly above** the tree. Hover shows the written name. 
 | 4 | Move Node Up | ↑ | After nodes exist; greyed until reorder possible |
 | 5 | Move Node Down | ↓ | Same as up |
 | 6 | Toggle Form Starting Point | Flag overlay on form icon | **Form selected only**; toggle on/off |
-| 7 | Block Back Button | Red ← overlay on form icon | **Form selected only**; toggle on/off |
+| 7 | Pre-populate With Last Entry | Form + last-entry overlay | **Form selected only**; toggle on/off (`dataEntryOnly`) |
+| 8 | Block Back Button | Red ← overlay on form icon | **Form selected only**; toggle on/off (`blockBackButton`) |
 
 - Icons **1–3** are the only active ones until forms/processes/documents exist.
 - Icons **1–5** show once nodes exist; **4–5** grey until there are siblings to reorder.
-- Icons **6–7** appear only when a **form** node is selected (hidden for Process or Document).
-- July 2026 close-up crop shows icons **1–5** clearly; **6–7** require a selected form node (not shown in that crop).
-
+- Icons **6–8** appear only when a **form** node is selected (hidden for Process or Document).
+- **Owner Sep 3:** Start Point was smoked in Library / Test Drive work; **#7 and #8 never smoked** — track as **C15** in `DESIGNER_OPEN_TODOS.md` (Design toggle → Push → `:8080`).
+- July 2026 close-up crop shows icons **1–5** clearly; **6–8** require a selected form node (not shown in that crop).
 **New nodes:** Default names (`Form 1`, `Process 2`, …) in the correct folder.
 
 **Rename:** Double-click the Form / Process / Document name, or press **F2** with that node selected → inline edit. Single-click opens / focuses the MDI window (does **not** rename). Duplicate name reverts; empty name cancels. Escape cancels.

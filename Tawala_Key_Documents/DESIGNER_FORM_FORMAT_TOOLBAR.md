@@ -80,7 +80,7 @@ Opened from **Format → Styles →** cascade (legacy) or **Project → Styles�
 
 | Radio | Preview sample | Stored `style` |
 |-------|----------------|----------------|
-| **Above** | `Name:` / `Address:` each above its blank (2 rows; blanks different widths) | `topLabels` |
+| **Above** | `Name:` / `Address:` each above its blank (2 rows; blanks different widths) | `topLabels` — **Parked gap Sep 3:** one-line Design prompts / rich one-blank Deploy can still look Freeform unless the author adds a return; required `*` should sit on the question label, not the caption/input stack. Batch on next Designer pass (`DESIGNER_OPEN_TODOS.md` **C14**). |
 | **Left justified** | `Name:` / `Address:` / `Phone:` left-aligned labels; blanks of varying width to the right | `leftAlignLabels` or `leftAlignLabelsJustified` |
 | **Right justified** | Same three rows; labels right-aligned so colons line up | `rightAlignLabels` or `rightAlignLabelsJustified` |
 | **Freeform** | Inline: *Columbus had three ships called the □ the □ and the □* | `freeform` |

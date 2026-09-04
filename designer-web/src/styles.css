@@ -1937,6 +1937,19 @@ textarea {
   overflow: visible;
 }
 
+/* Form Text paragraphs: match Preview spacing so single-Return blocks do not glue.
+   Empty / Double-Return spacers keep one line-height (bare <p></p> otherwise collapses). */
+.text-canvas-row .text-rich-editor > p,
+.text-canvas-row .text-rendered > p {
+  margin: 0.4em 0;
+}
+.text-canvas-row .text-rich-editor > p:empty,
+.text-canvas-row .text-rendered > p:empty,
+.text-canvas-row .text-rich-editor > p[data-doc-blank="1"],
+.text-canvas-row .text-rendered > p[data-doc-blank="1"] {
+  min-height: 1.25em;
+}
+
 /* Insert → Image → From your PC (Approach A): keep Design canvas from blowing layout. */
 .text-rich-editor img.tawala-embedded-image,
 .document-editor .rich-surface img.tawala-embedded-image {

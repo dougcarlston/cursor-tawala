@@ -142,6 +142,7 @@ See gap table below and `docs/DESIGNER_BACKLOG_ARCHITECTURE.md` §6 (Formatting 
 3. **Bold on Report / structured Text** (e.g. Multiple Question Survey “Age:” beside RESPONSE TOTALS): select the word → Formatting Palette **Bold**. Must stay bold after blur/save (not only while selected). Smoke (Jul 23): styleWithCSS spans and `<b>` both round-trip. **Deploy (Jul 24):** Tomcat `default.css` Yahoo reset zeroes `strong`/`em`; Java Bold emits `<strong>` — restore `b, strong { font-weight: bold }` after the reset or Age: looks normal on 8080 while Design/Preview stay bold.
 3. **Fields replace (Jul 23):** In a Text table cell with `<<attendeeName>>` (chip selected or not) → drop another field onto it → cell becomes the new `<<…>>` only — never `<<attende<<…>>eName>>`. Same for Heading / FIB prompt / MCQ question.
 4. **Form Text table Push (V1):** Insert table → set Border 1/none and column widths → Push. Live form keeps borders and relative widths. DirtBowl Registration **T4**: if Design HTML has a `<table>`, Push uses that table (not the old hardcoded info-box XML). Hard-refresh after `form-layout-core` CSS updates.
+5. **Instructional paragraph gaps (Sep 3):** Style Instructional → several short paragraphs with a blank line between (Double-Return). Gaps stay visible without gluing. Type into a blank spacer line → that paragraph keeps Instructional bold/italic/navy (same face as neighbors); it must not stay stuck as a “blank” with black scaffolding. Unit: `documentCanvas.blankLines.dom.test.ts`.
 
 ## Fill in the Blank — FIB (Q1)
 

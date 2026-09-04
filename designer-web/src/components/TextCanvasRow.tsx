@@ -39,6 +39,8 @@ import {
 import { ensureFunctionTokenCaretGaps, FUNCTION_TOKEN_CLASS } from "@/lib/functionTokens";
 import { tryDeleteInlineTokensInSelection } from "@/lib/inlineTokenDelete";
 import {
+  preserveFormTextFlowParagraphs,
+  sanitizeFormTextFlowHtml,
   seedBlankBlockTypingFormat,
   selectParagraphAtPoint,
   selectWordOrTokenAtPoint,
@@ -155,6 +157,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
     const el = editorRef.current;
     if (!el) return;
     el.innerHTML = content;
+    preserveFormTextFlowParagraphs(el);
     ensureFunctionTokenCaretGaps(el);
     el.focus();
     // Register with the palette immediately so B/I/U (and font/align) work on the first
@@ -311,7 +314,7 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
   };
 
   const isEmpty = textHtmlIsEmpty(content);
-  const renderedHtml = isEmpty ? "" : content;
+  const renderedHtml = isEmpty ? "" : sanitizeFormTextFlowHtml(content);
   const styleClass =
     item.style === "instructional"
       ? " text-style-instructional"
@@ -431,14 +434,9 @@ export function TextCanvasRow({ item, index, formName, selected }: Props) {
                   }
                 }
                 if (el) {
-                  // Restore Double-Return empty paragraphs Chromium may strip while editing.
-                  el.querySelectorAll("[data-doc-blank='1']").forEach((node) => {
-                    if (!(node instanceof HTMLElement)) return;
-                    const text = (node.textContent ?? "").replace(/\u00a0|\u200b/g, "").trim();
-                    if (!text && !node.querySelector("br")) {
-                      node.innerHTML = "<br>";
-                    }
-                  });
+                  // Clear blank marks on paragraphs that gained text; keep empty
+                  // Double-Return spacers from collapsing (Form Text flow, not Document).
+                  preserveFormTextFlowParagraphs(el);
                 }
                 commit();
                 syncPaletteFocus();

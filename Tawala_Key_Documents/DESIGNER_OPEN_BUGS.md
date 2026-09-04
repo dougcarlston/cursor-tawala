@@ -60,6 +60,7 @@ Also listed in catchup `docs/CATCHUP_MEMO_RETURN_AUG20.md` (historical). All fiv
 - **Note:** Not in the Aug 11 recreations; keep from Jul 30 stash.
 - **Fixed Aug 20 (Symptom A):** Form Text Deploy passes `keepEmptyParagraphs` into `documentHtmlToXml` so bare `<p></p>` / `<p><br></p>` (MQS instructional Double-Return) become spacer `<paragraph>`s. Document path still drops unmarked empties (Signup Sheet placed husks). Unit: `documentHtmlToXml.test.mjs`.
 - **Fixed Aug 21 (Symptom B):** Form Text drag-select extends across embedded images (`formTextSelection.ts` + `RichTextEditor` text mode). Unit: `formTextSelection.dom.test.ts`.
+- **Design follow-up Sep 3 (owner Survey Sample):** Instructional Text still glued in Design unless Double-Return, and typing into a Double-Return spacer left `data-doc-blank` + black color on the content paragraph (last para looked like a different face / lost Style bold). **Fixed:** Form Text calls `preserveFormTextFlowParagraphs` (clear blank mark + scaffold black when text lands; bare `<p></p>` → `<br>` spacer); Design CSS gives Form Text `p` margins + blank min-height. Idle view sanitizes stored HTML. Unit: `documentCanvas.blankLines.dom.test.ts`. Shot: `assets/Bug_-_FormText-Instructional-font-and-paragraph-spacing-Sep3.png`.
 
 #### 3) Form canvas badges — uneven widths (Not blocking) — **NEW / reconfirmed Aug 11**
 

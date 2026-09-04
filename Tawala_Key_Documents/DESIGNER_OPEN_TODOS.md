@@ -127,6 +127,8 @@ Today’s Document canvas is still **absolute placed-line islands** (`.doc-place
 - **Items palette icons** — **Done Jul 24** (legacy-style PNG tiles in `designer-web/public/icons/form-item-*.png`). (Was: Unicode/CSS placeholders.)
 - **MCQ dynamic choice source** (“from stored data” + Configure Function). **Done Jul 23** — Choice source / Edit → `ConfigureFunctionDialog` (`dynamic-mcq`); Deploy `mcToXml`. Preview expands rows from session records (condition filter still Preview-only soft). (Source: Forms canvas & Skip)
 - **Rich text HTML → legacy XML export** for Form items — **MCQ question Done Jul 24**; **Heading Main/Sub split Done Jul 24**. Text/FIB already on the rich path. (Source: Forms canvas & Skip)
+- **FIB Styles → Above vs Freeform + required asterisk placement** — **Park for next Designer batch (owner Sep 3).** Do **not** interrupt Library/startup smoke. (1) **Above** (`topLabels`) should put the question label on its own line without the author inserting a return; older projects (e.g. Automated List Builder Customize) often still look Freeform unless a soft-return is added — rich one-blank Deploy path can skip the split. (2) Required `*` (`span.qinfo`) today sits with the input/caption stack and can land on its own line between label and box under Above; preferred: paint `*` on the **FIB prompt/label**, never on **Caption** (Caption stays First/Last-style hints). Design + Deploy/runtime in one pass. Repro shot: List Builder Customize Page 1 Organization Name. Spec cross-ref: `DESIGNER_FORM_FORMAT_TOOLBAR.md` § FIB Styles.
+- **Explorer Pre-populate + Block Back (C15) + F1 3-browser smoke** — **Owner Sep 3:** never smoked the two toolbar icons beside Toggle Start Point; 3-browser smoke also fell off the radar. Same next Designer batch cluster as **C14** (do not bury under Library). See triage **C15** / **F1** and Owner review queue **#3**.
 
 ## Skip Instructions
 
@@ -196,6 +198,8 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **C1** FIB hint styling | **Never — done** (captions) |
 | **C2** Preview static mini-editor + sweep | **After live, before public** — one Preview sweep |
 | **C3** Fields drop map (FIB targeting) | **After live, before public** — one more stab; UX TBD |
+| **C14** FIB Above auto-split + required `*` on label (not caption) | **Next Designer batch** — park Sep 3; do not interleave with Library smoke |
+| **C15** Explorer **Pre-populate With Last Entry** + **Block Back Button** | **Next Designer batch / owner smoke** — Sep 3: icons sit next to Toggle Start Point; UI toggles + JSON/XML already wired (`dataEntryOnly`, `blockBackButton`); **never smoked** on Design → Push → `:8080`. Verify toggle, tree overlays, round-trip, and live behavior (last-entry refill; browser Back blocked). Spec: `DESIGNER_MENU_SPEC.md` § Explorer toolbar |
 | **C4** Per-item Properties popups / permanent panel | **No** — item windows + context popups only (Skip pattern) |
 | **C5** File Uploader | **Version 2** (MailMerge-like import) |
 | **C6–C9** Connect menu; Preview Get/Append; RecordSet Fields; MDI Pass 2 | **Joint review Aug 28** with C12–C13 |
@@ -205,7 +209,7 @@ Owner review of deferred inventory before public. **Sections A–G complete** (E
 | **D1–D2** Categorizer; Export Team Roster | **Hold** — Version 2 or never |
 | **D3** LINK TO PROJECT DETAILS (Insert → Function) | **Never** — no link to My Tawala Project Details from inside a live project (especially for non-subscriber use). **Insert → Link…** (Form/URL) remains the product path |
 | **D4** PayPal / generic payment | **After live, before public** — major effort |
-| **F1** 3-browser smoke | **After live, before public use** — confirmed Aug 27 |
+| **F1** 3-browser smoke | **After live, before public use** — confirmed Aug 27; **re-surfaced Sep 3** (owner: fell off radar with explorer Pre-populate / Block Back). Chrome + Safari + Edge: Main Menu starters, layout, Deploy, forms/Documents, MQL, FIB same-line, Potluck SUM. Detail: `DESIGNER_SESSION_JUL22_EOD.md` § Finish 3-browser smoke. Keep visible on Owner review queue **#3** |
 | **F2** Conform Look and Feel (legacy shell) | **Done (Sep 2026, Library slice)** — owner Sep 1 sign-off: Library listing rows, action columns, exam demo badge, Test Drive honesty, owner blurbs. Home / shared nav / stub CSS migration deferred. See `website-mock/README.md` § **F2 look-and-feel pass** |
 | **F3** Main menus/tabs — no duplicates; identical behavior | **Done (Sep 2026)** — owner smoke passed Sep 1: File↔toolbar↔shortcuts (Chrome **Ctrl+N** for New); Edit↔toolbar Form/Process/Document; Insert shared commands ↔ Items/Statements palette enable rules; View ✓ toggles + refresh; Project duplicates (Push, Themes, …); Form **Preview** greys authoring chrome; Windows Cascade/Tile/list/Close All; Process/Document cut-paste fixes. **G5** badge Cut/Copy/Paste still V2 stubs — Delete + Display conditionally… OK |
 | **G1** Responsive theme CSS (`@media` / fluid width; one layout reflows) | **Next version** — **important** (not G8 multi-layout authoring) |
@@ -241,7 +245,7 @@ Tasks the owner set (or agreed to schedule). Keep on this list until reviewed an
 |---|------|-------------------|
 | 1 | **Wire Main icon toolbar** (“frequently used” strip) | **Done Jul 12** — `MainIconToolbar` shares handlers with File/Edit via `shellCommands.ts`. |
 | 2 | **Home-page control audit — menus, tabs, and toolbars** | **Done Sep 2026 (F3)** — owner smoke Sep 1: File/Edit/Push duplicates; Insert ↔ palette enable rules (shared commands only); View checkmarks; Project menu; Preview grey-out; Windows menu; Process/Document cut-paste. Badge Cut/Copy/Paste = **G5** V2. **Jul 17 baseline:** View toggles wired; Page Header; Themes = local CSS. **Help → About** = queue **#13** (legal). |
-| 3 | **Review remaining gated items** (3-browser smoke; look-and-feel parity) | Still **gated** until Designer is basically finished — owner asked to keep them visible on the review queue; discuss before starting. **Do not start during #9 smoke.** |
+| 3 | **Review remaining gated items** (**F1** 3-browser smoke; look-and-feel parity) | **Still gated** until Designer is basically finished — **re-surfaced Sep 3** with **C15** (Pre-populate / Block Back never smoked). Discuss before starting; do not bury under Library work. |
 | 4 | **MCQ dynamic choice source** (“from stored data” + Configure Function) | **Done Jul 23** — Design Configure + Deploy XML. Owner smoke SignupSheets-class apps still useful. |
 | — | **Design-canvas Style paint** | **Owner Jul 18:** **Text** Instructional/Error shown on Forms → Text (already implemented). **FIB/MCQ layout paint = won't do** — interferes with editing; Preview immediate. See `DESIGNER_FORM_FORMAT_TOOLBAR.md`. |
 | 5 | **HTML→XML export for functions we already Configure** | **Done Jul 13–16** for 13 of 17. **Jul 24:** remaining 4 **Deferred stub** (parked) — see matrix below. |
@@ -325,7 +329,7 @@ Owner (July 12, 2026): park these until the browser Designer is considered **bas
 
 **Jul 16 cleanup:** Explicitly deferred until after #9 remaining function smokes (and owner says Designer is basically finished).
 
-1. **Big smoke test on three different browsers** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on three browsers; capture browser-specific defects. *(Also listed in Owner review queue #3.)*
+1. **Big smoke test on three different browsers (**F1**)** — full walkthrough of Designer (and critical Preview/Deploy paths as agreed) on Chrome, Safari, and Edge; capture browser-specific defects. **Re-surfaced Sep 3** (owner: fell off radar). *(Also Owner review queue #3; triage **F1**.)*
 2. **Conform Look and Feel** of the Designer shell and its windows to the legacy Designer application **without breaking** underlying behavior already shipped (layout, chrome, typography/colors — visual parity pass only after functional freeze). *(Also listed in Owner review queue #3.)*
 3. **Main Page menus and tabs — no duplicates; identical behavior** — **Done Sep 2026 (F3).** Owner smoke Sep 1 passed all slices (see F3 row in triage table). Remaining menu gap: **G5** badge whole-item Cut/Copy/Paste (Version 2).
 

@@ -322,6 +322,72 @@ export function preserveBlankPlacedLines(editor: HTMLElement): void {
   }
 }
 
+/** True when an inline color is default black (blank-seed scaffolding). */
+function isDefaultBlackCssColor(raw: string | null | undefined): boolean {
+  const c = String(raw ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "");
+  return (
+    c === "rgb(0,0,0)" ||
+    c === "rgba(0,0,0,1)" ||
+    c === "#000" ||
+    c === "#000000" ||
+    c === "black"
+  );
+}
+
+/**
+ * Form Text flow `<p>`/`<div>` (not Document `.doc-placed-text`):
+ * - Clear `data-doc-blank` when a spacer gains real text so Style (Instructional
+ *   bold/italic/navy) is not stuck under blank scaffolding (black color / min-height).
+ * - Normalize bare empty `<p></p>` to `<p><br></p>` (+ min-height when marked) so
+ *   Double-Return gaps do not collapse and glue content paragraphs together.
+ *
+ * Call from Form Text `onInput` / edit seed. Document keeps `preserveBlankPlacedLines`.
+ */
+export function preserveFormTextFlowParagraphs(editor: HTMLElement): void {
+  const blocks = Array.from(editor.querySelectorAll("p, div")).filter(
+    (node): node is HTMLElement => {
+      if (!(node instanceof HTMLElement)) return false;
+      if (node === editor) return false;
+      if (node.classList.contains(PLACED_TEXT_CLASS)) return false;
+      if (node.closest("table")) return false;
+      // Skip structural wrappers that contain other blocks.
+      if (node.tagName === "DIV" && node.querySelector("p, div, table")) return false;
+      return true;
+    },
+  );
+
+  for (const block of blocks) {
+    if (isPlacedTextBlockEmpty(block)) {
+      if (!block.querySelector("br")) {
+        block.innerHTML = "<br>";
+      }
+      if (block.getAttribute(DOC_BLANK_ATTR) === "1") {
+        ensureBlankPlacedScaffold(block);
+      }
+    } else {
+      const wasBlank = block.getAttribute(DOC_BLANK_ATTR) === "1";
+      clearBlankPlacedBlockIfContent(block);
+      // Blank seed often paints default black on the `<p>`; strip it once content lands
+      // so Instructional/Error Style color (and weight) show through again.
+      if (wasBlank && isDefaultBlackCssColor(block.style.color)) {
+        block.style.removeProperty("color");
+      }
+    }
+  }
+}
+
+/** Sanitize stored Form Text HTML the same way as live editing (idle + File→Open). */
+export function sanitizeFormTextFlowHtml(html: string): string {
+  if (typeof document === "undefined") return html;
+  const host = document.createElement("div");
+  host.innerHTML = html;
+  preserveFormTextFlowParagraphs(host);
+  return host.innerHTML;
+}
+
 /**
  * After select-all + Delete (or backspace-to-empty), remove husk `.doc-placed-text`
  * lines so they do not remain as invisible snap/pack slots. Intentional blank lines
