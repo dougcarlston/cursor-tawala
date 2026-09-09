@@ -11,6 +11,12 @@ import {
   projectBodyForPrivateClone,
   snapshotProjectAfterClone,
   uniqueIdsEqual,
+  uniqueIdFromLibraryEntry,
+  libraryOverwriteRuntime,
+  projectBodyForLibraryRedeploy,
+  PUBLISH_OVERWRITE_NO_IDENTITY,
+  PUBLISH_NO_CURRENT_DEFINITION,
+  versionDefinitionAttempts,
   hasMyTawalaCloneDefinitionSource,
   forkRuntimeShouldScrub,
   MAKE_COPY_NO_LIVE_FORM_ERROR,
@@ -61,6 +67,87 @@ assert.equal(snap.name, "My Survey");
 
 assert.equal(uniqueIdsEqual("gy1zssbrwm4fgfm", "gy1zssbrwm4fgfm"), true);
 assert.equal(uniqueIdsEqual("gy1zssbrwm4fgfm", "privatenewid01"), false);
+
+assert.equal(
+  uniqueIdFromLibraryEntry({
+    startPoints: [{ url: "http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey" }],
+  }),
+  "gy1zssbrwm4fgfm"
+);
+const ssCatalog = {
+  uniqueId: "gy1zssbrwm4fgfm",
+  deployIdentityName: "Simple Survey Template",
+  startPoints: [{ url: "http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey" }],
+};
+const mintedSibling = {
+  uniqueId: "mintedsibling01",
+  deployIdentityName: "Survey Sample abcd1234",
+  startPoints: [{ url: "http://localhost:8080/p/mintedsibling01/npwtqlg.Survey" }],
+};
+const overwriteKeep = libraryOverwriteRuntime({
+  catalogEntry: ssCatalog,
+  listingEntry: mintedSibling,
+  sourceUniqueId: "mg1ebmmaxcmss62",
+});
+assert.equal(overwriteKeep.uniqueId, "gy1zssbrwm4fgfm");
+assert.equal(overwriteKeep.deployIdentityName, "Simple Survey Template");
+assert.equal(overwriteKeep.canReuse, true);
+assert.equal(overwriteKeep.keepCatalogUniqueId, true);
+const overwriteSameAsAuthor = libraryOverwriteRuntime({
+  catalogEntry: ssCatalog,
+  listingEntry: ssCatalog,
+  sourceUniqueId: "gy1zssbrwm4fgfm",
+});
+assert.equal(overwriteSameAsAuthor.canReuse, false);
+const missingIdentity = libraryOverwriteRuntime({
+  catalogEntry: {
+    startPoints: [{ url: "http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey" }],
+  },
+  listingEntry: mintedSibling,
+  sourceUniqueId: "mg1ebmmaxcmss62",
+});
+assert.equal(missingIdentity.refuseMintOnCatalog, true);
+assert.equal(missingIdentity.canReuse, false);
+const redeployBody = projectBodyForLibraryRedeploy(
+  stock,
+  "Survey Sample",
+  "Simple Survey Template",
+  "gy1zssbrwm4fgfm"
+);
+assert.equal(redeployBody.name, "Survey Sample");
+assert.equal(redeployBody.deployIdentityName, "Simple Survey Template");
+assert.equal(redeployBody.deployUniqueId, "gy1zssbrwm4fgfm");
+assert.equal(redeployBody._freshFromTemplate, undefined);
+assert.equal(PUBLISH_OVERWRITE_NO_IDENTITY.includes("Tomcat name"), true);
+assert.match(transfer, /libraryOverwriteRuntime/);
+assert.match(transfer, /keepCatalogUniqueId/);
+assert.match(transfer, /refuseMintOnCatalog/);
+assert.match(transfer, /resolveDefinitionForLibraryPublish/);
+assert.match(transfer, /PUBLISH_NO_CURRENT_DEFINITION/);
+assert.match(transfer, /versionDefinitionAttempts/);
+assert.equal(PUBLISH_NO_CURRENT_DEFINITION.includes("Push snapshot"), true);
+
+const copiedThenPushed = {
+  jsonFile: "designer-web/public/samples/templates/simple-survey.json",
+  versions: [
+    { versionNumber: 2, deployed: true, snapshotId: "snap-sample" },
+    { versionNumber: 1, deployed: false, definition: { name: "Simple Survey" } },
+  ],
+};
+const publishPlan = versionDefinitionAttempts(copiedThenPushed, { currentOnly: true });
+assert.equal(publishPlan[0].kind, "snapshot");
+assert.equal(publishPlan[0].snapshotId, "snap-sample");
+assert.equal(
+  publishPlan.some((a) => a.kind === "cache"),
+  false,
+  "Publish must not fall back to the Copy-from-Library snapshot"
+);
+const copyPlan = versionDefinitionAttempts(copiedThenPushed, { currentOnly: false });
+assert.equal(copyPlan[0].snapshotId, "snap-sample");
+assert.equal(
+  copyPlan.some((a) => a.kind === "cache"),
+  true
+);
 assert.equal(
   catalogPathForOpenApi("website-mock/projects/library/Online Exam Builder.json"),
   "projects/library/Online Exam Builder.json"
@@ -234,6 +321,8 @@ const catalog = [
     id: "online-exam-builder",
     name: "Online Exam Builder",
     jsonFile: OEB_JSON,
+    liveReady: true,
+    sourcePile: "library",
   },
   {
     id: "get-together",
@@ -249,7 +338,26 @@ assert.equal(
 assert.equal(compactNameKey("Copy of Online Exam Builder"), "copyofonlineexambuilder");
 assert.notEqual(compactNameKey("Copy of Online Exam Builder"), compactNameKey("Online Exam Builder"));
 assert.equal(isListedLibraryAuthor({ author: "dev" }, "dev"), true);
+assert.equal(isListedLibraryAuthor({ author: "tawalamundo" }, "Douglas Carlston"), false);
 assert.equal(isListedLibraryAuthor({ name: "Online Exam Builder" }, "dev"), false);
+assert.equal(
+  isListedLibraryAuthor(
+    { name: "Simple Survey", liveReady: true, sourcePile: "main-menu" },
+    "tawalamundo"
+  ),
+  true
+);
+assert.equal(
+  isListedLibraryAuthor(
+    { name: "Simple Survey", liveReady: true, sourcePile: "main-menu" },
+    "Douglas Carlston"
+  ),
+  true
+);
+assert.equal(
+  isListedLibraryAuthor({ name: "Simple Survey", liveReady: true, sourcePile: "main-menu" }, ""),
+  false
+);
 assert.equal(currentMockUser({}), "dev");
 assert.equal(currentMockUser({ chromeUser: "alice" }), "alice");
 
@@ -276,10 +384,10 @@ assert.equal(
   refusePublishDuplicate({
     identicalListings: copyOfCatalog,
     replaceLibraryId: "online-exam-builder",
-    currentUser: "dev",
+    currentUser: "tawalamundo",
   }),
-  oebRefuse,
-  "catalog seed has no listed author — cannot overwrite OEB"
+  null,
+  "logged-in owner may overwrite seeded Live catalog (no author field)"
 );
 
 const forkLookup = (id) =>

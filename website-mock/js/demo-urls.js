@@ -53,6 +53,8 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
+    "uniqueId": "gy1zssbrwm4fgfm",
+    "deployIdentityName": "Simple Survey Template",
     "versionNumber": 1,
     "timesUsed": 210,
     "cloneCount": 56,
@@ -83,6 +85,8 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
+    "uniqueId": "52ozm3kqd58zlss",
+    "deployIdentityName": "Potluck",
     "versionNumber": 1,
     "timesUsed": 128,
     "cloneCount": 34,
@@ -113,6 +117,8 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "main-menu",
     "liveReady": true,
     "deployed": true,
+    "uniqueId": "b6do4s50iq64vl8",
+    "deployIdentityName": "Get Together Template",
     "versionNumber": 1,
     "timesUsed": 67,
     "cloneCount": 18,
@@ -143,6 +149,8 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
+    "uniqueId": "wg77ytn0bgq1x70",
+    "deployIdentityName": "Horses and Penguins Test",
     "versionNumber": 1,
     "timesUsed": 19,
     "cloneCount": 5,
@@ -169,6 +177,8 @@ window.TAWALA_LIBRARY = {
     "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
+    "uniqueId": "grniytf6dvmobqe",
+    "deployIdentityName": "Multiple Question Survey Template",
     "versionNumber": 1,
     "timesUsed": 44,
     "cloneCount": 12,
@@ -201,6 +211,7 @@ window.TAWALA_LIBRARY = {
     "liveReady": true,
     "deployed": true,
     "uniqueId": "u3hkqgwtrepjlur",
+    "deployIdentityName": "Online Exam Builder",
     "versionNumber": 1,
     "timesUsed": 95,
     "cloneCount": 22,
@@ -371,6 +382,34 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   rowDemoBadge: "Demo - your exam not saved.",
   rowDemoBadgeTitle:
     "Shared teacher try-out on :8080 — nothing you enter is saved. Copy to MyTawala (free account) to keep and run exams for real.",
+  /* Automated List Builder (and other send-mail apps) — Library Test Drive honesty (Sep 8, 2026).
+   * Warning lives on the listing, not in the form (My Tawala Use must not see Test Drive copy).
+   * Version 2: runtime TD flag so a form item can show only during Test Drive. */
+  tooltipSingleEmail:
+    "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080. This app sends real email to addresses you enter — use only addresses you control.",
+  tooltipMultiEmail:
+    "Choose a start. Clears this Library demo when you start (not when you close the tab). This app sends real email to addresses you enter — use only addresses you control.",
+  copyTooltipSingleEmail:
+    "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy. This app sends real email to addresses you enter.",
+  copyTooltipMultiEmail:
+    "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy. This app sends real email to addresses you enter.",
+  copyAlertEmail:
+    "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.\n\nWarning: this app sends real email to every address you enter. Use only addresses you control (your own, or people who have agreed to receive a test).",
+  copyPromptLabelEmail:
+    "Copy this Test Drive link (shared Library demo — sends real email):",
+  pickerOpenLedeEmail:
+    "“{name}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). This app sends real email — use only addresses you control.",
+  pickerCopyLedeEmail:
+    "“{name}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — this app sends real email.",
+  pickerOpenLinkTitleEmail:
+    "Open this start. Clears demo answers on start. This app sends real email — use only addresses you control.",
+  pickerCopyLinkTitleEmail:
+    "Copy this start’s URL (shared Library demo). This app sends real email — use only addresses you control.",
+  startLinkTitleEmail:
+    "Clears this Library demo when you start, then opens :8080. This app sends real email — use only addresses you control.",
+  rowEmailBadge: "Sends real email.",
+  rowEmailBadgeTitle:
+    "Library Test Drive of this app sends real email to every address you enter. Use only addresses you control.",
   /* keepResponses listings (Publish Purge unchecked) — do not claim answers clear on start. */
   tooltipSingleKeep:
     "No account. Opens this published app. Stored answers stay — Test Drive does not clear them.",
@@ -868,6 +907,23 @@ window.TawalaDemo = {
     const hasExam = starts.some((s) => s === "exam");
     const hasAdmin = starts.some((s) => s === "administration" || s === "setup" || s === "admin");
     return !!(hasExam && hasAdmin);
+  },
+  /**
+   * Apps whose Library Test Drive can send real outbound mail (Automated List Builder).
+   * Honesty copy is listing-only; My Tawala Use does not use these keys.
+   * Stamp `sendsRealEmail: true` on a catalog row, or match List Builder name/id/json.
+   */
+  isSendsRealEmailProject(project) {
+    if (!project || typeof project !== "object") return false;
+    if (project.sendsRealEmail === true) return true;
+    const id = String(project.id || "").trim().toLowerCase();
+    if (id === "automated-list-builder" || id.indexOf("list-builder") !== -1) return true;
+    const pulled = String(project.pulledFromLibraryId || "").trim().toLowerCase();
+    if (pulled === "automated-list-builder" || pulled.indexOf("list-builder") !== -1) return true;
+    const json = String(project.jsonFile || "").replace(/\\/g, "/").toLowerCase();
+    if (json.indexOf("list builder") !== -1 || json.indexOf("list-builder") !== -1) return true;
+    const name = String(project.name || "").toLowerCase();
+    return /list\s*builder/.test(name);
   },
   libraryProjectForUniqueId(uniqueId) {
     if (!this.isValidUniqueId(uniqueId)) return null;
@@ -1757,7 +1813,7 @@ window.TawalaDemo = {
    * configure questions. My Tawala Use for multi-start goes to Project Details
    * (not Exam); single-start Use still uses pickPrimaryStartPoint.
    */
-  pickLibraryTestDriveStartPoint(startPoints) {
+  pickLibraryTestDriveStartPoint(startPoints, project) {
     const list = (startPoints || []).filter((s) => s && s.url);
     if (!list.length) return null;
     const labelOf = (s) => this.startFormKey(s) || String(s.label || s.form || "").trim();
@@ -1768,6 +1824,10 @@ window.TawalaDemo = {
         const hit = list.find((s) => setupPrefer[p].test(labelOf(s)));
         if (hit) return hit;
       }
+    }
+    if (project && this.isSendsRealEmailProject(project)) {
+      const setup = list.find((s) => /^setup$/i.test(labelOf(s)));
+      if (setup) return setup;
     }
     return this.pickPrimaryStartPoint(startPoints);
   },
@@ -1783,7 +1843,7 @@ window.TawalaDemo = {
    */
   libraryTestDriveUrl(project) {
     if (!project) return null;
-    const preferred = this.pickLibraryTestDriveStartPoint(project.startPoints);
+    const preferred = this.pickLibraryTestDriveStartPoint(project.startPoints, project);
     if (preferred && preferred.url) return preferred.url;
     return project.testDriveUrl || null;
   },

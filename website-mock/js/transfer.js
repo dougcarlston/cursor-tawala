@@ -561,16 +561,72 @@
     };
   }
 
+  /** Keep in sync with website-mock/js/acquireClone.mjs */
+  function uniqueIdFromLibraryEntry(entry) {
+    if (!entry || typeof entry !== "object") return null;
+    const direct = String(entry.uniqueId || "").trim();
+    if (/^[A-Za-z0-9]{1,20}$/.test(direct)) return direct;
+    const urls = [];
+    if (entry.testDriveUrl) urls.push(entry.testDriveUrl);
+    const sps = Array.isArray(entry.startPoints) ? entry.startPoints : [];
+    for (let i = 0; i < sps.length; i++) {
+      if (sps[i] && sps[i].url) urls.push(sps[i].url);
+    }
+    for (let i = 0; i < urls.length; i++) {
+      const m = String(urls[i]).match(/\/p\/([A-Za-z0-9]{1,20})\//);
+      if (m) return m[1];
+    }
+    return null;
+  }
+
+  /**
+   * Live catalog overwrite keeps the listing uniqueId (e.g. gy1zss…).
+   * Keep in sync with website-mock/js/acquireClone.mjs.
+   */
+  function libraryOverwriteRuntime({ catalogEntry, listingEntry, sourceUniqueId } = {}) {
+    const sourceUid = String(sourceUniqueId || "").trim() || null;
+    const catalogUid = uniqueIdFromLibraryEntry(catalogEntry);
+    const listingUid = uniqueIdFromLibraryEntry(listingEntry);
+    const catalogIdentity = String((catalogEntry && catalogEntry.deployIdentityName) || "").trim();
+    const listingIdentity = String((listingEntry && listingEntry.deployIdentityName) || "").trim();
+    let uniqueId = null;
+    let deployIdentityName = "";
+    let keepCatalogUniqueId = false;
+    if (catalogUid && catalogUid !== sourceUid) {
+      uniqueId = catalogUid;
+      deployIdentityName = catalogIdentity;
+      keepCatalogUniqueId = true;
+    } else if (listingUid && listingUid !== sourceUid) {
+      uniqueId = listingUid;
+      deployIdentityName = listingIdentity || catalogIdentity;
+    }
+    return {
+      uniqueId: uniqueId || null,
+      deployIdentityName,
+      canReuse: !!(uniqueId && sourceUid && uniqueId !== sourceUid && deployIdentityName),
+      keepCatalogUniqueId,
+      refuseMintOnCatalog: !!(
+        keepCatalogUniqueId &&
+        uniqueId &&
+        sourceUid &&
+        uniqueId !== sourceUid &&
+        !deployIdentityName
+      ),
+    };
+  }
+
   /**
    * Redeploy onto an existing Library Tomcat identity (author overwrite).
    * Must not set `_freshFromTemplate` (that would mint a third uniqueId).
+   * Keep in sync with website-mock/js/acquireClone.mjs.
    */
-  function projectBodyForLibraryRedeploy(definition, displayName, deployIdentityName) {
+  function projectBodyForLibraryRedeploy(definition, displayName, deployIdentityName, libraryUniqueId) {
     if (!definition || typeof definition !== "object") {
       throw new Error("definition required");
     }
     const name = String(displayName || "").trim();
     const identity = String(deployIdentityName || "").trim();
+    const libraryUid = String(libraryUniqueId || "").trim();
     if (!name) throw new Error("display name required");
     if (!identity) throw new Error("Library deploy identity required");
     const {
@@ -584,6 +640,7 @@
       ...rest,
       name,
       deployIdentityName: identity,
+      ...(libraryUid ? { deployUniqueId: libraryUid } : {}),
     };
   }
 
@@ -619,6 +676,17 @@
       );
     }
     return incoming;
+  }
+
+  function startPointsMarkedInDefinition(startPoints, definition) {
+    const names = {};
+    const forms = Array.isArray(definition && definition.forms) ? definition.forms : [];
+    for (let i = 0; i < forms.length; i++) {
+      const f = forms[i];
+      if (f && f.startPoint === true && f.name) names[String(f.name)] = true;
+    }
+    if (!Object.keys(names).length) return startPoints || [];
+    return (startPoints || []).filter((sp) => names[String((sp && (sp.form || sp.label)) || "").trim()]);
   }
 
   /**
@@ -2019,6 +2087,10 @@
     "Library copy reused your private live form id — nothing was published. Your My Tawala project is unchanged. Try again.";
   const PUBLISH_LIBRARY_PURGE_FAILED =
     "Couldn't empty the Library copy. Your My Tawala project was not changed. Try Publish again.";
+  const PUBLISH_OVERWRITE_NO_IDENTITY =
+    "Couldn't update the live Library Test Drive in place (missing Tomcat name). Hard-refresh Project Details so the catalog scripts reload, then Publish again.";
+  const PUBLISH_NO_CURRENT_DEFINITION =
+    "This My Tawala project has no saved Push snapshot of the current version. Open it in Designer, Push, choose Show in My Tawala, then Publish again.";
 
   function currentMockUser() {
     if (
@@ -2037,9 +2109,13 @@
   }
 
   function isListedLibraryAuthor(entry, currentUser) {
+    const user = String(currentUser || "").trim();
+    if (!user) return false;
     const author = String((entry && entry.author) || "").trim();
-    if (!author) return false;
-    return author.toLowerCase() === String(currentUser || "").trim().toLowerCase();
+    if (author) return author.toLowerCase() === user.toLowerCase();
+    /* Seeded Live catalog rows have no author. Logged-in owner may overwrite. */
+    const pile = String((entry && entry.sourcePile) || "").trim();
+    return !!(entry && entry.liveReady === true && (pile === "main-menu" || pile === "library"));
   }
 
   function publishDuplicateRefuseMessage(libraryName) {
@@ -2203,8 +2279,8 @@
 
   /**
    * Empty live form for a Library listing. Never copies submissions. Never purges the
-   * author's uniqueId. If the listing already has its own uniqueId (not the author's),
-   * redeploy onto that identity and purge *that* uniqueId. Otherwise mint a new clone.
+   * author's uniqueId. Overwrite of a Live catalog row Redeploys onto that listing's
+   * uniqueId / Tomcat name (keep gy1zss… URLs). Otherwise mint a new clone.
    * Do not call maybeCopyResponsesOntoClone — Library must stay empty.
    */
   async function emptyLibraryRuntimeForPublish({
@@ -2212,9 +2288,10 @@
     sourceProjectId,
     publishName,
     existingLibraryEntry,
+    catalogLibraryEntry,
     sourceUniqueId,
   } = {}) {
-    const resolved = await resolveDefinitionForMyTawalaClone(sourceProject, sourceProjectId);
+    const resolved = await resolveDefinitionForLibraryPublish(sourceProject, sourceProjectId);
     if (!resolved || !resolved.ok) {
       return {
         ok: false,
@@ -2222,15 +2299,18 @@
       };
     }
     const sourceUid = sourceUniqueId || liveUniqueIdForPublish(sourceProjectId, sourceProject);
-    const existingLive = existingLibraryEntry ? liveRuntimeFromLibrarySource(existingLibraryEntry) : {};
-    const existingUid = existingLive.uniqueId || null;
-    const existingIdentity = String(
-      (existingLibraryEntry && existingLibraryEntry.deployIdentityName) || ""
-    ).trim();
-    const canReuse =
-      !!(existingUid && existingIdentity && sourceUid && String(existingUid) !== String(sourceUid));
+    const overwrite = libraryOverwriteRuntime({
+      catalogEntry: catalogLibraryEntry,
+      listingEntry: existingLibraryEntry,
+      sourceUniqueId: sourceUid,
+    });
+    if (overwrite.refuseMintOnCatalog) {
+      return { ok: false, error: PUBLISH_OVERWRITE_NO_IDENTITY };
+    }
+    const canReuse = overwrite.canReuse;
+    const existingIdentity = overwrite.deployIdentityName;
     const themePath = (sourceProject && sourceProject.themePath) || "";
-    const previousStartPoints = (sourceProject && sourceProject.startPoints) || [];
+    const previousStartPoints = [];
 
     if (canReuse) {
       if (typeof window === "undefined" || !window.TawalaDemo) {
@@ -2242,7 +2322,12 @@
       }
       let body;
       try {
-        body = projectBodyForLibraryRedeploy(resolved.project, publishName, existingIdentity);
+        body = projectBodyForLibraryRedeploy(
+          resolved.project,
+          publishName,
+          existingIdentity,
+          overwrite.uniqueId
+        );
       } catch (e) {
         return { ok: false, error: ownerFacingCloneError(e && e.message, PUBLISH_CLONE_FAILED) };
       }
@@ -2256,6 +2341,13 @@
       }
       if (String(deploy.uniqueId) === String(sourceUid)) {
         return { ok: false, error: PUBLISH_CLONE_REUSED_ID };
+      }
+      if (overwrite.uniqueId && String(deploy.uniqueId) !== String(overwrite.uniqueId)) {
+        return {
+          ok: false,
+          error:
+            "Publish did not update the existing Library Test Drive (uniqueId changed). Your My Tawala project is unchanged. Try again.",
+        };
       }
       const libraryUid = deploy.uniqueId;
       let purge = null;
@@ -2273,7 +2365,10 @@
           return { ok: false, error: PUBLISH_LIBRARY_PURGE_FAILED, purge };
         }
       }
-      const startPoints = startPointsFromDeploy(deploy, previousStartPoints);
+      const startPoints = startPointsMarkedInDefinition(
+        startPointsFromDeploy(deploy, previousStartPoints),
+        resolved.project
+      );
       if (!startPoints.length) {
         return { ok: false, error: PUBLISH_CLONE_FAILED };
       }
@@ -2302,7 +2397,11 @@
       noStartsError: PUBLISH_CLONE_FAILED,
     });
     if (!clone || !clone.ok) return clone;
-    return { ...clone, reusedLibraryRuntime: false };
+    const mintedStarts = startPointsMarkedInDefinition(clone.startPoints, resolved.project);
+    if (!mintedStarts.length) {
+      return { ok: false, error: PUBLISH_CLONE_FAILED };
+    }
+    return { ...clone, startPoints: mintedStarts, reusedLibraryRuntime: false };
   }
 
   /**
@@ -2389,6 +2488,7 @@
       sourceProjectId,
       publishName,
       existingLibraryEntry: visibleTarget || baseTarget,
+      catalogLibraryEntry: catalogTarget,
       sourceUniqueId,
     });
     if (!clone || !clone.ok) {
@@ -3204,6 +3304,55 @@
     return ordered;
   }
 
+  /** Keep in sync with website-mock/js/acquireClone.mjs versionDefinitionAttempts. */
+  function versionDefinitionAttempts(source, { currentOnly = false } = {}) {
+    const attempts = [];
+    const seenSnap = {};
+    function addSnap(id, versionNumber) {
+      const s = String(id || "").trim();
+      if (!s || seenSnap[s]) return;
+      seenSnap[s] = true;
+      attempts.push({ kind: "snapshot", snapshotId: s, versionNumber });
+    }
+    const versions = orderedVersionRowsForClone(source);
+    const rows = currentOnly ? versions.slice(0, 1).filter(Boolean) : versions;
+    for (let i = 0; i < rows.length; i++) {
+      const v = rows[i];
+      if (!v) continue;
+      if (v.snapshotId) addSnap(v.snapshotId, v.versionNumber);
+      if (v.definition && typeof v.definition === "object" && v.definition.name) {
+        attempts.push({ kind: "cache", definition: v.definition, versionNumber: v.versionNumber });
+      }
+    }
+    if (source && source.snapshotId) addSnap(source.snapshotId, null);
+    if (source && source.definition && typeof source.definition === "object" && source.definition.name) {
+      attempts.push({ kind: "overlay", definition: source.definition });
+    }
+    return attempts;
+  }
+
+  async function takeDefinitionFromAttempts(attempts, Demo) {
+    const list = Array.isArray(attempts) ? attempts : [];
+    for (let i = 0; i < list.length; i++) {
+      const a = list[i];
+      if (!a) continue;
+      if ((a.kind === "cache" || a.kind === "overlay") && a.definition && a.definition.name) {
+        return { ok: true, project: a.definition, from: a.kind };
+      }
+      if (a.kind === "snapshot" && a.snapshotId && Demo && typeof Demo.fetchVersionSnapshot === "function") {
+        try {
+          const snap = await Demo.fetchVersionSnapshot(a.snapshotId);
+          if (snap && snap.status !== "failure" && snap.project && snap.project.name) {
+            return { ok: true, project: snap.project, from: "snapshot" };
+          }
+        } catch {
+          /* next attempt */
+        }
+      }
+    }
+    return null;
+  }
+
   function hasMyTawalaCloneDefinitionSource(source) {
     if (!source || typeof source !== "object") return false;
     if (source.snapshotId) return true;
@@ -3229,40 +3378,8 @@
 
   async function resolveDefinitionForMyTawalaClone(source, sourceId) {
     const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
-    const versions = orderedVersionRowsForClone(source);
-    for (let i = 0; i < versions.length; i++) {
-      const v = versions[i];
-      if (v && v.definition && typeof v.definition === "object" && v.definition.name) {
-        return { ok: true, project: v.definition, from: "snapshot-cache" };
-      }
-    }
-    const snapIds = [];
-    const seen = {};
-    function pushSnap(id) {
-      const s = String(id || "").trim();
-      if (!s || seen[s]) return;
-      seen[s] = true;
-      snapIds.push(s);
-    }
-    for (let i = 0; i < versions.length; i++) {
-      if (versions[i] && versions[i].snapshotId) pushSnap(versions[i].snapshotId);
-    }
-    if (source && source.snapshotId) pushSnap(source.snapshotId);
-    if (Demo && typeof Demo.fetchVersionSnapshot === "function") {
-      for (let i = 0; i < snapIds.length; i++) {
-        try {
-          const snap = await Demo.fetchVersionSnapshot(snapIds[i]);
-          if (snap && snap.status !== "failure" && snap.project && snap.project.name) {
-            return { ok: true, project: snap.project, from: "snapshot" };
-          }
-        } catch {
-          /* try jsonFile / refuse below */
-        }
-      }
-    }
-    if (source && source.definition && typeof source.definition === "object" && source.definition.name) {
-      return { ok: true, project: source.definition, from: "overlay" };
-    }
+    const hit = await takeDefinitionFromAttempts(versionDefinitionAttempts(source, { currentOnly: false }), Demo);
+    if (hit) return hit;
     const jsonFile = catalogPathForOpenApi(source && source.jsonFile);
     if (jsonFile && Demo && typeof Demo.fetchCatalogProject === "function") {
       try {
@@ -3278,6 +3395,17 @@
       return { ok: false, error: MAKE_COPY_NO_LIVE_FORM_ERROR };
     }
     return { ok: false, error: CLONE_TRY_AGAIN_ERROR };
+  }
+
+  /** Publish: current Push only. Never an older Copy snapshot or catalog jsonFile. */
+  async function resolveDefinitionForLibraryPublish(source, sourceId) {
+    const Demo = typeof window !== "undefined" ? window.TawalaDemo : null;
+    const hit = await takeDefinitionFromAttempts(versionDefinitionAttempts(source, { currentOnly: true }), Demo);
+    if (hit) return hit;
+    if (!hasMyTawalaCloneDefinitionSource(source) && !liveUniqueIdForPublish(sourceId, source)) {
+      return { ok: false, error: MAKE_COPY_NO_LIVE_FORM_ERROR };
+    }
+    return { ok: false, error: PUBLISH_NO_CURRENT_DEFINITION };
   }
 
   async function cloneMyTawalaProjectToPrivateRuntime(source, copyName, sourceId) {

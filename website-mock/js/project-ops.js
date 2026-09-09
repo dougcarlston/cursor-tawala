@@ -120,6 +120,13 @@
     return false;
   }
 
+  function projectSendsRealEmail(project) {
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.isSendsRealEmailProject === "function") {
+      return TawalaDemo.isSendsRealEmailProject(project);
+    }
+    return !!(project && project.sendsRealEmail === true);
+  }
+
   function dataDrivenNoTestDriveTitle() {
     if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.dataDrivenNoTestDriveTitle === "function") {
       return TawalaDemo.dataDrivenNoTestDriveTitle();
@@ -127,18 +134,32 @@
     return "This project is used from My Tawala — Copy to MyTawala. Library Test Drive is not available.";
   }
 
-  /** Visible on Library listing rows for exam / data-driven teacher apps (owner Sep 1, 2026). */
+  /** Visible on Library listing rows for exam / data-driven teacher apps (owner Sep 1, 2026)
+   *  or send-mail apps (List Builder — Sep 8, 2026). */
   function renderLibraryDemoBadge(project) {
-    if (!projectIsDataDriven(project)) return "";
-    const label = honestyText("rowDemoBadge", "Demo - your exam not saved.");
-    const title = honestyText(
-      "rowDemoBadgeTitle",
-      "Shared teacher try-out — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams for real."
-    );
-    return (
-      `<span class="library-demo-badge" title="${escapeHtml(title)}">` +
-      `${escapeHtml(label)}</span>`
-    );
+    if (projectIsDataDriven(project)) {
+      const label = honestyText("rowDemoBadge", "Demo - your exam not saved.");
+      const title = honestyText(
+        "rowDemoBadgeTitle",
+        "Shared teacher try-out — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams for real."
+      );
+      return (
+        `<span class="library-demo-badge" title="${escapeHtml(title)}">` +
+        `${escapeHtml(label)}</span>`
+      );
+    }
+    if (projectSendsRealEmail(project)) {
+      const label = honestyText("rowEmailBadge", "Sends real email.");
+      const title = honestyText(
+        "rowEmailBadgeTitle",
+        "Library Test Drive of this app sends real email to every address you enter. Use only addresses you control."
+      );
+      return (
+        `<span class="library-demo-badge library-email-badge" title="${escapeHtml(title)}">` +
+        `${escapeHtml(label)}</span>`
+      );
+    }
+    return "";
   }
 
   function responseCopyNeedsAlert(result) {
@@ -165,6 +186,9 @@
       const examKey = `${key}Exam`;
       return honestyText(examKey, fallback);
     }
+    if (projectSendsRealEmail(project)) {
+      return honestyText(`${key}Email`, fallback);
+    }
     if (projectKeepsResponses(project)) {
       return honestyText(keepKey, keepFallback || fallback);
     }
@@ -175,6 +199,9 @@
     if (projectIsDataDriven(project)) {
       const examKey = `${key}Exam`;
       return honestyText(examKey, fallback).replace(/\{name\}/g, name);
+    }
+    if (projectSendsRealEmail(project)) {
+      return honestyText(`${key}Email`, fallback).replace(/\{name\}/g, name);
     }
     return honestyForProject(project, key, keepKey, fallback, keepFallback).replace(
       /\{name\}/g,
@@ -1014,11 +1041,12 @@
 
   /**
    * True when Library Test Drive / Copy should show the start picker.
-   * Data-driven exam apps (OEB): skip picker — open/copy the preferred single
-   * start only (Administration / Setup via libraryTestDriveUrl). Owner Sep 2, 2026.
+   * Data-driven exam apps (OEB) and send-mail apps (List Builder): skip picker —
+   * open/copy the preferred single start only (Admin/Setup via libraryTestDriveUrl).
    */
   function isLibraryMultiStart(project) {
     if (projectIsDataDriven(project)) return false;
+    if (projectSendsRealEmail(project)) return false;
     return libraryStartPointsWithUrls(project).length >= 2;
   }
 
@@ -1031,7 +1059,8 @@
       typeof TawalaDemo.pickLibraryTestDriveStartPoint === "function"
     ) {
       preferred = TawalaDemo.pickLibraryTestDriveStartPoint(
-        project && project.startPoints ? project.startPoints : starts
+        project && project.startPoints ? project.startPoints : starts,
+        project
       );
     }
     if (preferred && preferred.url) {
@@ -5311,7 +5340,22 @@
     const action = candidate.stub
       ? "retires to My Tawala, kept marked (stub)"
       : "replaces in place — overlay only";
-    return `${name} — ${action}${matchFlag ? ` (${matchFlag} match)` : ""}`;
+    const catalogSeed =
+      candidate.id && typeof window !== "undefined" && window.TAWALA_LIBRARY
+        ? window.TAWALA_LIBRARY[candidate.id]
+        : null;
+    const catalogName = catalogSeed && catalogSeed.name ? String(catalogSeed.name).trim() : "";
+    const sameName =
+      catalogName &&
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.compactNameKey === "function"
+        ? TawalaTransfer.compactNameKey(catalogName) === TawalaTransfer.compactNameKey(candidate.name)
+        : catalogName.toLowerCase() === String(candidate.name || "").trim().toLowerCase();
+    const was =
+      catalogName && !sameName ? ` (was ${escapeHtml(catalogName)})` : "";
+    const uid = candidate.uniqueId ? String(candidate.uniqueId).trim() : "";
+    const uidBit = uid ? ` · ${escapeHtml(uid)}` : "";
+    return `${name}${was} — ${action}${uidBit}${matchFlag ? ` (${matchFlag} match)` : ""}`;
   }
 
   /** "Uncategorized" is always offered even though it isn't a real Library group — Publish

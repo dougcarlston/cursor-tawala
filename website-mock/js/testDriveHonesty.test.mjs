@@ -47,4 +47,16 @@ assert.doesNotMatch(
 );
 assert.doesNotMatch(demo, /purgeRespondentResponses/);
 
+assert.match(demo, /tooltipSingleEmail:/);
+assert.match(demo, /this app sends real email/i);
+assert.match(demo, /isSendsRealEmailProject/);
+assert.match(demo, /rowEmailBadge:/);
+assert.match(ops, /projectSendsRealEmail\(project\)/);
+assert.match(ops, /library-email-badge/);
+assert.match(
+  ops,
+  /if \(projectSendsRealEmail\(project\)\) return false;/,
+  "Send-mail apps must skip Library Test Drive start picker"
+);
+
 console.log("testDriveHonesty contract ok");

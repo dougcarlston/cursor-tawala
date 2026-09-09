@@ -1259,6 +1259,12 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   white-space: nowrap;
 }
 
+.library-email-badge {
+  border-color: #c47a4a;
+  background: #fbeee6;
+  color: #7a3b16;
+}
+
 .library-name-secondary {
   display: flex;
   flex-wrap: nowrap;
