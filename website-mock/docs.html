@@ -120,15 +120,15 @@ curl -s http://localhost:3001/api/health</pre>
         <div class="block" id="library-admin">
           <h3>Library admin</h3>
           <p>
-            Maintainer tools so rename / overwrite / retire do not require an agent.
+            Maintainer tools so rename / overwrite / delete do not require an agent.
             Open <a href="library-admin.html">library-admin.html</a>.
           </p>
           <ul>
             <li>Enable once via <a href="library-admin.html?admin=1"><code>?admin=1</code></a> or the on-page button (sets <code>tawala.mock.libraryAdmin</code>).</li>
             <li><b>Publish / overwrite</b> from any My Tawala project (Library copy empty; My Tawala data unchanged).</li>
             <li><b>Rename</b> any Library display name in place.</li>
-            <li><b>Retire</b> removes from public Library but always keeps a My Tawala safety copy (no public Library Delete).</li>
-            <li><b>Restore to Library</b> undoes a retirement when that id is still free.</li>
+            <li><b>Delete</b> removes a listing with no successor. No My Tawala copy. The name is free for a later Publish. Live uniqueIds also vacate the :8080 display name.</li>
+            <li><b>Free a live :8080 name</b> — paste an occupant uniqueId (for example a name that is not even a Library row).</li>
           </ul>
           <p class="pm-hint">Quiet links also live in the Library and My Tawala sidebars (Maintainer tools).</p>
         </div>

@@ -6,10 +6,10 @@
   <title>Tawala - My Tawala</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubpriv1" />
-  <script src="js/demo-urls.js?v=20260909-libow1"></script>
-  <script src="js/transfer.js?v=20260909-libow2"></script>
-  <script src="js/project-ops.js?v=20260901-g10themes1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260909-desc1" />
+  <script src="js/demo-urls.js?v=20260909-sharedtodo1"></script>
+  <script src="js/transfer.js?v=20260909-libdel1"></script>
+  <script src="js/project-ops.js?v=20260909-sharedtodo1"></script>
   <script src="js/data-ops.js?v=20260826-pubpriv1"></script>
 </head>
 <body data-tawala-page="mytawala">
@@ -610,20 +610,29 @@
      * Row highlight selection (owner Aug 9 addenda):
      *   single click → select only (enables Pull / Delete)
      *   double-click → Project Details
-     * Use icon stays a real single-click control. Name is not a link (avoids
-     * navigating on the first click of a double-click).
+     * Delay selection so the first click of a double-click does not restyle the
+     * row (or grow the listing bar) before the second click, which used to open
+     * the project one row away.
      */
+    let listingClickTimer = 0;
     projectRows.addEventListener("click", (ev) => {
       if (ev.target.closest("a, button, .pm-icon-action, .pm-op-icon-btn")) return;
       const tr = ev.target.closest("tr[data-project-id]");
       if (!tr) return;
-      setListingSelection(tr.dataset.projectId);
+      const id = tr.dataset.projectId;
+      window.clearTimeout(listingClickTimer);
+      listingClickTimer = window.setTimeout(() => {
+        listingClickTimer = 0;
+        setListingSelection(id);
+      }, 280);
     });
     projectRows.addEventListener("dblclick", (ev) => {
       if (ev.target.closest("a, button, .pm-icon-action, .pm-op-icon-btn")) return;
       const tr = ev.target.closest("tr[data-project-id]");
       if (!tr || !tr.dataset.projectId) return;
       ev.preventDefault();
+      window.clearTimeout(listingClickTimer);
+      listingClickTimer = 0;
       setListingSelection(tr.dataset.projectId);
       location.href = projectDetailsHref(tr.dataset.projectId);
     });

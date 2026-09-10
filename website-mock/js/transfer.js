@@ -7,6 +7,9 @@
  *
  * Keys (local to :5500):
  *   tawala.mock.libraryCategoryOverrides — { [projectId]: categoryLabel }
+ *   tawala.mock.libraryTestDriveDoors — { [projectId]: { mode: "single"|"picker", startKey } }
+ *     Library admin Test Drive door. Default (missing) = single door; picker is opt-in.
+ *     startKey is the Designer form/start label (not a live URL). Copy to MyTawala is unchanged.
  *   tawala.mock.libraryCategoryDefs — { added: [{slug,label,source}], renamed: {slug:label},
  *     deleted: {slug:true} } — admin Category Add / Rename / Delete overlay on top of the
  *     repo's TAWALA_LIBRARY_CATEGORIES (js/demo-urls.js). Rename migrates every affected
@@ -37,10 +40,10 @@
  *   tawala.mock.libraryOverlay — { [libraryId]: catalog-shaped entry } merged into the public
  *     Library — Publish (My Tawala → Library) writes here. Mock-only; shipping an overlay entry
  *     into the repo catalog / demo-urls.js (and liveReady) stays a separate maintainer step.
- *   tawala.mock.libraryRetired — { [libraryId]: true } Library **stub** ids retired by Publish
- *     (removed from the public Library listing; safety copy lives in the My Tawala overlay,
- *     still marked " (stub)"). Replacing a **non-stub** Library entry (e.g. an outdated Main
- *     Menu template) does NOT set this — it just overwrites that id in libraryOverlay in place.
+ *   tawala.mock.libraryRetired — { [libraryId]: true } hides a **catalog seed** row that is
+ *     still in TAWALA_LIBRARY after Library admin **Delete**. Does **not** reserve the slug —
+ *     a later Publish with replace = None may reuse the name. Overlay-only Publishes are
+ *     removed on Delete (no hide flag). Discarded stub slugs are not auto-retired.
  *   tawala.mock.usageStats — { [myTawalaProjectId]: { timesUsed, lastUsedAt, lastUsed } }
  *     Mock **Times used** / **Last used** (Task #13): stamp after a My Tawala **Use**
  *     that actually opens a start URL (listing icon or Project Data Use, after the
@@ -81,14 +84,17 @@
  *
  * Library admin path (owner Aug 1, 2026 — "for when you won't always be available"):
  *   tawala.mock.libraryAdmin — "1" enables admin-only actions on library-admin.html (rename any
- *     Library entry, overwrite one from a My Tawala project, retire without Publishing first).
+ *     Library entry, overwrite one from a My Tawala project, Delete a listing so the name is free).
  *     Mock-only client gate — no real auth; see README § Library admin path for how to turn it on.
- *   Retiring any Library id (stub or not) from the admin page always keeps a My Tawala safety
- *     copy (never hard-deleted) and is reversible via "Restore to Library" as long as no new
- *     Publish/overwrite has since reused that id.
+ *   Delete (admin) removes a listing with no successor: drop the overlay, hide a remaining
+ *     catalog seed if any, do **not** copy to My Tawala, do **not** lock the name. Live
+ *     Tomcat names are vacated via :3001 /api/retire-name (uniqueId still exists under the
+ *     vacated title until Java can delete a deployment). Free-name field on library-admin
+ *     vacates an occupant uniqueId that is not even a Library row (e.g. ALB hatch).
  */
 (function () {
   const CATEGORY_KEY = "tawala.mock.libraryCategoryOverrides";
+  const TEST_DRIVE_DOOR_KEY = "tawala.mock.libraryTestDriveDoors";
   const CATEGORY_DEFS_KEY = "tawala.mock.libraryCategoryDefs";
   const INBOX_KEY = "tawala.mock.deployInbox";
   const PILE_KEY = "tawala.mock.myTawalaOverlay";
@@ -162,7 +168,19 @@
     } else {
       o[projectId] = label;
     }
-    return writeJson(CATEGORY_KEY, o);
+    const wrote = writeJson(CATEGORY_KEY, o);
+    /* Keep an existing Publish overlay in sync so listing category does not depend
+     * only on the parallel override key. Do not mint a new overlay row (that would
+     * look like a Publish). */
+    if (wrote && label) {
+      const overlay = getLibraryOverlay();
+      const prev = overlay[projectId];
+      if (prev && typeof prev === "object" && prev.category !== label) {
+        overlay[projectId] = { ...prev, category: label };
+        writeJson(LIBRARY_OVERLAY_KEY, overlay);
+      }
+    }
+    return wrote;
   }
 
   function clearProjectCategory(projectId) {
@@ -173,8 +191,50 @@
   function withCategoryOverrides(entries) {
     const o = getCategoryOverrides();
     return (entries || []).map((p) => {
+      if (!p || !p.id) return p;
       const next = o[p.id];
-      return next && next !== p.category ? { ...p, category: next, categoryOverridden: true } : p;
+      if (!next) return p;
+      if (next === p.category) {
+        return p.categoryOverridden ? p : { ...p, categoryOverridden: true };
+      }
+      return { ...p, category: next, categoryOverridden: true };
+    });
+  }
+
+  /**
+   * Library Test Drive door (owner Sep 9, 2026). Default is a single start;
+   * the start picker is opt-in per listing. startKey matches startFormKey
+   * (form name or catalog label), not a live URL.
+   */
+  function getTestDriveDoors() {
+    const o = readJson(TEST_DRIVE_DOOR_KEY, {});
+    return o && typeof o === "object" && !Array.isArray(o) ? o : {};
+  }
+
+  function normalizeTestDriveDoor(raw) {
+    const mode = raw && raw.mode === "picker" ? "picker" : "single";
+    const startKey = String((raw && raw.startKey) || "").trim();
+    return { mode, startKey };
+  }
+
+  function getTestDriveDoor(projectId) {
+    if (!projectId) return { mode: "single", startKey: "" };
+    return normalizeTestDriveDoor(getTestDriveDoors()[projectId]);
+  }
+
+  function setTestDriveDoor(projectId, spec) {
+    if (!projectId) return false;
+    const o = getTestDriveDoors();
+    o[projectId] = normalizeTestDriveDoor(spec);
+    return writeJson(TEST_DRIVE_DOOR_KEY, o);
+  }
+
+  function withTestDriveDoor(entries) {
+    return (entries || []).map((p) => {
+      if (!p || !p.id) return p;
+      const door = getTestDriveDoor(p.id);
+      if (p.testDriveMode === door.mode && p.testDriveStartKey === door.startKey) return p;
+      return { ...p, testDriveMode: door.mode, testDriveStartKey: door.startKey };
     });
   }
 
@@ -1197,11 +1257,8 @@
       createdAt: (prev && prev.createdAt) || nowIso,
       updated: now,
       updatedAt: nowIso,
-      shortDescription:
-        (prev && prev.shortDescription) || "Deployed from Web Designer (browser overlay).",
-      longDescription:
-        (prev && prev.longDescription) ||
-        "Added via Deploy → Show in My Tawala. Stored in this browser’s localStorage until copied into demo-urls.js / the MyTawala pile.",
+      shortDescription: ownerFacingProjectDescription(prev && prev.shortDescription),
+      longDescription: ownerFacingProjectDescription(prev && prev.longDescription),
       sourcePile: "deploy-overlay",
       fromDeployOverlay: true,
       designerName: designerName || (prev && prev.designerName) || undefined,
@@ -1221,9 +1278,10 @@
       versionDescription: versionDescription || "",
       versions,
     };
-    overlay[id] = entry;
+    const cleaned = stripBoilerplateDescriptionKeys(entry).entry;
+    overlay[id] = cleaned;
     writeJson(PILE_KEY, overlay);
-    return { id, ...entry };
+    return { id, ...cleaned };
   }
 
   /**
@@ -1238,7 +1296,7 @@
     clearMyTawalaDeleted(projectId);
     const overlay = getMyTawalaOverlay();
     const prev = overlay[projectId] || {};
-    overlay[projectId] = { ...prev, ...properties };
+    overlay[projectId] = stripBoilerplateDescriptionKeys({ ...prev, ...properties }).entry;
     return writeJson(PILE_KEY, overlay);
   }
 
@@ -1558,6 +1616,121 @@
   }
 
   /**
+   * Push / Publish used to stamp this mock-internal sentence when the owner left the
+   * listing blurb blank. Never show it; never write it again.
+   */
+  function isBoilerplateProjectDescription(text) {
+    const s = String(text == null ? "" : text).trim();
+    if (!s) return false;
+    if (/^Deployed from Web Designer \(browser overlay\)\.?$/i.test(s)) return true;
+    if (/^Published from My Tawala \(browser overlay\)\.?$/i.test(s)) return true;
+    if (/Added via Deploy\s*[→\-].*Show in My Tawala/i.test(s)) return true;
+    if (/Published from My Tawala project .+ via the Publish dialog/i.test(s)) return true;
+    if (/Stored in this browser['’]s localStorage until copied into demo-urls\.js/i.test(s)) return true;
+    return false;
+  }
+
+  function ownerFacingProjectDescription(text) {
+    const s = String(text == null ? "" : text).trim();
+    if (!s || isBoilerplateProjectDescription(s)) return "";
+    return s;
+  }
+
+  function shouldDropStoredProjectDescription(text) {
+    const s = String(text == null ? "" : text).trim();
+    return !s || isBoilerplateProjectDescription(s);
+  }
+
+  function stripBoilerplateDescriptionKeys(entry) {
+    if (!entry || typeof entry !== "object") return { entry, changed: false };
+    let next = entry;
+    let changed = false;
+    if (shouldDropStoredProjectDescription(entry.shortDescription) && Object.prototype.hasOwnProperty.call(entry, "shortDescription")) {
+      next = { ...next };
+      delete next.shortDescription;
+      changed = true;
+    }
+    if (shouldDropStoredProjectDescription(entry.longDescription) && Object.prototype.hasOwnProperty.call(next, "longDescription")) {
+      next = next === entry ? { ...next } : next;
+      delete next.longDescription;
+      changed = true;
+    }
+    return { entry: next, changed };
+  }
+
+  /**
+   * Drop Push/Publish boilerplate blurbs from overlays so catalog seed lines
+   * (e.g. Horses “Fun quiz from two young animal lovers”) can show through.
+   */
+  function scrubBoilerplateProjectDescriptions() {
+    let myChanged = false;
+    const my = getMyTawalaOverlay();
+    Object.keys(my).forEach((id) => {
+      const row = my[id];
+      if (!row || typeof row !== "object") return;
+      const stripped = stripBoilerplateDescriptionKeys(row);
+      if (!stripped.changed) return;
+      my[id] = stripped.entry;
+      myChanged = true;
+    });
+    if (myChanged) writeJson(PILE_KEY, my);
+
+    let libChanged = false;
+    const lib = getLibraryOverlay();
+    Object.keys(lib).forEach((id) => {
+      const row = lib[id];
+      if (!row || typeof row !== "object") return;
+      const stripped = stripBoilerplateDescriptionKeys(row);
+      if (!stripped.changed) return;
+      lib[id] = stripped.entry;
+      libChanged = true;
+    });
+    if (libChanged) writeJson(LIBRARY_OVERLAY_KEY, lib);
+    return { ok: true, myTawala: myChanged, library: libChanged };
+  }
+
+  function canEditLibraryListingDescription(entry) {
+    if (!entry) return false;
+    if (isLibraryAdmin()) return true;
+    const user = currentMockUser();
+    if (!user) return false;
+    return isListedLibraryAuthor(entry, user);
+  }
+
+  /**
+   * Edit the public Library one-line blurb (overlay only). Empty restores the
+   * catalog seed description when this id exists in TAWALA_LIBRARY.
+   */
+  function updateLibraryListingDescription(libraryId, shortDescription) {
+    const id = String(libraryId || "").trim();
+    if (!id) return { ok: false, error: "missing-library" };
+    const listing =
+      libraryReplaceCandidates().find((c) => c && c.id === id) ||
+      (window.TAWALA_LIBRARY && window.TAWALA_LIBRARY[id]
+        ? { id, ...window.TAWALA_LIBRARY[id] }
+        : getLibraryOverlayEntry(id));
+    if (!listing) return { ok: false, error: "no-listing" };
+    if (!canEditLibraryListingDescription(listing)) {
+      return { ok: false, error: "not-author" };
+    }
+    const next = ownerFacingProjectDescription(shortDescription);
+    const nowIso = timestampNow();
+    const base = (window.TAWALA_LIBRARY && window.TAWALA_LIBRARY[id]) || {};
+    const prevLib = getLibraryOverlayEntry(id) || {};
+    const { id: _drop, ...prevFields } = prevLib;
+    const entry = sanitizeLibraryEntryForOverlay({
+      ...base,
+      ...prevFields,
+      updated: formatListDate(nowIso),
+      updatedAt: nowIso,
+    });
+    if (next) entry.shortDescription = next;
+    else delete entry.shortDescription;
+    if (!upsertLibraryOverlay(id, entry)) return { ok: false, error: "write-failed" };
+    return { ok: true, libraryId: id, shortDescription: next };
+  }
+
+  /**
    * Strip stored auto acquire blurbs on overlay load (existing Exam Maker / Get Together
    * rows). Hide-on-render still covers the same pattern if this has not run yet.
    */
@@ -1721,6 +1894,7 @@
     rehydrateAcquireLiveUrls();
     ensureOverlayStartingVersions();
     scrubAutoLibraryAcquireVersionNotes();
+    scrubBoilerplateProjectDescriptions();
     ensureOverlayDesignerNames();
     const overlay = getMyTawalaOverlay();
     const deleted = getMyTawalaDeleted();
@@ -1845,6 +2019,17 @@
   }
 
   /**
+   * A real My Tawala → Library Publish overlay (not a leftover stub snapshot).
+   * Discarded seed slugs (sign-up-sheet, …) must still list when this is present.
+   */
+  function isLiveLibraryPublishOverlay(data) {
+    if (!data || typeof data !== "object") return false;
+    if (data.stub === true) return false;
+    if (/\(\s*stub\s*\)\s*$/i.test(String(data.name || ""))) return false;
+    return data.sourcePile === "publish-overlay" || data.fromPublishOverlay === true;
+  }
+
+  /**
    * True when an id/entry must not appear in the public Library (retired WebLibrary stubs,
    * Sign-up Sheet seed, or any stub-marked overlay snapshot). A later Publish at the same
    * slug (`sourcePile: "publish-overlay"`, not stub-marked) is allowed through.
@@ -1863,22 +2048,23 @@
         /* ignore */
       }
       /* Real Publish replacement at a formerly-discarded slug — keep. */
-      if (
-        data.sourcePile === "publish-overlay" &&
-        data.stub !== true &&
-        !/\(\s*stub\s*\)\s*$/i.test(String(data.name || ""))
-      ) {
-        return false;
-      }
+      if (isLiveLibraryPublishOverlay(data)) return false;
     }
     if (discardedLibraryIdSet().has(id)) return true;
     return false;
   }
 
+  function catalogHasSeed(libraryId) {
+    return !!(
+      window.TAWALA_LIBRARY &&
+      Object.prototype.hasOwnProperty.call(window.TAWALA_LIBRARY, libraryId)
+    );
+  }
+
   /**
    * Strip discarded / stub snapshots out of tawala.mock.libraryOverlay so they cannot
-   * resurrect after TAWALA_LIBRARY seed cleanup. Also marks them retired. Safe to call
-   * on every Library load. Does not touch My Tawala safety copies.
+   * resurrect after TAWALA_LIBRARY seed cleanup. Safe to call on every Library load.
+   * Does not lock those slugs — a later Publish may reuse the name.
    */
   function scrubDiscardedLibraryStubs() {
     const overlay = getLibraryOverlay();
@@ -1890,13 +2076,16 @@
       delete overlay[id];
       removed.push(id);
       changed = true;
-      markLibraryRetired(id);
     });
     if (changed) writeJson(LIBRARY_OVERLAY_KEY, overlay);
 
-    /* Also retire discarded ids even when overlay was already empty (blocks Restore). */
+    /* Live Publish at a formerly-discarded slug must list. Leftover denylist hides
+     * that are not catalog seeds must not keep the name reserved. */
     discardedLibraryIdSet().forEach((id) => {
-      if (!isLibraryRetired(id)) markLibraryRetired(id);
+      const data = overlay[id];
+      if (isLiveLibraryPublishOverlay(data) || !catalogHasSeed(id)) {
+        clearLibraryRetired(id);
+      }
     });
 
     /* Drop category overrides for discarded ids (cosmetic; they have no Library row). */
@@ -1908,6 +2097,15 @@
       catChanged = true;
     });
     if (catChanged) writeJson(CATEGORY_KEY, cats);
+
+    const doors = getTestDriveDoors();
+    let doorChanged = false;
+    Object.keys(doors).forEach((id) => {
+      if (!isDiscardedPublicLibraryEntry(id, null) && !discardedLibraryIdSet().has(id)) return;
+      delete doors[id];
+      doorChanged = true;
+    });
+    if (doorChanged) writeJson(TEST_DRIVE_DOOR_KEY, doors);
 
     return { ok: true, removed };
   }
@@ -1923,6 +2121,7 @@
    */
   function withLibraryOverlay(entries) {
     scrubDiscardedLibraryStubs();
+    scrubBoilerplateProjectDescriptions();
     const overlay = getLibraryOverlay();
     const retired = getLibraryRetired();
     const byId = new Map();
@@ -1935,7 +2134,7 @@
     Object.keys(overlay).forEach((id) => {
       const data = overlay[id];
       if (!data || typeof data !== "object") return;
-      if (retired[id]) return;
+      if (retired[id] && !isLiveLibraryPublishOverlay(data)) return;
       if (isDiscardedPublicLibraryEntry(id, data)) return;
       const existing = byId.get(id);
       /* Overlay-only: keep real Publishes; drop stray snapshots of removed seed rows. */
@@ -2033,7 +2232,8 @@
     return withLibraryOverlay(base);
   }
 
-  /** Free slug for a brand-new Library entry — never collides with a currently-visible id. */
+  /** Free slug for a brand-new Library entry — only currently-visible ids are taken.
+   * Discarded / hidden catalog slugs are reusable so Delete + later Publish can keep the name. */
   function uniqueLibrarySlug(baseSlug) {
     const taken = new Set(libraryReplaceCandidates().map((c) => c.id));
     if (!taken.has(baseSlug)) return baseSlug;
@@ -2430,7 +2630,7 @@
    * Publish never keeps responses on the Library uniqueId. `keepResponses` on a new overlay is
    * always false (older overlays that opted out of Purge-on-Publish may still have it).
    */
-  async function publishToLibrary({ sourceProjectId, name, replaceLibraryId, category } = {}) {
+  async function publishToLibrary({ sourceProjectId, name, replaceLibraryId, category, shortDescription: publishDescription } = {}) {
     const sourceProject =
       sourceProjectId && typeof window !== "undefined" && window.TawalaDemo
         ? window.TawalaDemo.getMyTawala(sourceProjectId)
@@ -2542,13 +2742,12 @@
       updated: now,
       updatedAt: nowIso,
       shortDescription:
-        (sourceProject && sourceProject.shortDescription) ||
-        "Published from My Tawala (browser overlay).",
+        ownerFacingProjectDescription(publishDescription) ||
+        ownerFacingProjectDescription(sourceProject && sourceProject.shortDescription) ||
+        ownerFacingProjectDescription(baseTarget && baseTarget.shortDescription),
       longDescription:
-        (sourceProject && sourceProject.longDescription) ||
-        `Published from My Tawala project "${
-          (sourceProject && sourceProject.name) || sourceProjectId || "unknown"
-        }" via the Publish dialog. Stored in this browser's localStorage until copied into demo-urls.js (see README § Publish).`,
+        ownerFacingProjectDescription(sourceProject && sourceProject.longDescription) ||
+        ownerFacingProjectDescription(baseTarget && baseTarget.longDescription),
       stub: false, // do not inherit catalog stub:true if this slug was a retired stub
       sourcePile: "publish-overlay",
       publishedFromId: sourceProjectId || null,
@@ -2574,7 +2773,7 @@
     };
     /* liveReady is an owner-vetted cue — a fresh Publish overlay never claims it automatically. */
 
-    upsertLibraryOverlay(libraryId, entry);
+    upsertLibraryOverlay(libraryId, stripBoilerplateDescriptionKeys(entry).entry);
 
     /* Stamp the source My Tawala row so Details can show Published → Library link + version. */
     if (sourceProjectId) {
@@ -3577,7 +3776,7 @@
     delete clone.id;
     delete clone.fromPublishOverlay;
     delete clone.matchKind;
-    return clone;
+    return stripBoilerplateDescriptionKeys(clone).entry;
   }
 
   /**
@@ -3585,12 +3784,12 @@
    * main-menu, or a prior Publish overlay) without going through Publish. Matching elsewhere
    * (findMatchingLibraryTargets) already ignores the " (stub)" suffix, so renaming a stub to
    * drop/add that suffix is fine and does not by itself flip the underlying `stub` flag —
-   * use Retire (or Publish over it) to actually remove it from the public Library.
+   * use Delete (or Publish over it) to actually remove it from the public Library.
    */
   function renameLibraryEntry(libraryId, newName) {
     if (!libraryId) return { ok: false, error: "libraryId required." };
     if (isLibraryRetired(libraryId)) {
-      return { ok: false, error: "That entry is retired — Publish/admin overwrite can still reuse its id." };
+      return { ok: false, error: "That listing was deleted. Publish again if you want this name back in the Library." };
     }
     const trimmed = String(newName || "").trim();
     if (!trimmed) return { ok: false, error: "Name is required." };
@@ -3606,90 +3805,37 @@
   }
 
   /**
-   * Admin retire — remove any Library id (stub or not) from the public listing with no
-   * replacement, always keeping a My Tawala safety copy (never hard-deleted; see README).
-   * Same destination for two different reasons:
-   *   - **Stub** (`stub: true`) → keeps its " (stub)" name suffix + `stub: true` flag.
-   *   - **Unvetted non-stub** (owner Aug 1, 2026 — "a lot of these": real entries
-   *     catalogued without ever being checked) → name is left as-is,
-   *     NOT given a fake " (stub)" suffix; marked instead via `retiredFromLibraryId` /
-   *     `retiredWasStub: false` plus a note in the description, so the owner can pull it into
-   *     Designer and re-Publish later once it's actually vetted.
+   * Admin Delete — remove a Library listing with no successor. No My Tawala safety copy.
+   * Catalog seeds still in TAWALA_LIBRARY are hidden (so they do not come back on refresh);
+   * the slug is still free for a later Publish. Overlay-only rows are dropped and un-hidden.
    */
-  function retireLibraryEntry(libraryId) {
+  function deleteLibraryEntry(libraryId) {
     if (!libraryId) return { ok: false, error: "libraryId required." };
-    if (isLibraryRetired(libraryId)) {
-      /* Idempotent hide: leftover Publish overlay used to reappear on the public list
-       * because withLibraryOverlay re-added overlay keys without checking retired[id].
-       * Still vacate overlay; do not duplicate the My Tawala safety copy. */
-      const leftover = getLibraryOverlayEntry(libraryId);
-      const myOverlay = getMyTawalaOverlay();
-      const safetyId = Object.prototype.hasOwnProperty.call(myOverlay, libraryId)
-        ? libraryId
-        : Object.prototype.hasOwnProperty.call(myOverlay, `${libraryId}-retired`)
-          ? `${libraryId}-retired`
-          : null;
-      const safety = safetyId ? myOverlay[safetyId] : null;
-      removeLibraryOverlay(libraryId);
-      return {
-        ok: true,
-        libraryId,
-        alreadyRetired: true,
-        myTawalaId: safetyId || undefined,
-        name: (leftover && leftover.name) || (safety && safety.name) || libraryId,
-      };
-    }
+    const leftover = getLibraryOverlayEntry(libraryId);
     const merged = libraryReplaceCandidates().find((c) => c.id === libraryId);
-    if (!merged) return { ok: false, error: `Unknown Library id: ${libraryId}` };
-
-    const nowIso = timestampNow();
-    const now = formatListDate(nowIso);
-    const isStub = merged.stub === true;
-    const myOverlay = getMyTawalaOverlay();
-    const collides =
-      Object.prototype.hasOwnProperty.call(myOverlay, libraryId) ||
-      (window.TAWALA_MYTAWALA && Object.prototype.hasOwnProperty.call(window.TAWALA_MYTAWALA, libraryId));
-    const myId = collides ? `${libraryId}-retired` : libraryId;
-    const retiredEntry = {
-      name: merged.name,
-      stub: isStub, // stubs keep the flag + " (stub)" suffix already in the name; non-stubs stay false
-      category: merged.category,
-      featured: false,
-      iconLabel: merged.iconLabel || iconLabelFromName(merged.name),
-      rating: merged.rating || 0,
-      comments: merged.comments || 0,
-      created: now,
-      createdAt: nowIso,
-      updated: now,
-      updatedAt: nowIso,
-      shortDescription: merged.shortDescription || "",
-      longDescription:
-        (isStub
-          ? `Retired Library stub — safety copy kept after admin retirement (${nowIso.slice(0, 10)}). `
-          : `Retired from the public Library by admin action (${nowIso.slice(0, 10)}) — kept in My Tawala as a safety copy, not deleted. `) +
-        (merged.longDescription || ""),
-      jsonFile: merged.jsonFile || null,
-      sourcePile: "library-retired",
-      retiredFromLibraryId: libraryId,
-      retiredAt: nowIso,
-      retiredWasStub: isStub,
-      deployed: !!merged.deployed,
-      startPoints: merged.startPoints || [],
-      testDriveUrl: merged.testDriveUrl || null,
+    const name = (merged && merged.name) || (leftover && leftover.name) || libraryId;
+    removeLibraryOverlay(libraryId);
+    if (catalogHasSeed(libraryId)) {
+      markLibraryRetired(libraryId);
+    } else {
+      clearLibraryRetired(libraryId);
+    }
+    return {
+      ok: true,
+      libraryId,
+      name,
+      catalogHidden: catalogHasSeed(libraryId),
     };
-    clearMyTawalaDeleted(myId);
-    const nextOverlay = getMyTawalaOverlay();
-    nextOverlay[myId] = retiredEntry;
-    writeJson(PILE_KEY, nextOverlay);
-    markLibraryRetired(libraryId);
-    removeLibraryOverlay(libraryId); // fully vacate the id — no replacement content stays behind
-    return { ok: true, libraryId, myTawalaId: myId, wasStub: isStub, name: merged.name };
+  }
+
+  /** @deprecated Use deleteLibraryEntry — kept so older admin/test snippets keep working. */
+  function retireLibraryEntry(libraryId) {
+    return deleteLibraryEntry(libraryId);
   }
 
   /**
-   * Undo an admin/Publish retirement — brings the original catalog row back into the Library
-   * listing (does not remove the My Tawala safety copy; delete that row separately if unwanted).
-   * No-op if something has since Published/overwritten that same id back into the overlay.
+   * Unhide a catalog seed that admin Delete hid. Overlay-only leftovers have no seed to
+   * restore — clearLibraryRetired is enough and a later Publish can reuse the name.
    */
   function restoreLibraryEntry(libraryId) {
     if (!libraryId) return { ok: false, error: "libraryId required." };
@@ -3787,6 +3933,7 @@
 
   window.TawalaTransfer = {
     CATEGORY_KEY,
+    TEST_DRIVE_DOOR_KEY,
     INBOX_KEY,
     PILE_KEY,
     DELETED_KEY,
@@ -3799,6 +3946,9 @@
     clearProjectCategory,
     withCategoryOverrides,
     effectiveCategory,
+    getTestDriveDoor,
+    setTestDriveDoor,
+    withTestDriveDoor,
     CATEGORY_DEFS_KEY,
     effectiveLibraryCategories,
     addLibraryCategory,
@@ -3845,8 +3995,14 @@
     scrubAutoLibraryAcquireVersionNotes,
     isAutoLibraryAcquireVersionNote,
     ownerFacingVersionDescription,
+    isBoilerplateProjectDescription,
+    ownerFacingProjectDescription,
+    scrubBoilerplateProjectDescriptions,
+    canEditLibraryListingDescription,
+    updateLibraryListingDescription,
     rehydrateAcquireLiveUrls,
     isDiscardedPublicLibraryEntry,
+    isLiveLibraryPublishOverlay,
     getLibraryRetired,
     isLibraryRetired,
     markLibraryRetired,
@@ -3891,7 +4047,9 @@
     ADMIN_KEY,
     isLibraryAdmin,
     setLibraryAdmin,
+    catalogHasSeed,
     renameLibraryEntry,
+    deleteLibraryEntry,
     retireLibraryEntry,
     restoreLibraryEntry,
   };

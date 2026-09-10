@@ -6,10 +6,10 @@
   <title>Tawala - Library</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260908-emailtd1" />
-  <script src="js/demo-urls.js?v=20260909-libow1"></script>
-  <script src="js/transfer.js?v=20260909-libow2"></script>
-  <script src="js/project-ops.js?v=20260908-emailtd1"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260909-tdtip1" />
+  <script src="js/demo-urls.js?v=20260909-tddoor1"></script>
+  <script src="js/transfer.js?v=20260909-tddoor1"></script>
+  <script src="js/project-ops.js?v=20260909-tddoor1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-status="compact">
   <div id="doc">
@@ -135,10 +135,25 @@
             ? String(Math.floor(Number(p.versionNumber)))
             : "—";
       /* Line 1: title. Line 2: stars + one-line blurb. Icons = Test drive | Copy link | Copy to MyTawala. */
-      const blurb = String(p.shortDescription || "").trim();
-      const blurbHtml = blurb
-        ? `<span class="description library-row-blurb">${escapeHtml(blurb)}</span>`
+      const blurb =
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.ownerFacingProjectDescription === "function"
+          ? TawalaTransfer.ownerFacingProjectDescription(p.shortDescription)
+          : String(p.shortDescription || "").trim();
+      const canEdit =
+        typeof TawalaTransfer !== "undefined" &&
+        typeof TawalaTransfer.canEditLibraryListingDescription === "function" &&
+        TawalaTransfer.canEditLibraryListingDescription(p);
+      const blurbAttrs = canEdit
+        ? ` data-wired="edit-library-description" data-project="${escapeHtml(
+            p.id
+          )}" title="Double-click to edit this Library description"`
         : "";
+      const blurbHtml = blurb
+        ? `<span class="description library-row-blurb"${blurbAttrs}>${escapeHtml(blurb)}</span>`
+        : canEdit
+          ? `<span class="description library-row-blurb is-empty"${blurbAttrs}>Add a description</span>`
+          : "";
       const demoBadge =
         typeof TawalaProjectOps !== "undefined" &&
         TawalaProjectOps.renderLibraryDemoBadge
@@ -382,6 +397,9 @@
     if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.scrubDiscardedLibraryStubs) {
       TawalaTransfer.scrubDiscardedLibraryStubs();
     }
+    if (typeof TawalaTransfer !== "undefined" && TawalaTransfer.scrubBoilerplateProjectDescriptions) {
+      TawalaTransfer.scrubBoilerplateProjectDescriptions();
+    }
     renderCategoryNav();
     document.getElementById("librarySubmenuHost").innerHTML =
       TawalaProjectOps.renderLibrarySubmenu("Search");
@@ -399,6 +417,10 @@
       }
     })();
     applyFilters();
+
+    document.addEventListener("tawala:library-description-changed", () => {
+      applyFilters();
+    });
 
     document.addEventListener("tawala:edit-categories", () => {
       renderCategoryEditor();

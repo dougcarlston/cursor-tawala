@@ -127,6 +127,16 @@
     return !!(project && project.sendsRealEmail === true);
   }
 
+  function projectIsSharedToDo(project) {
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.isSharedToDoProject === "function") {
+      return TawalaDemo.isSharedToDoProject(project);
+    }
+    const id = String((project && project.id) || "").trim().toLowerCase();
+    if (id === "shared-to-do" || id.indexOf("shared-to-do") !== -1) return true;
+    const name = String((project && project.name) || "").toLowerCase();
+    return /shared\s*to-?do/.test(name);
+  }
+
   function dataDrivenNoTestDriveTitle() {
     if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.dataDrivenNoTestDriveTitle === "function") {
       return TawalaDemo.dataDrivenNoTestDriveTitle();
@@ -186,6 +196,9 @@
       const examKey = `${key}Exam`;
       return honestyText(examKey, fallback);
     }
+    if (projectIsSharedToDo(project)) {
+      return honestyText(`${key}Todo`, fallback);
+    }
     if (projectSendsRealEmail(project)) {
       return honestyText(`${key}Email`, fallback);
     }
@@ -199,6 +212,9 @@
     if (projectIsDataDriven(project)) {
       const examKey = `${key}Exam`;
       return honestyText(examKey, fallback).replace(/\{name\}/g, name);
+    }
+    if (projectIsSharedToDo(project)) {
+      return honestyText(`${key}Todo`, fallback).replace(/\{name\}/g, name);
     }
     if (projectSendsRealEmail(project)) {
       return honestyText(`${key}Email`, fallback).replace(/\{name\}/g, name);
@@ -231,7 +247,7 @@
       label: "Test drive",
       title: honestyText(
         "tooltipSingle",
-        "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080."
+        "No account. Clears this Library demo when you start (not when you close the tab)."
       ),
       wired: "test-drive",
       icon: "testdrive",
@@ -808,10 +824,26 @@
       .replace(/"/g, "&quot;");
   }
 
-  /** Native title tooltips are unreliable on 22px Library icons; data-tooltip drives CSS tips. */
+  /** CSS tooltip only — native title stacked a second bubble and is unreliable on 20px icons. */
   function libraryTooltipAttrs(title) {
     const t = escapeHtml(title);
-    return `title="${t}" data-tooltip="${t}"`;
+    return `data-tooltip="${t}"`;
+  }
+
+  /**
+   * Close only when press and release are both on the dimmed backdrop.
+   * Dragging a text caret/selection slightly past the field must not cancel the dialog.
+   */
+  function bindDismissOnBackdropClick(backdrop, closeFn) {
+    if (!backdrop || typeof closeFn !== "function") return;
+    let pressOnBackdrop = false;
+    backdrop.addEventListener("pointerdown", (ev) => {
+      pressOnBackdrop = ev.target === backdrop;
+    });
+    backdrop.addEventListener("click", (ev) => {
+      if (ev.target === backdrop && pressOnBackdrop) closeFn();
+      pressOnBackdrop = false;
+    });
   }
 
   function isOpActive(op) {
@@ -986,16 +1018,16 @@
     const slots = Math.max(actions.length, 1);
     const subs = actions
       .map((op) => {
-        let extra = "";
+        let extraTitle = "";
         if (op.metric === "timesUsed") {
-          extra = `<span class="library-action-metric-head">Times used</span>`;
+          extraTitle = "Times used — Library Test Drive opens";
         } else if (op.metric === "cloneCount") {
-          extra = `<span class="library-action-metric-head">Copies</span>`;
+          extraTitle = "Copies downloaded — Copy to MyTawala / Get from Library";
         }
+        const tip = extraTitle ? `${op.title} · ${extraTitle}` : op.title;
         return (
-          `<span class="library-action-subhead" ${libraryTooltipAttrs(op.title)}>` +
+          `<span class="library-action-subhead" ${libraryTooltipAttrs(tip)}>` +
           libraryListingActionSubheadLabel(op) +
-          extra +
           `</span>`
         );
       })
@@ -1041,13 +1073,21 @@
 
   /**
    * True when Library Test Drive / Copy should show the start picker.
-   * Data-driven exam apps (OEB) and send-mail apps (List Builder): skip picker —
-   * open/copy the preferred single start only (Admin/Setup via libraryTestDriveUrl).
+   * Default is a single door (admin opt-in to picker). Copy to MyTawala still
+   * clones the full definition with every start.
    */
   function isLibraryMultiStart(project) {
-    if (projectIsDataDriven(project)) return false;
-    if (projectSendsRealEmail(project)) return false;
-    return libraryStartPointsWithUrls(project).length >= 2;
+    if (libraryStartPointsWithUrls(project).length < 2) return false;
+    if (project && project.testDriveMode === "picker") return true;
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.getTestDriveDoor === "function" &&
+      project &&
+      project.id
+    ) {
+      return TawalaTransfer.getTestDriveDoor(project.id).mode === "picker";
+    }
+    return false;
   }
 
   /** Prefer Library Test Drive ranking (Admin/Setup for Exam apps); else first start. */
@@ -1076,6 +1116,8 @@
     const pid = (project && project.id) || "";
     const title = projectIsDataDriven(project)
       ? "Copy to MyTawala (free account) — private copy with your own live exam; the shared Test Drive demo does not save your work"
+      : projectIsSharedToDo(project)
+        ? "Copy to MyTawala (free) — private copy with Setup, Signup, and Administration; Library Test Drive is Setup only"
       : "Copy this Library project into My Tawala (empty private clone; does not copy other people’s responses)";
     if (variant === "text") {
       return (
@@ -1115,7 +1157,7 @@
           project,
           "tooltipSingle",
           "tooltipSingleKeep",
-          "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080.",
+          "No account. Clears this Library demo when you start (not when you close the tab).",
           "No account. Opens this published app. Stored answers stay — Test Drive does not clear them."
         );
     if (variant === "text") {
@@ -1452,6 +1494,16 @@
     const s = String(text == null ? "" : text).trim();
     if (!s || isAutoLibraryAcquireVersionNote(s)) return "";
     return s;
+  }
+
+  function ownerFacingProjectDescription(text) {
+    if (
+      typeof TawalaTransfer !== "undefined" &&
+      typeof TawalaTransfer.ownerFacingProjectDescription === "function"
+    ) {
+      return TawalaTransfer.ownerFacingProjectDescription(text);
+    }
+    return String(text == null ? "" : text).trim();
   }
 
   /**
@@ -1845,13 +1897,15 @@
     });
 
     if (hint) {
+      const idle =
+        "Get from Library saves a copy into My Tawala · select a project to Make a Copy or Delete · select a linked project to Refresh";
+      hint.textContent = idle;
       if (!id) {
-        hint.textContent =
-          "Get from Library saves a copy into My Tawala · select a project to Make a Copy or Delete · select a linked project to Refresh";
+        hint.removeAttribute("title");
       } else if (link) {
-        hint.textContent = `Selected “${selectedName}” · linked to Library “${link.name}” — Make a Copy / Refresh / Delete available`;
+        hint.title = `Selected “${selectedName}” · linked to Library “${link.name}”`;
       } else {
-        hint.textContent = `Selected “${selectedName}” · not linked to Library — Make a Copy / Delete available; use Get from Library… to acquire`;
+        hint.title = `Selected “${selectedName}” · not linked to Library`;
       }
     }
   }
@@ -3201,27 +3255,9 @@
     closeTestDrivePickModal();
     closeDeployShareModal();
 
-    const displayName =
-      typeof TawalaDemo !== "undefined" && typeof TawalaDemo.displayName === "function"
-        ? TawalaDemo.displayName(project.name || projectId)
-        : String(project.name || projectId);
     const isCopy = intent === "copy";
     const title = isCopy ? "Copy link — choose a start" : "Test Drive — choose a start";
-    const safeName = escapeHtml(displayName);
-    const lede = isCopy
-      ? honestyNamed(
-          "pickerCopyLede",
-          safeName,
-          `“${safeName}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — not a private copy.`
-        )
-      : honestyNamedForProject(
-          project,
-          "pickerOpenLede",
-          "pickerOpenLedeKeep",
-          safeName,
-          `“${safeName}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). Use every start during this drive.`,
-          `“${safeName}” has more than one start form. Click a name to open it. Stored answers stay (Test Drive does not clear them).`
-        );
+    const lede = isCopy ? "Choose a start to copy." : "Choose a start.";
     const linkTitle = isCopy
       ? honestyText(
           "pickerCopyLinkTitle",
@@ -3234,10 +3270,6 @@
           "Open this start. Clears demo answers on start, not when you close the tab.",
           "Open this start. Does not clear stored answers."
         );
-    const pickerHint = honestyText(
-      "pickerHint",
-      "No account needed. Closing the Test Drive tab does not wipe answers."
-    );
 
     const linksHtml = starts
       .map((sp, i) => {
@@ -3259,7 +3291,6 @@
       `<p class="pm-hint tawala-modal-lede">${lede}</p>` +
       '<div class="tawala-modal-body">' +
       `<ul class="testdrive-pick-list" role="list">${linksHtml}</ul>` +
-      `<p class="pm-hint tawala-modal-hint-tight">${escapeHtml(pickerHint)}</p>` +
       "</div>" +
       '<div class="tawala-modal-actions">' +
       '<button type="button" class="pm-action" id="testDrivePickClose">Close</button>' +
@@ -3268,9 +3299,7 @@
     document.body.appendChild(backdrop);
     document.addEventListener("keydown", handleTestDrivePickModalKeydown, true);
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeTestDrivePickModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeTestDrivePickModal);
     const closeBtn = backdrop.querySelector("#testDrivePickClose");
     if (closeBtn) closeBtn.addEventListener("click", closeTestDrivePickModal);
 
@@ -4350,10 +4379,11 @@
         : "") +
       `</h2>` +
       (() => {
-        const blurb = String(project.shortDescription || "").trim();
+        const blurb = ownerFacingProjectDescription(project.shortDescription);
         const empty = !blurb;
         return (
           `<p class="pm-detail-meta${empty ? " is-empty" : ""}" tabindex="0" ` +
+          `title="Double-click to edit this description" ` +
           `data-wired="edit-description" data-project="${escapeHtml(project.id)}">` +
           (empty
             ? `<span class="pm-detail-meta-ph" aria-hidden="true">Add a description</span>`
@@ -4657,9 +4687,7 @@
       showErr("");
     }
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeRenameModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeRenameModal);
     backdrop.querySelector("#renameModalCancel").addEventListener("click", closeRenameModal);
     document.addEventListener("keydown", handleRenameModalKeydown, true);
 
@@ -4747,21 +4775,45 @@
   }
 
   /**
-   * Project Details — double-click blurb under title → edit shortDescription (My Tawala overlay).
-   * Quieter than Rename: no instructional “double-click” hint on the page; discoverable only that way.
+   * Description under the title (My Tawala Details) or on a Library listing row:
+   * double-click → edit shortDescription. Listing: "library"; Details: My Tawala overlay.
    */
-  function openEditDescriptionDialog(projectId) {
+  function openEditDescriptionDialog(projectId, opts) {
     if (typeof TawalaTransfer === "undefined" || typeof TawalaDemo === "undefined") {
       window.alert("Description edit isn't available — required scripts didn't load. Refresh and try again.");
       return;
     }
-    if (typeof TawalaTransfer.upsertMyTawalaProperties !== "function") {
+    const listing = opts && opts.listing === "library" ? "library" : "mytawala";
+    if (listing === "mytawala" && typeof TawalaTransfer.upsertMyTawalaProperties !== "function") {
       window.alert("Description edit isn't available — transfer support is outdated. Hard-refresh and try again.");
       return;
     }
-    const project = projectId && TawalaDemo.getMyTawala ? TawalaDemo.getMyTawala(projectId) : null;
+    if (listing === "library" && typeof TawalaTransfer.updateLibraryListingDescription !== "function") {
+      window.alert("Description edit isn't available — transfer support is outdated. Hard-refresh and try again.");
+      return;
+    }
+    const project =
+      listing === "library"
+        ? projectId && TawalaDemo.getLibrary
+          ? TawalaDemo.getLibrary(projectId)
+          : null
+        : projectId && TawalaDemo.getMyTawala
+          ? TawalaDemo.getMyTawala(projectId)
+          : null;
     if (!project) {
-      window.alert(`Can't edit description — unknown My Tawala project: ${projectId || "(none)"}`);
+      window.alert(
+        listing === "library"
+          ? `Can't edit description — unknown Library project: ${projectId || "(none)"}`
+          : `Can't edit description — unknown My Tawala project: ${projectId || "(none)"}`
+      );
+      return;
+    }
+    if (
+      listing === "library" &&
+      typeof TawalaTransfer.canEditLibraryListingDescription === "function" &&
+      !TawalaTransfer.canEditLibraryListingDescription(project)
+    ) {
+      window.alert("You can only edit the Library description if you are that listing’s author.");
       return;
     }
     closeDescModal();
@@ -4769,15 +4821,19 @@
     closeSaveCopyModal();
     closeMakeCopyModal();
 
-    const current = String(project.shortDescription || "").trim();
+    const current = ownerFacingProjectDescription(project.shortDescription);
     const backdrop = document.createElement("div");
     backdrop.className = "tawala-modal-backdrop";
     backdrop.id = DESC_MODAL_ID;
     backdrop.innerHTML =
       '<div class="tawala-modal tawala-modal--publish tawala-modal--desc" role="dialog" aria-modal="true" aria-labelledby="descModalTitle">' +
-      `<h3 id="descModalTitle">Description</h3>` +
+      `<h3 id="descModalTitle">${listing === "library" ? "Library description" : "Description"}</h3>` +
       '<div class="tawala-modal-body">' +
-      '<label class="tawala-modal-field" for="descModalInput">Under the project title' +
+      `<label class="tawala-modal-field" for="descModalInput">${
+        listing === "library"
+          ? "One-line blurb on the public Library listing"
+          : "Under the project title"
+      }` +
       `<textarea id="descModalInput" rows="3" autocomplete="off">${escapeHtml(current)}</textarea>` +
       "</label>" +
       '<p class="pm-hint" id="descModalError" role="alert" style="display:none;"></p>' +
@@ -4797,16 +4853,34 @@
       errEl.style.display = msg ? "" : "none";
     }
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeDescModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeDescModal);
     backdrop.querySelector("#descModalCancel").addEventListener("click", closeDescModal);
     document.addEventListener("keydown", handleDescModalKeydown, true);
 
     function confirmDesc() {
-      const next = String(input.value || "").trim();
+      const next = ownerFacingProjectDescription(input.value);
       if (next === current) {
         closeDescModal();
+        return;
+      }
+      if (listing === "library") {
+        const result = TawalaTransfer.updateLibraryListingDescription(projectId, next);
+        if (!result || !result.ok) {
+          showErr(
+            result && result.error === "not-author"
+              ? "You can only edit this listing if you are its author."
+              : "Could not save the Library description (localStorage)."
+          );
+          input.focus();
+          return;
+        }
+        closeDescModal();
+        setStatus(next ? "Library description updated." : "Library description cleared.");
+        document.dispatchEvent(
+          new CustomEvent("tawala:library-description-changed", {
+            detail: { libraryId: projectId, shortDescription: next },
+          })
+        );
         return;
       }
       const ok = TawalaTransfer.upsertMyTawalaProperties(projectId, {
@@ -4816,6 +4890,10 @@
         showErr("Could not save to My Tawala (localStorage).");
         input.focus();
         return;
+      }
+      const publishedId = String((project && project.publishedToLibraryId) || "").trim();
+      if (publishedId && typeof TawalaTransfer.updateLibraryListingDescription === "function") {
+        TawalaTransfer.updateLibraryListingDescription(publishedId, next);
       }
       closeDescModal();
       setStatus(next ? "Description updated." : "Description cleared.");
@@ -4882,7 +4960,7 @@
           ? TawalaDemo.displayName(p.name)
           : String(p.name || p.id);
         const cat = p.category || "Uncategorized";
-        const blurb = String(p.shortDescription || "").trim();
+        const blurb = ownerFacingProjectDescription(p.shortDescription);
         const live =
           p.liveReady === true || (p.deployed && p.testDriveUrl)
             ? ' <span class="get-lib-live" title="Live try-out on :8080">Live</span>'
@@ -4942,9 +5020,7 @@
       openSaveCopyDialog(libraryId);
     }
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeGetLibraryModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeGetLibraryModal);
     backdrop.querySelector("#getLibModalCancel").addEventListener("click", closeGetLibraryModal);
     backdrop.querySelector("#getLibModalContinue").addEventListener("click", continueAcquire);
     backdrop.querySelectorAll(".get-lib-row").forEach((row) => {
@@ -5041,9 +5117,7 @@
       showErr("");
     }
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeSaveCopyModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeSaveCopyModal);
     backdrop.querySelector("#saveCopyModalCancel").addEventListener("click", closeSaveCopyModal);
     document.addEventListener("keydown", handleSaveCopyModalKeydown, true);
 
@@ -5224,9 +5298,7 @@
       showErr("");
     }
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeMakeCopyModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeMakeCopyModal);
     backdrop.querySelector("#makeCopyModalCancel").addEventListener("click", closeMakeCopyModal);
     document.addEventListener("keydown", handleMakeCopyModalKeydown, true);
 
@@ -5622,9 +5694,7 @@
     document.body.appendChild(backdrop);
     document.addEventListener("keydown", handleDeployShareModalKeydown, true);
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closeDeployShareModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closeDeployShareModal);
     const closeBtn = backdrop.querySelector("#deployShareClose");
     if (closeBtn) closeBtn.addEventListener("click", closeDeployShareModal);
 
@@ -5814,11 +5884,16 @@
       '<label class="tawala-modal-field" for="publishCategorySelect">Library category (required)' +
       `<select id="publishCategorySelect" title="Defaults to the replace target\u2019s category, or Uncategorized">${publishCategoryOptionsHtml(defaultPublishCategory(null, project))}</select>` +
       "</label>" +
+      '<label class="tawala-modal-field tawala-modal-field--full" for="publishDescInput">Library description (one line)' +
+      `<textarea id="publishDescInput" rows="2" autocomplete="off" placeholder="Shown under the name in the public Library">${escapeHtml(
+        ownerFacingProjectDescription(project.shortDescription)
+      )}</textarea>` +
+      "</label>" +
       '<label class="tawala-modal-field tawala-modal-field--full" for="publishStubSelect">Replace an existing Library project (optional)' +
       `<select id="publishStubSelect">${initial.html}</select>` +
       "</label>" +
       "</div>" +
-      '<p class="pm-hint tawala-modal-hint-tight">Stubs retire to My Tawala marked <code>(stub)</code> (never hard-deleted). Non-stubs overlay in place. No public Library Delete.</p>' +
+      '<p class="pm-hint tawala-modal-hint-tight">To remove a listing with no successor, use Library admin <b>Delete</b> — the name can be used again. Overwrite keeps the listing id. Stubs (if any remain) still copy to My Tawala when replaced.</p>' +
       '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate live form with no saved responses. Your My Tawala project and its data are not changed. You cannot publish a copy of an existing Library product unless you are that listing’s author and are updating it.</p>' +
       '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
       "</div>" +
@@ -5833,6 +5908,7 @@
     const nameInput = backdrop.querySelector("#publishNameInput");
     const stubSelect = backdrop.querySelector("#publishStubSelect");
     const categorySelect = backdrop.querySelector("#publishCategorySelect");
+    const descInput = backdrop.querySelector("#publishDescInput");
     const confirmBtn = backdrop.querySelector("#publishModalConfirm");
     const liveId =
       typeof TawalaTransfer.liveUniqueIdForPublish === "function"
@@ -5862,14 +5938,31 @@
     categorySelect.addEventListener("change", () => {
       categoryTouchedByUser = true;
     });
+    let descTouchedByUser = false;
+    if (descInput) {
+      descInput.addEventListener("input", () => {
+        descTouchedByUser = true;
+      });
+    }
     function syncCategoryToTarget() {
       if (categoryTouchedByUser) return;
       const target = stubSelect.value ? allCandidates.find((c) => c.id === stubSelect.value) : null;
       const label = defaultPublishCategory(target, project);
       categorySelect.innerHTML = publishCategoryOptionsHtml(label);
     }
+    function syncDescToTarget() {
+      if (!descInput || descTouchedByUser) return;
+      const target = stubSelect.value ? allCandidates.find((c) => c.id === stubSelect.value) : null;
+      const fromMine = ownerFacingProjectDescription(project.shortDescription);
+      const fromTarget = ownerFacingProjectDescription(target && target.shortDescription);
+      descInput.value = fromMine || fromTarget || "";
+    }
     syncCategoryToTarget();
-    stubSelect.addEventListener("change", syncCategoryToTarget);
+    syncDescToTarget();
+    stubSelect.addEventListener("change", () => {
+      syncCategoryToTarget();
+      syncDescToTarget();
+    });
 
     nameInput.addEventListener("input", () => {
       const prevChoice = stubSelect.value;
@@ -5880,11 +5973,10 @@
       const stillPresent = Array.from(stubSelect.options).some((o) => o.value === prevChoice);
       stubSelect.value = prevChoice && stillPresent ? prevChoice : next.preselectId;
       syncCategoryToTarget();
+      syncDescToTarget();
     });
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closePublishModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closePublishModal);
     backdrop.querySelector("#publishModalCancel").addEventListener("click", closePublishModal);
 
     backdrop.querySelector("#publishModalConfirm").addEventListener("click", async () => {
@@ -5922,6 +6014,7 @@
         name: nameVal,
         replaceLibraryId: replaceLibraryId || null,
         category: categoryVal,
+        shortDescription: ownerFacingProjectDescription(descInput && descInput.value),
       });
       if (result && result.cancelledStrip) return;
       if (result && result.duplicateProduct) {
@@ -6063,9 +6156,7 @@
     sourceSelect.value = initialSelect;
     sourceSelect.focus();
 
-    backdrop.addEventListener("click", (ev) => {
-      if (ev.target === backdrop) closePullModal();
-    });
+    bindDismissOnBackdropClick(backdrop, closePullModal);
     backdrop.querySelector("#pullModalCancel").addEventListener("click", closePullModal);
 
     backdrop.querySelector("#pullModalConfirm").addEventListener("click", () => {
@@ -6165,7 +6256,7 @@
     }
 
     if (wired === "edit-categories" || op === "edit-categories") {
-      /* library.html listens for data-op=edit-categories and opens the editor. */
+      ev.preventDefault();
       document.dispatchEvent(new CustomEvent("tawala:edit-categories"));
       return;
     }
@@ -6506,7 +6597,16 @@
       }
       const meta =
         ev.target.closest && ev.target.closest('.pm-detail-meta[data-wired="edit-description"]');
-      if (!meta) return;
+      if (!meta) {
+        const libBlurb =
+          ev.target.closest &&
+          ev.target.closest('[data-wired="edit-library-description"]');
+        if (libBlurb) {
+          ev.preventDefault();
+          openEditDescriptionDialog(libBlurb.dataset.project || "", { listing: "library" });
+        }
+        return;
+      }
       ev.preventDefault();
       openEditDescriptionDialog(meta.dataset.project || "");
     });

@@ -17,7 +17,11 @@ Sep 4 evening close (pre-travel) is preserved below the Sep 8 delta.
 3. **Get Together Sample** + **Potluck Sample** — looping demos were built Sep 8; **parked Sep 9** (`_set-aside/`). Owner: those two are not Samples this pass. Full apps restored to multi-start.
 4. **Automated List Builder** — private Push identity stamped; public occupant left in place. Option A AfterSave on Setup; Questionnaire + Administration restored as starts. **Owner Push from Designer** (File→Open tray JSON → Push) then TD-smoke Setup.
 
-Did **not** this pass: public Library Push; retire/hatch occupant `ceihmyxlssxn6yn`; Designer C14/C15/F1.
+Did **not** this pass: public Library Push; Designer C14/C15/F1.
+
+**Sep 9 — Library admin Delete (replaces Retire):** listings are removed with no My Tawala copy; the name is free for a later Publish. Occupant uniqueIds (ALB `ceihmyxlssxn6yn`) can be vacated from library-admin **Free a live :8080 name** — no agent hatch. Tomcat still cannot destroy uniqueIds (rename only).
+
+**Sep 9 — Test Drive doors:** Library admin **Test Drive doors** sets per listing **Single door** (default) or **Start picker**. Single door also picks which start Test Drive / Copy link open. Copy to MyTawala still clones every start. Stored in `tawala.mock.libraryTestDriveDoors`. Missing overlay uses the old heuristics (OEB→Administration, email/Shared To-Do→Setup).
 
 ---
 
@@ -27,10 +31,10 @@ Did **not** this pass: public Library Push; retire/hatch occupant `ceihmyxlssxn6
 
 | File | Status |
 |------|--------|
-| `Survey Sample.json` | **Owner approved Sep 9** |
-| `Multiple Question Survey Sample.json` | **Owner approved Sep 9.** Drop Report as a **start** (keep Report form; loop still reaches it). TD door = Survey. |
-| `Sign-up Sheet Sample.json` | **Owner approved Sep 9** |
-| `Horses and Penguins Test.json` | **Owner approved Sep 9** (already Live Library) |
+| `Survey Sample.json` | **Live Library Sep 9** (overwrite Simple Survey) |
+| `Multiple Question Survey Sample.json` | **Live Library Sep 9** (overwrite Simple Multiple Question Survey). Drop Report as a **start** (keep Report form; loop still reaches it). TD door = Survey. |
+| `Sign-up Sheet Sample.json` | **Live Library Sep 9** |
+| `Horses and Penguins Test.json` | **Live Library — leave as-is** (owner Sep 9; do not re-Publish or rewrite the blurb) |
 | `Get Together Sample.json` | **Parked Sep 9** → `_set-aside/Get Together Sample__parked-2026-09-09.json`. Not a Library Sample this pass. |
 | `Potluck Sample.json` | **Parked Sep 9** → `_set-aside/Potluck Sample__parked-2026-09-09.json`. Not a Library Sample this pass. |
 
@@ -40,9 +44,9 @@ Public names (drop Sophisticated). Library **Test Drive OK** for these four:
 
 | File | TD door | Notes |
 |------|---------|--------|
-| `Single Question Poll or Survey.json` | **AdminStart + Start Questionnaire** | **Restored Sep 9** from live My Tawala uniqueId `b7ttti35vdo58pu` (Designer snapshot `8c1098d4957a094ca5db6cb9`, 2026-09-02). Dual-use: Library TD and real poll. Administration is **not** a start. Do **not** Push a different JSON onto this uniqueId. |
+| `Single Question Poll or Survey.json` | **AdminStart + Start Questionnaire** | Live My Tawala uniqueId `b7ttti35vdo58pu`. **Library TD OK** (AdminStart). **Not Library until owner Pushes the Sep 9 leak fix:** Survey-link respondents get thank-you only (no Administration invitation). Organizer still uses AdminStart / Administration. Email notify still links Administration for the organizer. |
 | `Sign-up Sheet.json` | **Customize** (also Questionnaire + Administration) | Keeper uniqueId `gnqp5qfd06ktec3`. Leftover My Tawala row deleted Sep 9. Dual-use like Poll: Customize is the TD hub. |
-| `Shared To-Do Test Drive.json` | **Setup** only | Option A menu **c**. **Smoke passed Sep 9.** No uniqueId on file. Real app: `Sophisticated Shared To-Do.json` (`qggyhqoy8m4td23`). |
+| `Shared To-Do Test Drive.json` | **Setup** only | Smoke artifact — **not** the public listing. Live Library is the three-start app (`shared-to-do`, uniqueId `bx44wpdnspbsi3k`). Website Test Drive opens Setup only. |
 | `Automated List Builder.json` | **Setup** | Typo pass + private Push Sep 8. Display name **Automated List Builder**. Live copy is uniqueId `vrjayw9lwun85i1` (Tomcat still parked as Smoke so we do not overwrite public occupant `ceihmyxlssxn6yn`). Email warning = Library listing honesty, not in-form. |
 
 ### Still in prep — `2-Ready-for-MyTawala/`
@@ -62,7 +66,7 @@ Also: older junk at `3-Ready` root (CYO, Dirtbowl Communicator, MVSC, etc.) — 
 |------|---------|
 | Sample vs Real vs Builder | **Sample** = that is all it is (looping Library demo). **Real** = Customize/Setup/Admin (drop Sophisticated on publish). **Builder** = OEB-class only. Do not call a real/TD-sibling app a Sample. |
 | Library-bound | Everything that works as a Test Drive is **on the plan to move to public Library** — Samples, dual-use real apps, Builders, and TD siblings. Operate-only this week (GT / Potluck) still on that plan once a TD door exists. |
-| Double smoke | If the Library TD shape is not the same JSON as the My Tawala working copy, smoke **both**: TD door (one in-session hub) **and** the multi-start deploy. Poll / Sign-up = one JSON, both roles. Shared To-Do = two JSONs (already both smoked). |
+| Double smoke | If the Library TD shape is not the same JSON as the My Tawala working copy, smoke **both**: TD door (one in-session hub) **and** the multi-start deploy. Poll / Sign-up = one JSON, both roles. **Shared To-Do Library = one JSON** (three starts); website Test Drive opens Setup only. The Setup-only `Shared To-Do Test Drive.json` is a smoke artifact, not the listing. |
 | Test Drive wipe | Leaving a start **wipes** TD data. Multi-start is for **My Tawala Use**, not hopping doors in one TD. |
 | Library TD door | One **in-session** hub that can reach the product (Poll AdminStart; Sign-up Customize; Shared To-Do Test Drive Setup). |
 | **GT + Potluck** | Full apps = My Tawala now. **Library still on the plan** (TD sibling or looping demo later — parked Sample JSONs are not the operate apps). Not this week's Samples folder. |
@@ -98,12 +102,16 @@ Setup: `http://localhost:8080/p/vrjayw9lwun85i1/r2s6sqe.Setup`
 
 ---
 
-## Next
+## Next — tomorrow (Sep 10)
 
-1. **GT + Potluck Test Drive smoke passed Sep 9.** JSON still under `_set-aside/*Sample__parked-2026-09-09.json` unless you Save As’d elsewhere. Do not stamp operate uniqueIds.
-2. **Library pack:** ALB Tomcat name vacated (`retire-name` on `ceihmyxlssxn6yn`). ALB goes in with the others. Publish a Library clone (email honesty); do not share My Tawala uniqueId `vrjayw9lwun85i1` as the public Test Drive.
-3. My Tawala keepers are in `Current Deployed MyTawala` (Poll, Sign-up, Shared To-Do, GT, Potluck, ALB, OEB).
-4. Later: Designer C14/C15/F1.
+**First group is in Live Library (owner Sep 9):** Survey Sample, Multiple Question Survey Sample, Sign-up Sheet Sample, Horses and Penguins Test. Horses stays as published — no description edit, no re-Publish. **Shared To-Do** is also Live (`bx44wpdnspbsi3k`).
+
+1. **Publish Sign-up Sheet** (operate JSON, uniqueId `gnqp5qfd06ktec3`) as a new Library listing — not the Sample already Live.
+2. **ALB:** Library admin **Free a live :8080 name** for occupant `ceihmyxlssxn6yn`, then Publish a Library clone from the `vrjayw9lwun85i1` definition (email honesty). Do not share that My Tawala uniqueId as public Test Drive.
+3. **Poll** — wait for owner Push of the leak-fix JSON onto keeper `b7ttti35vdo58pu` before any Library Publish. Poll v.8 still Defer-rewrite.
+4. **GT + Potluck** — parked Sample JSONs stay in `_set-aside/`. Not this Samples group. Do not stamp operate uniqueIds.
+5. Optional: set any Live listing’s Test Drive door in Library admin (default is already single door).
+6. Later: Designer C14/C15/F1. Keepers live in `Current Deployed MyTawala`.
 
 ---
 
@@ -113,7 +121,7 @@ Setup: `http://localhost:8080/p/vrjayw9lwun85i1/r2s6sqe.Setup`
 Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md (Sep 9).
 Branch cursor/forms-canvas-wysiwyg. Staging outside git: Website Staging.
 Smoked-Ready-to-Push: Poll, Sign-up Sheet, Shared To-Do, Automated List Builder.
-Samples: Survey / Multi-Q / Sign-up / Horses approved. Library-bound TD: Poll, Sign-up, STD, GT, Potluck. OEB Live. ALB: retire-name ceihmyxlssxn6yn.
+Samples first group Live Library (Sep 9): Survey Sample, MQSS, Sign-up Sample, Horses (leave as-is). Shared To-Do Live Library Sep 9 (`bx44wpdnspbsi3k`, Setup-only TD door). Next: Sign-up Sheet (operate), ALB (retire-name ceihmyxlssxn6yn). Single Question Poll = My Tawala keeper, Library later. Poll v.8 still Defer-rewrite. OEB Live. GT/Potluck not this Samples group.
 List Builder: Automated List Builder.json → uniqueId vrjayw9lwun85i1. Occupant ceihmyxlssxn6yn left live.
 No Designer C14 this pass.
 ```

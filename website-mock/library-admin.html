@@ -6,9 +6,9 @@
   <title>Tawala - Library Admin Tools</title>
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
-  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260826-pubpriv1" />
-  <script src="js/demo-urls.js?v=20260909-libow1"></script>
-  <script src="js/transfer.js?v=20260909-libow2"></script>
+  <link rel="stylesheet" href="css/tawala-chrome.css?v=20260909-tddoor1" />
+  <script src="js/demo-urls.js?v=20260909-tddoor1"></script>
+  <script src="js/transfer.js?v=20260909-tddoor1"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -26,8 +26,8 @@
           <h3>What this page is</h3>
           <p class="pm-hint">
             Maintainer-only tools so the public Library can be kept up to date without an
-            agent: rename an entry, overwrite one from a My Tawala project, or retire an
-            entry (always kept safe in My Tawala — never hard-deleted). See
+            agent: rename an entry, overwrite one from a My Tawala project, or delete a
+            listing (name is free for a later Publish — no My Tawala safety copy). See
             <code>README.md</code> § Library admin path for the full how-to.
           </p>
         </div>
@@ -189,8 +189,8 @@
         badges.push('<span class="library-cat-overridden" style="color:#1a6b3a;background:#e4f5ea;border-color:#bfe3cc;">live</span>');
       } else if (!p.stub) {
         // Owner Aug 1, 2026: a lot of non-stub entries (e.g. Sign-up Sheet Template) were
-        // catalogued but never actually vetted — surface that plainly so Retire is an obvious
-        // next step, same destination (My Tawala) as stub cleanup, just without the (stub) mark.
+        // catalogued but never actually vetted — surface that plainly. Delete (not Retire)
+        // removes the listing; a later Publish can reuse the name.
         badges.push('<span class="library-cat-overridden" style="color:#8a5a00;background:#fff3d6;border-color:#f0d896;">not vetted</span>');
       }
       if (p.fromPublishOverlay) badges.push('<span class="library-cat-overridden">published overlay</span>');
@@ -213,7 +213,7 @@
             `<td class="lib-admin-actions">` +
             `<button type="button" class="pm-action" data-admin-op="rename" data-lib-id="${escapeHtml(p.id)}">Rename</button> ` +
             `<button type="button" class="pm-action" data-admin-op="overwrite-target" data-lib-id="${escapeHtml(p.id)}">Use as overwrite target ↑</button> ` +
-            `<button type="button" class="pm-action" data-admin-op="retire" data-lib-id="${escapeHtml(p.id)}" title="Remove from public Library, keep safe in My Tawala">Retire</button>` +
+            `<button type="button" class="pm-action" data-admin-op="delete-listing" data-lib-id="${escapeHtml(p.id)}" title="Remove from public Library. The name can be used again.">Delete</button>` +
             "</td></tr>"
           );
         })
@@ -222,11 +222,9 @@
         '<div class="section">' +
         '<h3 class="sectionHeading">Current Library entries (' + entries.length + ')</h3>' +
         '<div class="sectionContent">' +
-        '<p class="pm-hint">Retire works on any row — stubs and non-stub <span class="library-cat-overridden" ' +
-        'style="color:#8a5a00;background:#fff3d6;border-color:#f0d896;">not vetted</span> entries alike (e.g. ' +
-        "Main Menu templates catalogued before they were actually checked, like Sign-up Sheet Template). Both " +
-        "land in My Tawala so you can open them in Designer and re-Publish later — stubs keep the " +
-        "<code>(stub)</code> name suffix, non-stub retirements keep their name as-is.</p>" +
+        '<p class="pm-hint">Delete removes a listing with no successor. It does not copy anything to My Tawala. ' +
+        "A later Publish can reuse the same name. If the row has a live uniqueId, Delete also frees the :8080 " +
+        "display name so a new Push can occupy it.</p>" +
         '<table class="projectListing stripe" style="width:100%;">' +
         "<thead><tr><th class=\"left\">Name</th><th>Id</th><th>Category</th><th>Updated</th><th>Actions</th></tr></thead>" +
         `<tbody id="adminLibraryRows">${rows}</tbody>` +
@@ -236,36 +234,53 @@
       );
     }
 
-    function renderRetiredSection() {
+    function renderHiddenSection() {
       const retired = TawalaTransfer.getLibraryRetired();
-      const ids = Object.keys(retired);
+      const ids = Object.keys(retired).filter((id) => retired[id]);
       if (!ids.length) return "";
-      const overlay = TawalaTransfer.getMyTawalaOverlay();
       const rows = ids
         .map((id) => {
-          const myId = overlay[id] ? id : `${id}-retired`;
-          const safety = overlay[id] || overlay[myId] || null;
-          const name = safety ? safety.name : id;
-          const where = safety
-            ? `<a href="mytawala-project.html?project=${encodeURIComponent(overlay[id] ? id : myId)}">My Tawala safety copy</a>`
-            : "My Tawala (see My Projects)";
+          const inCatalog =
+            typeof TawalaTransfer.catalogHasSeed === "function" && TawalaTransfer.catalogHasSeed(id);
+          const action = inCatalog
+            ? `<button type="button" class="pm-action" data-admin-op="restore" data-lib-id="${escapeHtml(id)}">Show in Library again</button>`
+            : `<button type="button" class="pm-action" data-admin-op="restore" data-lib-id="${escapeHtml(id)}">Forget leftover hide</button>`;
+          const where = inCatalog ? "Catalog seed hidden" : "Leftover hide (name already free)";
           return (
-            `<tr><td class="left">${escapeHtml(name)}</td><td><code>${escapeHtml(id)}</code></td>` +
+            `<tr><td class="left"><code>${escapeHtml(id)}</code></td>` +
             `<td>${where}</td>` +
-            `<td><button type="button" class="pm-action" data-admin-op="restore" data-lib-id="${escapeHtml(id)}">Restore to Library</button></td></tr>`
+            `<td>${action}</td></tr>`
           );
         })
         .join("");
       return (
         '<div class="section">' +
-        `<h3 class="sectionHeading">Retired from Library (${ids.length})</h3>` +
+        `<h3 class="sectionHeading">Hidden catalog names (${ids.length})</h3>` +
         '<div class="sectionContent">' +
-        '<p class="pm-hint">Removed from the public listing, kept safe in My Tawala — never hard-deleted. ' +
-        "Restore brings the original catalog row back (does not remove the My Tawala safety copy).</p>" +
+        '<p class="pm-hint">These ids are off the public listing. They do <b>not</b> block a new Publish of the same name. ' +
+        "Show in Library again only brings back a catalog seed that is still in the repo. Forget leftover hide just clears the reminder.</p>" +
         '<table class="projectListing stripe" style="width:100%;">' +
-        "<thead><tr><th class=\"left\">Name</th><th>Library id</th><th>Safety copy</th><th>Actions</th></tr></thead>" +
+        "<thead><tr><th class=\"left\">Library id</th><th>Why listed here</th><th>Actions</th></tr></thead>" +
         `<tbody>${rows}</tbody>` +
         "</table></div></div>"
+      );
+    }
+
+    function renderVacateNameSection() {
+      return (
+        '<div class="section">' +
+        '<h3 class="sectionHeading">Free a live :8080 name</h3>' +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">When a uniqueId occupies a Tomcat title you want for a new Push (for example Automated List Builder / <code>ceihmyxlssxn6yn</code>), paste that uniqueId here. ' +
+        "This renames the occupant to <code>{name} (retired {uniqueId})</code> so occupancy can reuse the bare title. " +
+        "Tomcat does not yet delete uniqueIds — old <code>/p/{uniqueId}/</code> URLs still resolve under the vacated title.</p>" +
+        '<p class="tawala-modal-field" style="display:flex;gap:8px;align-items:flex-end;flex-wrap:wrap;">' +
+        '<label style="flex:1 1 220px;max-width:320px;">uniqueId' +
+        '<input type="text" id="vacateUniqueId" placeholder="e.g. ceihmyxlssxn6yn" autocomplete="off" />' +
+        "</label>" +
+        '<button type="button" class="pm-action is-active" id="vacateNameBtn">Free this name</button>' +
+        "</p>" +
+        "</div></div>"
       );
     }
 
@@ -332,9 +347,10 @@
       );
     }
 
-    /** Drag-and-drop board — plus a per-row <select> fallback in case DnD misbehaves in a
-     * given browser/mock context. Both call the same TawalaTransfer.setProjectCategory. */
-    function renderCategoryBoard() {
+    /** Drag-and-drop board — pointer drag on the card, plus a per-row <select>.
+     * Both call TawalaTransfer.setProjectCategory. Do not rebuild the whole admin
+     * page on a move (that scrolled the board out of view and looked like a snap-back). */
+    function boardColumnsHtml() {
       const cats = TawalaDemo.libraryCategories();
       const rows = TawalaDemo.libraryEntries()
         .slice()
@@ -356,9 +372,8 @@
           })
           .join("");
         return (
-          `<div class="library-admin-proj-row" draggable="true" data-project-id="${escapeHtml(p.id)}" ` +
-          `title="Drag to another column, or use the select">` +
-          `<span class="library-admin-proj-name">${name}</span>` +
+          `<div class="library-admin-proj-row" data-project-id="${escapeHtml(p.id)}">` +
+          `<span class="library-admin-proj-name" title="Drag this card to another column, or use the select">${name}</span>` +
           `<select class="library-admin-proj-move" data-project-id="${escapeHtml(p.id)}" aria-label="Move ${name} to category">${opts}</select>` +
           "</div>"
         );
@@ -373,20 +388,107 @@
         );
       }
 
-      const colsHtml =
+      return (
         cats.map((c) => colHtml(c.label, byLabel.get(c.label) || [])).join("") +
-        colHtml(UNCATEGORIZED_LABEL, uncategorized);
+        colHtml(UNCATEGORIZED_LABEL, uncategorized)
+      );
+    }
 
+    function renderCategoryBoard() {
       return (
         '<div class="section">' +
         '<h3 class="sectionHeading">Projects by category (drag &amp; drop)</h3>' +
         '<div class="sectionContent">' +
-        '<p class="pm-hint">Drag a project card into another column to change its Library category — or use the ' +
-        "select in the card if drag-and-drop is awkward in your browser. Both write the same localStorage category " +
-        "override as the Library <b>Edit Categories</b> table (see README § Library categories).</p>" +
-        `<div class="library-admin-board" id="libraryAdminBoard">${colsHtml}</div>` +
+        '<p class="pm-hint">Drag the whole card into another column — or use the dropdown on the card. ' +
+        "The board updates here immediately. Refresh <b>library.html</b> to see the public listing.</p>" +
+        `<div class="library-admin-board" id="libraryAdminBoard">${boardColumnsHtml()}</div>` +
         "</div></div>"
       );
+    }
+
+    function startKeyOf(sp) {
+      if (typeof TawalaDemo.startFormKey === "function") return TawalaDemo.startFormKey(sp);
+      return String((sp && (sp.form || sp.label)) || "").trim();
+    }
+
+    function startsWithUrls(p) {
+      return ((p && p.startPoints) || []).filter((s) => s && s.url);
+    }
+
+    function renderTestDriveDoorSection() {
+      const rows = TawalaDemo.libraryEntries()
+        .slice()
+        .sort((a, b) => TawalaDemo.displayName(a.name).localeCompare(TawalaDemo.displayName(b.name)));
+      const body = rows
+        .map((p) => {
+          const name = escapeHtml(TawalaDemo.displayName(p.name));
+          const starts = startsWithUrls(p);
+          const door =
+            typeof TawalaTransfer.getTestDriveDoor === "function"
+              ? TawalaTransfer.getTestDriveDoor(p.id)
+              : { mode: "single", startKey: "" };
+          const heuristic =
+            typeof TawalaDemo.pickLibraryTestDriveStartPoint === "function"
+              ? TawalaDemo.pickLibraryTestDriveStartPoint(p.startPoints, {
+                  ...p,
+                  id: "",
+                  testDriveStartKey: "",
+                })
+              : starts[0] || null;
+          const heuristicKey = heuristic ? startKeyOf(heuristic) : "";
+          if (starts.length < 2) {
+            const one = starts[0] ? escapeHtml(startKeyOf(starts[0]) || "Start") : "—";
+            return (
+              `<tr data-td-project="${escapeHtml(p.id)}">` +
+              `<td class="left">${name}</td>` +
+              `<td>One start</td>` +
+              `<td class="left">${one}</td></tr>`
+            );
+          }
+          const selectedKey = door.startKey || heuristicKey;
+          const picker = door.mode === "picker";
+          const modeOpts =
+            `<option value="single"${picker ? "" : " selected"}>Single door</option>` +
+            `<option value="picker"${picker ? " selected" : ""}>Start picker</option>`;
+          const startOpts = starts
+            .map((s) => {
+              const key = startKeyOf(s);
+              const sel = key === selectedKey ? " selected" : "";
+              return `<option value="${escapeHtml(key)}"${sel}>${escapeHtml(key)}</option>`;
+            })
+            .join("");
+          return (
+            `<tr data-td-project="${escapeHtml(p.id)}">` +
+            `<td class="left">${name}</td>` +
+            `<td><select class="library-admin-td-mode" aria-label="Test Drive mode for ${name}">${modeOpts}</select></td>` +
+            `<td class="left"><select class="library-admin-td-start" aria-label="Test Drive start for ${name}"${
+              picker ? " disabled" : ""
+            }>${startOpts}</select></td></tr>`
+          );
+        })
+        .join("");
+      return (
+        '<div class="section">' +
+        '<h3 class="sectionHeading">Test Drive doors</h3>' +
+        '<div class="sectionContent">' +
+        '<p class="pm-hint">Default is <b>one start</b> (no picker). Use <b>Start picker</b> only when visitors should choose. ' +
+        "Copy to MyTawala still gets every start. Refresh <b>library.html</b> to see Test Drive / Copy link.</p>" +
+        '<table class="projectListing stripe library-admin-td-table" style="width:100%;">' +
+        "<thead><tr><th class=\"left\">Project</th><th>Test Drive</th><th class=\"left\">Door</th></tr></thead>" +
+        `<tbody id="adminTestDriveDoorRows">${body}</tbody>` +
+        "</table></div></div>"
+      );
+    }
+
+    function refreshCategoryBoard() {
+      const host = document.getElementById("libraryAdminBoard");
+      if (host) host.innerHTML = boardColumnsHtml();
+      document.querySelectorAll("#adminLibraryRows tr[data-lib-id]").forEach((tr) => {
+        const id = tr.getAttribute("data-lib-id");
+        const p = id && TawalaDemo.getLibrary(id);
+        const cell = tr.children[2];
+        if (cell && p) cell.textContent = p.category || "";
+      });
     }
 
     let pendingOverwriteTarget = "";
@@ -396,9 +498,11 @@
       host.innerHTML =
         renderPublishForm(pendingOverwriteTarget) +
         renderLibraryTable() +
-        renderRetiredSection() +
+        renderVacateNameSection() +
+        renderHiddenSection() +
         renderCategoryAdminSection() +
-        renderCategoryBoard();
+        renderCategoryBoard() +
+        renderTestDriveDoorSection();
       const sourceSel = document.getElementById("adminSourceProject");
       const targetSel = document.getElementById("adminPublishTarget");
       const nameInput = document.getElementById("adminPublishName");
@@ -439,7 +543,7 @@
 
     /* Owner Aug 1, 2026: every admin op here writes a localStorage overlay that library.html /
      * mytawala.html only pick up on their own next render — this page never pushes a live update
-     * to another open tab. Retire/move/rename all "worked" but looked like nothing happened until
+     * to another open tab. Delete/move/rename all "worked" but looked like nothing happened until
      * the owner manually refreshed Library. Say so every time, inline and as a toast. */
     const LIBRARY_REFRESH_HINT = "Open or refresh library.html to see it there.";
     let adminToastTimer = null;
@@ -554,6 +658,43 @@
         return;
       }
 
+      if (ev.target.id === "vacateNameBtn") {
+        const input = document.getElementById("vacateUniqueId");
+        const uniqueId = input && String(input.value || "").trim();
+        if (!uniqueId) {
+          window.alert("Enter the occupant uniqueId.");
+          return;
+        }
+        if (
+          !window.confirm(
+            `Free the live :8080 display name occupied by uniqueId ${uniqueId}?\n\n` +
+              "The uniqueId is not deleted. Occupancy can reuse the bare title on a later Push."
+          )
+        ) {
+          return;
+        }
+        setAdminStatus(`Freeing :8080 name for ${uniqueId}…`);
+        const vacate = await TawalaDemo.vacateLiveTomcatName(uniqueId);
+        if (!vacate || vacate.status !== "success") {
+          window.alert(
+            "Couldn't free that name.\n\n" +
+              ((vacate && vacate.error) || "Confirm :3001 and :8080 are up, then retry."),
+          );
+          setAdminStatus(
+            `Could not free :8080 name for ${uniqueId}. ` + ((vacate && vacate.error) || ""),
+          );
+          return;
+        }
+        const prev = vacate.previousName || "(unknown)";
+        setAdminStatus(
+          `Freed Tomcat name “${prev}” (uniqueId ${uniqueId} unchanged` +
+            (vacate.alreadyVacated ? ", already vacated" : "") +
+            ").",
+        );
+        if (input) input.value = "";
+        return;
+      }
+
       const catOpBtn = ev.target.closest("[data-cat-op]");
       if (catOpBtn) {
         const catOp = catOpBtn.dataset.catOp;
@@ -634,21 +775,18 @@
         return;
       }
 
-      if (op === "retire") {
+      if (op === "delete-listing" || op === "retire") {
         const current = TawalaDemo.getLibrary(libId);
         const currentName = current ? TawalaDemo.displayName(current.name) : libId;
-        const isStub = !!(current && current.stub);
         const liveId =
           current && typeof TawalaDemo.uniqueIdForProject === "function"
             ? TawalaDemo.uniqueIdForProject(current)
             : null;
         const msg =
-          `Retire "${currentName}" from the public Library?\n\n` +
-          (isStub
-            ? "It stays safe in My Tawala, still marked (stub)."
-            : "It stays safe in My Tawala (not deleted) — pick this for an unvetted / out-of-date real entry (e.g. a Main Menu template that needs more work) so you can pull it into Designer and re-Publish later.") +
+          `Delete "${currentName}" from the public Library?\n\n` +
+          "No My Tawala copy is kept. A later Publish can reuse this name." +
           (liveId
-            ? `\n\nThis also frees the live :8080 display name for uniqueId ${liveId} (uniqueId stays; occupancy can reuse the name). Restore to Library does not put the Tomcat name back.`
+            ? `\n\nThis also frees the live :8080 display name for uniqueId ${liveId} (uniqueId stays under a vacated title).`
             : "\n\nThis row has no live uniqueId — listing hide only; :8080 occupancy is unchanged.");
         if (!window.confirm(msg)) return;
         if (liveId) {
@@ -656,16 +794,16 @@
           const vacate = await TawalaDemo.vacateLiveTomcatName(liveId);
           if (!vacate || vacate.status !== "success") {
             window.alert(
-              "Couldn't retire — the :8080 name is still occupied.\n\n" +
-                ((vacate && vacate.error) || "Retire aborted so occupancy is not lying."),
+              "Couldn't delete — the :8080 name is still occupied.\n\n" +
+                ((vacate && vacate.error) || "Delete aborted so occupancy is not lying."),
             );
             setAdminStatus(
-              `Retire aborted — could not free :8080 name for ${liveId}. ` +
+              `Delete aborted — could not free :8080 name for ${liveId}. ` +
                 ((vacate && vacate.error) || ""),
             );
             return;
           }
-          const result = TawalaTransfer.retireLibraryEntry(libId);
+          const result = TawalaTransfer.deleteLibraryEntry(libId);
           if (!result.ok) {
             window.alert(
               "Freed the :8080 name, but couldn't hide the Library row.\n\n" + result.error,
@@ -674,26 +812,21 @@
           }
           const prev = vacate.previousName || currentName;
           setAdminStatus(
-            result.alreadyRetired
-              ? `Already retired — leftover overlay removed for "${result.name}". Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
-                (vacate.alreadyVacated ? ", already vacated" : "") +
-                ")."
-              : `Retired "${result.name}" → My Tawala. Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
-                (vacate.alreadyVacated ? ", already vacated" : "") +
-                ").",
+            `Deleted "${result.name}". Freed Tomcat name “${prev}” (uniqueId ${liveId} unchanged` +
+              (vacate.alreadyVacated ? ", already vacated" : "") +
+              "). Name is free for a later Publish.",
           );
           renderAdminBody();
           return;
         }
-        const result = TawalaTransfer.retireLibraryEntry(libId);
+        const result = TawalaTransfer.deleteLibraryEntry(libId);
         if (!result.ok) {
-          window.alert("Couldn't retire\n\n" + result.error);
+          window.alert("Couldn't delete\n\n" + result.error);
           return;
         }
         setAdminStatus(
-          result.alreadyRetired
-            ? `Already retired — leftover overlay removed for "${result.name}" (listing hide; no second My Tawala copy).`
-            : `Retired "${result.name}" → My Tawala (listing only — no live uniqueId, :8080 occupancy unchanged).`,
+          `Deleted "${result.name}" from the Library. Name is free for a later Publish` +
+            (result.catalogHidden ? " (catalog seed hidden so it does not come back on refresh)." : "."),
         );
         renderAdminBody();
         return;
@@ -705,58 +838,122 @@
           window.alert("Couldn't restore\n\n" + result.error);
           return;
         }
-        setAdminStatus(`Restored "${libId}" to the Library.`);
+        setAdminStatus(
+          TawalaTransfer.catalogHasSeed && TawalaTransfer.catalogHasSeed(libId)
+            ? `Showed "${libId}" in the Library again (catalog seed).`
+            : `Forgot leftover hide for "${libId}".`,
+        );
         renderAdminBody();
       }
     });
 
     function moveProjectToCategory(projectId, label) {
       if (!projectId || !label) return;
+      const current = TawalaDemo.getLibrary(projectId);
+      if (current && String(current.category || "") === String(label)) return;
       TawalaTransfer.setProjectCategory(projectId, label);
       const p = TawalaDemo.getLibrary(projectId);
       const name = p ? TawalaDemo.displayName(p.name) : projectId;
       setAdminStatus(`Moved "${name}" to "${label}".`);
-      renderAdminBody();
+      refreshCategoryBoard();
     }
 
-    /* Select fallback — same effect as a successful drag, works even where HTML5 DnD is
-     * fragile (touch devices, some embedded/mock browser contexts). */
+    /* Select — same effect as a drop, and the reliable control when drag is awkward. */
     document.addEventListener("change", (ev) => {
       const sel = ev.target.closest("select.library-admin-proj-move");
       if (!sel) return;
       moveProjectToCategory(sel.dataset.projectId, sel.value);
     });
 
-    /* HTML5 drag-and-drop — drag a project card from one column into another. */
-    document.addEventListener("dragstart", (ev) => {
-      const row = ev.target.closest(".library-admin-proj-row");
+    document.addEventListener("change", (ev) => {
+      const row = ev.target.closest("tr[data-td-project]");
       if (!row) return;
-      ev.dataTransfer.setData("text/plain", row.dataset.projectId);
-      ev.dataTransfer.effectAllowed = "move";
+      const modeSel = row.querySelector("select.library-admin-td-mode");
+      const startSel = row.querySelector("select.library-admin-td-start");
+      if (!modeSel && !startSel) return;
+      if (!ev.target.closest("select.library-admin-td-mode, select.library-admin-td-start")) return;
+      const projectId = row.getAttribute("data-td-project");
+      const mode = modeSel ? modeSel.value : "single";
+      const startKey = startSel ? startSel.value : "";
+      if (startSel) startSel.disabled = mode === "picker";
+      TawalaTransfer.setTestDriveDoor(projectId, { mode, startKey });
+      const p = TawalaDemo.getLibrary(projectId);
+      const name = p ? TawalaDemo.displayName(p.name) : projectId;
+      const doorLabel = mode === "picker" ? "start picker" : startKey || "single door";
+      setAdminStatus(`Test Drive for "${name}": ${doorLabel}.`);
     });
 
-    document.addEventListener("dragover", (ev) => {
-      const col = ev.target.closest(".library-admin-cat-col");
-      if (!col) return;
+    /* Pointer drag on the card (not HTML5 DnD). HTML5 drag from a nested name span
+     * failed often in embedded browsers; grabbing the dropdown started a drag instead
+     * of opening it. Do not start a drag from the <select>. */
+    let pointerDrag = null;
+
+    function clearDragHighlights() {
+      document.querySelectorAll(".library-admin-cat-col.drag-over").forEach((el) => {
+        el.classList.remove("drag-over");
+      });
+      document.querySelectorAll(".library-admin-proj-row.is-dragging").forEach((el) => {
+        el.classList.remove("is-dragging");
+      });
+    }
+
+    function columnFromPoint(clientX, clientY) {
+      const el = document.elementFromPoint(clientX, clientY);
+      return el && el.closest ? el.closest(".library-admin-cat-col") : null;
+    }
+
+    document.addEventListener("pointerdown", (ev) => {
+      if (ev.button !== 0) return;
+      if (ev.target.closest && ev.target.closest("select.library-admin-proj-move")) return;
+      const row = ev.target.closest && ev.target.closest(".library-admin-proj-row");
+      if (!row || !row.dataset.projectId) return;
+      pointerDrag = {
+        projectId: row.dataset.projectId,
+        startX: ev.clientX,
+        startY: ev.clientY,
+        started: false,
+        row,
+        pointerId: ev.pointerId,
+      };
+    });
+
+    document.addEventListener("pointermove", (ev) => {
+      if (!pointerDrag || pointerDrag.pointerId !== ev.pointerId) return;
+      const dx = ev.clientX - pointerDrag.startX;
+      const dy = ev.clientY - pointerDrag.startY;
+      if (!pointerDrag.started) {
+        if (dx * dx + dy * dy < 64) return;
+        pointerDrag.started = true;
+        pointerDrag.row.classList.add("is-dragging");
+        try {
+          pointerDrag.row.setPointerCapture(ev.pointerId);
+        } catch {
+          /* ignore */
+        }
+      }
       ev.preventDefault();
-      ev.dataTransfer.dropEffect = "move";
-      col.classList.add("drag-over");
+      document.querySelectorAll(".library-admin-cat-col.drag-over").forEach((el) => {
+        el.classList.remove("drag-over");
+      });
+      const col = columnFromPoint(ev.clientX, ev.clientY);
+      if (col) col.classList.add("drag-over");
     });
 
-    document.addEventListener("dragleave", (ev) => {
-      const col = ev.target.closest(".library-admin-cat-col");
-      if (!col || col.contains(ev.relatedTarget)) return;
-      col.classList.remove("drag-over");
-    });
+    function endPointerDrag(ev) {
+      if (!pointerDrag || (ev && pointerDrag.pointerId !== ev.pointerId)) return;
+      const drag = pointerDrag;
+      pointerDrag = null;
+      const started = drag.started;
+      clearDragHighlights();
+      if (!started) return;
+      const col = columnFromPoint(ev.clientX, ev.clientY);
+      if (col && col.dataset.catLabel) {
+        moveProjectToCategory(drag.projectId, col.dataset.catLabel);
+      }
+    }
 
-    document.addEventListener("drop", (ev) => {
-      const col = ev.target.closest(".library-admin-cat-col");
-      if (!col) return;
-      ev.preventDefault();
-      col.classList.remove("drag-over");
-      const projectId = ev.dataTransfer.getData("text/plain");
-      moveProjectToCategory(projectId, col.dataset.catLabel);
-    });
+    document.addEventListener("pointerup", endPointerDrag);
+    document.addEventListener("pointercancel", endPointerDrag);
 
     renderGate();
   </script>

@@ -469,4 +469,85 @@ const nameTwin = findIdenticalLibraryListings({
 assert.equal(nameTwin[0].id, "online-exam-builder");
 assert.equal(nameTwin[0].matchReason, "name");
 
+assert.match(transfer, /function isBoilerplateProjectDescription/);
+assert.match(transfer, /function ownerFacingProjectDescription/);
+assert.match(transfer, /function updateLibraryListingDescription/);
+assert.match(transfer, /function scrubBoilerplateProjectDescriptions/);
+assert.doesNotMatch(
+  publishFnSrc,
+  /Published from My Tawala \(browser overlay\)/,
+  "Publish must not stamp overlay boilerplate as the Library blurb"
+);
+const upsertDeploySrc = transfer.slice(
+  transfer.indexOf("function upsertMyTawalaFromDeploy"),
+  transfer.indexOf("function upsertMyTawalaProperties")
+);
+assert.doesNotMatch(
+  upsertDeploySrc,
+  /Deployed from Web Designer \(browser overlay\)/,
+  "Push → My Tawala must not stamp overlay boilerplate as the project blurb"
+);
+assert.match(ops, /publishDescInput/);
+assert.match(ops, /listing === "library"/);
+assert.match(ops, /data-wired="edit-library-description"/);
+
+assert.match(transfer, /function isLiveLibraryPublishOverlay/);
+assert.match(transfer, /function uniqueLibrarySlug/);
+const slugSrc = transfer.slice(
+  transfer.indexOf("function uniqueLibrarySlug"),
+  transfer.indexOf("function findMatchingLibraryTargets")
+);
+assert.doesNotMatch(
+  slugSrc,
+  /discardedLibraryIdSet/,
+  "new Library slugs may reuse discarded seed ids (Delete + later Publish keeps the name)"
+);
+assert.doesNotMatch(
+  slugSrc,
+  /getLibraryRetired/,
+  "hidden catalog ids must not reserve the slug"
+);
+const scrubSrc = transfer.slice(
+  transfer.indexOf("function scrubDiscardedLibraryStubs"),
+  transfer.indexOf("function withLibraryOverlay")
+);
+assert.match(scrubSrc, /isLiveLibraryPublishOverlay/);
+assert.match(scrubSrc, /clearLibraryRetired\(id\)/, "Publish overlay on a discarded slug must un-hide so Library can list it");
+assert.doesNotMatch(
+  scrubSrc,
+  /markLibraryRetired\(id\)/,
+  "discarded seed ids must not be auto-hidden on every Library load"
+);
+assert.match(transfer, /function deleteLibraryEntry/);
+assert.match(
+  transfer.slice(transfer.indexOf("function deleteLibraryEntry"), transfer.indexOf("function retireLibraryEntry")),
+  /catalogHasSeed/,
+  "Delete hides remaining catalog seeds but does not copy to My Tawala"
+);
+const overlayMergeSrc = transfer.slice(
+  transfer.indexOf("function withLibraryOverlay"),
+  transfer.indexOf("function setProjectLibraryActive")
+);
+assert.match(overlayMergeSrc, /retired\[id\] && !isLiveLibraryPublishOverlay/);
+
+const demo = readFileSync(join(dir, "demo-urls.js"), "utf8");
+const libEntriesSrc = demo.slice(
+  demo.indexOf("libraryEntries()"),
+  demo.indexOf("myTawalaEntries()")
+);
+assert.match(
+  libEntriesSrc,
+  /withCategoryOverrides/,
+  "Library listing must apply admin category moves or they snap back"
+);
+assert.match(
+  transfer,
+  /prev.category !== label/,
+  "Category moves must stamp an existing Publish overlay so listing category stays put"
+);
+assert.match(
+  transfer,
+  /function withCategoryOverrides/,
+);
+
 console.log("acquireClone contract ok");

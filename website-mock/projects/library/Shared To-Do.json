@@ -1,0 +1,1601 @@
+{
+  "name": "Shared To-Do",
+  "format": "2.0",
+  "themePath": "default",
+  "forms": [
+    {
+      "name": "task",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "sub",
+          "content": "<<TaskFormHeading>>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Task description (required):\n_____________________________________\nDue by:\n________________\nPerson to whom assigned\n(leave blank if you want sign-ups):\n_____________________________________",
+          "blanks": [
+            {
+              "name": "description",
+              "length": 37,
+              "alternateLabel": "description",
+              "required": true
+            },
+            {
+              "name": "due",
+              "length": 16,
+              "alternateLabel": "due"
+            },
+            {
+              "name": "assignedTo",
+              "length": 37,
+              "alternateLabel": "assignedTo"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "<<Query>>"
+            }
+          ],
+          "name": "addAnother"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "id"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "status"
+        }
+      ],
+      "themePath": "default",
+      "process": "Task Setup Post Processing",
+      "preProcess": "Task Setup Pre Processing"
+    },
+    {
+      "name": "SignupForTask",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "To sign up, please fill out this form:"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "name": "Error Message",
+          "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignupErrorMessage\" title=\"SignupErrorMessage\" draggable=\"true\">&lt;&lt;SignupErrorMessage&gt;&gt;</span></b></span></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "rightAlignLabels",
+          "prompt": "<div>Your name or initials:&nbsp; ________________________</div>",
+          "blanks": [
+            {
+              "name": "a",
+              "length": 24,
+              "required": false,
+              "alternateLabel": "name",
+              "height": 1
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "stored",
+          "question": "Task(s) you would like to sign up for:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "task",
+              "displayExpr": "<<Record:task:description>>",
+              "valueExpr": "<<Record:task:id>>"
+            }
+          ],
+          "name": "TaskIds"
+        }
+      ],
+      "themePath": "default",
+      "process": "Signup Post Processing",
+      "preProcess": "Build Signup Sheet"
+    },
+    {
+      "name": "SetupVariables",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Project Name: (required)\n__________________________________\nIf you would like to receive notifications, please provide:\nYour name:\n__________________________________\nEmail:\n_________________________________",
+          "blanks": [
+            {
+              "name": "projectName",
+              "length": 34,
+              "alternateLabel": "projectName",
+              "required": true
+            },
+            {
+              "name": "organizerName",
+              "length": 34,
+              "alternateLabel": "organizerName"
+            },
+            {
+              "name": "organizerEmail",
+              "length": 33,
+              "alternateLabel": "organizerEmail"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Notify me when somebody signs up for a task"
+            }
+          ],
+          "name": "notifyOnSignupQuestion"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Notify me when a task is marked as complete"
+            }
+          ],
+          "name": "notifyOnTaskCompletionQuestion"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "notifyOrganizerOnSignup"
+        },
+        {
+          "type": "field",
+          "label": "",
+          "name": "notifyOrganizerOnCompletion"
+        }
+      ],
+      "themePath": "default",
+      "process": "SetupVariables Post Processing",
+      "preProcess": "SetupVariables Pre Process"
+    },
+    {
+      "name": "Administration",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Manage your To-Do List."
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Change project description and notification preferences"
+            },
+            {
+              "label": "b",
+              "text": "Add new task"
+            },
+            {
+              "label": "c",
+              "text": "Change a task (change description, status, due by, or delete)"
+            }
+          ],
+          "name": "Choice"
+        }
+      ],
+      "themePath": "default",
+      "process": "Administration Post Process",
+      "preProcess": "Build Signup Sheet"
+    },
+    {
+      "name": "Setup",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "You have finished setting up this project. \nProceed to the next step, or edit this project further:"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "To edit this project:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Update project name and notification preferences."
+            },
+            {
+              "label": "b",
+              "text": "Add new tasks."
+            }
+          ],
+          "name": "MenuChoice"
+        }
+      ],
+      "themePath": "default",
+      "process": "Setup Post Processing",
+      "preProcess": "Setup Pre Processing"
+    },
+    {
+      "name": "NavigationToSetup",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "Empty form used only to setup a variable and navigation to Setup form."
+        }
+      ],
+      "themePath": "default",
+      "preProcess": "NavigationToSetup Pre Processing"
+    },
+    {
+      "name": "Signup",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "default",
+      "preProcess": "Build Signup Sheet"
+    },
+    {
+      "name": "Mark Task Completed",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MarkAsCompletedConfirmationMessage\" title=\"MarkAsCompletedConfirmationMessage\" draggable=\"true\">&lt;&lt;MarkAsCompletedConfirmationMessage&gt;&gt;</span></b></span></p><p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MarkAsCompletedErrorMessage\" title=\"MarkAsCompletedErrorMessage\" draggable=\"true\">&lt;&lt;MarkAsCompletedErrorMessage&gt;&gt;</span></b></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "stored",
+          "question": "Select the task(s) to mark as completed:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "task",
+              "displayExpr": "<<Record:task:description>>",
+              "valueExpr": "<<Record:task:id>>",
+              "where": {
+                "field": "Record:task:status",
+                "op": "doesNotEqual",
+                "value": "completed"
+              },
+              "conditionsRows": [
+                {
+                  "field": "Record:task:status",
+                  "op": "doesNotEqual",
+                  "value": "completed"
+                }
+              ],
+              "conditionsCombinator": "and"
+            }
+          ],
+          "name": "TaskIds"
+        }
+      ],
+      "themePath": "default",
+      "process": "Mark Task Completed Post Processing",
+      "preProcess": "Build Signup Sheet"
+    },
+    {
+      "name": "Modify Task",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "You can edit a task by entering its id number and selecting one of the actions below."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ModifyTaskErrorMessage\" title=\"ModifyTaskErrorMessage\" draggable=\"true\">&lt;&lt;ModifyTaskErrorMessage&gt;&gt;</span></b></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "stored",
+          "question": "Task to edit:",
+          "choices": [
+            {
+              "type": "dynamic",
+              "sourceForm": "task",
+              "displayExpr": "<<Record:task:description>>",
+              "valueExpr": "<<Record:task:id>>"
+            }
+          ],
+          "name": "TaskId"
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Edit description, due by, or task assignment"
+            },
+            {
+              "label": "b",
+              "text": "Remove \"Complete\" tag"
+            },
+            {
+              "label": "c",
+              "text": "Delete"
+            }
+          ],
+          "name": "Choice"
+        }
+      ],
+      "themePath": "default",
+      "process": "Modify Task Post Processing"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Task Setup Post Processing",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "fromAdmin",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "task:status",
+                "op": "doesNotEqual",
+                "value": "completed"
+              },
+              "then": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "task:assignedTo",
+                    "op": "isBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "task:status",
+                      "value": "unassigned",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "task:status",
+                      "value": "assigned",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "cmd": "set",
+              "field": "fromAdmin",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "--- Generate new task id"
+        },
+        {
+          "cmd": "get",
+          "recordList": "tasks",
+          "sourceForms": [
+            "task"
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "maxTaskId",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "currentTask",
+          "recordList": "tasks",
+          "do": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "maxTaskId",
+                "op": "isLessThan",
+                "value": "<<currentTask:task:id>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "maxTaskId",
+                  "value": "<<currentTask:task:id>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "task:id",
+          "value": "<<maxTaskId>> + 1",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "task:assignedTo",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "task:status",
+              "value": "unassigned",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "task:status",
+              "value": "assigned",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "task:addAnother",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "task"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "fromAdmin",
+            "op": "equals",
+            "value": "add"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "fromAdmin",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "SetupVariables Post Processing",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetupVariables:notifyOnSignupQuestion",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:notifyOrganizerOnSignup",
+              "value": "yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:notifyOrganizerOnSignup",
+              "value": "no",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SetupVariables:notifyOnTaskCompletionQuestion",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:notifyOrganizerOnCompletion",
+              "value": "yes",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "SetupVariables:notifyOrganizerOnCompletion",
+              "value": "no",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "FirstViewOfSetup",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "FirstViewOfSetup",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "task"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "fromAdmin",
+            "op": "equals",
+            "value": "add"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "fromAdmin",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "Customization Pre Processing",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "customization records",
+          "sourceForms": [
+            "SetupVariables"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "customization",
+          "recordList": "customization records",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "ProjectName",
+              "value": "<<customization:SetupVariables:projectName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "OrganizerName",
+              "value": "<<customization:SetupVariables:organizerName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "OrganizerEmail",
+              "value": "<<customization:SetupVariables:organizerEmail>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "customization:SetupVariables:notifyOnSignupQuestion",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "NotifyOrganizerOnSignup",
+                  "value": "yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "NotifyOrganizerOnSignup",
+                  "value": "no",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "customization:SetupVariables:notifyOnTaskCompletionQuestion",
+                "op": "mcEquals",
+                "value": "a"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "NotifyOrganizerOnCompletion",
+                  "value": "yes",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "NotifyOrganizerOnCompletion",
+                  "value": "no",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Build Signup Sheet",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "--- Ability to call a procedure would be nice - this code is replicated."
+        },
+        {
+          "cmd": "get",
+          "recordList": "customization records",
+          "sourceForms": [
+            "SetupVariables"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "customization",
+          "recordList": "customization records",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_projectName",
+              "value": "<<customization:SetupVariables:projectName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "OrganizerName",
+              "value": "<<customization:SetupVariables:organizerName>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "OrganizerEmail",
+              "value": "<<customization:SetupVariables:organizerEmail>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "NotifyOrganizerOnSignup",
+              "value": "<<customization:SetupVariables:notifyOrganizerOnSignup>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "NotifyOrganizerOnCompletion",
+              "value": "<<customization:SetupVariables:notifyOrganizerOnCompletion>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "--- Here's where we start building the report"
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Signup Header",
+          "reset": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "tasks",
+          "sourceForms": [
+            "task"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "currentTask",
+          "recordList": "tasks",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "currentTaskDescription",
+              "value": "<<currentTask:task:description>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "currentTaskDue",
+              "value": "<<currentTask:task:due>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "currentTaskEmail",
+              "value": "<<currentTask:task:assignedTo>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "currentTaskId",
+              "value": "<<currentTask:task:id>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "currentTaskStatus",
+              "value": "<<currentTask:task:status>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "currentTaskStatus",
+                "op": "equals",
+                "value": "completed"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "Task Completed",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "currentTaskStatus",
+                "op": "equals",
+                "value": "unassigned"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "Task Unassigned",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "currentTaskStatus",
+                "op": "equals",
+                "value": "assigned"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "Task Assigned",
+                  "reset": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Signup Footer",
+          "reset": false
+        },
+        {
+          "cmd": "comment",
+          "text": "--- Check flag to see whether we got here from the Administration Form"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "administrationMode",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "doneAddingTasksPrompt",
+              "value": "simply close your browser window",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "doneAddingTasksPrompt",
+              "value": "proceed to the next step by clicking Review and Send",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "User Menu",
+          "reset": false
+        }
+      ]
+    },
+    {
+      "name": "Signup Post Processing",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "-- Input validation"
+        },
+        {
+          "cmd": "set",
+          "field": "SignupErrorMessage",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SignupForTask:name",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "SignupErrorMessage",
+              "value": "Please provide your name.",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "SignupErrorMessage",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SignupForTask"
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "-- Attempt to sign-up"
+        },
+        {
+          "cmd": "get",
+          "recordList": "matchedTasks",
+          "sourceForms": [
+            "task"
+          ],
+          "where": {
+            "field": "SignupForTask:TaskIds",
+            "op": "mcContains",
+            "value": "<<matchedTasks:task:id>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "matchedTask",
+          "recordList": "matchedTasks",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "matchedTask:task:assignedTo",
+              "value": "<<SignupForTask:name>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "matchedTask:task:status",
+              "value": "assigned",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "NotifyOrganizerOnSignup",
+                "op": "equals",
+                "value": "yes"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "currentTaskDescription",
+                  "value": "<<matchedTask:task:description>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "SignupConfirmationMessage",
+                  "value": "Task \"<<matchedTask:task:description>>\" has been assigned to <<SignupForTask:name>>.",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "send",
+                  "to": {
+                    "fieldRef": "OrganizerEmail"
+                  },
+                  "subject": "Tawala project's task is signed up for",
+                  "body": {
+                    "document": "Task Signup Email Notification",
+                    "reset": false,
+                    "showHeader": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "SignupForTask"
+        }
+      ]
+    },
+    {
+      "name": "Administration Post Process",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Choice",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "fromAdmin",
+              "value": "add",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "FirstViewOfSetup",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "SetupVariables"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Choice",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "fromAdmin",
+              "value": "add",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "FirstViewOfSetup",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "show",
+              "form": "task"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Choice",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Modify Task"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "SetupVariables Pre Process",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "SetupVariables",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Task Setup Pre Processing",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "fromAdmin",
+            "op": "doesNotEqual",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Task Setup Header",
+              "reset": false
+            },
+            {
+              "cmd": "set",
+              "field": "Query",
+              "value": "Add another task?",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "Query",
+              "value": "Press Submit to return to Administration page",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "task:status",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "TaskFormHeading",
+              "value": "Add a Task",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "set",
+              "field": "TaskFormHeading",
+              "value": "Edit Task",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Setup Pre Processing",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "FirstViewOfSetup",
+            "op": "isBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SetupVariables"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Setup Post Processing",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:MenuChoice",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "SetupVariables"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Setup:MenuChoice",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "task"
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "NavigationToSetup Pre Processing",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "FirstViewOfSetup",
+          "value": "false",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "show",
+          "form": "Setup"
+        }
+      ]
+    },
+    {
+      "name": "Mark Task Completed Post Processing",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "MarkAsCompletedErrorMessage",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "set",
+          "field": "MarkAsCompletedConfirmationMessage",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "tasks",
+          "sourceForms": [
+            "task"
+          ],
+          "where": {
+            "field": "Mark Task Completed:TaskIds",
+            "op": "mcContains",
+            "value": "<<tasks:task:id>>"
+          }
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "currentTask",
+          "recordList": "tasks",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "currentTask:task:status",
+              "value": "completed",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "NotifyOrganizerOnCompletion",
+                "op": "equals",
+                "value": "yes"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "currentTaskDescription",
+                  "value": "<<currentTask:task:description>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "send",
+                  "to": {
+                    "fieldRef": "OrganizerEmail"
+                  },
+                  "subject": "Tawala project's task is completed",
+                  "body": {
+                    "document": "Task Completion Email Notification",
+                    "reset": false,
+                    "showHeader": true
+                  }
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Mark Task Completed"
+        }
+      ]
+    },
+    {
+      "name": "Modify Task Post Processing",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "-- A bit of error checking"
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Modify Task:TaskId",
+            "op": "mcIsBlank"
+          },
+          "then": [
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "set",
+          "field": "ModifyTaskErrorMessage",
+          "value": " ",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Modify Task:Choice",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "fromAdmin",
+              "value": "true",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "edit",
+              "form": "task",
+              "submit": "modify",
+              "condition": {
+                "field": "Modify Task:TaskId",
+                "op": "mcEquals",
+                "value": "<<Record:task:id>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Modify Task:Choice",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "tasks",
+              "sourceForms": [
+                "task"
+              ],
+              "where": {
+                "field": "tasks:task:id",
+                "op": "equals",
+                "value": "<<Modify Task:TaskId>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Element",
+              "recordList": "tasks",
+              "do": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Element:task:assignedTo",
+                    "op": "isBlank"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Element:task:status",
+                      "value": "unassigned",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ],
+                  "else": [
+                    {
+                      "cmd": "set",
+                      "field": "Element:task:status",
+                      "value": "assigned",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Modify Task:Choice",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "task",
+              "from": "task",
+              "where": {
+                "field": "Record:task:id",
+                "op": "equals",
+                "value": "<<Modify Task:TaskId>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Modify Task"
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "Task Setup Confirmation",
+      "content": "<p style=\"text-align:center\"><span>You have successfully added a new task  </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"task:description\" title=\"task:description\" draggable=\"true\">&lt;&lt;task:description&gt;&gt;</span></b></span><span>.</span></p>"
+    },
+    {
+      "name": "Task Assigned",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span style=\"color:#0000FF\"><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</b></span><span>​&nbsp;&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDue&gt;&gt;</span>​&nbsp;&nbsp;</span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskEmail\" title=\"currentTaskEmail\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskEmail&gt;&gt;</span>​</span></p></p>"
+    },
+    {
+      "name": "Task Unassigned",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span style=\"color:#FF8040\"><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</b></span><span>​&nbsp;&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDue&gt;&gt;</span>​</span></p></p>"
+    },
+    {
+      "name": "Signup Header",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_projectName\" title=\"Customize_projectName\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Customize_projectName&gt;&gt;</span>​</b></span><span><b> Tasks</b></span></p><p><span><b>Description&nbsp; &nbsp; &nbsp;&nbsp;</b></span><span><b>Due&nbsp; &nbsp; &nbsp; &nbsp;</b></span><span><b>Assigned To</b></span></p><p><span><b>________________________________________________</b></span></p></p>"
+    },
+    {
+      "name": "Task Completed",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span style=\"color:#008000\"><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</b></span><span>​&nbsp;&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDue&gt;&gt;</span>​&nbsp;</span><span>​&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskEmail\" title=\"currentTaskEmail\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskEmail&gt;&gt;</span>​</span></p></p>"
+    },
+    {
+      "name": "Signup Footer",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span><b>________________________________________________</b></span></p><p><span>Task Color Legend: </span><span style=\"color:#FF8000\">Unassigned&nbsp;</span><span style=\"color:#0000FF\">Assigned&nbsp;</span><span style=\"color:#008000\">Complete</span></p></p>"
+    },
+    {
+      "name": "Task Completion Email Notification",
+      "content": "<p><span>Dear </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"OrganizerName\" title=\"OrganizerName\" draggable=\"true\">&lt;&lt;OrganizerName&gt;&gt;</span></span><span>,</span></p><p></p><p><span>Task &quot;</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span></span><span>&quot; was just marked as complete. For more details on the status of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ProjectName\" title=\"ProjectName\" draggable=\"true\">&lt;&lt;ProjectName&gt;&gt;</span></span><span> project, or to create additional tasks, go to </span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;the administration form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">the administration form</span></u></span><span>.</span></p><p></p><p><span>Best regards,</span></p><p><span>Tawala Systems, Inc.</span></p>"
+    },
+    {
+      "name": "Task Signup Email Notification",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 657.8pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span>Dear </span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"OrganizerName\" title=\"OrganizerName\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;OrganizerName&gt;&gt;</span>​</span><span>,</span></p><p></p><p><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignupForTask:name\" title=\"SignupForTask:name\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;SignupForTask:name&gt;&gt;</span>​</span><span> just signed up to work on \"</span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</span><span>\". For more details on the status of </span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ProjectName\" title=\"ProjectName\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;ProjectName&gt;&gt;</span>​</span><span> project, or to create additional tasks, go to </span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;the administration form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">the administration form</span></u></span><span>.</span></p><p></p><p><span>Best regards,</span></p><p><span>Tawala Systems, Inc.</span></p></p>"
+    },
+    {
+      "name": "Task Setup Header",
+      "content": "<p><span><i>If you are done setting up tasks </i></span><span><i><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;NavigationToSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></i></span><span><i> to finish.</i></span></p>"
+    },
+    {
+      "name": "User Menu",
+      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SignupForTask&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Sign up for a task&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Sign up for a task</span></u></span><span style=\"color:#000080\">&nbsp; &nbsp; or&nbsp; &nbsp;<u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Mark Task Completed&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Mark a task complete&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Mark a task complete</span></u></span></p><p></p></p>"
+    }
+  ],
+  "_originalFormat": "1.9",
+  "_designerBuild": "194",
+  "_convertedFrom": "../ Current Tawala Projects/Master List TAWALA/customizable/Shared To-Do.tawala",
+  "_conversionPass": {
+    "date": "2026-08-20",
+    "converter": "designer-web/src/lib/tawalaXmlToJson.mjs",
+    "source": "../ Current Tawala Projects/Master List TAWALA/customizable/Shared To-Do.tawala"
+  }
+}

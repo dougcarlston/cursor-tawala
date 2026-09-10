@@ -234,6 +234,43 @@ window.TAWALA_LIBRARY = {
       }
     ],
     "testDriveUrl": "http://localhost:8080/p/u3hkqgwtrepjlur/ef6sx16.Administration"
+  },
+  "shared-to-do": {
+    "name": "Shared To-Do",
+    "category": "Activities",
+    "featured": false,
+    "iconLabel": "ST",
+    "rating": 0,
+    "comments": 0,
+    "updated": "9/9/26",
+    "shortDescription": "Share a task list — assign work or let helpers sign up.",
+    "longDescription": "Organizers set up tasks, then share Signup with helpers (or assign people themselves). Administration stays with the organizer. Library Test Drive opens Setup only; Copy to MyTawala gives a private copy with Setup, Signup, and Administration.",
+    "jsonFile": "projects/library/Shared To-Do.json",
+    "formNames": ["task", "SignupForTask", "SetupVariables", "Administration", "Setup", "NavigationToSetup", "Signup", "Mark Task Completed", "Modify Task"],
+    "themePath": "default",
+    "sourcePile": "library",
+    "liveReady": true,
+    "deployed": true,
+    "uniqueId": "bx44wpdnspbsi3k",
+    "deployIdentityName": "Shared To-Do bd155bbc",
+    "versionNumber": 1,
+    "timesUsed": 0,
+    "cloneCount": 0,
+    "startPoints": [
+      {
+        "label": "Setup",
+        "url": "http://localhost:8080/p/bx44wpdnspbsi3k/cswcunp.Setup"
+      },
+      {
+        "label": "Signup",
+        "url": "http://localhost:8080/p/bx44wpdnspbsi3k/cug0g7y.Signup"
+      },
+      {
+        "label": "Administration",
+        "url": "http://localhost:8080/p/bx44wpdnspbsi3k/1eyqcdw.Administration"
+      }
+    ],
+    "testDriveUrl": "http://localhost:8080/p/bx44wpdnspbsi3k/cswcunp.Setup"
   }
   // signup-sheet — removed from public Library (owner Aug 10, 2026):
   // old/broken Library seed + Test Drive uniqueId; use Designer → File → New Project
@@ -243,9 +280,9 @@ window.TAWALA_LIBRARY = {
 };
 
 /**
- * Former public-Library seed ids that must never reappear via localStorage overlay
- * (Save a copy / Rename used to snapshot full catalog rows into tawala.mock.libraryOverlay).
- * transfer.js scrub + withLibraryOverlay filter against this list every Library load.
+ * Former public-Library seed ids. Stub snapshots with these ids are stripped from
+ * libraryOverlay on load so old localStorage cannot resurrect them. They do **not**
+ * reserve the slug — a later Publish may reuse the name (Library admin Delete).
  */
 window.TAWALA_LIBRARY_DISCARDED_IDS = [
   "signup-sheet",
@@ -334,7 +371,7 @@ window.TAWALA_DEMO_RESPONSE_SEEDS = {
  */
 window.TAWALA_TEST_DRIVE_HONESTY = {
   tooltipSingle:
-    "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080.",
+    "No account. Clears this Library demo when you start (not when you close the tab).",
   tooltipMulti:
     "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive.",
   copyTooltipSingle:
@@ -352,16 +389,16 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   pickerCopyLinkTitle: "Copy this start’s URL (shared Library demo, not a private copy).",
   pickerHint: "No account needed. Closing the Test Drive tab does not wipe answers.",
   startLinkTitle:
-    "Clears this Library demo when you start, then opens :8080. Closing the tab does not wipe.",
+    "Clears this Library demo when you start. Closing the tab does not wipe.",
   homeNote:
-    "Clears this shared Library demo when you start (not when you close the tab). Needs :8080.",
+    "Clears this shared Library demo when you start (not when you close the tab).",
   listingPile:
     "Browse templates · Test drive (shared demo — not saved) · Copy link · Copy to MyTawala when logged in",
   listingHint:
     "Test Drive opens a shared demo. Simple templates clear when someone starts a new drive. Exam apps (Online Exam Builder): try Administration / Setup — nothing you enter is saved; Copy to MyTawala (free account) to keep and run exams for real.",
   /* Exam / data-driven Library rows — try-before-register (owner Sep 1, 2026). */
   tooltipSingleExam:
-    "No account. Try the teacher flow on :8080 — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams.",
+    "No account. Try the teacher flow — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams.",
   tooltipMultiExam:
     "Choose a start — try Administration or Setup first. No account; nothing you enter is saved. Copy to MyTawala (free) to use it for real.",
   copyTooltipSingleExam:
@@ -378,15 +415,15 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   pickerOpenLinkTitleExam: "Open this start. Shared demo — your entries are not saved.",
   pickerCopyLinkTitleExam: "Copy this start’s demo URL (not saved — Copy to MyTawala for real use).",
   startLinkTitleExam:
-    "Opens the shared teacher demo on :8080. Nothing you enter is saved — Copy to MyTawala (free) to keep exams.",
+    "Opens the shared teacher demo. Nothing you enter is saved — Copy to MyTawala (free) to keep exams.",
   rowDemoBadge: "Demo - your exam not saved.",
   rowDemoBadgeTitle:
-    "Shared teacher try-out on :8080 — nothing you enter is saved. Copy to MyTawala (free account) to keep and run exams for real.",
+    "Shared teacher try-out — nothing you enter is saved. Copy to MyTawala (free account) to keep and run exams for real.",
   /* Automated List Builder (and other send-mail apps) — Library Test Drive honesty (Sep 8, 2026).
    * Warning lives on the listing, not in the form (My Tawala Use must not see Test Drive copy).
    * Version 2: runtime TD flag so a form item can show only during Test Drive. */
   tooltipSingleEmail:
-    "No account. Clears this Library demo when you start (not when you close the tab), then opens :8080. This app sends real email to addresses you enter — use only addresses you control.",
+    "No account. Clears this Library demo when you start (not when you close the tab). This app sends real email to addresses you enter — use only addresses you control.",
   tooltipMultiEmail:
     "Choose a start. Clears this Library demo when you start (not when you close the tab). This app sends real email to addresses you enter — use only addresses you control.",
   copyTooltipSingleEmail:
@@ -406,10 +443,34 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   pickerCopyLinkTitleEmail:
     "Copy this start’s URL (shared Library demo). This app sends real email — use only addresses you control.",
   startLinkTitleEmail:
-    "Clears this Library demo when you start, then opens :8080. This app sends real email — use only addresses you control.",
+    "Clears this Library demo when you start. This app sends real email — use only addresses you control.",
   rowEmailBadge: "Sends real email.",
   rowEmailBadgeTitle:
     "Library Test Drive of this app sends real email to every address you enter. Use only addresses you control.",
+  /* Shared To-Do — Library Test Drive opens Setup only; Copy to MyTawala is the full
+   * three-start app (Setup + Signup + Administration). Same pattern as OEB (Admin door). */
+  tooltipSingleTodo:
+    "No account. Opens Setup only. Clears this Library demo when you start (not when you close the tab). Copy to MyTawala (free) to run for real and share Signup with helpers.",
+  tooltipMultiTodo:
+    "No account. Opens Setup only. Clears this Library demo when you start (not when you close the tab). Copy to MyTawala (free) for Signup and Administration.",
+  copyTooltipSingleTodo:
+    "Copy the shared Setup try-out URL (no account). Copy to MyTawala (free) for a private copy with Signup and Administration.",
+  copyTooltipMultiTodo:
+    "Copy the shared Setup try-out URL (no account). Copy to MyTawala (free) for a private copy with Signup and Administration.",
+  copyAlertTodo:
+    "Link copied.\n\nThis is the shared Library Setup URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.\n\nCopy to MyTawala (free) for a private copy with Setup, Signup, and Administration.",
+  copyPromptLabelTodo:
+    "Copy this Setup Test Drive link (shared Library demo — not a private copy):",
+  pickerOpenLedeTodo:
+    "“{name}” Test Drive opens Setup only. Copy to MyTawala (free) for Signup and Administration.",
+  pickerCopyLedeTodo:
+    "Copy the shared Setup try-out URL. Copy to MyTawala (free) for a private copy with Signup and Administration.",
+  pickerOpenLinkTitleTodo:
+    "Open Setup. Clears demo answers on start. Copy to MyTawala (free) to share Signup.",
+  pickerCopyLinkTitleTodo:
+    "Copy the Setup URL (shared Library demo). Copy to MyTawala (free) for Signup and Administration.",
+  startLinkTitleTodo:
+    "Opens Setup. Clears this Library demo when you start. Copy to MyTawala (free) to share Signup.",
   /* keepResponses listings (Publish Purge unchecked) — do not claim answers clear on start. */
   tooltipSingleKeep:
     "No account. Opens this published app. Stored answers stay — Test Drive does not clear them.",
@@ -426,7 +487,7 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
   pickerOpenLedeKeep:
     "“{name}” has more than one start form. Click a name to open it. Stored answers stay (Test Drive does not clear them).",
   pickerOpenLinkTitleKeep: "Open this start. Does not clear stored answers.",
-  startLinkTitleKeep: "Opens :8080. This listing does not clear answers on start.",
+  startLinkTitleKeep: "Opens this published app. This listing does not clear answers on start.",
 };
 
 window.TAWALA_DATA_DRIVEN_TEST_DRIVE_TITLE =
@@ -569,14 +630,27 @@ window.TawalaDemo = {
     }));
     // Publish (My Tawala → Library) writes a localStorage overlay (transfer.js) and can
     // retire a matching stub out of the listing. See README § Publish.
-    if (
+    let overlayMerged =
       typeof window !== "undefined" &&
       window.TawalaTransfer &&
       typeof window.TawalaTransfer.withLibraryOverlay === "function"
+        ? window.TawalaTransfer.withLibraryOverlay(base)
+        : base;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.withCategoryOverrides === "function"
     ) {
-      return window.TawalaTransfer.withLibraryOverlay(base);
+      overlayMerged = window.TawalaTransfer.withCategoryOverrides(overlayMerged);
     }
-    return base;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.withTestDriveDoor === "function"
+    ) {
+      return window.TawalaTransfer.withTestDriveDoor(overlayMerged);
+    }
+    return overlayMerged;
   },
   myTawalaEntries() {
     const base = Object.keys(window.TAWALA_MYTAWALA).map((id) => ({
@@ -648,14 +722,40 @@ window.TawalaDemo = {
   get(id) {
     return this.getLibrary(id) || this.getMyTawala(id) || null;
   },
+  applyCategoryOverride(entry) {
+    if (!entry || !entry.id) return entry;
+    let next = entry;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.withCategoryOverrides === "function"
+    ) {
+      next = window.TawalaTransfer.withCategoryOverrides([next])[0] || next;
+    }
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.withTestDriveDoor === "function"
+    ) {
+      next = window.TawalaTransfer.withTestDriveDoor([next])[0] || next;
+    }
+    return next;
+  },
   getLibrary(id) {
     if (!id) return null;
     const hasTransfer = typeof window !== "undefined" && window.TawalaTransfer;
-    // Retired ids stay off the public Library (listing + detail). Leftover overlay is
-    // skipped — do not resurrect a retired Publish (e.g. House Test). A later Publish
-    // calls clearLibraryRetired so this branch no longer matches.
+    // Hidden catalog seeds stay off the public Library. A live Publish overlay at the
+    // same slug still lists (withLibraryOverlay); uniqueLibrarySlug does not reserve hides.
     if (hasTransfer && typeof window.TawalaTransfer.isLibraryRetired === "function" && window.TawalaTransfer.isLibraryRetired(id)) {
-      return null;
+      const overlayWhileHidden =
+        typeof window.TawalaTransfer.getLibraryOverlayEntry === "function"
+          ? window.TawalaTransfer.getLibraryOverlayEntry(id)
+          : null;
+      const livePublish =
+        overlayWhileHidden &&
+        typeof window.TawalaTransfer.isLiveLibraryPublishOverlay === "function" &&
+        window.TawalaTransfer.isLiveLibraryPublishOverlay(overlayWhileHidden);
+      if (!livePublish) return null;
     }
     const base = window.TAWALA_LIBRARY[id] || null;
     if (hasTransfer && typeof window.TawalaTransfer.getLibraryOverlayEntry === "function") {
@@ -668,7 +768,7 @@ window.TawalaDemo = {
         ) {
           return null;
         }
-        return merged;
+        return this.applyCategoryOverride(merged);
       }
     }
     if (
@@ -681,7 +781,7 @@ window.TawalaDemo = {
     }
     /* Seed rows live under TAWALA_LIBRARY[id] without an id field — stamp it for callers
      * (library-detail Save a copy uses project.id; libraryEntries() already injects id). */
-    return base ? { ...base, id } : null;
+    return base ? this.applyCategoryOverride({ ...base, id }) : null;
   },
   getMyTawala(id) {
     if (!id) return null;
@@ -748,7 +848,7 @@ window.TawalaDemo = {
     try {
       if (!this.isLiveReady(p)) return "";
       return (
-        '<span class="library-live-ready" title="Vetted · live on localhost:8080">Live</span>'
+        '<span class="library-live-ready" title="Vetted · live try-out">Live</span>'
       );
     } catch {
       return "";
@@ -924,6 +1024,22 @@ window.TawalaDemo = {
     if (json.indexOf("list builder") !== -1 || json.indexOf("list-builder") !== -1) return true;
     const name = String(project.name || "").toLowerCase();
     return /list\s*builder/.test(name);
+  },
+  /**
+   * Shared To-Do Library rows. Test Drive opens Setup only (skip start picker);
+   * Copy to MyTawala clones the full definition (Setup + Signup + Administration).
+   * Do not treat the Setup-only smoke JSON as a separate public listing.
+   */
+  isSharedToDoProject(project) {
+    if (!project || typeof project !== "object") return false;
+    const id = String(project.id || "").trim().toLowerCase();
+    if (id === "shared-to-do" || id.indexOf("shared-to-do") !== -1) return true;
+    const pulled = String(project.pulledFromLibraryId || "").trim().toLowerCase();
+    if (pulled === "shared-to-do") return true;
+    const json = String(project.jsonFile || "").replace(/\\/g, "/").toLowerCase();
+    if (json.indexOf("shared to-do") !== -1 || json.indexOf("shared-to-do") !== -1) return true;
+    const name = String(project.name || "").toLowerCase();
+    return /shared\s*to-?do/.test(name);
   },
   libraryProjectForUniqueId(uniqueId) {
     if (!this.isValidUniqueId(uniqueId)) return null;
@@ -1808,15 +1924,30 @@ window.TawalaDemo = {
     return nonAdmin || list[0];
   },
   /**
-   * Library Test Drive entry point — for apps with Exam + Administration/Setup
-   * (Online Exam Builder), open Admin/Setup first so the drive starts where you
-   * configure questions. My Tawala Use for multi-start goes to Project Details
-   * (not Exam); single-start Use still uses pickPrimaryStartPoint.
+   * Library Test Drive entry point — admin startKey first, then Exam→Admin,
+   * send-mail / Shared To-Do → Setup. My Tawala Use for multi-start still goes
+   * to Project Details; single-start Use uses pickPrimaryStartPoint.
    */
   pickLibraryTestDriveStartPoint(startPoints, project) {
     const list = (startPoints || []).filter((s) => s && s.url);
     if (!list.length) return null;
     const labelOf = (s) => this.startFormKey(s) || String(s.label || s.form || "").trim();
+    let startKey = String((project && project.testDriveStartKey) || "").trim();
+    if (
+      !startKey &&
+      project &&
+      project.id &&
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.getTestDriveDoor === "function"
+    ) {
+      startKey = window.TawalaTransfer.getTestDriveDoor(project.id).startKey || "";
+    }
+    if (startKey) {
+      const want = startKey.toLowerCase();
+      const hit = list.find((s) => labelOf(s).toLowerCase() === want);
+      if (hit) return hit;
+    }
     const hasExam = list.some((s) => /^exam$/i.test(labelOf(s)));
     if (hasExam) {
       const setupPrefer = [/^administration$/i, /^setup$/i, /^admin$/i];
@@ -1826,6 +1957,10 @@ window.TawalaDemo = {
       }
     }
     if (project && this.isSendsRealEmailProject(project)) {
+      const setup = list.find((s) => /^setup$/i.test(labelOf(s)));
+      if (setup) return setup;
+    }
+    if (project && this.isSharedToDoProject(project)) {
       const setup = list.find((s) => /^setup$/i.test(labelOf(s)));
       if (setup) return setup;
     }
@@ -1910,9 +2045,9 @@ window.TawalaDemo = {
         const keep = uid && typeof this.uniqueIdKeepsResponses === "function" && this.uniqueIdKeepsResponses(uid);
         const honestyTitle = keep
           ? (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitleKeep) ||
-            "Opens :8080. This listing does not clear answers on start."
+            "Opens this published app. This listing does not clear answers on start."
           : (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitle) ||
-            "Clears this Library demo when you start, then opens :8080. Closing the tab does not wipe.";
+            "Clears this Library demo when you start. Closing the tab does not wipe.";
         return (
           '<a class="js-testdrive" href="' +
           sp.url +

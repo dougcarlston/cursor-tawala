@@ -1306,6 +1306,15 @@ details.library-category:not([open]) > summary .library-category-toggle::before 
   line-height: 1.25;
 }
 
+.library-row-blurb.is-empty {
+  color: #a8a098;
+  font-style: italic;
+}
+
+.library-row-blurb[data-wired="edit-library-description"] {
+  cursor: text;
+}
+
 /* Reputation placeholders — quiet until the later ratings push */
 body[data-tawala-page="library"] .rating-stars {
   opacity: 0.58;
@@ -1397,6 +1406,7 @@ button.pm-op-icon-btn.library-row-action {
 }
 
 /* Library listing — CSS tooltips (native title is unreliable on 20px icons and disabled buttons). */
+body[data-tawala-page="library"] .library-project-row,
 body[data-tawala-page="library"] .library-project-row .lib-col-actions,
 body[data-tawala-page="library"] .library-action-slot,
 body[data-tawala-page="library"] .library-colhead-bar .lib-col-actions {
@@ -1407,14 +1417,19 @@ body[data-tawala-page="library"] [data-tooltip] {
   position: relative;
 }
 
+/* width:max-content + max-width: the icon is ~20px; abspos shrink-to-fit was wrapping
+ * one word per line (a tall skinny column). Grow left from the icon so right-edge
+ * action columns stay on-screen. */
 body[data-tawala-page="library"] [data-tooltip]::after {
   content: attr(data-tooltip);
   position: absolute;
-  z-index: 40;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: min(22rem, 72vw);
-  padding: 6px 8px;
+  z-index: 80;
+  left: auto;
+  right: 0;
+  transform: none;
+  width: max-content;
+  max-width: min(22rem, calc(100vw - 24px));
+  padding: 7px 10px;
   font-size: 12px;
   font-weight: normal;
   line-height: 1.35;
@@ -1422,7 +1437,7 @@ body[data-tawala-page="library"] [data-tooltip]::after {
   text-align: left;
   color: #fff;
   background: rgba(28, 32, 40, 0.94);
-  border-radius: 3px;
+  border-radius: 4px;
   pointer-events: none;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
   opacity: 0;
@@ -1432,11 +1447,12 @@ body[data-tawala-page="library"] [data-tooltip]::after {
 
 body[data-tawala-page="library"] .library-row-actions [data-tooltip]::after,
 body[data-tawala-page="library"] .library-action-metric[data-tooltip]::after {
-  bottom: calc(100% + 5px);
+  bottom: calc(100% + 6px);
 }
 
 body[data-tawala-page="library"] .library-action-subhead[data-tooltip]::after {
   top: calc(100% + 4px);
+  bottom: auto;
 }
 
 body[data-tawala-page="library"] [data-tooltip]:hover::after,
@@ -1857,9 +1873,12 @@ body[data-tawala-page="library"] .library-row-actions .pm-icon-action.is-scope-d
 
 /* My Tawala listing — Get (always) · Refresh (linked) · Delete (selection) */
 .pm-listing-bar {
+  display: flex;
+  flex-wrap: nowrap;
   align-items: center;
   margin: 4px 0 10px;
   max-width: min(56rem, 100%);
+  min-height: 2.15em;
 }
 
 .pm-listing-bar-hint {
@@ -1867,6 +1886,11 @@ body[data-tawala-page="library"] .library-row-actions .pm-icon-action.is-scope-d
   color: var(--tw-muted);
   font-weight: normal;
   margin-left: 4px;
+  flex: 1 1 auto;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* My Tawala listing — click / double-click affordance (owner Aug 10).
@@ -3783,10 +3807,16 @@ a.pm-action.is-active {
   padding: 4px 6px;
   cursor: grab;
   font-size: 0.85em;
+  user-select: none;
 }
 
-.library-admin-proj-row:active {
+.library-admin-proj-row:active,
+.library-admin-proj-row.is-dragging {
   cursor: grabbing;
+}
+
+.library-admin-proj-row.is-dragging {
+  opacity: 0.45;
 }
 
 .library-admin-proj-name {
@@ -3799,6 +3829,13 @@ a.pm-action.is-active {
   width: 100%;
   font-size: 11px;
   padding: 2px 3px;
+  cursor: pointer;
+  user-select: auto;
+}
+
+.library-admin-td-table select {
+  max-width: 100%;
+  font-size: 12px;
 }
 
 /* Publish / Pull dialogs (My Tawala) — plain DOM modal, no framework. */
