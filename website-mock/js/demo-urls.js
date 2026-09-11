@@ -364,52 +364,52 @@ window.TAWALA_DEMO_RESPONSE_SEEDS = {
 };
 
 /**
- * Task #14 honesty (Aug 24, 2026). Product contract is wipe-on-leave; this static mock
- * can only purge-on-start. Closing the :8080 tab is invisible to :5500. Copy link shares
- * the Library uniqueId. Single source for Library / home / picker copy — do not invent
- * leave-detection here. Rewire notes: website-mock/README.md § Test Drive leave/wipe.
+ * Task #14 honesty (Sep 11, 2026). Library Test Drive is a private Tomcat session
+ * copy (`/projectmanager/testdrive` → `/t/…`), not the live `/p/{libraryUniqueId}` pile.
+ * Copy link starts a drive for the recipient (their session), not a shared data URL.
+ * Do not invent leave-detection on the :5500 listing page.
  */
 window.TAWALA_TEST_DRIVE_HONESTY = {
   tooltipSingle:
-    "No account. Clears this Library demo when you start (not when you close the tab).",
+    "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter. Copy to MyTawala (free) to keep a lasting copy.",
   tooltipMulti:
-    "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive.",
+    "Choose a start. Opens a private try-out in this browser — every start stays usable during this drive. Other visitors cannot see what you enter.",
   copyTooltipSingle:
-    "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy.",
+    "Copy a link that starts a private try-out (no account). Recipients get their own copy — not your answers.",
   copyTooltipMulti:
-    "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy.",
+    "Choose a start, then copy a link that starts a private try-out. Recipients get their own copy — not your answers.",
   copyAlert:
-    "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.",
-  copyPromptLabel: "Copy this Test Drive link (shared Library demo — not a private copy):",
+    "Link copied.\n\nThis starts a private try-out in the recipient’s browser. Other visitors cannot see what they enter. It is not a copy in My Tawala.",
+  copyPromptLabel: "Copy this Test Drive link (starts a private try-out):",
   pickerOpenLede:
-    "“{name}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). Use every start during this drive.",
+    "“{name}” has more than one start form. Click a name to open it in another tab. This list stays so you can hop — the try-out keeps your entries. Close when you are done.",
   pickerCopyLede:
-    "“{name}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — not a private copy.",
-  pickerOpenLinkTitle: "Open this start. Clears demo answers on start, not when you close the tab.",
-  pickerCopyLinkTitle: "Copy this start’s URL (shared Library demo, not a private copy).",
-  pickerHint: "No account needed. Closing the Test Drive tab does not wipe answers.",
+    "“{name}” has more than one start form. Click a name to copy a link that starts a private try-out for that start.",
+  pickerOpenLinkTitle: "Open this start in a private try-out. Other visitors cannot see what you enter.",
+  pickerCopyLinkTitle: "Copy a link that starts a private try-out for this start.",
+  pickerHint: "No account needed. This try-out is private to this browser session.",
   startLinkTitle:
-    "Clears this Library demo when you start. Closing the tab does not wipe.",
+    "Opens a private try-out. Other visitors cannot see what you enter.",
   homeNote:
-    "Clears this shared Library demo when you start (not when you close the tab).",
+    "Opens a private try-out in this browser. Other visitors cannot see what you enter.",
   listingPile:
-    "Browse templates · Test drive (shared demo — not saved) · Copy link · Copy to MyTawala when logged in",
+    "Browse templates · Test drive (private try-out) · Copy link · Copy to MyTawala when logged in",
   listingHint:
-    "Test Drive opens a shared demo. Simple templates clear when someone starts a new drive. Exam apps (Online Exam Builder): try Administration / Setup — nothing you enter is saved; Copy to MyTawala (free account) to keep and run exams for real.",
+    "Test Drive is a private try-out in this browser — other visitors cannot see what you enter. Copy to MyTawala (free account) to keep a lasting copy. Exam apps: try Administration / Setup, then Copy to MyTawala to run exams for real.",
   /* Exam / data-driven Library rows — try-before-register (owner Sep 1, 2026). */
   tooltipSingleExam:
-    "No account. Try the teacher flow — nothing you enter is saved. Copy to MyTawala (free) to keep and run exams.",
+    "No account. Private try-out of the teacher flow — nothing is saved to the public listing. Copy to MyTawala (free) to keep and run exams.",
   tooltipMultiExam:
-    "Choose a start — try Administration or Setup first. No account; nothing you enter is saved. Copy to MyTawala (free) to use it for real.",
+    "Choose a start — try Administration or Setup first. Private try-out; nothing is saved to the public listing. Copy to MyTawala (free) to use it for real.",
   copyTooltipSingleExam:
-    "Copy the shared teacher demo URL (no account). Nothing is saved — Copy to MyTawala (free) for a private copy.",
+    "Copy a link that starts a private teacher try-out (no account). Copy to MyTawala (free) for a lasting copy.",
   copyTooltipMultiExam:
-    "Choose a start, then copy its demo URL. Shared try-out — nothing saved. Copy to MyTawala (free) for real use.",
+    "Choose a start, then copy a link that starts a private try-out. Copy to MyTawala (free) for real use.",
   copyAlertExam:
-    "Link copied.\n\nShared teacher demo — nothing you enter is saved to an account.\n\nCopy to MyTawala (free) to keep your exam and run it for real.",
+    "Link copied.\n\nThis starts a private teacher try-out. Nothing is saved to the public listing.\n\nCopy to MyTawala (free) to keep your exam and run it for real.",
   copyPromptLabelExam: "Copy this shared demo link (not saved — Copy to MyTawala for a private copy):",
   pickerOpenLedeExam:
-    "“{name}” has more than one start. Teachers: try Administration or Setup first. No account — nothing you enter is saved.",
+    "“{name}” has more than one start. Teachers: try Administration or Setup first. Click a name — this list stays so you can hop. No account — nothing you enter is saved.",
   pickerCopyLedeExam:
     "“{name}” has more than one start. Copy a demo link — shared try-out, nothing saved. Copy to MyTawala (free) for real use.",
   pickerOpenLinkTitleExam: "Open this start. Shared demo — your entries are not saved.",
@@ -423,54 +423,53 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
    * Warning lives on the listing, not in the form (My Tawala Use must not see Test Drive copy).
    * Version 2: runtime TD flag so a form item can show only during Test Drive. */
   tooltipSingleEmail:
-    "No account. Clears this Library demo when you start (not when you close the tab). This app sends real email to addresses you enter — use only addresses you control.",
+    "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter. This app sends real email to addresses you enter — use only addresses you control.",
   tooltipMultiEmail:
-    "Choose a start. Clears this Library demo when you start (not when you close the tab). This app sends real email to addresses you enter — use only addresses you control.",
+    "Choose a start. Private try-out — other visitors cannot see what you enter. This app sends real email to addresses you enter — use only addresses you control.",
   copyTooltipSingleEmail:
-    "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy. This app sends real email to addresses you enter.",
+    "Copy a link that starts a private try-out (no account). This app sends real email to addresses you enter.",
   copyTooltipMultiEmail:
-    "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy. This app sends real email to addresses you enter.",
+    "Choose a start, then copy a link that starts a private try-out. This app sends real email to addresses you enter.",
   copyAlertEmail:
-    "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.\n\nWarning: this app sends real email to every address you enter. Use only addresses you control (your own, or people who have agreed to receive a test).",
+    "Link copied.\n\nThis starts a private try-out in the recipient’s browser. Other visitors cannot see what they enter.\n\nWarning: this app sends real email to every address you enter. Use only addresses you control (your own, or people who have agreed to receive a test).",
   copyPromptLabelEmail:
-    "Copy this Test Drive link (shared Library demo — sends real email):",
+    "Copy this Test Drive link (private try-out — sends real email):",
   pickerOpenLedeEmail:
-    "“{name}” has more than one start form. Click a name to open it. Demo answers clear when you start (not when you close the tab). This app sends real email — use only addresses you control.",
+    "“{name}” has more than one start form. Click a name to open it in a private try-out. This app sends real email — use only addresses you control.",
   pickerCopyLedeEmail:
-    "“{name}” has more than one start form. Click a name to copy its Test Drive URL. Same shared Library demo — this app sends real email.",
+    "“{name}” has more than one start form. Click a name to copy a private try-out link. This app sends real email.",
   pickerOpenLinkTitleEmail:
-    "Open this start. Clears demo answers on start. This app sends real email — use only addresses you control.",
+    "Open this start in a private try-out. This app sends real email — use only addresses you control.",
   pickerCopyLinkTitleEmail:
-    "Copy this start’s URL (shared Library demo). This app sends real email — use only addresses you control.",
+    "Copy a private try-out link for this start. This app sends real email — use only addresses you control.",
   startLinkTitleEmail:
-    "Clears this Library demo when you start. This app sends real email — use only addresses you control.",
+    "Opens a private try-out. This app sends real email — use only addresses you control.",
   rowEmailBadge: "Sends real email.",
   rowEmailBadgeTitle:
     "Library Test Drive of this app sends real email to every address you enter. Use only addresses you control.",
-  /* Shared To-Do — Library Test Drive opens Setup only; Copy to MyTawala is the full
-   * three-start app (Setup + Signup + Administration). Same pattern as OEB (Admin door). */
+  /* Shared To-Do — default door is Setup; the session copy still has Signup and Administration. */
   tooltipSingleTodo:
-    "No account. Opens Setup only. Clears this Library demo when you start (not when you close the tab). Copy to MyTawala (free) to run for real and share Signup with helpers.",
+    "No account. Private try-out (starts at Setup). Other visitors cannot see what you enter. Copy to MyTawala (free) to keep a lasting copy and share Signup with helpers.",
   tooltipMultiTodo:
-    "No account. Opens Setup only. Clears this Library demo when you start (not when you close the tab). Copy to MyTawala (free) for Signup and Administration.",
+    "No account. Private try-out (starts at Setup). Other visitors cannot see what you enter. Copy to MyTawala (free) for a lasting copy.",
   copyTooltipSingleTodo:
-    "Copy the shared Setup try-out URL (no account). Copy to MyTawala (free) for a private copy with Signup and Administration.",
+    "Copy a link that starts a private Setup try-out. Copy to MyTawala (free) for a lasting copy with Signup and Administration.",
   copyTooltipMultiTodo:
-    "Copy the shared Setup try-out URL (no account). Copy to MyTawala (free) for a private copy with Signup and Administration.",
+    "Copy a link that starts a private Setup try-out. Copy to MyTawala (free) for a lasting copy with Signup and Administration.",
   copyAlertTodo:
-    "Link copied.\n\nThis is the shared Library Setup URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.\n\nCopy to MyTawala (free) for a private copy with Setup, Signup, and Administration.",
+    "Link copied.\n\nThis starts a private Setup try-out. Other visitors cannot see what they enter.\n\nCopy to MyTawala (free) for a lasting copy with Setup, Signup, and Administration.",
   copyPromptLabelTodo:
-    "Copy this Setup Test Drive link (shared Library demo — not a private copy):",
+    "Copy this Setup Test Drive link (private try-out):",
   pickerOpenLedeTodo:
-    "“{name}” Test Drive opens Setup only. Copy to MyTawala (free) for Signup and Administration.",
+    "“{name}” Test Drive starts at Setup in a private try-out. Copy to MyTawala (free) for a lasting copy.",
   pickerCopyLedeTodo:
-    "Copy the shared Setup try-out URL. Copy to MyTawala (free) for a private copy with Signup and Administration.",
+    "Copy a private Setup try-out link. Copy to MyTawala (free) for a lasting copy with Signup and Administration.",
   pickerOpenLinkTitleTodo:
-    "Open Setup. Clears demo answers on start. Copy to MyTawala (free) to share Signup.",
+    "Open Setup in a private try-out. Copy to MyTawala (free) to share Signup.",
   pickerCopyLinkTitleTodo:
-    "Copy the Setup URL (shared Library demo). Copy to MyTawala (free) for Signup and Administration.",
+    "Copy a private Setup try-out link. Copy to MyTawala (free) for Signup and Administration.",
   startLinkTitleTodo:
-    "Opens Setup. Clears this Library demo when you start. Copy to MyTawala (free) to share Signup.",
+    "Opens Setup in a private try-out. Copy to MyTawala (free) to share Signup.",
   /* keepResponses listings (Publish Purge unchecked) — do not claim answers clear on start. */
   tooltipSingleKeep:
     "No account. Opens this published app. Stored answers stay — Test Drive does not clear them.",
@@ -858,11 +857,14 @@ window.TawalaDemo = {
   isValidUniqueId(uniqueId) {
     return typeof uniqueId === "string" && /^[A-Za-z0-9]{1,20}$/.test(uniqueId);
   },
-  /** Extract uniqueId from `/p/{uniqueId}/…` (Library / My Tawala test-drive URLs). */
+  /** Extract uniqueId from `/p/{id}/…`, `/t/{id}/…`, or `testdrive?id=`. */
   uniqueIdFromUrl(url) {
     if (!url) return null;
-    const m = String(url).match(/\/p\/([A-Za-z0-9]{1,20})(?:\/|$)/);
-    return m ? m[1] : null;
+    const s = String(url);
+    const path = s.match(/\/(?:p|t)\/([A-Za-z0-9]{1,20})(?:\/|$)/);
+    if (path) return path[1];
+    const q = s.match(/[?&]id=([A-Za-z0-9]{1,20})(?:&|$)/);
+    return q ? q[1] : null;
   },
   /** Deploy-field default only — never a Project Data tree title, never persist over a form name. */
   DEFAULT_SHARE_LABEL: "Click here.",
@@ -1722,25 +1724,18 @@ window.TawalaDemo = {
     return { ...result, uniqueId };
   },
   /**
-   * Optionally purge then open the :8080 form. Product contract (#14) is wipe-on-leave; this
-   * mock wipes on start because a static :5500 page cannot see the :8080 tab close.
-   * Honesty copy: TEST_DRIVE_HONESTY (keepResponses listings must not claim a wipe).
-   * keepResponses uniqueIds (Publish Purge unchecked) skip purge entirely — no half-wipe.
-   * Data-driven Library rows (Exam Builder) use exam honesty copy; purge-on-start still applies
-   * to the shared demo uniqueId (visitor work is not saved — see TEST_DRIVE_HONESTY *Exam keys).
-   * Other Test Drive purges use whole-uniqueId purgeResponses.
-   * Opens a blank tab synchronously (keeps the user gesture for popup blockers),
-   * probes Tomcat before navigating (same offline gate as My Tawala Use), then
-   * navigates after purge. Failed / timed-out purge never blocks opening when :8080 is up.
-   * If :8080 is down: close the blank tab, alert, stay on :5500 — never “site can’t be reached.”
-   * Post-tab-close purge is not available in this static mock — do not fake it.
+   * Optionally purge then open the :8080 form. Library Test Drive uses the Java
+   * session sandbox (`/projectmanager/testdrive`) — do not purge the public `/p/`
+   * uniqueId and do not probe that prepare URL as a form (no session yet).
+   * My Tawala Use still opens `/p/` and may purge when callers pass purge:true.
    */
   async openTestDrive(url, opts) {
     const options = opts || {};
-    const purgeFirst = options.purge !== false;
-    const purgeMs = typeof options.purgeTimeoutMs === "number" ? options.purgeTimeoutMs : 12000;
     const target = url || null;
     if (!target) return { opened: false, purge: null };
+    const sandbox = this.isJavaSessionTestDriveUrl(target);
+    const purgeFirst = !sandbox && options.purge !== false;
+    const purgeMs = typeof options.purgeTimeoutMs === "number" ? options.purgeTimeoutMs : 12000;
 
     // Capture gesture before any await — otherwise browsers block the popup.
     const tab = window.open("about:blank", "_blank");
@@ -1769,7 +1764,7 @@ window.TawalaDemo = {
         );
         return { opened: false, purge: null, offline: true };
       }
-      const formProbe = await this.probeFormStartUrl(target);
+      const formProbe = sandbox ? { ok: true, skipped: true } : await this.probeFormStartUrl(target);
       if (formProbe && formProbe.ok === false && formProbe.reason !== "probe-http") {
         closeBlankTab();
         window.alert(
@@ -1956,6 +1951,8 @@ window.TawalaDemo = {
         if (hit) return hit;
       }
     }
+    const customize = list.find((s) => /^customiz/i.test(labelOf(s)));
+    if (customize) return customize;
     if (project && this.isSendsRealEmailProject(project)) {
       const setup = list.find((s) => /^setup$/i.test(labelOf(s)));
       if (setup) return setup;
@@ -1973,12 +1970,50 @@ window.TawalaDemo = {
     return fallbackUrl || null;
   },
   /**
-   * Library listing / detail Test Drive URL. Prefer Setup/Admin for Exam apps;
-   * fall back to stored testDriveUrl.
+   * True when href is the Java session Test Drive gate (`/projectmanager/testdrive`).
+   * That URL mints a private in-memory World (cookie JSESSIONID) and redirects to `/t/…`.
+   */
+  isJavaSessionTestDriveUrl(url) {
+    if (!url || !this.isLocalJavaRuntimeUrl(url)) return false;
+    try {
+      const u = new URL(url, "http://localhost/");
+      const path = (u.pathname || "").replace(/\/+$/, "") || "/";
+      return path === "/projectmanager/testdrive";
+    } catch {
+      return /\/projectmanager\/testdrive(?:\?|$)/i.test(String(url));
+    }
+  },
+  /**
+   * Legacy-shaped Library Test Drive start URL. Tomcat prepares a session World
+   * and redirects to `/t/{uniqueId}/{token}.{Form}`. Not the durable `/p/` pile.
+   */
+  javaTestDrivePrepareUrl(uniqueId, formName) {
+    if (!this.isValidUniqueId(uniqueId)) return null;
+    const form = String(formName || "").trim();
+    if (!form) return null;
+    return (
+      "http://localhost:8080/projectmanager/testdrive?id=" +
+      encodeURIComponent(uniqueId) +
+      "&form=" +
+      encodeURIComponent(form)
+    );
+  },
+  /** Session-sandbox URL for one Library start, or null if identity/form is missing. */
+  libraryTestDriveUrlForStart(project, startPoint) {
+    if (!project || !startPoint) return null;
+    const uid = this.uniqueIdForProject(project);
+    const form = this.startFormKey(startPoint);
+    return this.javaTestDrivePrepareUrl(uid, form);
+  },
+  /**
+   * Library listing / detail / Copy-link URL. Session sandbox for the preferred
+   * start (Customize / Setup / Admin heuristics), not the live `/p/` uniqueId.
    */
   libraryTestDriveUrl(project) {
     if (!project) return null;
     const preferred = this.pickLibraryTestDriveStartPoint(project.startPoints, project);
+    const sandbox = this.libraryTestDriveUrlForStart(project, preferred);
+    if (sandbox) return sandbox;
     if (preferred && preferred.url) return preferred.url;
     return project.testDriveUrl || null;
   },
@@ -2004,14 +2039,15 @@ window.TawalaDemo = {
         const libraryId = el.getAttribute("data-project") || "";
         if (
           libraryId &&
-          purge &&
           typeof window.TawalaTransfer !== "undefined" &&
           typeof window.TawalaTransfer.bumpLibraryTimesUsed === "function"
         ) {
           /* Library catalog Times used (popularity) — not My Tawala usageStats. */
           window.TawalaTransfer.bumpLibraryTimesUsed(libraryId);
         }
-        void this.openTestDrive(href, { purge });
+        const sandbox =
+          typeof this.isJavaSessionTestDriveUrl === "function" && this.isJavaSessionTestDriveUrl(href);
+        void this.openTestDrive(href, { purge: sandbox ? false : purge });
       },
       true
     );
@@ -2047,7 +2083,7 @@ window.TawalaDemo = {
           ? (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitleKeep) ||
             "Opens this published app. This listing does not clear answers on start."
           : (this.TEST_DRIVE_HONESTY && this.TEST_DRIVE_HONESTY.startLinkTitle) ||
-            "Clears this Library demo when you start. Closing the tab does not wipe.";
+            "Opens a private try-out. Other visitors cannot see what you enter.";
         return (
           '<a class="js-testdrive" href="' +
           sp.url +

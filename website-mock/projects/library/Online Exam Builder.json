@@ -501,7 +501,7 @@
       ],
       "themePath": "default",
       "process": "SetupExam",
-      "preProcess": "SetupCustomizationVariables"
+      "preProcess": "Pre-Exam"
     },
     {
       "name": "Answer",
@@ -1458,6 +1458,101 @@
               ]
             }
           ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-Exam",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "- copy SetupVariables into Customize_* then show title, date, and pre-test instructions with the examinee Name page"
+        },
+        {
+          "cmd": "get",
+          "recordList": "Records",
+          "sourceForms": [
+            "SetupVariables"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Configuration",
+          "recordList": "Records",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_Title",
+              "value": "<<Configuration:SetupVariables:Title>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date",
+              "value": "<<Configuration:SetupVariables:Date>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_PreInstructions",
+              "value": "<<Configuration:SetupVariables:PreInstructions>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_PostInstructions",
+              "value": "<<Configuration:SetupVariables:PostInstructions>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ShowScore",
+              "value": "<<Configuration:SetupVariables:ShowScore>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ShowCorrectAnswers",
+              "value": "<<Configuration:SetupVariables:ShowCorrectAnswers>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "Configuration:SetupVariables:NotifyByEmail",
+                    "op": "equals",
+                    "value": "yes"
+                  },
+                  {
+                    "field": "Configuration:SetupVariables:EmailToNotify",
+                    "op": "isNotBlank"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "EmailConfirm",
+                  "value": "<<Configuration:SetupVariables:EmailToNotify>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Exam Start",
+          "reset": false
         }
       ]
     },
@@ -2494,7 +2589,9 @@
         {
           "cmd": "set",
           "field": "FirstViewOfSetup",
-          "value": "\"\""
+          "value": "",
+          "concat": false,
+          "arithmeticAsText": false
         },
         {
           "cmd": "get",

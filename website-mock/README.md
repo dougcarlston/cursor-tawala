@@ -444,7 +444,7 @@ Linked quietly from the My Tawala sidebar (**Maintainer tools**) and the Library
 2. **Rename** — edit any current Library entry's display name in place (`TawalaTransfer.renameLibraryEntry`) without Publishing anything new.
 3. **Delete** — remove a listing with **no successor** (`TawalaTransfer.deleteLibraryEntry`). **No My Tawala safety copy.** The name is free for a later Publish (discarded/hidden slugs are not reserved). Catalog seeds still in `TAWALA_LIBRARY` are hidden so they do not come back on refresh; overlay-only Publishes are dropped. Live uniqueId rows also **free the :8080 display/Tomcat name** (`POST :3001/api/retire-name` → Tomcat `retireDeployment`). uniqueId is **not** destroyed — Tomcat has no delete-deployment yet; the occupant is renamed `{name} (retired {uniqueId})` so occupancy can reuse the bare title. **Free a live :8080 name** on the same admin page vacates an occupant uniqueId that is not even a Library row (e.g. ALB `ceihmyxlssxn6yn`).
 4. **Use as overwrite target ↑** on any row is a shortcut that scrolls to the Publish/overwrite form above with that row preselected as the target — it doesn't do anything by itself.
-5. **Test Drive doors** — per listing, choose **Single door** (default) or **Start picker**. Single door also picks which start Test Drive / Copy link open. Copy to MyTawala still clones every start. Stored in `tawala.mock.libraryTestDriveDoors`.
+5. **Test Drive doors** — per listing, choose **Single door** (default) or **Start picker**. Single door also picks which start Test Drive / Copy link open. Copy to MyTawala still clones every start. Stored in `tawala.mock.libraryTestDriveDoors`. **Start picker stays open** after you pick a start (hop Administration ↔ Exam in the same try-out); Close / Escape dismisses it.
 
 There is still **no public Library Delete** for normal users — `library-admin.html` is the maintainer hatch. Delete does **not** copy to My Tawala.
 
@@ -717,27 +717,24 @@ Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala 
 4. **Online Exam Builder** — Test Drive (and Copy link) **disabled**; tooltip: used from **My Tawala** — **Copy to MyTawala**. Does not open `:8080`.
 5. Behavior unchanged for Survey/Horses/Get Together: Test Drive still purge-on-start (whole uniqueId); closing the `:8080` tab does **not** wipe. Home Quick test drive note matches (`index.html?v=20260826-examtd1`).
 
-### When to leave the mock for real :8080 Test Drive sessions
+**Sep 11 — session sandbox (legacy `/t/`):** Library Test Drive and Copy link use `http://localhost:8080/projectmanager/testdrive?id={uniqueId}&form={Form}`. Tomcat mints a private in-memory World (JSESSIONID) and redirects to `/t/…`. Two browsers do not share `/p/{libraryUniqueId}` data. My Tawala **Use** still opens the real `/p/` project. Copy link is a start-a-drive URL (recipient gets their own session). Do not purge the public uniqueId on Library Test Drive start. Idle TTL / tab-close wipe is still Tomcat session expiry — not a `:5500` listing `onunload`. Opt-in **Start picker** stays on the Library tab after you pick a start so you can hop (same session); Close / Escape dismisses it.
 
-**Stay on the mock** while Library is a local review surface and Test Drive URLs are shared demo uniqueIds (`gy1zssbrwm4fgfm`, `u3hkqgwtrepjlur`, …). Honesty copy is enough until a stranger’s Copy-link click would collide with real respondent data.
+**Stay on honesty copy for leave/TTL polish** until public Library needs explicit idle timeout.
 
-**Shift off the mock** when any of these becomes true:
+**Shift further** when:
 
-1. **Library Live / public visitors** — Copy link must not dump everyone onto one shared `/p/{libraryUniqueId}/…`.
-2. **True leave/wipe** — product contract is wipe when the visitor **leaves**, not when the next person **starts**.
-3. **Copy to MyTawala must not share Library submissions** — **Task #26 wired Aug 24** (private clone uniqueId). Test Drive catalog uniqueId is still shared among visitors until Library Live ([#14](#task-list-aug-9)).
+1. **True leave/wipe TTL** — product still wants wipe when the visitor **leaves**, not only when the servlet session expires.
+2. **Copy to MyTawala must not share Library submissions** — **Task #26 wired Aug 24** (private clone uniqueId).
 
-**Rewire then (do not start these in the mock):**
+**Still true:**
 
-| Today (mock) | Needed on real website + `:8080` |
+| Now (Sep 11) | Later |
 |---|---|
-| Test Drive opens the catalog uniqueId; **purge-on-start** | Mint a **per-drive uniqueId** (clone of the published definition) or a short-lived session; wipe **that** id on leave / TTL |
-| Static `:5500` cannot see the `:8080` tab close | Website (or Tomcat) session: wrapper/start URL, idle TTL, or unload beacon — not a Library listing `alert` |
-| Copy link copies the raw `/p/{libraryUniqueId}/form` URL | Copy a **start-a-drive** website URL that mints/resumes a session, or a session-scoped `:8080` URL |
-| `mockSharedLibraryRuntime` copies Library uniqueId onto Copy to MyTawala | **Task #26 wired Aug 24:** mint a **private** uniqueId on acquire |
-| `openTestDrive` POST `:3001/api/purge-responses` before navigate | Purge the **session** uniqueId on leave; keep catalog uniqueId empty/unshared. Publish mints a separate empty Library uniqueId and does **not** purge the author’s My Tawala uniqueId |
-| Library **Times used** mock bump | Count real drive sessions, not `:5500` localStorage |
-| Fail-page probe (`/api/probe-java-url`) | Keep — still useful when World is down |
+| Test Drive = session World via `/projectmanager/testdrive` → `/t/` | Optional idle TTL / unload beacon |
+| Copy link = start-a-drive prepare URL | Same |
+| `openTestDrive` does **not** purge `/p/` for sandbox URLs | Keep catalog uniqueId empty |
+| Static `:5500` cannot see the `:8080` tab close | Tomcat session timeout is the discard |
+| Fail-page probe skipped for the prepare URL (no session yet) | Probe `/home` only |
 
 Do **not** implement leave-detection inside `website-mock/` as a fake `window.onunload` on the listing page — that page is not the form tab.
 

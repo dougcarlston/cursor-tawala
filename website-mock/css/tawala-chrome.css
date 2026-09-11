@@ -4015,6 +4015,11 @@ a.testdrive-pick-link:focus-visible {
   box-shadow: 0 0 0 2px rgba(11, 92, 171, 0.35);
 }
 
+a.testdrive-pick-link.is-open {
+  background: rgba(11, 92, 171, 0.12);
+  box-shadow: inset 3px 0 0 var(--tw-accent, #0b5cab);
+}
+
 .tawala-modal-hint-tight {
   margin: 6px 0 0;
   font-size: 0.8em;

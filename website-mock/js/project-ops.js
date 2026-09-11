@@ -239,7 +239,7 @@
    *   Listing shows **Copies downloaded** under Copy link.
    * wired: "save-copy-library" → rename dialog → TawalaTransfer.saveCopyFromLibrary (logged-in only).
    * ≠ My Tawala Deploy / Project Data “Copy link” (owner distributing *their* live starts).
-   * Task #14: tooltips tell the mock truth (purge-on-start, shared uniqueId) — see TEST_DRIVE_HONESTY.
+   * Task #14: tooltips tell the mock truth (private session try-out) — see TEST_DRIVE_HONESTY.
    */
   const LIBRARY_LISTING_ACTIONS = [
     {
@@ -247,7 +247,7 @@
       label: "Test drive",
       title: honestyText(
         "tooltipSingle",
-        "No account. Clears this Library demo when you start (not when you close the tab)."
+        "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter. Copy to MyTawala (free) to keep a lasting copy."
       ),
       wired: "test-drive",
       icon: "testdrive",
@@ -258,7 +258,7 @@
       label: "Copy link",
       title: honestyText(
         "copyTooltipSingle",
-        "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy."
+        "Copy a link that starts a private try-out (no account). Recipients get their own copy — not your answers."
       ),
       wired: "copy-testdrive-link",
       icon: "link",
@@ -906,7 +906,7 @@
       return "active when :8080 deployed (single → open; multi → start hot links; purge-on-start not leave; no account)";
     }
     if (item.wired === "copy-testdrive-link") {
-      return "active when :8080 deployed — copy shared Library uniqueId URL (multi → start hot links; ≠ Deploy Copy link)";
+      return "active when :8080 deployed — copy private try-out start URL (multi → start hot links; ≠ Deploy Copy link)";
     }
     if (item.wired === true) return "active";
     return "disabled in mock";
@@ -1059,6 +1059,16 @@
     return project && project.testDriveUrl ? project.testDriveUrl : null;
   }
 
+  function libraryOpenUrlForStart(project, startPoint) {
+    if (
+      typeof TawalaDemo !== "undefined" &&
+      typeof TawalaDemo.libraryTestDriveUrlForStart === "function"
+    ) {
+      return TawalaDemo.libraryTestDriveUrlForStart(project, startPoint) || (startPoint && startPoint.url) || "";
+    }
+    return (startPoint && startPoint.url) || "";
+  }
+
   function resolveLibraryProject(projectId) {
     if (!projectId || typeof TawalaDemo === "undefined") return null;
     if (typeof TawalaDemo.getLibrary !== "function") return null;
@@ -1137,7 +1147,7 @@
 
   /**
    * Library Test Drive — listing icon or detail text button.
-   * Single-start: direct :8080 open (purge-on-start). Multi-start: opens start hot-link list.
+   * Single-start: session-sandbox open (no purge of the public uniqueId). Multi-start: opens start hot-link list.
    */
   function renderLibraryTestDriveButton(project, variant) {
     const pid = (project && project.id) || "";
@@ -1150,14 +1160,14 @@
           project,
           "tooltipMulti",
           "tooltipMultiKeep",
-          "Choose a start. Clears this Library demo when you start (not when you close the tab). All starts stay usable during the drive.",
+          "Choose a start. Opens a private try-out in this browser — every start stays usable during this drive. Other visitors cannot see what you enter.",
           "Choose a start. Stored answers stay — Test Drive does not clear them."
         )
       : honestyForProject(
           project,
           "tooltipSingle",
           "tooltipSingleKeep",
-          "No account. Clears this Library demo when you start (not when you close the tab).",
+          "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter. Copy to MyTawala (free) to keep a lasting copy.",
           "No account. Opens this published app. Stored answers stay — Test Drive does not clear them."
         );
     if (variant === "text") {
@@ -1222,14 +1232,14 @@
           project,
           "copyTooltipMulti",
           "copyTooltipMultiKeep",
-          "Choose a start, then copy its try-out URL. Same shared Library demo as Test Drive — not a private copy.",
+          "Choose a start, then copy a link that starts a private try-out. Recipients get their own copy — not your answers.",
           "Choose a start, then copy its URL. Same published app as Test Drive — answers are not cleared on start."
         )
       : honestyForProject(
           project,
           "copyTooltipSingle",
           "copyTooltipSingleKeep",
-          "Copy the live try-out URL (no account). Same shared Library demo as Test Drive — not a private copy.",
+          "Copy a link that starts a private try-out (no account). Recipients get their own copy — not your answers.",
           "Copy the live URL (no account). Same published app as Test Drive — answers are not cleared on start."
         );
     if (variant === "text") {
@@ -3178,9 +3188,8 @@
   }
 
   /**
-   * Library viral share — copy the same :8080 URL Test Drive opens.
-   * Alert includes #14 honesty (shared uniqueId; wipe-on-start not leave).
-   * keepResponses listings must not claim answers clear on start.
+   * Library viral share — copy the session-sandbox start URL (not the live `/p/` pile).
+   * Alert includes #14 honesty (private try-out per recipient).
    * ≠ My Tawala Deploy Copy link.
    */
   async function copyTestDriveLinkToClipboard(url, project) {
@@ -3192,21 +3201,21 @@
       project,
       "copyAlert",
       "copyAlertKeep",
-      "Link copied.\n\nThis is the shared Library demo URL (same uniqueId for every visitor). Answers clear when someone starts Test Drive from the Library, not when they close the tab.",
+      "Link copied.\n\nThis starts a private try-out in the recipient’s browser. Other visitors cannot see what they enter. It is not a copy in My Tawala.",
       "Link copied.\n\nThis is the shared Library URL for this published app. Answers are not cleared when someone starts Test Drive."
     );
     const promptLabel = honestyForProject(
       project,
       "copyPromptLabel",
       "copyPromptLabelKeep",
-      "Copy this Test Drive link (shared Library demo — not a private copy):",
+      "Copy this Test Drive link (starts a private try-out):",
       "Copy this Test Drive link (shared Library URL — stored answers stay):"
     );
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
         await navigator.clipboard.writeText(url);
         window.alert(copied);
-        setStatus("Copied Test Drive link (shared Library demo).");
+        setStatus("Copied Test Drive link (private try-out).");
         return true;
       }
     } catch {
@@ -3238,13 +3247,13 @@
     }
     /* Single-start should not reach here; fall through to direct open/copy. */
     if (starts.length < 2) {
-      const url = starts[0].url;
+      const url = libraryOpenUrlForStart(project, starts[0]) || starts[0].url;
       if (intent === "copy") {
         void copyTestDriveLinkToClipboard(url, project);
       } else {
         noteLibraryTestDriveOpen(projectId);
         if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.openTestDrive === "function") {
-          void TawalaDemo.openTestDrive(url, { purge: true });
+          void TawalaDemo.openTestDrive(url, { purge: false });
         } else {
           window.open(url, "_blank", "noopener");
         }
@@ -3257,17 +3266,19 @@
 
     const isCopy = intent === "copy";
     const title = isCopy ? "Copy link — choose a start" : "Test Drive — choose a start";
-    const lede = isCopy ? "Choose a start to copy." : "Choose a start.";
+    const lede = isCopy
+      ? "Choose a start to copy."
+      : "Choose a start. It opens in another tab — this list stays so you can hop. Close when you are done.";
     const linkTitle = isCopy
       ? honestyText(
           "pickerCopyLinkTitle",
-          "Copy this start’s URL (shared Library demo, not a private copy)."
+          "Copy a link that starts a private try-out for this start."
         )
       : honestyForProject(
           project,
           "pickerOpenLinkTitle",
           "pickerOpenLinkTitleKeep",
-          "Open this start. Clears demo answers on start, not when you close the tab.",
+          "Open this start in a private try-out. Other visitors cannot see what you enter.",
           "Open this start. Does not clear stored answers."
         );
 
@@ -3311,7 +3322,7 @@
         ev.preventDefault();
         const idx = Number(a.getAttribute("data-start-idx"));
         const sp = starts[idx] || starts[0];
-        const url = (sp && sp.url) || "";
+        const url = libraryOpenUrlForStart(project, sp);
         if (!url) {
           window.alert("No start URL for that selection.");
           return;
@@ -3321,10 +3332,14 @@
           void copyTestDriveLinkToClipboard(url, project);
           return;
         }
-        closeTestDrivePickModal();
+        listEl.querySelectorAll("a.testdrive-pick-link").forEach((el) => {
+          el.classList.toggle("is-open", el === a);
+          if (el === a) el.setAttribute("aria-current", "true");
+          else el.removeAttribute("aria-current");
+        });
         noteLibraryTestDriveOpen(projectId);
         if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.openTestDrive === "function") {
-          void TawalaDemo.openTestDrive(url, { purge: true });
+          void TawalaDemo.openTestDrive(url, { purge: false });
         } else {
           window.open(url, "_blank", "noopener");
         }
@@ -6302,7 +6317,7 @@
       }
       noteLibraryTestDriveOpen(projectId);
       if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.openTestDrive === "function") {
-        void TawalaDemo.openTestDrive(url, { purge: true });
+        void TawalaDemo.openTestDrive(url, { purge: false });
       } else {
         window.open(url, "_blank", "noopener");
       }

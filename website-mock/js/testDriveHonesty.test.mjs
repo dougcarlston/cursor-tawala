@@ -1,6 +1,6 @@
 /**
- * Task #14 contract: honesty copy must stay explicit (wipe-on-start, not leave;
- * shared Library uniqueId). Run: node js/testDriveHonesty.test.mjs
+ * Task #14 contract: Library Test Drive is a private session try-out.
+ * Run: node js/testDriveHonesty.test.mjs
  */
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -13,10 +13,9 @@ const ops = readFileSync(join(dir, "project-ops.js"), "utf8");
 const transfer = readFileSync(join(dir, "transfer.js"), "utf8");
 
 assert.match(demo, /window\.TAWALA_TEST_DRIVE_HONESTY/);
-assert.match(demo, /Clears this Library demo when you start \(not when you close the tab\)/);
-assert.match(demo, /same uniqueId for every visitor/);
-assert.match(demo, /Post-tab-close purge is not available in this static mock — do not fake it/);
-assert.match(demo, /Closing the tab does not wipe/);
+assert.match(demo, /private try-out/);
+assert.match(demo, /Other visitors cannot see/);
+assert.doesNotMatch(demo, /same uniqueId for every visitor/);
 
 assert.match(ops, /honestyForProject\(\s*project,\s*"copyAlert"/);
 assert.match(ops, /honestyText\(\s*"tooltipSingle"/);
@@ -40,7 +39,7 @@ assert.doesNotMatch(
   /:8080/,
   "Library Test Drive honesty copy must not mention :8080"
 );
-assert.match(demo, /nothing you enter is saved/);
+assert.match(demo, /nothing is saved to the public listing/);
 assert.match(demo, /rowDemoBadge:/);
 assert.match(ops, /function renderLibraryDemoBadge/);
 assert.match(ops, /projectIsDataDriven\(project\)/);
@@ -56,6 +55,7 @@ assert.doesNotMatch(
 );
 assert.match(ops, /function bindDismissOnBackdropClick/);
 assert.match(ops, /Choose a start\./);
+assert.match(ops, /this list stays so you can hop/);
 assert.match(ops, /publishDescInput/);
 assert.doesNotMatch(
   ops.slice(
@@ -63,6 +63,15 @@ assert.doesNotMatch(
     ops.indexOf("async function copyLibraryTestDriveLink")
   ),
   /pickerHint/
+);
+const pickerFn = ops.slice(
+  ops.indexOf("function openLibraryTestDrivePicker"),
+  ops.indexOf("async function copyLibraryTestDriveLink")
+);
+assert.doesNotMatch(
+  pickerFn,
+  /closeTestDrivePickModal\(\);\s*noteLibraryTestDriveOpen/,
+  "Open-a-start must keep the picker; Close/Escape still dismiss it"
 );
 
 assert.match(demo, /tooltipSingleEmail:/);
@@ -74,7 +83,7 @@ assert.match(ops, /library-email-badge/);
 
 assert.match(demo, /isSharedToDoProject/);
 assert.match(demo, /tooltipSingleTodo:/);
-assert.match(demo, /Opens Setup only/);
+assert.match(demo, /starts at Setup/);
 assert.match(ops, /function projectIsSharedToDo/);
 assert.match(
   demo,

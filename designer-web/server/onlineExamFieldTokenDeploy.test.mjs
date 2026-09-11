@@ -73,4 +73,22 @@ describe("Online Exam Builder: field tokens never Deploy as value literals", () 
     );
     expect(xml).not.toContain('string value="<<Exam:id>>"');
   });
+
+  it("examinee Exam preProcess shows Exam Start (title, date, Q3 pre-instructions)", () => {
+    const project = JSON.parse(readFileSync(EXAM_JSON, "utf8"));
+    const exam = project.forms.find((f) => f.name === "Exam");
+    expect(exam?.preProcess).toBe("Pre-Exam");
+    const admin = project.forms.find((f) => f.name === "Administration");
+    expect(admin?.preProcess).toBe("SetupCustomizationVariables");
+    const pre = project.processes.find((p) => p.name === "Pre-Exam");
+    expect(
+      pre?.commands?.some(
+        (c) => c.cmd === "showDocument" && c.document === "Exam Start",
+      ),
+    ).toBe(true);
+    const xml = projectToXml(project);
+    expect(xml).toMatch(
+      /<process name="Pre-Exam">[\s\S]*?<show document="Exam Start" reset="false"\/>/,
+    );
+  });
 });
