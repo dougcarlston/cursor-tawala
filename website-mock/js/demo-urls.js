@@ -371,15 +371,15 @@ window.TAWALA_DEMO_RESPONSE_SEEDS = {
  */
 window.TAWALA_TEST_DRIVE_HONESTY = {
   tooltipSingle:
-    "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter. Copy to MyTawala (free) to keep a lasting copy.",
+    "No account. Opens a private try-out in this browser. Other visitors cannot see what you enter. Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too. Copy to MyTawala (free) to keep a lasting copy.",
   tooltipMulti:
-    "Choose a start. Opens a private try-out in this browser — every start stays usable during this drive. Other visitors cannot see what you enter.",
+    "Choose a start. Opens a private try-out in this browser — every start stays usable during this drive. Other visitors cannot see what you enter. Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too.",
   copyTooltipSingle:
     "Copy a link that starts a private try-out (no account). Recipients get their own copy — not your answers.",
   copyTooltipMulti:
     "Choose a start, then copy a link that starts a private try-out. Recipients get their own copy — not your answers.",
   copyAlert:
-    "Link copied.\n\nThis starts a private try-out in the recipient’s browser. Other visitors cannot see what they enter. It is not a copy in My Tawala.",
+    "Link copied.\n\nThis starts a private try-out in the recipient’s browser. Other visitors cannot see what they enter. Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too. It is not a copy in My Tawala.",
   copyPromptLabel: "Copy this Test Drive link (starts a private try-out):",
   pickerOpenLede:
     "“{name}” has more than one start form. Click a name to open it in another tab. This list stays so you can hop — the try-out keeps your entries. Close when you are done.",
@@ -398,15 +398,15 @@ window.TAWALA_TEST_DRIVE_HONESTY = {
     "Test Drive is a private try-out in this browser — other visitors cannot see what you enter. Copy to MyTawala (free account) to keep a lasting copy. Exam apps: try Administration / Setup, then Copy to MyTawala to run exams for real.",
   /* Exam / data-driven Library rows — try-before-register (owner Sep 1, 2026). */
   tooltipSingleExam:
-    "No account. Private try-out of the teacher flow — nothing is saved to the public listing. Copy to MyTawala (free) to keep and run exams.",
+    "No account. Private try-out of the teacher flow — nothing is saved to the public listing. Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too. Copy to MyTawala (free) to keep and run exams.",
   tooltipMultiExam:
-    "Choose a start — try Administration or Setup first. Private try-out; nothing is saved to the public listing. Copy to MyTawala (free) to use it for real.",
+    "Choose a start — try Administration or Setup first. Private try-out; nothing is saved to the public listing. Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too. Copy to MyTawala (free) to use it for real.",
   copyTooltipSingleExam:
     "Copy a link that starts a private teacher try-out (no account). Copy to MyTawala (free) for a lasting copy.",
   copyTooltipMultiExam:
     "Choose a start, then copy a link that starts a private try-out. Copy to MyTawala (free) for real use.",
   copyAlertExam:
-    "Link copied.\n\nThis starts a private teacher try-out. Nothing is saved to the public listing.\n\nCopy to MyTawala (free) to keep your exam and run it for real.",
+    "Link copied.\n\nThis starts a private teacher try-out. Nothing is saved to the public listing. Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too.\n\nCopy to MyTawala (free) to keep your exam and run it for real.",
   copyPromptLabelExam: "Copy this shared demo link (not saved — Copy to MyTawala for a private copy):",
   pickerOpenLedeExam:
     "“{name}” has more than one start. Teachers: try Administration or Setup first. Click a name — this list stays so you can hop. No account — nothing you enter is saved.",

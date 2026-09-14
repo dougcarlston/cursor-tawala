@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260911-tdpick1" />
-  <script src="js/demo-urls.js?v=20260911-tdpick1"></script>
-  <script src="js/transfer.js?v=20260911-tdpick1"></script>
+  <script src="js/demo-urls.js?v=20260914-tdpick2"></script>
+  <script src="js/transfer.js?v=20260914-tdpick2"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -472,7 +472,9 @@
         '<h3 class="sectionHeading">Test Drive doors</h3>' +
         '<div class="sectionContent">' +
         '<p class="pm-hint">Default is <b>one start</b> (no picker). Use <b>Start picker</b> only when visitors should choose. ' +
-        "Copy to MyTawala still gets every start. Refresh <b>library.html</b> to see Test Drive / Copy link.</p>" +
+        "Copy to MyTawala still gets every start. Then open <b>library.html</b> on the <i>same</i> address " +
+        "(<code>http://localhost:5500</code>, not 127.0.0.1) and hard-refresh (Cmd+Shift+R). " +
+        "The door is saved in this browser only.</p>" +
         '<table class="projectListing stripe library-admin-td-table" style="width:100%;">' +
         "<thead><tr><th class=\"left\">Project</th><th>Test Drive</th><th class=\"left\">Door</th></tr></thead>" +
         `<tbody id="adminTestDriveDoorRows">${body}</tbody>` +

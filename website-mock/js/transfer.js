@@ -497,8 +497,9 @@
   }
 
   /**
-   * Save a copy / Publish-retire safety rows must survive Push at the same slug.
-   * Push mints a new id instead of replacing them (owner Aug 10 — merge keeps acquires).
+   * Save a copy / Publish-retire safety rows must survive Push at the same *slug* when that
+   * row is a different live uniqueId. Same uniqueId always merges (people re-Push the app
+   * they already have). Owner Sep 14, 2026.
    */
   function isProtectedAcquireOverlayRow(data) {
     if (!data || typeof data !== "object") return false;
@@ -1087,9 +1088,11 @@
   }
 
   /**
-   * Account-private My Tawala Delete: remove this account’s row + Deploy overlay /
-   * inbox receipt. Does not touch public Library catalog, liveReady, or :8080 XML.
-   * Former seed rows stay hidden via deleted set; re-Deploy / Save a copy clears the mark.
+   * Account-private My Tawala Delete: remove this account’s listing row (overlay key /
+   * catalog id) + matching Deploy inbox receipts. Does **not** match or delete by uniqueId —
+   * a second listing that shares the same live uniqueId stays. Does not touch public Library
+   * catalog, liveReady, or :8080 XML. Former seed rows stay hidden via deleted set;
+   * re-Deploy / Save a copy clears the mark.
    */
   function deleteMyTawalaProject(projectId) {
     if (!projectId) {
@@ -1103,27 +1106,97 @@
     return { ok: true, projectId, hadOverlay, hadInbox };
   }
 
+  function uniqueIdFromLiveUrl(url) {
+    const s = String(url || "");
+    const m = s.match(/\/(?:p|t)\/([A-Za-z0-9]{1,20})(?:\/|$)/);
+    return m ? m[1] : "";
+  }
+
+  function uniqueIdFromOverlayEntry(data) {
+    if (!data || typeof data !== "object") return "";
+    const direct = String(data.uniqueId || "").trim();
+    if (direct) return direct;
+    const fromTest = uniqueIdFromLiveUrl(data.testDriveUrl);
+    if (fromTest) return fromTest;
+    const starts = Array.isArray(data.startPoints) ? data.startPoints : [];
+    for (let i = 0; i < starts.length; i++) {
+      const fromStart = uniqueIdFromLiveUrl(starts[i] && starts[i].url);
+      if (fromStart) return fromStart;
+    }
+    return "";
+  }
+
+  function overlayCreatedMs(data) {
+    const raw = data && (data.createdAt || data.lastDeployAt || data.updatedAt);
+    const n = Date.parse(raw || "");
+    return Number.isFinite(n) ? n : Number.MAX_SAFE_INTEGER;
+  }
+
+  /**
+   * Listing overlay keys that already point at this live uniqueId.
+   * Used so Push / Show in My Tawala updates the existing card instead of minting a twin.
+   */
+  function findMyTawalaOverlayIdsByUniqueId(overlay, uniqueId) {
+    const uid = String(uniqueId || "").trim();
+    if (!uid || !overlay || typeof overlay !== "object") return [];
+    return Object.keys(overlay).filter((id) => uniqueIdFromOverlayEntry(overlay[id]) === uid);
+  }
+
+  /**
+   * Which My Tawala listing a Push receipt should update.
+   * UniqueId wins (oldest listing if duplicates already exist). Same-slug Copy to My Tawala /
+   * retire-safety rows still mint a sibling **only** when that row is a different live app.
+   */
+  function resolveMyTawalaDeployListingId(overlay, receipt) {
+    const receiptId = String(
+      (receipt && receipt.id) || slugifyProjectId(receipt && receipt.name) || ""
+    ).trim();
+    const uniqueId = String(
+      (receipt && (receipt.uniqueId || receipt.deployUniqueId)) || ""
+    ).trim();
+    const pile = overlay && typeof overlay === "object" ? overlay : {};
+    const uidHits = uniqueId ? findMyTawalaOverlayIdsByUniqueId(pile, uniqueId) : [];
+    if (uidHits.length) {
+      uidHits.sort((a, b) => {
+        const ta = overlayCreatedMs(pile[a]);
+        const tb = overlayCreatedMs(pile[b]);
+        if (ta !== tb) return ta - tb;
+        return String(a).localeCompare(String(b));
+      });
+      return uidHits[0];
+    }
+    const prev = receiptId ? pile[receiptId] || null : null;
+    if (prev && isProtectedAcquireOverlayRow(prev)) {
+      return uniqueMyTawalaSlug(receiptId);
+    }
+    return receiptId || "project";
+  }
+
   /**
    * Build / merge a catalog-shaped My Tawala row from a Designer deploy receipt.
    * Mints a monotonic versionNumber and appends to versions[] (Details-only history).
+   * Same live uniqueId always updates that listing in place (keeps its overlay id and name).
    * Returns { id, ...entry } or null.
    */
   function upsertMyTawalaFromDeploy(receipt) {
     if (!receipt || !receipt.name) return null;
-    let id = receipt.id || slugifyProjectId(receipt.name);
     const overlay = getMyTawalaOverlay();
-    /* Never replace a Save a copy / retire-safety row at the same slug — mint a sibling id.
-     * Re-Push onto an existing deploy-overlay row still merges versions in place. */
-    let prev = overlay[id] || null;
-    if (prev && isProtectedAcquireOverlayRow(prev)) {
-      id = uniqueMyTawalaSlug(id);
-      receipt.id = id;
-      prev = null;
-    }
+    const id = resolveMyTawalaDeployListingId(overlay, {
+      id: receipt.id || slugifyProjectId(receipt.name),
+      name: receipt.name,
+      uniqueId: receipt.uniqueId || receipt.deployUniqueId || null,
+    });
+    receipt.id = id;
+    const prev = overlay[id] || null;
+    const mergedByUniqueId = !!(
+      prev &&
+      String(receipt.uniqueId || receipt.deployUniqueId || "").trim() &&
+      uniqueIdFromOverlayEntry(prev) === String(receipt.uniqueId || receipt.deployUniqueId || "").trim()
+    );
     /* Re-Deploy / Show in My Tawala restores a previously deleted row. */
     clearMyTawalaDeleted(id);
     const incomingStarts = rawStartPointsFromReceipt(receipt);
-    let uniqueId = receipt.uniqueId || null;
+    let uniqueId = receipt.uniqueId || receipt.deployUniqueId || null;
     if (
       !uniqueId &&
       typeof window !== "undefined" &&
@@ -1247,7 +1320,10 @@
         : "";
     const themePath = defTheme || receiptTheme || prevTheme || undefined;
     const entry = {
-      name: String(receipt.name),
+      name:
+        mergedByUniqueId && prev && String(prev.name || "").trim()
+          ? String(prev.name).trim()
+          : String(receipt.name),
       category: (prev && prev.category) || receipt.category || "My Projects",
       featured: false,
       iconLabel: (prev && prev.iconLabel) || iconLabelFromName(receipt.name),
@@ -3867,7 +3943,8 @@
     if (!parsed.id && parsed.name) parsed.id = slugifyProjectId(parsed.name);
     upsertMyTawalaFromDeploy(parsed);
     recordDeploy(parsed);
-    /* Always sync ?project= — upsert may mint a new id when a Save a copy already owns the slug. */
+    /* Always sync ?project= — upsert may retarget to an existing uniqueId listing, or mint a
+     * sibling id when a Save a copy already owns the slug for a *different* live app. */
     if (parsed.id) {
       params.set("project", parsed.id);
     }
@@ -4026,6 +4103,8 @@
     findPullCandidates,
     pullFromLibrary,
     myTawalaIdTaken,
+    findMyTawalaOverlayIdsByUniqueId,
+    resolveMyTawalaDeployListingId,
     uniqueMyTawalaSlug,
     myTawalaNameTaken,
     findMyTawalaByName,

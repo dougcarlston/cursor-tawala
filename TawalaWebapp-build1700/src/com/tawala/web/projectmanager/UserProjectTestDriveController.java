@@ -29,6 +29,9 @@ public class UserProjectTestDriveController implements Controller {
 	public static final String PARAMETER_FORM_NAME = "form";
 	public static final String PARAMETER_PROJECT_RANDOM_ID = "id";
 	public static final String PARAMETER_PROJECT_FORCE_REINITIALIZATION = "r";
+	public static final String PARAMETER_LEAVE = "leave";
+	public static final String PARAMETER_TOUCH = "touch";
+	public static final String PARAMETER_EPOCH = "epoch";
 
 	protected UserProject prepareTestWorld(HttpServletRequest request,
 			HttpServletResponse response, UserProject userProject)
@@ -40,6 +43,8 @@ public class UserProjectTestDriveController implements Controller {
 
 			return null;
 		}
+
+		TestDriveSupport.discardIfDue(session);
 
 		UserProject runnableProject = null;
 
@@ -55,6 +60,8 @@ public class UserProjectTestDriveController implements Controller {
 				Send.DEFAULT_FROM_ADDRESS)
 				: userProject.getUser().getEmail();
 
+		TestDriveSupport.discardNow(session);
+
 		User user = new User("test", "test", "test", emailAddress, "none");
 		runnableProject = new UserProject(userProject.getProject(), user,
 				userProject.getName());
@@ -66,12 +73,14 @@ public class UserProjectTestDriveController implements Controller {
 		testDriveWorld.domain().projects().put(runnableProject);
 		testDriveWorld.domain().users().addOrSave(user);
 
+		// B1: definition only. Do not snapshot live /p/ submissions into /t/.
 		TestDriveSupport.copyExistingSubmissionsToTestWorld(userProject
 				.getProject(), testDriveWorld);
 
 		session.setAttribute(
 				ProjectTestDriveController.TESTWORLD_ATTRIBUTE_NAME,
 				testDriveWorld);
+		TestDriveSupport.onWorldCreated(session);
 
 		return runnableProject;
 	}
@@ -97,6 +106,18 @@ public class UserProjectTestDriveController implements Controller {
 
 	public ModelAndView handleRequest(HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
+		if ("1".equals(request.getParameter(PARAMETER_LEAVE))) {
+			TestDriveSupport.scheduleLeave(request.getSession(false), request
+					.getParameter(PARAMETER_EPOCH));
+			response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+			return null;
+		}
+		if ("1".equals(request.getParameter(PARAMETER_TOUCH))) {
+			TestDriveSupport.keepAlive(request.getSession(false), request
+					.getParameter(PARAMETER_EPOCH));
+			response.setStatus(HttpServletResponse.SC_NO_CONTENT);
+			return null;
+		}
 		String projectId = request.getParameter(PARAMETER_PROJECT_RANDOM_ID);
 		LinkToUserProject link = WorldInitializer.getDefaultWorld().domain()
 				.projects().getWithProjectRuntime(projectId);

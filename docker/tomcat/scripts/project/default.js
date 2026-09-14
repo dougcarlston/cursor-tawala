@@ -1406,6 +1406,68 @@ Event.onDOMReady(Tawala.fixTemplates);
 Event.onDOMReady(Tawala.fixTableWidth);
 
 /**
+ * Library B2: /t/ Test Drive only. Listing :5500 must not fake this.
+ * Must be assigned before onDOMReady(this) — YUI stores the function reference
+ * at register time (undefined here would never bind).
+ * pagehide beacons leave; hop POSTs bump epoch so stale beacons are ignored.
+ * Idle keepalive while the tab is visible (30 min idle TTL on the server).
+ */
+Tawala.bindTestDriveLeaveWipe = function() {
+	if (window.__TAWALA_TD_LEAVE_BOUND) {
+		return;
+	}
+	if (!window.location || String(window.location.pathname).indexOf("/t/") !== 0) {
+		return;
+	}
+	window.__TAWALA_TD_LEAVE_BOUND = true;
+	var testdriveUrl = function(action) {
+		var epoch = window.TAWALA_TD_EPOCH;
+		var url = "/projectmanager/testdrive?" + action + "=1";
+		if (epoch != null && epoch !== "") {
+			url += "&epoch=" + encodeURIComponent(String(epoch));
+		}
+		return url;
+	};
+	var ping = function(action) {
+		var url = testdriveUrl(action);
+		try {
+			if (navigator.sendBeacon) {
+				navigator.sendBeacon(url);
+			}
+		} catch (ignoreBeacon) {}
+		try {
+			if (window.fetch) {
+				fetch(url, {
+					method: "GET",
+					keepalive: true,
+					credentials: "same-origin",
+					cache: "no-store"
+				});
+			}
+		} catch (ignoreFetch) {}
+		try {
+			var img = new Image();
+			img.src = url + (url.indexOf("?") >= 0 ? "&" : "?") + "_=" + new Date().getTime();
+		} catch (ignoreImg) {}
+	};
+	if (window.addEventListener) {
+		window.addEventListener("pagehide", function() {
+			ping("leave");
+		}, false);
+		window.addEventListener("pageshow", function() {
+			ping("touch");
+		}, false);
+	}
+	window.setInterval(function() {
+		if (document.visibilityState && document.visibilityState !== "visible") {
+			return;
+		}
+		ping("touch");
+	}, 4 * 60 * 1000);
+};
+Event.onDOMReady(Tawala.bindTestDriveLeaveWipe);
+
+/**
  * When a FIB blank appears before the first MCQ control on the form, put the
  * caret in that blank on load (Deploy). If an MCQ comes first, leave focus alone.
  */

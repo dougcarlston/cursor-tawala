@@ -38,6 +38,7 @@ import com.tawala.web.Response;
 import com.tawala.web.oldhtml.Html;
 import com.tawala.web.oldhtml.OldPage;
 import com.tawala.web.oldhtml.RenderingContext;
+import com.tawala.web.library.TestDriveSupport;
 
 public abstract class DataCollectingProjectController extends ProjectController {
 	public DataCollectingProjectController(ServletContext servletContext) {
@@ -142,8 +143,10 @@ public abstract class DataCollectingProjectController extends ProjectController 
 				OldPage errorPage = new OldPage(new BackButtonNavigationPage(
 						context.getOriginalLink()));
 				addHeaderAndStyleSheets(project, context, errorPage);
+				stampTestDriveEpoch(errorPage, request);
 				return new OldPageResponse(errorPage);
 			} else {
+				stampTestDriveEpoch(page, request);
 				return new OldPageResponse(page);
 			}
 		}
@@ -329,6 +332,7 @@ public abstract class DataCollectingProjectController extends ProjectController 
 		}
 
 		addHeaderAndStyleSheets(project, context, page);
+		stampTestDriveEpoch(page, request);
 
 		// --- Determine if session timeout is needed on this page
 		if ((context.getSubmission() != null && context.getSubmission()
@@ -356,6 +360,13 @@ public abstract class DataCollectingProjectController extends ProjectController 
 
 	protected abstract boolean getAllowAdsToAppear();
 
+	private void stampTestDriveEpoch(OldPage page, Request request) {
+		if (page == null || getEntryPointType() != EntryPointType.TEST_DRIVE) {
+			return;
+		}
+		page.setTestDriveEpoch(TestDriveSupport.currentEpoch(request.getSession()));
+	}
+
 	private static OldPage validateSubmission(ExecutionContext context,
 			Form form, FormSegment currentSegment) {
 		if (!context.expectPostedData()) {
@@ -379,7 +390,7 @@ public abstract class DataCollectingProjectController extends ProjectController 
 		page.addPrintStylesheets(theme.getPrintStylesheetURLs());
 		page.addScreenStylesheets(theme.getScreenStylesheetURLs());
 
-		page.addScript("/scripts/project/default.js");
+		page.addScript("/scripts/project/default.js?v=20260914-tdleave4");
 
 		if (project.getPageHeader() != null) {
 			page.addToFront(project.getPageHeader().toHtml(context));

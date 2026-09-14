@@ -10,6 +10,47 @@ import { fileURLToPath } from "node:url";
 const dir = dirname(fileURLToPath(import.meta.url));
 const demo = readFileSync(join(dir, "demo-urls.js"), "utf8");
 const ops = readFileSync(join(dir, "project-ops.js"), "utf8");
+const testDriveSupport = readFileSync(
+  join(dir, "../../TawalaWebapp-build1700/src/com/tawala/web/library/TestDriveSupport.java"),
+  "utf8"
+);
+assert.doesNotMatch(
+  testDriveSupport,
+  /fullyInitializedResponsesFor/,
+  "B1: new /t/ Worlds must not snapshot live /p/ submissions"
+);
+assert.match(testDriveSupport, /Intentionally empty/);
+assert.match(testDriveSupport, /LEAVE_GRACE_MS = 20 \* 1000L/);
+assert.match(testDriveSupport, /IDLE_MS = 30 \* 60 \* 1000L/);
+assert.match(
+  testDriveSupport,
+  /purgeTestDriveSessionData/,
+  "B2: leave-wipe must drop session variables (Customize_Title), not only the World"
+);
+const executionContext = readFileSync(
+  join(dir, "../../TawalaWebapp-build1700/src/com/tawala/project/commands/ExecutionContext.java"),
+  "utf8"
+);
+assert.match(executionContext, /public static void purgeTestDriveSessionData/);
+const defaultJs = readFileSync(
+  join(dir, "../../TawalaWebapp-build1700/web/scripts/project/default.js"),
+  "utf8"
+);
+assert.match(defaultJs, /bindTestDriveLeaveWipe/);
+assert.match(defaultJs, /\/t\//);
+{
+	const assigned = defaultJs.indexOf("Tawala.bindTestDriveLeaveWipe = function");
+	const ready = defaultJs.indexOf("Event.onDOMReady(Tawala.bindTestDriveLeaveWipe)");
+	assert.ok(
+		assigned >= 0 && ready > assigned,
+		"onDOMReady(bindTestDriveLeaveWipe) must run after the function is assigned"
+	);
+}
+assert.doesNotMatch(
+  ops,
+  /addEventListener\("pagehide"/,
+  "leave-wipe lives on the :8080 /t/ form, not the :5500 listing"
+);
 
 assert.match(demo, /isJavaSessionTestDriveUrl/);
 assert.match(demo, /javaTestDrivePrepareUrl/);

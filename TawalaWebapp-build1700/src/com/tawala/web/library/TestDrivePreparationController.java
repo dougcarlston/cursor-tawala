@@ -37,6 +37,8 @@ public abstract class TestDrivePreparationController extends
 			return null;
 		}
 
+		TestDriveSupport.discardIfDue(session);
+
 		// Test if we already have this version of the project - it might be
 		// trying to access another form and we would like to preserve the
 		// submissions.
@@ -59,6 +61,8 @@ public abstract class TestDrivePreparationController extends
 				|| sessionUser.getEmail() == null ? new EmailAddress(
 				Send.DEFAULT_FROM_ADDRESS) : sessionUser.getEmail();
 
+		TestDriveSupport.discardNow(session);
+
 		User user = new User("test", "test", "test", emailAddress, "none");
 		UserProject runnableProject = new UserProject(version.getProject(),
 				user, project.getName());
@@ -70,12 +74,14 @@ public abstract class TestDrivePreparationController extends
 
 		testDriveWorld.domain().users().addOrSave(user);
 
+		// B1: definition only. Do not snapshot live /p/ submissions into /t/.
 		TestDriveSupport.copyExistingSubmissionsToTestWorld(version
 				.getProject(), testDriveWorld);
 
 		session.setAttribute(
 				ProjectTestDriveController.TESTWORLD_ATTRIBUTE_NAME,
 				testDriveWorld);
+		TestDriveSupport.onWorldCreated(session);
 
 		ProjectLibraryService.onProjectTestDrive(project);
 

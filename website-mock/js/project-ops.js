@@ -97,9 +97,29 @@
     return {};
   }
 
+  function isMockLoggedIn() {
+    return (
+      typeof window.TawalaChrome !== "undefined" &&
+      typeof window.TawalaChrome.isLoggedIn === "function" &&
+      window.TawalaChrome.isLoggedIn()
+    );
+  }
+
+  /** Guests hear “No account.” Logged-in viewers already have one. */
+  function honestyAdjustForLogin(text) {
+    const raw = String(text || "");
+    if (!raw || !isMockLoggedIn()) return raw;
+    return raw
+      .replace(/^No account needed\. /g, "")
+      .replace(/^No account\. /g, "")
+      .replace(/No account — /g, "")
+      .replace(/\nNo account\. /g, "\n");
+  }
+
   function honestyText(key, fallback) {
     const v = testDriveHonesty()[key];
-    return typeof v === "string" && v ? v : fallback;
+    const text = typeof v === "string" && v ? v : fallback;
+    return honestyAdjustForLogin(text);
   }
 
   function honestyNamed(key, name, fallback) {
@@ -196,7 +216,9 @@
       const examKey = `${key}Exam`;
       return honestyText(examKey, fallback);
     }
-    if (projectIsSharedToDo(project)) {
+    /* Shared To-Do Setup-only copy is for the default single door. Admin Start
+     * picker uses the generic multi-start strings (Setup / Signup / Administration). */
+    if (projectIsSharedToDo(project) && !projectUsesStartPicker(project)) {
       return honestyText(`${key}Todo`, fallback);
     }
     if (projectSendsRealEmail(project)) {
@@ -213,7 +235,7 @@
       const examKey = `${key}Exam`;
       return honestyText(examKey, fallback).replace(/\{name\}/g, name);
     }
-    if (projectIsSharedToDo(project)) {
+    if (projectIsSharedToDo(project) && !projectUsesStartPicker(project)) {
       return honestyText(`${key}Todo`, fallback).replace(/\{name\}/g, name);
     }
     if (projectSendsRealEmail(project)) {
@@ -273,14 +295,6 @@
       requiresLogin: true,
     },
   ];
-
-  function isMockLoggedIn() {
-    return (
-      typeof window.TawalaChrome !== "undefined" &&
-      typeof window.TawalaChrome.isLoggedIn === "function" &&
-      window.TawalaChrome.isLoggedIn()
-    );
-  }
 
   function visibleLibraryListingActions() {
     return LIBRARY_LISTING_ACTIONS.filter((op) => !op.requiresLogin || isMockLoggedIn());
@@ -1081,13 +1095,7 @@
     return ((project && project.startPoints) || []).filter((s) => s && s.url);
   }
 
-  /**
-   * True when Library Test Drive / Copy should show the start picker.
-   * Default is a single door (admin opt-in to picker). Copy to MyTawala still
-   * clones the full definition with every start.
-   */
-  function isLibraryMultiStart(project) {
-    if (libraryStartPointsWithUrls(project).length < 2) return false;
+  function projectUsesStartPicker(project) {
     if (project && project.testDriveMode === "picker") return true;
     if (
       typeof TawalaTransfer !== "undefined" &&
@@ -1098,6 +1106,16 @@
       return TawalaTransfer.getTestDriveDoor(project.id).mode === "picker";
     }
     return false;
+  }
+
+  /**
+   * True when Library Test Drive / Copy should show the start picker.
+   * Default is a single door (admin opt-in to picker). Copy to MyTawala still
+   * clones the full definition with every start.
+   */
+  function isLibraryMultiStart(project) {
+    if (libraryStartPointsWithUrls(project).length < 2) return false;
+    return projectUsesStartPicker(project);
   }
 
   /** Prefer Library Test Drive ranking (Admin/Setup for Exam apps); else first start. */
@@ -1127,7 +1145,9 @@
     const title = projectIsDataDriven(project)
       ? "Copy to MyTawala (free account) — private copy with your own live exam; the shared Test Drive demo does not save your work"
       : projectIsSharedToDo(project)
-        ? "Copy to MyTawala (free) — private copy with Setup, Signup, and Administration; Library Test Drive is Setup only"
+        ? projectUsesStartPicker(project)
+          ? "Copy to MyTawala (free) — private copy with Setup, Signup, and Administration"
+          : "Copy to MyTawala (free) — private copy with Setup, Signup, and Administration; Library Test Drive is Setup only"
       : "Copy this Library project into My Tawala (empty private clone; does not copy other people’s responses)";
     if (variant === "text") {
       return (

@@ -345,7 +345,7 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Library thread`
 
-**Resume Monday Sep 14:** [`docs/LIBRARY_WHERE_WE_ARE_SEP3.md`](LIBRARY_WHERE_WE_ARE_SEP3.md) § **Monday Sep 14 — ToDo**. Isolation sandbox is wired; OEB Pre-Exam is live; Setup first-pass JSON is **not** Pushed yet.
+**Resume Monday Sep 14:** [`docs/LIBRARY_WHERE_WE_ARE_SEP3.md`](LIBRARY_WHERE_WE_ARE_SEP3.md) § **Monday Sep 14 — ToDo**. **A–B3 done** (Poll TD still waits on leak-fix). **Next: B4** Publish dual-use as they are. Real login / lost-password = pre-live HOLD Task #21 (do not start in this Library pass).
 
 **Handoff script (Aug 24, 2026):** From repo root:
 

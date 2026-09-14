@@ -19,6 +19,7 @@ public class OldPage implements Html {
 	private String googleAdSenseCode;
 	private String headerCSS;
 	private Integer sessionExpirationTimeout;
+	private Integer testDriveEpoch;
 	private final String buildNumber;
 	private UrgentMessage urgentMessage;
 
@@ -113,6 +114,23 @@ public class OldPage implements Html {
 					+ "var sessionExpirationTimeout = "
 					+ sessionExpirationTimeout + ";\n"
 					+ "Event.onDOMReady(initTimeoutDialog);\n" + "</script>\n");
+		}
+
+		if (testDriveEpoch != null) {
+			out.print("<script type=\"text/javascript\">window.TAWALA_TD_EPOCH="
+					+ testDriveEpoch.intValue() + ";"
+					+ "(function(){if(window.__TAWALA_TD_LEAVE_BOUND)return;"
+					+ "if(!location.pathname||location.pathname.indexOf('/t/')!==0)return;"
+					+ "window.__TAWALA_TD_LEAVE_BOUND=true;"
+					+ "function u(a){return '/projectmanager/testdrive?'+a+'=1&epoch='"
+					+ "+encodeURIComponent(String(window.TAWALA_TD_EPOCH||''));}"
+					+ "function p(a){var x=u(a);"
+					+ "try{if(navigator.sendBeacon)navigator.sendBeacon(x);}catch(e){}"
+					+ "try{if(window.fetch)fetch(x,{method:'GET',keepalive:true,credentials:'same-origin',cache:'no-store'});}catch(e2){}"
+					+ "}"
+					+ "if(window.addEventListener){addEventListener('pagehide',function(){p('leave');},false);"
+					+ "addEventListener('pageshow',function(){p('touch');},false);}"
+					+ "})();</script>\n");
 		}
 
 		out.print("</head>\n");
@@ -229,6 +247,10 @@ public class OldPage implements Html {
 
 	public void setSessionExpirationTimeout(int minutes) {
 		sessionExpirationTimeout = minutes;
+	}
+
+	public void setTestDriveEpoch(int epoch) {
+		testDriveEpoch = Integer.valueOf(epoch);
 	}
 
 	public UrgentMessage getUrgentMessage() {

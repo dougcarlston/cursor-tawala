@@ -14,7 +14,7 @@ Companions: this file; tray READMEs under `2-Ready-for-MyTawala/` and `3-Ready-f
 
 Do **not** start Designer C14/C15/F1. Do **not** implement “projects of projects” until the planning session below is done. Isolation restoration stays the product spine.
 
-### A. First — OEB Setup first-pass (small, unfinished smoke)
+### A. First — OEB Setup first-pass — **done Mon Sep 14**
 
 Setup start should open **SetupVariables** (title / date / Q3) when there are **no Question rows**. Hub “Your exam is now set up!” + Update Setup is **original v.8** once any question exists — not a single-door rewrite.
 
@@ -27,7 +27,9 @@ Setup start should open **SetupVariables** (title / date / Q3) when there are **
 - Keeper: `~/Projects/ Current Tawala Projects/Current Deployed MyTawala/Online Exam Builder.json`  
   (Open this. Live My Tawala `un7qtlf0tcc0rqq` / Tomcat name **Online Exam Builder e3c56ca6**. Public Library `u3hkqgwtrepjlur`.)
 
-**Monday smoke:** File → Open keeper → confirm uniqueId `un7q…` → Push → fresh Test Drive / Use **Setup** with **no questions** → SetupVariables. If questions already exist on that uniqueId, hub is correct; use a new TD session or Purge Question rows first. Then Publish/replace Library in place (`u3hk…`) if public TD should match.
+**Smoked My Tawala Use** on `un7q…`: Purge questions → Setup goes to Customize/SetupVariables; Restore 3 questions → Setup hub + pre-AdminDashboard MCQ. **Publish replace in place** onto Library `u3hkqgwtrepjlur`. Owner confirmed Library TD uses that uniqueId with a **`/t/`** door.
+
+**Duplicate My Tawala listing (Sep 14):** Push / Show in My Tawala keyed listings by display-name slug, so a second OEB card appeared with the same uniqueId `un7q…`. **Fixed** — same uniqueId updates the existing listing in place. Owner deleted the older listing (overlay only). Hard-refresh My Tawala (`transfer.js?v=20260914-uidmerge1`).
 
 Also confirm examinee **Exam** still shows Exam Start (title + Q3) — that Push/Publish already smoked Sep 11 (`Pre-Exam`).
 
@@ -37,9 +39,9 @@ Also confirm examinee **Exam** still shows Exam Start (title + Q3) — that Push
 
 **Still open (do in order):**
 
-1. **Stop copying live `/p/` into a new TD World** — `TestDriveSupport.copyExistingSubmissionsToTestWorld` still snapshots the public pile at session start. That is why a “fresh” Setup can skip first-pass (questions already there) and why isolation is incomplete. Prefer empty World (or copy **definition only**). Confirm two visitors never see each other’s entries **and** a new drive does not inherit author/library submissions.
-2. **Idle TTL / leave-wipe** — today discard = Tomcat session expiry, not listing `onunload`. Product still wants wipe when the visitor **leaves**. Spec TTL; do not fake it in `:5500`.
-3. **Smoke dual-use via Library TD** (not only My Tawala Use): Sign-up Customize-first; Shared To-Do Setup; OEB Administration or Setup; Poll only after leak-fix. Default door remains **single start**; picker is admin opt-in. Do not implement two-door (AdminStart vs UserStart) unless asked.
+1. **Stop copying live `/p/` into a new TD World** — **smoked Sep 14.** `TestDriveSupport.copyExistingSubmissionsToTestWorld` is a no-op. Library OEB TD: Administration empty; `…/testdrive?id=u3hk…&form=Setup` → SetupVariables. Same session still hops. A later `docker compose build tawala` needs this class in `ROOT.war` or a re-copy.
+2. **Idle TTL / leave-wipe** — **smoked Sep 14 (OEB picker).** Closing **all** `:8080` `/t/` tabs discards the drive after **20s**; picker on `:5500` may stay. Same-session hops (Customize ↔ Exam ↔ Admin) **keep** state. Discard drops the in-memory World **and** Test Drive session variables (`Customize_Title` etc.) — Setup FIBs going blank is not enough. Idle **30 min** with 4 min keepalive while the tab is visible. Beacon is on `:8080` `/t/`, not the listing. Honesty: “Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too.” Durability: classes+JS must stay in `ROOT.war` (entrypoint `jar uf` can unpack over hot-copies).
+3. **Smoke dual-use via Library TD** — **smoked Sep 14** except Poll (wait for leak-fix). Sign-up Customize-first; Shared To-Do **Start picker** (Setup / Signup / Administration hops, same `/t/` World); OEB already. Default door remains **single start**; picker is admin opt-in (Shared To-Do is the one that needs it).
 4. **Then Publish dual-use as they already are** — no JSON reshape for a single `/p/` door:
    - Sign-up Sheet operate `gnqp5qfd06ktec3`
    - ALB after **Free a live :8080 name** `ceihmyxlssxn6yn` (do not share `vrjayw9lwun85i1` as public TD)
@@ -215,8 +217,7 @@ Not this pass. Needs a first-class **authoring vs respondent** data role (start-
 ```text
 Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md **Monday Sep 14 ToDo**.
 Branch cursor/forms-canvas-wysiwyg. Staging outside git: Website Staging.
-**First:** smoke OEB Pre-Setup first-pass (keeper JSON, Push un7q…, then Library replace u3hk…).
-**Then:** finish TD isolation — stop copying live /p/ into new /t/ Worlds; then dual-use Publishes as they are.
+**A + B1 + B2 + B3 done** (Sign-up TD; Shared To-Do picker; OEB). Poll TD waits on leak-fix. **Next: B4** Publish dual-use as they are. Real login = pre-live HOLD (#21), not this pass.
 Parked: User Contributed “projects of projects” planning session (section D) — do not code yet.
 No Designer C14 this pass.
 ```

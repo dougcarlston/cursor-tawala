@@ -3,6 +3,7 @@ package com.tawala.project.commands;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -416,6 +417,33 @@ public class ExecutionContext {
 
 	public void purgePreviousSessionData() {
 		request.getSession().removeAttribute(getStorageAttribute());
+	}
+
+	/**
+	 * Library B2: dropping the Test Drive World is not enough for dual-use apps.
+	 * Process Set writes exam title etc. into session variables
+	 * ({@code Customize_Title}), keyed by project id — they survive a new empty
+	 * World, so Setup FIBs look blank while Exam/Admin still show the title.
+	 */
+	public static void purgeTestDriveSessionData(HttpSession session) {
+		if (session == null) {
+			return;
+		}
+		String livePrefix = TAWALA_STORED_CONTEXT_INFO
+				+ EntryPointType.TEST_DRIVE.toString();
+		String previewPrefix = TAWALA_STORED_CONTEXT_INFO_FOR_PREVIEW
+				+ EntryPointType.TEST_DRIVE.toString();
+		List<String> names = new ArrayList<String>();
+		Enumeration<?> attrs = session.getAttributeNames();
+		while (attrs.hasMoreElements()) {
+			String name = String.valueOf(attrs.nextElement());
+			if (name.startsWith(livePrefix) || name.startsWith(previewPrefix)) {
+				names.add(name);
+			}
+		}
+		for (int i = 0; i < names.size(); i++) {
+			session.removeAttribute(names.get(i));
+		}
 	}
 
 	/*

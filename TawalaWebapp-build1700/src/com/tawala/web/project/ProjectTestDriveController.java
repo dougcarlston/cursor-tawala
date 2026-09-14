@@ -6,6 +6,7 @@ import javax.servlet.http.HttpSession;
 
 import com.tawala.World;
 import com.tawala.project.UserProject.EntryPointType;
+import com.tawala.web.library.TestDriveSupport;
 
 public class ProjectTestDriveController extends DataCollectingProjectController {
     public ProjectTestDriveController(ServletContext servletContext) {
@@ -19,6 +20,7 @@ public class ProjectTestDriveController extends DataCollectingProjectController 
         HttpSession session = request.getSession(false);
         if(session == null)
             return null;
+        TestDriveSupport.onTestDrivePage(session);
         return (World)session.getAttribute(TESTWORLD_ATTRIBUTE_NAME);
     }
 

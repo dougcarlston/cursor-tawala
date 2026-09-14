@@ -20,7 +20,8 @@ assert.doesNotMatch(demo, /same uniqueId for every visitor/);
 assert.match(ops, /honestyForProject\(\s*project,\s*"copyAlert"/);
 assert.match(ops, /honestyText\(\s*"tooltipSingle"/);
 assert.match(ops, /honestyNamedForProject\(/);
-assert.match(ops, /honestyForProject\(\s*project,\s*"tooltipSingle"/);
+assert.match(ops, /function honestyAdjustForLogin/);
+assert.match(ops, /replace\(\/\^No account\\\. \/g/);
 assert.match(demo, /tooltipSingleKeep:/);
 assert.match(demo, /copyAlertKeep:/);
 assert.match(demo, /Stored answers stay/);
@@ -39,11 +40,19 @@ assert.doesNotMatch(
   /:8080/,
   "Library Test Drive honesty copy must not mention :8080"
 );
+assert.match(demo, /Closing the browser tab or window ends the Test Drive/);
+assert.match(demo, /Starting a Test Drive of a different project does too/);
 assert.match(demo, /nothing is saved to the public listing/);
 assert.match(demo, /rowDemoBadge:/);
 assert.match(ops, /function renderLibraryDemoBadge/);
 assert.match(ops, /projectIsDataDriven\(project\)/);
 assert.match(ops, /function isLibraryMultiStart/);
+assert.match(ops, /function projectUsesStartPicker/);
+assert.match(
+  ops,
+  /projectIsSharedToDo\(project\) && !projectUsesStartPicker\(project\)/,
+  "Shared To-Do Setup-only honesty must not apply when Start picker is on"
+);
 assert.match(
   ops,
   /return TawalaTransfer\.getTestDriveDoor\(project\.id\)\.mode === "picker"/,

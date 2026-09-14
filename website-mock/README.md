@@ -232,7 +232,7 @@ Shared helpers: `js/transfer.js` (localStorage on `:5500` only — Designer `:51
 
 | Hop | UI | Status |
 |-----|-----|--------|
-| **Web Designer → My Tawala** | Designer **Push** dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. Overlay survives reload until **Delete** (or clear). Not written into `demo-urls.js`. Listing **Push from Designer** chrome **retired Aug 25 (#18)** — authors hop via Details **Edit project in Designer**, then Push there. |
+| **Web Designer → My Tawala** | Designer **Push** dialog **Show in My Tawala**; My Tawala **From Web Designer** inbox | Wired — receipt upserts `localStorage` overlay into My Projects pile + opens Project Details. **Same live uniqueId updates that listing in place** (keeps overlay id / name; does not mint a second card). Overlay survives reload until **Delete** (or clear). **Delete** is by listing id, not uniqueId. Not written into `demo-urls.js`. Listing **Push from Designer** chrome **retired Aug 25 (#18)** — authors hop via Details **Edit project in Designer**, then Push there. |
 | **Library → My Tawala** | Listing / detail **Copy to MyTawala** | Wired (Aug 9 #8; private uniqueId Aug 24 #26) — rename dialog → Push catalog JSON as a **new** Tomcat identity (**empty** clone; does **not** import catalog/author submissions) → My Tawala overlay (`pulledFromLibraryId`, own uniqueId). Edit in Designer uses the clone snapshot. |
 | **My Tawala → Library** | Project Details **PUBLISH** | Wired (Aug 1, 2026) — opens the Publish dialog. Listing Publish removed Aug 9 (lean list). Listing-sidebar **Publish to Library** grey stub **retired Aug 25 (#18)** — use Details **PUBLISH** or library-admin. |
 | **Library → My Tawala acquire** | Listing **GET FROM LIBRARY…** | Wired (Aug 10 acquire picker) — opens a Library project picker → same **Save a copy** rename flow → lands on **My Tawala listing** with the new row highlighted (`?highlight=`). Not a nav duplicate of Library. |
@@ -719,21 +719,25 @@ Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala 
 
 **Sep 11 — session sandbox (legacy `/t/`):** Library Test Drive and Copy link use `http://localhost:8080/projectmanager/testdrive?id={uniqueId}&form={Form}`. Tomcat mints a private in-memory World (JSESSIONID) and redirects to `/t/…`. Two browsers do not share `/p/{libraryUniqueId}` data. My Tawala **Use** still opens the real `/p/` project. Copy link is a start-a-drive URL (recipient gets their own session). Do not purge the public uniqueId on Library Test Drive start. Idle TTL / tab-close wipe is still Tomcat session expiry — not a `:5500` listing `onunload`. Opt-in **Start picker** stays on the Library tab after you pick a start so you can hop (same session); Close / Escape dismisses it.
 
-**Stay on honesty copy for leave/TTL polish** until public Library needs explicit idle timeout.
+**Sep 14 — B1 empty World:** `TestDriveSupport.copyExistingSubmissionsToTestWorld` is a no-op. A new `/t/` session gets the project **definition** only — not a snapshot of live `/p/` submissions (OEB questions, sign-up rows, exam answers). Same JSESSIONID still reuses the in-progress drive (hop starts). A new browser / incognito starts empty. Content-product “bring the author’s questions” is a later Publish rule, not this copy.
+
+**Sep 14 — B2 leave-wipe / idle TTL (smoked):** `/t/` form pages `pagehide` → leave ping (20s grace). Hops bump epoch so Setup→Exam→Admin keep the World. Discard also purges Test Drive `StoredContextInfo` (`Customize_Title` and other Process Set variables) — not only the in-memory World. Idle **30 minutes**; visible-tab ping every 4 minutes. Do **not** implement leave-detection on `:5500`. Owner smoked OEB from the Library picker: after closing all `:8080` tabs, Customize / Exam / Admin were empty.
 
 **Shift further** when:
 
-1. **True leave/wipe TTL** — product still wants wipe when the visitor **leaves**, not only when the servlet session expires.
+1. **Shorter idle TTL** if 30 minutes feels long for public Library.
 2. **Copy to MyTawala must not share Library submissions** — **Task #26 wired Aug 24** (private clone uniqueId).
 
 **Still true:**
 
 | Now (Sep 11) | Later |
 |---|---|
-| Test Drive = session World via `/projectmanager/testdrive` → `/t/` | Optional idle TTL / unload beacon |
+| Test Drive = session World via `/projectmanager/testdrive` → `/t/` | — |
+| Leave-wipe = `/t/` pagehide beacon (20s grace, epoch) | — |
+| Idle = 30 min no `/t/` activity | Optional shorter TTL |
 | Copy link = start-a-drive prepare URL | Same |
 | `openTestDrive` does **not** purge `/p/` for sandbox URLs | Keep catalog uniqueId empty |
-| Static `:5500` cannot see the `:8080` tab close | Tomcat session timeout is the discard |
+| Static `:5500` cannot see the `:8080` tab close | `/t/` pagehide beacon does |
 | Fail-page probe skipped for the prepare URL (no session yet) | Probe `/home` only |
 
 Do **not** implement leave-detection inside `website-mock/` as a fake `window.onunload` on the listing page — that page is not the form tab.
@@ -787,7 +791,7 @@ Ordered work for the next Website sessions. **Do list-2-shaped chunks first.** I
 18. **Library stub cleanup** — **DONE (Aug 25 #18):** Catalog seed has **0** WebLibrary stubs (Aug 10). Website path into Library is Details **PUBLISH** (wired Aug 1). **Publish refuses a My Tawala row with no live form** (Aug 26) — no overlay, owner copy *Edit in Designer, Push, then Publish.* Retired leftover My Tawala listing **Push from Designer** chrome (opened blank `:5173` as if that were the site go-live hop). Authors still **Push** from Designer (**Show in My Tawala**); the site hop is Details **Edit project in Designer**. Copy to MyTawala and Make a Copy already clone a live form (#26 / #9 Aug 26). Leftover uniqueId-null rows still say Edit in Designer → Push. See § Library stubs. Review: `http://localhost:5500/mytawala.html?v=20260825-stub18` and Details `?v=20260826-makecopy1`.
 19. **Empty My Tawala seed + Get from Library acquire** — **DONE (Aug 10):** `TAWALA_MYTAWALA = {}`; discarded archive seed ids scrubbed on load. Listing = Push + Save a copy only. **Get from Library…** = Library picker → Save a copy (not nav to `library.html`). Online Exam via Get/Save a copy or Designer Push.
 20. **HOLD — Email metering (billing)** — Visible email-volume counter, resettable per billing period; **admin** (cross-user / all projects) first, optional **Project Details** counter for authors we bill. Do **not** implement send infra or fake counts now. **Done (cleanup):** empty Details collapsible **“Backups, emails & library publish”** removed Aug 10 — metering remains a separate future feature. See § [Email metering (billing)](#email-metering-billing).
-21. **HOLD (pre-live, not near-term) — Registration / accounts / passwords / lost password** — Must exist before real public; countless UI examples, but **real security** concerns. Do not implement in this phase. Soft gate moment = **save data** (see [#24](#task-list-aug-9)). **Owner confirmed Aug 25:** magic-link door + GitHub-style personal account (org later); school roster out. Vendor choice is the security pass. See `docs/LIBRARY_TASK_SCRATCH.md` and § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
+21. **HOLD (pre-live) — Registration / accounts / passwords / lost password** — **Must exist before real public.** Owner reconfirmed Sep 14 (Clerk test login rejected password-minder; no Forgot-password on the mock). Do **not** implement in the Library isolation pass. Soft gate = **save data** (#24). **Owner Aug 25:** magic-link door + GitHub-style personal account (org later); school roster out. Vendor choice is the security pass. See `docs/LIBRARY_TASK_SCRATCH.md` and § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term). Local mock stays **Log in as dev**.
 22. **HOLD (pre-live, not near-term) — Payments** — Must exist before real public; legacy PayPal-style functions in samples were never wired. Do not implement in this phase. See § [Pre-live HOLD](#pre-live-hold-must-do-before-real-public--not-near-term).
 23. **HOLD — Project end page (Library + Designer promo)** — **Designer / runtime follow-up** (not website-mock chrome). After a Test Drive / respondent flow, land on a page promoting the **public Library** (and **Designer** for a few projects). Do not half-build runtime here; optional tiny mock stub only. Minimum checklist when reopened:
     - **Simple Survey** — end / thank-you form after Survey submit → promo Library (+ optional Designer CTA).
