@@ -666,6 +666,12 @@
       deployIdentityName,
       canReuse: !!(uniqueId && sourceUid && uniqueId !== sourceUid && deployIdentityName),
       keepCatalogUniqueId,
+      refuseMintOnOverwrite: !!(
+        uniqueId &&
+        sourceUid &&
+        uniqueId !== sourceUid &&
+        !deployIdentityName
+      ),
       refuseMintOnCatalog: !!(
         keepCatalogUniqueId &&
         uniqueId &&
@@ -2575,12 +2581,40 @@
       };
     }
     const sourceUid = sourceUniqueId || liveUniqueIdForPublish(sourceProjectId, sourceProject);
-    const overwrite = libraryOverwriteRuntime({
+    let overwrite = libraryOverwriteRuntime({
       catalogEntry: catalogLibraryEntry,
       listingEntry: existingLibraryEntry,
       sourceUniqueId: sourceUid,
     });
-    if (overwrite.refuseMintOnCatalog) {
+    if (overwrite.uniqueId && !overwrite.deployIdentityName) {
+      if (typeof window === "undefined" || !window.TawalaDemo) {
+        return { ok: false, error: PUBLISH_OVERWRITE_NO_IDENTITY };
+      }
+      const DemoLookup = window.TawalaDemo;
+      if (typeof DemoLookup.lookupDeployIdentityByUniqueId !== "function") {
+        return { ok: false, error: PUBLISH_OVERWRITE_NO_IDENTITY };
+      }
+      const looked = await DemoLookup.lookupDeployIdentityByUniqueId(overwrite.uniqueId);
+      const lookedName = looked && String(looked.name || "").trim();
+      if (!looked || looked.status !== "success" || !lookedName) {
+        return {
+          ok: false,
+          error: ownerFacingCloneError(looked && looked.error, PUBLISH_OVERWRITE_NO_IDENTITY),
+        };
+      }
+      overwrite = libraryOverwriteRuntime({
+        catalogEntry: {
+          uniqueId: overwrite.uniqueId,
+          deployIdentityName: lookedName,
+        },
+        listingEntry: {
+          uniqueId: overwrite.uniqueId,
+          deployIdentityName: lookedName,
+        },
+        sourceUniqueId: sourceUid,
+      });
+    }
+    if (overwrite.refuseMintOnOverwrite || overwrite.refuseMintOnCatalog) {
       return { ok: false, error: PUBLISH_OVERWRITE_NO_IDENTITY };
     }
     const canReuse = overwrite.canReuse;

@@ -84,20 +84,18 @@
           "label": "T2",
           "style": "normal",
           "name": "Error Message",
-          "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignupErrorMessage\" title=\"SignupErrorMessage\" draggable=\"true\">&lt;&lt;SignupErrorMessage&gt;&gt;</span></b></span></p>"
+          "content": "<p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignupErrorMessage\" title=\"SignupErrorMessage\" draggable=\"true\">&lt;&lt;SignupErrorMessage&gt;&gt;</span></b></p>"
         },
         {
           "type": "fib",
           "label": "Q1",
           "style": "rightAlignLabels",
-          "prompt": "<div>Your name or initials:&nbsp; ________________________</div>",
+          "prompt": "Your name or initials: ________________________",
           "blanks": [
             {
-              "name": "a",
+              "name": "name",
               "length": 24,
-              "required": false,
-              "alternateLabel": "name",
-              "height": 1
+              "alternateLabel": "name"
             }
           ]
         },
@@ -133,7 +131,7 @@
           "type": "fib",
           "label": "Q1",
           "style": "",
-          "prompt": "Project Name: (required)\n__________________________________\nIf you would like to receive notifications, please provide:\nYour name:\n__________________________________\nEmail:\n_________________________________",
+          "prompt": "Project Name:\n__________________________________\nIf you would like to receive notifications, please provide:\nYour name:\n__________________________________\nEmail:\n_________________________________",
           "blanks": [
             {
               "name": "projectName",
@@ -318,7 +316,7 @@
           "type": "text",
           "label": "T1",
           "style": "normal",
-          "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MarkAsCompletedConfirmationMessage\" title=\"MarkAsCompletedConfirmationMessage\" draggable=\"true\">&lt;&lt;MarkAsCompletedConfirmationMessage&gt;&gt;</span></b></span></p><p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MarkAsCompletedErrorMessage\" title=\"MarkAsCompletedErrorMessage\" draggable=\"true\">&lt;&lt;MarkAsCompletedErrorMessage&gt;&gt;</span></b></span></p>"
+          "content": "<p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MarkAsCompletedConfirmationMessage\" title=\"MarkAsCompletedConfirmationMessage\" draggable=\"true\">&lt;&lt;MarkAsCompletedConfirmationMessage&gt;&gt;</span></b></p><p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"MarkAsCompletedErrorMessage\" title=\"MarkAsCompletedErrorMessage\" draggable=\"true\">&lt;&lt;MarkAsCompletedErrorMessage&gt;&gt;</span></b></p>"
         },
         {
           "type": "mc",
@@ -371,7 +369,7 @@
           "type": "text",
           "label": "T2",
           "style": "normal",
-          "content": "<p><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ModifyTaskErrorMessage\" title=\"ModifyTaskErrorMessage\" draggable=\"true\">&lt;&lt;ModifyTaskErrorMessage&gt;&gt;</span></b></span></p>"
+          "content": "<p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ModifyTaskErrorMessage\" title=\"ModifyTaskErrorMessage\" draggable=\"true\">&lt;&lt;ModifyTaskErrorMessage&gt;&gt;</span></b></p>"
         },
         {
           "type": "mc",
@@ -429,7 +427,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "fromAdmin",
+            "field": "task:fromAdmin",
             "op": "equals",
             "value": "true"
           },
@@ -484,7 +482,7 @@
         },
         {
           "cmd": "comment",
-          "text": "--- Generate new task id"
+          "text": "[object Object]"
         },
         {
           "cmd": "get",
@@ -573,7 +571,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "fromAdmin",
+            "field": "task:fromAdmin",
             "op": "equals",
             "value": "add"
           },
@@ -655,7 +653,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "FirstViewOfSetup",
+            "field": "SetupVariables:FirstViewOfSetup",
             "op": "isBlank"
           },
           "then": [
@@ -675,7 +673,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "fromAdmin",
+            "field": "SetupVariables:fromAdmin",
             "op": "equals",
             "value": "add"
           },
@@ -796,7 +794,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "--- Ability to call a procedure would be nice - this code is replicated."
+          "text": "[object Object]"
         },
         {
           "cmd": "get",
@@ -849,7 +847,7 @@
         },
         {
           "cmd": "comment",
-          "text": "--- Here's where we start building the report"
+          "text": "[object Object]"
         },
         {
           "cmd": "showDocument",
@@ -957,12 +955,12 @@
         },
         {
           "cmd": "comment",
-          "text": "--- Check flag to see whether we got here from the Administration Form"
+          "text": "[object Object]"
         },
         {
           "cmd": "if",
           "condition": {
-            "field": "administrationMode",
+            "field": "Mark Task Completed:administrationMode",
             "op": "equals",
             "value": "true"
           },
@@ -997,7 +995,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "-- Input validation"
+          "text": "[object Object]"
         },
         {
           "cmd": "set",
@@ -1025,7 +1023,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "SignupErrorMessage",
+            "field": "SignupForTask:SignupErrorMessage",
             "op": "isNotBlank"
           },
           "then": [
@@ -1037,7 +1035,7 @@
         },
         {
           "cmd": "comment",
-          "text": "-- Attempt to sign-up"
+          "text": "[object Object]"
         },
         {
           "cmd": "get",
@@ -1209,7 +1207,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "fromAdmin",
+            "field": "task:fromAdmin",
             "op": "doesNotEqual",
             "value": "true"
           },
@@ -1270,7 +1268,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "FirstViewOfSetup",
+            "field": "Setup:FirstViewOfSetup",
             "op": "isBlank"
           },
           "then": [
@@ -1418,7 +1416,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "-- A bit of error checking"
+          "text": "[object Object]"
         },
         {
           "cmd": "if",
@@ -1551,51 +1549,52 @@
   "documents": [
     {
       "name": "Task Setup Confirmation",
-      "content": "<p style=\"text-align:center\"><span>You have successfully added a new task  </span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"task:description\" title=\"task:description\" draggable=\"true\">&lt;&lt;task:description&gt;&gt;</span></b></span><span>.</span></p>"
+      "content": "<p style=\"text-align:center\">You have successfully added a new task  <b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"task:description\" title=\"task:description\" draggable=\"true\">&lt;&lt;task:description&gt;&gt;</span></b>.</p>"
     },
     {
       "name": "Task Assigned",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span style=\"color:#0000FF\"><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</b></span><span>​&nbsp;&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDue&gt;&gt;</span>​&nbsp;&nbsp;</span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskEmail\" title=\"currentTaskEmail\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskEmail&gt;&gt;</span>​</span></p></p>"
+      "content": "<p><span style=\"font-size:10pt;color:#0000FF\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span></b></span>  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\">&lt;&lt;currentTaskDue&gt;&gt;</span>  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskEmail\" title=\"currentTaskEmail\" draggable=\"true\">&lt;&lt;currentTaskEmail&gt;&gt;</span></p>"
     },
     {
       "name": "Task Unassigned",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span style=\"color:#FF8040\"><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</b></span><span>​&nbsp;&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDue&gt;&gt;</span>​</span></p></p>"
+      "content": "<p><span style=\"font-size:10pt;color:#FF8040\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span></b></span>  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\">&lt;&lt;currentTaskDue&gt;&gt;</span></p>"
     },
     {
       "name": "Signup Header",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_projectName\" title=\"Customize_projectName\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;Customize_projectName&gt;&gt;</span>​</b></span><span><b> Tasks</b></span></p><p><span><b>Description&nbsp; &nbsp; &nbsp;&nbsp;</b></span><span><b>Due&nbsp; &nbsp; &nbsp; &nbsp;</b></span><span><b>Assigned To</b></span></p><p><span><b>________________________________________________</b></span></p></p>"
+      "content": "<p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_projectName\" title=\"Customize_projectName\" draggable=\"true\">&lt;&lt;Customize_projectName&gt;&gt;</span></b><b> Tasks</b></p><p><b>Description      </b><b>Due       </b><b>Assigned To</b></p><p><b>________________________________________________</b></p>"
     },
     {
       "name": "Task Completed",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span style=\"color:#008000\"><b>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</b></span><span>​&nbsp;&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDue&gt;&gt;</span>​&nbsp;</span><span>​&nbsp;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskEmail\" title=\"currentTaskEmail\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskEmail&gt;&gt;</span>​</span></p></p>"
+      "content": "<p><span style=\"font-size:10pt;color:#008000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span></b></span>  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDue\" title=\"currentTaskDue\" draggable=\"true\">&lt;&lt;currentTaskDue&gt;&gt;</span>  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskEmail\" title=\"currentTaskEmail\" draggable=\"true\">&lt;&lt;currentTaskEmail&gt;&gt;</span></p>"
     },
     {
       "name": "Signup Footer",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span><b>________________________________________________</b></span></p><p><span>Task Color Legend: </span><span style=\"color:#FF8000\">Unassigned&nbsp;</span><span style=\"color:#0000FF\">Assigned&nbsp;</span><span style=\"color:#008000\">Complete</span></p></p>"
+      "content": "<p><b>________________________________________________</b></p><p>Task Color Legend: <span style=\"font-size:10pt;color:#FF8000\">Unassigned </span><span style=\"font-size:10pt;color:#0000FF\">Assigned </span><span style=\"font-size:10pt;color:#008000\">Complete</span></p>"
     },
     {
       "name": "Task Completion Email Notification",
-      "content": "<p><span>Dear </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"OrganizerName\" title=\"OrganizerName\" draggable=\"true\">&lt;&lt;OrganizerName&gt;&gt;</span></span><span>,</span></p><p></p><p><span>Task &quot;</span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span></span><span>&quot; was just marked as complete. For more details on the status of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ProjectName\" title=\"ProjectName\" draggable=\"true\">&lt;&lt;ProjectName&gt;&gt;</span></span><span> project, or to create additional tasks, go to </span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;the administration form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">the administration form</span></u></span><span>.</span></p><p></p><p><span>Best regards,</span></p><p><span>Tawala Systems, Inc.</span></p>"
+      "content": "<p>Dear <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"OrganizerName\" title=\"OrganizerName\" draggable=\"true\">&lt;&lt;OrganizerName&gt;&gt;</span>,</p><p>Task &amp;quot;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span>&amp;quot; was just marked as complete. For more details on the status of <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ProjectName\" title=\"ProjectName\" draggable=\"true\">&lt;&lt;ProjectName&gt;&gt;</span> project, or to create additional tasks, go to <span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;the administration form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">the administration form</span></u></span>.</p><p>Best regards,</p><p>Tawala Systems, Inc.</p>"
     },
     {
       "name": "Task Signup Email Notification",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 657.8pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span>Dear </span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"OrganizerName\" title=\"OrganizerName\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;OrganizerName&gt;&gt;</span>​</span><span>,</span></p><p></p><p><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignupForTask:name\" title=\"SignupForTask:name\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;SignupForTask:name&gt;&gt;</span>​</span><span> just signed up to work on \"</span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;currentTaskDescription&gt;&gt;</span>​</span><span>\". For more details on the status of </span><span>​<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ProjectName\" title=\"ProjectName\" draggable=\"true\" style=\"vertical-align: baseline;\">&lt;&lt;ProjectName&gt;&gt;</span>​</span><span> project, or to create additional tasks, go to </span><span><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;the administration form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">the administration form</span></u></span><span>.</span></p><p></p><p><span>Best regards,</span></p><p><span>Tawala Systems, Inc.</span></p></p>"
+      "content": "<p>Dear <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"OrganizerName\" title=\"OrganizerName\" draggable=\"true\">&lt;&lt;OrganizerName&gt;&gt;</span>,</p><p><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"SignupForTask:name\" title=\"SignupForTask:name\" draggable=\"true\">&lt;&lt;SignupForTask:name&gt;&gt;</span> just signed up to work on &quot;<span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"currentTaskDescription\" title=\"currentTaskDescription\" draggable=\"true\">&lt;&lt;currentTaskDescription&gt;&gt;</span>&quot;. For more details on the status of <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"ProjectName\" title=\"ProjectName\" draggable=\"true\">&lt;&lt;ProjectName&gt;&gt;</span> project, or to create additional tasks, go to <span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;the administration form&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">the administration form</span></u></span>.</p><p>Best regards,</p><p>Tawala Systems, Inc.</p>"
     },
     {
       "name": "Task Setup Header",
-      "content": "<p><span><i>If you are done setting up tasks </i></span><span><i><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;NavigationToSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></i></span><span><i> to finish.</i></span></p>"
+      "content": "<p><i>If you are done setting up tasks </i><span style=\"color:#000080\"><i><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;NavigationToSetup&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></i></span><i> to finish.</i></p>"
     },
     {
       "name": "User Menu",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 444pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p></p><p><span style=\"color:#000080\"><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SignupForTask&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Sign up for a task&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Sign up for a task</span></u></span><span style=\"color:#000080\">&nbsp; &nbsp; or&nbsp; &nbsp;<u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Mark Task Completed&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Mark a task complete&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Mark a task complete</span></u></span></p><p></p></p>"
+      "content": "<p><span style=\"font-size:10pt;color:#000080\"><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;SignupForTask&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Sign up for a task&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Sign up for a task</span></span><span style=\"font-size:10pt;color:#000080\">    or   <u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Mark Task Completed&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;Mark a task complete&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">Mark a task complete</span></u></span></p>"
     }
   ],
-  "_originalFormat": "1.9",
-  "_designerBuild": "194",
-  "_convertedFrom": "../ Current Tawala Projects/Master List TAWALA/customizable/Shared To-Do.tawala",
-  "_conversionPass": {
-    "date": "2026-08-20",
-    "converter": "designer-web/src/lib/tawalaXmlToJson.mjs",
-    "source": "../ Current Tawala Projects/Master List TAWALA/customizable/Shared To-Do.tawala"
-  }
+  "_originalFormat": "1.11",
+  "_designerBuild": "204",
+  "_convertedFrom": "tomcat:bx44wpdnspbsi3k",
+  "deployIdentityName": "Shared To-Do bd155bbc",
+  "deployUniqueId": "bx44wpdnspbsi3k",
+  "_dumpedFrom": "tomcat-postgres",
+  "_dumpedAt": "2026-09-14T22:43:25.827Z",
+  "_tomcatLastUpdated": "2026-09-09T22:40:07.588+00:00",
+  "_tomcatVersion": 1
 }

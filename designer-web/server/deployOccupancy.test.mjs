@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   claimedAuthorId,
   decideNameOccupancy,
+  findOccupantByUniqueIdInDeploymentsXml,
   findOccupantInDeploymentsXml,
   findOccupantInNodeIndex,
   incomingOwnsOccupant,
@@ -63,6 +64,17 @@ describe("findOccupantInDeploymentsXml", () => {
   </deployments>
 </response>`;
     expect(findOccupantInDeploymentsXml(xml, "Online Exam Builder")).toBeNull();
+  });
+});
+
+describe("findOccupantByUniqueIdInDeploymentsXml", () => {
+  it("returns the Tomcat name for a live uniqueId", () => {
+    const o = findOccupantByUniqueIdInDeploymentsXml(LIBRARY_XML, "gy1zssbrwm4fgfm");
+    expect(o).toEqual({ name: "Simple Survey Template", uniqueId: "gy1zssbrwm4fgfm" });
+  });
+
+  it("returns null when the uniqueId is unknown", () => {
+    expect(findOccupantByUniqueIdInDeploymentsXml(LIBRARY_XML, "notarealuniqueid1")).toBeNull();
   });
 });
 

@@ -16,9 +16,12 @@ import {
 import { resolveProjectForDeploy } from "./deployIdentity.mjs";
 import {
   decideNameOccupancy,
+  findOccupantByUniqueIdInDeploymentsXml,
+  findOccupantByUniqueIdInNodeIndex,
   findOccupantInDeploymentsXml,
   findOccupantInNodeIndex,
   occupancyHatchAllowed,
+  occupancyLookupFailedMessage,
   queryDeploymentsRequestXml,
 } from "./deployOccupancy.mjs";
 import {
@@ -270,6 +273,67 @@ async function lookupOccupantForDeploy(user, password, tomcatName) {
   }
   return findOccupantInNodeIndex(store.listProjects(user), tomcatName, user);
 }
+
+async function lookupOccupantByUniqueIdForDeploy(user, password, uniqueId) {
+  if (JAVA_URL) {
+    const javaUser = process.env.TAWALA_JAVA_USER || "dev";
+    const javaPass = process.env.TAWALA_JAVA_PASSWORD || "dev";
+    const xml = queryDeploymentsRequestXml(javaUser, javaPass);
+    const text = await forwardToJava(xml);
+    const failure = parseDeployFailure(text);
+    if (failure || !/status="success"/i.test(text)) {
+      throw new Error(failure || "queryDeployments failed");
+    }
+    return findOccupantByUniqueIdInDeploymentsXml(text, uniqueId);
+  }
+  return findOccupantByUniqueIdInNodeIndex(store.listProjects(user), uniqueId, user);
+}
+
+app.options("/api/lookup-unique-id", (req, res) => {
+  allowMockCors(req, res);
+  res.status(204).end();
+});
+
+/** Website Publish replace: Tomcat name for a listing uniqueId when overlay omitted it. */
+app.post("/api/lookup-unique-id", async (req, res) => {
+  allowMockCors(req, res);
+  const { credentials, uniqueId } = req.body ?? {};
+  if (!credentials?.user || !credentials?.password) {
+    res.status(400).json({ status: "failure", error: "credentials required" });
+    return;
+  }
+  if (!checkAuth(credentials.user, credentials.password, credentials.authProvider)) {
+    res.status(401).json({ status: "failure", error: "auth.failed" });
+    return;
+  }
+  const uid = String(uniqueId || "").trim();
+  if (!/^[A-Za-z0-9]{1,20}$/.test(uid)) {
+    res.status(400).json({ status: "failure", error: "uniqueId required" });
+    return;
+  }
+  try {
+    const occupant = await lookupOccupantByUniqueIdForDeploy(
+      credentials.user,
+      credentials.password,
+      uid,
+    );
+    if (!occupant || !String(occupant.name || "").trim()) {
+      res.json({ status: "failure", error: "No live project with that uniqueId." });
+      return;
+    }
+    res.json({
+      status: "success",
+      name: occupant.name,
+      uniqueId: occupant.uniqueId || uid,
+    });
+  } catch (e) {
+    console.error("uniqueId occupancy lookup failed:", e);
+    res.status(503).json({
+      status: "failure",
+      error: occupancyLookupFailedMessage(),
+    });
+  }
+});
 
 /** JSON deploy from web Designer (also My Tawala Deploy-this-version via CORS). */
 app.post("/api/deploy", async (req, res) => {

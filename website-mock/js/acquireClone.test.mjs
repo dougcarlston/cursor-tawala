@@ -107,7 +107,20 @@ const missingIdentity = libraryOverwriteRuntime({
   sourceUniqueId: "mg1ebmmaxcmss62",
 });
 assert.equal(missingIdentity.refuseMintOnCatalog, true);
+assert.equal(missingIdentity.refuseMintOnOverwrite, true);
 assert.equal(missingIdentity.canReuse, false);
+const overlayOnlyMissingIdentity = libraryOverwriteRuntime({
+  catalogEntry: null,
+  listingEntry: {
+    uniqueId: "ca7ws92mpss0sb5",
+    startPoints: [{ url: "http://localhost:8080/p/ca7ws92mpss0sb5/a.AdminStart" }],
+  },
+  sourceUniqueId: "b7ttti35vdo58pu",
+});
+assert.equal(overlayOnlyMissingIdentity.uniqueId, "ca7ws92mpss0sb5");
+assert.equal(overlayOnlyMissingIdentity.canReuse, false);
+assert.equal(overlayOnlyMissingIdentity.refuseMintOnOverwrite, true);
+assert.equal(overlayOnlyMissingIdentity.keepCatalogUniqueId, false);
 const redeployBody = projectBodyForLibraryRedeploy(
   stock,
   "Survey Sample",
@@ -122,6 +135,10 @@ assert.equal(PUBLISH_OVERWRITE_NO_IDENTITY.includes("Tomcat name"), true);
 assert.match(transfer, /libraryOverwriteRuntime/);
 assert.match(transfer, /keepCatalogUniqueId/);
 assert.match(transfer, /refuseMintOnCatalog/);
+assert.match(transfer, /refuseMintOnOverwrite/);
+assert.match(transfer, /lookupDeployIdentityByUniqueId/);
+const demoSrc = readFileSync(join(dir, "demo-urls.js"), "utf8");
+assert.match(demoSrc, /async lookupDeployIdentityByUniqueId/);
 assert.match(transfer, /resolveDefinitionForLibraryPublish/);
 assert.match(transfer, /PUBLISH_NO_CURRENT_DEFINITION/);
 assert.match(transfer, /versionDefinitionAttempts/);

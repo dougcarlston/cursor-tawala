@@ -16,7 +16,8 @@
         {
           "type": "heading",
           "label": "H2",
-          "content": "<span class=\"heading-size-sub\">Designed to show you how much more a couple of 8-year-olds know than you do.</span>"
+          "level": "sub",
+          "content": "Designed to show you how much more a couple of 8-year-olds know than you do."
         },
         {
           "type": "fib",
@@ -335,7 +336,7 @@
           "style": "vertical",
           "displayAs": "radio",
           "choiceSource": "manual",
-          "question": "9) Is blackpoint dun a breed or horse or a color?",
+          "question": "9) Is blackpoint dun a breed of horse or a color?",
           "choices": [
             {
               "label": "a",
@@ -877,7 +878,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "Score",
+            "field": "Form 1:Score",
             "op": "isGreaterThan",
             "value": "90"
           },
@@ -892,7 +893,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "Score",
+            "field": "Form 1:Score",
             "op": "isLessThanOrEqualTo",
             "value": "40"
           },
@@ -909,12 +910,12 @@
           "condition": {
             "and": [
               {
-                "field": "Score",
+                "field": "Form 1:Score",
                 "op": "isLessThanOrEqualTo",
                 "value": "90"
               },
               {
-                "field": "Score",
+                "field": "Form 1:Score",
                 "op": "isGreaterThan",
                 "value": "40"
               }
@@ -969,30 +970,36 @@
   "documents": [
     {
       "name": "Document 1",
-      "content": "<p><span>Well, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span></span><span>, you sound quite self-confident!  However, your score of  </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span>% wasn't too impressive.  You got </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span></span><span> questions wrong!  I think you need to talk with Katie and Megan a bit more about penguins and horses.  After all, anyone who thinks that </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Word\" title=\"Word\" draggable=\"true\">&lt;&lt;Word&gt;&gt;</span></span><span> is a </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Animal\" title=\"Animal\" draggable=\"true\">&lt;&lt;Animal&gt;&gt;</span></span><span> needs some educating.</span></p>"
+      "content": "<p>Well, <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span>, you sound quite self-confident!  However, your score of  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span>% wasn't too impressive.  You got <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span> questions wrong!  I think you need to talk with Katie and Megan a bit more about penguins and horses.  After all, anyone who thinks that <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Word\" title=\"Word\" draggable=\"true\">&lt;&lt;Word&gt;&gt;</span> is a <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Animal\" title=\"Animal\" draggable=\"true\">&lt;&lt;Animal&gt;&gt;</span> needs some educating.</p>"
     },
     {
       "name": "Document 2",
-      "content": "<p><span>Top notch work, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span></span><span>!  I wonder if you're related to Katie and Megan.  After all, not many people can get all these questions right!  Your score was </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span>%!  You got  </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span></span><span> questions wrong.</span></p>"
+      "content": "<p>Top notch work, <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span>!  I wonder if you're related to Katie and Megan.  After all, not many people can get all these questions right!  Your score was <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span>%!  You got  <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span> questions wrong.</p>"
     },
     {
       "name": "Document 3",
-      "content": "<p><span>Well, </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span></span><span>, your score of </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span></span><span>% is not perfect but it's not too bad either.  You only missed </span><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span></span><span> questions.</span></p>"
+      "content": "<p>Well, <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Form 1:first\" title=\"Form 1:first\" draggable=\"true\">&lt;&lt;Form 1:first&gt;&gt;</span>, your score of <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Score\" title=\"Score\" draggable=\"true\">&lt;&lt;Score&gt;&gt;</span>% is not perfect but it's not too bad either.  You only missed <span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Wrong\" title=\"Wrong\" draggable=\"true\">&lt;&lt;Wrong&gt;&gt;</span> questions.</p>"
     },
     {
       "name": "Document 4",
-      "content": "<p><span>But I don't think you know more about horses than Katie!</span></p>"
+      "content": "<p>But I don't think you know more about horses than Katie!</p>"
     },
     {
       "name": "Document 5",
-      "content": "<p><span>And I really doubt that you know more about penguins than Megan!</span></p>"
+      "content": "<p>And I really doubt that you know more about penguins than Megan!</p>"
     },
     {
       "name": "Document 6",
-      "content": "<p class=\"doc-placed-text\" data-doc-home-top=\"0pt\" style=\"position: absolute; left: 7.5pt; top: 0pt; margin: 0px; min-width: 2em; width: 431.3pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\" data-doc-indent=\"0\"><p><span>Thank you for trying our test!  It's been a lot of fun, at least for us!  Here are all of the correct answers.</span></p></p><p class=\"doc-placed-text\" data-doc-home-top=\"59.6pt\" data-doc-indent=\"1\" style=\"position: absolute; left: 43.5pt; top: 59.6pt; margin: 0px; min-width: 2em; color: rgb(0, 0, 0); width: 395.3pt; right: auto; white-space: normal; overflow-wrap: normal; word-break: normal;\" data-doc-wrap=\"1\"><p><span></span></p><p></p><p><span>1) Horses live 20-25 years, penguins 15-20 years.</span></p><p><span>2) A penguin on land is faster than a horse in water.</span></p><p><span>3) A Jackass is a penguin, as is an Emperor.  Pintos and Appaloosas are horses.</span></p><p><span>4) A frog is part of a horse's hoof.</span></p><p><span>5) There are at least 5 different penguin species in Antarctica.</span></p><p><span>6) The Galapagos penguin lives farthest north, in the Galapagos Islands of Ecuador.</span></p><p><span>7) Any color horse can have dapples.</span></p><p><span>8) The biggest penguins may weight 75-80 pounds.  The smallest adult horse weighs in at about 150 pounds.</span></p><p><span>9) Blackpoint dun is a color, not a breed.</span></p><p><span>10) They don't eat each other, although they don't like each other much either!</span></p><p><span>11) The greak auk was originally called a penguin.  There's no such thing, by the way, as a lemonade penguin.</span></p><p><span>12) There are more breeds of horse than species of penguin.</span></p><p><span>13) The Falabella horse is reputedly the smallest.</span></p><p><span>14) Most penguins do NOT have yellow beaks.</span></p></p>"
+      "content": "<p>1) Horses live 20-25 years, penguins 15-20 years.</p><p>2) A penguin on land is faster than a horse in water.</p><p>3) A Jackass is a penguin, as is an Emperor.  Pintos and Appaloosas are horses.</p><p>4) A frog is part of a horse's hoof.</p><p>5) There are at least 5 different penguin species in Antarctica.</p><p>6) The Galapagos penguin lives farthest north, in the Galapagos Islands of Ecuador.</p><p>7) Any color horse can have dapples.</p><p>8) The biggest penguins may weigh 75-80 pounds.  The smallest adult horse weighs in at about 150 pounds.</p><p>9) Blackpoint dun is a color, not a breed.</p><p>10) They don't eat each other, although they don't like each other much either!</p><p>11) The greak auk was originally called a penguin.  There's no such thing, by the way, as a lemonade penguin.</p><p>12) There are more breeds of horse than species of penguin.</p><p>13) The Falabella horse is reputedly the smallest.</p><p>14) Most penguins do NOT have yellow beaks.</p><p></p><p></p><p></p><p>Thank you for trying our test!  It's been a lot of fun, at least for us!  Here are all of the correct answers.</p>"
     }
   ],
-  "_originalFormat": "1.16",
-  "_designerBuild": "251",
-  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Horses and Penguins Test.tawala"
+  "_originalFormat": "1.11",
+  "_designerBuild": "204",
+  "_convertedFrom": "tomcat:wg77ytn0bgq1x70",
+  "deployIdentityName": "Horses and Penguins Test",
+  "deployUniqueId": "wg77ytn0bgq1x70",
+  "_dumpedFrom": "tomcat-postgres",
+  "_dumpedAt": "2026-09-14T22:43:25.827Z",
+  "_tomcatLastUpdated": "2026-08-08T05:12:54.822+00:00",
+  "_tomcatVersion": 7
 }

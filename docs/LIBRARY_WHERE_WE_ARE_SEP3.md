@@ -37,23 +37,30 @@ Also confirm examinee **Exam** still shows Exam Start (title + Q3) — that Push
 
 **Wired Sep 11 (in this commit):** Library Test Drive / Copy link → `http://localhost:8080/projectmanager/testdrive?id={uniqueId}&form={Form}` → 302 `/t/{uniqueId}/{token}.{Form}` + `JSESSIONID`. Private in-memory World. Two browsers = two copies. My Tawala **Use** stays `/p/`. Start picker stays open after pick (hop starts, same session). Honesty copy: private try-out, not “same uniqueId for every visitor.”
 
-**Still open (do in order):**
+**Still open (do in order):** — **closed Sep 14 evening** (B1–B5 smoked earlier; isolation-pass leftovers below).
 
-1. **Stop copying live `/p/` into a new TD World** — **smoked Sep 14.** `TestDriveSupport.copyExistingSubmissionsToTestWorld` is a no-op. Library OEB TD: Administration empty; `…/testdrive?id=u3hk…&form=Setup` → SetupVariables. Same session still hops. A later `docker compose build tawala` needs this class in `ROOT.war` or a re-copy.
-2. **Idle TTL / leave-wipe** — **smoked Sep 14 (OEB picker).** Closing **all** `:8080` `/t/` tabs discards the drive after **20s**; picker on `:5500` may stay. Same-session hops (Customize ↔ Exam ↔ Admin) **keep** state. Discard drops the in-memory World **and** Test Drive session variables (`Customize_Title` etc.) — Setup FIBs going blank is not enough. Idle **30 min** with 4 min keepalive while the tab is visible. Beacon is on `:8080` `/t/`, not the listing. Honesty: “Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too.” Durability: classes+JS must stay in `ROOT.war` (entrypoint `jar uf` can unpack over hot-copies).
-3. **Smoke dual-use via Library TD** — **smoked Sep 14** except Poll (wait for leak-fix). Sign-up Customize-first; Shared To-Do **Start picker** (Setup / Signup / Administration hops, same `/t/` World); OEB already. Default door remains **single start**; picker is admin opt-in (Shared To-Do is the one that needs it).
+1. **Stop copying live `/p/` into a new TD World** — **smoked Sep 14.** `TestDriveSupport.copyExistingSubmissionsToTestWorld` is a no-op. Library OEB TD: Administration empty; `…/testdrive?id=u3hk…&form=Setup` → SetupVariables. Same session still hops. **Docker bake:** `docker compose build tawala` recompiles isolation Java over `ROOT.war` (see `docker/tomcat/README.md`).
+2. **Idle TTL / leave-wipe** — **smoked Sep 14 (OEB picker).** Closing **all** `:8080` `/t/` tabs discards the drive after **60s**; picker on `:5500` may stay. Same-session hops (Customize ↔ Exam ↔ Admin) **keep** state. Discard drops the in-memory World **and** Test Drive session variables (`Customize_Title` etc.) — Setup FIBs going blank is not enough. Idle **30 min** with 4 min keepalive while the tab is visible. Beacon is on `:8080` `/t/`, not the listing. Honesty: “Closing the browser tab or window ends the Test Drive. Starting a Test Drive of a different project does too.” Owner Sep 14: 20s felt too quick while hopping; grace is **one minute**.
+3. **Smoke dual-use via Library TD** — **smoked Sep 14** including Poll. Sign-up Customize-first; Shared To-Do **Start picker**; OEB already; Poll **AdminStart single door** (owner: passes). Default door remains **single start**; picker is admin opt-in (Shared To-Do is the one that needs it).
 4. **Then Publish dual-use as they already are** — no JSON reshape for a single `/p/` door:
-   - Sign-up Sheet operate `gnqp5qfd06ktec3`
-   - ALB after **Free a live :8080 name** `ceihmyxlssxn6yn` (do not share `vrjayw9lwun85i1` as public TD)
-   - Poll — wait for leak-fix Push `b7ttti35vdo58pu`
-5. Sync catalog JSON on disk after each successful in-place Publish so Copy to MyTawala matches `:8080`.
+   - Sign-up Sheet operate Library uniqueId **`ffawe1uxeudjwpr`** (Tomcat `Sign-up Sheet 49a8b2d5`). My Tawala Use stays `gnqp5qfd06ktec3`. Do not overwrite Sign-up Sheet Sample `kxlgkzkqmaebhz3`.
+   - **ALB stays My Tawala only** until invitation Confirm links work on a public host. Do not Publish; do not Free `ceihmyxlssxn6yn`. Live copy `vrjayw9lwun85i1`.
+   - **Poll** — Library occupant `ca7ws92mpss0sb5` Redeployed + TD smoked Sep 14.
+5. Sync catalog JSON on disk after each successful in-place Publish so Copy to MyTawala matches `:8080`. **Sep 14:** dumped live Library uniqueIds into `Current Deployed Public Library/` (root). Aug 4 `Live Library Projects/` template copies **removed**. Also copied OEB / Shared To-Do / Poll / Sign-up Sheet / Horses into `website-mock/projects/library/`.
+
+**Isolation-pass close (Sep 14 evening):**
+
+- **Publish replace Redeploys.** Overlay-only listings (Poll) often had uniqueId but no `deployIdentityName`, so replace minted a sibling and Tomcat `ca7ws…` stayed stale. Publish now looks up the live Tomcat name (`POST :3001/api/lookup-unique-id`) and Redeploys onto the listing uniqueId. Missing identity **fails closed** — it does not mint.
+- **Poison Poll file.** `website-mock/projects/mytawala/Single Question Poll or Survey.json` is the leak-fixed AdminStart dump **without** live uniqueId stamps. Do not Publish that archive onto the listing.
+- **Poll Quit copy.** Thanks document is “You're done. You can close this window.” (not “Thanks for Test Driving…”). Same in CDPL + Library catalog JSON; keeper My Tawala uses the same idea.
+- **Copy to MyTawala** smokes the dumped Poll/Sign-up catalog JSON (empty private clone; not `ca7ws…` / `ffawe…`).
 
 ### C. Reversions / alterations tied to isolation (do not undo the sandbox)
 
 | Do | Do not |
 |----|--------|
 | Keep apps multi-start in JSON; TD isolation is the `/t/` World | Rewrite Sign-up / ALB / GT so Customize is the only start |
-| Jump-tracks in **published invite URLs** = definition rule (Poll leak-fix) | Jump-track tricks in Test Drive |
+| Jump-tracks in **published invite URLs** = definition rule (Poll Admin vs User wall) | Jump-track tricks so Test Drive is one portal |
 | Copy to MyTawala = empty private clone of the **listing definition** | Same uniqueId as Library TD |
 | Publish = empty Library uniqueId (reuse listing id on **replace**) | Put author’s My Tawala data on public TD |
 | Start picker = rare opt-in; list stays open while hopping | Close picker on pick (felt like the drive died) |
@@ -132,7 +139,7 @@ Public names (drop Sophisticated). Library **Test Drive OK** for these four:
 
 | File | TD door | Notes |
 |------|---------|--------|
-| `Single Question Poll or Survey.json` | **AdminStart + Start Questionnaire** | Live My Tawala uniqueId `b7ttti35vdo58pu`. **Library TD OK** (AdminStart). **Not Library until owner Pushes the Sep 9 leak fix:** Survey-link respondents get thank-you only (no Administration invitation). Organizer still uses AdminStart / Administration. Email notify still links Administration for the organizer. |
+| `Single Question Poll or Survey.json` | **AdminStart** (single door) | **Library TD smoked Sep 14.** My Tawala `b7ttti35vdo58pu`. Public Library `ca7ws92mpss0sb5` (Redeployed leak-fix onto that uniqueId). Do not overwrite Survey Sample. Do not enable Start picker. |
 | `Sign-up Sheet.json` | **Customize** (also Questionnaire + Administration) | Keeper uniqueId `gnqp5qfd06ktec3`. Leftover My Tawala row deleted Sep 9. Dual-use like Poll: Customize is the TD hub. |
 | `Shared To-Do Test Drive.json` | **Setup** only | Smoke artifact — **not** the public listing. Live Library is the three-start app (`shared-to-do`, uniqueId `bx44wpdnspbsi3k`). Website Test Drive opens Setup only. |
 | `Automated List Builder.json` | **Setup** | Typo pass + private Push Sep 8. Display name **Automated List Builder**. Live copy is uniqueId `vrjayw9lwun85i1` (Tomcat still parked as Smoke so we do not overwrite public occupant `ceihmyxlssxn6yn`). Email warning = Library listing honesty, not in-form. |
@@ -178,7 +185,35 @@ Setup: `http://localhost:8080/p/vrjayw9lwun85i1/r2s6sqe.Setup`
 
 **Email warning (Sep 8, option 2):** Library listing Test Drive / Copy-link honesty (`tooltipSingleEmail`) + **Sends real email.** badge. In-form `TWarn` **removed**. **Version 2 (B9):** runtime TD flag so a form item can show only during Test Drive.
 
+**Owner Sep 14:** keep ALB **off Library** until Confirm links work both directions (public hostname in invitation URLs; snowball from My Tawala `/p/`, not `/t/`). Stay on `vrjayw9lwun85i1`. Do not overwrite public occupant `ceihmyxlssxn6yn`.
+
 **Not done:** retire/hatch `ceihmyxlssxn6yn`. Extra JSON copies (Sophisticated / Smoke filenames) **deleted Sep 8** — only `Smoked-Ready-to-Push/Automated List Builder.json` remains. Recovery path is the old `.tawala`, not a JSON twin.
+
+---
+
+## Poll — revisit (Sep 14)
+
+**What used to work:** two roles, two doors. Organizer: **AdminStart** → Administration dashboard. Respondents: **Start Questionnaire** (survey link) → thank-you. Email notify to the organizer still links Administration.
+
+**What broke it:** a single-portal Test Drive attempt. Respondent **Questionnaire Done** grew “see the results so far → Administration,” and Administration was left as a start. Anyone who took the poll could walk into the dashboard. That is the Admin/User leak.
+
+**Keeper already undoes that reshape** (`Current Deployed MyTawala/Single Question Poll or Survey.json`, uniqueId `b7ttti35vdo58pu`):
+
+- Questionnaire Done = “Thank you. Your response has been recorded.” No Administration invitation.
+- Administration `startPoint: false`.
+- `Admin?` flag: organizer “Test your Survey” returns to the dashboard; a real respondent does not.
+
+**Owner smoke Sep 14 (still leaked):** Use → **Start Questionnaire** on live `b7ttt` still opened the Administration menu at the end of the poll. Live XML already had thank-you-only. The remaining leak is **`Admin?` sticky on `/p/`**.
+
+**JSON fix in keeper, Pushed to My Tawala `b7ttt`.** Website Publish replace onto `ca7ws92mpss0sb5` **did not Redeploy Tomcat** (listing uniqueId stayed Sep 9 XML). **Redeployed Sep 14 22:16 UTC** onto `ca7ws…` from keeper (same leak-fix). Purge Library responses after Redeploy so TD stays empty.
+
+**Still leftover from the TD experiment (do not keep as product):**
+
+- Same-session hop AdminStart → Start Questionnaire can still mix roles. **Do not enable Start picker** on this listing. Library TD = AdminStart only; **Test your Survey** is the Admin preview of the poll.
+
+**Library Test Drive (locked Sep 14):** **single door, AdminStart only.** Owner smoked: passes. Poll-takers are not the TD audience (wall is My Tawala Use → Start Questionnaire). Organizer **Test your Survey** is how an Admin sees the poll, then returns to Administration. Leave-wipe grace **60s**. Do **not** turn on Start picker. Do **not** reshape JSON so one portal is both Admin and respondent.
+
+**Sep 14 evening:** Quit **Thanks** is no longer “Thanks for Test Driving…”. `website-mock/projects/mytawala/Single Question Poll or Survey.json` is the leak-fixed dump without live uniqueId stamps (replaced the Customize + Administration-invitation copy).
 
 ---
 
@@ -199,8 +234,8 @@ Smoke of Customize-first apps via My Tawala **Use** does **not** count as Librar
 **First group is in Live Library (owner Sep 9):** Survey Sample, Multiple Question Survey Sample, Sign-up Sheet Sample, Horses and Penguins Test. Horses stays as published. **Shared To-Do** is also Live (`bx44wpdnspbsi3k`).
 
 1. **First: Test Drive sandbox** — **wired Sep 11.** Library Test Drive / Copy link → `/projectmanager/testdrive?id=&form=` (session World → `/t/…`). Default door still a single start (Customize/Setup/Admin heuristics; picker opt-in). Do not rewrite Sign-up / ALB / GT JSON for a single `/p/` door. Then Publish dual-use apps **as they already are**.
-2. **Then** Publish dual-use apps **as they already are** (Sign-up Sheet operate `gnqp5qfd06ktec3`, ALB after **Free a live :8080 name** `ceihmyxlssxn6yn`, etc.).
-3. **Poll** — wait for owner leak-fix Push on `b7ttti35vdo58pu`. Poll v.8 still Defer-rewrite. Jump-tracks in **published invite URLs** stays a definition rule (not a TD trick).
+2. **Then** Publish dual-use apps **as they already are** (Sign-up Sheet operate `gnqp5qfd06ktec3`). **ALB stays My Tawala** until public Confirm links work.
+3. **Poll** — **Library TD smoked Sep 14** (AdminStart single door on `ca7ws…`). Poll v.8 still Defer-rewrite.
 4. **GT + Potluck** — parked Sample JSONs in `_set-aside/`. Not this Samples group.
 5. Later: Designer C14/C15/F1. Keepers in `Current Deployed MyTawala`.
 
@@ -217,7 +252,7 @@ Not this pass. Needs a first-class **authoring vs respondent** data role (start-
 ```text
 Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md **Monday Sep 14 ToDo**.
 Branch cursor/forms-canvas-wysiwyg. Staging outside git: Website Staging.
-**A + B1 + B2 + B3 done** (Sign-up TD; Shared To-Do picker; OEB). Poll TD waits on leak-fix. **Next: B4** Publish dual-use as they are. Real login = pre-live HOLD (#21), not this pass.
+**A + B closed Sep 14 evening** (Publish replace looks up Tomcat name; Poll archive JSON is leak-fixed; isolation Java recompiles on `docker compose build tawala`). **ALB stays My Tawala.** Real login = pre-live HOLD (#21), not this pass.
 Parked: User Contributed “projects of projects” planning session (section D) — do not code yet.
 No Designer C14 this pass.
 ```

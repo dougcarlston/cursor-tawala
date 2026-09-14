@@ -11,7 +11,7 @@ import com.tawala.web.project.ProjectTestDriveController;
 public class TestDriveSupport {
 
 	/** After the /t/ tab hides, discard the World unless a newer /t/ request arrives. */
-	public static final long LEAVE_GRACE_MS = 20 * 1000L;
+	public static final long LEAVE_GRACE_MS = 60 * 1000L;
 	/** No /t/ or testdrive touch for this long → discard (tab left open but idle). */
 	public static final long IDLE_MS = 30 * 60 * 1000L;
 

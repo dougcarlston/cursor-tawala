@@ -20,7 +20,7 @@ assert.doesNotMatch(
   "B1: new /t/ Worlds must not snapshot live /p/ submissions"
 );
 assert.match(testDriveSupport, /Intentionally empty/);
-assert.match(testDriveSupport, /LEAVE_GRACE_MS = 20 \* 1000L/);
+assert.match(testDriveSupport, /LEAVE_GRACE_MS = 60 \* 1000L/);
 assert.match(testDriveSupport, /IDLE_MS = 30 \* 60 \* 1000L/);
 assert.match(
   testDriveSupport,

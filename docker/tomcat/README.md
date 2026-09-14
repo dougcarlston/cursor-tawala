@@ -54,8 +54,26 @@ docker cp docker/tomcat/scripts/project/default.js \
 
 Then on `:8080` Online Exam **SetupVariables**: **Cmd+Shift+R**. Java (`TextInput` / `FormSubmission`) still needs a WAR rebuild or class copy + Tomcat restart; the JS patch alone hides leftover `&#x0D;` glyphs in already-stored Pre/Post instruction boxes.
 
-Rebuild after changes:
+## Library Test Drive isolation (Java classes)
+
+`docker compose build tawala` unpacks gitignored `ROOT.war` and **recompiles** isolation sources over it so a rebuild cannot silently restore snapshot-into-World / skip leave-wipe:
+
+- `TestDriveSupport.java` (empty World, 60s leave grace, 30 min idle)
+- `TestDrivePreparationController.java`, `UserProjectTestDriveController.java`
+- `OldPage.java`, `ExecutionContext.java` (purge Test Drive session variables)
+- `DataCollectingProjectController.java`, `ProjectTestDriveController.java`
+
+Canonical sources: `TawalaWebapp-build1700/src/...`. `scripts/project/default.js` (pagehide beacon) is the matching JS patch above.
+
+Rebuild after isolation or form-runtime Java changes:
 
 ```bash
-docker compose build tawala && docker compose up -d tawala
+docker compose build tawala
+docker compose up -d --no-deps --force-recreate tawala
+# If /home is 500 with UnknownHostException: postgres, Tomcat is on a different
+# compose network than the existing tawala-postgres container:
+docker network connect ai-tawala_default tawala-tomcat
+docker restart tawala-tomcat
 ```
+
+Or from repo root: `./scripts/start-library-chat.sh --start` (auto-fixes that split).

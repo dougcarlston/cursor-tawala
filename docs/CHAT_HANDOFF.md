@@ -345,7 +345,7 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Library thread`
 
-**Resume Monday Sep 14:** [`docs/LIBRARY_WHERE_WE_ARE_SEP3.md`](LIBRARY_WHERE_WE_ARE_SEP3.md) § **Monday Sep 14 — ToDo**. **A–B3 done** (Poll TD still waits on leak-fix). **Next: B4** Publish dual-use as they are. Real login / lost-password = pre-live HOLD Task #21 (do not start in this Library pass).
+**Resume:** [`docs/LIBRARY_WHERE_WE_ARE_SEP3.md`](LIBRARY_WHERE_WE_ARE_SEP3.md) § **Monday Sep 14 — ToDo**. **A + B closed** (Publish replace Redeploys; isolation baked into Docker image). **ALB stays My Tawala.** Next: planning session D (no code) or GT/Potluck Library. Real login / lost-password = pre-live HOLD Task #21.
 
 **Handoff script (Aug 24, 2026):** From repo root:
 

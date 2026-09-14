@@ -18,6 +18,13 @@ COPY docker/tomcat/mail.properties /tmp/patch/mail.properties
 COPY docker/tomcat/css /tmp/patch/css
 COPY docker/tomcat/images /tmp/patch/images
 COPY docker/tomcat/scripts /tmp/patch/scripts
+COPY TawalaWebapp-build1700/src/com/tawala/web/library/TestDriveSupport.java /tmp/td-src/com/tawala/web/library/TestDriveSupport.java
+COPY TawalaWebapp-build1700/src/com/tawala/web/library/TestDrivePreparationController.java /tmp/td-src/com/tawala/web/library/TestDrivePreparationController.java
+COPY TawalaWebapp-build1700/src/com/tawala/web/projectmanager/UserProjectTestDriveController.java /tmp/td-src/com/tawala/web/projectmanager/UserProjectTestDriveController.java
+COPY TawalaWebapp-build1700/src/com/tawala/web/oldhtml/OldPage.java /tmp/td-src/com/tawala/web/oldhtml/OldPage.java
+COPY TawalaWebapp-build1700/src/com/tawala/project/commands/ExecutionContext.java /tmp/td-src/com/tawala/project/commands/ExecutionContext.java
+COPY TawalaWebapp-build1700/src/com/tawala/web/project/DataCollectingProjectController.java /tmp/td-src/com/tawala/web/project/DataCollectingProjectController.java
+COPY TawalaWebapp-build1700/src/com/tawala/web/project/ProjectTestDriveController.java /tmp/td-src/com/tawala/web/project/ProjectTestDriveController.java
 
 RUN mkdir -p /tmp/ROOT \
  && unzip -q /tmp/ROOT.war -d /tmp/ROOT \
@@ -30,8 +37,18 @@ RUN mkdir -p /tmp/ROOT \
  && cp /tmp/patch/images/submit-progress.gif /tmp/ROOT/images/ \
  && cp /tmp/patch/images/checkbox_on.gif /tmp/patch/images/checkbox_off.gif /tmp/ROOT/images/ \
  && cp /tmp/patch/scripts/project/default.js /tmp/ROOT/scripts/project/default.js \
+ && javac -source 1.8 -target 1.8 -encoding UTF-8 \
+      -cp "/tmp/ROOT/WEB-INF/classes:/tmp/ROOT/WEB-INF/lib/*:/usr/local/tomcat/lib/*" \
+      -d /tmp/ROOT/WEB-INF/classes \
+      /tmp/td-src/com/tawala/web/library/TestDriveSupport.java \
+      /tmp/td-src/com/tawala/web/library/TestDrivePreparationController.java \
+      /tmp/td-src/com/tawala/web/projectmanager/UserProjectTestDriveController.java \
+      /tmp/td-src/com/tawala/web/oldhtml/OldPage.java \
+      /tmp/td-src/com/tawala/project/commands/ExecutionContext.java \
+      /tmp/td-src/com/tawala/web/project/DataCollectingProjectController.java \
+      /tmp/td-src/com/tawala/web/project/ProjectTestDriveController.java \
  && cd /tmp/ROOT && jar cf /usr/local/tomcat/webapps/ROOT.war . \
- && rm -rf /tmp/ROOT /tmp/ROOT.war /tmp/patch
+ && rm -rf /tmp/ROOT /tmp/ROOT.war /tmp/patch /tmp/td-src
 
 ENV CATALINA_OPTS="-Dlucene.use.in.process=true -Xms256m -Xmx1024m"
 

@@ -83,6 +83,12 @@ export function libraryOverwriteRuntime({ catalogEntry, listingEntry, sourceUniq
     deployIdentityName,
     canReuse: !!(uniqueId && sourceUid && uniqueId !== sourceUid && deployIdentityName),
     keepCatalogUniqueId,
+    refuseMintOnOverwrite: !!(
+      uniqueId &&
+      sourceUid &&
+      uniqueId !== sourceUid &&
+      !deployIdentityName
+    ),
     refuseMintOnCatalog: !!(
       keepCatalogUniqueId &&
       uniqueId &&

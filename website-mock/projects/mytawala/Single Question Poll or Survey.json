@@ -4,14 +4,39 @@
   "themePath": "default",
   "forms": [
     {
-      "name": "Customize",
+      "name": "AdminStart",
       "startPoint": true,
       "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "AdminStart:TitleText",
+                "op": "isNotBlank"
+              },
+              "then": [
+                {
+                  "cmd": "skip",
+                  "to": "__EndOfForm__"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Customize your Survey"
+        },
         {
           "type": "fib",
           "label": "Q1",
           "style": "",
-          "prompt": "Title of your survey:__________________________________________________________",
+          "prompt": "Title of your survey:\n__________________________________________________________",
           "blanks": [
             {
               "name": "TitleText",
@@ -24,7 +49,7 @@
           "type": "fib",
           "label": "Q2",
           "style": "",
-          "prompt": "Question text:__________________________________________________________",
+          "prompt": "Question text:\n__________________________________________________________",
           "blanks": [
             {
               "name": "QuestionText",
@@ -38,7 +63,7 @@
           "type": "fib",
           "label": "Q3",
           "style": "",
-          "prompt": "Choices:________________________________________________________________________________________________________________________________________________________________________________________________________________________________________",
+          "prompt": "Choices:\n__________________________________________________________\n__________________________________________________________\n__________________________________________________________\n__________________________________________________________",
           "blanks": [
             {
               "name": "Choice1",
@@ -106,12 +131,32 @@
           "type": "fib",
           "label": "Q6",
           "style": "",
-          "prompt": "If you checked the box above, please provide your email address:__________________________________________________________",
+          "prompt": "If you checked the box above, please provide your email address:\n__________________________________________________________",
           "blanks": [
             {
               "name": "AdminEmail",
               "length": 58,
               "alternateLabel": "AdminEmail"
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "MCQ1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Continue to Administration Dashboard?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Yes"
+            },
+            {
+              "label": "b",
+              "text": "No"
             }
           ]
         },
@@ -152,13 +197,7 @@
           "type": "text",
           "label": "T1",
           "style": "normal",
-          "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p>"
-        },
-        {
-          "type": "heading",
-          "label": "H1",
-          "level": "main",
-          "content": ""
+          "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt;color:#000000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p>"
         },
         {
           "type": "mc",
@@ -206,7 +245,7 @@
           "type": "text",
           "label": "T1",
           "style": "normal",
-          "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p>"
+          "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt;color:#000000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p>"
         },
         {
           "type": "fib",
@@ -217,7 +256,8 @@
             {
               "name": "Name",
               "length": 40,
-              "alternateLabel": "Name"
+              "alternateLabel": "Name",
+              "required": true
             }
           ]
         },
@@ -261,21 +301,133 @@
     },
     {
       "name": "Administration",
-      "startPoint": true,
+      "startPoint": false,
       "items": [
         {
-          "type": "skipInstructions",
-          "label": "skip1",
-          "commands": [
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Administration Dashboard"
+        },
+        {
+          "type": "mc",
+          "label": "MCQ1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Please choose and then press Submit button:",
+          "choices": [
             {
-              "cmd": "skip",
-              "to": "__EndOfForm__"
+              "label": "a",
+              "text": "Go back to Customize Survey"
+            },
+            {
+              "label": "b",
+              "text": "Test your Survey"
+            },
+            {
+              "label": "c",
+              "text": "Exclude Signatory from Display"
+            },
+            {
+              "label": "d",
+              "text": "Purge all Results"
+            },
+            {
+              "label": "e",
+              "text": "Quit Administrative Dashboard"
             }
           ]
         }
       ],
       "themePath": "default",
-      "process": "Pre-Administration"
+      "process": "Post-Administration",
+      "preProcess": "Pre-Administration"
+    },
+    {
+      "name": "Exclude Signatory",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "heading",
+          "label": "H1",
+          "level": "main",
+          "content": "Exclude Signatory"
+        },
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "instructional",
+          "content": "This routine will keep a signatory from showing on the list, although it will not delete the name.  This is useful if you see an obviously fake signatory, although it is preserved in the record for any future audit of results."
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": [
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": [
+                {
+                  "type": "font",
+                  "nodes": [
+                    {
+                      "type": "itemizationTable",
+                      "version": 2,
+                      "form": "Questionnaire_Name",
+                      "columns": [
+                        {
+                          "header": "Name",
+                          "field": "Record:Questionnaire_Name:Name"
+                        },
+                        {
+                          "header": "Choice",
+                          "field": "Record:Questionnaire_Name:UserResponse"
+                        },
+                        {
+                          "header": "Active Record",
+                          "field": "Record:Questionnaire_Name:Name"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "font",
+                  "nodes": [],
+                  "face": "Arial",
+                  "size": 16,
+                  "color": "#000000"
+                }
+              ]
+            },
+            {
+              "type": "paragraph",
+              "align": "left",
+              "indent": 0,
+              "nodes": []
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "FIB1",
+          "style": "",
+          "prompt": "Name to exclude: ____________________",
+          "blanks": [
+            {
+              "name": "FIB1:a",
+              "length": 20,
+              "alternateLabel": "FIB1:a"
+            }
+          ]
+        }
+      ],
+      "process": "Post-Exclude"
     }
   ],
   "processes": [
@@ -284,13 +436,24 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "get the display parameters for the current questionnaire"
+          "text": "[object Object]"
+        },
+        {
+          "cmd": "set",
+          "field": "Admin?",
+          "value": "No",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "comment",
+          "text": "[object Object]"
         },
         {
           "cmd": "get",
           "recordList": "Setup Records",
           "sourceForms": [
-            "Customize"
+            "AdminStart"
           ]
         },
         {
@@ -301,49 +464,49 @@
             {
               "cmd": "set",
               "field": "Customize_TitleText",
-              "value": "<<SetupRecord:Customize:TitleText>>",
+              "value": "<<SetupRecord:AdminStart:TitleText>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_QuestionText",
-              "value": "<<SetupRecord:Customize:QuestionText>>",
+              "value": "<<SetupRecord:AdminStart:QuestionText>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "NumberOfChoices",
-              "value": "<<SetupRecord:Customize:NumberOfChoices>>",
+              "value": "<<SetupRecord:AdminStart:NumberOfChoices>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice1",
-              "value": "<<SetupRecord:Customize:Choice1>>",
+              "value": "<<SetupRecord:AdminStart:Choice1>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice2",
-              "value": "<<SetupRecord:Customize:Choice2>>",
+              "value": "<<SetupRecord:AdminStart:Choice2>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice3",
-              "value": "<<SetupRecord:Customize:Choice3>>",
+              "value": "<<SetupRecord:AdminStart:Choice3>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice4",
-              "value": "<<SetupRecord:Customize:Choice4>>",
+              "value": "<<SetupRecord:AdminStart:Choice4>>",
               "concat": false,
               "arithmeticAsText": false
             },
@@ -357,7 +520,7 @@
             {
               "cmd": "if",
               "condition": {
-                "field": "SetupRecord:Customize:AskForNames",
+                "field": "SetupRecord:AdminStart:AskForNames",
                 "op": "mcEquals",
                 "value": "a"
               },
@@ -376,12 +539,12 @@
               "condition": {
                 "and": [
                   {
-                    "field": "SetupRecord:Customize:EmailNotify?",
+                    "field": "SetupRecord:AdminStart:EmailNotify?",
                     "op": "mcEquals",
                     "value": "a"
                   },
                   {
-                    "field": "SetupRecord:Customize:AdminEmail",
+                    "field": "SetupRecord:AdminStart:AdminEmail",
                     "op": "isNotBlank"
                   }
                 ]
@@ -390,7 +553,7 @@
                 {
                   "cmd": "set",
                   "field": "EmailAddress",
-                  "value": "<<SetupRecord:Customize:AdminEmail>>",
+                  "value": "<<SetupRecord:AdminStart:AdminEmail>>",
                   "concat": false,
                   "arithmeticAsText": false
                 }
@@ -410,7 +573,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "IncludeName",
+            "field": "Start Questionnaire:IncludeName",
             "op": "equals",
             "value": "true"
           },
@@ -432,7 +595,7 @@
       "commands": [
         {
           "cmd": "set",
-          "field": "Customize:NumberOfChoices",
+          "field": "AdminStart:NumberOfChoices",
           "value": "0",
           "concat": false,
           "arithmeticAsText": false
@@ -440,56 +603,56 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "Customize:Choice1",
+            "field": "AdminStart:Choice1",
             "op": "isNotBlank"
           },
           "then": [
             {
               "cmd": "set",
-              "field": "Customize:NumberOfChoices",
-              "value": "<<Customize:NumberOfChoices>> + 1",
+              "field": "AdminStart:NumberOfChoices",
+              "value": "<<AdminStart:NumberOfChoices>> + 1",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "if",
               "condition": {
-                "field": "Customize:Choice2",
+                "field": "AdminStart:Choice2",
                 "op": "isNotBlank"
               },
               "then": [
                 {
                   "cmd": "set",
-                  "field": "Customize:NumberOfChoices",
-                  "value": "<<Customize:NumberOfChoices>> + 1",
+                  "field": "AdminStart:NumberOfChoices",
+                  "value": "<<AdminStart:NumberOfChoices>> + 1",
                   "concat": false,
                   "arithmeticAsText": false
                 },
                 {
                   "cmd": "if",
                   "condition": {
-                    "field": "Customize:Choice3",
+                    "field": "AdminStart:Choice3",
                     "op": "isNotBlank"
                   },
                   "then": [
                     {
                       "cmd": "set",
-                      "field": "Customize:NumberOfChoices",
-                      "value": "<<Customize:NumberOfChoices>> + 1",
+                      "field": "AdminStart:NumberOfChoices",
+                      "value": "<<AdminStart:NumberOfChoices>> + 1",
                       "concat": false,
                       "arithmeticAsText": false
                     },
                     {
                       "cmd": "if",
                       "condition": {
-                        "field": "Customize:Choice4",
+                        "field": "AdminStart:Choice4",
                         "op": "isNotBlank"
                       },
                       "then": [
                         {
                           "cmd": "set",
-                          "field": "Customize:NumberOfChoices",
-                          "value": "<<Customize:NumberOfChoices>> + 1",
+                          "field": "AdminStart:NumberOfChoices",
+                          "value": "<<AdminStart:NumberOfChoices>> + 1",
                           "concat": false,
                           "arithmeticAsText": false
                         }
@@ -506,7 +669,7 @@
                 },
                 {
                   "cmd": "show",
-                  "form": "Customize"
+                  "form": "AdminStart"
                 }
               ]
             }
@@ -519,75 +682,43 @@
             },
             {
               "cmd": "show",
-              "form": "Customize"
+              "form": "AdminStart"
             }
           ]
         },
         {
           "cmd": "comment",
-          "text": "\"clear\" previous submissions to keep them from being counted in results"
+          "text": "[object Object]"
         },
         {
           "cmd": "if",
           "condition": {
-            "field": "Customize:AskForNames",
+            "field": "AdminStart:MCQ1",
             "op": "mcEquals",
             "value": "a"
           },
           "then": [
             {
-              "cmd": "get",
-              "recordList": "recordsWithName",
-              "sourceForms": [
-                "Questionnaire_Name"
-              ]
+              "cmd": "comment",
+              "text": "[object Object]"
             },
             {
-              "cmd": "foreach",
-              "recordName": "nameRecord",
-              "recordList": "recordsWithName",
-              "do": [
-                {
-                  "cmd": "set",
-                  "field": "nameRecord:Questionnaire_Name:activeRecord",
-                  "value": "0",
-                  "concat": false,
-                  "arithmeticAsText": false
-                }
-              ]
+              "cmd": "set",
+              "field": "Admin?",
+              "value": "Yes",
+              "concat": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
             }
           ],
           "else": [
             {
-              "cmd": "get",
-              "recordList": "records",
-              "sourceForms": [
-                "Questionnaire"
-              ]
-            },
-            {
-              "cmd": "foreach",
-              "recordName": "record",
-              "recordList": "records",
-              "do": [
-                {
-                  "cmd": "set",
-                  "field": "record:Questionnaire:activeRecord",
-                  "value": "0",
-                  "concat": false,
-                  "arithmeticAsText": false
-                }
-              ]
+              "cmd": "show",
+              "form": "AdminStart"
             }
           ]
-        },
-        {
-          "cmd": "comment",
-          "text": "stay in customization loop"
-        },
-        {
-          "cmd": "show",
-          "form": "Customize"
         }
       ]
     },
@@ -596,7 +727,7 @@
       "commands": [
         {
           "cmd": "comment",
-          "text": "flag to include this record in all results counts"
+          "text": "[object Object]"
         },
         {
           "cmd": "set",
@@ -620,14 +751,24 @@
           "arithmeticAsText": false
         },
         {
-          "cmd": "showDocument",
-          "document": "Questionnaire Done",
-          "reset": false
+          "cmd": "if",
+          "condition": {
+            "field": "Questionnaire_Name:Admin?",
+            "op": "doesNotEqual",
+            "value": "Yes"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "Questionnaire Done",
+              "reset": false
+            }
+          ]
         },
         {
           "cmd": "if",
           "condition": {
-            "field": "EmailAddress",
+            "field": "Questionnaire_Name:EmailAddress",
             "op": "doesNotEqual",
             "value": "No Notification"
           },
@@ -645,6 +786,24 @@
               }
             }
           ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Questionnaire_Name:Admin?",
+            "op": "equals",
+            "value": "Yes"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "[object Object]"
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
         }
       ]
     },
@@ -655,7 +814,7 @@
           "cmd": "get",
           "recordList": "Settings",
           "sourceForms": [
-            "Customize"
+            "AdminStart"
           ]
         },
         {
@@ -666,49 +825,49 @@
             {
               "cmd": "set",
               "field": "Customize_TitleText",
-              "value": "<<Setting:Customize:TitleText>>",
+              "value": "<<Setting:AdminStart:TitleText>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_QuestionText",
-              "value": "<<Setting:Customize:QuestionText>>",
+              "value": "<<Setting:AdminStart:QuestionText>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "NumberOfChoices",
-              "value": "<<Setting:Customize:NumberOfChoices>>",
+              "value": "<<Setting:AdminStart:NumberOfChoices>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice1",
-              "value": "<<Setting:Customize:Choice1>>",
+              "value": "<<Setting:AdminStart:Choice1>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice2",
-              "value": "<<Setting:Customize:Choice2>>",
+              "value": "<<Setting:AdminStart:Choice2>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice3",
-              "value": "<<Setting:Customize:Choice3>>",
+              "value": "<<Setting:AdminStart:Choice3>>",
               "concat": false,
               "arithmeticAsText": false
             },
             {
               "cmd": "set",
               "field": "Customize_Choice4",
-              "value": "<<Setting:Customize:Choice4>>",
+              "value": "<<Setting:AdminStart:Choice4>>",
               "concat": false,
               "arithmeticAsText": false
             },
@@ -722,7 +881,7 @@
             {
               "cmd": "if",
               "condition": {
-                "field": "Setting:Customize:AskForNames",
+                "field": "Setting:AdminStart:AskForNames",
                 "op": "mcEquals",
                 "value": "a"
               },
@@ -741,7 +900,7 @@
         {
           "cmd": "if",
           "condition": {
-            "field": "IncludeName",
+            "field": "Administration:IncludeName",
             "op": "equals",
             "value": "true"
           },
@@ -749,6 +908,11 @@
             {
               "cmd": "showDocument",
               "document": "Results with Names",
+              "reset": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Excluded Names",
               "reset": false
             }
           ],
@@ -764,15 +928,199 @@
     },
     {
       "name": "Post-Administration",
-      "commands": []
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MCQ1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "[object Object]"
+            },
+            {
+              "cmd": "show",
+              "form": "AdminStart"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MCQ1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "[object Object]"
+            },
+            {
+              "cmd": "set",
+              "field": "Admin?",
+              "value": "Yes",
+              "concat": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administration:IncludeName",
+                "op": "equals",
+                "value": "true"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "Questionnaire_Name"
+                }
+              ]
+            },
+            {
+              "cmd": "show",
+              "form": "Questionnaire"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MCQ1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "[object Object]"
+            },
+            {
+              "cmd": "show",
+              "form": "Exclude Signatory"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MCQ1",
+            "op": "mcEquals",
+            "value": "d"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "[object Object]"
+            },
+            {
+              "cmd": "delete",
+              "form": "Questionnaire",
+              "from": "Questionnaire"
+            },
+            {
+              "cmd": "delete",
+              "form": "Questionnaire_Name",
+              "from": "Questionnaire_Name"
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Records Deleted",
+              "reset": false
+            },
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:MCQ1",
+            "op": "mcEquals",
+            "value": "e"
+          },
+          "then": [
+            {
+              "cmd": "comment",
+              "text": "[object Object]"
+            },
+            {
+              "cmd": "set",
+              "field": "Admin?",
+              "value": "No",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "showDocument",
+              "document": "Thanks",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "show",
+              "form": "Administration"
+            }
+          ]
+        }
+      ]
     },
     {
       "name": "Pre-Customize",
       "commands": [
         {
           "cmd": "edit",
-          "form": "Customize",
+          "form": "AdminStart",
           "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-Exclude",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Record List",
+          "sourceForms": [
+            "Questionnaire_Name"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Such Record",
+          "recordList": "Record List",
+          "do": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Exclude Signatory:FIB1:a",
+                "op": "equals",
+                "value": "<<Such Record:Questionnaire_Name:Name>>"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "Such Record:Questionnaire_Name:activeRecord",
+                  "value": "2",
+                  "concat": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "Excluded Names",
+          "reset": false
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
         }
       ]
     }
@@ -780,26 +1128,38 @@
   "documents": [
     {
       "name": "Choice Count Error",
-      "content": "<p><span style=\"color:#C24322\"><b>You must offer at least two choices.</b></span></p>"
+      "content": "<p><span style=\"font-size:10pt;color:#C24322\"><b>You must offer at least two choices.</b></span></p>"
     },
     {
       "name": "Questionnaire Done",
-      "content": "<p></p><p></p><p><span><b>Thank you.</b></span></p><p></p><p><span><b>If you'd like to see the results so far </b></span><span><b><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here.&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here.</span></u></b></span></p>"
+      "content": "<p><b>Thank you.</b></p><p>Your response has been recorded.</p>"
     },
     {
       "name": "Results",
-      "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p><p style=\"text-align:center\"></p><p><span><b>Responses to question:  </b></span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_QuestionText\" title=\"Customize_QuestionText\" draggable=\"true\">&lt;&lt;Customize_QuestionText&gt;&gt;</span></b></span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Questionnaire:UserResponse\" title=\"Questionnaire:UserResponse\" draggable=\"true\">&lt;&lt;Questionnaire:UserResponse&gt;&gt;</span>\n\n\n\n</span></p>"
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt;color:#000000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p><p><b>Responses to question:  </b><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_QuestionText\" title=\"Customize_QuestionText\" draggable=\"true\">&lt;&lt;Customize_QuestionText&gt;&gt;</span></b></p><p><span><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"choice-tally-table\" data-function-instance=\"1\" data-function-config=\"{&quot;field&quot;:&quot;Questionnaire:UserResponse&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Questionnaire:activeRecord&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;1&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE BAR GRAPH\">&lt;&lt;RESPONSE BAR GRAPH(Questionnaire:UserResponse, Questionnaire:activeRecord equals 1)&gt;&gt;</span></span></p>"
     },
     {
       "name": "Results with Names",
-      "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p><p style=\"text-align:center\"></p><p><span><b>Responses to question:  </b></span><span><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_QuestionText\" title=\"Customize_QuestionText\" draggable=\"true\">&lt;&lt;Customize_QuestionText&gt;&gt;</span></b></span></p><p></p><p><span><b>Totals:</b></span></p><p></p><p><span><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Record:Questionnaire_Name:UserResponse\" title=\"Record:Questionnaire_Name:UserResponse\" draggable=\"true\">&lt;&lt;Record:Questionnaire_Name:UserResponse&gt;&gt;</span>\n\n\n\n</span></p><p></p><p><span><b>By respondent:</b></span></p><p></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire_Name\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A1%2C%22form%22%3A%22Questionnaire_Name%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AName%22%7D%2C%7B%22header%22%3A%22Choice%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AUserResponse%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire_Name%3AactiveRecord%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%221%22%7D%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:16pt;color:#000000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></b></span></p><p><b>Responses to question:  </b><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_QuestionText\" title=\"Customize_QuestionText\" draggable=\"true\">&lt;&lt;Customize_QuestionText&gt;&gt;</span></b></p><p><b>Totals:</b></p><p><span><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"choice-tally-table\" data-function-instance=\"2\" data-function-config=\"{&quot;field&quot;:&quot;Questionnaire_Name:UserResponse&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Questionnaire_Name:activeRecord&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;1&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"RESPONSE BAR GRAPH\">&lt;&lt;RESPONSE BAR GRAPH(Questionnaire_Name:UserResponse, Questionnaire_Name:activeRecord equals 1)&gt;&gt;</span></span></p><p><b>By respondent:</b></p><p><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire_Name\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22Questionnaire_Name%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AName%22%7D%2C%7B%22header%22%3A%22Choice%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AUserResponse%22%7D%2C%7B%22header%22%3A%22Active%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AactiveRecord%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire_Name%3AactiveRecord%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%221%22%7D%2C%22conditions%22%3A%5B%7B%22field%22%3A%22Questionnaire_Name%3AactiveRecord%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%221%22%7D%5D%2C%22combinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span></p>"
     },
     {
       "name": "Email Notification",
-      "content": "<p><span><b><i>Someone has responded to </i></b></span><span><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></i></b></span><span><b><i>.</i></b></span></p><p></p><p><span><b><i>To see the latest results </i></b></span><span style=\"color:#000080\"><b><i><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></i></b></span><span><b><i>.</i></b></span></p><p></p><p><span><b><i>Thank you for using Tawala!</i></b></span></p>"
+      "content": "<p><b><i>Someone has responded to </i></b><b><i><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_TitleText\" title=\"Customize_TitleText\" draggable=\"true\">&lt;&lt;Customize_TitleText&gt;&gt;</span></i></b><b><i>.</i></b></p><p><b><i>To see the latest results </i></b><span style=\"font-size:10pt;color:#000080\"><b><i><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></i></b></span><b><i>.</i></b></p><p><b><i>Thank you for using Tawala!</i></b></p>"
+    },
+    {
+      "name": "Records Deleted",
+      "content": "<p>All records have been deleted.</p>"
+    },
+    {
+      "name": "Thanks",
+      "content": "<p></p><p>You're done. You can close this window.</p>"
+    },
+    {
+      "name": "Excluded Names",
+      "content": "<p><b>Excluded Names:</b><span><span contenteditable=\"false\" class=\"function-table-inline function-table-token\" data-itemization-token=\"true\" data-itemization-form=\"Questionnaire_Name\" data-tawala-structured-node=\"%7B%22type%22%3A%22itemizationTable%22%2C%22version%22%3A2%2C%22form%22%3A%22Questionnaire_Name%22%2C%22columns%22%3A%5B%7B%22header%22%3A%22Name%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AName%22%7D%2C%7B%22header%22%3A%22Choice%22%2C%22field%22%3A%22Record%3AQuestionnaire_Name%3AUserResponse%22%7D%5D%2C%22where%22%3A%7B%22field%22%3A%22Record%3AQuestionnaire_Name%3AactiveRecord%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%222%22%7D%2C%22conditions%22%3A%5B%7B%22field%22%3A%22Questionnaire_Name%3AactiveRecord%22%2C%22op%22%3A%22equals%22%2C%22value%22%3A%222%22%7D%5D%2C%22combinator%22%3A%22and%22%7D\" title=\"MULTIPLE QUESTION LIST\">{ MULTIPLE QUESTION LIST }</span></span><span style=\"font-family:&amp;quot;font-size:13pt;color:#000000\"></span></p>"
     }
   ],
-  "_originalFormat": "1.8",
-  "_designerBuild": "169",
-  "_convertedFrom": "../Jul 28 tawala files to convert/Tawala Versions/Single Question Poll or Survey.tawala"
+  "_originalFormat": "1.11",
+  "_designerBuild": "204",
+  "_archiveNote": "Not a live identity. Library uniqueId ca7ws92mpss0sb5; My Tawala Use b7ttti35vdo58pu. Do not Publish this file onto the listing."
 }

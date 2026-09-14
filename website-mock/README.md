@@ -721,7 +721,9 @@ Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala 
 
 **Sep 14 — B1 empty World:** `TestDriveSupport.copyExistingSubmissionsToTestWorld` is a no-op. A new `/t/` session gets the project **definition** only — not a snapshot of live `/p/` submissions (OEB questions, sign-up rows, exam answers). Same JSESSIONID still reuses the in-progress drive (hop starts). A new browser / incognito starts empty. Content-product “bring the author’s questions” is a later Publish rule, not this copy.
 
-**Sep 14 — B2 leave-wipe / idle TTL (smoked):** `/t/` form pages `pagehide` → leave ping (20s grace). Hops bump epoch so Setup→Exam→Admin keep the World. Discard also purges Test Drive `StoredContextInfo` (`Customize_Title` and other Process Set variables) — not only the in-memory World. Idle **30 minutes**; visible-tab ping every 4 minutes. Do **not** implement leave-detection on `:5500`. Owner smoked OEB from the Library picker: after closing all `:8080` tabs, Customize / Exam / Admin were empty.
+**Sep 14 evening — Publish replace Redeploys:** if the Library overlay has the listing uniqueId but no `deployIdentityName`, Publish looks up the live Tomcat name (`POST :3001/api/lookup-unique-id`) and Redeploys onto that uniqueId. It does **not** mint a sibling. Missing identity fails closed.
+
+**Sep 14 — B2 leave-wipe / idle TTL (smoked):** `/t/` form pages `pagehide` → leave ping (**60s** grace; was 20s). Hops bump epoch so Setup→Exam→Admin keep the World. Discard also purges Test Drive `StoredContextInfo` (`Customize_Title` and other Process Set variables) — not only the in-memory World. Idle **30 minutes**; visible-tab ping every 4 minutes. Do **not** implement leave-detection on `:5500`. Owner smoked OEB from the Library picker: after closing all `:8080` tabs, Customize / Exam / Admin were empty. **Docker:** `docker compose build tawala` recompiles isolation Java over `ROOT.war` so a rebuild cannot silently undo B1/B2 (`docker/tomcat/README.md`).
 
 **Shift further** when:
 
@@ -733,7 +735,7 @@ Do **not** conflate Library **Copy Test Drive link** (viral try) with My Tawala 
 | Now (Sep 11) | Later |
 |---|---|
 | Test Drive = session World via `/projectmanager/testdrive` → `/t/` | — |
-| Leave-wipe = `/t/` pagehide beacon (20s grace, epoch) | — |
+| Leave-wipe = `/t/` pagehide beacon (60s grace, epoch) | — |
 | Idle = 30 min no `/t/` activity | Optional shorter TTL |
 | Copy link = start-a-drive prepare URL | Same |
 | `openTestDrive` does **not** purge `/p/` for sandbox URLs | Keep catalog uniqueId empty |

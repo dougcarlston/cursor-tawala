@@ -44,6 +44,11 @@ export function occupancyHatchAllowed(body, env = process.env) {
   return String(body.occupancyHatch || "").trim() === secret;
 }
 
+function uniqueIdFromLiveUrl(url) {
+  const m = String(url || "").match(/\/[pt]\/([A-Za-z0-9]{1,20})\//);
+  return m ? m[1] : "";
+}
+
 export function findOccupantInDeploymentsXml(xml, tomcatName) {
   const want = String(tomcatName || "").trim();
   if (!xml || !want) return null;
@@ -62,6 +67,25 @@ export function findOccupantInDeploymentsXml(xml, tomcatName) {
   return null;
 }
 
+/** Live Tomcat name for a uniqueId (Publish replace when overlay omitted deployIdentityName). */
+export function findOccupantByUniqueIdInDeploymentsXml(xml, uniqueId) {
+  const want = String(uniqueId || "").trim();
+  if (!xml || !want) return null;
+  const allDeployments = [
+    ...String(xml).matchAll(/<deployment project="([^"]*)"[^>]*>([\s\S]*?)<\/deployment>/g),
+  ];
+  for (const [, name, body] of allDeployments) {
+    const startpoints = parseStartpointsFromBlock(body);
+    for (const sp of startpoints) {
+      const uid = uniqueIdFromLiveUrl(sp && sp.url);
+      if (uid === want) {
+        return { name, uniqueId: uid };
+      }
+    }
+  }
+  return null;
+}
+
 export function findOccupantInNodeIndex(entries, tomcatName, user = null) {
   const want = String(tomcatName || "").trim().toLowerCase();
   if (!want || !Array.isArray(entries)) return null;
@@ -71,6 +95,19 @@ export function findOccupantInNodeIndex(entries, tomcatName, user = null) {
   return {
     name: String(hit.name || "").trim(),
     uniqueId: hit.uniqueId ? String(hit.uniqueId) : null,
+    ...(author ? { author, user: author } : {}),
+  };
+}
+
+export function findOccupantByUniqueIdInNodeIndex(entries, uniqueId, user = null) {
+  const want = String(uniqueId || "").trim();
+  if (!want || !Array.isArray(entries)) return null;
+  const hit = entries.find((e) => e && String(e.uniqueId || "").trim() === want);
+  if (!hit) return null;
+  const author = hit.author || hit.authorId || hit.userId || hit.user || user || null;
+  return {
+    name: String(hit.name || "").trim(),
+    uniqueId: hit.uniqueId ? String(hit.uniqueId) : want,
     ...(author ? { author, user: author } : {}),
   };
 }

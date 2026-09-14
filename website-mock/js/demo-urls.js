@@ -1658,6 +1658,43 @@ window.TawalaDemo = {
     }
   },
   /**
+   * Tomcat / Node Deploy name for a live uniqueId. Publish replace uses this when the
+   * Library overlay omitted deployIdentityName (otherwise replace minted a sibling).
+   */
+  async lookupDeployIdentityByUniqueId(uniqueId) {
+    const uid = String(uniqueId || "").trim();
+    if (!uid) {
+      return { status: "failure", error: "uniqueId required" };
+    }
+    const url = this.purgeApiBase().replace(/\/$/, "") + "/api/lookup-unique-id";
+    try {
+      const res = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          credentials: { user: "dev", password: "dev" },
+          uniqueId: uid,
+        }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        return {
+          status: "failure",
+          error: data.error || `HTTP ${res.status}`,
+          ...data,
+        };
+      }
+      return data;
+    } catch (e) {
+      return {
+        status: "failure",
+        error:
+          String(e.message || e) +
+          " — is designer-web API on :3001? (cd designer-web && npm run dev)",
+      };
+    }
+  },
+  /**
    * After a private clone (new uniqueId): copy **all** submissions from the source
    * uniqueId onto the destination. No form-name filter — Exam / trial names copy too.
    * Owner Purges for a clean slate. Refuses same-uniqueId (that was the scrambled
