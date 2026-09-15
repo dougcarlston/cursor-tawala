@@ -345,7 +345,7 @@ Constraints: Do not refactor designer-web UI or website-mock in this chat unless
 
 **Suggested title:** `Library thread`
 
-**Resume:** [`docs/LIBRARY_WHERE_WE_ARE_SEP3.md`](LIBRARY_WHERE_WE_ARE_SEP3.md). **A + B closed.** **Get Together + Potluck Live Library Sep 15** (operate overwrite of Simple uniqueIds; picker TD). **ALB stays My Tawala.** Next: planning session D (no code). Real login / lost-password = pre-live HOLD Task #21.
+**Resume:** [`docs/LIBRARY_WHERE_WE_ARE_SEP3.md`](LIBRARY_WHERE_WE_ARE_SEP3.md) § **D**. **A + B closed.** GT + Potluck Live Library. **ALB stays My Tawala.** D product **confirmed**; public exam Publish is **Version 2**. Version 1 Builder hooks landed (catalog flag + keep/strip; stripped from My Tawala so private OEB Use is unchanged; duplicate-refuse still blocks Publish another OEB). Real login = HOLD #21.
 
 **Handoff script (Aug 24, 2026):** From repo root:
 

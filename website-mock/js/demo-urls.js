@@ -23,6 +23,9 @@
  * starters (including Sign-up Sheet / Sign-up Sheet w Email) live on Designer → File → New Project
  * (`designer-web/src/templates/catalog.ts` + `public/samples/templates/`). Re-Publish to Library
  * when a finished Deploy exists. See README.md § "Library vs New Project templates".
+ *
+ * Version 1 Builder provision: `builder: true` on a Library listing (OEB) plus keep/strip form
+ * names. Do not copy those fields onto My Tawala. Do not show a public badge yet.
  */
 
 /**
@@ -225,6 +228,11 @@ window.TAWALA_LIBRARY = {
     "deployed": true,
     "uniqueId": "u3hkqgwtrepjlur",
     "deployIdentityName": "Online Exam Builder",
+    "builder": true,
+    "builderVersion": 1,
+    "builderKeepForms": ["SetupVariables", "Question"],
+    "builderStripForms": ["Exam", "Answer", "Scoring", "ShowExamineeDetail"],
+    "builderTransientForms": ["Edit Question", "Delete Question", "CustomizationPreview"],
     "versionNumber": 1,
     "timesUsed": 95,
     "cloneCount": 22,
@@ -820,6 +828,17 @@ window.TawalaDemo = {
         return null;
       }
     }
+    const stripPrivate = (row) => {
+      if (
+        row &&
+        typeof window !== "undefined" &&
+        window.TawalaTransfer &&
+        typeof window.TawalaTransfer.stripBuilderProvisionFromPrivateRow === "function"
+      ) {
+        return window.TawalaTransfer.stripBuilderProvisionFromPrivateRow(row);
+      }
+      return row;
+    };
     const base = window.TAWALA_MYTAWALA[id] || null;
     if (
       typeof window !== "undefined" &&
@@ -828,7 +847,7 @@ window.TawalaDemo = {
     ) {
       const overlay = window.TawalaTransfer.getOverlayEntry(id);
       if (overlay) {
-        if (!base) return { ...overlay, id };
+        if (!base) return stripPrivate({ ...overlay, id });
         const merged = { ...base, ...overlay, id };
         /* Empty overlay theme must not wipe catalog / definition themePath. */
         if (!merged.themePath && base.themePath) merged.themePath = base.themePath;
@@ -838,10 +857,20 @@ window.TawalaDemo = {
             merged.formNames = base.formNames.slice();
           }
         }
-        return merged;
+        return stripPrivate(merged);
       }
     }
-    return base ? { ...base, id } : null;
+    return base ? stripPrivate({ ...base, id }) : null;
+  },
+  isPublicLibraryBuilder(entry) {
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaTransfer &&
+      typeof window.TawalaTransfer.isPublicLibraryBuilder === "function"
+    ) {
+      return window.TawalaTransfer.isPublicLibraryBuilder(entry);
+    }
+    return !!(entry && entry.builder === true && !entry.pulledFromLibraryId);
   },
   /** @deprecated Prefer libraryEntries() */
   entries() {

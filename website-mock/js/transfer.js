@@ -218,6 +218,39 @@
   }
 
   /**
+   * Version 1 Builder provision (LIBRARY_WHERE_WE_ARE § D). Public exam Publish is Version 2.
+   * Never copy these onto a teacher's My Tawala row — private Use must stay unchanged.
+   * Keep in sync with builderProvision.mjs.
+   */
+  const BUILDER_PROVISION_KEYS = [
+    "builder",
+    "builderVersion",
+    "builderKeepForms",
+    "builderStripForms",
+    "builderTransientForms",
+    "derivedFromBuilderId",
+    "builderSnapshotId",
+  ];
+
+  function stripBuilderProvisionFromPrivateRow(row) {
+    if (!row || typeof row !== "object") return row;
+    const next = { ...row };
+    for (let i = 0; i < BUILDER_PROVISION_KEYS.length; i++) {
+      delete next[BUILDER_PROVISION_KEYS[i]];
+    }
+    return next;
+  }
+
+  function isPublicLibraryBuilder(entry) {
+    if (!entry || entry.builder !== true) return false;
+    if (entry.fromLibraryAcquire || entry.sourcePile === "library-acquire") return false;
+    if (entry.fromDeployOverlay || entry.sourcePile === "deploy-overlay") return false;
+    if (entry.sourcePile === "mytawala-fork") return false;
+    if (entry.pulledFromLibraryId) return false;
+    return true;
+  }
+
+  /**
    * Library Test Drive door (owner Sep 9, 2026). Default is a single start;
    * the start picker is opt-in per listing. startKey matches startFormKey
    * (form name or catalog label), not a live URL.
@@ -1388,7 +1421,7 @@
       versionDescription: versionDescription || "",
       versions,
     };
-    const cleaned = stripBoilerplateDescriptionKeys(entry).entry;
+    const cleaned = stripBuilderProvisionFromPrivateRow(stripBoilerplateDescriptionKeys(entry).entry);
     overlay[id] = cleaned;
     writeJson(PILE_KEY, overlay);
     return { id, ...cleaned };
@@ -2034,13 +2067,13 @@
         byId.set(id, { id, ...data, fromDeployOverlay: true });
       }
     });
-    return Array.from(byId.values());
+    return Array.from(byId.values()).map(stripBuilderProvisionFromPrivateRow);
   }
 
   function getOverlayEntry(projectId) {
     if (!projectId || isMyTawalaDeleted(projectId)) return null;
     const data = getMyTawalaOverlay()[projectId];
-    return data ? { id: projectId, ...data } : null;
+    return data ? stripBuilderProvisionFromPrivateRow({ id: projectId, ...data }) : null;
   }
 
   /** Strip the visible " (stub)" suffix used on Library stub display names (case-insensitive). */
@@ -2475,6 +2508,10 @@
   /**
    * Visible Library rows that are the same product (acquire lineage, same template
    * file, or compact-equal Publish name). Keep in sync with acquireClone.mjs.
+   *
+   * Version 1: a Builder flag on the catalog twin does not change this match.
+   * A teacher's filled OEB copy still collides with blank OEB — refusePublishDuplicate
+   * still blocks “Publish another OEB.” Version 2 Publish-as-exam is a separate path.
    */
   function findIdenticalLibraryListings({
     sourceProject,
@@ -3051,7 +3088,7 @@
     const prev = overlay[myTawalaProjectId] || {};
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
-    const entry = {
+    const entry = stripBuilderProvisionFromPrivateRow({
       ...prev,
       category: source.category || prev.category || "Uncategorized",
       shortDescription: source.shortDescription || prev.shortDescription || "",
@@ -3071,7 +3108,7 @@
       pulledAt: nowIso,
       updated: now,
       updatedAt: nowIso,
-    };
+    });
     clearMyTawalaDeleted(myTawalaProjectId);
     overlay[myTawalaProjectId] = entry;
     writeJson(PILE_KEY, overlay);
@@ -3419,7 +3456,7 @@
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
 
-    const entry = {
+    const entry = stripBuilderProvisionFromPrivateRow({
       name: copyName,
       category: source.category || "Uncategorized",
       featured: false,
@@ -3448,7 +3485,7 @@
       deployIdentityName: clone.deployIdentityName,
       snapshotId: clone.snapshotId || null,
       mockSharedLibraryRuntime: false,
-    };
+    });
     /* Version 1 with no auto “Copied from Library” note — Source is the provenance line. */
     seedStartingVersionOnEntry(entry);
 
@@ -3833,7 +3870,7 @@
     const nowIso = timestampNow();
     const now = formatListDate(nowIso);
 
-    const entry = {
+    const entry = stripBuilderProvisionFromPrivateRow({
       name: copyName,
       category: source.category || "Uncategorized",
       featured: false,
@@ -3865,7 +3902,7 @@
       snapshotId: clone.snapshotId || null,
       mockSharedForkRuntime: false,
       mockSharedLibraryRuntime: false,
-    };
+    });
     /* Fresh version line at 1 — do not copy source versions[] / versionNumber. */
     seedStartingVersionOnEntry(entry, `Copy of ${sourceDisplay}`);
 
@@ -4147,6 +4184,8 @@
     markLibraryRetired,
     clearLibraryRetired,
     preferLibraryCatalogJsonFile,
+    stripBuilderProvisionFromPrivateRow,
+    isPublicLibraryBuilder,
     withLibraryOverlay,
     libraryReplaceCandidates,
     findMatchingLibraryTargets,

@@ -76,25 +76,94 @@ Also confirm examinee **Exam** still shows Exam Start (title + Q3) — that Push
 - Duplicate My Tawala rows with the **same** uniqueId: Delete **one listing** only (overlay). Does not retire `:8080`.
 - Designer C14/C15/F1 still parked.
 
-### D. Planning session — “Projects of projects” (do not code yet)
+### D. Planning session — “Projects of projects”
 
-**When:** After isolation **B1** (empty TD World) is real, and OEB first-pass **A** is live. Isolation is a dependency: a Library try-out of a filled exam must be a sandbox with the author’s **questions**, not the author’s live uniqueId and not other visitors’ scores.
+**When:** Isolation **B1** and OEB first-pass **A** are already live. Needed because a Library try-out of a filled exam must be a sandbox with the author’s **questions**, not the author’s live uniqueId and not other visitors’ scores.
 
-**What the product is:** Library holds **tools** (blank Online Exam Builder) **and** **content products** (e.g. “American History Final Exam”) built *inside* OEB, not in Designer. A teacher Publishes a standard exam: keep authoring/subject content, strip student/respondent data. Other teachers Copy to My Tawala and run it with their classes.
+**Locked Sep 15 (owner):** product calls **confirmed**. This path is **Version 2** for public rollout. Version 1 may **plan and provision** the two-tier model (Builder vs user-contributed content) so we do not paint ourselves into a corner — no public “Publish as an exam,” no user-contributed folder, no Details copy until Version 2.
+
+#### Version split
+
+| | Version 1 (now / live Library) | Version 2 (public) |
+|--|-------------------------------|---------------------|
+| Users | Copy OEB to My Tawala, Use it, Publish still means “Library product” (blocked as duplicate of OEB). | Publish **as an exam** into User-contributed → that Builder. |
+| Library | Blank Builders as ordinary liveReady listings (OEB today). | Badge and/or Builders section; sub-folder of exams under each Builder. |
+| Provision | Data shape + admin-only Builder flag + do not hard-code “OEB is the only exception.” Keep/strip map stored on the Builder, unused by Publish. | Wire Publish / Copy / TD to that map; snapshot Builder version onto the exam listing. |
+| Legal / promote | Out of band if ever needed. | Administrator contacts author; membership incorporate consent. |
+
+Do **not** ship Version 2 UX in Version 1 “quietly.” Empty reserved fields are fine; a visible exam-Publish button is not.
+
+#### Product
+
+Library holds **Builders** (blank instruments) **and** **user-contributed content** built *inside* a Builder, not in Designer. There may be **many** Builders; OEB is the first. A teacher Publishes an exam: keep authoring/subject content, strip student/respondent data. Other teachers Copy to My Tawala and run it with their classes.
+
+**Builder is a Tawala Administrator designation.** Only that Administrator (the person who runs the public Library — not a teacher using a Builder’s Administration form, not the listed author of a My Tawala copy) can mark a Library product as a Builder. Users cannot self-declare a project as a Builder. A new Tawala-made project may be designated when it is added. Designation may show as a **badge**, or Builders may live in a **special section of the Library** (or both).
+
+A Builder’s **My Tawala Project Details** (where **PUBLISH** already lives) gets a section that explains: a User of this Builder can **Publish an exam written in it** — not an update of the Builder itself.
+
+**Promoting contributor work** (to a Builder, to the public Library, or into the user-contributed Library) is not self-serve. The Tawala Administrator **contacts the author** and negotiates an agreement. That agreement **must** include legal consent for **all Tawala users** to incorporate the contributed project in their own work, subject only to the terms of their Tawala registration membership. Until that agreement exists, a user-published exam stays the author’s listing under the Builder’s user-contributed folder.
+
+#### Locked product calls (owner Sep 15)
+
+| Call | Decision |
+|------|----------|
+| Who Publishes content | **Any person with a My Tawala copy of the Builder** may Publish **as an exam** (content product). That is never an update of OEB (`u3hk…`). Duplicate-product refuse still blocks a second blank OEB. |
+| Where it lists | **User-contributed content**, in a **sub-folder under the Builder** (under OEB for exams). Not a sibling of the blank tool in Advanced / Polls. |
+| Updates | Default = **new contribution** (new Library uniqueId, new listing in that sub-folder). **Overwrite** only when the User is the **Author of that exam** and **explicitly** chooses replace. Overwrite targets the exam listing, never the Builder. |
+| Builder upgrades | Published exams stay on the **Builder definition as of that publication**. New OEB capabilities do **not** flow to old exams. They pick up new capabilities only if the exam Author **updates and explicitly overwrites** from a copy that already has the newer Builder. |
+| Many Builders | Any number. Each has its own user-contributed sub-folder and its own keep/strip map. Badge and/or a Library Builders section are allowed chrome. |
+| Promote to Builder / public Library | Tawala Administrator contacts the author and negotiates an agreement. Required term: all Tawala members may incorporate the project in their own work, subject only to registration membership. No in-app “make this a Builder” for contributors. |
 
 **Why start-point names are not enough:** OEB subject matter lives on `Question` and `SetupVariables` (and Customize_* derived from setup). Student data lives on `Exam` / `Answer` (and scores, incomplete tests, email confirmations). Administration is a **door**, not a data class. Aug 26 “keep Question/SetupVariables, purge Exam” on the **same** uniqueId scrambled OEB — do not revive it.
 
-**Scoping questions for the session (coding implications):**
+#### OEB keep / strip (Version 2 — table agreed as the map)
 
-1. **Data roles, not form names** — per-project (or per-template) map: authoring forms vs respondent forms vs derived/admin reports. OEB: keep `Question` + `SetupVariables`; strip `Exam` + `Answer`; decide `ShowExamineeDetail` / score documents (empty after strip). Other builders (Poll, Sign-up) need their own maps — do not hard-code OEB names into Publish.
-2. **Identity** — content product is a **new Library uniqueId** (empty of students, full of questions). Never Publish onto the teacher’s My Tawala uniqueId. Duplicate-product refuse (same `jsonFile` as catalog OEB) must gain an exception or a “derived from tool X” flag so American History is not blocked as “the same as Online Exam Builder.”
-3. **Authoring vs listing definition** — Copy to MyTawala of a content product should clone **questions + setup**, not a blank tool. Publish from OEB must snapshot those submissions into the Library clone, then wipe respondent rows. Two-step clone (definition XML + selected forms’ submissions) vs one special purge.
-4. **Who may Publish content** — listed author of the *tool* vs any teacher who used Copy to MyTawala. Library categories: Tools vs Curriculum / User Contributed.
-5. **Test Drive of a filled exam** — sandbox `/t/` with questions present, scores empty, no write-back to `u3hk…` or the teacher’s `un7q…`. Depends on **B1** (do not snapshot *student* rows from live `/p/`; *do* include authoring rows for content products).
-6. **Versioning** — teacher updates questions → Publish replace in place (like OEB tool replace on `u3hk…`) vs mint a new exam version. Occupancy: content titles (“American History Final Exam”) must not collide with tool title “Online Exam Builder.”
-7. **Out of scope for v1** — nested “projects of projects of projects”; billing; Designer changes to make OEB. Teachers stay in the runtime app.
+| Form | Role | Publish as exam | Copy that exam to MyTawala | Library TD of that exam (`/t/`) |
+|------|------|-----------------|----------------------------|----------------------------------|
+| `SetupVariables` | Authoring | **Keep** | **Clone** | **Seed** into the sandbox |
+| `Question` | Authoring | **Keep** | **Clone** | **Seed** |
+| `Exam` | Respondent | **Strip** | Empty | Empty |
+| `Answer` | Respondent | **Strip** | Empty | Empty |
+| `Scoring` | Derived report | **Strip** | Empty | Empty |
+| `ShowExamineeDetail` | Student report | **Strip** | Empty | Empty |
+| `Setup` / `Administration` / `Exam` starts | Doors | Keep as starts | Keep as starts | No write-back to `u3hk…` or the author’s My Tawala id |
+| `Edit Question` / `Delete Question` / `CustomizationPreview` | Transient | Empty | Empty | Empty |
 
-**Session output:** a one-page role table for OEB (keep/strip/report), identity rules, and a sequenced build list. Code only after that page is agreed.
+Reset session leftovers on kept rows (e.g. `LastSessionId`). Keep setup policy fields (title, date, Q3, ShowScore, email-on-complete). Other Builders get their **own** maps later — do not hard-code OEB form names into Publish.
+
+**Isolation (Version 2):** B1 stays — do not copy **student** rows from live `/p/` into a new TD World. Content-product TD **does** copy **authoring** rows from the **exam’s Library uniqueId** into `/t/`. Questions present, scores empty. Version 1 keeps today’s empty TD World for the blank OEB tool.
+
+#### Identity
+
+- Exam = **new Library uniqueId** unless the Author explicitly overwrites their existing exam listing.
+- Never Publish an exam onto the teacher’s My Tawala uniqueId.
+- Never Redeploy the Builder uniqueId (`u3hk…`) as a filled exam.
+- Occupancy is by **title**: “American History Final Exam” must not collide with “Online Exam Builder.”
+- Derived-from-Builder flag (or equivalent) so duplicate-refuse does not treat every OEB-based exam as “the same as Online Exam Builder.”
+- **Pinned Builder version:** an exam listing stores a snapshot of the Builder (definition + keep-form rows) at Publish/overwrite time. It is **linked to that former OEB**, not a live pointer at current Library OEB. Upgrading the blank tool (`u3hk…`) does not rewrite already-published exams. Copy to MyTawala of an old exam clones that pinned snapshot. To gain later Builder features, the Author must be working in a newer Builder copy, then **explicitly overwrite** the exam listing.
+
+#### Sequenced build
+
+**Version 1 provision (landed Sep 15 — no public UX):**
+
+1. **Done.** Admin-only **Builder** flag + keep/strip map on catalog OEB (`builder: true`). Not shown on public Library.
+2. **Done.** Reserved fields stripped from every My Tawala read/write (`stripBuilderProvisionFromPrivateRow`) so a teacher’s private OEB Use is unchanged.
+3. **Done.** Duplicate-refuse still blocks Publish of a filled OEB copy as “another OEB.” Builder flag does not bypass that. Version 2 Publish-as-exam stays a separate path.
+4. No Publish-as-exam dialog, no Details explanation, no User-contributed folder on the listing.
+
+**Version 2 (public):**
+
+1. My Tawala Project Details copy + Publish dialog: **Publish as an exam** (default new contribution) vs **Overwrite my exam…** (Author only).
+2. Publish path: new uniqueId + snapshot of that Builder version + keep-form submissions + strip the rest; list under User-contributed → Builder.
+3. Copy to MyTawala of an exam clones keep-forms.
+4. Library TD of an exam seeds keep-forms into `/t/`.
+5. Badge / Builders section / sub-folder chrome.
+6. Later Builders: admin designation + their own keep/strip map.
+7. Promote-to-Builder / public Library: Administrator agreement (not an in-app button).
+
+**Not this product:** nested projects-of-projects-of-projects; billing; Designer work to “make” a Builder; automated contract/e-sign.
+
+**Still open (chrome, Version 2):** how the sub-folder lists; badge vs a Builders section. Public Library Project Details stay retired — Version 2 explanation lives on **My Tawala Details** of a Builder copy.
 
 ---
 
@@ -161,7 +230,7 @@ Also: older junk at `3-Ready` root (CYO, Dirtbowl Communicator, MVSC, etc.) — 
 
 | Rule | Meaning |
 |------|---------|
-| Sample vs Real vs Builder | **Sample** = that is all it is (looping Library demo). **Real** = Customize/Setup/Admin (drop Sophisticated on publish). **Builder** = OEB-class only. Do not call a real/TD-sibling app a Sample. |
+| Sample vs Real vs Builder | **Sample** = that is all it is (looping Library demo). **Real** = Customize/Setup/Admin (drop Sophisticated on publish). **Builder** = Tawala Administrator designation (OEB first; more later). Users Publish **content** from a Builder, never a second copy of the Builder. Do not call a real/TD-sibling app a Sample. |
 | Library-bound | Everything that works as a Test Drive is **on the plan to move to public Library** — Samples, dual-use real apps, Builders. |
 | **GT + Potluck** | **Live Library Sep 15** as operate apps (overwrite Simple uniqueIds). TD = **Start picker**. File → New simples stay Designer samples. Parked looping Sample JSONs stay in `_set-aside/`. |
 | Double smoke | If the Library TD shape is not the same JSON as the My Tawala working copy, smoke **both**: TD door **and** the multi-start deploy. Poll / Sign-up = one JSON, both roles. **Shared To-Do / Get Together / Potluck** = one JSON (three starts); Library TD uses **Start picker**. The Setup-only `Shared To-Do Test Drive.json` is a smoke artifact, not the listing. |
@@ -245,7 +314,7 @@ Smoke of Customize-first apps via My Tawala **Use** does **not** count as Librar
 
 A teacher could Publish **American History Final Exam** from OEB: same Designer definition as Online Exam Builder, **keep administrator/authoring data** (questions, setup), **strip student/respondent data**. Library would hold both **tools** (blank OEB) and **content products** (filled OEB instances). Teachers build in OEB, not Designer.
 
-Not this pass. Needs a first-class **authoring vs respondent** data role (start-point names are not enough — OEB questions live on `Question` / `SetupVariables`, not on Administration). Do not revive the Aug 26 same-uniqueId “keep Question / SetupVariables, purge Exam” path — it scrambled OEB. Duplicate-product refuse (same `jsonFile` as catalog OEB) would also have to change for contributed content. Depends on per-drive TD isolation so a Library try-out of a filled exam is a sandbox with questions, not the author’s live uniqueId.
+**In session Sep 15** — see § **D**. Product confirmed; public rollout is **Version 2**. Version 1 provision allowed (data only). Do not revive the Aug 26 same-uniqueId “keep Question / SetupVariables, purge Exam” path.
 
 ---
 
@@ -255,7 +324,7 @@ Not this pass. Needs a first-class **authoring vs respondent** data role (start-
 Library / Samples pass — resume from docs/LIBRARY_WHERE_WE_ARE_SEP3.md.
 Branch cursor/forms-canvas-wysiwyg. Staging outside git: Website Staging.
 **A + B closed Sep 14.** **Get Together + Potluck Live Library Sep 15** (operate overwrite of Simple uniqueIds; picker TD). **ALB stays My Tawala.** Real login = pre-live HOLD (#21), not this pass.
-Next: planning session D (projects of projects) — do not code yet.
+Section D confirmed: two-tier is **Version 2** public. Version 1 Builder hooks landed Sep 15 (catalog only; private OEB Use unchanged).
 No Designer C14 this pass.
 ```
 
