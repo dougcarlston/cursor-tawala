@@ -202,6 +202,22 @@
   }
 
   /**
+   * Publish overlay can keep a File→New sample jsonFile after replace-in-place.
+   * Copy to MyTawala must clone projects/library/ JSON, not designer-web samples.
+   */
+  function preferLibraryCatalogJsonFile(catalogEntry, overlayEntry) {
+    const overlayJson = String((overlayEntry && overlayEntry.jsonFile) || "").replace(/\\/g, "/");
+    const catalogJson = String((catalogEntry && catalogEntry.jsonFile) || "").replace(/\\/g, "/");
+    if (
+      /^designer-web\/public\/samples\//i.test(overlayJson) &&
+      /^projects\/library\//i.test(catalogJson)
+    ) {
+      return catalogJson;
+    }
+    return overlayJson || catalogJson || "";
+  }
+
+  /**
    * Library Test Drive door (owner Sep 9, 2026). Default is a single start;
    * the start picker is opt-in per listing. startKey matches startFormKey
    * (form name or catalog label), not a live URL.
@@ -219,7 +235,19 @@
 
   function getTestDriveDoor(projectId) {
     if (!projectId) return { mode: "single", startKey: "" };
-    return normalizeTestDriveDoor(getTestDriveDoors()[projectId]);
+    const stored = getTestDriveDoors()[projectId];
+    if (stored && typeof stored === "object" && (stored.mode || stored.startKey)) {
+      return normalizeTestDriveDoor(stored);
+    }
+    const cat =
+      typeof window !== "undefined" && window.TAWALA_LIBRARY && window.TAWALA_LIBRARY[projectId];
+    if (cat && cat.testDriveMode === "picker") {
+      return {
+        mode: "picker",
+        startKey: String(cat.testDriveStartKey || "").trim(),
+      };
+    }
+    return { mode: "single", startKey: "" };
   }
 
   function setTestDriveDoor(projectId, spec) {
@@ -2225,12 +2253,12 @@
           data.sourcePile === "publish-overlay" || data.fromPublishOverlay === true;
         if (!isPublish && !data.liveReady) return;
       }
-      byId.set(
-        id,
-        existing
-          ? { ...existing, ...data, id, fromPublishOverlay: true }
-          : { id, ...data, fromPublishOverlay: true }
-      );
+      const merged = existing
+        ? { ...existing, ...data, id, fromPublishOverlay: true }
+        : { id, ...data, fromPublishOverlay: true };
+      const preferred = preferLibraryCatalogJsonFile(existing, data);
+      if (preferred) merged.jsonFile = preferred;
+      byId.set(id, merged);
     });
     /* Active / De-activate (Aug 9): inactive Library rows stay off the public listing. */
     return Array.from(byId.values()).filter(
@@ -4118,6 +4146,7 @@
     isLibraryRetired,
     markLibraryRetired,
     clearLibraryRetired,
+    preferLibraryCatalogJsonFile,
     withLibraryOverlay,
     libraryReplaceCandidates,
     findMatchingLibraryTargets,

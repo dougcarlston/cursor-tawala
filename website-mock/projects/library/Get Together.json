@@ -1,0 +1,1296 @@
+{
+  "name": "Get Together",
+  "format": "2.0",
+  "themePath": "basicblue",
+  "forms": [
+    {
+      "name": "Customize",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Name of event:\n___________________________________________________________________",
+          "blanks": [
+            {
+              "name": "EventTitle",
+              "length": 67,
+              "alternateLabel": "EventTitle"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q2",
+          "style": "",
+          "prompt": "Brief description of event:\n___________________________________________________________________",
+          "blanks": [
+            {
+              "name": "EventDescription",
+              "length": 67,
+              "alternateLabel": "EventDescription",
+              "height": 2
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q3",
+          "style": "",
+          "prompt": "Enter potential dates or times in the blanks below:\n__________________________\n__________________________\n__________________________\n__________________________\n__________________________\n__________________________\n__________________________\n__________________________\n__________________________\n__________________________",
+          "blanks": [
+            {
+              "name": "Date01",
+              "length": 26,
+              "alternateLabel": "Date01"
+            },
+            {
+              "name": "Date02",
+              "length": 26,
+              "alternateLabel": "Date02"
+            },
+            {
+              "name": "Date03",
+              "length": 26,
+              "alternateLabel": "Date03"
+            },
+            {
+              "name": "Date04",
+              "length": 26,
+              "alternateLabel": "Date04"
+            },
+            {
+              "name": "Date05",
+              "length": 26,
+              "alternateLabel": "Date05"
+            },
+            {
+              "name": "Date06",
+              "length": 26,
+              "alternateLabel": "Date06"
+            },
+            {
+              "name": "Date07",
+              "length": 26,
+              "alternateLabel": "Date07"
+            },
+            {
+              "name": "Date08",
+              "length": 26,
+              "alternateLabel": "Date08"
+            },
+            {
+              "name": "Date09",
+              "length": 26,
+              "alternateLabel": "Date09"
+            },
+            {
+              "name": "Date10",
+              "length": 26,
+              "alternateLabel": "Date10"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q4",
+          "style": "",
+          "prompt": "Closing remarks:\n___________________________________________________________________",
+          "blanks": [
+            {
+              "name": "Remarks",
+              "length": 67,
+              "alternateLabel": "Remarks",
+              "height": 2
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q5",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Would you like the results to be available for everyone in the group to see?",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Only for me"
+            },
+            {
+              "label": "b",
+              "text": "Available to everyone"
+            }
+          ],
+          "name": "PublicReport"
+        },
+        {
+          "type": "mc",
+          "label": "Q6",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "Check here to be notified by email when someone responds"
+            }
+          ]
+        },
+        {
+          "type": "fib",
+          "label": "Q7",
+          "style": "",
+          "prompt": "If you checked the box above, please provide your email address:\n__________________________",
+          "blanks": [
+            {
+              "name": "AdminEmail",
+              "length": 26,
+              "alternateLabel": "AdminEmail"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Customize",
+      "preProcess": "Pre-Customize"
+    },
+    {
+      "name": "Questionnaire",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p></p><p style=\"text-align:center\"><span style=\"font-size:18pt;color:#000000\"><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_EventTitle\" title=\"Customize_EventTitle\" draggable=\"true\">&lt;&lt;Customize_EventTitle&gt;&gt;</span></b></span></p><p></p><p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_EventDescription\" title=\"Customize_EventDescription\" draggable=\"true\">&lt;&lt;Customize_EventDescription&gt;&gt;</span></b></p>"
+        },
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "Please enter your name: ___________________",
+          "blanks": [
+            {
+              "name": "Name",
+              "length": 19,
+              "alternateLabel": "Name",
+              "required": true
+            }
+          ]
+        },
+        {
+          "type": "mc",
+          "label": "Q2",
+          "onlyone": false,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "checkbox",
+          "choiceSource": "manual",
+          "question": "Please indicate when you would be able to attend (as many choices as work for you):",
+          "choices": [
+            {
+              "label": "a",
+              "text": "<<Customize_Date01>>"
+            },
+            {
+              "label": "b",
+              "text": "<<Customize_Date02>>"
+            },
+            {
+              "label": "c",
+              "text": "<<Customize_Date03>>"
+            },
+            {
+              "label": "d",
+              "text": "<<Customize_Date04>>"
+            },
+            {
+              "label": "e",
+              "text": "<<Customize_Date05>>"
+            },
+            {
+              "label": "f",
+              "text": "<<Customize_Date06>>"
+            },
+            {
+              "label": "g",
+              "text": "<<Customize_Date07>>"
+            },
+            {
+              "label": "h",
+              "text": "<<Customize_Date08>>"
+            },
+            {
+              "label": "i",
+              "text": "<<Customize_Date09>>"
+            },
+            {
+              "label": "j",
+              "text": "<<Customize_Date10>>"
+            }
+          ],
+          "name": "Able"
+        },
+        {
+          "type": "mc",
+          "label": "Q3",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Please indicate your preferred choice:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "<<Customize_Date01>>"
+            },
+            {
+              "label": "b",
+              "text": "<<Customize_Date02>>"
+            },
+            {
+              "label": "c",
+              "text": "<<Customize_Date03>>"
+            },
+            {
+              "label": "d",
+              "text": "<<Customize_Date04>>"
+            },
+            {
+              "label": "e",
+              "text": "<<Customize_Date05>>"
+            },
+            {
+              "label": "f",
+              "text": "<<Customize_Date06>>"
+            },
+            {
+              "label": "g",
+              "text": "<<Customize_Date07>>"
+            },
+            {
+              "label": "h",
+              "text": "<<Customize_Date08>>"
+            },
+            {
+              "label": "i",
+              "text": "<<Customize_Date09>>"
+            },
+            {
+              "label": "j",
+              "text": "<<Customize_Date10>>"
+            }
+          ],
+          "name": "Preferred"
+        },
+        {
+          "type": "text",
+          "label": "T2",
+          "style": "normal",
+          "content": "<p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_Remarks\" title=\"Customize_Remarks\" draggable=\"true\">&lt;&lt;Customize_Remarks&gt;&gt;</span></b></p>"
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Questionnaire",
+      "preProcess": "Pre-Questionnaire"
+    },
+    {
+      "name": "Report",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "skipInstructions",
+          "label": "skip1",
+          "commands": [
+            {
+              "cmd": "skip",
+              "to": "__EndOfForm__"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Report"
+    },
+    {
+      "name": "Administration",
+      "startPoint": true,
+      "items": [
+        {
+          "type": "fib",
+          "label": "Q1",
+          "style": "",
+          "prompt": "If you want to delete a record, enter the name of the person whose record is to be deleted:\n____________________________",
+          "blanks": [
+            {
+              "name": "Name",
+              "length": 28,
+              "alternateLabel": "Name"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Admin",
+      "preProcess": "Post-Report"
+    },
+    {
+      "name": "PickRecord",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><b>Here are the records that match </b><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Target\" title=\"Target\" draggable=\"true\">&lt;&lt;Target&gt;&gt;</span></b><b>:</b></p><p></p><p><span><b><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"question-correlation-table\" data-function-instance=\"1\" data-function-config=\"{&quot;question-field-name&quot;:&quot;Questionnaire:Able&quot;,&quot;display-field-name&quot;:&quot;Questionnaire:Name&quot;,&quot;preferred-choice-field-name&quot;:&quot;Questionnaire:Preferred&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;Questionnaire:Name&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&lt;&lt;Target&gt;&gt;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"QUESTION CORRELATION TABLE\">&lt;&lt;QUESTION CORRELATION TABLE(Questionnaire:Able, Questionnaire:Name, Questionnaire:Preferred, Questionnaire:Name equals &lt;&lt;Target&gt;&gt;)&gt;&gt;</span></b></span></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "Delete:",
+          "choices": [
+            {
+              "label": "a",
+              "text": "All matching records"
+            },
+            {
+              "label": "b",
+              "text": "The first record"
+            },
+            {
+              "label": "c",
+              "text": "All but the first record"
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-PickRecord"
+    },
+    {
+      "name": "Update",
+      "startPoint": false,
+      "items": [
+        {
+          "type": "text",
+          "label": "T1",
+          "style": "normal",
+          "content": "<p><b>A person named </b><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Questionnaire:Name\" title=\"Questionnaire:Name\" draggable=\"true\">&lt;&lt;Questionnaire:Name&gt;&gt;</span></b><b> has already responded to this Questionnaire.</b></p>"
+        },
+        {
+          "type": "mc",
+          "label": "Q1",
+          "onlyone": true,
+          "required": false,
+          "style": "vertical",
+          "displayAs": "radio",
+          "choiceSource": "manual",
+          "question": "",
+          "choices": [
+            {
+              "label": "a",
+              "text": "I want to modify my previous response."
+            },
+            {
+              "label": "b",
+              "text": "I am a different person with a similar name."
+            },
+            {
+              "label": "c",
+              "text": "I had forgotten I'd already filled this out.  Please disregard this response."
+            }
+          ]
+        }
+      ],
+      "themePath": "basicblue",
+      "process": "Post-Update"
+    }
+  ],
+  "processes": [
+    {
+      "name": "Pre-Questionnaire",
+      "commands": [
+        {
+          "cmd": "comment",
+          "text": "[object Object]"
+        },
+        {
+          "cmd": "get",
+          "recordList": "Settings",
+          "sourceForms": [
+            "Customize"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Setting",
+          "recordList": "Settings",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_EventTitle",
+              "value": "<<Setting:Customize:EventTitle>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_EventDescription",
+              "value": "<<Setting:Customize:EventDescription>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date01",
+              "value": "<<Setting:Customize:Date01>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date02",
+              "value": "<<Setting:Customize:Date02>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date03",
+              "value": "<<Setting:Customize:Date03>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date04",
+              "value": "<<Setting:Customize:Date04>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date05",
+              "value": "<<Setting:Customize:Date05>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date06",
+              "value": "<<Setting:Customize:Date06>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date07",
+              "value": "<<Setting:Customize:Date07>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date08",
+              "value": "<<Setting:Customize:Date08>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date09",
+              "value": "<<Setting:Customize:Date09>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date10",
+              "value": "<<Setting:Customize:Date10>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Remarks",
+              "value": "<<Setting:Customize:Remarks>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "ShowReportToUser",
+              "value": "false",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Setting:Customize:PublicReport",
+                "op": "mcEquals",
+                "value": "b"
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "ShowReportToUser",
+                  "value": "true",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "and": [
+                  {
+                    "field": "Setting:Customize:Q6",
+                    "op": "mcEquals",
+                    "value": "a"
+                  },
+                  {
+                    "field": "Setting:Customize:AdminEmail",
+                    "op": "isNotBlank"
+                  }
+                ]
+              },
+              "then": [
+                {
+                  "cmd": "set",
+                  "field": "EmailNotify",
+                  "value": "<<Setting:Customize:AdminEmail>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ],
+              "else": [
+                {
+                  "cmd": "set",
+                  "field": "EmailNotify",
+                  "value": "No Notification",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Customize",
+      "commands": [
+        {
+          "cmd": "show",
+          "form": "Customize"
+        }
+      ]
+    },
+    {
+      "name": "Post-Questionnaire",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Record List 4",
+          "sourceForms": [
+            "Questionnaire"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Match",
+          "recordList": "Record List 4",
+          "do": [
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Match:Questionnaire:Name",
+                "op": "equals",
+                "value": "<<Questionnaire:Name>>"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "Update"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "showDocument",
+          "document": "QuestionnaireComplete",
+          "reset": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Questionnaire:ShowReportToUser",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "UserReportLink",
+              "reset": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Questionnaire:EmailNotify",
+            "op": "doesNotEqual",
+            "value": "No Notification"
+          },
+          "then": [
+            {
+              "cmd": "send",
+              "to": {
+                "fieldRef": "EmailNotify"
+              },
+              "subject": "Response to <<Customize_EventTitle>> invitation",
+              "body": {
+                "document": "Notification",
+                "reset": false,
+                "showHeader": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Pre-Customize",
+      "commands": [
+        {
+          "cmd": "edit",
+          "form": "Customize",
+          "submit": "modify"
+        }
+      ]
+    },
+    {
+      "name": "Post-Report",
+      "commands": [
+        {
+          "cmd": "get",
+          "recordList": "Settings",
+          "sourceForms": [
+            "Customize"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Setting",
+          "recordList": "Settings",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "Customize_EventTitle",
+              "value": "<<Setting:Customize:EventTitle>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date01",
+              "value": "<<Setting:Customize:Date01>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date02",
+              "value": "<<Setting:Customize:Date02>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date03",
+              "value": "<<Setting:Customize:Date03>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date04",
+              "value": "<<Setting:Customize:Date04>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date05",
+              "value": "<<Setting:Customize:Date05>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date06",
+              "value": "<<Setting:Customize:Date06>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date07",
+              "value": "<<Setting:Customize:Date07>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date08",
+              "value": "<<Setting:Customize:Date08>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date09",
+              "value": "<<Setting:Customize:Date09>>",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "set",
+              "field": "Customize_Date10",
+              "value": "<<Setting:Customize:Date10>>",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "comment",
+          "text": "[object Object]"
+        },
+        {
+          "cmd": "set",
+          "field": "TotalResponses",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "get",
+          "recordList": "ResponseList",
+          "sourceForms": [
+            "Questionnaire"
+          ]
+        },
+        {
+          "cmd": "foreach",
+          "recordName": "Responses",
+          "recordList": "ResponseList",
+          "do": [
+            {
+              "cmd": "set",
+              "field": "TotalResponses",
+              "value": "<<TotalResponses>> + 1",
+              "concat": false,
+              "arithmeticAsText": false
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:TotalResponses",
+            "op": "equals",
+            "value": "0"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "No Responses",
+              "reset": false
+            }
+          ],
+          "else": [
+            {
+              "cmd": "showDocument",
+              "document": "Report",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Post-Admin",
+      "commands": [
+        {
+          "cmd": "set",
+          "field": "Count",
+          "value": "0",
+          "concat": false,
+          "arithmeticAsText": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Administration:Name",
+            "op": "isNotBlank"
+          },
+          "then": [
+            {
+              "cmd": "get",
+              "recordList": "Record List 1",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 1:Questionnaire:Name",
+                "op": "equals",
+                "value": "<<Administration:Name>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Choice",
+              "recordList": "Record List 1",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "set",
+                  "field": "Target",
+                  "value": "<<Choice:Questionnaire:Name>>",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administration:Count",
+                "op": "equals",
+                "value": "0"
+              },
+              "then": [
+                {
+                  "cmd": "showDocument",
+                  "document": "NobodywthatName",
+                  "reset": false
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administration:Count",
+                "op": "equals",
+                "value": "1"
+              },
+              "then": [
+                {
+                  "cmd": "delete",
+                  "form": "Questionnaire",
+                  "from": "Questionnaire",
+                  "where": {
+                    "field": "Target",
+                    "op": "equals",
+                    "value": "<<Record:Questionnaire:Name>>"
+                  }
+                }
+              ]
+            },
+            {
+              "cmd": "if",
+              "condition": {
+                "field": "Administration:Count",
+                "op": "isGreaterThan",
+                "value": "1"
+              },
+              "then": [
+                {
+                  "cmd": "show",
+                  "form": "PickRecord"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-PickRecord",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "PickRecord:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "delete",
+              "form": "Questionnaire",
+              "from": "Questionnaire",
+              "where": {
+                "field": "Target",
+                "op": "equals",
+                "value": "<<Questionnaire:Name>>"
+              }
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "PickRecord:Q1",
+            "op": "mcEquals",
+            "value": "b"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 2",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 2:Questionnaire:Name",
+                "op": "equals",
+                "value": "<<Target>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Item",
+              "recordList": "Record List 2",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "equals",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Item:Questionnaire:Name",
+                      "value": "Delete",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "PickRecord:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Count",
+              "value": "0",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 3",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 3:Questionnaire:Name",
+                "op": "equals",
+                "value": "<<Target>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Item1",
+              "recordList": "Record List 3",
+              "do": [
+                {
+                  "cmd": "set",
+                  "field": "Count",
+                  "value": "<<Count>> + 1",
+                  "concat": false,
+                  "arithmeticAsText": false
+                },
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Count",
+                    "op": "isGreaterThan",
+                    "value": "1"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Item1:Questionnaire:Name",
+                      "value": "Delete",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "delete",
+          "form": "Questionnaire",
+          "from": "Questionnaire",
+          "where": {
+            "field": "Record:Questionnaire:Name",
+            "op": "equals",
+            "value": "Delete"
+          }
+        },
+        {
+          "cmd": "show",
+          "form": "Administration"
+        }
+      ]
+    },
+    {
+      "name": "Post-Update",
+      "commands": [
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Update:Q1",
+            "op": "mcEquals",
+            "value": "a"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Deleted",
+              "value": "No",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 5",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 5:Questionnaire:Name",
+                "op": "equals",
+                "value": "<<Questionnaire:Name>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Response",
+              "recordList": "Record List 5",
+              "do": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Deleted",
+                    "op": "equals",
+                    "value": "No"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Deleted",
+                      "value": "Yes",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    },
+                    {
+                      "cmd": "set",
+                      "field": "Response:Questionnaire:Name",
+                      "value": "Delete",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Update:Q1",
+            "op": "mcEquals",
+            "value": "c"
+          },
+          "then": [
+            {
+              "cmd": "set",
+              "field": "Deleted",
+              "value": "Yes",
+              "concat": false,
+              "arithmeticAsText": false
+            },
+            {
+              "cmd": "get",
+              "recordList": "Record List 6",
+              "sourceForms": [
+                "Questionnaire"
+              ],
+              "where": {
+                "field": "Record List 6:Questionnaire:Name",
+                "op": "equals",
+                "value": "<<Questionnaire:Name>>"
+              }
+            },
+            {
+              "cmd": "foreach",
+              "recordName": "Response1",
+              "recordList": "Record List 6",
+              "do": [
+                {
+                  "cmd": "if",
+                  "condition": {
+                    "field": "Deleted",
+                    "op": "equals",
+                    "value": "No"
+                  },
+                  "then": [
+                    {
+                      "cmd": "set",
+                      "field": "Response1:Questionnaire:Name",
+                      "value": "Delete",
+                      "concat": false,
+                      "arithmeticAsText": false
+                    }
+                  ]
+                },
+                {
+                  "cmd": "set",
+                  "field": "Deleted",
+                  "value": "No",
+                  "concat": false,
+                  "arithmeticAsText": false
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "cmd": "delete",
+          "form": "Questionnaire",
+          "from": "Questionnaire",
+          "where": {
+            "field": "Record:Questionnaire:Name",
+            "op": "equals",
+            "value": "Delete"
+          }
+        },
+        {
+          "cmd": "showDocument",
+          "document": "QuestionnaireComplete",
+          "reset": false
+        },
+        {
+          "cmd": "if",
+          "condition": {
+            "field": "Update:ShowReportToUser",
+            "op": "equals",
+            "value": "true"
+          },
+          "then": [
+            {
+              "cmd": "showDocument",
+              "document": "UserReportLink",
+              "reset": false
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "documents": [
+    {
+      "name": "QuestionnaireComplete",
+      "content": "<p style=\"text-align:center\"><b>Thank you!</b></p><p style=\"text-align:center\"><b>Your choices have been received.</b></p>"
+    },
+    {
+      "name": "UserReportLink",
+      "content": "<p><b>To see the everyone's responses so far </b><span style=\"font-size:10pt;color:#000080\"><b><u><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Report&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></u></b></span><span style=\"font-family:Arial;font-size:10pt;color:#000000\"><b>.</b></span></p>"
+    },
+    {
+      "name": "Report",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:18pt;color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_EventTitle\" title=\"Customize_EventTitle\" draggable=\"true\">&lt;&lt;Customize_EventTitle&gt;&gt;</span></span></p><p>Total respondents: <span><b><i><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"record-count\" data-function-instance=\"2\" data-function-config=\"{&quot;form-name&quot;:&quot;Questionnaire&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"FORM RECORD COUNT\">&lt;&lt;FORM RECORD COUNT(Questionnaire)&gt;&gt;</span></i></b></span></p><p><span><span class=\"function-token function-table-token\" contenteditable=\"false\" data-function-id=\"question-correlation-table\" data-function-instance=\"3\" data-function-config=\"{&quot;question-field-name&quot;:&quot;Questionnaire:Able&quot;,&quot;display-field-name&quot;:&quot;Questionnaire:Name&quot;,&quot;preferred-choice-field-name&quot;:&quot;Questionnaire:Preferred&quot;,&quot;conditionsRows&quot;:[{&quot;field&quot;:&quot;&quot;,&quot;op&quot;:&quot;equals&quot;,&quot;value&quot;:&quot;&quot;}],&quot;conditionsCombinator&quot;:&quot;and&quot;}\" title=\"QUESTION CORRELATION TABLE\">&lt;&lt;QUESTION CORRELATION TABLE(Questionnaire:Able, Questionnaire:Name, Questionnaire:Preferred)&gt;&gt;</span></span></p>"
+    },
+    {
+      "name": "No Responses",
+      "content": "<p style=\"text-align:center\"><span style=\"font-size:18pt;color:#000000\"><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_EventTitle\" title=\"Customize_EventTitle\" draggable=\"true\">&lt;&lt;Customize_EventTitle&gt;&gt;</span></span></p><p style=\"text-align:center\"><span style=\"font-size:11pt;color:#000000\">Nobody has responded yet.</span></p>"
+    },
+    {
+      "name": "NobodywthatName",
+      "content": "<p><span style=\"font-size:10pt;color:#800000\"><b><i>No such person found in records.</i></b></span></p>"
+    },
+    {
+      "name": "Notification",
+      "content": "<p><b><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Customize_EventTitle\" title=\"Customize_EventTitle\" draggable=\"true\">&lt;&lt;Customize_EventTitle&gt;&gt;</span></b></p><p><span class=\"field-token function-table-token\" contenteditable=\"false\" data-field-name=\"Questionnaire:Name\" title=\"Questionnaire:Name\" draggable=\"true\">&lt;&lt;Questionnaire:Name&gt;&gt;</span> has responded to your Get Together survey.</p><p>To see the latest results <span style=\"font-size:10pt;color:#000080\"><span contenteditable=\"false\" class=\"invitation-token\" data-invitation-config=\"{&quot;form&quot;:&quot;Administration&quot;,&quot;project&quot;:&quot;&quot;,&quot;displayText&quot;:&quot;click here&quot;,&quot;isPrivate&quot;:false,&quot;authToken&quot;:&quot;&quot;}\" style=\"color:#000080;text-decoration:underline\">click here</span></span>.</p><p><b>Thank you for using Tawala!</b></p>"
+    }
+  ],
+  "_originalFormat": "1.11",
+  "_designerBuild": "204",
+  "_convertedFrom": "tomcat:b6do4s50iq64vl8",
+  "deployIdentityName": "Get Together Template",
+  "deployUniqueId": "b6do4s50iq64vl8",
+  "_dumpedFrom": "tomcat-postgres",
+  "_dumpedAt": "2026-09-15T18:45:38.002Z",
+  "_tomcatLastUpdated": "2026-09-15T18:40:30.424+00:00",
+  "_tomcatVersion": 31
+}

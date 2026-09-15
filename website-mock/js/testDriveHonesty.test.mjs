@@ -102,5 +102,10 @@ assert.match(
 assert.match(transfer, /TEST_DRIVE_DOOR_KEY/);
 assert.match(transfer, /function setTestDriveDoor/);
 assert.match(transfer, /function getTestDriveDoor/);
+assert.match(transfer, /cat.testDriveMode === "picker"/);
+assert.match(transfer, /function preferLibraryCatalogJsonFile/);
+assert.match(demo, /"testDriveMode": "picker"/);
+assert.match(demo, /projects\/library\/Get Together\.json/);
+assert.match(demo, /projects\/library\/Potluck\.json/);
 
 console.log("testDriveHonesty contract ok");

@@ -343,8 +343,8 @@ const catalog = [
   },
   {
     id: "get-together",
-    name: "Get Together Template",
-    jsonFile: "designer-web/public/samples/templates/get-together.json",
+    name: "Get Together",
+    jsonFile: "projects/library/Get Together.json",
   },
 ];
 const oebRefuse = publishDuplicateRefuseMessage("Online Exam Builder");

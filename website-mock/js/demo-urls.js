@@ -6,8 +6,9 @@
  *   website-mock/projects/mytawala/ ← ~/Projects/Tawala Projects/MyTawala
  *
  * Public Library holds vetted liveReady try-outs only (Aug 10, 2026 cleanup). New Project
- * starters live under designer-web/public/samples/templates/ (catalog.ts). Sign-up Sheet and
- * Sign-up Sheet w Email are Designer New Project only until a good Push is re-Published.
+ * starters live under designer-web/public/samples/templates/ (catalog.ts). File→New Get Together
+ * and Potluck simples stay Designer-only; Library listings are the operate apps (picker TD).
+ * Sign-up Sheet w Email is Designer New Project only.
  * Empty/Blank, Form with Process, Form with Process & Document stay Designer-only.
  *
  * Library listing groups mirror Designer File → New Project categories
@@ -71,68 +72,80 @@ window.TAWALA_LIBRARY = {
     "testDriveUrl": "http://localhost:8080/p/gy1zssbrwm4fgfm/npwtqlg.Survey"
   },
   "potluck": {
-    "name": "Simple Potluck",
+    "name": "Potluck",
     "category": "Meetings and Gatherings",
     "featured": true,
     "iconLabel": "PL",
     "rating": 4,
     "comments": 15,
-    "updated": "8/28/26",
-    "shortDescription": "Headcount, regrets, who brings what",
-    "longDescription": "Invite guests to a potluck, collect RSVPs and what each person will bring. Includes skip logic for non-attendees and captions for Adults/Kids. Uses Potluck Organizer (start), Report, documents, and processes for thanks and delete.",
-    "jsonFile": "designer-web/public/samples/templates/potluck.json",
-    "themePath": "default",
-    "sourcePile": "main-menu",
+    "updated": "9/15/26",
+    "shortDescription": "Set up a potluck, take RSVPs, and see who is bringing what.",
+    "longDescription": "Organizers set the event in Setup, guests fill Potluck Organizer (RSVP and dish), Administration stays with the host. Library Test Drive uses a start picker. File → New still has the simple Organizer + Report starter.",
+    "jsonFile": "projects/library/Potluck.json",
+    "formNames": ["Setup", "Potluck Organizer", "Administration"],
+    "themePath": "basicyellow",
+    "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
     "uniqueId": "52ozm3kqd58zlss",
     "deployIdentityName": "Potluck",
+    "testDriveMode": "picker",
     "versionNumber": 1,
     "timesUsed": 128,
     "cloneCount": 34,
     "startPoints": [
       {
+        "label": "Setup",
+        "url": "http://localhost:8080/p/52ozm3kqd58zlss/0oufcth.Setup"
+      },
+      {
         "label": "Potluck Organizer",
         "url": "http://localhost:8080/p/52ozm3kqd58zlss/uhqc1kc.Potluck+Organizer"
       },
       {
-        "label": "Report",
-        "url": "http://localhost:8080/p/52ozm3kqd58zlss/cni7mae.Report"
+        "label": "Administration",
+        "url": "http://localhost:8080/p/52ozm3kqd58zlss/9rl2llr.Administration"
       }
     ],
-    "testDriveUrl": "http://localhost:8080/p/52ozm3kqd58zlss/uhqc1kc.Potluck+Organizer"
+    "testDriveUrl": "http://localhost:8080/p/52ozm3kqd58zlss/0oufcth.Setup"
   },
   "get-together": {
-    "name": "Simple Get Together",
+    "name": "Get Together",
     "category": "Meetings and Gatherings",
     "featured": true,
     "iconLabel": "GT",
     "rating": 4,
     "comments": 11,
-    "updated": "8/28/26",
-    "shortDescription": "Basic scheduling, with table of responses, top choice",
-    "longDescription": "Two MCQs: which dates work (multi-select) and top preference (single). Green Line theme for high-contrast title readability. Report includes a question-correlation table to see the best overlap.",
-    "jsonFile": "designer-web/public/samples/templates/get-together.json",
-    "themePath": "greenline",
-    "sourcePile": "main-menu",
+    "updated": "9/15/26",
+    "shortDescription": "Name the event and dates, collect who can come, pick a time.",
+    "longDescription": "Organizers Customize the event; guests answer Questionnaire; Administration stays with the host. Library Test Drive uses a start picker. File → New still has the simple Survey + Report starter.",
+    "jsonFile": "projects/library/Get Together.json",
+    "formNames": ["Customize", "Questionnaire", "Administration"],
+    "themePath": "basicblue",
+    "sourcePile": "library",
     "liveReady": true,
     "deployed": true,
     "uniqueId": "b6do4s50iq64vl8",
     "deployIdentityName": "Get Together Template",
+    "testDriveMode": "picker",
     "versionNumber": 1,
     "timesUsed": 67,
     "cloneCount": 18,
     "startPoints": [
       {
-        "label": "Survey",
-        "url": "http://localhost:8080/p/b6do4s50iq64vl8/g6zi1ar.Survey"
+        "label": "Customize",
+        "url": "http://localhost:8080/p/b6do4s50iq64vl8/dkgtrm4.Customize"
       },
       {
-        "label": "Report",
-        "url": "http://localhost:8080/p/b6do4s50iq64vl8/ejeypox.Report"
+        "label": "Questionnaire",
+        "url": "http://localhost:8080/p/b6do4s50iq64vl8/w9kcttp.Questionnaire"
+      },
+      {
+        "label": "Administration",
+        "url": "http://localhost:8080/p/b6do4s50iq64vl8/qigbjfa.Administration"
       }
     ],
-    "testDriveUrl": "http://localhost:8080/p/b6do4s50iq64vl8/g6zi1ar.Survey"
+    "testDriveUrl": "http://localhost:8080/p/b6do4s50iq64vl8/dkgtrm4.Customize"
   },
   "horses-and-penguins-test": {
     "name": "Horses and Penguins Test",
@@ -244,7 +257,7 @@ window.TAWALA_LIBRARY = {
     "comments": 0,
     "updated": "9/9/26",
     "shortDescription": "Share a task list — assign work or let helpers sign up.",
-    "longDescription": "Organizers set up tasks, then share Signup with helpers (or assign people themselves). Administration stays with the organizer. Library Test Drive opens Setup only; Copy to MyTawala gives a private copy with Setup, Signup, and Administration.",
+    "longDescription": "Organizers set up tasks, then share Signup with helpers (or assign people themselves). Administration stays with the organizer. Library Test Drive uses a start picker. Copy to MyTawala gives a private copy with Setup, Signup, and Administration.",
     "jsonFile": "projects/library/Shared To-Do.json",
     "formNames": ["task", "SignupForTask", "SetupVariables", "Administration", "Setup", "NavigationToSetup", "Signup", "Mark Task Completed", "Modify Task"],
     "themePath": "default",
@@ -253,6 +266,7 @@ window.TAWALA_LIBRARY = {
     "deployed": true,
     "uniqueId": "bx44wpdnspbsi3k",
     "deployIdentityName": "Shared To-Do bd155bbc",
+    "testDriveMode": "picker",
     "versionNumber": 1,
     "timesUsed": 0,
     "cloneCount": 0,
@@ -761,6 +775,11 @@ window.TawalaDemo = {
       const overlay = window.TawalaTransfer.getLibraryOverlayEntry(id);
       if (overlay) {
         const merged = base ? { ...base, ...overlay, id } : { ...overlay, id };
+        const preferred =
+          typeof window.TawalaTransfer.preferLibraryCatalogJsonFile === "function"
+            ? window.TawalaTransfer.preferLibraryCatalogJsonFile(base, overlay)
+            : "";
+        if (preferred) merged.jsonFile = preferred;
         if (
           typeof window.TawalaTransfer.isDiscardedPublicLibraryEntry === "function" &&
           window.TawalaTransfer.isDiscardedPublicLibraryEntry(id, merged)

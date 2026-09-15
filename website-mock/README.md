@@ -127,7 +127,7 @@ See `projects/README.md` for refresh commands and MANIFEST files.
 
 - Removed broken **Sign-up Sheet Template** Library seed (`signup-sheet` → old uniqueId `cicw55xxhvwrrh7`). Sign-up Sheet stays on **New Project** only until a good Deploy is re-Published.
 - Removed all remaining **WebLibrary stubs** from the catalog seed (do not reintroduce). Backing JSON under `projects/library/` may still exist on disk as archives; they are not listed.
-- Kept liveReady: Simple Survey, Potluck, Get Together, Multiple Question Survey, Horses and Penguins Test, Online Exam Builder.
+- Kept liveReady: Simple Survey, **Potluck** (operate, picker), **Get Together** (operate, picker), Multiple Question Survey, Horses and Penguins Test, Online Exam Builder, Shared To-Do, Sign-up Sheet operate, Poll. File → New Get Together / Potluck simples stay Designer-only.
 - **Sign-up Sheet w Email** already retired Aug 1 (New Project only).
 
 **If Library / My Tawala still shows Sign-up Sheet after the repo cleanup:** that is almost always this browser’s `localStorage` (Save a copy / Publish overlay / old Test Drive uniqueId `cicw55xxhvwrrh7`) — not the seed. Open once (auto-runs): `http://localhost:5500/_diag-discard-signup-copy.html` — then hard-refresh Library and My Tawala. Designer **New Project → Sign-up Sheet** is intentionally kept.
