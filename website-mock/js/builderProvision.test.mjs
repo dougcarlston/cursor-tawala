@@ -95,6 +95,24 @@ assert.equal(
   "Version 1: filled private OEB still cannot Publish as another OEB"
 );
 
+const hexPush = findIdenticalLibraryListings({
+  sourceProject: {
+    name: "Online Exam Builder e3c56ca6",
+    uniqueId: "un7qtlf0tcc0rqq",
+  },
+  publishName: "Online Exam Builder e3c56ca6",
+  libraryEntries: catalog,
+});
+assert.equal(hexPush[0].id, "online-exam-builder");
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: hexPush,
+    replaceLibraryId: null,
+    currentUser: "dev",
+  }),
+  publishDuplicateRefuseMessage("Online Exam Builder")
+);
+
 assert.match(demo, /"builder": true/);
 assert.match(demo, /"builderKeepForms": \["SetupVariables", "Question"\]/);
 assert.match(transfer, /function stripBuilderProvisionFromPrivateRow/);

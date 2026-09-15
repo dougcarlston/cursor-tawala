@@ -28,11 +28,17 @@ import {
   PUBLISH_CLONE_FAILED,
   countShowsSavedResponses,
   compactNameKey,
+  productNameKey,
+  jsonFileBasenameKey,
   findIdenticalLibraryListings,
+  findNameOccupyingLibraryListings,
   refusePublishDuplicate,
+  refusePublishNameTaken,
   publishDuplicateRefuseMessage,
+  publishNameTakenRefuseMessage,
   currentMockUser,
   isListedLibraryAuthor,
+  canReplaceLibraryListing,
 } from "./acquireClone.mjs";
 
 const dir = dirname(fileURLToPath(import.meta.url));
@@ -328,6 +334,14 @@ assert.match(publishSrc, /author:\s*authorKeep \|\| currentUser/);
 assert.match(transfer, /async function publishToLibraryAfterStripConfirm/);
 assert.match(ops, /publishToLibraryAfterStripConfirm/);
 assert.match(ops, /result\.duplicateProduct/);
+assert.match(ops, /result\.nameTaken/);
+assert.match(ops, /window\.alert\(duplicateNow\)/);
+assert.match(ops, /function duplicateRefuseNow/);
+assert.match(transfer, /function productNameKey/);
+assert.match(transfer, /function jsonFileBasenameKey/);
+assert.match(transfer, /jsonFileBase/);
+assert.match(transfer, /nameTaken:\s*true/);
+assert.match(transfer, /function findNameOccupyingLibraryListings/);
 assert.match(ops, /Library copy has no saved responses/);
 assert.doesNotMatch(ops, /publishPurgeCheckbox/);
 assert.doesNotMatch(ops, /keepResponses: !purgeOnPublish/);
@@ -354,6 +368,16 @@ assert.equal(
 );
 assert.equal(compactNameKey("Copy of Online Exam Builder"), "copyofonlineexambuilder");
 assert.notEqual(compactNameKey("Copy of Online Exam Builder"), compactNameKey("Online Exam Builder"));
+assert.equal(productNameKey("Online Exam Builder e3c56ca6"), productNameKey("Online Exam Builder"));
+assert.equal(productNameKey("Copy of Online Exam Builder"), productNameKey("Online Exam Builder"));
+assert.equal(
+  productNameKey("Copy of Copy of Online Exam Builder e3c56ca6"),
+  productNameKey("Online Exam Builder")
+);
+assert.equal(
+  jsonFileBasenameKey("projects/mytawala/Online Exam Builder.json"),
+  jsonFileBasenameKey("projects/library/Online Exam Builder.json")
+);
 assert.equal(isListedLibraryAuthor({ author: "dev" }, "dev"), true);
 assert.equal(isListedLibraryAuthor({ author: "tawalamundo" }, "Douglas Carlston"), false);
 assert.equal(isListedLibraryAuthor({ name: "Online Exam Builder" }, "dev"), false);
@@ -362,14 +386,30 @@ assert.equal(
     { name: "Simple Survey", liveReady: true, sourcePile: "main-menu" },
     "tawalamundo"
   ),
-  true
+  false,
+  "seed with no author is not a member-authored listing"
 );
 assert.equal(
-  isListedLibraryAuthor(
+  canReplaceLibraryListing(
     { name: "Simple Survey", liveReady: true, sourcePile: "main-menu" },
-    "Douglas Carlston"
+    "tawalamundo",
+    false
   ),
-  true
+  false
+);
+assert.equal(
+  canReplaceLibraryListing(
+    { name: "Simple Survey", liveReady: true, sourcePile: "main-menu" },
+    "tawalamundo",
+    true
+  ),
+  true,
+  "Library admin may replace a Tawala seed that has no member author"
+);
+assert.equal(
+  canReplaceLibraryListing({ author: "dev", liveReady: true, sourcePile: "library" }, "alice", true),
+  false,
+  "admin cannot replace a member listing they do not author"
 );
 assert.equal(
   isListedLibraryAuthor({ name: "Simple Survey", liveReady: true, sourcePile: "main-menu" }, ""),
@@ -403,8 +443,18 @@ assert.equal(
     replaceLibraryId: "online-exam-builder",
     currentUser: "tawalamundo",
   }),
+  oebRefuse,
+  "member cannot replace a Tawala seed"
+);
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: copyOfCatalog,
+    replaceLibraryId: "online-exam-builder",
+    currentUser: "tawalamundo",
+    isAdmin: true,
+  }),
   null,
-  "logged-in owner may overwrite seeded Live catalog (no author field)"
+  "Library admin may overwrite seeded Live catalog (no author field)"
 );
 
 const forkLookup = (id) =>
@@ -483,8 +533,127 @@ const nameTwin = findIdenticalLibraryListings({
   publishName: "Online Exam Builder",
   libraryEntries: catalog,
 });
-assert.equal(nameTwin[0].id, "online-exam-builder");
-assert.equal(nameTwin[0].matchReason, "name");
+assert.equal(
+  nameTwin.length,
+  0,
+  "coincidental same title without lineage/jsonFile is not the same product"
+);
+const nameTakenHits = findNameOccupyingLibraryListings({
+  publishName: "Online Exam Builder",
+  libraryEntries: catalog,
+});
+assert.equal(nameTakenHits[0].id, "online-exam-builder");
+const oebNameTaken = publishNameTakenRefuseMessage("Online Exam Builder");
+assert.equal(
+  refusePublishNameTaken({
+    nameHits: nameTakenHits,
+    replaceLibraryId: null,
+    currentUser: "alice",
+  }),
+  oebNameTaken
+);
+assert.equal(
+  refusePublishNameTaken({
+    nameHits: nameTakenHits,
+    replaceLibraryId: "online-exam-builder",
+    currentUser: "alice",
+    isAdmin: false,
+  }),
+  oebNameTaken,
+  "non-author cannot replace the occupant listing"
+);
+assert.equal(
+  refusePublishNameTaken({
+    nameHits: nameTakenHits,
+    replaceLibraryId: "online-exam-builder",
+    currentUser: "tawalamundo",
+    isAdmin: true,
+  }),
+  oebNameTaken,
+  "admin cannot clobber a Tawala seed by publishing different code under its name"
+);
+assert.equal(
+  refusePublishNameTaken({
+    nameHits: [{ id: "house-test", name: "House Test (stub)", stub: true }],
+    replaceLibraryId: "house-test",
+    currentUser: "alice",
+  }),
+  null,
+  "explicit replace fills a placeholder stub"
+);
+assert.equal(
+  refusePublishNameTaken({
+    nameHits: [{ id: "house-test", name: "House Test (stub)", stub: true }],
+    replaceLibraryId: null,
+    currentUser: "alice",
+  }),
+  publishNameTakenRefuseMessage("House Test (stub)"),
+  "add-as-new still cannot silently take a stub’s name"
+);
+assert.equal(
+  refusePublishNameTaken({
+    nameHits: [{ id: "my-bake", name: "Bake Sale", author: "alice" }],
+    replaceLibraryId: "my-bake",
+    currentUser: "alice",
+  }),
+  null,
+  "listed author may replace their own listing with different code"
+);
+
+const differentCode = findIdenticalLibraryListings({
+  sourceProject: {
+    name: "Bake Sale Signup",
+    jsonFile: "projects/mytawala/Bake Sale.json",
+  },
+  publishName: "Online Exam Builder",
+  libraryEntries: catalog,
+});
+assert.equal(differentCode.length, 0, "different jsonFile is not the OEB product");
+assert.equal(
+  findNameOccupyingLibraryListings({
+    publishName: "Online Exam Builder",
+    libraryEntries: catalog,
+    exceptIds: differentCode.map((e) => e.id),
+  })[0].id,
+  "online-exam-builder"
+);
+
+const hexPushHits = findIdenticalLibraryListings({
+  sourceProject: {
+    name: "Online Exam Builder e3c56ca6",
+    uniqueId: "un7qtlf0tcc0rqq",
+    deployIdentityName: "Online Exam Builder e3c56ca6",
+  },
+  publishName: "Online Exam Builder e3c56ca6",
+  libraryEntries: catalog,
+});
+assert.equal(hexPushHits[0].id, "online-exam-builder");
+assert.equal(
+  refusePublishDuplicate({
+    identicalListings: hexPushHits,
+    replaceLibraryId: null,
+    currentUser: "dev",
+  }),
+  oebRefuse,
+  "Designer Push OEB (hex suffix, no pulledFromLibraryId) cannot Publish as a new Library project"
+);
+
+const mytawalaJsonHits = findIdenticalLibraryListings({
+  sourceProject: {
+    name: "Period 3 History",
+    jsonFile: "projects/mytawala/Online Exam Builder.json",
+  },
+  publishName: "Period 3 History",
+  libraryEntries: catalog,
+});
+assert.equal(mytawalaJsonHits[0].id, "online-exam-builder");
+
+const copyNameOnly = findIdenticalLibraryListings({
+  sourceProject: { name: "Copy of Online Exam Builder" },
+  publishName: "House Test",
+  libraryEntries: catalog,
+});
+assert.equal(copyNameOnly[0].id, "online-exam-builder");
 
 assert.match(transfer, /function isBoilerplateProjectDescription/);
 assert.match(transfer, /function ownerFacingProjectDescription/);

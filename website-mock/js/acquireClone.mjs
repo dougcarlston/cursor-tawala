@@ -314,11 +314,39 @@ export function compactNameKey(name) {
   return stripStubSuffix(name).toLowerCase().replace(/[^a-z0-9]+/g, "");
 }
 
+/** Designer Push Tomcat tag — "Online Exam Builder e3c56ca6". */
+export function stripDeployHexSuffix(name) {
+  return String(name || "").replace(/\s+[a-f0-9]{6,8}$/i, "").trim();
+}
+
+export function stripCopyOfPrefix(name) {
+  let s = String(name || "").trim();
+  for (let i = 0; i < 8; i++) {
+    const next = s.replace(/^copy\s+of\s+/i, "").trim();
+    if (next === s) break;
+    s = next;
+  }
+  return s;
+}
+
+/** Same Library product despite Copy of / Push hex suffix. */
+export function productNameKey(name) {
+  return compactNameKey(stripCopyOfPrefix(stripDeployHexSuffix(stripStubSuffix(name))));
+}
+
 export function normalizeJsonFileKey(jsonFile) {
   let rel = String(jsonFile || "").trim().replace(/\\/g, "/");
   if (!rel) return "";
   if (rel.startsWith("website-mock/")) rel = rel.slice("website-mock/".length);
   return rel.toLowerCase();
+}
+
+export function jsonFileBasenameKey(jsonFile) {
+  const rel = normalizeJsonFileKey(jsonFile);
+  if (!rel) return "";
+  const parts = rel.split("/");
+  const base = parts[parts.length - 1] || "";
+  return compactNameKey(base.replace(/\.json$/i, ""));
 }
 
 /**
@@ -337,11 +365,25 @@ export function isListedLibraryAuthor(entry, currentUser) {
   const user = String(currentUser || "").trim();
   if (!user) return false;
   const author = String((entry && entry.author) || "").trim();
-  if (author) return author.toLowerCase() === user.toLowerCase();
-  /* Seeded Live catalog rows have no author. Any logged-in mock user (dev,
-   * tawalamundo / Douglas Carlston, …) may overwrite; guests may not. */
+  if (!author) return false;
+  return author.toLowerCase() === user.toLowerCase();
+}
+
+/**
+ * Replace/overwrite is the listed member author, or Library admin for a
+ * Tawala seed that has no member `author`. Active placeholder stubs are
+ * filled by an explicit replace pick (not via this helper).
+ */
+export function canReplaceLibraryListing(entry, currentUser, isAdmin) {
+  if (isListedLibraryAuthor(entry, currentUser)) return true;
+  if (!isAdmin) return false;
+  if (String((entry && entry.author) || "").trim()) return false;
   const pile = String((entry && entry.sourcePile) || "").trim();
-  return !!(entry && entry.liveReady === true && (pile === "main-menu" || pile === "library"));
+  return !!(entry && (entry.liveReady === true || pile === "main-menu" || pile === "library"));
+}
+
+export function isActiveLibraryStub(entry) {
+  return !!(entry && entry.stub === true);
 }
 
 /** Owner refuse copy — keep in sync with `transfer.js`. */
@@ -352,6 +394,23 @@ export function publishDuplicateRefuseMessage(libraryName) {
     name +
     "” already in the Library. You can only publish an update if you are that listing’s author."
   );
+}
+
+export function publishNameTakenRefuseMessage(libraryName) {
+  const name = String(libraryName || "that project").trim() || "that project";
+  return (
+    "The name “" +
+    name +
+    "” is already used in the Library for a different project. Choose a different name. " +
+    "Only that listing’s author can replace it."
+  );
+}
+
+export function looksLikeDerivedProductName(name) {
+  const s = stripStubSuffix(name);
+  if (!s) return false;
+  if (/^copy\s+of\s+/i.test(s)) return true;
+  return /\s+[a-f0-9]{6,8}$/i.test(s);
 }
 
 /**
@@ -372,8 +431,10 @@ export function pulledLibraryIdFromProject(project, lookupMyTawala) {
 }
 
 /**
- * Visible Library rows that are the same product: acquire lineage, same
- * template jsonFile, or compact-equal Publish name. Empty jsonFile is not a twin.
+ * Same Library product: acquire lineage, same template jsonFile (path or
+ * basename), Tomcat identity, uniqueId, or a Copy-of / Push-hex source name.
+ * A coincidental Publish *name* is not a twin — that is name occupancy.
+ * Empty jsonFile is not a twin.
  */
 export function findIdenticalLibraryListings({
   sourceProject,
@@ -404,10 +465,32 @@ export function findIdenticalLibraryListings({
     });
   }
 
-  const nameKey = compactNameKey(publishName || (sourceProject && sourceProject.name) || "");
-  if (nameKey) {
+  const jsonBase = jsonFileBasenameKey(sourceProject && sourceProject.jsonFile);
+  if (jsonBase) {
     entries.forEach((e) => {
-      if (compactNameKey(e && e.name) === nameKey) add(e, "name");
+      if (jsonFileBasenameKey(e && e.jsonFile) === jsonBase) add(e, "jsonFileBase");
+    });
+  }
+
+  function addByProductName(raw, reason) {
+    const key = productNameKey(raw);
+    if (!key) return;
+    entries.forEach((e) => {
+      if (productNameKey(e && e.name) === key) add(e, reason);
+      if (productNameKey(e && e.deployIdentityName) === key) add(e, reason);
+    });
+  }
+  if (sourceProject && looksLikeDerivedProductName(sourceProject.name)) {
+    addByProductName(sourceProject.name, "sourceName");
+  }
+  if (sourceProject && sourceProject.deployIdentityName) {
+    addByProductName(sourceProject.deployIdentityName, "deployIdentityName");
+  }
+
+  const srcUid = String((sourceProject && sourceProject.uniqueId) || "").trim();
+  if (srcUid) {
+    entries.forEach((e) => {
+      if (String((e && e.uniqueId) || "").trim() === srcUid) add(e, "uniqueId");
     });
   }
 
@@ -415,22 +498,66 @@ export function findIdenticalLibraryListings({
 }
 
 /**
+ * Listings whose public name (Copy of / Push hex stripped) equals the proposed
+ * Library name. Different code can still collide on the title.
+ */
+export function findNameOccupyingLibraryListings({
+  publishName,
+  libraryEntries,
+  exceptIds,
+} = {}) {
+  const entries = Array.isArray(libraryEntries) ? libraryEntries : [];
+  const skip = new Set(
+    (Array.isArray(exceptIds) ? exceptIds : []).map((id) => String(id || "").trim()).filter(Boolean)
+  );
+  const key = productNameKey(publishName);
+  if (!key) return [];
+  const hits = [];
+  entries.forEach((e) => {
+    if (!e || e.id == null) return;
+    const id = String(e.id);
+    if (!id || skip.has(id)) return;
+    if (productNameKey(e.name) === key) hits.push({ ...e, id, matchReason: "publishName" });
+  });
+  return hits;
+}
+
+/**
  * Null when Publish may proceed (no twin, or replace target is that twin and
- * the current mock user is its listed author). Otherwise the refuse string.
+ * the current user may replace it). Otherwise the refuse string.
  */
 export function refusePublishDuplicate({
   identicalListings,
   replaceLibraryId,
   currentUser,
+  isAdmin,
 } = {}) {
   const list = Array.isArray(identicalListings) ? identicalListings : [];
   if (!list.length) return null;
   const replaceId = String(replaceLibraryId || "").trim();
   const target = replaceId ? list.find((e) => String(e.id) === replaceId) : null;
-  if (target && isListedLibraryAuthor(target, currentUser)) return null;
+  if (target && isActiveLibraryStub(target)) return null;
+  if (target && canReplaceLibraryListing(target, currentUser, isAdmin)) return null;
   const cited =
-    (target && !isListedLibraryAuthor(target, currentUser) && target) ||
-    list.find((e) => !isListedLibraryAuthor(e, currentUser)) ||
+    (target && !canReplaceLibraryListing(target, currentUser, isAdmin) && target) ||
+    list.find((e) => !canReplaceLibraryListing(e, currentUser, isAdmin)) ||
     list[0];
   return publishDuplicateRefuseMessage((cited && (cited.name || cited.id)) || "that project");
+}
+
+export function refusePublishNameTaken({
+  nameHits,
+  replaceLibraryId,
+  currentUser,
+} = {}) {
+  const list = Array.isArray(nameHits) ? nameHits : [];
+  if (!list.length) return null;
+  const replaceId = String(replaceLibraryId || "").trim();
+  const target = replaceId ? list.find((e) => String(e.id) === replaceId) : null;
+  /* Placeholder stub: explicit replace fills the slot. Live Tawala seeds are
+   * same-product only (refusePublishDuplicate). */
+  if (target && isActiveLibraryStub(target)) return null;
+  if (target && isListedLibraryAuthor(target, currentUser)) return null;
+  const cited = target || list[0];
+  return publishNameTakenRefuseMessage((cited && (cited.name || cited.id)) || "that project");
 }

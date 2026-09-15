@@ -5949,23 +5949,85 @@
       typeof TawalaTransfer.liveUniqueIdForPublish === "function"
         ? TawalaTransfer.liveUniqueIdForPublish(projectId, project)
         : null;
-    if (!liveId) {
-      const refuse =
-        TawalaTransfer.PUBLISH_NO_LIVE_FORM_ERROR ||
-        "This project has no live form yet. Edit in Designer, Push, then Publish.";
-      const errEl = backdrop.querySelector("#publishModalError");
-      if (errEl) {
-        errEl.textContent = refuse;
-        errEl.style.display = "";
-      }
-      if (confirmBtn) {
-        confirmBtn.disabled = true;
-        confirmBtn.title = refuse;
-      }
+    if (!liveId && confirmBtn) {
+      confirmBtn.disabled = true;
     }
     stubSelect.value = initial.preselectId;
     nameInput.focus();
     nameInput.select();
+
+    function duplicateRefuseNow() {
+      if (
+        typeof TawalaTransfer.findIdenticalLibraryListings !== "function" ||
+        typeof TawalaTransfer.refusePublishDuplicate !== "function"
+      ) {
+        return "";
+      }
+      const isAdmin =
+        (typeof TawalaTransfer.isLibraryAdmin === "function" && TawalaTransfer.isLibraryAdmin()) ||
+        (typeof TawalaChrome !== "undefined" &&
+          typeof TawalaChrome.isAdmin === "function" &&
+          TawalaChrome.isAdmin());
+      const currentUser =
+        typeof TawalaTransfer.currentMockUser === "function"
+          ? TawalaTransfer.currentMockUser()
+          : "dev";
+      const identical = TawalaTransfer.findIdenticalLibraryListings({
+        sourceProject: project,
+        publishName: (nameInput.value || "").trim(),
+        libraryEntries: allCandidates,
+        lookupMyTawala: (id) =>
+          typeof TawalaDemo.getMyTawala === "function" ? TawalaDemo.getMyTawala(id) : null,
+      });
+      const dup =
+        TawalaTransfer.refusePublishDuplicate({
+          identicalListings: identical,
+          replaceLibraryId: stubSelect.value || null,
+          currentUser,
+          isAdmin,
+        }) || "";
+      if (dup) return dup;
+      if (
+        typeof TawalaTransfer.findNameOccupyingLibraryListings !== "function" ||
+        typeof TawalaTransfer.refusePublishNameTaken !== "function"
+      ) {
+        return "";
+      }
+      const nameHits = TawalaTransfer.findNameOccupyingLibraryListings({
+        publishName: (nameInput.value || "").trim(),
+        libraryEntries: allCandidates,
+        exceptIds: identical.map((e) => e && e.id),
+      });
+      return (
+        TawalaTransfer.refusePublishNameTaken({
+          nameHits,
+          replaceLibraryId: stubSelect.value || null,
+          currentUser,
+          isAdmin,
+        }) || ""
+      );
+    }
+    function syncPublishRefuse() {
+      const errEl = backdrop.querySelector("#publishModalError");
+      const dup = liveId ? duplicateRefuseNow() : "";
+      const refuse = !liveId
+        ? TawalaTransfer.PUBLISH_NO_LIVE_FORM_ERROR ||
+          "This project has no live form yet. Edit in Designer, Push, then Publish."
+        : dup;
+      if (errEl) {
+        if (refuse) {
+          errEl.textContent = refuse;
+          errEl.style.display = "";
+        } else {
+          errEl.textContent = "";
+          errEl.style.display = "none";
+        }
+      }
+      if (confirmBtn) {
+        confirmBtn.title = refuse || "Publish this project to the public Library";
+      }
+    }
+    syncPublishRefuse();
 
     /* Category follows the replace-target pick until the owner explicitly overrides it —
      * mirrors "Default: current category of replace-target if replacing" from the spec. */
@@ -5997,6 +6059,7 @@
     stubSelect.addEventListener("change", () => {
       syncCategoryToTarget();
       syncDescToTarget();
+      syncPublishRefuse();
     });
 
     nameInput.addEventListener("input", () => {
@@ -6009,6 +6072,7 @@
       stubSelect.value = prevChoice && stillPresent ? prevChoice : next.preselectId;
       syncCategoryToTarget();
       syncDescToTarget();
+      syncPublishRefuse();
     });
 
     bindDismissOnBackdropClick(backdrop, closePublishModal);
@@ -6028,6 +6092,13 @@
       if (!categoryVal) {
         errEl.textContent = "Pick a Library category for the published project.";
         errEl.style.display = "";
+        return;
+      }
+      const duplicateNow = duplicateRefuseNow();
+      if (duplicateNow) {
+        errEl.textContent = duplicateNow;
+        errEl.style.display = "";
+        window.alert(duplicateNow);
         return;
       }
       const confirmMsg =
@@ -6052,9 +6123,11 @@
         shortDescription: ownerFacingProjectDescription(descInput && descInput.value),
       });
       if (result && result.cancelledStrip) return;
-      if (result && result.duplicateProduct) {
-        errEl.textContent = result.error || "This project is already in the Library.";
+      if (result && (result.duplicateProduct || result.nameTaken)) {
+        const refuse = result.error || "This project is already in the Library.";
+        errEl.textContent = refuse;
         errEl.style.display = "";
+        window.alert(refuse);
         return;
       }
       closePublishModal();

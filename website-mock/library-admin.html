@@ -7,8 +7,8 @@
   <link rel="stylesheet" href="css/legacy/tawala-base.css" />
   <link rel="stylesheet" href="css/legacy/pages/library.css" />
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260911-tdpick1" />
-  <script src="js/demo-urls.js?v=20260915-builder1"></script>
-  <script src="js/transfer.js?v=20260915-builder1"></script>
+  <script src="js/demo-urls.js?v=20260915-dup4"></script>
+  <script src="js/transfer.js?v=20260915-dup4"></script>
 </head>
 <body data-tawala-page="library" data-tawala-user="dev">
   <div id="doc">
@@ -600,6 +600,62 @@
           errEl.style.display = "";
           return;
         }
+        const sourceProject =
+          typeof TawalaDemo.getMyTawala === "function" ? TawalaDemo.getMyTawala(sourceProjectId) : null;
+        const isAdmin =
+          (typeof TawalaTransfer.isLibraryAdmin === "function" && TawalaTransfer.isLibraryAdmin()) ||
+          (typeof TawalaChrome !== "undefined" &&
+            typeof TawalaChrome.isAdmin === "function" &&
+            TawalaChrome.isAdmin());
+        const currentUser =
+          typeof TawalaTransfer.currentMockUser === "function"
+            ? TawalaTransfer.currentMockUser()
+            : "dev";
+        const candidates =
+          typeof TawalaTransfer.libraryReplaceCandidates === "function"
+            ? TawalaTransfer.libraryReplaceCandidates()
+            : [];
+        const identical =
+          typeof TawalaTransfer.findIdenticalLibraryListings === "function"
+            ? TawalaTransfer.findIdenticalLibraryListings({
+                sourceProject,
+                publishName: name,
+                libraryEntries: candidates,
+                lookupMyTawala: (id) =>
+                  typeof TawalaDemo.getMyTawala === "function" ? TawalaDemo.getMyTawala(id) : null,
+              })
+            : [];
+        const duplicateNow =
+          typeof TawalaTransfer.refusePublishDuplicate === "function"
+            ? TawalaTransfer.refusePublishDuplicate({
+                identicalListings: identical,
+                replaceLibraryId,
+                currentUser,
+                isAdmin,
+              })
+            : "";
+        const nameNow =
+          !duplicateNow &&
+          typeof TawalaTransfer.findNameOccupyingLibraryListings === "function" &&
+          typeof TawalaTransfer.refusePublishNameTaken === "function"
+            ? TawalaTransfer.refusePublishNameTaken({
+                nameHits: TawalaTransfer.findNameOccupyingLibraryListings({
+                  publishName: name,
+                  libraryEntries: candidates,
+                  exceptIds: identical.map((e) => e && e.id),
+                }),
+                replaceLibraryId,
+                currentUser,
+                isAdmin,
+              })
+            : "";
+        if (duplicateNow || nameNow) {
+          const refuse = duplicateNow || nameNow;
+          errEl.textContent = refuse;
+          errEl.style.display = "";
+          window.alert(refuse);
+          return;
+        }
         errEl.style.display = "none";
         const target = replaceLibraryId
           ? TawalaTransfer.libraryReplaceCandidates().find((c) => c.id === replaceLibraryId)
@@ -625,7 +681,7 @@
         });
         if (result && result.cancelledStrip) return;
         if (!result.ok) {
-          if (result.duplicateProduct && errEl) {
+          if ((result.duplicateProduct || result.nameTaken) && errEl) {
             errEl.textContent = result.error || "This project is already in the Library.";
             errEl.style.display = "";
           }

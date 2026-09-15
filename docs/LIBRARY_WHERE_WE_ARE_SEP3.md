@@ -93,6 +93,8 @@ Also confirm examinee **Exam** still shows Exam Start (title + Q3) — that Push
 
 Do **not** ship Version 2 UX in Version 1 “quietly.” Empty reserved fields are fine; a visible exam-Publish button is not.
 
+**Sep 15 (Version 1 refuse):** Publishing My Tawala OEB as a **new** Library project (replace = None) must **alert** the duplicate-product string — not fail silently. Designer Push names like `Online Exam Builder e3c56ca6` count as the same product as catalog OEB. Overwrite of the **same product** is only the listing’s **author** (or Library admin for a Tawala seed with no member author). A coincidental same Library **name** with different code is blocked with a separate name-taken alert and **cannot** replace a Tawala seed (even as admin).
+
 #### Product
 
 Library holds **Builders** (blank instruments) **and** **user-contributed content** built *inside* a Builder, not in Designer. There may be **many** Builders; OEB is the first. A teacher Publishes an exam: keep authoring/subject content, strip student/respondent data. Other teachers Copy to My Tawala and run it with their classes.

@@ -76,11 +76,13 @@
  *     Never purge the source uniqueId. Never copy submissions onto the Library uniqueId.
  *     Overlay start URLs / uniqueId come from that clone. Fail closed if clone fails or
  *     reuses the author’s uniqueId — no overlay write. My Tawala data is unchanged.
- *   - Owner Aug 26, 2026: refuse a duplicate Library product unless the current mock user is
- *     updating a listing they authored (`replaceLibraryId` = that id and `entry.author` matches).
- *     Identical = pulledFromLibraryId (or forkedFromId → that acquire), same jsonFile, or
- *     compact-equal Publish name. Duplicate refuse runs before the Library clone. Overlay
- *     stamps `author: currentUser` when missing.
+ *   - Owner Aug 26, 2026: refuse a duplicate Library product unless the current user
+ *     may replace that listing (`replaceLibraryId` = that id and they are its listed
+ *     `author`, or Library admin replacing a Tawala seed with no member author).
+ *     Identical = lineage, jsonFile, Tomcat identity, Copy-of / Push-hex source name.
+ *     A coincidental Publish name (different code) is a separate name-taken refuse.
+ *     Duplicate / name-taken refuse runs before the Library clone. Overlay stamps
+ *     `author: currentUser` when missing.
  *
  * Library admin path (owner Aug 1, 2026 — "for when you won't always be available"):
  *   tawala.mock.libraryAdmin — "1" enables admin-only actions on library-admin.html (rename any
@@ -2095,6 +2097,33 @@
     return stripStubSuffix(name).toLowerCase().replace(/[^a-z0-9]+/g, "");
   }
 
+  /** Designer Push Tomcat tag — "Online Exam Builder e3c56ca6". Keep in sync with acquireClone.mjs. */
+  function stripDeployHexSuffix(name) {
+    return String(name || "").replace(/\s+[a-f0-9]{6,8}$/i, "").trim();
+  }
+
+  function stripCopyOfPrefix(name) {
+    let s = String(name || "").trim();
+    for (let i = 0; i < 8; i++) {
+      const next = s.replace(/^copy\s+of\s+/i, "").trim();
+      if (next === s) break;
+      s = next;
+    }
+    return s;
+  }
+
+  function productNameKey(name) {
+    return compactNameKey(stripCopyOfPrefix(stripDeployHexSuffix(stripStubSuffix(name))));
+  }
+
+  function jsonFileBasenameKey(jsonFile) {
+    const rel = normalizeJsonFileKey(jsonFile);
+    if (!rel) return "";
+    const parts = rel.split("/");
+    const base = parts[parts.length - 1] || "";
+    return compactNameKey(base.replace(/\.json$/i, ""));
+  }
+
   function getLibraryOverlay() {
     const o = readJson(LIBRARY_OVERLAY_KEY, {});
     return o && typeof o === "object" && !Array.isArray(o) ? o : {};
@@ -2455,10 +2484,20 @@
     const user = String(currentUser || "").trim();
     if (!user) return false;
     const author = String((entry && entry.author) || "").trim();
-    if (author) return author.toLowerCase() === user.toLowerCase();
-    /* Seeded Live catalog rows have no author. Logged-in owner may overwrite. */
+    if (!author) return false;
+    return author.toLowerCase() === user.toLowerCase();
+  }
+
+  function isActiveLibraryStub(entry) {
+    return !!(entry && entry.stub === true);
+  }
+
+  function canReplaceLibraryListing(entry, currentUser, isAdmin) {
+    if (isListedLibraryAuthor(entry, currentUser)) return true;
+    if (!isAdmin) return false;
+    if (String((entry && entry.author) || "").trim()) return false;
     const pile = String((entry && entry.sourcePile) || "").trim();
-    return !!(entry && entry.liveReady === true && (pile === "main-menu" || pile === "library"));
+    return !!(entry && (entry.liveReady === true || pile === "main-menu" || pile === "library"));
   }
 
   function publishDuplicateRefuseMessage(libraryName) {
@@ -2468,6 +2507,35 @@
       name +
       "” already in the Library. You can only publish an update if you are that listing’s author."
     );
+  }
+
+  function publishNameTakenRefuseMessage(libraryName) {
+    const name = String(libraryName || "that project").trim() || "that project";
+    return (
+      "The name “" +
+      name +
+      "” is already used in the Library for a different project. Choose a different name. " +
+      "Only that listing’s author can replace it."
+    );
+  }
+
+  function looksLikeDerivedProductName(name) {
+    const s = stripStubSuffix(name);
+    if (!s) return false;
+    if (/^copy\s+of\s+/i.test(s)) return true;
+    return /\s+[a-f0-9]{6,8}$/i.test(s);
+  }
+
+  function currentUserIsLibraryAdmin() {
+    if (isLibraryAdmin()) return true;
+    if (
+      typeof window !== "undefined" &&
+      window.TawalaChrome &&
+      typeof window.TawalaChrome.isAdmin === "function"
+    ) {
+      return !!window.TawalaChrome.isAdmin();
+    }
+    return false;
   }
 
   function lookupMyTawalaRow(projectId) {
@@ -2506,8 +2574,9 @@
   }
 
   /**
-   * Visible Library rows that are the same product (acquire lineage, same template
-   * file, or compact-equal Publish name). Keep in sync with acquireClone.mjs.
+   * Same Library product (lineage, jsonFile path/basename, Tomcat identity,
+   * uniqueId, Copy-of / Push-hex source name). Coincidental Publish name is
+   * name occupancy, not a twin. Keep in sync with acquireClone.mjs.
    *
    * Version 1: a Builder flag on the catalog twin does not change this match.
    * A teacher's filled OEB copy still collides with blank OEB — refusePublishDuplicate
@@ -2542,27 +2611,80 @@
       });
     }
 
-    const nameKey = compactNameKey(publishName || (sourceProject && sourceProject.name) || "");
-    if (nameKey) {
+    const jsonBase = jsonFileBasenameKey(sourceProject && sourceProject.jsonFile);
+    if (jsonBase) {
       entries.forEach((e) => {
-        if (compactNameKey(e && e.name) === nameKey) add(e, "name");
+        if (jsonFileBasenameKey(e && e.jsonFile) === jsonBase) add(e, "jsonFileBase");
+      });
+    }
+
+    function addByProductName(raw, reason) {
+      const key = productNameKey(raw);
+      if (!key) return;
+      entries.forEach((e) => {
+        if (productNameKey(e && e.name) === key) add(e, reason);
+        if (productNameKey(e && e.deployIdentityName) === key) add(e, reason);
+      });
+    }
+    if (sourceProject && looksLikeDerivedProductName(sourceProject.name)) {
+      addByProductName(sourceProject.name, "sourceName");
+    }
+    if (sourceProject && sourceProject.deployIdentityName) {
+      addByProductName(sourceProject.deployIdentityName, "deployIdentityName");
+    }
+
+    const srcUid = String((sourceProject && sourceProject.uniqueId) || "").trim();
+    if (srcUid) {
+      entries.forEach((e) => {
+        if (String((e && e.uniqueId) || "").trim() === srcUid) add(e, "uniqueId");
       });
     }
 
     return Array.from(hits.values());
   }
 
-  function refusePublishDuplicate({ identicalListings, replaceLibraryId, currentUser } = {}) {
+  function findNameOccupyingLibraryListings({ publishName, libraryEntries, exceptIds } = {}) {
+    const entries = Array.isArray(libraryEntries) ? libraryEntries : [];
+    const skip = new Set(
+      (Array.isArray(exceptIds) ? exceptIds : []).map((id) => String(id || "").trim()).filter(Boolean)
+    );
+    const key = productNameKey(publishName);
+    if (!key) return [];
+    const hits = [];
+    entries.forEach((e) => {
+      if (!e || e.id == null) return;
+      const id = String(e.id);
+      if (!id || skip.has(id)) return;
+      if (productNameKey(e.name) === key) hits.push({ ...e, id, matchReason: "publishName" });
+    });
+    return hits;
+  }
+
+  function refusePublishDuplicate({ identicalListings, replaceLibraryId, currentUser, isAdmin } = {}) {
     const list = Array.isArray(identicalListings) ? identicalListings : [];
     if (!list.length) return null;
     const replaceId = String(replaceLibraryId || "").trim();
     const target = replaceId ? list.find((e) => String(e.id) === replaceId) : null;
-    if (target && isListedLibraryAuthor(target, currentUser)) return null;
+    if (target && isActiveLibraryStub(target)) return null;
+    if (target && canReplaceLibraryListing(target, currentUser, isAdmin)) return null;
     const cited =
-      (target && !isListedLibraryAuthor(target, currentUser) && target) ||
-      list.find((e) => !isListedLibraryAuthor(e, currentUser)) ||
+      (target && !canReplaceLibraryListing(target, currentUser, isAdmin) && target) ||
+      list.find((e) => !canReplaceLibraryListing(e, currentUser, isAdmin)) ||
       list[0];
     return publishDuplicateRefuseMessage((cited && (cited.name || cited.id)) || "that project");
+  }
+
+  function refusePublishNameTaken({ nameHits, replaceLibraryId, currentUser } = {}) {
+    const list = Array.isArray(nameHits) ? nameHits : [];
+    if (!list.length) return null;
+    const replaceId = String(replaceLibraryId || "").trim();
+    const target = replaceId ? list.find((e) => String(e.id) === replaceId) : null;
+    /* Placeholder stub: explicit replace fills the slot. Live Tawala seeds are
+     * same-product only (refusePublishDuplicate). */
+    if (target && isActiveLibraryStub(target)) return null;
+    if (target && isListedLibraryAuthor(target, currentUser)) return null;
+    const cited = target || list[0];
+    return publishNameTakenRefuseMessage((cited && (cited.name || cited.id)) || "that project");
   }
 
   /** True when a :3001 count result means the source has submissions (Publish must strip first). */
@@ -2821,19 +2943,36 @@
     }
 
     const currentUser = currentMockUser();
+    const isAdmin = currentUserIsLibraryAdmin();
+    const candidates = libraryReplaceCandidates();
     const identicalListings = findIdenticalLibraryListings({
       sourceProject,
       publishName,
-      libraryEntries: libraryReplaceCandidates(),
+      libraryEntries: candidates,
       lookupMyTawala: lookupMyTawalaRow,
     });
     const duplicateError = refusePublishDuplicate({
       identicalListings,
       replaceLibraryId,
       currentUser,
+      isAdmin,
     });
     if (duplicateError) {
       return { ok: false, duplicateProduct: true, error: duplicateError };
+    }
+    const nameHits = findNameOccupyingLibraryListings({
+      publishName,
+      libraryEntries: candidates,
+      exceptIds: identicalListings.map((e) => e && e.id),
+    });
+    const nameError = refusePublishNameTaken({
+      nameHits,
+      replaceLibraryId,
+      currentUser,
+      isAdmin,
+    });
+    if (nameError) {
+      return { ok: false, nameTaken: true, error: nameError };
     }
 
     const targetId = replaceLibraryId || null;
@@ -4159,6 +4298,8 @@
     stripStubSuffix,
     baseNameSlug,
     compactNameKey,
+    productNameKey,
+    jsonFileBasenameKey,
     getLibraryOverlay,
     getLibraryOverlayEntry,
     upsertLibraryOverlay,
@@ -4190,8 +4331,12 @@
     libraryReplaceCandidates,
     findMatchingLibraryTargets,
     findIdenticalLibraryListings,
+    findNameOccupyingLibraryListings,
     refusePublishDuplicate,
+    refusePublishNameTaken,
     publishDuplicateRefuseMessage,
+    publishNameTakenRefuseMessage,
+    canReplaceLibraryListing,
     currentMockUser,
     liveUniqueIdForPublish,
     countShowsSavedResponses,
