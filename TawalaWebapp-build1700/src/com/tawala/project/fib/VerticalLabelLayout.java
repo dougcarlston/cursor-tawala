@@ -14,7 +14,7 @@ public class VerticalLabelLayout extends DefaultLayout {
 	@Override
 	public Html render(Blank blank, ExecutionContext executionContext) {
 		Div result = new Div("class", "blank");
-		result.add(blank.defaultRendering(executionContext));
+		result.add(blank.defaultRendering(executionContext, false));
 		return result;
 	}
 }

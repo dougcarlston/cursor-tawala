@@ -27,11 +27,11 @@ function blankLetter(i) {
   return String.fromCharCode(97 + (i % 26));
 }
 
-function fontXml(text, escText, { bold = false, italic = false, size = 200 } = {}) {
+function fontXml(text, escText, { bold = false, italic = false, size = 200, color = "000000" } = {}) {
   let inner = escText(text);
   if (italic) inner = `<i>${inner}</i>`;
   if (bold) inner = `<b>${inner}</b>`;
-  return `<font face="Arial" size="${size}" color="000000">${inner}</font>`;
+  return `<font face="Arial" size="${size}" color="${color}">${inner}</font>`;
 }
 
 /** One `<field name="…"/>` wrapped in the default FIB font. */
@@ -85,6 +85,41 @@ function promptRunXml(text, escAttr, escText) {
 
 function paragraph(inner, tabs = TAB_LEFT) {
   return `<paragraph indent="0" align="left">${tabs}${inner}</paragraph>`;
+}
+
+function rowHasRequiredBlank(row) {
+  return (row?.segments || []).some((seg) => seg.type === "blank" && seg.blank?.required);
+}
+
+function requiredStarFontXml(escText) {
+  return fontXml(" *", escText, { bold: true, color: "cc0000" });
+}
+
+function paragraphHasRequiredStar(xml) {
+  return /color="cc0000"/.test(xml);
+}
+
+/** Put required * on the question-label paragraph, including Name-then-blanks soft-rows. */
+function ensureStarOnPriorLabel(parts, starXml) {
+  if (!starXml) return;
+  for (let i = parts.length - 1; i >= 0; i--) {
+    if (/<blank\b/.test(parts[i])) continue;
+    if (paragraphHasRequiredStar(parts[i])) return;
+    parts[i] = parts[i].replace(/<\/paragraph>\s*$/, `${starXml}</paragraph>`);
+    return;
+  }
+}
+
+/** Split a rich Above paragraph so the question label is not on the blank line. */
+function splitTopLabelsRichParagraph(paraXml, starXml) {
+  const m = String(paraXml || "").match(/^(<paragraph[^>]*>)([\s\S]*)(<\/paragraph>)$/);
+  if (!m) return [paraXml];
+  const inner = m[2];
+  const blankAt = inner.search(/<blank\b/);
+  if (blankAt <= 0) return [paraXml];
+  const labelInner = inner.slice(0, blankAt) + (starXml || "");
+  const fieldInner = inner.slice(blankAt);
+  return [m[1] + labelInner + m[3], m[1] + fieldInner + m[3]];
 }
 
 /** FIB validator metadata id → runtime element name (mirrors `lib/fibBlanks.ts` FIB_VALIDATORS). */
@@ -592,16 +627,20 @@ function topLabelsFromPrompt(prompt, blanks, letters, escAttr, escText) {
       escText,
       TAB_TOPLABELS,
     );
-    // Multi-blank Above: prefer split (label paragraph + blanks paragraph) so
-    // VerticalLabelLayout's block wrappers do not stack same-line blanks. Rich
-    // character formatting on one-blank rows still uses the rich path.
-    if (richPara && blankCount <= 1) {
-      parts.push(richPara);
-      bi += blankCount;
-      continue;
+    // Above always splits the question label onto its own paragraph. Rich
+    // one-blank rows used to stay on one paragraph (looked Freeform).
+    if (richPara) {
+      const split = splitTopLabelsRichParagraph(
+        richPara,
+        rowHasRequiredBlank(row) ? requiredStarFontXml(escText) : "",
+      );
+      parts.push(...split);
+    } else {
+      parts.push(...topLabelsOneRowXml(row, letters, escAttr, escText));
     }
-
-    parts.push(...topLabelsOneRowXml(row, letters, escAttr, escText));
+    if (blankCount > 0 && rowHasRequiredBlank(row)) {
+      ensureStarOnPriorLabel(parts, requiredStarFontXml(escText));
+    }
     bi += blankCount;
   }
   return parts;
@@ -629,6 +668,9 @@ function topLabelsFromBlanks(item, letters, escAttr, escText) {
     body += fontXml("  ", escText);
     body += blankXml(blank, letters.get(blank), escAttr, escText);
     parts.push(paragraph(body, TAB_TOPLABELS));
+  }
+  if ((item.blanks ?? []).some((b) => b.required)) {
+    ensureStarOnPriorLabel(parts, requiredStarFontXml(escText));
   }
   return parts;
 }
@@ -686,6 +728,7 @@ function topLabelsOneRowXml(row, letters, escAttr, escText) {
     if (seg.type === "text") leadingBody += renderTextSeg(seg);
   }
   if (leadingBody.trim()) {
+    if (rowHasRequiredBlank(row)) leadingBody += requiredStarFontXml(escText);
     parts.push(paragraph(leadingBody, TAB_TOPLABELS));
   }
 

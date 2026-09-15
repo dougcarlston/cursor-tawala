@@ -2171,10 +2171,28 @@ textarea {
 }
 
 .fib-rendered .fib-blank-caption .qinfo,
-.fib-blank-caption .qinfo {
+.fib-blank-caption .qinfo,
+.fib-rendered .qinfo,
+.fib-toplabel-prompt .qinfo {
   color: #c00;
   font-style: normal;
   font-weight: bold;
+}
+
+.fib-rendered .fib-toplabel-idle {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  vertical-align: top;
+  margin: 0 0 0.35em;
+}
+
+.fib-rendered .fib-toplabel-prompt {
+  line-height: 1.3;
+}
+
+.fib-rendered .fib-toplabel-fields {
+  line-height: 1.2;
 }
 
 .fib-rendered .fib-blank-underscores {

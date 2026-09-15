@@ -148,6 +148,15 @@ public class Blank implements Field, FormRenderable {
 	}
 
 	public Html defaultRendering(ExecutionContext context) {
+		return defaultRendering(context, true);
+	}
+
+	/**
+	 * @param includeRequiredStar false for Styles→Above (VerticalLabelLayout):
+	 *        the * lives on the question-label paragraph from Deploy XML, not
+	 *        after the input.
+	 */
+	public Html defaultRendering(ExecutionContext context, boolean includeRequiredStar) {
 		HtmlItems htmlItems = new HtmlItems();
 		if (context.isPreviewMode()) {
 			htmlItems.add(new Anchor("anchor-" + getHtmlId()));
@@ -179,23 +188,19 @@ public class Blank implements Field, FormRenderable {
 			Italics italic = new Italics();
 			italic.add(new HtmlString(caption.trim()));
 			cap.add(italic);
-			if (isRequired()) {
+			stack.add(cap);
+			stack.add(fieldBody);
+			if (isRequired() && includeRequiredStar) {
 				Block star = new Block("span", false, new HtmlString(" *"));
 				star.setAttribute("class", "qinfo");
-				cap.add(star);
+				stack.add(star);
 			}
-			stack.add(cap);
-			stack.add(fieldBody);
 			htmlItems.add(stack);
-		} else if (isRequired()) {
-			Span stack = new Span("class", "fib-blank-stack");
-			Span cap = new Span("class", "fib-blank-caption");
-			Block star = new Block("span", false, new HtmlString("*"));
+		} else if (isRequired() && includeRequiredStar) {
+			Block star = new Block("span", false, new HtmlString(" *"));
 			star.setAttribute("class", "qinfo");
-			cap.add(star);
-			stack.add(cap);
-			stack.add(fieldBody);
-			htmlItems.add(stack);
+			fieldBody.add(star);
+			htmlItems.add(fieldBody);
 		} else {
 			htmlItems.add(fieldBody);
 		}

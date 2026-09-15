@@ -7,6 +7,7 @@ import {
   defaultValidation,
   fibHintHighlightEnd,
   fibIdleHtmlWithCaptions,
+  fibIdleHtmlTopLabels,
   htmlToPlainText,
   isAlternateLabelUnique,
   selectionIsSingleBlank,
@@ -372,8 +373,10 @@ export function FibCanvasRow({ item, index, formName, selected }: Props) {
   const stripEnabled = activeBlank >= 0 && !!currentBlank;
   const idleHtml = isEmpty
     ? FIB_PLACEHOLDER
-    : fibIdleHtmlWithCaptions(plainPrompt, blanks, embedPlainFieldTokensAsHtml) ??
-      embedPlainFieldTokensAsHtml(prompt);
+    : item.style === "topLabels"
+      ? fibIdleHtmlTopLabels(plainPrompt, blanks, embedPlainFieldTokensAsHtml)
+      : fibIdleHtmlWithCaptions(plainPrompt, blanks, embedPlainFieldTokensAsHtml) ??
+        embedPlainFieldTokensAsHtml(prompt);
 
   return (
     <div

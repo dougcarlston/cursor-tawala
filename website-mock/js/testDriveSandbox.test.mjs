@@ -38,6 +38,19 @@ const defaultJs = readFileSync(
 );
 assert.match(defaultJs, /bindTestDriveLeaveWipe/);
 assert.match(defaultJs, /\/t\//);
+assert.match(
+  defaultJs,
+  /tawalaTrapBrowserBack/,
+  "C15: Block Back must bounce Back off the prior page, not Leave-site"
+);
+assert.match(defaultJs, /tawalaBounceIfLeftBlockedPage/);
+assert.match(defaultJs, /sessionStorage.setItem\("tawalaBlockBack"/);
+assert.match(defaultJs, /history.forward/);
+assert.doesNotMatch(
+  defaultJs,
+  /window\.onbeforeunload = function/,
+  "Leave-site beforeunload is not Block Back — Chrome lets Leave go to page 1"
+);
 {
 	const assigned = defaultJs.indexOf("Tawala.bindTestDriveLeaveWipe = function");
 	const ready = defaultJs.indexOf("Event.onDOMReady(Tawala.bindTestDriveLeaveWipe)");

@@ -51,7 +51,7 @@ Icons sit in a strip **directly above** the tree. Hover shows the written name. 
 - Icons **1–3** are the only active ones until forms/processes/documents exist.
 - Icons **1–5** show once nodes exist; **4–5** grey until there are siblings to reorder.
 - Icons **6–8** appear only when a **form** node is selected (hidden for Process or Document).
-- **Owner Sep 3:** Start Point was smoked in Library / Test Drive work; **#7 and #8 never smoked** — track as **C15** in `DESIGNER_OPEN_TODOS.md` (Design toggle → Push → `:8080`).
+- **Owner Sep 3:** Start Point was smoked in Library / Test Drive work; **#7 and #8** are **C15**. Pre-populate smoked Sep 15 (owner). **Block Back:** Chrome will not honor dummy `pushState` (hash can change, Back still unloads to page 1 and shows Leave-site). Runtime: no `beforeunload`; `sessionStorage` lock + `history.forward()` on `pageshow`/`popstate`. Submit clears the lock. Smoke: page 2 → Back stays on (or snaps back to) page 2, no Leave dialog. Hard-refresh `:8080`.
 - July 2026 close-up crop shows icons **1–5** clearly; **6–8** require a selected form node (not shown in that crop).
 **New nodes:** Default names (`Form 1`, `Process 2`, …) in the correct folder.
 

@@ -113,6 +113,36 @@ i, em { font-style: italic; }
   max-width: 100%;
   box-sizing: content-box;
 }
+/* Styles → Above: question label (and required *) above the blanks — not Name | box. */
+.fib-row.fib-top-label-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  width: 100%;
+  gap: 0.15em;
+  line-height: 1.5;
+  box-sizing: border-box;
+}
+.fib-top-label-stack .fib-top-label-text {
+  flex: none;
+  min-width: 0;
+  max-width: none;
+  font-size: inherit;
+  color: inherit;
+}
+.fib-top-label-stack .fib-top-label-fields {
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: flex-end;
+  gap: 8px 12px;
+}
+.fib-top-label-stack .qinfo,
+.fib-style-topLabels .qinfo {
+  color: #c00;
+  font-weight: bold;
+  font-style: normal;
+}
 .fib-row.fib-top-label { flex-direction: row; align-items: center; }
 .fib-top-label-text { flex: 0 0 140px; min-width: 100px; font-size: 13px; color: #444; }
 .fib-top-label-field { flex: 0 1 auto; }

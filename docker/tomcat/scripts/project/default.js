@@ -1333,16 +1333,82 @@ function initTimeoutDialog() {
 };
 
 /*************************************
- * Handling of page exits in case where the back button navigation should be discouraged.
+ * Block Back Button (form blockBackButton).
+ * Chrome will not let a page own the Back button (history-spam intervention):
+ * dummy pushState entries update the hash but Back still targets the previous
+ * document, and beforeunload only shows "Leave site?". So: no beforeunload;
+ * lock in sessionStorage; if Back reveals the prior page, bounce forward.
  */
 
-var confirmNavigationAwayFromPage = false;
+(function () {
+	var tawalaBlockBackFlag = false;
+	Object.defineProperty(window, "confirmNavigationAwayFromPage", {
+		configurable: true,
+		enumerable: true,
+		get: function () {
+			return tawalaBlockBackFlag;
+		},
+		set: function (v) {
+			tawalaBlockBackFlag = (v === true);
+			if (tawalaBlockBackFlag) {
+				tawalaTrapBrowserBack();
+			} else {
+				try {
+					sessionStorage.removeItem("tawalaBlockBack");
+				} catch (ignore) {}
+			}
+		}
+	});
+})();
 
-window.onbeforeunload = function () {
-	if(confirmNavigationAwayFromPage == true) {
-		return "You might have unsaved information on the form. To save any possible unsaved information, stay on the page and click submit.";
+function tawalaBounceIfLeftBlockedPage() {
+	try {
+		if (sessionStorage.getItem("tawalaBlockBack") !== "1") {
+			return;
+		}
+	} catch (e) {
+		return;
 	}
-};     
+	if (history.state && history.state.tawalaBlockBack) {
+		return;
+	}
+	try {
+		history.forward();
+	} catch (ignore) {}
+}
+
+window.addEventListener("pageshow", tawalaBounceIfLeftBlockedPage);
+
+function tawalaTrapBrowserBack() {
+	try {
+		sessionStorage.setItem("tawalaBlockBack", "1");
+	} catch (ignore) {}
+	if (!window.history || !history.pushState) {
+		return;
+	}
+	try {
+		history.pushState(
+			{ tawalaBlockBack: 1 },
+			"",
+			location.pathname + location.search + "#tawala-bb"
+		);
+	} catch (ignore) {}
+	if (window._tawalaBlockBackBound) {
+		return;
+	}
+	window._tawalaBlockBackBound = true;
+	window.addEventListener("popstate", function () {
+		if (confirmNavigationAwayFromPage !== true) {
+			return;
+		}
+		if (history.state && history.state.tawalaBlockBack) {
+			return;
+		}
+		try {
+			history.forward();
+		} catch (ignore) {}
+	});
+}
 
 function onSubmit(form) {
 	var i, inputs, input;

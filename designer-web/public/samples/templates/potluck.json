@@ -134,6 +134,10 @@
           "content": "Click the submit button to enter your information."
         },
         {
+          "type": "break",
+          "label": "BREAK"
+        },
+        {
           "type": "text",
           "label": "T6",
           "content": "You entered the following information:<div data-doc-blank=\"1\" style=\"min-height: 13.7pt;\"><table class=\"user user-border-2\" style=\"position: relative; width: 216pt; border-collapse: collapse; margin-bottom: 12pt; left: 57.3pt; top: 12.3pt;\"><tbody><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"table-cell-selected\">Name&nbsp;</td><td style=\"width: 108pt;\" class=\"\">&nbsp;&lt;&lt;attendeeName&gt;&gt;</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">Number of Adults&nbsp;</td><td style=\"width: 108pt;\" class=\"\">&nbsp;&lt;&lt;numAdults&gt;&gt;</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">Number of Kids&nbsp;</td><td style=\"width: 108pt;\" class=\"\">&nbsp;&lt;&lt;numKids&gt;&gt;</td></tr><tr style=\"height: 12pt;\"><td style=\"width: 108pt;\" class=\"\">Dish&nbsp;</td><td style=\"width: 108pt;\">&nbsp;&lt;&lt;contribution&gt;&gt;</td></tr></tbody></table></div>",
@@ -182,7 +186,8 @@
       ],
       "themePath": "default",
       "process": "Send Thanks",
-      "preProcess": "Show Results"
+      "preProcess": "Show Results",
+      "blockBackButton": true
     },
     {
       "name": "Report",

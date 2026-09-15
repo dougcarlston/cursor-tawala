@@ -213,3 +213,71 @@ describe("designer Preview (review mode)", () => {
     expect(html).toContain("color: #c00000");
   });
 });
+
+describe("designer Preview FIB Styles → Above", () => {
+  it("stacks Name above the blank with required * on the label", () => {
+    const project = {
+      name: "potluck",
+      themePath: "default",
+      forms: [
+        {
+          name: "Potluck Organizer",
+          items: [
+            {
+              type: "fib",
+              label: "FIB1",
+              style: "topLabels",
+              prompt: "Name___________________________________",
+              blanks: [{ name: "attendeeName", length: 35, required: true }],
+            },
+          ],
+        },
+      ],
+    };
+    const html = renderFormPage(
+      project,
+      "Potluck Organizer",
+      "http://localhost:5173",
+      "preview-above",
+      createSession(project),
+      { designerPreview: true },
+    );
+    expect(html).toContain("fib-top-label-stack");
+    expect(html).toContain("fib-top-label-text");
+    expect(html).toMatch(/fib-top-label-text">Name<span class="qinfo"> \*<\/span>/);
+    expect(html.indexOf("fib-top-label-text")).toBeLessThan(html.indexOf("fib-top-label-fields"));
+    expect(html.indexOf("class=\"qinfo\"")).toBeLessThan(html.indexOf("name=\"FIB1:attendeeName\""));
+    expect(html).not.toMatch(/class="fib-row fib-row-stacked"/);
+  });
+
+  it("puts required * on Name when the prompt is already two lines", () => {
+    const project = {
+      name: "potluck",
+      themePath: "default",
+      forms: [
+        {
+          name: "Potluck Organizer",
+          items: [
+            {
+              type: "fib",
+              label: "FIB1",
+              style: "topLabels",
+              prompt: "Name\n___________________________________",
+              blanks: [{ name: "attendeeName", length: 35, required: true }],
+            },
+          ],
+        },
+      ],
+    };
+    const html = renderFormPage(
+      project,
+      "Potluck Organizer",
+      "http://localhost:5173",
+      "preview-above-2line",
+      createSession(project),
+      { designerPreview: true },
+    );
+    expect(html).toMatch(/fib-top-label-text">Name<span class="qinfo"> \*<\/span>/);
+    expect(html).toContain("fib-top-label-stack");
+  });
+});

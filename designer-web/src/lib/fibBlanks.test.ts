@@ -70,6 +70,47 @@ describe("fibIdleHtmlWithCaptions", () => {
       fibIdleHtmlWithCaptions("Name ________", [{ name: "a", length: 8 }], (s) => s),
     ).toBeNull();
   });
+
+  it("paints required star on the prompt, not on Caption", async () => {
+    const { fibIdleHtmlWithCaptions } = await import("@/lib/fibBlanks");
+    const html = fibIdleHtmlWithCaptions(
+      "Name: ________",
+      [{ name: "a", length: 8, caption: "First", required: true }],
+      (s) => s,
+    );
+    expect(html).toContain("Name:");
+    expect(html).toContain('class="qinfo"');
+    expect(html.indexOf("class=\"qinfo\"")).toBeLessThan(html.indexOf("fib-blank-caption"));
+    expect(html).toContain('class="fib-blank-caption">First<');
+    expect(html).not.toMatch(/fib-blank-caption">[^<]*class="qinfo"/);
+  });
+
+  it("Above idle stacks a one-line prompt without a return", async () => {
+    const { fibIdleHtmlTopLabels } = await import("@/lib/fibBlanks");
+    const html = fibIdleHtmlTopLabels(
+      "Organization Name: ________",
+      [{ name: "a", length: 8, required: true }],
+      (s) => s,
+    );
+    expect(html).toContain("fib-toplabel-idle");
+    expect(html).toContain("fib-toplabel-prompt");
+    expect(html).toContain("Organization Name:");
+    expect(html).toContain('class="qinfo"');
+    expect(html.indexOf("Organization Name:")).toBeLessThan(html.indexOf("________"));
+    expect(html.indexOf("class=\"qinfo\"")).toBeLessThan(html.indexOf("________"));
+  });
+
+  it("Above idle puts required star on a two-line Name / blanks prompt", async () => {
+    const { fibIdleHtmlTopLabels } = await import("@/lib/fibBlanks");
+    const html = fibIdleHtmlTopLabels(
+      "Name\n___________________________________",
+      [{ name: "attendeeName", length: 35, required: true }],
+      (s) => s,
+    );
+    expect(html).toContain("fib-toplabel-prompt");
+    expect(html.indexOf("Name")).toBeLessThan(html.indexOf("class=\"qinfo\""));
+    expect(html.indexOf("class=\"qinfo\"")).toBeLessThan(html.indexOf("________"));
+  });
 });
 
 describe("fibHintHighlightEnd", () => {

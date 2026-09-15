@@ -255,6 +255,14 @@ form div.fib.vertical > div > div.blank:last-child {
 }
 
 /*
+ * C14: required * belongs on the Above question label (XML next to Name),
+ * never under the box. Hide Java Blank.qinfo after the input.
+ */
+form div.fib.vertical .blank span.qinfo {
+	display: none !important;
+}
+
+/*
  * Per-blank captions (Design blank.caption → Java <blank caption="…">):
  * stack sits above each input. inline-flex so freeform / remainder keep Street
  * City Zip on one line; vertical-align:bottom keeps side labels with inputs.

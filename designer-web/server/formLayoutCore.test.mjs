@@ -122,4 +122,10 @@ describe("form-layout-core.css (Deploy layout lock)", () => {
     expect(defaultCss).toMatch(/b,\s*strong\s*\{\s*font-weight:\s*bold\s*;?\s*\}/);
     expect(defaultCss).toMatch(/i,\s*em\s*\{\s*font-style:\s*italic\s*;?\s*\}/);
   });
+
+  it("hides Java required * under Above blanks (star lives on the label)", () => {
+    expect(css).toMatch(
+      /form div\.fib\.vertical \.blank span\.qinfo\s*\{\s*display:\s*none\s*!important/,
+    );
+  });
 });

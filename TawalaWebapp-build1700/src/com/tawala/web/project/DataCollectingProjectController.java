@@ -390,7 +390,7 @@ public abstract class DataCollectingProjectController extends ProjectController 
 		page.addPrintStylesheets(theme.getPrintStylesheetURLs());
 		page.addScreenStylesheets(theme.getScreenStylesheetURLs());
 
-		page.addScript("/scripts/project/default.js?v=20260914-tdleave4");
+		page.addScript("/scripts/project/default.js?v=20260915-bbtrap01");
 
 		if (project.getPageHeader() != null) {
 			page.addToFront(project.getPageHeader().toHtml(context));

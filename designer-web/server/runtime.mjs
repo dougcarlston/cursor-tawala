@@ -12,7 +12,7 @@ import {
 } from "./runtimeEngine.mjs";
 import { enhanceRichTextHtml as enhanceRichHtmlShared, looksLikeRichHtml } from "./richHtmlPreview.mjs";
 import { renderDocumentsPage } from "./documentRenderer.mjs";
-import { fibRowLabel, fibUsesLeftLabels, fibUsesRightAlignLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
+import { fibRowFields, fibRowLabel, fibUsesLeftLabels, fibUsesRightAlignLabels, normalizeFibPromptSource, parseFibPrompt } from "./fibPrompt.mjs";
 import { renderItemizationTableHtml, blankAliasesFromForm } from "./itemizationPreview.mjs";
 import { renderChoiceTallyTableHtml } from "./choiceTallyPreview.mjs";
 import { BASE_FORM_CSS, resolveTheme as resolveThemeCss, themeBodyClass } from "./themes/index.mjs";
@@ -94,6 +94,74 @@ function runSkipBlocks(skipBlocks, ctx) {
   return null;
 }
 
+function previewRequiredStarHtml() {
+  return `<span class="qinfo"> *</span>`;
+}
+
+/** Text before the first blank on a parsed FIB row (keeps a trailing colon). */
+function rowLeadingText(row) {
+  let text = "";
+  for (const seg of row?.segments || []) {
+    if (seg.type === "blank") break;
+    text += String(seg.text ?? "").replace(/_+/g, "");
+  }
+  return text.replace(/\s+$/g, "");
+}
+
+function rowHasRequiredBlank(row) {
+  return (row?.segments || []).some((seg) => seg.type === "blank" && seg.blank?.required);
+}
+
+/** Preview: Styles → Above stacks the question label (and required *) over the blanks. */
+function renderTopLabelsUnderscoreHtml(item, ctx, rows) {
+  const fieldSegHtml = (row) => {
+    let seenBlank = false;
+    return row.segments
+      .map((seg) => {
+        if (seg.type === "text") {
+          if (!seenBlank) return "";
+          const text = String(seg.text ?? "").replace(/_+/g, "");
+          if (!text) return "";
+          return `<span class="fib-inline-text">${esc(text)}</span>`;
+        }
+        if (seg.type === "blank") {
+          seenBlank = true;
+          const cap = String(seg.blank?.caption ?? seg.hint ?? "").trim();
+          const capHtml = cap ? `<em class="fib-blank-caption">${esc(cap)}</em>` : "";
+          return `<span class="fib-field${cap ? " fib-field-captioned" : ""}">${capHtml}${blankInput(item, seg.blank, ctx)}</span>`;
+        }
+        return "";
+      })
+      .join("");
+  };
+
+  const parts = [];
+  let pendingLabel = "";
+  for (const row of rows) {
+    const fields = fibRowFields(row.segments);
+    const leading = rowLeadingText(row);
+    if (fields.length === 0) {
+      pendingLabel = [pendingLabel, leading].filter(Boolean).join(" ");
+      continue;
+    }
+    const label = [pendingLabel, leading].filter(Boolean).join(" ");
+    pendingLabel = "";
+    const star = rowHasRequiredBlank(row) ? previewRequiredStarHtml() : "";
+    parts.push(
+      `<div class="fib-row fib-top-label-stack">` +
+        `${label || star ? `<div class="fib-top-label-text">${esc(label)}${star}</div>` : ""}` +
+        `<div class="fib-top-label-fields">${fieldSegHtml(row)}</div>` +
+        `</div>`,
+    );
+  }
+  if (pendingLabel) {
+    parts.push(
+      `<div class="fib-row fib-top-label-stack"><div class="fib-top-label-text">${esc(pendingLabel)}</div></div>`,
+    );
+  }
+  return `<div class="fib fib-style-topLabels" id="item-${esc(itemKey(item))}">${parts.join("")}</div>`;
+}
+
 function blankInput(item, blank, ctx) {
   const fname = `${item.label}:${blank.name}`;
   const alt = blank.alternateLabel || blank.name;
@@ -136,34 +204,35 @@ function renderFib(item, ctx) {
       .replace(/<[^>]+>/g, "")
       .trim();
     const hasUnderscoreRuns = /_+/.test(plainPrompt);
-    if (!hasUnderscoreRuns) {
-      const introRaw =
-        prompt.trim() && !prompt.includes("//") && !prompt.includes("/") ? prompt.trim() : "";
-      const intro = introRaw
-        ? normalizeFibPromptSource(introRaw)
-            .replace(/<[^>]+>/g, "")
-            .replace(/_+/g, "")
-            .replace(/\s+/g, " ")
-            .trim()
-        : "";
-      const fieldRows = blanks;
-      const rowHtml = fieldRows
-        .map((blank) => {
-          const label = blank.displayLabel?.trim() || "";
-          // Live Preview inputs — never readonly (that produced empty signup records /
-          // blank MULTIPLE QUESTION LIST rows). Reuse blankInput for name + session value.
-          return `<div class="fib-row fib-top-label">
+    if (hasUnderscoreRuns) {
+      return renderTopLabelsUnderscoreHtml(item, ctx, rows);
+    }
+    const introRaw =
+      prompt.trim() && !prompt.includes("//") && !prompt.includes("/") ? prompt.trim() : "";
+    const intro = introRaw
+      ? normalizeFibPromptSource(introRaw)
+          .replace(/<[^>]+>/g, "")
+          .replace(/_+/g, "")
+          .replace(/\s+/g, " ")
+          .trim()
+      : "";
+    const fieldRows = blanks;
+    const rowHtml = fieldRows
+      .map((blank) => {
+        const label = blank.displayLabel?.trim() || "";
+        // Live Preview inputs — never readonly (that produced empty signup records /
+        // blank MULTIPLE QUESTION LIST rows). Reuse blankInput for name + session value.
+        return `<div class="fib-row fib-top-label">
           ${label ? `<div class="fib-top-label-text">${esc(label)}</div>` : ""}
           <div class="fib-top-label-field">${blankInput(item, blank, ctx)}</div>
         </div>`;
-        })
-        .join("");
-      const introHtml =
-        intro && !/underscores create blanks/i.test(intro)
-          ? `<p class="fib-intro">${esc(intro)}</p>`
-          : "";
-      return `<div class="fib fib-style-topLabels" id="item-${esc(itemKey(item))}">${introHtml}${rowHtml}</div>`;
-    }
+      })
+      .join("");
+    const introHtml =
+      intro && !/underscores create blanks/i.test(intro)
+        ? `<p class="fib-intro">${esc(intro)}</p>`
+        : "";
+    return `<div class="fib fib-style-topLabels" id="item-${esc(itemKey(item))}">${introHtml}${rowHtml}</div>`;
   }
 
   const rowHtml = rows

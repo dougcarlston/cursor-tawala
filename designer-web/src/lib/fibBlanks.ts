@@ -171,19 +171,29 @@ function escapeIdleText(s: string): string {
     .replace(/"/g, "&quot;");
 }
 
+/** Idle required marker — on the prompt/label, never inside Caption. */
+export function fibIdleRequiredStarHtml(): string {
+  return `<span class="qinfo"> *</span>`;
+}
+
 /**
  * Design idle: when any blank has a caption, wrap each underscore run so the
  * caption sits tight above that run (not Styles→Above; edit mode stays plain).
- * Returns null when captions are absent — caller should use the normal idle path.
+ * Required `*` is painted on the prompt text before the blank, not on Caption.
+ * Returns null when captions are absent and stars are omitted — caller uses the
+ * normal idle path.
  * `embedSlice` turns plain slices (incl. <<Field>> tokens) into HTML.
  */
 export function fibIdleHtmlWithCaptions(
   plainText: string,
   blanks: TawalaBlank[],
   embedSlice: (plain: string) => string,
+  opts?: { omitRequiredStar?: boolean },
 ): string | null {
+  const omitStar = opts?.omitRequiredStar === true;
   const runs = parseUnderscoreRuns(plainText);
-  if (runs.length === 0 || !blanks.some((b) => b.caption?.trim() || b.required)) {
+  const needsWrap = blanks.some((b) => b.caption?.trim() || (!omitStar && b.required));
+  if (runs.length === 0 || !needsWrap) {
     return null;
   }
   let out = "";
@@ -191,14 +201,13 @@ export function fibIdleHtmlWithCaptions(
   for (let i = 0; i < runs.length; i++) {
     const run = runs[i];
     out += embedSlice(plainText.slice(last, run.start));
+    if (!omitStar && blanks[i]?.required) out += fibIdleRequiredStarHtml();
     const unders = plainText.slice(run.start, run.end);
     const cap = blanks[i]?.caption?.trim();
-    const reqStar = blanks[i]?.required ? `<span class="qinfo"> *</span>` : "";
-    if (cap || reqStar) {
-      const capText = cap ? escapeIdleText(cap) : "";
+    if (cap) {
       out +=
         `<span class="fib-blank-unit">` +
-        `<span class="fib-blank-caption">${capText}${reqStar}</span>` +
+        `<span class="fib-blank-caption">${escapeIdleText(cap)}</span>` +
         `<span class="fib-blank-underscores">${unders}</span>` +
         `</span>`;
     } else {
@@ -208,6 +217,47 @@ export function fibIdleHtmlWithCaptions(
   }
   out += embedSlice(plainText.slice(last));
   return out;
+}
+
+/**
+ * Styles → Above (`topLabels`): idle stacks the question label above the blanks
+ * without the author inserting a return. Edit mode stays the raw prompt.
+ */
+export function fibIdleHtmlTopLabels(
+  plainText: string,
+  blanks: TawalaBlank[],
+  embedSlice: (plain: string) => string,
+): string {
+  const lines = String(plainText || "").split("\n");
+  let blankI = 0;
+  const parts: string[] = [];
+  let pendingLabel = "";
+  for (let li = 0; li < lines.length; li++) {
+    const line = lines[li];
+    const runs = parseUnderscoreRuns(line);
+    if (runs.length === 0) {
+      pendingLabel = pendingLabel ? `${pendingLabel}\n${line}` : line;
+      continue;
+    }
+    const lineLabel = line.slice(0, runs[0].start);
+    const label = pendingLabel ? `${pendingLabel}${lineLabel}` : lineLabel;
+    pendingLabel = "";
+    const fieldsPlain = line.slice(runs[0].start);
+    const rowBlanks = blanks.slice(blankI, blankI + runs.length);
+    const star = rowBlanks.some((b) => b.required) ? fibIdleRequiredStarHtml() : "";
+    const fieldsHtml =
+      fibIdleHtmlWithCaptions(fieldsPlain, rowBlanks, embedSlice, { omitRequiredStar: true }) ??
+      embedSlice(fieldsPlain);
+    parts.push(
+      `<span class="fib-toplabel-idle">` +
+        `<span class="fib-toplabel-prompt">${embedSlice(label)}${star}</span>` +
+        `<span class="fib-toplabel-fields">${fieldsHtml}</span>` +
+        `</span>`,
+    );
+    blankI += runs.length;
+  }
+  if (pendingLabel) parts.push(embedSlice(pendingLabel));
+  return parts.join("\n");
 }
 
 /**

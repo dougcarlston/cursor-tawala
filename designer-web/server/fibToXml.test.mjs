@@ -138,18 +138,40 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(xml).not.toMatch(/<b>Email:/);
   });
 
-  it("topLabels mirrors Design bold on MQS-style Name:/Age: prompts", () => {
+  it("topLabels one-blank rich prompt still splits label above the blank", () => {
     const item = {
       type: "fib",
       label: "Q1",
       style: "topLabels",
       prompt: "<b>Name:</b> _________________________",
-      blanks: [{ name: "a", length: 25, alternateLabel: "Name" }],
+      blanks: [{ name: "a", length: 25, alternateLabel: "Name", required: true }],
     };
     const xml = fibToXml(item, escAttr, escText);
-    expect(xml).toMatch(/<font[^>]*><b>Name:<\/b><\/font>/);
-    expect(xml).toContain("<blank");
-    expect(xml).not.toMatch(/>Name: <\/font>/);
+    const paras = [...xml.matchAll(/<paragraph[\s\S]*?<\/paragraph>/g)].map((m) => m[0]);
+    expect(paras.length).toBeGreaterThanOrEqual(2);
+    expect(paras[0]).toMatch(/<b>Name:<\/b>/);
+    expect(paras[0]).not.toMatch(/<blank\b/);
+    expect(paras[1]).toMatch(/<blank\b/);
+    expect(paras[0]).toMatch(/\*/);
+  });
+
+  it("topLabels two-line Name then blanks puts required star on the label paragraph", () => {
+    const item = {
+      type: "fib",
+      label: "FIB1",
+      style: "topLabels",
+      prompt: "Name\n___________________________________",
+      blanks: [{ name: "attendeeName", length: 35, required: true }],
+    };
+    const xml = fibToXml(item, escAttr, escText);
+    const paras = [...xml.matchAll(/<paragraph[\s\S]*?<\/paragraph>/g)].map((m) => m[0]);
+    expect(paras.length).toBeGreaterThanOrEqual(2);
+    expect(paras[0]).toMatch(/Name/);
+    expect(paras[0]).not.toMatch(/<blank\b/);
+    expect(paras[0]).toMatch(/color="cc0000"/);
+    expect(paras[0]).toMatch(/\*/);
+    expect(paras[1]).toMatch(/<blank\b/);
+    expect(paras[1]).not.toMatch(/color="cc0000"/);
   });
 
   it("topLabels mirrors palette font-weight:bold spans (styleWithCSS)", () => {
@@ -224,8 +246,12 @@ describe("fibToXml WYSIWYG rows", () => {
     expect(paras.length).toBeGreaterThanOrEqual(2);
     expect(paras[0]).toMatch(/Add your name/);
     expect(paras[0]).not.toMatch(/<blank\b/);
-    expect(paras[1]).toMatch(/Name:/);
-    expect(paras[1]).toMatch(/<blank\b/);
+    const namePara = paras.find((p) => /Name:/.test(p));
+    const blankPara = paras.find((p) => /<blank\b/.test(p));
+    expect(namePara).toBeTruthy();
+    expect(blankPara).toBeTruthy();
+    expect(namePara).not.toMatch(/<blank\b/);
+    expect(paras.indexOf(namePara)).toBeLessThan(paras.indexOf(blankPara));
   });
 
   it("emits per-blank caption attribute for leftAlign (AlignedLabelsLayout)", () => {

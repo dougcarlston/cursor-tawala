@@ -80,7 +80,7 @@ Opened from **Format → Styles →** cascade (legacy) or **Project → Styles�
 
 | Radio | Preview sample | Stored `style` |
 |-------|----------------|----------------|
-| **Above** | `Name:` / `Address:` each above its blank (2 rows; blanks different widths) | `topLabels` — **Parked gap Sep 3:** one-line Design prompts / rich one-blank Deploy can still look Freeform unless the author adds a return; required `*` should sit on the question label, not the caption/input stack. Batch on next Designer pass (`DESIGNER_OPEN_TODOS.md` **C14**). |
+| **Above** | `Name:` / `Address:` each above its blank (2 rows; blanks different widths) | `topLabels` — Design idle auto-stacks a one-line prompt (no extra return). Required `*` sits on the question label, not Caption. Deploy splits the label paragraph above the blank even on rich one-blank rows. |
 | **Left justified** | `Name:` / `Address:` / `Phone:` left-aligned labels; blanks of varying width to the right | `leftAlignLabels` or `leftAlignLabelsJustified` |
 | **Right justified** | Same three rows; labels right-aligned so colons line up | `rightAlignLabels` or `rightAlignLabelsJustified` |
 | **Freeform** | Inline: *Columbus had three ships called the □ the □ and the □* | `freeform` |
@@ -97,6 +97,7 @@ Preview labels are **dark blue**; blanks are disabled textboxes (inset). Labels 
 6. Even **vertical spacing** between FIB items (use `margin` on `table.fib` — Java sets `padding-bottom: 0` on multi-blank remainder wrappers).
 7. `Full Name: ____ (first) ____ (last)` stays **one** Deploy row (both blanks + hints). Hard-refresh after CSS changes.
 8. **Layout lock:** Deploy geometry lives in `/css/project/form-layout-core.css`, loaded **last** by `CommonTheme` (and re-appended after user-defined themes). Themes may set `--tawala-fib-label-width` / `--tawala-fib-table-max-width` only. Do not put FIB geometry in `{theme}/project.css`. Bake via `docker/tomcat/css/` into the image — do not rely on ephemeral `docker cp`. Unit: `formLayoutCore.test.mjs`.
+9. **Above (C14, Sep 15):** one-line Design prompt (`Organization Name: ____`) idles with the label **above** the blank — no extra return. Required `*` is on that label, never on Caption (First/Last) and never under the box. Preview stacks the same way (not `Name` | box). Push splits the label paragraph above the blank even when the prompt is bold or already two lines (`Name` then underscores); the red `*` is in that label paragraph. Edit mode still shows raw underscores. Re-Push after the change so live `:8080` picks up the label star.
 
 #### Blanks
 
