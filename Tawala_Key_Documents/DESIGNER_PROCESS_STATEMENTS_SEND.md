@@ -9,7 +9,9 @@ Related: `DESIGNER_PROCESS_STATEMENTS_SHOW.md`, `DESIGNER_FORM_ITEMS_TEXT_FIB_MC
 
 ## Overview
 
-**Send** means **send by email only**. There is a single **Email** tab (no SMS or other channels in this UI).
+**Send** means **send by email only** in the current UI. There is a single **Email** tab (no SMS or other channels in this UI).
+
+**Parked (owner Sep 17, 2026):** SMS / text as a second Send channel — sports leagues already said kids and many parents live on text; group volumes are cheap. Not this track. See `DESIGNER_OPEN_TODOS.md` **D5** and `docs/TAWALA_WEDGE_MEMO_NOTES.md` §16.
 
 Select **Send** in the Statements palette. **Add** inserts at the blue-arrow insertion point in the process script.
 
