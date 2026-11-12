@@ -117,6 +117,14 @@
             	</c:choose>
             </div>
             <div id="featuredApps">
+                <style>
+                    /* Heading text replaced a 13px gif. line-height:0 on #featuredApps
+                       let that line cover the icon row. A missing icon then showed the
+                       project name (alt text) sliced by the heading. */
+                    #featuredApps { height: auto; min-height: 267px; padding-bottom: 8px; }
+                    #featuredFree, #featuredFree p { line-height: 1.35; }
+                    #featuredFree p { margin: 0 0 0.35em 0; }
+                </style>
                 <div id="featuredFree">
 					<c:choose>
                			<c:when test="${empty domain.title}">
