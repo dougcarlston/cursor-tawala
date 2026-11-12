@@ -1380,7 +1380,14 @@
   }
 
   /** Resolve a My Tawala project for Use / deploy checks. */
+  const PUBLIC_DETAIL_PROJECTS = Object.create(null);
+
+  function rememberPublicProject(project) {
+    if (project && project.id) PUBLIC_DETAIL_PROJECTS[project.id] = project;
+  }
+
   function resolveMyTawalaProject(projectId) {
+    if (projectId && PUBLIC_DETAIL_PROJECTS[projectId]) return PUBLIC_DETAIL_PROJECTS[projectId];
     if (!projectId || typeof TawalaDemo === "undefined") return null;
     if (typeof TawalaDemo.getMyTawala === "function") {
       const p = TawalaDemo.getMyTawala(projectId);
@@ -2579,19 +2586,62 @@
     return new Set(orderedStartPoints(project).map(startPointFormKey));
   }
 
+  /**
+   * Real start-link names from the project definition.
+   * A pushed project often has a Run link on every form, because Java treats a
+   * missing startPoint attribute as true. That list is not the start links.
+   */
+  function knownStartNameSet(project) {
+    const table = typeof window !== "undefined" ? window.TAWALA_FORM_STARTS : null;
+    if (!table || !project) return null;
+    const name = projectDisplayName(project).trim().toLowerCase();
+    if (name && table.byName && Array.isArray(table.byName[name]) && table.byName[name].length) {
+      return new Set(table.byName[name]);
+    }
+    const forms = [];
+    const seen = new Set();
+    function add(value) {
+      const text = String(value || "").trim();
+      if (!text || seen.has(text)) return;
+      seen.add(text);
+      forms.push(text);
+    }
+    (Array.isArray(project.formNames) ? project.formNames : []).forEach(add);
+    (Array.isArray(project.forms) ? project.forms : []).forEach((form) =>
+      add(typeof form === "string" ? form : form && form.name)
+    );
+    orderedStartPoints(project).forEach((sp) => add(startPointFormKey(sp)));
+    if (!forms.length || !table.bySignature) return null;
+    const starts = table.bySignature[forms.slice().sort().join("\n")];
+    return Array.isArray(starts) && starts.length ? new Set(starts) : null;
+  }
+
   /** Map form key → first matching start point (idx + url + label). */
   function startInfoByForm(project) {
     const map = new Map();
-    orderedStartPoints(project).forEach((sp, idx) => {
+    const allowed = knownStartNameSet(project);
+    const raw = orderedStartPoints(project);
+    raw.forEach((sp) => {
       const key = startPointFormKey(sp);
-      if (!map.has(key)) {
-        map.set(key, {
-          idx,
-          url: sp.url ? String(sp.url) : "",
-          label: key,
-        });
-      }
+      if (!key || map.has(key)) return;
+      if (allowed && !allowed.has(key)) return;
+      map.set(key, {
+        idx: map.size,
+        url: sp.url ? String(sp.url) : "",
+        label: key,
+      });
     });
+    if (allowed) {
+      allowed.forEach((name) => {
+        if (map.has(name)) return;
+        const sp = raw.find((item) => startPointFormKey(item) === name);
+        map.set(name, {
+          idx: map.size,
+          url: sp && sp.url ? String(sp.url) : "",
+          label: name,
+        });
+      });
+    }
     return map;
   }
 
@@ -3524,6 +3574,84 @@
   }
 
   /**
+   * Definition path for the Forms list. A My Tawala row often stores only the
+   * start-link names; the Library JSON still has the other forms (Potluck’s
+   * PickRecord). The second caret click is what reveals those.
+   */
+  function catalogDefinitionPath(project) {
+    const own = project && project.jsonFile ? String(project.jsonFile).trim() : "";
+    if (own) return own;
+    if (
+      !project ||
+      typeof TawalaDemo === "undefined" ||
+      typeof TawalaDemo.libraryEntries !== "function"
+    ) {
+      return "";
+    }
+    const want = projectDisplayName(project).trim().toLowerCase();
+    if (!want) return "";
+    const hit = TawalaDemo.libraryEntries().find((entry) => {
+      if (!entry || !entry.jsonFile) return false;
+      const shown =
+        typeof TawalaDemo.displayName === "function"
+          ? TawalaDemo.displayName(entry.name)
+          : entry.name;
+      return String(shown || "").trim().toLowerCase() === want;
+    });
+    return hit && hit.jsonFile ? String(hit.jsonFile) : "";
+  }
+
+  /**
+   * Start links follow the definition’s startPoint flag.
+   * Potluck: Setup, Potluck Organizer, and Administration are starts.
+   * PickRecord is startPoint false — it stays off the first caret click.
+   */
+  function projectWithDefinitionStarts(project, defForms) {
+    const forms = Array.isArray(defForms) ? defForms : [];
+    if (!forms.length) return project;
+    const nonStart = new Set();
+    const mustStart = [];
+    forms.forEach((form) => {
+      const name = String((form && form.name) || "").trim();
+      if (!name) return;
+      if (form.startPoint === false) nonStart.add(name);
+      else if (form.startPoint === true) mustStart.push(name);
+    });
+    if (!nonStart.size && !mustStart.length) return project;
+    const catalogByForm = new Map();
+    if (typeof TawalaDemo !== "undefined" && typeof TawalaDemo.libraryEntries === "function") {
+      const want = projectDisplayName(project).trim().toLowerCase();
+      const hit = TawalaDemo.libraryEntries().find((entry) => {
+        const shown =
+          typeof TawalaDemo.displayName === "function"
+            ? TawalaDemo.displayName(entry.name)
+            : entry && entry.name;
+        return String(shown || "").trim().toLowerCase() === want;
+      });
+      ((hit && hit.startPoints) || []).forEach((sp) => {
+        const key = startPointFormKey(sp);
+        if (key && !catalogByForm.has(key)) catalogByForm.set(key, sp);
+      });
+    }
+    const merged = [];
+    const seen = new Set();
+    function addStart(sp) {
+      const key = startPointFormKey(sp);
+      if (!key || nonStart.has(key) || seen.has(key)) return;
+      seen.add(key);
+      const fromCatalog = catalogByForm.get(key);
+      const url = (sp && sp.url) || (fromCatalog && fromCatalog.url) || "";
+      merged.push({ ...sp, form: key, label: (sp && sp.label) || key, url });
+    }
+    ((project && project.startPoints) || []).forEach(addStart);
+    mustStart.forEach((name) => {
+      if (seen.has(name)) return;
+      addStart(catalogByForm.get(name) || { form: name, label: name, url: "" });
+    });
+    return { ...project, startPoints: merged };
+  }
+
+  /**
    * Enrich Forms branch from catalog jsonFile / export, and fill Records counts.
    * Safe no-op when offline / undeployed — form names still come from catalog formNames.
    */
@@ -3537,7 +3665,8 @@
     const extras = [];
     let countsState = null;
 
-    const jsonFile = project.jsonFile ? String(project.jsonFile) : "";
+    let listedProject = project;
+    const jsonFile = catalogDefinitionPath(project);
     if (jsonFile && !jsonFile.includes("..") && !jsonFile.startsWith("/")) {
       /* Only paths the mock static server can serve (projects/… under website-mock). */
       if (jsonFile.startsWith("projects/")) {
@@ -3545,9 +3674,11 @@
           const res = await fetch(encodeMockRelPath(jsonFile));
           if (res.ok) {
             const def = await res.json();
-            (def.forms || []).forEach((f) => {
+            const defForms = Array.isArray(def.forms) ? def.forms : [];
+            defForms.forEach((f) => {
               if (f && f.name) extras.push(f.name);
             });
+            listedProject = projectWithDefinitionStarts(project, defForms);
           }
         } catch {
           /* ignore */
@@ -3583,8 +3714,8 @@
       countsState = { known: false, error: "no uniqueId — Deploy first" };
     }
 
-    const formNames = collectFormNames(project, extras);
-    rebuildFormsList(tree, formNames, project, countsState);
+    const formNames = collectFormNames(listedProject, extras);
+    rebuildFormsList(tree, formNames, listedProject, countsState);
     setProjectRecordsDisplay(scope, countsState);
     if (
       typeof TawalaTransfer !== "undefined" &&
@@ -3593,7 +3724,8 @@
       setUsageStatsDisplay(scope, TawalaTransfer.getUsageStats(projectId), projectId);
     }
 
-    /* Preserve selection highlight after rebuild. */
+    /* Preserve selection highlight after rebuild.
+     * Do not pull a tree the user already opened to “all forms” back to start links. */
     const sel = readDataTreeSelection(tree);
     if ((sel.kind === "form" || sel.kind === "start") && sel.formName) {
       const rows = tree.querySelectorAll(".pm-data-tree-form");
@@ -3609,7 +3741,10 @@
         /* Use entry: prefer first start over falling back to grey Use/Copy. */
         if (!applyOpenStartsEntry(tree)) syncProjectActionsForDataSelection(tree);
       }
-    } else if (wantsOpenStartsFromLocation()) {
+    } else if (
+      wantsOpenStartsFromLocation() &&
+      normalizeExpandLevel(tree.dataset.expandLevel) < 2
+    ) {
       applyOpenStartsEntry(tree);
     } else {
       syncProjectActionsForDataSelection(tree);
@@ -4236,6 +4371,10 @@
   }
 
   async function applyThemeSelection(projectId, themePath) {
+    if (window.TAWALA_PUBLIC_SITE) {
+      setStatus("Theme on the public site is not changed from this page yet.");
+      return;
+    }
     if (!projectId || !themePath) return;
     if (typeof TawalaTransfer === "undefined" || typeof TawalaTransfer.upsertMyTawalaProperties !== "function") {
       window.alert("Couldn't save theme — transfer script didn't load.");
@@ -6314,6 +6453,37 @@
 
     if (wired === "false" || !wired) return;
 
+    if (window.TAWALA_PUBLIC_SITE) {
+      const localOnly =
+        wired === "delete-mytawala" ||
+        wired === "purge-local" ||
+        wired === "edit-in-designer" ||
+        wired === "deactivate-project" ||
+        wired === "activate-project" ||
+        wired === "deploy-version" ||
+        wired === "rename-project" ||
+        wired === "make-copy-mytawala" ||
+        wired === "publish-mytawala" ||
+        wired === "export-mytawala" ||
+        wired === "import-mytawala" ||
+        wired === "backup-mytawala" ||
+        op === "delete" ||
+        op === "purge" ||
+        op === "deploy" ||
+        op === "publish" ||
+        op === "rename" ||
+        op === "make-copy" ||
+        op === "backup" ||
+        op === "restore" ||
+        op === "export" ||
+        op === "import";
+      if (localOnly) {
+        ev.preventDefault();
+        setStatus("That control is on the prototype. It is not connected to this account yet.");
+        return;
+      }
+    }
+
     /*
      * Use: multi-start → Project Details (same mock host); single-start / banner start
      * → :8080. Probe Tomcat first so a dead :8080 never silently dumps the owner off :5500.
@@ -6813,6 +6983,7 @@
     renderLibraryListingActionHeaders,
     renderLibraryListingControls,
     renderDetailPanel,
+    rememberPublicProject,
     fromLibraryAcquireBadge,
     fromLibraryProvenanceLine,
     fromDesignerProvenanceLine,

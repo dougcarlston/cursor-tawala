@@ -1120,7 +1120,7 @@ export function projectToXml(project) {
     .map((form) => {
       const attrs = [
         `name="${escAttr(form.name)}"`,
-        form.startPoint ? `startPoint="true"` : "",
+        `startPoint="${form.startPoint ? "true" : "false"}"`,
         form.blockBackButton ? `blockBackButton="true"` : "",
         form.dataEntryOnly ? `dataEntryOnly="true"` : "",
         form.process ? `process="${escAttr(form.process)}"` : "",

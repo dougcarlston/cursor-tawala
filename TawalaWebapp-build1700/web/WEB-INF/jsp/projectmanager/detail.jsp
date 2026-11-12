@@ -28,6 +28,18 @@
 <%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
 <%@ taglib prefix="tiles" uri="http://jakarta.apache.org/struts/tags-tiles" %>
 
+<%-- Browser visits use the 2026 Project Details layout. Fetch from that page still reads this JSP. --%>
+<style>#bd { visibility: hidden; }</style>
+<div id="pmJavaProjectName" hidden><c:out value="${projectInfo.project.name}" /></div>
+<script>
+(function () {
+  var holder = document.getElementById("pmJavaProjectName");
+  var name = holder ? holder.textContent.replace(/^\s+|\s+$/g, "") : "";
+  if (!name) return;
+  location.replace("/app/mytawala-project.html?name=" + encodeURIComponent(name) + "&openStarts=1");
+})();
+</script>
+
 <script>
 	setPageTitle("Project Details");
 </script>

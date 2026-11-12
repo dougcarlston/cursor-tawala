@@ -653,7 +653,8 @@
               updated: cell(3),
               responseCount: cell(4),
               lastAccessed: cell(5),
-              detailUrl: a.getAttribute("href"),
+              detailUrl:
+                "/app/mytawala-project.html?name=" + encodeURIComponent(name),
               publicAccount: true,
             };
           });

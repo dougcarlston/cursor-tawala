@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="css/tawala-chrome.css?v=20260909-desc1" />
   <script src="js/demo-urls.js?v=20260915-dup4"></script>
   <script src="js/transfer.js?v=20260915-dup4"></script>
-  <script src="js/project-ops.js?v=20260915-dup4"></script>
+  <script src="js/form-starts.js?v=20261112-starts1"></script>
+  <script src="js/project-ops.js?v=20261112-detail5"></script>
   <script src="js/data-ops.js?v=20260826-pubpriv1"></script>
 </head>
 <body data-tawala-page="mytawala">
@@ -26,9 +27,9 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-login2"></script>
+  <script src="js/chrome.js?v=20261112-acct2"></script>
   <script>
-    if (typeof TawalaChrome !== "undefined" && !TawalaChrome.isLoggedIn()) {
+    if (!window.TAWALA_PUBLIC_SITE && typeof TawalaChrome !== "undefined" && !TawalaChrome.isLoggedIn()) {
       location.replace("mytawala-demo.html");
     }
     TawalaChrome.mount();
@@ -144,6 +145,140 @@
 
     const justAcquired = params.get("acquired") === "1";
     const justForked = params.get("forked") === "1";
+
+    function escapeDetail(s) {
+      return String(s == null ? "" : s)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/"/g, "&quot;");
+    }
+
+    async function loadPublicProjectDetail() {
+      const host = document.getElementById("pmDetailHost");
+      await TawalaChrome.syncPublicAccount();
+      if (!TawalaChrome.isLoggedIn()) {
+        location.replace("/login?r=" + encodeURIComponent(location.pathname + location.search));
+        return;
+      }
+      const name = params.get("name") || "";
+      if (!name) {
+        host.innerHTML =
+          '<p class="pm-hint">Open a project from <a href="/app/mytawala.html">My Tawala</a>.</p>';
+        return;
+      }
+      const javaUrl =
+        "/projectmanager/projectdetail?projectName=" + encodeURIComponent(name);
+      let title = name;
+      let forms = [];
+      try {
+        const res = await fetch(javaUrl, { credentials: "same-origin", cache: "no-store" });
+        const html = await res.text();
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const heading = doc.querySelector("h2");
+        if (heading && heading.textContent.trim()) title = heading.textContent.trim();
+        forms = [...doc.querySelectorAll("#projectForms tr")].map((tr) => {
+          const cells = [...tr.querySelectorAll("td")];
+          const run = tr.querySelector("a[id^='run']");
+          const view = tr.querySelector("a[id^='view']");
+          return {
+            name: cells[1] ? cells[1].textContent.replace(/\s+/g, " ").trim() : "",
+            responses: cells[2] ? cells[2].textContent.replace(/\s+/g, " ").trim() : "",
+            runHref: run ? run.getAttribute("href") : "",
+            viewHref: view ? view.getAttribute("href") : "",
+          };
+        }).filter((row) => row.name);
+      } catch {
+        forms = [];
+      }
+      document.title = "Tawala - " + title;
+      const startPoints = forms
+        .filter((row) => row.runHref)
+        .map((row) => ({ form: row.name, label: row.name, url: row.runHref }));
+      const uniqueId =
+        (startPoints[0] &&
+          TawalaDemo.uniqueIdFromUrl &&
+          TawalaDemo.uniqueIdFromUrl(startPoints[0].url)) ||
+        "";
+      let publishedToLibraryId = "";
+      if (typeof TawalaDemo.libraryEntries === "function") {
+        const want = title.toLowerCase();
+        const hit = TawalaDemo.libraryEntries().find((p) => {
+          const shown =
+            typeof TawalaDemo.displayName === "function"
+              ? TawalaDemo.displayName(p.name)
+              : p.name;
+          return String(shown || "").toLowerCase() === want;
+        });
+        if (hit && hit.id) publishedToLibraryId = hit.id;
+      }
+      const responseTotal = forms.reduce((sum, row) => {
+        const n = Number(String(row.responses).replace(/[^0-9]/g, ""));
+        return sum + (Number.isFinite(n) ? n : 0);
+      }, 0);
+      const project = {
+        id: "acct-" + title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, ""),
+        name: title,
+        author: TawalaChrome.currentUser(),
+        designerName: title,
+        versionNumber: 1,
+        uniqueId,
+        deployed: true,
+        inactive: false,
+        libraryActive: true,
+        publishedToLibraryId,
+        publishedToLibraryVersion: publishedToLibraryId ? 1 : null,
+        formNames: forms.map((row) => row.name),
+        startPoints,
+        versions: [
+          {
+            versionNumber: 1,
+            description: "",
+            at: null,
+            uniqueId,
+            deployed: true,
+            current: true,
+          },
+        ],
+        publicAccount: true,
+      };
+      /* Blue hint above Project Data: caret starts closed. First click = start
+       * links, second click = every form. Do not pre-open the start links. */
+      try {
+        const next = new URL(location.href);
+        let changed = false;
+        ["openStarts", "fromUse"].forEach((key) => {
+          if (next.searchParams.has(key)) {
+            next.searchParams.delete(key);
+            changed = true;
+          }
+        });
+        if (next.hash === "#pmSecData" || next.hash === "#pmDataStartPoints") {
+          next.hash = "";
+          changed = true;
+        }
+        if (changed) history.replaceState({}, "", next.pathname + next.search + next.hash);
+      } catch {
+        /* ignore */
+      }
+      if (typeof TawalaProjectOps.rememberPublicProject === "function") {
+        TawalaProjectOps.rememberPublicProject(project);
+      }
+      host.innerHTML = TawalaProjectOps.renderDetailPanel(project, {});
+      if (typeof TawalaProjectOps.syncProjectActionsForDataSelection === "function") {
+        TawalaProjectOps.syncProjectActionsForDataSelection(host.querySelector("#pmDataTree"));
+      }
+      const records = host.querySelector("#pmDataProjectRecords");
+      if (records) {
+        records.textContent = String(responseTotal);
+        records.title = "Responses on this account: " + responseTotal;
+      }
+      const back = host.querySelector(".pm-back a");
+      if (back) back.setAttribute("href", "/app/mytawala.html");
+    }
+
+    if (window.TAWALA_PUBLIC_SITE && TawalaChrome.syncPublicAccount) {
+      loadPublicProjectDetail();
+    } else {
     renderProject(id, { justAcquired, justForked });
     if ((justAcquired || justForked) && id) {
       try {
@@ -162,23 +297,29 @@
           : "Copied from Library — private empty clone; Use / Deploy / Publish from this page.";
       }
     }
+    }
 
     /* Left-rail identity: re-paint after Publish / Active / Rename without a full navigation. */
     document.addEventListener("tawala:project-published", () => {
+      if (window.TAWALA_PUBLIC_SITE) return;
       if (id) renderProject(id);
     });
     document.addEventListener("tawala:project-active-changed", () => {
+      if (window.TAWALA_PUBLIC_SITE) return;
       if (id) renderProject(id);
     });
     document.addEventListener("tawala:project-renamed", () => {
+      if (window.TAWALA_PUBLIC_SITE) return;
       if (id) renderProject(id);
     });
     document.addEventListener("tawala:project-description-changed", () => {
+      if (window.TAWALA_PUBLIC_SITE) return;
       if (id) renderProject(id);
     });
 
     /* After Purge / Import / Restore — refresh Records totals + per-form counts in Project Data. */
     function refreshProjectDataCounts() {
+      if (window.TAWALA_PUBLIC_SITE) return;
       const host = document.getElementById("pmDetailHost");
       if (host && typeof TawalaProjectOps.hydrateProjectDataTree === "function") {
         void TawalaProjectOps.hydrateProjectDataTree(host);
@@ -187,11 +328,13 @@
     document.addEventListener("tawala:project-purged", refreshProjectDataCounts);
     document.addEventListener("tawala:project-imported", refreshProjectDataCounts);
     document.addEventListener("tawala:project-restored", () => {
+      if (window.TAWALA_PUBLIC_SITE) return;
       if (id) renderProject(id);
     });
 
     /* Hydrate definition body from :3001 snapshot so Deploy-this-version works offline of a re-fetch later. */
     (async function hydrateSnapshot() {
+      if (window.TAWALA_PUBLIC_SITE) return;
       if (!ingested || !id || !ingested.snapshotId) return;
       const versionNumber = ingested.versionNumber;
       if (versionNumber == null) return;

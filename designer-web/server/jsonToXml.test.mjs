@@ -52,6 +52,22 @@ describe("imagesToXml", () => {
   });
 });
 
+describe("projectToXml startPoint", () => {
+  it("writes startPoint false so Java does not treat every form as a start link", () => {
+    const xml = projectToXml({
+      name: "Potluck",
+      forms: [
+        { name: "Setup", startPoint: true, items: [] },
+        { name: "PickRecord", startPoint: false, items: [] },
+      ],
+      processes: [],
+      documents: [],
+    });
+    expect(xml).toContain('<form name="Setup" startPoint="true"');
+    expect(xml).toContain('<form name="PickRecord" startPoint="false"');
+  });
+});
+
 describe("projectToXml Form Text raw HTML", () => {
   it("emits marked Form Text as escaped HTML, not paragraphs", () => {
     const xml = projectToXml({
