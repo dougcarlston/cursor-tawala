@@ -1,11 +1,36 @@
 import { describe, expect, it } from "vitest";
 import {
   applyTextItemStyleToXml,
+  claimedUploadUniqueId,
   collectProjectImages,
   imagesToXml,
   projectToXml,
+  TAWALA_RAW_HTML_MARK,
   xmlCommentText,
 } from "./jsonToXml.mjs";
+
+describe("claimedUploadUniqueId", () => {
+  it("keeps a library deployUniqueId on the upload", () => {
+    expect(claimedUploadUniqueId({ deployUniqueId: "52ozm3kqd58zlss" })).toBe(
+      "52ozm3kqd58zlss",
+    );
+    const xml = projectToXml({
+      name: "Potluck",
+      deployUniqueId: "52ozm3kqd58zlss",
+      forms: [],
+    });
+    expect(xml.startsWith('<project name="Potluck" uniqueId="52ozm3kqd58zlss" ')).toBe(
+      true,
+    );
+  });
+
+  it("omits a missing or illegal id", () => {
+    expect(claimedUploadUniqueId({ name: "Potluck" })).toBe("");
+    expect(claimedUploadUniqueId({ deployUniqueId: "has space" })).toBe("");
+    const xml = projectToXml({ name: "Potluck", forms: [] });
+    expect(xml.includes("uniqueId=")).toBe(false);
+  });
+});
 
 describe("imagesToXml", () => {
   it("omits empty images", () => {
@@ -24,6 +49,32 @@ describe("imagesToXml", () => {
         `<imagedef id="image2"><imagedata imageFormat="PNG">QkJC</imagedata></imagedef>` +
         `</images>`,
     );
+  });
+});
+
+describe("projectToXml Form Text raw HTML", () => {
+  it("emits marked Form Text as escaped HTML, not paragraphs", () => {
+    const xml = projectToXml({
+      name: "Raw",
+      forms: [
+        {
+          name: "Form 1",
+          startPoint: true,
+          items: [
+            {
+              type: "text",
+              label: "Nav",
+              content:
+                `${TAWALA_RAW_HTML_MARK}<input type="submit" name="Nav" value="Back" />`,
+            },
+          ],
+        },
+      ],
+      processes: [],
+      documents: [],
+    });
+    expect(xml).toContain("&lt;input type=\"submit\" name=\"Nav\" value=\"Back\" /&gt;");
+    expect(xml).not.toContain("<paragraph");
   });
 });
 

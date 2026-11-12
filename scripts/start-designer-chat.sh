@@ -204,43 +204,44 @@ read -r -d '' OPENER <<EOF || true
 Project: Tawala (${ROOT})
 Track: Browser Designer — designer-web/ — chat title: Designer thread
 Branch: ${GIT_BRANCH} @ ${GIT_COMMIT}
-Goal: Designer canvas pass. FIRST: Document two links on one line merge underlines (Shared To-Do → Document - User Menu). Then parked Document smoothness P0s if we get there. Design canvas ≫ Deploy/Push ≫ Preview. Do NOT mix website-mock / Library look-and-feel in this chat.
+Goal: Designer canvas for a public general-use site (owner 11 Nov 2026). Owner picks Document smoothness P0s (B1) or F1 3-browser. Design canvas ≫ Push ≫ Preview. Do NOT mix website-mock Library cosmetics or payments in this chat.
 Read first (in order):
-1. docs/START_DESIGNER_CHAT.md
-2. Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md § Document — two links on one line merge underlines
-3. Tawala_Key_Documents/DESIGNER_DOCUMENT_EDITOR.md + DESIGNER_INSERT_MENU_AND_FUNCTIONS.md § Smoke — Link…
-4. .cursor/rules/tawala-work-scopes.mdc (Designer track — Design canvas first)
-5. .cursor/rules/tawala-designer-parked-post-website.mdc (parked polish; Link/Push/Theme MUST DOs already done)
+1. docs/HANDOFF_NOV11_2026.md
+2. docs/START_DESIGNER_CHAT.md
+3. Tawala_Key_Documents/DESIGNER_OPEN_TODOS.md (B1, F1)
+4. .cursor/rules/tawala-work-scopes.mdc
+5. .cursor/rules/tawala-designer-parked-post-website.mdc
 Constraints:
 - Work in designer-web/ (and C#/specs for truth). Do not refactor website-mock Library listing cosmetics here.
 - Preview/runtime fixes stay in designer-web/server/ — do not change Design canvas to match Preview.
-- Push checks use http://localhost:5173 + :3001 + :8080. Never www.tawala.com.
+- Push checks use http://localhost:5173 + :3001 + :8080. Never www.tawala.com by default.
+- Do not discard uncommitted Java / TAWALA_PUBLIC_HOSTNAME / jsonToXml files.
 - No commit unless I explicitly ask
 Review URLs:
 - Designer: ${DESIGNER_BASE}
 - API health: ${API_BASE}/api/health
 - Tomcat (Push): ${JAVA_BASE}/home
-First task: Shared To-Do → Document - User Menu — two Form links on one line with “or” between them must not share one underline (Design and Push). Confirm whether click targets are merged too.
+First task: Confirm HANDOFF_NOV11_2026.md, then wait for me to pick B1 Document smoothness or F1 3-browser.
 EOF
 
 read -r -d '' PUNCH <<'EOF' || true
-Designer punch list (Aug 26 resume):
-  1. P0 this chat — Document two links on one line merge underlines (Not blocking for Live Library; owner wants it next)
-     Repro: Shared To-Do → Document - User Menu. Shots in Tawala_Key_Documents/assets/Bug_-_Document-two-links-merged-underline-*.png
-  2. Parked Document smoothness P0s — Face/Size multi-chip, invent-with-tables, chip drag, table reflow
-  3. Parked polish (do not start unless I ask): native confirm(), Font Color picker, Skip/Process Cut/Copy/Paste/Undo stubs
-  4. Jul 30 / Aug 11 polish — most CLOSED Aug 20–21; do not reopen unless a regression is reported
-  5. .tawala convert batch C2/C3 — wait until Library vetting inventories examples
+Designer punch list (11 Nov 2026 resume):
+  1. Document smoothness P0s (B1) — Face/Size multi-chip, invent-with-tables, chip drag, table reflow
+  2. F1 3-browser smoke — Chrome + Safari + Edge when Designer is far enough along
+  3. Native confirm() before public use
+  4. Two-link Document underline — FIXED 2 Sep 2026; do not reopen unless it regresses
+  5. C14 FIB Above + * — implemented 15 Sep; re-smoke only if touching FIB Styles
+Parked: Font Color picker; B8 undo-last-delete; payments; teacher-exam packets; OEB Publish-as-exam V2
 Do not pull into this chat:
-  - Public Library listing look-and-feel (owner prefers My Tawala / Project Details; cosmetics before any public switch)
-  - Going live but private / stranger gates (Test Drive #14, accounts, payments) — next Library session after Designer
+  - Public Library listing cosmetics
+  - Auth vendor / payments (accounts wait for a My Tawala public-host chat)
 EOF
 
 hdr "Cursor — new chat steps"
 printf '  1. New Chat in Cursor (Cmd+L → New Chat)\n'
 printf '  2. Rename chat: %sDesigner thread%s\n' "$BLD" "$RST"
 printf '  3. Paste the START SCRIPT below as your first message\n'
-printf '  4. Optional @-attach: docs/START_DESIGNER_CHAT.md, Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md\n'
+printf '  4. Optional @-attach: docs/HANDOFF_NOV11_2026.md, docs/START_DESIGNER_CHAT.md\n'
 
 hdr "START SCRIPT (paste as first message)"
 printf '%s\n' "$OPENER"

@@ -41,6 +41,21 @@ describe("resolveProjectForDeploy", () => {
     expect(r.projectForDeploy.name).toBe("Exam Builder aabbccdd");
     expect(r.projectForDeploy.deployIdentityName).toBe("Exam Builder aabbccdd");
     expect(r.projectForDeploy._freshFromTemplate).toBeUndefined();
+    expect(r.projectForDeploy.deployUniqueId).toBeUndefined();
+  });
+
+  it("drops a library uniqueId when minting a new identity", () => {
+    const r = resolveProjectForDeploy(
+      {
+        name: "Potluck",
+        deployUniqueId: "52ozm3kqd58zlss",
+        uniqueId: "52ozm3kqd58zlss",
+        _freshFromTemplate: true,
+      },
+      { mintSuffix: "aabbccdd" },
+    );
+    expect(r.projectForDeploy.deployUniqueId).toBeUndefined();
+    expect(r.projectForDeploy.uniqueId).toBeUndefined();
   });
 
   it("reuses deployIdentityName on later Push (not fresh)", () => {

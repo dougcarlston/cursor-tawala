@@ -46,6 +46,6 @@ Owner policy: will not ship projects to **Library Live** that cannot be fixed un
 
 ## Next focus (separate chat)
 
-**Website — library mock & test-drive links** (`~/Projects/Tawala`) — Designer Sign-up / Get Together gate met; next is a fully operational site (library fidelity + stable `:8080` test-drive links).
+**11 Nov 2026:** Designer + My Tawala toward a persistent public **general-use** site. Not school-exam GTM, not monetization. Resume: `docs/HANDOFF_NOV11_2026.md`.
 
-Handoff: `docs/CHAT_HANDOFF.md` → Chat 3; also `docs/MORNING_START.md` §5, `docs/ROADMAP.md` Phase 3, `website-mock/README.md`.
+Designer start: `./scripts/start-designer-chat.sh --start --copy`. Library/site later: My Tawala host + accounts; listing cosmetics still wait.

@@ -133,7 +133,7 @@
     <div id="tawala-chrome-footer"></div>
   </div>
 
-  <script src="js/chrome.js?v=20260810-login2"></script>
+  <script src="js/chrome.js?v=20261112-acct2"></script>
   <script>
     function escapeHtml(s) {
       return String(s)
@@ -202,7 +202,10 @@
     /** Selected project id for listing Pull / Delete (row highlight). */
     let selectedProjectId = "";
 
+    let publicProjectsLoaded = false;
+
     function refreshProjects() {
+      if (publicProjectsLoaded) return;
       projects = TawalaDemo.myTawalaEntries();
     }
     refreshProjects();
@@ -218,6 +221,8 @@
     }
 
     function projectDetailsHref(projectId) {
+      const found = projects.find((p) => p && p.id === projectId);
+      if (found && found.detailUrl) return found.detailUrl;
       return `mytawala-project.html?project=${encodeURIComponent(projectId || "")}`;
     }
 
@@ -341,16 +346,18 @@
           ? TawalaProjectOps.fromLibraryAcquireBadge(p)
           : "";
       const usage = usageForProject(p);
-      const timesUsed =
-        typeof TawalaTransfer !== "undefined" &&
-        typeof TawalaTransfer.formatUsageTimesUsed === "function"
+      const timesUsed = p.publicAccount
+        ? "—"
+        : typeof TawalaTransfer !== "undefined" &&
+            typeof TawalaTransfer.formatUsageTimesUsed === "function"
           ? TawalaTransfer.formatUsageTimesUsed(usage)
           : Number(usage.timesUsed) > 0
             ? String(Math.floor(Number(usage.timesUsed)))
             : "—";
-      const lastUsed =
-        typeof TawalaTransfer !== "undefined" &&
-        typeof TawalaTransfer.formatUsageLastUsed === "function"
+      const lastUsed = p.publicAccount
+        ? displayListDate(p.lastAccessed)
+        : typeof TawalaTransfer !== "undefined" &&
+            typeof TawalaTransfer.formatUsageLastUsed === "function"
           ? TawalaTransfer.formatUsageLastUsed(usage)
           : usage.lastUsed || "—";
       const timesTitle =
@@ -367,7 +374,11 @@
         selected ? "true" : "false"
       }"${selected ? ' class="is-selected"' : ""} title="Click to select · Double-click for Project Details">
         <td class="info left col-name col-group-info">
-          <span class="title listing-project-name">${escapeHtml(title)}${fromLib}${offline}</span>
+          <span class="title listing-project-name">${
+            p.detailUrl
+              ? `<a href="${escapeHtml(p.detailUrl)}">${escapeHtml(title)}</a>`
+              : escapeHtml(title)
+          }${fromLib}${offline}</span>
         </td>
         <td class="col-version col-group-info" title="${escapeHtml(versionTitle)}">${escapeHtml(version)}</td>
         <td class="date-created col-date col-group-info">${escapeHtml(created)}</td>
@@ -393,6 +404,7 @@
             ? TawalaDemo.resolvePurgeUniqueId(id)
             : null;
         if (!uid) {
+          if (cell.textContent && cell.textContent !== "—") return;
           cell.textContent = "—";
           cell.title = "Records (Responses) — no uniqueId (Deploy → Show in My Tawala)";
           return;
@@ -434,6 +446,12 @@
       updateSortIndicators();
       TawalaProjectOps.syncListingSelectionBar(selectedProjectId);
       void hydrateListingRecordCounts();
+      if (publicProjectsLoaded) {
+        document.querySelectorAll("#projectRows button").forEach((el) => {
+          el.disabled = true;
+          el.title = "Open the project from its name. Account tools stay on the project details page.";
+        });
+      }
     }
 
     function enableColumnResize(table) {
@@ -490,7 +508,7 @@
       });
     }
 
-    if (typeof TawalaChrome !== "undefined" && !TawalaChrome.isLoggedIn()) {
+    if (!window.TAWALA_PUBLIC_SITE && typeof TawalaChrome !== "undefined" && !TawalaChrome.isLoggedIn()) {
       location.replace("mytawala-demo.html");
     }
 
@@ -594,6 +612,58 @@
     });
 
     renderRows();
+    if (window.TAWALA_PUBLIC_SITE && TawalaChrome.syncPublicAccount) {
+      TawalaChrome.syncPublicAccount().then(async () => {
+        if (!TawalaChrome.isLoggedIn()) {
+          location.replace("/login?r=" + encodeURIComponent("/app/mytawala.html"));
+          return;
+        }
+        const label = document.getElementById("mytawalaUserLabel");
+        if (label) {
+          label.textContent = TawalaChrome.currentUser();
+          const note = label.parentElement;
+          if (note) note.innerHTML = "Logged in as <b>" + label.textContent + "</b>.";
+        }
+        document.querySelectorAll('a[href="http://localhost:5173"]').forEach((a) => {
+          const block = a.closest(".block");
+          if (block) block.remove();
+        });
+        try {
+          const res = await fetch("/projectmanager/view", {
+            credentials: "same-origin",
+            cache: "no-store",
+          });
+          const html = await res.text();
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          projects = [...doc.querySelectorAll("a[id^='projectDetailsLink']")].map((a) => {
+            const tr = a.closest("tr");
+            const cells = tr ? [...tr.querySelectorAll("td")] : [];
+            const cell = (i) => (cells[i] ? cells[i].textContent.trim() : "");
+            const name = a.textContent.trim();
+            const id =
+              "acct-" +
+              name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-|-$/g, "");
+            return {
+              id: id || "acct-project",
+              name,
+              created: cell(2),
+              updated: cell(3),
+              responseCount: cell(4),
+              lastAccessed: cell(5),
+              detailUrl: a.getAttribute("href"),
+              publicAccount: true,
+            };
+          });
+        } catch {
+          projects = [];
+        }
+        publicProjectsLoaded = true;
+        renderRows();
+      });
+    }
     enableColumnResize(document.getElementById("myProjectsTable"));
 
     if (selectedProjectId) {

@@ -390,10 +390,19 @@ export function applyTextItemStyleToXml(bodyXml, style, opts = {}) {
   return xml;
 }
 
+/** Form Text whose body must Deploy as literal HTML (not paragraphs). Used for in-form submit links. */
+export const TAWALA_RAW_HTML_MARK = "<!--tawala-raw-html-->";
+
 function textContentToXml(content, style, project = null, formName = "") {
   if (typeof content === "string") {
     if (!content) {
       return `<paragraph indent="0" align="left">${TAB_MC}</paragraph>`;
+    }
+    const rawHtmlMarked = content.trimStart();
+    if (rawHtmlMarked.startsWith(TAWALA_RAW_HTML_MARK)) {
+      // Java TextBlock prints this as HTML inside the <form>. Keep one line: HtmlString
+      // turns remaining newlines into <br>.
+      return escText(rawHtmlMarked.slice(TAWALA_RAW_HTML_MARK.length).trim());
     }
     // Canvas Text items store WYSIWYG HTML (field/function tokens). Escape-as-text
     // would Deploy the token chrome instead of `<display-image>` / `<display-mcq-label>`.
@@ -1151,8 +1160,16 @@ export function projectToXml(project) {
   // (Design/Preview show src=data:…; Deploy needs <imagedef> or Java 404s).
   const imagesXml = imagesToXml(collectProjectImages(project));
   const pageHeaderXml = pageHeaderToXml(project);
+  const uniqueId = claimedUploadUniqueId(project);
+  const uniqueAttr = uniqueId ? ` uniqueId="${escAttr(uniqueId)}"` : "";
 
-  return `<project name="${escAttr(project.name)}" themePath="${escAttr(project.themePath ?? "default")}" format="1.11" designerBuild="204">${pageHeaderXml}<forms>${forms}</forms><processes>${processes}</processes><documents>${documents}</documents>${imagesXml}</project>`;
+  return `<project name="${escAttr(project.name)}"${uniqueAttr} themePath="${escAttr(project.themePath ?? "default")}" format="1.11" designerBuild="204">${pageHeaderXml}<forms>${forms}</forms><processes>${processes}</processes><documents>${documents}</documents>${imagesXml}</project>`;
+}
+
+/** Public project id to keep on upload. Blank when the file has none. */
+export function claimedUploadUniqueId(project) {
+  const id = String(project?.deployUniqueId || project?.uniqueId || "").trim();
+  return /^[A-Za-z0-9]{1,20}$/.test(id) ? id : "";
 }
 
 /** Legacy `<pageHeader><text>…</text><image id width height/></pageHeader>`. */

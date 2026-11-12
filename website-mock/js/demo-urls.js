@@ -532,11 +532,24 @@ window.TawalaDemo = {
       .replace(/\.tawala$/i, "")
       .replace(/\.json$/i, "");
   },
-  /** True when href targets local Tomcat (:8080) — live form runtime Test Drive / Use open. */
+  /**
+   * Form runtime origin. The laptop prototype uses Tomcat on :8080.
+   * A public copy sets window.TAWALA_JAVA_ORIGIN to the site it is served from.
+   */
+  javaOrigin() {
+    const custom = typeof window !== "undefined" ? window.TAWALA_JAVA_ORIGIN : "";
+    const origin = String(custom || "").replace(/\/$/, "");
+    return origin || "http://localhost:8080";
+  },
+  /** True when href targets the form runtime (local :8080, or the public site origin). */
   isLocalJavaRuntimeUrl(url) {
     if (!url || url === "#") return false;
     try {
       const u = new URL(url, typeof location !== "undefined" ? location.href : "http://localhost/");
+      const origin = this.javaOrigin();
+      if (origin !== "http://localhost:8080") {
+        return u.origin === new URL(origin + "/").origin;
+      }
       const host = (u.hostname || "").toLowerCase();
       if (host !== "localhost" && host !== "127.0.0.1") return false;
       const port = String(u.port || (u.protocol === "https:" ? "443" : "80"));
@@ -559,9 +572,11 @@ window.TawalaDemo = {
     const ctrl = new AbortController();
     const timer = setTimeout(() => ctrl.abort(), ms);
     try {
-      await fetch("http://127.0.0.1:8080/home", {
+      const origin = this.javaOrigin();
+      const probeUrl = origin === "http://localhost:8080" ? "http://127.0.0.1:8080/home" : origin + "/home";
+      await fetch(probeUrl, {
         method: "GET",
-        mode: "no-cors",
+        mode: origin === "http://localhost:8080" ? "no-cors" : "cors",
         cache: "no-store",
         signal: ctrl.signal,
       });
@@ -2077,7 +2092,7 @@ window.TawalaDemo = {
     const form = String(formName || "").trim();
     if (!form) return null;
     return (
-      "http://localhost:8080/projectmanager/testdrive?id=" +
+      this.javaOrigin() + "/projectmanager/testdrive?id=" +
       encodeURIComponent(uniqueId) +
       "&form=" +
       encodeURIComponent(form)

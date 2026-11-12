@@ -2,12 +2,14 @@ services:
   postgres:
     image: postgres:16
     container_name: tawala-postgres
+    restart: unless-stopped
     environment:
       POSTGRES_USER: tawala_admin
       POSTGRES_PASSWORD: tawala
       POSTGRES_DB: tawala
     ports:
-      - "5432:5432"
+      # Host only — never the LAN or the teacher tunnel (8080 only).
+      - "127.0.0.1:5432:5432"
     volumes:
       - tawala_pg_data:/var/lib/postgresql/data
       - ./db/init:/docker-entrypoint-initdb.d:ro
@@ -44,6 +46,9 @@ services:
     env_file:
       - path: .env.email.local
         required: false
+    environment:
+      # After last Submit, Java redirects here. Mini: TAWALA_PUBLIC_HOSTNAME=teacherexams.org in .env
+      TAWALA_PUBLIC_HOSTNAME: ${TAWALA_PUBLIC_HOSTNAME:-localhost:8080}
     volumes:
       - tawala_lucene:/var/tawala/lucene
     restart: unless-stopped

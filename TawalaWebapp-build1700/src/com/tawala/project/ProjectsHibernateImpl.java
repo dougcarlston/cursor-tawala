@@ -188,28 +188,30 @@ public class ProjectsHibernateImpl implements Projects {
 						UserProject originalProject = get(project.getUser()
 								.getId(), project.getName());
 						if (originalProject == null) {
-							boolean newLinkRequired = project
-									.getUniqueRandomId() == null;
-							LinkToUserProject linkToUserProject = null;
-							if (newLinkRequired) {
-								String uniqueId = generateUniqueRandomProjectId();
-								project.setUniqueRandomId(uniqueId);
-
-								project.getProject().generateRandomFormTokens();
-
-								linkToUserProject = LinkToUserProject
-										.createUnauthenticatedLink(project,
-												uniqueId);
+							String uniqueId = project.getUniqueRandomId();
+							if (uniqueId != null) {
+								uniqueId = uniqueId.trim();
 							}
+							if (uniqueId == null || uniqueId.length() == 0) {
+								uniqueId = generateUniqueRandomProjectId();
+							} else if (uniqueId.length() > 20
+									|| !uniqueId.matches("[A-Za-z0-9]+")
+									|| !isUnique(uniqueId)) {
+								throw new IllegalArgumentException(
+										"uniqueId already in use or invalid: "
+												+ uniqueId);
+							}
+							project.setUniqueRandomId(uniqueId);
+							project.getProject().generateRandomFormTokens();
+							LinkToUserProject linkToUserProject = LinkToUserProject
+									.createUnauthenticatedLink(project,
+											uniqueId);
 							project.setLastUpdatedDate(new Date());
 
 							TawalaSessionFactory.MAIN.getHibernateTemplate()
 									.save(project);
-							if (newLinkRequired) {
-								TawalaSessionFactory.MAIN
-										.getHibernateTemplate().save(
-												linkToUserProject);
-							}
+							TawalaSessionFactory.MAIN.getHibernateTemplate()
+									.save(linkToUserProject);
 							TawalaSessionFactory.MAIN.getHibernateTemplate()
 									.flush();
 							project.deployVersion(project.getVersions().get(0),

@@ -7,6 +7,8 @@ alwaysApply: true
 
 This repo has three parallel tracks. Do not merge them in one change unless the owner asks.
 
+**North star (owner 11 Nov 2026):** Designer + My Tawala on a persistent public site for general use. Not school-exam GTM. Not monetization. Full note: `docs/HANDOFF_NOV11_2026.md`.
+
 ## 1. Legacy Designer documentation (owner-led)
 
 - **Goal**: Accurate specs in `Tawala_Key_Documents/DESIGNER_*.md` from screenshots and owner notes.
@@ -39,8 +41,9 @@ Within browser Designer work, priority order is:
 
 1. Owner is documenting UI → update specs, do not refactor code.
 2. Owner asks to implement a Designer feature → **Design canvas first** in `designer-web/` + cite spec section; Preview only if needed for a Deploy check.
-3. Owner asks about Registration look/feel on 8080 → runtime XML/CSS/deploy, not palette UX.
-4. Owner asks about Preview bugs → fix Preview/runtime only; do not change Design canvas to accommodate Preview.
+3. Owner asks about **My Tawala / public host / accounts** → website-mock + Tomcat identity stack; do not start payments or a teacher Library marketplace.
+4. Owner asks about Registration look/feel on 8080 → runtime XML/CSS/deploy, not palette UX.
+5. Owner asks about Preview bugs → fix Preview/runtime only; do not change Design canvas to accommodate Preview.
 
 ## Commits and PRs
 

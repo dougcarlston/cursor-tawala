@@ -158,6 +158,21 @@ public class UserProject {
 	public UserProject(ConfigElement projectElement, User user) {
 		this(new Project(projectElement), user, projectElement
 				.attribute("name").stringValue());
+		if (projectElement.hasAttribute("uniqueId")) {
+			String uniqueId = projectElement.attribute("uniqueId")
+					.stringValue();
+			if (uniqueId != null) {
+				uniqueId = uniqueId.trim();
+			}
+			if (uniqueId != null && uniqueId.length() > 0) {
+				if (uniqueId.length() > 20
+						|| !uniqueId.matches("[A-Za-z0-9]+")) {
+					throw new IllegalArgumentException(
+							"uniqueId must be 1-20 alphanumeric");
+				}
+				setUniqueRandomId(uniqueId);
+			}
+		}
 	}
 
 	public String getUniqueRandomId() {

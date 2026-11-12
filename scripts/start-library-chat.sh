@@ -219,22 +219,23 @@ read -r -d '' OPENER <<EOF || true
 Project: Tawala (${ROOT})
 Track: Website mock — website-mock/ (Phase 3) — chat title: Library thread
 Branch: ${GIT_BRANCH} @ ${GIT_COMMIT}
-Goal: Library-only ops — harden Delete/Purge, EXPORT/IMPORT, BACKUP/RESTORE; Test Drive stability; Publish/stub readiness. Do NOT open Designer canvas work unless a Test Drive URL truly requires deploy wiring.
+Goal: My Tawala + public general-use site (owner 11 Nov 2026). Not school-exam GTM, not payments. Do NOT open Designer canvas work unless Push/Test Drive wiring requires it.
 Read first (in order):
-1. docs/START_LIBRARY_CHAT.md
-2. docs/CHAT_HANDOFF.md (Chat 3 + Aug 24 checkpoint)
-3. website-mock/README.md § Task List (Aug 9) + § Aug 9 decisions
-4. .cursor/rules/tawala-work-scopes.mdc (Library track only)
+1. docs/HANDOFF_NOV11_2026.md
+2. docs/START_LIBRARY_CHAT.md
+3. docs/LIBRARY_WHERE_WE_ARE_SEP3.md (Sep 14–15 isolation close)
+4. website-mock/README.md § Task List
+5. .cursor/rules/tawala-work-scopes.mdc
 Constraints:
 - Use http://${HOST}:5500 for review (NOT 127.0.0.1 — separate localStorage)
-- website-mock/ + :5500 + :8080 Test Drive; defer parked Designer polish (.cursor/rules/tawala-designer-parked-post-website.mdc)
+- website-mock/ + :5500 + :8080; Test Drive is /t/ isolation (Sep 2026) — do not revive shared uniqueId TD
+- Do not discard uncommitted Java / TAWALA_PUBLIC_HOSTNAME files
 - No commit unless I explicitly ask
 - If Test Drive shows "We are very sorry": ./scripts/start-library-chat.sh --start
 Review URLs (cache-bust ${CACHE_BUST}):
 - Library: ${MOCK_BASE}/library.html?v=${CACHE_BUST}
 - My Tawala: ${MOCK_BASE}/mytawala.html?v=${CACHE_BUST}
-- Simple Survey Test Drive: ${JAVA_BASE}/p/gy1zssbrwm4fgfm/npwtqlg.Survey
-First task: P0 Task #26 — private uniqueId on Copy to MyTawala (stop sharing Library :8080 ids). Then confirm health and remaining Task List (#14 leave/wipe, #10 Deploy/share, EXPORT/IMPORT smoked Aug 24).
+First task: Confirm HANDOFF_NOV11_2026.md. Public site needs a host that stays up and accounts (#21). Payments/ratings/teacher packets stay parked.
 EOF
 
 read -r -d '' PUNCH <<'EOF' || true
@@ -255,7 +256,7 @@ hdr "Cursor — new chat steps"
 printf '  1. New Chat in Cursor (Cmd+L → New Chat)\n'
 printf '  2. Rename chat: %sLibrary thread%s\n' "$BLD" "$RST"
 printf '  3. Paste the START SCRIPT below as your first message\n'
-printf '  4. Optional @-attach: docs/START_LIBRARY_CHAT.md, website-mock/README.md\n'
+printf '  4. Optional @-attach: docs/HANDOFF_NOV11_2026.md, docs/START_LIBRARY_CHAT.md\n'
 
 hdr "START SCRIPT (paste as first message)"
 printf '%s\n' "$OPENER"

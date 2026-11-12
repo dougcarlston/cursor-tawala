@@ -1,0 +1,62 @@
+---
+description: Data durability, schema discipline, and no AI panic-patches that drop guards or data
+alwaysApply: true
+---
+
+# Durable state (do not vibe this)
+
+Syntax that runs on localhost is not operational viability. User submissions, scores, and identities are expensive; generated UI is cheap.
+
+## Do not panic-patch
+
+When a 500 / “fix this error” arrives:
+
+```text
+❌ BAD — rewrite the handler to make the error go away
+   remove auth / SSL / validation
+   catch Exception and return 200
+   hard-code a host, password, or uniqueId
+   DROP / truncate / delete-all to “clear the bad state”
+   change Design canvas to paper over a runtime bug
+
+✅ GOOD — isolate, then a small patch
+   reproduce with two overlapping requests or two sessions
+   keep the existing guard; fix the real cause
+   add a test or smoke that would have caught it
+```
+
+Do not delete or rebuild a database to unblock a demo. Do not “fix” Test Drive by copying or wiping live `/p/` data.
+
+## Identity, money, mail — use the existing machinery
+
+Do not invent a second session, password, or billing system. Tawala already has Java `HttpSession`, `World`, `LinkToUserProject`, and the mail worker (`entrypoint.sh` / `mail.properties`).
+
+- Auth and occupancy live in that stack. New endpoints must go through the same project-link lookup; do not add an unauthenticated `/api/…` that accepts a uniqueId and returns another user’s rows.
+- Mail: one worker, idempotent enough to survive a retry. Do not send from a form request thread “because SMTP is easy.” Do not put Resend/Postgres secrets in client JS.
+- Stripe/Clerk-style greenfield auth is **out of scope** unless the owner asks. Do not paste a tutorial billing engine into this repo.
+
+## Schema and migrations
+
+- Do not `ALTER TABLE` on live Postgres from chat. Change Hibernate mappings / SQL in git, review keys and indexes, then apply.
+- Every table needs a primary key. Foreign keys must be explicit. Columns used in `WHERE` / `ORDER BY` / occupancy lookups need indexes.
+- Do not stuff submissions, scores, or identities into unstructured JSON “because it was faster to generate.” `jsonToXml` project files are definitions, not the live student store.
+- Prefer one transaction around “record this submit + run Process + enqueue mail.” A crash mid-way must not double-score or double-send without a dedupe key.
+
+## Cost and unbounded work
+
+We are not an “unlimited LLM analyses” wrapper, but the same trap exists:
+
+- Email, Cloudflare, and Process-on-every-submit all scale with traffic. Do not add per-keystroke server round-trips or re-embed / re-parse an entire exam on every Back/Forward.
+- No new uncapped third-party API call on a student POST without a budget/limit the owner has agreed.
+- Caching repeated reads (theme CSS, project definition) is good. Caching **writes** (scores, occupancy) across users is not.
+
+## Vibe vs architect (this repo)
+
+| Safe to generate against specs | Architect; do not improvise |
+| --- | --- |
+| Marketing / website-mock chrome | Session, World, Test Drive isolation |
+| Designer canvas visuals *from* `DESIGNER_*.md` | Live `/p/` occupancy, scoring, Process |
+| Theme CSS chrome | Hibernate schema, Postgres, mail worker |
+| Copy / one-pagers | Idempotent POST, webhooks, authz |
+
+If a task touches the right-hand column, read the existing Java path first. Do not replace it with a Node in-memory store “for now.”

@@ -49,12 +49,16 @@ export function resolveProjectForDeploy(project, { mintSuffix } = {}) {
 
   if (freshFromTemplate) {
     const deployIdentityName = mintNonCollidingDeployName(displayName, mintSuffix);
+    const projectForDeploy = {
+      ...rest,
+      name: deployIdentityName,
+      deployIdentityName,
+    };
+    // A brand-new Tomcat identity must not claim the source file's public id.
+    delete projectForDeploy.deployUniqueId;
+    delete projectForDeploy.uniqueId;
     return {
-      projectForDeploy: {
-        ...rest,
-        name: deployIdentityName,
-        deployIdentityName,
-      },
+      projectForDeploy,
       deployIdentityName,
       displayName,
       freshFromTemplate: true,

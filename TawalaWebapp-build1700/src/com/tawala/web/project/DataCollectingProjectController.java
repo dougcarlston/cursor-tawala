@@ -65,14 +65,7 @@ public abstract class DataCollectingProjectController extends ProjectController 
 		public void render(PrintWriter out, RenderingContext renderingContext) {
 			out.println("<div align=\"center\">Thank you!</div>");
 			out.println("<br />");
-			out.println("<br />");
-			out.println("<br />");
-			out.println("<div class=\"produced-by\">");
-			out.println("<a href=\"http://www.tawala.com\">");
-			out.println("Produced using the Tawala Designer<br />");
-			out.println("Tawala Systems, Inc.<br />");
-			out.println("www.tawala.com</a>");
-			out.println("</div>");
+			out.println("<div align=\"center\">You can close this window.</div>");
 		}
 
 		public boolean isEmpty(ExecutionContext context) {
@@ -350,7 +343,10 @@ public abstract class DataCollectingProjectController extends ProjectController 
 					context.isAdsExplicitlySurpressed());
 			String url = urlToForm + (urlToForm.contains("?") ? '&' : '?')
 					+ REDIRECT_AFTER_POST_PARAMETER;
-			return new RedirectResponse(url);
+			// Stay on the host the browser already used (https://teacherexams.org
+			// vs baked-in localhost:8080). Absolute Location: localhost sends
+			// teachers to their own machine after the last Submit.
+			return new RedirectResponse(toSameHostPath(url));
 		} else {
 			return new OldPageResponse(page);
 		}
@@ -359,6 +355,15 @@ public abstract class DataCollectingProjectController extends ProjectController 
 	protected abstract EntryPointType getEntryPointType();
 
 	protected abstract boolean getAllowAdsToAppear();
+
+	static String toSameHostPath(String url) {
+		int scheme = url.indexOf("://");
+		if (scheme < 0) {
+			return url;
+		}
+		int pathStart = url.indexOf('/', scheme + 3);
+		return pathStart >= 0 ? url.substring(pathStart) : "/";
+	}
 
 	private void stampTestDriveEpoch(OldPage page, Request request) {
 		if (page == null || getEntryPointType() != EntryPointType.TEST_DRIVE) {

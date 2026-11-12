@@ -54,13 +54,18 @@ mail.worker.maxSecondsPerRun=30
 mail.worker.staleSendingMinutes=15
 EOF
 
-# Inject into ROOT.war so Spring classpath:mail.properties picks it up (overrides WEB-INF defaults).
+# Inject into ROOT.war so Spring classpath properties pick these up.
+# Hostname is used after the last Submit (redirect). Laptop stays localhost:8080;
+# teacher Mini sets TAWALA_PUBLIC_HOSTNAME=teacherexams.org (no port).
+PUBLIC_HOST="${TAWALA_PUBLIC_HOSTNAME:-localhost:8080}"
 PATCH_DIR=/tmp/mail-war-patch
 rm -rf "$PATCH_DIR"
 mkdir -p "$PATCH_DIR/WEB-INF/classes"
 cp "$MAIL_PROPS" "$PATCH_DIR/WEB-INF/classes/mail.properties"
-( cd "$PATCH_DIR" && jar uf /usr/local/tomcat/webapps/ROOT.war WEB-INF/classes/mail.properties )
+printf "projectruntime.hostname=%s\n" "$PUBLIC_HOST" > "$PATCH_DIR/WEB-INF/classes/userproject.properties"
+( cd "$PATCH_DIR" && jar uf /usr/local/tomcat/webapps/ROOT.war WEB-INF/classes/mail.properties WEB-INF/classes/userproject.properties )
 rm -rf "$PATCH_DIR" "$MAIL_PROPS"
 echo "Email config applied: enabled=${MAIL_ENABLED} host=${MAIL_HOST} port=${MAIL_PORT} from=${MAIL_FROM_ADDR} worker=${MAIL_WORKER}"
+echo "Public hostname: ${PUBLIC_HOST}"
 
 exec catalina.sh run

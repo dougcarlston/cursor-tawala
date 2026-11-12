@@ -1,0 +1,43 @@
+---
+description: Robustness under many simultaneous users — sessions, Worlds, occupancy, races, pooling
+alwaysApply: true
+---
+
+# Concurrent users (do not vibe this)
+
+A change that works in one Safari tab is not done. Assume many students, two teacher tabs, and overlapping Test Drives. Localhost sequential clicks hide races.
+
+## Occupancy and isolation
+
+- Live `/p/{uniqueId}/…` is **one World**. Callers of the same uniqueId share questions, submissions, and scores. Never tell two teachers to use one live copy. Never “fix” isolation by copying live `/p/` rows into a Test Drive World.
+- Test Drive `/t/` is **per HTTP session**. Do not key Test Drive data on a global singleton, static map, or `WorldInitializer.getDefaultWorld()`.
+- `JSESSIONID` is shared across tabs on one browser. Session attributes must be scoped by **uniqueId + form** (or equivalent), not by form name alone. A stored “last page” / epoch / leave-timer for project A must not clobber project B.
+- In-memory objects (`HttpSession`, a Test Drive `World`, a static cache) are not a substitute for Postgres when two requests can mutate the same live project.
+
+## Races (read-then-write)
+
+Treat double-submit, double-click, and two students finishing at once as the normal case.
+
+```text
+❌ BAD — read value, compute, write back
+   lastSessionId = record.lastSessionId;  save(lastSessionId + 1);
+   score = exam.score;  save(score + thisQuestion);
+   if (balance sufficient) pay(); update(balance);
+
+✅ GOOD — one atomic unit
+   Hibernate transaction around the whole mutation
+   UPDATE … SET n = n + 1  (or SELECT FOR UPDATE) for counters
+   Unique constraint / dedupe key for “this submit already stored”
+```
+
+Hot spots: OEB scoring and session ids, form POST + Process, email send workers, Test Drive create/discard, occupancy of a uniqueId.
+
+## Connections and queries
+
+- Use the existing Tomcat / Hibernate **pool**. Do not open a new JDBC connection, `SessionFactory`, or `pg.Client()` per request in Node.
+- Do not `SELECT *` wide tables as a default. New lookup columns need an index. Do not add unbounded loops over submissions in a Process that runs on every Exam POST.
+- Process loops already abort at 1000 iterations — do not add a new “retry until it works” inner loop.
+
+## What “done” means
+
+If the change mutates shared live data, say in the change how two overlapping requests behave. If you cannot, it is not ready. A single-tab smoke is not a concurrency test.

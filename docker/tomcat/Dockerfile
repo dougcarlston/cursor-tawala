@@ -25,6 +25,9 @@ COPY TawalaWebapp-build1700/src/com/tawala/web/oldhtml/OldPage.java /tmp/td-src/
 COPY TawalaWebapp-build1700/src/com/tawala/project/commands/ExecutionContext.java /tmp/td-src/com/tawala/project/commands/ExecutionContext.java
 COPY TawalaWebapp-build1700/src/com/tawala/web/project/DataCollectingProjectController.java /tmp/td-src/com/tawala/web/project/DataCollectingProjectController.java
 COPY TawalaWebapp-build1700/src/com/tawala/web/project/ProjectTestDriveController.java /tmp/td-src/com/tawala/web/project/ProjectTestDriveController.java
+COPY TawalaWebapp-build1700/src/com/tawala/project/UserProject.java /tmp/td-src/com/tawala/project/UserProject.java
+COPY TawalaWebapp-build1700/src/com/tawala/project/ProjectsHibernateImpl.java /tmp/td-src/com/tawala/project/ProjectsHibernateImpl.java
+COPY TawalaWebapp-build1700/src/com/tawala/web/client/ClientApiController.java /tmp/td-src/com/tawala/web/client/ClientApiController.java
 
 RUN mkdir -p /tmp/ROOT \
  && unzip -q /tmp/ROOT.war -d /tmp/ROOT \
@@ -47,6 +50,9 @@ RUN mkdir -p /tmp/ROOT \
       /tmp/td-src/com/tawala/project/commands/ExecutionContext.java \
       /tmp/td-src/com/tawala/web/project/DataCollectingProjectController.java \
       /tmp/td-src/com/tawala/web/project/ProjectTestDriveController.java \
+      /tmp/td-src/com/tawala/project/UserProject.java \
+      /tmp/td-src/com/tawala/project/ProjectsHibernateImpl.java \
+      /tmp/td-src/com/tawala/web/client/ClientApiController.java \
  && cd /tmp/ROOT && jar cf /usr/local/tomcat/webapps/ROOT.war . \
  && rm -rf /tmp/ROOT /tmp/ROOT.war /tmp/patch /tmp/td-src
 

@@ -1,6 +1,8 @@
 # Start the Library Cursor chat — owner guide
 
-**Purpose:** Switch from the Designer track to the **Website / Library** track with minimal friction.
+**Purpose:** Switch from the Designer track to the **Website / My Tawala** track with minimal friction.
+
+**Read first (after 11 Nov 2026):** [`docs/HANDOFF_NOV11_2026.md`](HANDOFF_NOV11_2026.md) — public general-use site, not school-exam sales.
 
 **One command:**
 
@@ -17,10 +19,11 @@ That checks (and starts) Tomcat `:8080`, website mock `:5500`, and Designer API 
 
 | Order | File | Purpose |
 |-------|------|---------|
-| 1 | `docs/START_LIBRARY_CHAT.md` | This guide |
-| 2 | `docs/CHAT_HANDOFF.md` → **Chat 3** | Library checkpoint, clean-start steps, constraints |
-| 3 | `website-mock/README.md` | Task List (Aug 9), tenancy, Publish/Save/Deploy glossary |
-| 4 | `.cursor/rules/tawala-work-scopes.mdc` | Three tracks — stay on Library unless deploy wiring forces `:8080` |
+| 1 | `docs/HANDOFF_NOV11_2026.md` | Product pivot |
+| 2 | `docs/START_LIBRARY_CHAT.md` | This guide |
+| 3 | `docs/LIBRARY_WHERE_WE_ARE_SEP3.md` | Isolation close (Sep 14–15) — still true |
+| 4 | `website-mock/README.md` | Task List, tenancy, Publish/Save/Deploy glossary |
+| 5 | `.cursor/rules/tawala-work-scopes.mdc` | Stay on My Tawala / site unless Push wiring forces Designer |
 
 **Do not read** the full Designer spec set unless a task explicitly needs Push/deploy URL wiring.
 
@@ -90,7 +93,7 @@ Execute in chunks; see `website-mock/README.md` § Task List for DONE/HOLD detai
 
 **Next Designer pass (later):** `.tawala` convert batch C2/C3, Document caret epic, post-website polish.
 
-**When you return to Library (after Designer, Aug 26):** public listing cosmetics (owner prefers My Tawala / Project Details look) before any public switch; then **go live but private** and stranger gates. Designer start: `./scripts/start-designer-chat.sh --start --copy`.
+**11 Nov 2026:** School-exam GTM is parked. Public site = My Tawala + Designer for general use, not a teacher marketplace. Payments parked; accounts still required for persistence. Resume: `docs/HANDOFF_NOV11_2026.md`. Isolation Test Drive (`/t/`) already landed Sep 2026 — do not revive shared uniqueId TD.
 
 ---
 

@@ -320,6 +320,12 @@ A teacher could Publish **American History Final Exam** from OEB: same Designer 
 
 ---
 
+## Resume after 11 Nov 2026
+
+School-exam GTM and OEB “Publish as an exam” Version 2 are **parked**. Isolation rules in this file still stand. Full pivot: [`HANDOFF_NOV11_2026.md`](HANDOFF_NOV11_2026.md).
+
+---
+
 ## New-chat opener
 
 ```text

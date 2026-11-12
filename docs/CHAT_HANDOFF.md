@@ -8,6 +8,7 @@ Use this file when starting or resuming a Cursor chat. Copy the **5-line opener*
 
 | Handoff | Use when |
 |---------|----------|
+| [`HANDOFF_NOV11_2026.md`](HANDOFF_NOV11_2026.md) | **Resume after Nov 11 pivot** — Designer + My Tawala, public general-use site, no monetization |
 | [`START_DESIGNER_CHAT.md`](START_DESIGNER_CHAT.md) | **Browser Designer** — run `./scripts/start-designer-chat.sh` |
 | [`START_LIBRARY_CHAT.md`](START_LIBRARY_CHAT.md) | **Library / website mock** — run `./scripts/start-library-chat.sh` |
 | [`CHAT_HANDOFF_FORMS.md`](CHAT_HANDOFF_FORMS.md) | Forms canvas WYSIWYG, FIB/MCQ, remaining form items, palette table/fx |
@@ -15,6 +16,16 @@ Use this file when starting or resuming a Cursor chat. Copy the **5-line opener*
 | [`CHAT_HANDOFF_INTEGRATED.md`](CHAT_HANDOFF_INTEGRATED.md) | Documents editor, shared Formatting Palette, cross-Form/Process/Document shell |
 
 Status dashboard: [`docs/ROADMAP.md`](ROADMAP.md). Cursor usage tips: [`docs/CURSOR_CHAT_GUIDE.md`](CURSOR_CHAT_GUIDE.md).
+
+---
+
+## ⏱️ Session checkpoint — 11 November 2026 (product pivot)
+
+**Read first:** [`docs/HANDOFF_NOV11_2026.md`](HANDOFF_NOV11_2026.md). New-chat opener is at the bottom of that file.
+
+**Owner:** long pause (father died; executor). Teachers will not adopt exam software because of AI. **Finish Tawala** as Designer + My Tawala on a **persistent public site** for general use. **Not monetizing.** Developer use welcome. Park school GTM, payments, ratings, OEB Publish-as-exam V2.
+
+**Do not discard** uncommitted Java same-host redirect, `TAWALA_PUBLIC_HOSTNAME`, jsonToXml raw-HTML mark, or the two `.cursor/rules` files (`tawala-concurrent-users`, `tawala-durable-state`).
 
 ---
 
@@ -224,15 +235,15 @@ Owner references:
 
 **Suggested title:** `Designer thread`
 
-**Handoff script (Aug 26, 2026):** From repo root:
+**Resume (11 Nov 2026):** [`docs/HANDOFF_NOV11_2026.md`](HANDOFF_NOV11_2026.md). Two-link underline is **fixed**. Next Designer items are Document smoothness P0s / F1 — owner picks.
+
+**Handoff script:** From repo root:
 
 ```bash
 ./scripts/start-designer-chat.sh --start --copy
 ```
 
 Checks Designer UI `:5173`, API `:3001`, Tomcat `:8080`; prints + optionally copies the Designer chat opener. Guide: [`docs/START_DESIGNER_CHAT.md`](START_DESIGNER_CHAT.md).
-
-**When this track resumes (Aug 26):** first task is Document two-links-on-one-line underline merge — `DESIGNER_OPEN_BUGS.md`. Link unification / Push rename / Theme-on-Push are **done**. Parked Document smoothness P0s next if there is time. Do not mix Library listing cosmetics.
 
 **Aug 2 morning — conversion inventory (no code fixes):** Owner is listing **`.tawala` → JSON** bugs before another large import trove; **batch-fix with tests later**. Queue: sequential FIB blanks elided (C1; multi-alt destroyed), MCQ alternate labels → Q1/Q2 (C2), function tables fail convert (C3, examples pending), Heading `<<field>>` Deploy fixed / convert residual watch (C4). Full table: `Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md` § **Legacy .tawala → JSON conversion (batch fix queue)**. Repros: Online Exam Builder, Priority Library Projects.
 
@@ -241,9 +252,9 @@ Checks Designer UI `:5173`, API `:3001`, Tomcat `:8080`; prints + optionally cop
 ```
 Project: Tawala (~/Projects/Tawala)
 Track: Browser Designer — designer-web/ — chat title: Designer thread
-Goal: FIRST: Document two links on one line merge underlines (Shared To-Do → Document - User Menu). Then parked Document smoothness P0s. Design canvas ≫ Push ≫ Preview.
-Read first: docs/START_DESIGNER_CHAT.md, Tawala_Key_Documents/DESIGNER_OPEN_BUGS.md, DESIGNER_DOCUMENT_EDITOR.md, .cursor/rules/tawala-work-scopes.mdc
-Constraints: designer-web/ only; do not mix website-mock Library cosmetics; no commit unless I ask; Push checks on 5173/3001/8080 — never www.tawala.com
+Goal: Designer canvas for a public general-use site. Owner picks Document smoothness P0s (B1) or F1 3-browser. Design canvas ≫ Push ≫ Preview.
+Read first: docs/HANDOFF_NOV11_2026.md, docs/START_DESIGNER_CHAT.md, Tawala_Key_Documents/DESIGNER_OPEN_TODOS.md
+Constraints: designer-web/ only; do not mix website-mock Library cosmetics; no commit unless I ask; do not discard uncommitted Java/hostname files; Push on 5173/3001/8080 — never www.tawala.com by default
 ```
 
 ### Work to date
@@ -372,6 +383,10 @@ Checks Tomcat `:8080`, website mock `:5500`, Designer API `:3001`; auto-fixes To
 **Owner (Aug 26):** public Library listing look-and-feel is weaker than My Tawala / Project Details — cosmetics **before** any public switch. Next Library talk after Designer: **go live but private**, then stranger gates (Test Drive #14, accounts, payments).
 
 **Designer tomorrow:** `./scripts/start-designer-chat.sh --start --copy` — first bug: two Document links merging underlines. Do not mix Library cosmetics into that chat.
+
+### ⏱️ Session checkpoint — 11 November 2026 (see top of this file)
+
+School-exam GTM parked. Resume from [`docs/HANDOFF_NOV11_2026.md`](HANDOFF_NOV11_2026.md). Test Drive isolation already landed Sep 2026. Public site = My Tawala + Designer; accounts still required; payments parked.
 
 **Status (Aug 10, 2026):** Task List #9 (**Make a Copy**) wired in working tree (**uncommitted**). Review on **`http://localhost:5500`** — owner localStorage lives there; `127.0.0.1:5500` is a separate origin (banner redirects). Rename ≠ Make a Copy ≠ Library Save a copy.
 

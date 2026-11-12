@@ -17,6 +17,7 @@
   let clerkLoaded = false;
 
   function initClerk() {
+    if (isPublicSite()) return;
     if (typeof window === "undefined" || !CLERK_PUBLISHABLE_KEY) return;
     if (window.Clerk && window.Clerk.isReady) {
       clerkInstance = window.Clerk;
@@ -133,6 +134,11 @@
     return null;
   }
 
+  /** Public host copy. Does not default every visitor to the dev session. */
+  function isPublicSite() {
+    return typeof window !== "undefined" && window.TAWALA_PUBLIC_SITE === true;
+  }
+
   function isGuestMode() {
     try {
       return localStorage.getItem(GUEST_KEY) === "1";
@@ -149,6 +155,7 @@
   function isLoggedIn() {
     if (isGuestMode()) return false;
     if (readSession()) return true;
+    if (isPublicSite()) return false;
     /* No session and not explicitly guest → treat as logged-in for mock UX. */
     return true;
   }
@@ -157,6 +164,7 @@
     if (isGuestMode()) return "";
     const s = readSession();
     if (s && s.user) return String(s.user);
+    if (isPublicSite()) return "";
     return "dev";
   }
 
@@ -255,6 +263,7 @@
 
   /** Guest taste My Tawala; logged-in users get the real private pile. */
   function myTawalaHref() {
+    if (isPublicSite()) return "/app/mytawala.html";
     return isLoggedIn() ? "mytawala.html" : "mytawala-demo.html";
   }
 
@@ -312,6 +321,8 @@
 
   function resolveHref(key) {
     if (key === "mytawala") return myTawalaHref();
+    if (isPublicSite() && key === "home") return "/home";
+    if (isPublicSite() && key === "library") return "/app/library.html";
     const item = LINKS[key];
     return item ? item.href : "#";
   }
@@ -352,11 +363,11 @@
           isClerk
             ? `<li><a href="#" class="clerk-profile-action" title="Manage your Clerk profile &amp; security">Manage Account</a></li>`
             : `<li>${anchor("changePassword")}</li>`,
-          `<li><a href="logout.html" class="clerk-logout-action">Logout</a></li>`,
+          `<li><a href="${isPublicSite() ? "/logout" : "logout.html"}" class="clerk-logout-action">Logout</a></li>`,
         ]
       : [
-          `<li><a href="signup.html" class="clerk-signup-action">Register</a></li>`,
-          `<li><a href="login.html?next=mytawala.html" class="clerk-login-action">Log in</a></li>`,
+          `<li><a href="${isPublicSite() ? "/user/registration" : "signup.html"}" class="clerk-signup-action">Register</a></li>`,
+          `<li><a href="${isPublicSite() ? "/login" : "login.html?next=mytawala.html"}" class="clerk-login-action">Log in</a></li>`,
         ];
     return (
       `<div class="account-menu">` +
@@ -371,6 +382,14 @@
   }
 
   function renderGuestStatus() {
+    if (isPublicSite()) {
+      return (
+        `Welcome. Please ` +
+        `<a href="/user/registration">register</a> or ` +
+        `<a href="/login">Log in</a> ` +
+        renderAccountMenu("")
+      );
+    }
     return (
       `Welcome. Please ` +
       `<a href="signup.html" class="clerk-signup-action">register</a> or ` +
@@ -553,6 +572,35 @@
     });
   }
 
+  /**
+   * The public Library page does not share the prototype's browser login.
+   * Read the real Tomcat session from /home and show that name.
+   */
+  function syncPublicAccount() {
+    if (!isPublicSite()) return Promise.resolve("");
+    return fetch("/home", { credentials: "same-origin", cache: "no-store" })
+      .then((res) => (res.ok ? res.text() : ""))
+      .then((html) => {
+        const match = String(html).match(
+          /Welcome back,\s*<span class="userName">([^<]*)<\/span>/
+        );
+        const name = match ? match[1].trim() : "";
+        try {
+          if (name) {
+            setSession(name, { authProvider: "java" });
+          } else {
+            localStorage.removeItem(SESSION_KEY);
+            localStorage.removeItem(GUEST_KEY);
+          }
+        } catch {
+          /* ignore */
+        }
+        mount();
+        return name;
+      })
+      .catch(() => "");
+  }
+
   function mount() {
     initClerk();
     const body = document.body;
@@ -560,7 +608,7 @@
     /* Session wins. data-tawala-user is display-only when logged in (legacy pages). */
     const sessionUser = currentUser();
     const user = sessionUser || "";
-    const showBanner = body.dataset.tawalaBanner !== "false";
+    const showBanner = body.dataset.tawalaBanner !== "false" && !isPublicSite();
 
     const bannerEl = document.getElementById("tawala-chrome-banner");
     const headerEl = document.getElementById("tawala-chrome-header");
@@ -595,6 +643,7 @@
     currentUser,
     currentAuthUser,
     setSession,
+    syncPublicAccount,
     clearSession,
     openSignIn,
     openSignUp,

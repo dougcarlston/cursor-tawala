@@ -190,9 +190,17 @@ public class ClientApiController implements Controller {
 			World world, User user) {
 		String userId = apiRequest.getUserId();
 		ConfigElement projectElement = apiRequest.getXml().child("project");
-		UserProject project = new UserProject(projectElement, user);
-
-		project = world.domain().projects().put(project);
+		UserProject project;
+		try {
+			project = new UserProject(projectElement, user);
+			project = world.domain().projects().put(project);
+		} catch (IllegalArgumentException e) {
+			String message = e.getMessage();
+			if (message == null || message.length() == 0) {
+				message = "Could not keep the requested uniqueId";
+			}
+			return new ApiErrorResponse("project.uniqueId", message);
+		}
 
 		Event event = new Event("ProjectUploadThroughDesigner", project
 				.getName());

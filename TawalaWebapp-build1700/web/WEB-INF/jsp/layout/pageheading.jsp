@@ -110,12 +110,12 @@
 		</li>
 
 		<li class="<c:out value="${libraryPageClass}" />" >
-			<a href="${urls.librarySearch}">LIBRARY</a>
+			<a href="/app/library.html">LIBRARY</a>
 		</li>
 
 		<c:if test="${! empty user}">
 			<li class="<c:out value="${mytawalaPageClass}" />" >
-				<a href="${urls.projectManagerView}">MY TAWALA</a>
+				<a href="/app/mytawala.html">MY TAWALA</a>
 			</li>
 		</c:if>
 

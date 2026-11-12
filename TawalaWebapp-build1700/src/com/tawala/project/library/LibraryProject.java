@@ -60,7 +60,7 @@ public class LibraryProject {
 	@Column(length = 60, nullable = false, unique = true)
 	private String name;
 
-	@Column(name = "short_desc", length = 60, nullable = false)
+	@Column(name = "short_desc", length = 200, nullable = false)
 	private String shortDescription;
 
 	@Lob

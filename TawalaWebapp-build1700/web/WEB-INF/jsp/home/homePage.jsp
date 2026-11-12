@@ -79,9 +79,9 @@
 				                    </c:if>
 		                        </c:if>
 		                        <li><a href="${urls.faq}">FAQ</a></li>
-		                        <li><a href="${urls.librarySearch}">LIBRARY</a></li>
+		                        <li><a href="/app/library.html">LIBRARY</a></li>
 								<c:if test="${! empty user}">
-			                        <li><a href="${urls.projectManagerView}">MY TAWALA</a></li>
+			                        <li><a href="/app/mytawala.html">MY TAWALA</a></li>
 			                    </c:if>
 		                        <li><a href="/home">HOME</a></li>
 		                	</ul>
