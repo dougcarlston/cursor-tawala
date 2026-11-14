@@ -7,12 +7,15 @@
 <c:url var="exportURL" value="${urls.projectManagerExportAllData}">
 	<c:param name="<%= AllProjectDataExportController.PROJECT_ID_PARAMETER %>" value="${userProject.id}" />
 </c:url>
+<c:url var="backToProject" value="/app/mytawala-project.html">
+	<c:param name="name" value="${userProject.name}" />
+</c:url>
 <script>
-	parent.exportURL = '${exportURL}';
+	if (parent && parent !== window) parent.exportURL = '${exportURL}';
 </script>
 
 
-<div class="section" >
+<div class="section" style="padding: 16px 20px; font: 13px/1.4 Tahoma, Verdana, sans-serif; color: #222;">
 
 	<p>	
 	It is very useful to export the entire project data as a backup or for use
@@ -22,7 +25,7 @@
 
 	<p>
 	The data contained in your project will be exported to an Excel File, and it
-	will be downloaded to your computer.Click the EXPORT button below to start the download.
+	will be downloaded to your computer. Click the EXPORT button below to start the download.
 	</p>
 	<br />
 	
@@ -32,7 +35,16 @@
 	</p>
 	<br />
 
-	
-<%--	<iframe id="file_download" width="0" height="0" scrolling="no" frameborder="0" --%>
-<%--		src="${exportURL}"></iframe>--%>
+	<p id="exportActions">
+		<a href="${exportURL}" style="display:inline-block;padding:6px 18px;background:#1a3a5c;color:#fff;font-weight:700;text-decoration:none;">EXPORT</a>
+	</p>
+	<p style="margin-top:16px;">
+		<a href="${backToProject}">Back to the project</a>
+	</p>
 </div>
+<script>
+	if (parent && parent !== window) {
+		var actions = document.getElementById("exportActions");
+		if (actions) actions.style.display = "none";
+	}
+</script>

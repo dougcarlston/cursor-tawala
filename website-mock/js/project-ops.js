@@ -2748,13 +2748,15 @@
     return (
       `<div class="pm-data-project-controls">` +
       vrule +
-      `<div class="pm-data-ctrl-group pm-data-banner-controls" role="toolbar" aria-label="Start this project">` +
+      `<div class="pm-data-ctrl-group pm-data-banner-controls" role="toolbar" aria-label="Start this project" style="position:relative">` +
       `<a class="pm-data-ctrl pm-data-ctrl-use is-scope-disabled" href="#" ` +
       `data-op="use" data-wired="use-project" data-project="${pid}" ` +
       `title="${escapeHtml(useOffTitle)}" aria-disabled="true">Use</a>` +
       `<button type="button" class="pm-data-ctrl is-scope-disabled" data-op="copy-link" ` +
       `data-wired="copy-start-link" data-project="${pid}" aria-disabled="true" ` +
       `title="${escapeHtml(copyOffTitle)}">Copy link</button>` +
+      `<span id="pmCopyNote" role="status" hidden ` +
+      `style="position:absolute;left:0;top:100%;margin-top:1px;font-size:11px;font-weight:400;color:#c00000;white-space:nowrap;z-index:2"></span>` +
       `</div>` +
       vrule +
       `<div class="pm-data-ctrl-group" role="group" aria-label="Response data">` +
@@ -2863,6 +2865,8 @@
         lastTitle
       )}">${escapeHtml(lastLabel)}</span>` +
       `</div>` +
+      `<p id="pmOpStatus" class="pm-hint" role="status" hidden ` +
+      `style="grid-column:1 / -1;margin:2px 0 2px 22px;font-size:11px;font-weight:400;color:#555"></p>` +
       `<ul class="pm-data-tree-list pm-data-forms-list${preferLevel >= 1 ? "" : " is-collapsed"}" ` +
       `id="pmDataFormsList" role="group" aria-label="Forms">` +
       (formRows ||
@@ -3239,21 +3243,64 @@
     }
   }
 
-  async function copyUrlToClipboard(url) {
-    if (!url) {
+  /**
+   * Address to put on the clipboard. On the public site, keep the /p/ path and
+   * use the page’s own origin so the link is https://teacherexams.org/… rather
+   * than http:// or www.tawala.com.
+   */
+  function shareableStartUrl(url) {
+    const raw = String(url || "").trim();
+    if (!raw || !window.TAWALA_PUBLIC_SITE || typeof location === "undefined") return raw;
+    try {
+      const abs = new URL(raw, location.href);
+      const path = abs.pathname || "";
+      if (path.indexOf("/p/") === 0 || path.indexOf("/t/") === 0) {
+        return location.origin + path + abs.search + abs.hash;
+      }
+    } catch {
+      /* keep the stored address */
+    }
+    return raw;
+  }
+
+  let copyNoteTimer = 0;
+
+  function showCopyNote(msg) {
+    const el = document.getElementById("pmCopyNote");
+    if (!el) {
+      setStatus(msg);
+      return;
+    }
+    el.textContent = msg || "";
+    el.removeAttribute("hidden");
+    if (copyNoteTimer) window.clearTimeout(copyNoteTimer);
+    copyNoteTimer = window.setTimeout(() => {
+      copyNoteTimer = 0;
+      if (!el.isConnected) return;
+      el.textContent = "";
+      el.setAttribute("hidden", "");
+    }, 5000);
+  }
+
+  async function copyUrlToClipboard(url, formName) {
+    const share = shareableStartUrl(url);
+    if (!share) {
       window.alert("This start point has no :8080 URL to copy yet.");
       return;
     }
+    const status = formName ? "Copied the " + formName + " link." : "Copied start link.";
     try {
       if (navigator.clipboard && navigator.clipboard.writeText) {
-        await navigator.clipboard.writeText(url);
+        await navigator.clipboard.writeText(share);
       } else {
-        window.prompt("Copy this start link:", url);
+        window.prompt("Copy this start link:", share);
+        showCopyNote(status);
         return;
       }
-      setStatus("Copied start link.");
+      showCopyNote(status);
     } catch {
-      window.prompt("Copy this start link:", url);
+      window.prompt("Copy this start link:", share);
+      showCopyNote(status);
     }
   }
 
@@ -4576,7 +4623,6 @@
         greyed: true,
         summaryTitle: "Comments / reputation — stub (not wired)",
       }) +
-      '<p class="pm-hint" id="pmOpStatus" role="status"></p>' +
       "</div>" +
       "</div>"
     );
@@ -4676,14 +4722,11 @@
 
   function setStatus(msg) {
     const el = document.getElementById("pmOpStatus");
-    if (el) {
-      el.textContent = msg;
-      try {
-        el.scrollIntoView({ block: "nearest", behavior: "smooth" });
-      } catch {
-        /* ignore */
-      }
-    }
+    if (!el) return;
+    const text = msg ? String(msg) : "";
+    el.textContent = text;
+    if (text) el.removeAttribute("hidden");
+    else el.setAttribute("hidden", "");
   }
 
   const PUBLISH_MODAL_ID = "tawalaPublishModal";
@@ -5775,7 +5818,10 @@
       typeof TawalaDemo.displayName === "function"
         ? TawalaDemo.displayName(project.name || projectId)
         : String(project.name || projectId);
-    const starts = startPointsWithUrls(project);
+    const starts = startPointsWithUrls(project).map((sp) => ({
+      ...sp,
+      url: shareableStartUrl(sp && sp.url),
+    }));
     const hasLive = starts.length > 0;
     const fromAcquire =
       !!(project.fromLibraryAcquire || project.sourcePile === "library-acquire") && !hasLive;
@@ -6439,6 +6485,835 @@
     });
   }
 
+  let accountActionBusy = false;
+
+  function accountProject(projectId) {
+    return resolveMyTawalaProject(projectId);
+  }
+
+  function goToAccountPage(url) {
+    const next = String(url || "").trim();
+    if (!next) {
+      setStatus("That page is not available for this project.");
+      return;
+    }
+    location.assign(next);
+  }
+
+  async function postAccountAction(projectName, action, extra) {
+    const body = new URLSearchParams();
+    body.set("projectName", projectName);
+    body.set("action", action);
+    if (extra) {
+      Object.keys(extra).forEach((key) => {
+        if (extra[key] != null && extra[key] !== "") body.set(key, String(extra[key]));
+      });
+    }
+    const res = await fetch("/projectmanager/projectdetail", {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8" },
+      body: body.toString(),
+    });
+    if (res.url && /\/login(?:\?|$)/.test(res.url)) {
+      location.assign(res.url);
+      return false;
+    }
+    if (!res.ok) {
+      setStatus("That did not complete (" + res.status + ").");
+      return false;
+    }
+    return true;
+  }
+
+  function createBackupDownloadUrl(descriptionUrl) {
+    try {
+      const abs = new URL(String(descriptionUrl || ""), location.href);
+      if (abs.pathname.replace(/\/$/, "") === "/projectmanager/backup") {
+        abs.pathname = "/projectmanager/create-backup";
+        return abs.pathname + abs.search;
+      }
+    } catch {
+      /* keep the description page */
+    }
+    return "";
+  }
+
+  /** Backup note on the project page. BACKUP downloads the file; the page stays put. */
+  function openPublicBackupDialog(descriptionUrl) {
+    const downloadUrl = createBackupDownloadUrl(descriptionUrl);
+    if (!downloadUrl) {
+      goToAccountPage(descriptionUrl);
+      return;
+    }
+    const prior = document.getElementById("tawalaBackupModal");
+    if (prior) prior.remove();
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = "tawalaBackupModal";
+    backdrop.innerHTML =
+      '<div class="tawala-modal" role="dialog" aria-modal="true" aria-labelledby="backupModalTitle">' +
+      '<h3 id="backupModalTitle">Backup project</h3>' +
+      '<p class="pm-hint">You can backup this project and the data it contains. ' +
+      "It is a complete snapshot of the project and its responses.</p>" +
+      '<p class="pm-hint">Press BACKUP to download the file. ' +
+      "On some browsers a message says the download was blocked. Click that message and select Download File.</p>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action is-active" id="backupStart">BACKUP</button>' +
+      '<button type="button" class="pm-action" id="backupCancel">CANCEL</button>' +
+      "</div></div>";
+    function closeBackupDialog() {
+      backdrop.remove();
+      document.removeEventListener("keydown", onBackupKey, true);
+    }
+    function onBackupKey(ev) {
+      if (ev.key === "Escape") closeBackupDialog();
+    }
+    function startBackupDownload() {
+      let frame = document.getElementById("tawalaBackupDownload");
+      if (!frame) {
+        frame = document.createElement("iframe");
+        frame.id = "tawalaBackupDownload";
+        frame.hidden = true;
+        frame.setAttribute("aria-hidden", "true");
+        frame.title = "Project backup download";
+        document.body.appendChild(frame);
+      }
+      frame.src = downloadUrl;
+      closeBackupDialog();
+    }
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", onBackupKey, true);
+    bindDismissOnBackdropClick(backdrop, closeBackupDialog);
+    backdrop.querySelector("#backupCancel").addEventListener("click", closeBackupDialog);
+    backdrop.querySelector("#backupStart").addEventListener("click", startBackupDownload);
+  }
+
+  /**
+   * Same steps as the prototype Restore: choose a file, one confirm, then restore.
+   * The file is the account .backup, and the restore uses the account wizard.
+   */
+  function openPublicRestoreDialog(restoreUrl, projectName) {
+    let action = "";
+    try {
+      const raw = String(restoreUrl || "").trim();
+      if (!raw) throw new Error("missing");
+      const abs = new URL(raw, location.href);
+      if (!/\/restore-from-backup(?:;[^/]*)?$/.test(abs.pathname)) throw new Error("unexpected");
+      action = abs.pathname + abs.search;
+    } catch {
+      action = "";
+    }
+    if (!action) {
+      setStatus("Restore is not available for this project.");
+      return;
+    }
+    const displayName = String(projectName || "this project");
+    void restorePublicProject(action, displayName);
+  }
+
+  function pickBackupFile() {
+    return new Promise(function (resolve, reject) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = ".backup";
+      input.style.cssText = "position:fixed;left:-10000px;top:0;";
+      let settled = false;
+      input.addEventListener("change", function () {
+        const file = input.files && input.files[0];
+        input.remove();
+        settled = true;
+        if (!file) reject(new Error("No file selected"));
+        else resolve(file);
+      });
+      document.body.appendChild(input);
+      input.click();
+      window.addEventListener(
+        "focus",
+        function onFocus() {
+          window.removeEventListener("focus", onFocus);
+          setTimeout(function () {
+            if (!settled && !(input.files && input.files.length)) {
+              settled = true;
+              input.remove();
+              reject(new Error("No file selected"));
+            }
+          }, 300);
+        },
+        { once: true }
+      );
+    });
+  }
+
+  async function restorePublicProject(action, displayName) {
+    let file;
+    try {
+      file = await pickBackupFile();
+    } catch (e) {
+      if (e && e.message !== "No file selected") {
+        window.alert("Couldn't read the selected file\n\n" + e.message);
+      }
+      return;
+    }
+    const ok = window.confirm(
+      "Restore Project — “" + displayName + "”\n\n" +
+        "This replaces “" + displayName + "”, including its current responses, with this backup."
+    );
+    if (!ok) return;
+
+    setStatus("Restoring “" + displayName + "”…");
+    try {
+      await fetch(action, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "_cancel=1",
+        redirect: "follow",
+      });
+      await fetch(action, { credentials: "same-origin", redirect: "follow" });
+      const upload = new FormData();
+      upload.append("data", file, file.name);
+      upload.append("_page", "0");
+      upload.append("_target1", "Next");
+      const uploaded = await postRestoreWizard(action, upload);
+      if (!uploaded) return;
+      const uploadError = restoreServerMessage(uploaded);
+      if (uploadError && !restorePageIsConfirm(uploaded)) {
+        failPublicRestore(displayName, uploadError);
+        return;
+      }
+      const finish = new FormData();
+      finish.append("_page", "1");
+      finish.append("_finish", "Finish");
+      finish.append("_confirmRestore", "on");
+      finish.append("confirmRestore", "true");
+      const done = await postRestoreWizard(action, finish);
+      if (!done) return;
+      if (restorePageSucceeded(done)) {
+        const msg = "Restored “" + (restoreResultName(done) || displayName) + "”.";
+        try {
+          sessionStorage.setItem("tawalaRestoreNote", msg);
+        } catch {
+          /* ignore */
+        }
+        setStatus(msg);
+        window.alert(msg);
+        location.reload();
+        return;
+      }
+      failPublicRestore(displayName, restoreServerMessage(done) || "The project was not restored.");
+    } catch (e) {
+      failPublicRestore(displayName, (e && e.message) || "The backup could not be uploaded.");
+    }
+  }
+
+  function failPublicRestore(displayName, message) {
+    setStatus("Restore failed for “" + displayName + "”.");
+    window.alert("Couldn't restore “" + displayName + "”\n\n" + message);
+  }
+
+  async function postRestoreWizard(action, body) {
+    const res = await fetch(action, {
+      method: "POST",
+      body: body,
+      credentials: "same-origin",
+      redirect: "follow",
+    });
+    if (res.url && /\/login(?:\?|$)/.test(new URL(res.url, location.href).pathname)) {
+      location.assign(res.url);
+      return null;
+    }
+    return new DOMParser().parseFromString(await res.text(), "text/html");
+  }
+
+  function restoreVisibleText(doc) {
+    const root = doc && doc.body ? doc.body.cloneNode(true) : null;
+    if (!root) return "";
+    root.querySelectorAll("script, style, noscript").forEach(function (el) {
+      el.remove();
+    });
+    return String(root.textContent || "").replace(/\s+/g, " ").trim();
+  }
+
+  function restoreServerMessage(doc) {
+    const errEl = doc.querySelector(".error");
+    const errText = errEl ? String(errEl.textContent || "").replace(/\s+/g, " ").trim() : "";
+    if (errText && errText.length < 240 && !/function\s|margin:/.test(errText)) return errText;
+    const text = restoreVisibleText(doc);
+    const size = text.match(/exceed maximum allowed size of [\d,]+ bytes/);
+    if (size) return "The backup is too large. " + size[0] + ".";
+    return "";
+  }
+
+  function restorePageIsConfirm(doc) {
+    return !!(doc.getElementById("confirmRestoreCheckBox") || /will be restored from the backup/i.test(restoreVisibleText(doc)));
+  }
+
+  function restorePageSucceeded(doc) {
+    const heads = doc.querySelectorAll("h3, h5");
+    for (let i = 0; i < heads.length; i++) {
+      const t = String(heads[i].textContent || "").replace(/\s+/g, " ").trim();
+      if (/^Project\s+.+\s+has been restored/i.test(t) && !/has not been restored/i.test(t)) return true;
+    }
+    return false;
+  }
+
+  function restoreResultName(doc) {
+    const heads = doc.querySelectorAll("h3, h5");
+    for (let i = 0; i < heads.length; i++) {
+      const t = String(heads[i].textContent || "").replace(/\s+/g, " ").trim();
+      const m = t.match(/^Project\s+(.+?)\s+has been restored\.?$/i);
+      if (m && m[1] && m[1].length < 80 && !/[{};]|function\s/.test(m[1])) return m[1].trim();
+    }
+    return "";
+  }
+
+  function accountActionPath(url) {
+    const raw = String(url || "").trim();
+    if (!raw) return "";
+    const abs = new URL(raw, location.href);
+    return abs.pathname + abs.search;
+  }
+
+  function exportFileLabel(projectName, formScope) {
+    if (formScope) return String(formScope) + ".xls";
+    const name = String(projectName || "Project")
+      .replace(/:/g, "-")
+      .replace(/[\\/]/g, "-")
+      .replace(/ /g, "_");
+    return name + "-date.xls";
+  }
+
+  /**
+   * Export uses the same save step as Backup. The file is Excel (.xls).
+   * The download starts on the EXPORT click so Safari can ask where to save it.
+   */
+  function exportPublicProject(descriptionUrl, projectName, formScope) {
+    let downloadUrl = "";
+    if (formScope && projectName) {
+      downloadUrl =
+        "/projectmanager/export-excel?project=" +
+        encodeURIComponent(projectName) +
+        "&form=" +
+        encodeURIComponent(formScope);
+    } else {
+      try {
+        const abs = new URL(String(descriptionUrl || ""), location.href);
+        if (abs.pathname.replace(/;[^/]*$/, "").replace(/\/$/, "") === "/projectmanager/export-all") {
+          abs.pathname = "/projectmanager/create-export-all";
+          downloadUrl = abs.pathname + abs.search;
+        }
+      } catch {
+        downloadUrl = "";
+      }
+    }
+    if (!downloadUrl) {
+      setStatus("Export is not available for this project.");
+      return;
+    }
+    const displayName = String(projectName || "this project");
+    const fileLabel = exportFileLabel(displayName, formScope);
+    const namePrefix = fileLabel.replace(/-date\.xls$/, "");
+    const prior = document.getElementById("tawalaExportModal");
+    if (prior) prior.remove();
+    setStatus("");
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = "tawalaExportModal";
+    const what = formScope
+      ? "the responses on “" + formScope + "”"
+      : "the responses in “" + displayName + "”";
+    backdrop.innerHTML =
+      '<div class="tawala-modal" role="dialog" aria-modal="true" aria-labelledby="exportModalTitle">' +
+      '<h3 id="exportModalTitle">Export project data</h3>' +
+      '<p class="pm-hint">This saves ' + escapeHtml(what) + " as an Excel file. " +
+      (formScope
+        ? "The file is named " + escapeHtml(fileLabel) + "."
+        : "The name starts with " + escapeHtml(namePrefix) + "- and ends in .xls, with the date in the middle.") +
+      " Import uses that file.</p>" +
+      '<p class="pm-hint">Press EXPORT to download it. Safari asks where to save the file when ' +
+      "Ask where to save each file is turned on — the same place Backup saves.</p>" +
+      (formScope
+        ? '<p class="pm-hint">If this form has no responses, no file is saved.</p>'
+        : "") +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action is-active" id="exportStart">EXPORT</button>' +
+      '<button type="button" class="pm-action" id="exportCancel">CANCEL</button>' +
+      "</div></div>";
+    function closeExportDialog() {
+      backdrop.remove();
+      document.removeEventListener("keydown", onExportKey, true);
+    }
+    function onExportKey(ev) {
+      if (ev.key === "Escape") closeExportDialog();
+    }
+    function startExportDownload() {
+      let frame = document.getElementById("tawalaAccountDownload");
+      if (!frame) {
+        frame = document.createElement("iframe");
+        frame.id = "tawalaAccountDownload";
+        frame.hidden = true;
+        frame.setAttribute("aria-hidden", "true");
+        frame.title = "Project export download";
+        document.body.appendChild(frame);
+      }
+      frame.src = downloadUrl;
+      closeExportDialog();
+      const msg = formScope
+        ? "Saving " + fileLabel + ". Choose a folder, then pick that file in Import."
+        : "Saving " + namePrefix + "-….xls. Choose a folder, then pick that file in Import.";
+      setStatus(msg);
+      window.setTimeout(function () {
+        const el = document.getElementById("pmOpStatus");
+        if (el && el.textContent === msg) setStatus("");
+      }, 5000);
+    }
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", onExportKey, true);
+    bindDismissOnBackdropClick(backdrop, closeExportDialog);
+    backdrop.querySelector("#exportCancel").addEventListener("click", closeExportDialog);
+    backdrop.querySelector("#exportStart").addEventListener("click", startExportDownload);
+  }
+
+  function pickAccountFile(accept) {
+    return new Promise(function (resolve, reject) {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = accept || "";
+      input.style.cssText = "position:fixed;left:-10000px;top:0;";
+      let settled = false;
+      input.addEventListener("change", function () {
+        const file = input.files && input.files[0];
+        input.remove();
+        settled = true;
+        if (!file) reject(new Error("No file selected"));
+        else resolve(file);
+      });
+      document.body.appendChild(input);
+      input.click();
+      window.addEventListener(
+        "focus",
+        function onFocus() {
+          window.removeEventListener("focus", onFocus);
+          setTimeout(function () {
+            if (!settled && !(input.files && input.files.length)) {
+              settled = true;
+              input.remove();
+              reject(new Error("No file selected"));
+            }
+          }, 300);
+        },
+        { once: true }
+      );
+    });
+  }
+
+  function importPageKind(doc) {
+    if (!doc) return "unknown";
+    if (doc.getElementById("confirmDataDeletionCheckBox")) return "all-approve";
+    const text = restoreVisibleText(doc);
+    if (/Map data to fields/i.test(text)) return "map";
+    if (/Confirm data import mapping/i.test(text)) return "approve";
+    if (/Data has NOT been restored/i.test(text)) return "failed";
+    if (/Data has been imported/i.test(text)) return "done";
+    return "unknown";
+  }
+
+  function wizardStepFields(doc) {
+    const body = new FormData();
+    const form = doc && doc.querySelector("form");
+    if (!form) return body;
+    form.querySelectorAll("input, select, textarea").forEach(function (el) {
+      if (!el.name || el.disabled) return;
+      const type = String(el.type || "").toLowerCase();
+      if (type === "file" || type === "submit" || type === "button" || type === "image") return;
+      if (/^_target|^_finish$|^_cancel$/.test(el.name)) return;
+      if ((type === "checkbox" || type === "radio") && !el.checked) return;
+      body.append(el.name, el.value);
+    });
+    return body;
+  }
+
+  /**
+   * Import: choose the Excel file from Export, one confirm, then the account import.
+   * A form file keeps the column match the account already filled in.
+   */
+  async function importPublicProject(importUrl, displayName, formScope) {
+    let action = "";
+    try {
+      action = accountActionPath(importUrl);
+      const path = new URL(action, location.href).pathname.replace(/;[^/]*$/, "").replace(/\/$/, "");
+      const expected = formScope ? "/projectmanager/import-project-data" : "/projectmanager/restore-all-data";
+      if (path !== expected) action = "";
+    } catch {
+      action = "";
+    }
+    if (!action) {
+      setStatus("Import is not available for this project.");
+      return;
+    }
+    let file;
+    try {
+      file = await pickAccountFile(".xls,.xlsx,application/vnd.ms-excel,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+    } catch (e) {
+      if (e && e.message !== "No file selected") {
+        window.alert("Couldn't read the selected file\n\n" + e.message);
+      }
+      return;
+    }
+    const scope = formScope
+      ? "form “" + formScope + "” in “" + displayName + "”"
+      : "“" + displayName + "”";
+    const ok = window.confirm(
+      "Import Project Data — " + scope + "\n\n" +
+        (formScope
+          ? "This replaces the current responses on “" + formScope + "”. Other forms stay as they are. Import does not change the project definition."
+          : "This replaces the current responses in “" + displayName + "”. Import does not change the project definition.")
+    );
+    if (!ok) return;
+
+    setStatus("Importing into " + scope + "…");
+    try {
+      await fetch(action, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "_cancel=1",
+        redirect: "follow",
+      });
+      await fetch(action, { credentials: "same-origin", redirect: "follow" });
+      const upload = new FormData();
+      upload.append("data", file, file.name);
+      upload.append("_page", "0");
+      upload.append("_target1", "Next");
+      let doc = await postRestoreWizard(action, upload);
+      if (!doc) return;
+      for (let step = 0; step < 4; step++) {
+        const kind = importPageKind(doc);
+        if (kind === "done") {
+          const msg = "Imported responses into " + scope + ".";
+          setStatus(msg);
+          window.alert(msg);
+          location.reload();
+          return;
+        }
+        if (kind === "failed") {
+          window.alert("Couldn't import into " + scope + "\n\n" + (restoreServerMessage(doc) || "The file was not imported."));
+          setStatus("Import failed for " + scope + ".");
+          return;
+        }
+        const problem = restoreServerMessage(doc);
+        if (problem && (kind === "unknown" || step > 0)) {
+          window.alert("Couldn't import into " + scope + "\n\n" + problem);
+          setStatus("Import failed for " + scope + ".");
+          return;
+        }
+        let next;
+        if (kind === "all-approve") {
+          next = wizardStepFields(doc);
+          next.set("_page", "1");
+          next.set("_confirmDataDeletion", "on");
+          next.set("confirmDataDeletion", "true");
+          next.append("_finish", "Finish");
+        } else if (kind === "map") {
+          next = wizardStepFields(doc);
+          next.set("_page", "1");
+          next.append("_target2", "Next");
+        } else if (kind === "approve") {
+          next = wizardStepFields(doc);
+          next.set("_page", "2");
+          next.set("_deleteOldData", "on");
+          next.set("deleteOldData", "true");
+          next.append("_finish", "Finish");
+        } else {
+          window.alert("Couldn't import into " + scope + "\n\n" + (problem || "The file was not imported."));
+          setStatus("Import failed for " + scope + ".");
+          return;
+        }
+        doc = await postRestoreWizard(action, next);
+        if (!doc) return;
+      }
+      window.alert("Couldn't import into " + scope + "\n\nThe file was not imported.");
+      setStatus("Import failed for " + scope + ".");
+    } catch (e) {
+      window.alert("Couldn't import into " + scope + "\n\n" + ((e && e.message) || "The file could not be uploaded."));
+      setStatus("Import failed for " + scope + ".");
+    }
+  }
+
+  /** Publish dialog from the prototype. The last step submits the account publish form. */
+  async function openPublicPublishDialog(publishUrl, projectName) {
+    let action = "";
+    try {
+      action = accountActionPath(publishUrl);
+      if (new URL(action, location.href).pathname.replace(/;[^/]*$/, "").replace(/\/$/, "") !== "/projectmanager/publish") {
+        action = "";
+      }
+    } catch {
+      action = "";
+    }
+    if (!action) {
+      setStatus("Publish is not available for this project.");
+      return;
+    }
+    setStatus("Opening Publish…");
+    let doc;
+    try {
+      const res = await fetch(action, { credentials: "same-origin", redirect: "follow" });
+      if (res.url && /\/login(?:\?|$)/.test(new URL(res.url, location.href).pathname)) {
+        location.assign(res.url);
+        return;
+      }
+      doc = new DOMParser().parseFromString(await res.text(), "text/html");
+    } catch (e) {
+      setStatus("Publish is not available for this project.");
+      window.alert("Couldn't open Publish\n\n" + ((e && e.message) || "The form did not load."));
+      return;
+    }
+    const categorySelect = doc.querySelector(
+      'select[name="project.category"], select[name="form.project.category"]'
+    );
+    const nameField = doc.querySelector(
+      'input[name="project.name"], input[name="form.project.name"]'
+    );
+    const descField = doc.querySelector(
+      'input[name="project.shortDescription"], input[name="form.project.shortDescription"]'
+    );
+    const idField = doc.querySelector('input[name="project_id"]');
+    if (!categorySelect || !nameField) {
+      const problem = restoreServerMessage(doc);
+      setStatus("Publish is not available for this project.");
+      window.alert("Couldn't open Publish\n\n" + (problem || "The form did not load."));
+      return;
+    }
+    closePublishModal();
+    const displayName = String((nameField.value || projectName || "this project")).trim();
+    const backdrop = document.createElement("div");
+    backdrop.className = "tawala-modal-backdrop";
+    backdrop.id = PUBLISH_MODAL_ID;
+    backdrop.innerHTML =
+      '<div class="tawala-modal tawala-modal--publish" role="dialog" aria-modal="true" aria-labelledby="publishModalTitle">' +
+      '<h3 id="publishModalTitle">Publish to Library</h3>' +
+      '<p class="pm-hint tawala-modal-lede">Publishing “' + escapeHtml(displayName) + '” copies it into the public Library.</p>' +
+      '<div class="tawala-modal-body">' +
+      '<div class="tawala-modal-grid">' +
+      '<label class="tawala-modal-field" for="publishNameInput">Library name' +
+      '<input type="text" id="publishNameInput" value="' + escapeHtml(displayName) + '" />' +
+      "</label>" +
+      '<label class="tawala-modal-field" for="publishCategorySelect">Library category (required)' +
+      '<select id="publishCategorySelect"></select>' +
+      "</label>" +
+      '<label class="tawala-modal-field tawala-modal-field--full" for="publishDescInput">Library description (one line)' +
+      '<textarea id="publishDescInput" rows="2" autocomplete="off" placeholder="Shown under the name in the public Library">' +
+      escapeHtml(descField ? descField.value : "") +
+      "</textarea>" +
+      "</label>" +
+      "</div>" +
+      '<p class="pm-hint tawala-modal-hint-tight">The Library copy is a separate listing and does not include saved responses. Your project and its responses stay here.</p>' +
+      '<p class="pm-hint" id="publishModalError" role="alert" style="display:none;"></p>' +
+      "</div>" +
+      '<div class="tawala-modal-actions">' +
+      '<button type="button" class="pm-action" id="publishModalCancel">Cancel</button>' +
+      '<button type="button" class="pm-action is-active" id="publishModalConfirm">Publish</button>' +
+      "</div></div>";
+    document.body.appendChild(backdrop);
+    document.addEventListener("keydown", handlePublishModalKeydown, true);
+    const liveCategory = backdrop.querySelector("#publishCategorySelect");
+    liveCategory.innerHTML = categorySelect.innerHTML;
+    const nameInput = backdrop.querySelector("#publishNameInput");
+    const descInput = backdrop.querySelector("#publishDescInput");
+    const errEl = backdrop.querySelector("#publishModalError");
+    nameInput.focus();
+    nameInput.select();
+    bindDismissOnBackdropClick(backdrop, closePublishModal);
+    backdrop.querySelector("#publishModalCancel").addEventListener("click", closePublishModal);
+    backdrop.querySelector("#publishModalConfirm").addEventListener("click", async function () {
+      const nameVal = nameInput.value.trim();
+      const categoryVal = liveCategory.value.trim();
+      const categoryLabel = liveCategory.options[liveCategory.selectedIndex]
+        ? liveCategory.options[liveCategory.selectedIndex].text.replace(/\s+/g, " ").trim()
+        : categoryVal;
+      const descVal = descInput.value.trim();
+      if (!nameVal) {
+        errEl.textContent = "Enter a name for the published Library project.";
+        errEl.style.display = "";
+        return;
+      }
+      if (!categoryVal) {
+        errEl.textContent = "Pick a Library category for the published project.";
+        errEl.style.display = "";
+        return;
+      }
+      if (!descVal) {
+        errEl.textContent = "Enter a one-line description for the published project.";
+        errEl.style.display = "";
+        return;
+      }
+      const confirmMsg =
+        "Publish “" + nameVal + "” to the public Library (category: " + categoryLabel + ")?\n\n" +
+        "The Library copy will not include saved responses. Your project is unchanged.";
+      if (!window.confirm(confirmMsg)) return;
+      errEl.style.display = "none";
+      const body = new URLSearchParams();
+      body.set("project_id", (idField && idField.value) || projectName || nameVal);
+      body.set(nameField.getAttribute("name") || "project.name", nameVal);
+      body.set(categorySelect.getAttribute("name") || "project.category", categoryVal);
+      body.set((descField && descField.getAttribute("name")) || "project.shortDescription", descVal);
+      body.set("submit", "Submit");
+      try {
+        const posted = await fetch(action, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: body.toString(),
+          redirect: "follow",
+        });
+        if (posted.url && /\/login(?:\?|$)/.test(new URL(posted.url, location.href).pathname)) {
+          location.assign(posted.url);
+          return;
+        }
+        const result = new DOMParser().parseFromString(await posted.text(), "text/html");
+        const heads = result.querySelectorAll("h3, h5");
+        let published = false;
+        for (let i = 0; i < heads.length; i++) {
+          if (/has been published/i.test(String(heads[i].textContent || ""))) published = true;
+        }
+        if (published) {
+          closePublishModal();
+          const msg = "Published “" + nameVal + "” to the Library.";
+          setStatus(msg);
+          window.alert(msg);
+          return;
+        }
+        const problem = restoreServerMessage(result) || "The project was not published.";
+        errEl.textContent = problem;
+        errEl.style.display = "";
+        window.alert("Couldn't publish “" + nameVal + "”\n\n" + problem);
+      } catch (e) {
+        const problem = (e && e.message) || "The form could not be submitted.";
+        errEl.textContent = problem;
+        errEl.style.display = "";
+        window.alert("Couldn't publish “" + nameVal + "”\n\n" + problem);
+      }
+    });
+    setStatus("");
+  }
+
+  /**
+   * Public-site Project Details buttons that already have a Java account page.
+   * Returns true when this click was handled.
+   */
+  function handlePublicAccountAction(ev, btn, wired, op, projectId) {
+    if (!window.TAWALA_PUBLIC_SITE) return false;
+    const project = accountProject(projectId);
+    const name = project && project.name ? String(project.name) : "";
+    const actions = (project && project.accountActions) || {};
+    const formScope = btn.dataset.dataScope === "form" && btn.dataset.formName
+      ? String(btn.dataset.formName)
+      : "";
+
+    if (wired === "deploy-share" || op === "deploy") {
+      ev.preventDefault();
+      openDeployShareDialog(projectId);
+      return true;
+    }
+
+    if (wired === "backup-mytawala" || op === "backup") {
+      ev.preventDefault();
+      openPublicBackupDialog(actions.backup);
+      return true;
+    }
+
+    if (wired === "restore-mytawala" || op === "restore") {
+      ev.preventDefault();
+      openPublicRestoreDialog(actions.restore, name);
+      return true;
+    }
+
+    if (wired === "publish-mytawala" || op === "publish") {
+      ev.preventDefault();
+      void openPublicPublishDialog(actions.publish, name);
+      return true;
+    }
+
+    if (wired === "export-mytawala" || op === "export") {
+      ev.preventDefault();
+      exportPublicProject(actions.exportAll, name, formScope);
+      return true;
+    }
+
+    if (wired === "import-mytawala" || op === "import") {
+      ev.preventDefault();
+      const importUrl = formScope && name
+        ? "/projectmanager/import-project-data?project=" +
+          encodeURIComponent(name) +
+          "&form=" +
+          encodeURIComponent(formScope)
+        : actions.importAll;
+      void importPublicProject(importUrl, name || "this project", formScope);
+      return true;
+    }
+
+    if (wired === "delete-mytawala" || op === "delete") {
+      ev.preventDefault();
+      if (!name || accountActionBusy) return true;
+      const ok = window.confirm(
+        "Delete “" + name + "” from this account?\n\nThe project and its responses are removed. This cannot be undone."
+      );
+      if (!ok) return true;
+      accountActionBusy = true;
+      void postAccountAction(name, "Delete")
+        .then((done) => {
+          if (done) location.assign("/app/mytawala.html");
+        })
+        .finally(() => {
+          accountActionBusy = false;
+        });
+      return true;
+    }
+
+    if (wired === "purge-local" || op === "purge") {
+      ev.preventDefault();
+      if (!name || accountActionBusy) return true;
+      const question = formScope
+        ? "Remove the responses on “" + formScope + "” in “" + name + "”?\n\nThe form stays. Those answers are deleted."
+        : "Remove all responses on “" + name + "”?\n\nThe project stays. The answers are deleted.";
+      if (!window.confirm(question)) return true;
+      accountActionBusy = true;
+      const action = formScope ? "Erase" : "Purge";
+      const extra = formScope ? { form: formScope } : null;
+      void postAccountAction(name, action, extra)
+        .then((done) => {
+          if (done) location.reload();
+        })
+        .finally(() => {
+          accountActionBusy = false;
+        });
+      return true;
+    }
+
+    return false;
+  }
+
+  function publicAccountPendingMessage(wired, op) {
+    if (wired === "rename-project" || op === "rename") {
+      return "Rename is not connected to this account yet.";
+    }
+    if (wired === "make-copy-mytawala" || op === "make-copy") {
+      return "Make a Copy is not connected to this account yet.";
+    }
+    if (wired === "edit-in-designer" || op === "edit-in-designer") {
+      return "Edit in Designer stays on this computer. It is not opened from the public site.";
+    }
+    if (wired === "deploy-version") {
+      return "Push this version is not connected to this account yet.";
+    }
+    if (wired === "activate-project" || wired === "deactivate-project") {
+      return "That control is not connected to this account yet.";
+    }
+    return "That control is not connected to this account yet.";
+  }
+
   async function handleOpClick(ev) {
     const btn = ev.target.closest("[data-op], .pm-action, .pm-icon-action");
     if (!btn || !btn.dataset) return;
@@ -6454,6 +7329,7 @@
     if (wired === "false" || !wired) return;
 
     if (window.TAWALA_PUBLIC_SITE) {
+      if (handlePublicAccountAction(ev, btn, wired, op, projectId)) return;
       const localOnly =
         wired === "delete-mytawala" ||
         wired === "purge-local" ||
@@ -6479,7 +7355,7 @@
         op === "import";
       if (localOnly) {
         ev.preventDefault();
-        setStatus("That control is on the prototype. It is not connected to this account yet.");
+        setStatus(publicAccountPendingMessage(wired, op));
         return;
       }
     }
@@ -6512,7 +7388,7 @@
       const tree = document.getElementById("pmDataTree");
       const sel = effectiveDataSelection(tree);
       if (sel.kind === "start" && sel.url) {
-        void copyUrlToClipboard(sel.url);
+        void copyUrlToClipboard(sel.url, sel.formName);
       } else {
         window.alert("Select a start point (◀) first, then Copy link.");
       }

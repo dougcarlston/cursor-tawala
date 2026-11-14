@@ -83,7 +83,7 @@
 							${stats.responseCount}
 						</td>
 						<td class="lastAccessed">
-							<fmt:formatDate value="${stats.lastAccessed}" type="both" pattern="yyyy-MM-dd" /> 
+							<fmt:formatDate value="${stats.lastAccessed}" pattern="yyyy-MM-dd" timeZone="America/Los_Angeles" /> 
 						</td>
 						<td>
 							<div  class="controls">

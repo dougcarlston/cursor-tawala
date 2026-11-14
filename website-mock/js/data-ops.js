@@ -16,7 +16,10 @@
   function setStatus(msg) {
     const el = document.getElementById("pmOpStatus");
     if (el) {
-      el.textContent = msg;
+      const text = msg ? String(msg) : "";
+      el.textContent = text;
+      if (text) el.removeAttribute("hidden");
+      else el.setAttribute("hidden", "");
       try {
         el.scrollIntoView({ block: "nearest", behavior: "smooth" });
       } catch {

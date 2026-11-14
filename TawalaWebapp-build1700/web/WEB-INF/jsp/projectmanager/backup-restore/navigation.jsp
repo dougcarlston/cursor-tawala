@@ -10,7 +10,7 @@
 		<button type="submit" name="<%=AbstractWizardFormController.PARAM_TARGET%>${pageNumber - 1}"> &lt;&lt; PREVIOUS </button>
 	</c:if>
 	
-	<button type="submit" name="cancel" onclick="parent.currentDialogObject.cancel(); return false;">CANCEL</button>
+	<button type="submit" name="cancel" onclick="return tawalaRestoreLeave(false);">CANCEL</button>
 	
 	<c:if test="${pageNumber < totalPageCount - 1}">
 		<button type="submit" name="<%=AbstractWizardFormController.PARAM_TARGET%>${pageNumber + 1}" value="Next"> NEXT &gt;&gt; </button>

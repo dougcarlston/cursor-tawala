@@ -32,7 +32,7 @@
 				<span>
 					<c:choose>
 						<c:when test="${empty lastDataRecordedDate}">never</c:when>
-						<c:otherwise><fmt:formatDate value="${lastDataRecordedDate}" pattern="yyyy-MM-dd hh:mm" /></c:otherwise>
+						<c:otherwise><span id="tawalaLastUsed" data-last-used-ms="${lastDataRecordedDate.time}"><fmt:formatDate value="${lastDataRecordedDate}" pattern="M/d/yy" timeZone="America/Los_Angeles" /></span></c:otherwise>
 					</c:choose>
 				</span>
 			</div>

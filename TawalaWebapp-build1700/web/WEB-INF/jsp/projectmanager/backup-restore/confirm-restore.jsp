@@ -32,7 +32,7 @@
 		<br />
 		<br />
 		<div class="buttons">
-			<button type="submit" name="done" onclick="parent.currentDialogObject.submit(); return false;">DONE</button>
+			<button type="button" name="done" onclick="return tawalaRestoreLeave(true);">DONE</button>
 		</div>
 	</div>
 </div>

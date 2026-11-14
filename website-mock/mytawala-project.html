@@ -10,7 +10,7 @@
   <script src="js/demo-urls.js?v=20260915-dup4"></script>
   <script src="js/transfer.js?v=20260915-dup4"></script>
   <script src="js/form-starts.js?v=20261112-starts1"></script>
-  <script src="js/project-ops.js?v=20261112-detail5"></script>
+  <script src="js/project-ops.js?v=20261113-actions13"></script>
   <script src="js/data-ops.js?v=20260826-pubpriv1"></script>
 </head>
 <body data-tawala-page="mytawala">
@@ -153,6 +153,27 @@
         .replace(/"/g, "&quot;");
     }
 
+    function javaStringVar(html, varName) {
+      const re = new RegExp("var\\s+" + varName + "\\s*=\\s*'((?:\\\\'|[^'])*)'");
+      const match = String(html || "").match(re);
+      if (!match) return "";
+      return match[1]
+        .replace(/\\'/g, "'")
+        .replace(/\\"/g, '"')
+        .replace(/\\\\/g, "\\")
+        .replace(/&amp;/g, "&");
+    }
+
+    function accountActionsFromJavaHtml(html) {
+      return {
+        backup: javaStringVar(html, "linkToBackup"),
+        restore: javaStringVar(html, "linkToRestore"),
+        publish: javaStringVar(html, "linkToPublishAsNew"),
+        exportAll: javaStringVar(html, "linkToExportAll"),
+        importAll: javaStringVar(html, "linkToImportAll"),
+      };
+    }
+
     async function loadPublicProjectDetail() {
       const host = document.getElementById("pmDetailHost");
       await TawalaChrome.syncPublicAccount();
@@ -170,9 +191,12 @@
         "/projectmanager/projectdetail?projectName=" + encodeURIComponent(name);
       let title = name;
       let forms = [];
+      let accountHtml = "";
+      let lastUsed = "";
       try {
         const res = await fetch(javaUrl, { credentials: "same-origin", cache: "no-store" });
         const html = await res.text();
+        accountHtml = html;
         const doc = new DOMParser().parseFromString(html, "text/html");
         const heading = doc.querySelector("h2");
         if (heading && heading.textContent.trim()) title = heading.textContent.trim();
@@ -187,6 +211,38 @@
             viewHref: view ? view.getAttribute("href") : "",
           };
         }).filter((row) => row.name);
+        const used = doc.getElementById("tawalaLastUsed");
+        const usedMs = used ? Number(used.getAttribute("data-last-used-ms")) : 0;
+        if (usedMs > 0) {
+          const dt = new Date(usedMs);
+          lastUsed =
+            dt.getMonth() + 1 + "/" + dt.getDate() + "/" + String(dt.getFullYear()).slice(-2);
+        } else {
+          const usedLabel = [...doc.querySelectorAll(".label")].find((el) =>
+            el.textContent.replace(/\s+/g, " ").trim() === "Last Used:"
+          );
+          const usedValue = usedLabel && usedLabel.nextElementSibling;
+          const usedText = usedValue ? usedValue.textContent.replace(/\s+/g, " ").trim() : "";
+          if (usedText && usedText.toLowerCase() !== "never") {
+            const clock = usedText.match(
+              /^(\d{4})-(\d{2})-(\d{2})(?:[ T](\d{1,2}):(\d{2}))?/
+            );
+            if (clock) {
+              const instant = Date.UTC(
+                Number(clock[1]),
+                Number(clock[2]) - 1,
+                Number(clock[3]),
+                Number(clock[4] || 0),
+                Number(clock[5] || 0)
+              );
+              const dt = new Date(instant);
+              lastUsed =
+                dt.getMonth() + 1 + "/" + dt.getDate() + "/" + String(dt.getFullYear()).slice(-2);
+            } else {
+              lastUsed = usedText;
+            }
+          }
+        }
       } catch {
         forms = [];
       }
@@ -240,6 +296,7 @@
           },
         ],
         publicAccount: true,
+        accountActions: accountActionsFromJavaHtml(accountHtml),
       };
       /* Blue hint above Project Data: caret starts closed. First click = start
        * links, second click = every form. Do not pre-open the start links. */
@@ -264,6 +321,19 @@
         TawalaProjectOps.rememberPublicProject(project);
       }
       host.innerHTML = TawalaProjectOps.renderDetailPanel(project, {});
+      try {
+        const restoreNote = sessionStorage.getItem("tawalaRestoreNote");
+        if (restoreNote) {
+          sessionStorage.removeItem("tawalaRestoreNote");
+          const status = document.getElementById("pmOpStatus");
+          if (status) {
+            status.textContent = restoreNote;
+            status.removeAttribute("hidden");
+          }
+        }
+      } catch {
+        /* ignore */
+      }
       if (typeof TawalaProjectOps.syncProjectActionsForDataSelection === "function") {
         TawalaProjectOps.syncProjectActionsForDataSelection(host.querySelector("#pmDataTree"));
       }
@@ -271,6 +341,42 @@
       if (records) {
         records.textContent = String(responseTotal);
         records.title = "Responses on this account: " + responseTotal;
+      }
+      const countsByForm = Object.create(null);
+      forms.forEach((row) => {
+        const raw = String(row.responses || "").replace(/,/g, "").trim();
+        if (/^\d+$/.test(raw)) countsByForm[row.name] = raw;
+      });
+      host.querySelectorAll("[data-pm-form]").forEach((rowEl) => {
+        const formName = rowEl.getAttribute("data-pm-form") || "";
+        const count = countsByForm[formName];
+        const cell = rowEl.querySelector("[data-pm-form-count]");
+        if (count == null) return;
+        if (cell) {
+          cell.textContent = count;
+          cell.title = "Records for form “" + formName + "”: " + count;
+        }
+        if (Number(count) > 0) {
+          const times = rowEl.querySelector(".pm-data-stat-times");
+          if (times) {
+            times.textContent = count;
+            times.classList.remove("pm-data-stat-empty");
+            times.removeAttribute("aria-hidden");
+            times.title = "Times used — " + count;
+          }
+        }
+      });
+      const timesEl = host.querySelector("#pmDataProjectTimesUsed");
+      if (timesEl && responseTotal > 0) {
+        timesEl.textContent = String(responseTotal);
+        timesEl.classList.remove("pm-data-stat-placeholder");
+        timesEl.title = "Times used — " + responseTotal;
+      }
+      const lastEl = host.querySelector("#pmDataProjectLastUsed");
+      if (lastEl && lastUsed) {
+        lastEl.textContent = lastUsed;
+        lastEl.classList.remove("pm-data-stat-placeholder");
+        lastEl.title = "Last used — " + lastUsed;
       }
       const back = host.querySelector(".pm-back a");
       if (back) back.setAttribute("href", "/app/mytawala.html");
@@ -295,6 +401,7 @@
         status.textContent = justForked
           ? "Made a copy — private :8080 clone with all response data; Use / Deploy / Publish from this page. Purge if you want a clean slate."
           : "Copied from Library — private empty clone; Use / Deploy / Publish from this page.";
+        status.removeAttribute("hidden");
       }
     }
     }
